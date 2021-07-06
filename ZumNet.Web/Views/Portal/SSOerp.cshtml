@@ -1,0 +1,42 @@
+﻿@using System.Data;
+@using System.Data.SqlClient;
+@using ZumNet.Framework.Base;
+@using ZumNet.Framework.Core;
+@using ZumNet.Framework.Data;
+
+@{
+    ViewBag.Title = "ERP";
+    Layout = "~/Views/Shared/Layouts/_LayoutNone.cshtml";
+
+    string strReturn = "";
+    string strConnect = DbConnect.GetString(DbConnect.INITIAL_CATALOG.INIT_CAT_BASE);
+    string strQuery = "SELECT Keyword7 FROM admin.PH_USER_DETAIL (NOLOCK) WHERE UserID = @urid";
+
+    SqlParameter[] parameters = new SqlParameter[]
+    {
+        ParamSet.Add4Sql("@urid", SqlDbType.Int, 4, 101374)
+    };
+
+    ParamData pData = new ParamData(strQuery, "text", parameters);
+
+    using (DbBase db = new DbBase())
+    {
+        strReturn = db.ExecuteScalarNTx(strConnect, System.Reflection.MethodInfo.GetCurrentMethod(), pData);
+    }
+
+    string stgrPwd = Request.ServerVariables["AUTH_PASSWORD"];
+}
+
+<div style="margin-top: 100px; text-align: center; font-weight: bold">
+    <h4>잠시만 기다려 주십시오!</h4>
+</div>
+
+<form id="ssoForm" method="post" action="http://erpap.cresyn.com:8000/OA_HTML/Ssl_Login.jsp">
+    <input type="hidden" name="username" value="@strReturn" />
+    <input type="hidden" name="password" value="@stgrPwd" />
+    <input type="hidden" name="langCode" value="US" />
+</form>
+
+@section Scripts {
+    <script type="text/javascript">$(function () { $('ssoForm').submit(); });</script>
+}

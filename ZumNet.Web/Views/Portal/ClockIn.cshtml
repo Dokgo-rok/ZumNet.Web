@@ -1,0 +1,78 @@
+﻿
+@{
+    ViewBag.Title = "출근하기";
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+}
+
+@section Styles {
+    <style type="text/css">
+        html, body  {height: 100%}
+        .z-clockin {
+            display: flex !important;
+            flex-shrink: 1;
+            justify-content: center !important;
+            padding-top: 10rem;
+        }
+        .card {
+            border-radius: 1rem !important;
+            min-width: 340px;
+        }
+        .card-header {
+            border-top-left-radius: 1rem !important;
+            border-top-right-radius: 1rem !important;
+        }
+        .ccircle {
+            width: 180px;
+            border-radius: 50%;
+            border: 1rem solid #26AAE1;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            line-height: 8rem;
+        }
+        .vl {
+            border-left: 2px solid #e2e2e2;
+            height: 100px;
+            position: absolute;
+            left: 50%;
+        }
+    </style>
+}
+
+<div class="h-100 bg-light">
+    <div class="z-clockin">
+        <div class="card">
+            <div class="card-header bg-windows d-flex justify-content-between">
+                <div class="text-white">출근하기</div>
+                <div>08:54:12</div>
+            </div>
+            <div class="card-body px-3">
+                <div class="row d-flex">
+
+                    <div class="col-6 flex-fill text-center">
+                        <h5 class="text-danger"><i class="mdi mdi-clock-time-nine-outline"></i> 계획출근시간</h5>
+                        <p class="mt-2 text-muted">2021-04-11</p>
+                        <h2>09:00:06</h2>
+                    </div>
+
+                    <div class="vl"></div>
+
+                    <div class="col-6 flex-fill text-center">
+
+                        <h5 class="text-primary"><i class="mdi mdi-clock-time-five-outline ml-2"></i> 계획퇴근시간</h5>
+                        <p class=" mt-2 text-muted">2021-04-11</p>
+                        <h2>18:40:06</h2>
+                    </div>
+                </div>
+
+                <div class="col-12 my-4 text-center">
+                    <button class="btn btn-outline-windows ccircle">출근하기</button>
+                </div>
+
+                <div class="d-grid">
+                    <button class="btn btn-outline-windows mx-2 font-weight-bold" onclick="location.href='/'">건너뛰기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

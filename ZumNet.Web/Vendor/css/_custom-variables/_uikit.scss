@@ -1,0 +1,35 @@
+@import 'features';
+
+//Ãß°¡
+@media only all and (min-width:1200px) {
+    @for $i from 1 through 99 {
+        .wd-xl-#{$i} {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 $i*1%;
+            flex: 0 0 $i*1%;
+            max-width: $i*1%;
+        }
+    }
+}
+
+@media only all and (max-width:1200px) {
+    @for $i from 1 through 99 {
+        .wd-lg-#{$i} {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 $i*1%;
+            flex: 0 0 $i*1%;
+            max-width: $i*1%;
+        }
+    }
+}
+
+@media only all and (max-width:576px) {
+    @for $i from 1 through 99 {
+        .wd-#{$i} {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 $i*1%;
+            flex: 0 0 $i*1%;
+            max-width: $i*1%;
+        }
+    }
+}

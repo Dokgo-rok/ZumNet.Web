@@ -1,24 +1,100 @@
-﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+﻿/*******************************************************************************/
+/* 레이아웃, 로고, 상단검색 */
+
+.layout-sidenav .app-brand, layout-sidenav-horizontal .app-brand {
+    padding-top: 0; /*1.04709rem;*/
+    padding-bottom: 0; /*0.739rem;*/
+    padding-left: 2.8rem;
+    height: 56px;
+}
+.layout-navbar {
+    padding-top: 0;
+    padding-bottom: 0;
+    /*height: 56px;*/
+}
+.navbar-brand {
+    padding-left: 0.1rem;
+    height: 56px;
+}
+.navbar-nav .nav-link {
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 56px;
+}
+.app-brand .app-brand-logo img {
+    height: 28px;
+    vertical-align: middle;
 }
 
-/* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+.app-brand .app-brand-text img {
+    height: 22px;
+    vertical-align: middle;
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
+.layout-1 .layout-sidenav .app-brand,
+.layout-1 .layout-sidenav .app-brand + .sidenav-divider,
+.layout-reversed .layout-2 .layout-sidenav .app-brand {
+    display: none;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+.layout-1 .layout-navbar .app-brand,
+.layout-reversed .layout-2 .layout-navbar .app-brand {
+    display: -ms-flexbox !important;
+    display: flex !important;
 }
+
+.layout-1 .layout-navbar .layout-sidenav-toggle,
+.layout-reversed .layout-2 .layout-navbar .layout-sidenav-toggle,
+.layout-offcanvas .layout-navbar .layout-sidenav-toggle,
+.layout-fixed-offcanvas .layout-navbar .layout-sidenav-toggle {
+    display: block !important;
+}
+
+@media (min-width: 992px) {
+    .layout-offcanvas .layout-sidenav .layout-sidenav-toggle,
+    .layout-fixed-offcanvas .layout-sidenav .layout-sidenav-toggle {
+        display: none;
+    }
+}
+
+.sidenav-vertical .sidenav-header, .sidenav-vertical .sidenav-block {
+    /*padding: .5rem 1rem;*/
+}
+.sidenav-horizontal .sidenav-item .sidenav-link {
+    padding: 0.75rem 1rem;
+}
+
+.layout-navbar .navbar-nav .app-search {
+    max-width: 180px;
+    width: 180px; /* IE */
+}
+
+.input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+    margin-left: -1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.layout-navbar .navbar-nav .app-search .btn {
+    background-color: rgba(255,255,255,0.12);
+    border-color: transparent;
+    color: rgba(255,255,255,0.5);
+    border-radius: 0 30px 30px 0;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    margin-left: 0 !important;
+    z-index: 4;
+}
+
+.layout-navbar .navbar-nav .app-search .form-control {
+    border: none;
+    height: 30px;
+    padding-left: 20px;
+    padding-right: 0;
+    color: #fff;
+    background-color: rgba(255,255,255,0.12);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-radius: 30px 0 0 30px;
+}
+

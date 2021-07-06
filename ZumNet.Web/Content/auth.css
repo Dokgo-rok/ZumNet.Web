@@ -1,0 +1,63 @@
+﻿/*******************************************************************************/
+/* 인증 */
+
+.auth-bg {
+    background: url(/images/bg-md-1.jpg) center;
+    background-size: contain;
+    background-position: left;
+}
+
+@media (min-width: 1035px) {
+    .auth-bg {
+        background: url(/images/bg-auth2.jpg) center;
+        background-size: cover;
+    }
+}
+
+.auth-user-testimonial {
+    position: absolute;
+    margin: 0 auto;
+    padding: 0 2.75rem;
+    bottom: 3rem;
+    left: 0;
+    right: 0;
+}
+
+.auth-user-testimonial p.lead {
+        max-width: 700px;
+    }
+
+.fw-normal {
+    font-weight: 400 !important;
+}
+
+.lead {
+    font-size: 1.01562rem;
+    font-weight: 300;
+}
+
+.footer-alt {
+    left: 0 !important;
+    text-align: center;
+    background-color: transparent;
+}
+
+.footer {
+    bottom: 0;
+    padding: 10px 15px 10px;
+    position: absolute;
+    right: 0;
+    color: #98a6ad;
+    left: 220px;
+}
+
+.logo-xl img {
+    height: 32px;
+}
+
+ul, li {
+    list-style: none;
+    padding-inline-start: 0;
+}
+
+

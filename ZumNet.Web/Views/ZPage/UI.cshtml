@@ -1,0 +1,876 @@
+﻿@{
+    ViewBag.Title = "UI";
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/spinkit/spinkit")
+ 
+}
+
+<!DOCTYPE html>
+
+
+
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+    <div class="mx-4 my-3">
+        <h4>상단 메뉴바 아이콘</h4>
+        <div class="text-dark text-large">
+            <i class="mdi mdi-timer-sand"></i>
+            <i class="fe-phone ml-2"></i>
+            <i class="mdi mdi-sitemap ml-2"></i>
+            <i class="mdi mdi-map-search noti-icon ml-2"></i>
+            <i class="fe-navigation ml-2"></i>
+        </div>
+        <hr />
+        <h4>출퇴근</h4>
+        <div class="text-dark text-large">
+            <i class="mdi mdi-clock-time-nine-outline"></i>
+            <i class="mdi mdi-clock-time-five-outline ml-2"></i>
+
+        </div>
+        <hr />
+        <h4>좌측사이드메뉴</h4>
+        <div class="text-dark mt-4">
+            <h5>전자결재<i class="fe-edit ml-2"></i></h5>
+            <h5>모델별원가<i class="mdi mdi-text-box-search-outline ml-2"></i></h5>
+            <h5>업무일지<i class="fe-calendar ml-2"></i></h5>
+            <h5>전자메일<i class="fe-mail ml-2"></i></h5>
+            <h5>문서관리<i class="fe-file-text ml-2"></i></h5>
+            <h5>설계개발<i class="mdi mdi-ruler-square ml-2"></i></h5>
+            <h5>변경관리<i class="fe-bar-chart-2 ml-2"></i></h5>
+            <h5>금형관리<i class="mdi mdi-wrench-outline ml-2"></i></h5>
+            <h5>생산현황<i class="fe-pie-chart ml-2"></i></h5>
+            <h5>지식관리<i class="far fa-clipboard ml-2"></i></h5>
+            <h5>교육관리<i class="fas fa-chalkboard-teacher ml-2"></i></h5>
+            <h5>자원관리<i class="far fa-building ml-2"></i></h5>
+            <h5>게시판<i class="mdi mdi-format-list-bulleted-square ml-2"></i></h5>
+
+        </div>
+        <hr />
+        <h4>포털 메인</h4>
+        <div class="text-dark mt-4">
+            <h5>결재함<i class="fe-edit ml-2"></i></h5>
+            <h5>공지사항<i class="fe-mic ml-2"></i></h5>
+            <h5>전자메일<i class="fe-mail ml-2"></i></h5>
+            <h5>게시판<i class="mdi mdi-format-list-bulleted-square ml-2"></i></h5>
+
+        </div>
+        <hr />
+        <h4>사용자 및 그룹</h4>
+        <div class="text-dark text-large">
+            <i class="fe-user"></i>
+            <i class="fe-users ml-2"></i>
+            <i class="mdi mdi-24px mdi-account-multiple ml-2"></i>
+
+        </div>
+        <hr />
+        <h4>폴더 외</h4>
+        <div class="text-dark text-large">
+            <h5><i class="far fa-folder mr-2"></i>일반폴더</h5>
+            <h5><i class="mdi mdi-folder-star mr-2"></i>폴더2</h5>
+            <h5><i class="far fa-file-image mr-2"></i>앨범</h5>
+            <h5><i class="far fa-calendar-alt mr-2"></i>일정</h5>
+            <h5><i class="mdi mdi-file-cabinet mr-2"></i>문서함</h5>
+            <h5><i class="mdi mdi-file-multiple-outline mr-2"></i>문서 서식류</h5>
+            <h5><i class="mdi mdi-camera-switch-outline mr-2"></i>자원폴더</h5>
+            <h5><i class="mdi mdi-clipboard-text-search-outline mr-2"></i>예약현황</h5>
+            <h5><i class="mdi mdi-timetable mr-2"></i>예약현황</h5>
+
+
+        </div>
+        <hr />
+        <h4>메뉴 펼침 접힘</h4>
+        <div class="text-dark text-large">
+            <h5><i class="mdi mdi-plus-box-outline mr-2"></i>펼침</h5>
+            <h5><i class="mdi mdi-plus-box mr-2"></i>펼침</h5>
+            <h5><i class="mdi mdi-minus-box-outline mr-2"></i>접힘</h5>
+            <h5><i class="mdi mdi-minus-box mr-2"></i>접힘</h5>
+
+
+
+        </div>
+        <hr />
+        <h4>전자결재 및 게시판 상단 메뉴</h4>
+        <div class="text-dark text-large">
+
+            <h5><i class="mdi mdi-refresh mr-2"></i>새로고침</h5>
+            <h5><i class="fe-edit-2 mr-2"></i>새글작성</h5>
+            <h5><i class="mdi mdi-trash-can-outline mr-2"></i>삭제</h5>
+            <h5><i class="fe-file-plus mr-2"></i>추가</h5>
+
+            <h5><i class="mdi mdi-cog-outline mr-2"></i>환경설정</h5>
+
+
+        </div>
+
+        <hr />
+        <h4>게시판 본문 상단</h4>
+        <div class="text-dark">
+            <h5><i class="mdi mdi-format-list-bulleted mr-2"></i>목록</h5>
+            <h5><i class="mdi mdi-reply mr-2"></i>목록 모바일(돌아가기)</h5>
+
+            <h5><i class="mdi mdi mdi-arrow-left-bold mr-2"></i>이전</h5>
+            <h5><i class="mdi mdi-arrow-right-bold mr-2"></i>다음</h5>
+            <h5><i class="fe-edit-2 mr-2"></i>새글작성</h5>
+            <h5><i class="fe-edit-1 mr-2"></i>수정</h5>
+            <h5><i class="mdi mdi-trash-can-outline mr-2"></i>삭제</h5>
+            <h5><i class="mdi mdi-message-text-outline mr-2"></i>답글</h5>
+            <h5><i class="fe-printer mr-2"></i>인쇄</h5>
+        </div>
+        <hr />
+        <h4>게시판 리스트</h4>
+        <div class="text-dark text-large">
+            <h5><i class="mdi mdi-alarm-light mr-2"></i>긴급</h5>
+            <h5><i class="mdi mdi-alarm-light-outline mr-2"></i>긴급</h5>
+            <h5><i class="mdi mdi-alert-circle mr-2"></i>긴급</h5>
+            <h5><i class="mdi mdi-alert-circle-outline mr-2"></i>긴급</h5>
+            <h5><i class="mdi mdi-bullhorn mr-2"></i>긴급</h5>
+            <h5><i class="mdi mdi-bell mr-2"></i>New(신규)</h5>
+            <h5><i class="mdi mdi-briefcase-variant-outline mr-2"></i>회수</h5>
+            <h5><i class="mdi mdi-subdirectory-arrow-right mr-2"></i>답글</h5>
+
+        </div>
+        <hr />
+        <h4>게시판(커뮤니티형)</h4>
+        <div class="text-dark text-large">
+            <h5><i class="fe-paperclip mr-2"></i>첨부파일</h5>
+            <h5><i class="fe-message-circle mr-2"></i>댓글</h5>
+        </div>
+        <hr />
+        <h4>전자결재 서식페이지 상단</h4>
+        <div class="text-dark text-large">
+            <h5><i class="far fa-edit mr-2"></i>기안하기</h5>
+            <h5><i class="fe-paperclip mr-2"></i>첨부</h5>
+            <h5><i class="far fa-file-alt mr-2"></i>연관문서</h5>
+            <h5><i class="fas fa-link mr-2"></i>관련제품/부품</h5>
+            <h5><i class="fas fa-info mr-2"></i>문서정보</h5>
+            <h5><i class="fas fa-list mr-2"></i>옵션</h5>
+            <h5><i class="far fa-save mr-2"></i>임시저장</h5>
+            <h5><i class="fas fa-eye mr-2"></i>미리보기</h5>
+            <h5><i class="fas fa-redo-alt mr-2"></i>새로고침</h5>
+        </div>
+        <hr />
+
+
+
+    </div>
+
+    <h4 class="font-weight-bold py-3 mb-4 mt-4">
+        <span class="text-muted font-weight-light ml-4">UI elements /</span> Buttons
+    </h4>
+
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="card mb-4">
+                <div class="row no-gutters row-bordered">
+                    <div class="col-xl-6 p-4">
+
+                        <small class="text-light font-weight-semibold">Default</small>
+                        <div class="demo-inline-spacing mt-3">
+                            <button type="button" class="btn btn-primary waves-effect waves-light">Primary</button>
+                            <button type="button" class="btn btn-danger">Danger</button>
+                            <button type="button" class="btn btn-pink">Pink</button>
+                            <button type="button" class="btn btn-warning">Warning</button>
+                            <button type="button" class="btn btn-success">Success</button>
+                            <button type="button" class="btn btn-teal">Teal</button>
+                            <button type="button" class="btn btn-info">Info</button>
+                            <button type="button" class="btn btn-purple">Purple</button>
+                            <button type="button" class="btn btn-indigo">indigo</button>
+                            <button type="button" class="btn btn-blue">blue</button>
+                            <button type="button" class="btn btn-dark">Dark</button>
+                            <button type="button" class="btn btn-secondary">Secondary</button>
+                            <button type="button" class="btn btn-default">Default</button>
+                            <button type="button" class="btn btn-link">Link</button>
+                        </div>
+
+                    </div>
+                    <div class="col-xl-6 p-4">
+
+                        <small class="text-light font-weight-semibold">Rounded</small>
+                        <div class="demo-inline-spacing mt-3">
+                            <button type="button" class="btn rounded-pill btn-primary">Primary</button>
+                            <button type="button" class="btn rounded-pill btn-danger">Danger</button>
+                            <button type="button" class="btn rounded-pill btn-pink">Pink</button>
+                            <button type="button" class="btn rounded-pill btn-warning">Warning</button>
+                            <button type="button" class="btn rounded-pill btn-success">Success</button>
+                            <button type="button" class="btn rounded-pill btn-info">Info</button>
+                            <button type="button" class="btn rounded-pill btn-purple">Purple</button>
+                            <button type="button" class="btn rounded-pill btn-indigo">indigo</button>
+                            <button type="button" class="btn rounded-pill btn-blue">blue</button>
+                            <button type="button" class="btn rounded-pill btn-dark">Dark</button>
+                            <button type="button" class="btn rounded-pill btn-secondary">Secondary</button>
+                            <button type="button" class="btn rounded-pill btn-default">Default</button>
+                        </div>
+
+                    </div>
+                    <div class="col-xl-6 p-4">
+
+                        <small class="text-light font-weight-semibold">Outline</small>
+                        <div class="demo-inline-spacing mt-3">
+                            <button type="button" class="btn btn-outline-primary">Primary</button>
+                            <button type="button" class="btn btn-outline-danger">Danger</button>
+                            <button type="button" class="btn btn-outline-pink">Pink</button>
+                            <button type="button" class="btn btn-outline-warning">Warning</button>
+
+                            <button type="button" class="btn btn-outline-success">Success</button>
+                            <button type="button" class="btn btn-outline-info">Info</button>
+                            <button type="button" class="btn btn-outline-purple">Purple</button>
+                            <button type="button" class="btn btn-outline-indigo">indigo</button>
+                            <button type="button" class="btn btn-outline-blue">blue</button>
+                            <button type="button" class="btn btn-outline-dark">Dark</button>
+                            <button type="button" class="btn btn-outline-secondary">Secondary</button>
+                            <button type="button" class="btn btn-outline-default">Default</button>
+                        </div>
+
+                    </div>
+                    <div class="col-xl-6 p-4">
+
+                        <small class="text-light font-weight-semibold">Rounded outline</small>
+                        <div class="demo-inline-spacing mt-3">
+                            <button type="button" class="btn rounded-pill btn-outline-primary">Primary</button>
+                            <button type="button" class="btn rounded-pill btn-outline-danger">Danger</button>
+                            <button type="button" class="btn rounded-pill btn-outline-pink">Pink</button>
+                            <button type="button" class="btn rounded-pill btn-outline-warning">Warning</button>
+
+                            <button type="button" class="btn rounded-pill btn-outline-success">Success</button>
+                            <button type="button" class="btn rounded-pill btn-outline-info">Info</button>
+                            <button type="button" class="btn rounded-pill btn-outline-purple">Purple</button>
+                            <button type="button" class="btn rounded-pill btn-outline-indigo">indigo</button>
+                            <button type="button" class="btn rounded-pill btn-outline-blue">blue</button>
+                            <button type="button" class="btn rounded-pill btn-outline-dark">Dark</button>
+                            <button type="button" class="btn rounded-pill btn-outline-secondary">Secondary</button>
+                            <button type="button" class="btn rounded-pill btn-outline-default">Default</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="material-style-only col-12">
+
+            <div class="card mb-4">
+                <h6 class="card-header">
+                    Flat (Material only)
+                </h6>
+                <div class="card-body demo-inline-spacing">
+                    <button type="button" class="btn btn-primary md-btn-flat">Primary</button>
+                    <button type="button" class="btn btn-secondary md-btn-flat">Secondary</button>
+                    <button type="button" class="btn btn-default md-btn-flat">Default</button>
+                    <button type="button" class="btn btn-success md-btn-flat">Success</button>
+                    <button type="button" class="btn btn-warning md-btn-flat">Warning</button>
+                    <button type="button" class="btn btn-info md-btn-flat">Info</button>
+                    <button type="button" class="btn btn-danger md-btn-flat">Danger</button>
+                    <button type="button" class="btn btn-dark md-btn-flat">Dark</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+
+            <div class="card mb-4">
+                <h6 class="card-header">
+                    Sizes
+                </h6>
+                <div class="card-body">
+                    <small class="text-light font-weight-semibold">Extra large</small>
+                    <div class="demo-paragraph-spacing mt-3">
+                        <p>
+                            <button type="button" class="btn btn-xl btn-primary">Primary</button>
+                            <button type="button" class="btn btn-xl btn-secondary">Secondary</button>
+                            <button type="button" class="btn btn-xl btn-default">Default</button>
+                            <button type="button" class="btn btn-xl btn-success">Success</button>
+                            <button type="button" class="btn btn-xl btn-warning">Warning</button>
+                            <button type="button" class="btn btn-xl btn-info">Info</button>
+                            <button type="button" class="btn btn-xl btn-danger">Danger</button>
+                            <button type="button" class="btn btn-xl btn-dark">Dark</button>
+                        </p>
+
+                        <!-- Outline -->
+                        <p>
+                            <button type="button" class="btn btn-xl btn-outline-primary">Primary</button>
+                            <button type="button" class="btn btn-xl btn-outline-secondary">Secondary</button>
+                            <button type="button" class="btn btn-xl btn-outline-default">Default</button>
+                            <button type="button" class="btn btn-xl btn-outline-success">Success</button>
+                            <button type="button" class="btn btn-xl btn-outline-warning">Warning</button>
+                            <button type="button" class="btn btn-xl btn-outline-info">Info</button>
+                            <button type="button" class="btn btn-xl btn-outline-danger">Danger</button>
+                            <button type="button" class="btn btn-xl btn-outline-dark">Dark</button>
+                        </p>
+                    </div>
+                </div>
+                <hr class="m-0">
+                <div class="card-body">
+                    <small class="text-light font-weight-semibold">Large</small>
+                    <div class="demo-paragraph-spacing mt-3">
+                        <p>
+                            <button type="button" class="btn btn-lg btn-primary">Primary</button>
+                            <button type="button" class="btn btn-lg btn-secondary">Secondary</button>
+                            <button type="button" class="btn btn-lg btn-default">Default</button>
+                            <button type="button" class="btn btn-lg btn-success">Success</button>
+                            <button type="button" class="btn btn-lg btn-warning">Warning</button>
+                            <button type="button" class="btn btn-lg btn-info">Info</button>
+                            <button type="button" class="btn btn-lg btn-danger">Danger</button>
+                            <button type="button" class="btn btn-lg btn-dark">Dark</button>
+                        </p>
+
+                        <!-- Outline -->
+                        <p>
+                            <button type="button" class="btn btn-lg btn-outline-primary">Primary</button>
+                            <button type="button" class="btn btn-lg btn-outline-secondary">Secondary</button>
+                            <button type="button" class="btn btn-lg btn-outline-default">Default</button>
+                            <button type="button" class="btn btn-lg btn-outline-success">Success</button>
+                            <button type="button" class="btn btn-lg btn-outline-warning">Warning</button>
+                            <button type="button" class="btn btn-lg btn-outline-info">Info</button>
+                            <button type="button" class="btn btn-lg btn-outline-danger">Danger</button>
+                            <button type="button" class="btn btn-lg btn-outline-dark">Dark</button>
+                        </p>
+                    </div>
+                </div>
+                <hr class="m-0">
+                <div class="card-body">
+                    <small class="text-light font-weight-semibold">Small</small>
+                    <div class="demo-paragraph-spacing mt-3">
+                        <p>
+                            <button type="button" class="btn btn-sm btn-primary">Primary</button>
+                            <button type="button" class="btn btn-sm btn-secondary">Secondary</button>
+                            <button type="button" class="btn btn-sm btn-default">Default</button>
+                            <button type="button" class="btn btn-sm btn-success">Success</button>
+                            <button type="button" class="btn btn-sm btn-warning">Warning</button>
+                            <button type="button" class="btn btn-sm btn-info">Info</button>
+                            <button type="button" class="btn btn-sm btn-danger">Danger</button>
+                            <button type="button" class="btn btn-sm btn-dark">Dark</button>
+                        </p>
+
+                        <!-- Outline -->
+                        <p>
+                            <button type="button" class="btn btn-sm btn-outline-primary">Primary</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Secondary</button>
+                            <button type="button" class="btn btn-sm btn-outline-default">Default</button>
+                            <button type="button" class="btn btn-sm btn-outline-success">Success</button>
+                            <button type="button" class="btn btn-sm btn-outline-warning">Warning</button>
+                            <button type="button" class="btn btn-sm btn-outline-info">Info</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger">Danger</button>
+                            <button type="button" class="btn btn-sm btn-outline-dark">Dark</button>
+                        </p>
+                    </div>
+                </div>
+                <hr class="m-0">
+                <div class="card-body">
+                    <small class="text-light font-weight-semibold">Extra small</small>
+                    <div class="demo-paragraph-spacing mt-3">
+                        <p>
+                            <button type="button" class="btn btn-xs btn-primary">Primary</button>
+                            <button type="button" class="btn btn-xs btn-secondary">Secondary</button>
+                            <button type="button" class="btn btn-xs btn-default">Default</button>
+                            <button type="button" class="btn btn-xs btn-success">Success</button>
+                            <button type="button" class="btn btn-xs btn-warning">Warning</button>
+                            <button type="button" class="btn btn-xs btn-info">Info</button>
+                            <button type="button" class="btn btn-xs btn-danger">Danger</button>
+                            <button type="button" class="btn btn-xs btn-dark">Dark</button>
+                        </p>
+
+                        <!-- Outline -->
+                        <p>
+                            <button type="button" class="btn btn-xs btn-outline-primary">Primary</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary">Secondary</button>
+                            <button type="button" class="btn btn-xs btn-outline-default">Default</button>
+                            <button type="button" class="btn btn-xs btn-outline-success">Success</button>
+                            <button type="button" class="btn btn-xs btn-outline-warning">Warning</button>
+                            <button type="button" class="btn btn-xs btn-outline-info">Info</button>
+                            <button type="button" class="btn btn-xs btn-outline-danger">Danger</button>
+                            <button type="button" class="btn btn-xs btn-outline-dark">Dark</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-12">
+
+            <div class="card mb-4">
+                <h6 class="card-header">
+                    With icon
+                </h6>
+                <div class="card-body demo-inline-spacing">
+                    <button type="button" class="btn btn-lg btn-primary"><span class="far fa-paper-plane"></span>&nbsp;&nbsp;Primary</button>
+                    <button type="button" class="btn btn-lg btn-secondary"><span class="oi oi-cloud-download"></span>&nbsp;&nbsp;Secondary</button>
+                    <button type="button" class="btn btn-lg btn-default"><span class="pe-7s-users"></span>&nbsp;&nbsp;Default</button>
+                    <button type="button" class="btn btn-lg btn-success"><span class="ion ion-md-bulb"></span>&nbsp;&nbsp;Success</button>
+                    <button type="button" class="btn btn-lg btn-warning"><span class="lnr lnr-map"></span>&nbsp;&nbsp;Warning</button>
+                    <button type="button" class="btn btn-lg btn-info"><span class="far fa-paper-plane"></span>&nbsp;&nbsp;Info</button>
+                    <button type="button" class="btn btn-lg btn-danger"><span class="oi oi-cloud-download"></span>&nbsp;&nbsp;Danger</button>
+                    <button type="button" class="btn btn-lg btn-dark"><span class="pe-7s-users"></span>&nbsp;&nbsp;Dark</button>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-12">
+
+            <div class="card mb-4">
+                <h6 class="card-header">
+                    Icon-buttons
+                </h6>
+                <div class="card-body demo-paragraph-spacing">
+                    <!-- Extra-large -->
+                    <p>
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-primary">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-secondary">
+                            <span class="oi oi-cloud-download"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-default">
+                            <span class="pe-7s-users"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-success">
+                            <span class="ion-md-bulb"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-warning">
+                            <span class="lnr lnr-map"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-info">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-danger">
+                            <span class="oi oi-cloud-download"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-dark">
+                            <span class="pe-7s-users"></span>
+                        </button>
+                    </p>
+
+                    <!-- Large -->
+                    <p>
+                        <button type="button" class="btn icon-btn btn-lg btn-outline-primary">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-lg btn-outline-secondary">
+                            <span class="oi oi-cloud-download"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-lg btn-outline-default">
+                            <span class="pe-7s-users"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-lg btn-outline-success">
+                            <span class="ion-md-bulb"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-lg btn-outline-warning">
+                            <span class="lnr lnr-map"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-lg btn-outline-info">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-lg btn-outline-danger">
+                            <span class="oi oi-cloud-download"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-lg btn-outline-dark">
+                            <span class="pe-7s-users"></span>
+                        </button>
+                    </p>
+
+                    <!-- Default -->
+                    <p>
+                        <button type="button" class="btn icon-btn btn-outline-primary">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-outline-secondary">
+                            <span class="oi oi-cloud-download"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-outline-default">
+                            <span class="pe-7s-users"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-outline-success">
+                            <span class="ion-md-bulb"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-outline-warning">
+                            <span class="lnr lnr-map"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-outline-info">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-outline-danger">
+                            <span class="oi oi-cloud-download"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-outline-dark">
+                            <span class="pe-7s-users"></span>
+                        </button>
+                    </p>
+
+                    <!-- Small -->
+                    <p>
+                        <button type="button" class="btn icon-btn btn-sm btn-outline-primary">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-sm btn-outline-secondary">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-sm btn-outline-default">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-sm btn-outline-success">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-sm btn-outline-warning">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-sm btn-outline-info">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-sm btn-outline-danger">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-sm btn-outline-dark">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                    </p>
+
+                    <!-- Extra-small -->
+                    <p>
+                        <button type="button" class="btn icon-btn btn-xs btn-outline-primary">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xs btn-outline-secondary">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xs btn-outline-default">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xs btn-outline-success">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xs btn-outline-warning">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xs btn-outline-info">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xs btn-outline-danger">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                        <button type="button" class="btn icon-btn btn-xs btn-outline-dark">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+                    </p>
+                </div>
+                <hr class="m-0">
+                <div class="card-body">
+                    <small class="text-light font-weight-semibold">Borderless</small>
+                    <div class="demo-inline-spacing mt-3">
+                        <button type="button" class="btn icon-btn btn-xl btn-outline-primary borderless">
+                            <span class="far fa-paper-plane"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <h4 class="mx-4 mb-3">로딩중</h4>
+    <div class="row ml-4 mb-4">
+
+        <i class="mdi mdi-spin mdi-loading mdi-24px text-indigo"></i>
+
+        <div class="col-2 ml-4 py-2">
+            <div class="sk-circle sk-primary">
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+            </div>
+        </div>
+        <div class="col-2 ml-4 py-2">
+            <div class="sk-circle sk-indigo">
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+                <div class="sk-circle-dot"></div>
+            </div>
+        </div>
+        <div class="col-2 py-2">
+            <div class="sk-circle-fade sk-primary">
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+                <div class="sk-circle-fade-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mx-4 mb-3">Color</h4>
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-primary text-white p-4">
+                        bg-primary
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-primary-dark text-white p-4">
+                        bg-primary-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-primary-darker text-white p-4">
+                        bg-primary-darker
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-danger text-white p-4">
+                        bg-danger
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-danger-dark text-white p-4">
+                        bg-danger-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-danger-darker text-white p-4">
+                        bg-danger-darker
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-pink text-white p-4">
+                        bg-pink
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-pink-dark text-white p-4">
+                        bg-pink-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-pink-darker text-white p-4">
+                        bg-pink-darker
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-warning p-4">
+                        bg-warning
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-warning-dark text-white p-4">
+                        bg-warning-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-warning-darker text-white p-4">
+                        bg-warning-darker
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-success text-white p-4">
+                        bg-success
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-success-dark text-white p-4">
+                        bg-success-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-success-darker text-white p-4">
+                        bg-success-darker
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-teal text-white p-4">
+                        bg-teal
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-teal-dark text-white p-4">
+                        bg-teal-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-teal-darker text-white p-4">
+                        bg-teal-darker
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-info text-white p-4">
+                        bg-info
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-info-dark text-white p-4">
+                        bg-info-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-info-darker text-white p-4">
+                        bg-info-darker
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-blue text-white p-4">
+                        bg-blue
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-blue-dark text-white p-4">
+                        bg-blue-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-blue-darker text-white p-4">
+                        bg-blue-darker
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-indigo text-white p-4">
+                        bg-indigo
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-indigo-dark text-white p-4">
+                        bg-indigo-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-indigo-darker text-white p-4">
+                        bg-indigo-darker
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-purple text-white p-4">
+                        bg-purple
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-purple-dark text-white p-4">
+                        bg-purple -dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-purple-darker text-white p-4">
+                        bg-purple-darker
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-a-primary text-white p-4">
+                        bg-a-primary
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-a-primary-dark text-white p-4">
+                        bg-a-primary-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-a-primary-darker text-white p-4">
+                        bg-a-primary-darker
+                    </div>
+                </div>
+           
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-a-primary opacity-75 text-white p-4">
+                        bg-a-primary opacity-75
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-a-primary opacity-50 text-white p-4">
+                        bg-a-primary opacity-50
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-a-primary opacity-25 text-white p-4">
+                        bg-a-primary opacity-25
+                    </div>
+                </div>
+
+
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6 col-md-3 mb-4 mb-md-0 pr-0">
+                    <div class="bg-secondary text-white p-4">
+                        bg-secondary
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-secondary-dark text-white p-4">
+                        bg-secondary-dark
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-4 mb-md-0 p-0">
+                    <div class="bg-secondary-darker text-white p-4">
+                        bg-secondary-darker
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+</div>

@@ -1,0 +1,126 @@
+﻿@model ZumNet.Web.Models.AccountViewModels
+@{
+    ViewBag.Title = "로그인";
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+}
+
+@section Styles {
+    <!-- Page -->
+    @Styles.Render("~/bundle/vendor/css/pages/authentication")
+    @Styles.Render("~/Content/auth.css")
+}
+
+<div class="authentication-wrapper authentication-3">
+    <div class="authentication-inner">
+
+        <!-- Side container -->
+        <!-- Do not display the container on extra small, small and medium screens -->
+        <div class="auth-bg d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5">
+            <div class="ui-bg-overlay bg-dark opacity-50"></div>
+
+            <!-- Text -->
+            <div class="auth-user-testimonial text-white">
+                <h3 class="mb-3">Value Creation for Customers</h3>
+                <p class="lead fw-normal">
+                    <sup class="fas fa-quote-left"></sup> Develop products of the utmost quality and value
+                    Increase company value through realization of customer value <sub class="fas fa-quote-right"></sub>
+                </p>
+            </div>
+            <!-- /.Text -->
+        </div>
+        <!-- / Side container -->
+        <!-- Form container -->
+        <div class="d-flex col-lg-4 align-items-center theme-bg-white px-5">
+            <!-- Inner container -->
+            <!-- Have to add `.d-flex` to control width via `.col-*` classes -->
+            <div class="d-flex col-sm-7 col-md-5 col-lg-12 px-0 px-xl-4 mx-auto mb-5">
+                <div class="w-100">
+
+                    <!-- Logo -->
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="">
+                            <div class="w-100 position-relative">
+                                <span class="logo-xl">
+                                    <img src="/images/logo_cresyn.png" alt="">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- / Logo -->
+                    <!-- Form -->
+                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @id = "loginForm", @class = "my-5", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @*<label for="emailaddress" class="form-label">아이디</label>*@
+                            @Html.TextBoxFor(m => m.LoginId, new { @class = "form-control", placeholder = Html.DisplayNameFor(m => m.LoginId) })
+                            @Html.ValidationMessageFor(m => m.LoginId, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = Html.DisplayNameFor(m => m.Password) })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+                        @*<div class="form-group">
+                                <label for="password" class="form-label">비밀번호</label>
+                                <div class="input-group input-group-merge">
+                                    <input type="password" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
+                                    <div class="input-group-text" data-password="false">
+                                        <span class="password-eye"></span>
+                                    </div>
+                                </div>
+                            </div>*@
+                        <div class="form-group d-flex justify-content-between align-items-center">
+                            <label class="custom-control custom-checkbox m-0">
+                                @Html.CheckBoxFor(m => m.RememberMe, new { @class = "custom-control-input" })
+                                @Html.LabelFor(m => m.RememberMe, new { @class="custom-control-label" })
+                                @*<label class="custom-control-label" for="@(">아이디 저장</label>*@
+                            </label>
+                        </div>
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary btn-block" type="submit">로그인</button>
+                        </div>
+                    }
+                    <!-- / Form -->
+                </div>
+            </div>
+
+            <footer class="footer footer-alt text-small">
+                <p class="text-muted mb-0">CRESYN GROUPWARE 3.0 </p>
+                <p class="text-muted">Copyright ©Cresyn Co.Ltd All right reserved. </p>
+            </footer>
+        </div>
+        <!-- / Form container -->
+
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundle/jqueryval")
+
+    <script type="text/javascript">
+    $(function () {
+        var userId = _zw.ut.getCookie("accountField"); //console.log('cookie -> ' + userId)
+        if (userId && userId != 'null' && userId != '') {
+            $("#LoginId").val(userId);
+            $("#RememberMe").prop('checked', true);
+            $("#Password").focus();
+        } else {
+            $("#LoginId").focus();
+        }
+
+        $("#loginForm").submit(function () {
+            //console.log(event);
+
+            if ($("#RememberMe").prop('checked')) {
+                _zw.ut.setCookie("accountField", $("#LoginId").val(), 1);
+            } else {
+                _zw.ut.deleteCookie("accountField");
+            }
+
+            //event.cancelBubble = true;
+            //event.preventDefault();
+        });
+    });
+    </script>
+}

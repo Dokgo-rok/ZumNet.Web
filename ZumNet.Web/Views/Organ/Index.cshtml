@@ -1,0 +1,126 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = "크레신 조직도";
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    StringBuilder sb = new StringBuilder();
+    sb.Append("{");
+    sb.AppendFormat("selected:\"{0}\"", ViewBag.TreeOpenNode);
+    sb.Append(",data:[");
+
+    int i = 0;
+    string[] v = ViewBag.TreeOpenNode.Split(';');
+
+    foreach (DataRow row in ViewBag.OrgTree)
+    {
+        if (i > 0) { sb.Append(",{"); }
+        else { sb.Append("{"); }
+
+        sb.AppendFormat("id:\"{0}\"", row["GR_ID"].ToString());
+        sb.AppendFormat(",parent:\"{0}\"", row["MemberOf"].ToString() == "0" ? "#" : row["MemberOf"].ToString());
+        sb.AppendFormat(",text:\"{0}\"", row["DisplayName"].ToString());
+        sb.AppendFormat(",icon:\"{0}\"", "");
+
+        if (v.Contains(row["GR_ID"].ToString()))
+        {
+            if (v[v.Length - 1] == row["GR_ID"].ToString())
+            {
+                sb.Append(",state:{opened:true,disabled:false,selected:true}");
+            }
+            else
+            {
+                sb.Append(",state:{opened:true,disabled:false,selected:false}");
+            }
+        }
+        else
+        {
+            sb.Append(",state:{opened:false,disabled:false,selected:false}");
+        }
+        sb.Append(",li_attr:{");
+        sb.AppendFormat("level:\"{0}\"", row["NodeLevel"].ToString());
+        sb.AppendFormat(",gralias:\"{0}\"", row["GRAlias"].ToString());
+        sb.AppendFormat(",policy:\"{0}\"", row["Policy"].ToString());
+        sb.AppendFormat(",history:\"{0}\"", row["HasHistory"].ToString());
+        sb.AppendFormat(",inuse:\"{0}\"", row["InUse"].ToString());
+        sb.AppendFormat(",hasmember:\"{0}\"", row["HasMember"].ToString());
+        sb.AppendFormat(",rcv:\"{0}\"", row["Reserved1"].ToString());
+        sb.Append("}");
+        sb.Append(",a_attr:{}");
+        sb.Append("}");
+
+        i++;
+    }
+    sb.Append("]");
+    sb.Append("}");
+
+    ViewBag.R.tree = Newtonsoft.Json.Linq.JObject.Parse(sb.ToString());
+
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+<script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    <div class="messages-sidebox messages-scroll bg-body border-right">
+        <div class="py-3 px-3">
+            <ul class="nav nav-tabs tabs-alt justify-content-center font-weight-bold">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" role="tab" href="#orgtree" aria-controls="orgtree" aria-selected="true">조직도</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" role="tab" href="#orgsearch" aria-controls="orgsearch" aria-selected="false">검색</a>
+                </li>
+            </ul>
+            <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-block text-muted text-large font-weight-light">&times;</a>
+        </div>
+        <!-- sidebox tree -->
+        <div class="tab-content px-3">
+            <div class="tab-pane fade show active" id="orgtree" role="tabpanel" aria-labelledby="orgtree-tab">
+                <div id="__OrgTree"></div>
+            </div>
+            <div class="tab-pane fade show" id="orgsearch" role="tabpanel" aria-labelledby="orgsearch-tab">
+                <div id="__OrgSearch"></div>
+            </div>
+        </div>
+        <!-- / sidebox tree -->
+    </div>
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex justify-content-between font-weight-bold container-p-x py-3 py-lg-4 m-0">
+                <div class="h5 font-weight-bold mb-0 z-ttl">
+                    <i class="mdi mdi-account-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                </div>
+                <div class="h5">
+                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-inline-block align-self-center px-2"><i class="fe-more-vertical"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- / Header -->
+        <!-- Set `.contacts-col-view` or '.contacts-row-view' to control view mode -->
+        <div id="__OrgList" class="flex-grow-0 contacts-col-view">
+            @Html.Partial("_MemberList")
+        </div>
+    </div>
+    <!-- / content -->
+
+</div><!-- / .messages-wrapper -->

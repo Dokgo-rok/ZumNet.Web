@@ -1,0 +1,155 @@
+﻿@using System.Data;
+
+@{
+    bool isHorizontal = ViewData["LayoutSidenavHorizontal"] != null && ViewData["LayoutSidenavHorizontal"].ToString() == "True";
+    //string currentPage = @Request.Url.AbsolutePath;
+    //string currentPath = @Request.Url.PathAndQuery;
+    string currentCategory = "";
+
+    if (ViewBag.R != null && ViewBag.R.ct != null)
+    {
+        currentCategory = ViewBag.R["ct"].ToString();
+    }
+
+    //Response.Write("aa=>" + Request["qi"]); 
+}
+
+@functions { 
+    public string[] GetMenuPath(DataRow row)
+    {
+        string[] v = { "", "", "", "", "", "" }; //Area, Controller, Action, Path, Icon, QueryString
+
+        v[5] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"" + row["OpenNode"].ToString() + "\"}");
+
+        switch (row["CTAlias"].ToString().ToLower())
+        {
+            case "ea":
+                v[0] = "EA"; v[1] = "Main"; v[2] = "Index"; v[3] = "/EA/Main/Index";  v[4] = "fe-edit"; break; // 전자결재
+
+            case "mc":
+                v[0] = "Exs"; v[1] = "MC"; v[2] = "Index"; v[3] = "/Exs/MC/Index"; v[4] = "mdi mdi-text-box-search-outline"; break; // 모델별원가
+
+            case "schedule":
+                v[0] = "TnC"; v[1] = "ToDo"; v[2] = "Index"; v[3] = "/TnC/ToDo/Index"; v[4] = "fe-calendar"; break; // 업무일지
+
+            case "mail":
+                v[0] = ""; v[1] = "_url_"; v[2] = ""; v[3] = ""; v[4] = "fe-mail"; break; // 메일
+
+            case "kdoc":
+                v[0] = "Docs"; v[1] = "Edm"; v[2] = "Index"; v[3] = "/Docs/Edm/Index"; v[4] = "fe-file-text"; break; // 문서관리
+
+            case "tms":
+                v[0] = "Docs"; v[1] = "Edm"; v[2] = "Index"; v[3] = "/Docs/Edm/Index"; v[4] = "mdi mdi-ruler-square"; break; // 설계개발
+
+            case "cms":
+                v[0] = "Docs"; v[1] = "Edm"; v[2] = "Index"; v[3] = "/Docs/Edm/Index"; v[4] = "fe-bar-chart-2"; break; // 변경관리
+
+            case "tooling":
+                v[0] = "Docs"; v[1] = "Edm"; v[2] = "Index"; v[3] = "/Docs/Edm/Index"; v[4] = "mdi mdi-wrench-outline"; break; // 금형관리
+
+            case "improvement":
+                v[0] = "Docs"; v[1] = "Edm"; v[2] = "Index"; v[3] = "/Docs/Edm/Index"; v[4] = "fe-pie-chart"; break; // 생산현황
+
+            case "kms":
+                v[0] = "Docs"; v[1] = "Kms"; v[2] = "Index"; v[3] = "/Docs/Kms/Index"; v[4] = "far fa-clipboard"; break; // 지식관리
+
+            case "lcm":
+                v[0] = "Exs"; v[1] = "Lcm"; v[2] = "Index"; v[3] = "/Exs/Lcm/Index"; v[4] = "fas fa-chalkboard-teacher"; break; // 교육관리
+
+            case "booking":
+                v[0] = "TnC"; v[1] = "Booking"; v[2] = "Index"; v[3] = "/TnC/Booking/Index"; v[4] = "far fa-building"; break; // 자원관리
+
+            case "bboard":
+                //Response.Write("===" + "/" + v[5]);
+                v[0] = ""; v[1] = "Board"; v[2] = "Index"; v[3] = "/Board/Index"; v[4] = "mdi mdi-format-list-bulleted-square"; break; // 게시판
+
+            case "messenger":
+                v[0] = ""; v[1] = "_url_"; v[2] = ""; v[3] = ""; v[4] = "far fa-bookmark"; break; // 메신저
+
+            case "erp":
+                v[0] = ""; v[1] = "_url_"; v[2] = ""; v[3] = ""; v[4] = "far fa-bookmark"; break; // ERP
+
+            case "jaego":
+                v[0] = "Docs"; v[1] = "Edm"; v[2] = "Index"; v[3] = "/Docs/Edm/Index"; v[4] = "far fa-bookmark"; break; // 재고현황
+
+            case "csr":
+                v[0] = "Docs"; v[1] = "Edm"; v[2] = "Index"; v[3] = "/Docs/Edm/Index"; v[4] = "far fa-bookmark"; break; // CSR
+
+            default:
+
+                break;
+        }
+        return v;
+    }
+}
+
+<!-- Layout sidenav -->
+<div id="layout-sidenav" class="@(isHorizontal ? "layout-sidenav-horizontal sidenav-horizontal container-p-x flex-grow-0" : "layout-sidenav sidenav-vertical") sidenav bg-sidenav-theme">
+    @if (!isHorizontal)
+    {
+        <a href="/" class="app-brand">
+            <span class="app-brand-logo">
+                <img src="~/images/logo-sm.png" />
+            </span>
+            <span class="app-brand-text sidenav-text font-weight-normal ml-2">
+                <img src="~/images/logo-2-light.png" />
+            </span>
+        </a>
+
+        <div class="sidenav-divider mt-0"></div>
+    }
+
+    <!-- Inner -->
+<ul class="sidenav-inner">
+    @if (!isHorizontal)
+    {
+        <li class="sidenav-header fs-12">
+            <div class="">
+                <div class="d-flex justify-content-between mb-1">
+                    <div class="text-white">21.12.31 근무</div>
+                    <div><span class="text-primary">5시간 13분</span></div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div class="text-white">주 평균 근무</div>
+                    <div><span class="text-primary">5시간 13분</span></div>
+                </div>
+            </div>
+        </li>
+
+        <li class="sidenav-divider my-1"></li>
+    }
+
+
+    @foreach (DataRow row in ViewBag.MainMenu.Rows)
+    {
+        string[] v = GetMenuPath(row);
+
+        if (v[0] != "" || v[1] != "")
+        {
+            if (v[1] != "" && v[1] == "_url_")
+            {
+                <li class="sidenav-item" data-navmenu="@row["CTAlias"].ToString().ToLower()">
+                    <a href="javascript:void(0)" class="sidenav-link"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
+                </li>
+            }
+            else if (v[0] == "")
+            {
+                <li class="sidenav-item@(currentCategory == row["CT_ID"].ToString() ? " active" : "")">
+                    <a href="@Url.Action(v[2], v[1], new { Area = "", qi = v[5] })" class="sidenav-link"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
+                </li>
+            }
+            else
+            {
+                <li class="sidenav-item@(currentCategory == row["CT_ID"].ToString() ? " active" : "")">
+                    <a href="@Url.Action(v[2], v[1], new { Area = v[0], qi = v[5] })" class="sidenav-link"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
+                </li>
+            }
+
+        }
+    }
+
+
+
+</ul>
+</div>
+<!-- / Layout sidenav -->

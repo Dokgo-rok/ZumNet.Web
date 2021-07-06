@@ -1,0 +1,28 @@
+﻿@using System.Data;
+
+@foreach (DataRow row in ViewBag.MemberList)
+{
+    <div class="contacts-col col-12">
+        <div class="card">
+            <div class="card-body">
+                <img src="http://ekp.cresyn.com/Storage/cresyn/PersonPhoto/@(row["LogonID"].ToString() + ".jpg")" class="contact-content-img rounded-circle" style="max-height: 120px" alt="">
+                <h5 class="card-title">@row["DisplayName"]</h5>
+                <div>
+                    @if (row["SecondMail"].ToString() == "")
+                    {
+                        @(row["MailAccount"].ToString() + "@" + row["Domain"].ToString())
+                    }
+                    else
+                    {
+                        @row["SecondMail"].ToString()
+                    }
+                </div>
+                <div>@row["Mobile"]</div>
+                <div>@row["Grade1"]</div>
+                <div>@row["Telephone"]</div>
+                <div>@row["GroupName"]</div>
+                <div>@row["Keyword1"]</div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,149 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = ViewBag.R["ttl"]; //"게시판";
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    //StringBuilder sb = new StringBuilder();
+    //sb.Append("{");
+    //sb.Append("current: {");
+    //sb.AppendFormat("urid:\"{0}\"", "");
+    //sb.AppendFormat(",user:\"{0}\"", "");
+    //sb.AppendFormat(",deid:\"{0}\"", "");
+    //sb.AppendFormat(",dept:\"{0}\"", "");
+    //sb.AppendFormat(",date:\"{0}\"", "");
+    //sb.AppendFormat(",page:\"{0}\"", "");
+    //sb.AppendFormat(",acl:\"{0}\"", "");
+    //sb.AppendFormat(",chief:\"{0}\"", "");
+    //sb.AppendFormat(",operator:\"{0}\"", "");
+    //sb.Append("}"); //current
+    //sb.AppendFormat(",mode:\"{0}\"", "");
+    //sb.AppendFormat(",ct:\"{0}\"", "");
+    //sb.AppendFormat(",appid:\"{0}\"", "");
+    //sb.Append(",query:{page:1,count:0,total:0,sort:\"\",sortcol:\"\"}"); //listview
+    //sb.Append(",tree: {");
+    ////sb.AppendFormat("selected:\"{0}\"", ViewBag.TreeOpenNode);
+    //sb.Append("data:[");
+
+    //int i = 0;
+    //string[] v = ViewBag.TreeOpenNode.Split(';');
+
+    //foreach (DataRow row in ViewBag.FolderTree)
+    //{
+    //    if (i > 0) { sb.Append(",{"); }
+    //    else { sb.Append("{"); }
+
+    //    sb.AppendFormat("\"id\":\"{0}\"", row["NodeID"].ToString());
+    //    sb.AppendFormat(",\"parent\":\"{0}\"", row["MemberOf"].ToString() == "0.0.0" ? "#" : row["MemberOf"].ToString());
+    //    sb.AppendFormat(",\"text\":\"{0}\"", row["DisplayName"].ToString());
+    //    sb.AppendFormat(",\"icon\":\"{0}\"", "");
+
+    //    if (v.Contains(row["NodeID"].ToString()))
+    //    {
+    //        if (v[v.Length - 1] == row["NodeID"].ToString())
+    //        {
+    //            sb.Append(",\"state\":{\"opened\":true,\"disabled\":false,\"selected\":true}");
+    //        }
+    //        else
+    //        {
+    //            sb.Append(",\"state\":{\"opened\":true,\"disabled\":false,\"selected\":false}");
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sb.Append(",\"state\":{\"opened\":false,\"disabled\":false,\"selected\":false}");
+    //    }
+
+    //    if (row["HasSub"].ToString() == "Y")
+    //    {
+    //        sb.Append(",\"children\": true");
+    //    }
+
+    //    sb.Append(",\"li_attr\":{");
+    //    sb.AppendFormat("\"level\":\"{0}\"", row["NodeLevel"].ToString());
+    //    sb.AppendFormat(",\"objecttype\":\"{0}\"", row["ObjectType"].ToString());
+    //    sb.AppendFormat(",\"hassub\":\"{0}\"", row["HasSub"].ToString());
+    //    sb.AppendFormat(",\"alias\":\"{0}\"", row["Alias"].ToString());
+    //    sb.AppendFormat(",\"xfalias\":\"{0}\"", row["XFAlias"].ToString());
+    //    sb.AppendFormat(",\"shared\":\"{0}\"", row["Shared"].ToString());
+    //    sb.AppendFormat(",\"attype\":\"{0}\"", row["AttType"].ToString());
+    //    sb.AppendFormat(",\"inuse\":\"{0}\"", row["InUse"].ToString());
+    //    sb.AppendFormat(",\"permission\":\"{0}\"", row["Permission"].ToString());
+    //    sb.AppendFormat(",\"deleted\":\"{0}\"", row["Deleted"].ToString());
+    //    sb.Append("}");
+    //    sb.Append(",\"a_attr\":{");
+    //    sb.AppendFormat("\"url\":\"{0}\"", row["URL"].ToString());
+    //    sb.Append("}");
+    //    sb.Append("}");
+
+    //    i++;
+    //}
+    //sb.Append("]");
+    //sb.Append("}"); // treeview
+    //sb.Append("}");
+
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    <div class="messages-sidebox messages-scroll border-right">
+        <div class="py-3 px-4">
+            <div class="media align-items-center">
+                <div class="media-body">
+                    <a id="__NewDoc" href="javascript:void(0)" class="btn btn-teal rounded-pill btn-block">게시물작성</a>
+                </div>
+                <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-block text-muted text-large font-weight-light">&times;</a>
+            </div>
+        </div>
+        <!-- sidebox tree -->
+        <div id="__FolderTree" class="px-3"></div>
+        <!-- / sidebox tree -->
+    </div>
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex justify-content-between font-weight-bold container-p-x py-3 py-lg-4 m-0">
+                <div class="h5 font-weight-bold mb-0 z-ttl">
+                    <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                </div>
+                <div class="h5">
+                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-inline-block align-self-center px-2"><i class="fe-more-vertical"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- / Header -->
+        <!-- Wrap `.messages-scroll` to properly position scroll area. Remove this wrapper if you don't need scroll -->
+        <div class="flex-grow-0">&nbsp;</div>
+
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="messages-content flex-grow-0">
+                <ul id="__ListView" class="list-group messages-list">
+                    @Html.Partial("_ListView")
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+
+</div><!-- / .messages-wrapper -->
