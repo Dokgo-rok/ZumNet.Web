@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en" class="light-style">
+<html lang="en" class="light-style layout-fixed">
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1" />
@@ -67,29 +67,29 @@
                         </div>*@
                         <div><img alt="loader" src="/Images/loader.gif" /></div>
                         @*<div class="spinner-border text-success" role="status"><span class="sr-only"></span></div>*@
-                        <div class="modal-title h4 pl-4 text-muted"></div>
+                        <div class="modal-title h4 pl-4"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal-ajaxloader">
+    @*<div class="modal-ajaxloader">
         <div class="d-flex justify-content-center align-items-center">
-            @*<div class="sk-circle-fade sk-primary">
+            <div class="sk-circle-fade sk-primary">
                     <div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div>
-                </div>*@
+                </div>
             <div><img alt="loader" src="/Images/loader.gif" /></div>
-            @*<div class="spinner-border text-success" role="status"><span class="sr-only"></span></div>*@
+            <div class="spinner-border text-success" role="status"><span class="sr-only"></span></div>
             <div class="modal-title h4 pl-4 text-muted"></div>
         </div>
-    </div>
+    </div>*@
 
     <!-- Core scripts -->
     @Scripts.Render("~/bundle/jquery")
 
     <!-- Uncomment the following line to enable unobtrusive validation -->
-    <!-- @Html.Partial("_ValidationScriptsPartial") -->
+    @*@Html.Partial("_ValidationScriptsPartial")*@
     @Scripts.Render("~/bundle/vendor/js/popper/popper")
     @Scripts.Render("~/bundle/vendor/js/bootstrap")
     @Scripts.Render("~/bundle/vendor/js/sidenav")

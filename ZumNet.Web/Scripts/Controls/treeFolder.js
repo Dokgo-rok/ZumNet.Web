@@ -57,6 +57,9 @@ $(function () {
                         return '{ct:"' + _zw.V.ct + '",selected:"' + node.id + '",seltype:"' + selType + '",lvl:"' + lvl + '",open:"' + _zw.V.openNode + '"}'
                     },
                     dataType: 'json',
+                    beforeSend: function () {//jstree ajax event와 충돌하는 듯....pace.js가 이벤트 종료가 안됨!!
+                        //$('#ajaxLoader').modal('show');
+                    },
                 }
             },
             plugins: ["types", "wholerow"]

@@ -11,11 +11,43 @@
         currentCategory = ViewBag.R["ct"].ToString();
     }
 
-    //Response.Write("aa=>" + Request["qi"]); 
+    //Response.Write("qi=>" + Request["qi"]);
+    //Response.Write("ct=>" + currentCategory);
+
+    Dictionary<string, DataRow> dicChild = new Dictionary<string, DataRow>();
+
+    foreach (DataRow row in ViewBag.MainMenu.Rows)
+    {
+        if (row["Permission"].ToString() == "Y" && row["Position"].ToString() == "9")
+        {
+            if (!dicChild.ContainsKey(row["CT_ID"].ToString()))
+            {
+                dicChild.Add(row["CT_ID"].ToString(), row);
+            }
+        }
+    }
 }
 
-@functions { 
-    public string[] GetMenuPath(DataRow row)
+@functions {
+    private Dictionary<string, DataRow> GetChildMenu(string memberOf)
+    {
+        Dictionary<string, DataRow> rt = new Dictionary<string, DataRow>();
+
+        foreach (DataRow row in ViewBag.MainMenu.Rows)
+        {
+            if (memberOf == row["MemberOf"].ToString() && row["Permission"].ToString() == "Y" && row["Position"].ToString() == "1")
+            {
+                if (!rt.ContainsKey(row["CT_ID"].ToString()))
+                {
+                    rt.Add(row["CT_ID"].ToString(), row);
+                }
+            }
+        }
+
+        return rt;
+    }
+
+    private string[] GetMenuPath(DataRow row)
     {
         string[] v = { "", "", "", "", "", "" }; //Area, Controller, Action, Path, Icon, QueryString
 
@@ -24,10 +56,13 @@
         switch (row["CTAlias"].ToString().ToLower())
         {
             case "ea":
-                v[0] = "EA"; v[1] = "Main"; v[2] = "Index"; v[3] = "/EA/Main/Index";  v[4] = "fe-edit"; break; // 전자결재
+                v[0] = "EA"; v[1] = "Main"; v[2] = "Index"; v[3] = "/EA/Main/Index"; v[4] = "fe-edit"; break; // 전자결재
 
             case "mc":
-                v[0] = "Exs"; v[1] = "MC"; v[2] = "Index"; v[3] = "/Exs/MC/Index"; v[4] = "mdi mdi-text-box-search-outline"; break; // 모델별원가
+                v[0] = "ExS"; v[1] = "MC"; v[2] = "Index"; v[3] = "/ExS/MC/Index"; v[4] = "mdi mdi-text-box-search-outline"; break; // 모델별원가
+
+            case "ce":
+                v[0] = "ExS"; v[1] = "CE"; v[2] = "Index"; v[3] = "/ExS/CE/Index"; v[4] = ""; break; // 개발원가견적
 
             case "schedule":
                 v[0] = "TnC"; v[1] = "ToDo"; v[2] = "Index"; v[3] = "/TnC/ToDo/Index"; v[4] = "fe-calendar"; break; // 업무일지
@@ -54,7 +89,7 @@
                 v[0] = "Docs"; v[1] = "Kms"; v[2] = "Index"; v[3] = "/Docs/Kms/Index"; v[4] = "far fa-clipboard"; break; // 지식관리
 
             case "lcm":
-                v[0] = "Exs"; v[1] = "Lcm"; v[2] = "Index"; v[3] = "/Exs/Lcm/Index"; v[4] = "fas fa-chalkboard-teacher"; break; // 교육관리
+                v[0] = "ExS"; v[1] = "Lcm"; v[2] = "Index"; v[3] = "/ExS/Lcm/Index"; v[4] = "fas fa-chalkboard-teacher"; break; // 교육관리
 
             case "booking":
                 v[0] = "TnC"; v[1] = "Booking"; v[2] = "Index"; v[3] = "/TnC/Booking/Index"; v[4] = "far fa-building"; break; // 자원관리
@@ -74,6 +109,21 @@
 
             case "csr":
                 v[0] = "Docs"; v[1] = "Edm"; v[2] = "Index"; v[3] = "/Docs/Edm/Index"; v[4] = "far fa-bookmark"; break; // CSR
+
+            case "orgmap":
+                v[0] = ""; v[1] = "Organ"; v[2] = "Index"; v[3] = "/Organ/Index"; v[4] = ""; break; // 조직도
+
+            case "linksite":
+                v[0] = ""; v[1] = "LinkSite"; v[2] = "Index"; v[3] = "/LinkSite/Index"; v[4] = ""; break; // 링크사이트
+
+            case "worktime":
+                v[0] = "ExS"; v[1] = "WorkTime"; v[2] = "Index"; v[3] = "/ExS/WorkTime/Index"; v[4] = ""; break; // 근무관리
+
+            case "board.depart":
+                v[0] = ""; v[1] = "Board"; v[2] = "Depart"; v[3] = "/Board/Depart"; v[4] = ""; break; // 부서별 게시판
+
+            case "external.post":
+                v[0] = ""; v[1] = "_url_"; v[2] = ""; v[3] = ""; v[4] = ""; break; // 현황판
 
             default:
 
@@ -100,56 +150,110 @@
     }
 
     <!-- Inner -->
-<ul class="sidenav-inner">
-    @if (!isHorizontal)
-    {
-        <li class="sidenav-header fs-12">
-            <div class="">
-                <div class="d-flex justify-content-between mb-1">
-                    <div class="text-white">21.12.31 근무</div>
-                    <div><span class="text-primary">5시간 13분</span></div>
+    <ul class="sidenav-inner">
+        @if (!isHorizontal)
+        {
+            <li class="sidenav-header fs-12">
+                <div class="">
+                    <div class="d-flex justify-content-between mb-1">
+                        <div class="text-white">21.12.31 근무</div>
+                        <div><span class="text-primary">5시간 13분</span></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="text-white">주 평균 근무</div>
+                        <div><span class="text-primary">5시간 13분</span></div>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <div class="text-white">주 평균 근무</div>
-                    <div><span class="text-primary">5시간 13분</span></div>
-                </div>
-            </div>
+            </li>
+
+            <li class="sidenav-divider my-1"></li>
+        }
+
+        <li class="sidenav-item@(currentCategory == "" || currentCategory == "0" || dicChild.ContainsKey(currentCategory) ? " active open" : "")">
+            <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="fe-home sidenav-icon"></i><div>홈</div></a>
+
+            <ul class="sidenav-menu my-0">
+                <li class="sidenav-item@(currentCategory == "" || currentCategory == "0" ? " active" : "")">
+                    <a href="/" class="sidenav-link"><div>포탈</div></a>
+                </li>
+
+                @foreach (string k in dicChild.Keys)
+                {
+                    string[] v = GetMenuPath(dicChild[k]);
+                    if (v[0] != "" || v[1] != "")
+                    {
+                        <li class="sidenav-item@(currentCategory == k ? " active" : "")">
+                            <a href="@Url.Action(v[2], v[1], new { Area = v[0], qi = v[5] })" class="sidenav-link"><div>@dicChild[k]["DisplayName"]</div></a>
+                        </li>
+                    }
+                }
+
+            </ul>
         </li>
 
-        <li class="sidenav-divider my-1"></li>
-    }
-
-
-    @foreach (DataRow row in ViewBag.MainMenu.Rows)
-    {
-        string[] v = GetMenuPath(row);
-
-        if (v[0] != "" || v[1] != "")
+        @foreach (DataRow row in ViewBag.MainMenu.Rows)
         {
-            if (v[1] != "" && v[1] == "_url_")
+            if (row["Permission"].ToString() == "Y" && row["MemberOf"].ToString() == "0" && row["Position"].ToString() == "0")
             {
-                <li class="sidenav-item" data-navmenu="@row["CTAlias"].ToString().ToLower()">
-                    <a href="javascript:void(0)" class="sidenav-link"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
-                </li>
-            }
-            else if (v[0] == "")
-            {
-                <li class="sidenav-item@(currentCategory == row["CT_ID"].ToString() ? " active" : "")">
-                    <a href="@Url.Action(v[2], v[1], new { Area = "", qi = v[5] })" class="sidenav-link"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
-                </li>
-            }
-            else
-            {
-                <li class="sidenav-item@(currentCategory == row["CT_ID"].ToString() ? " active" : "")">
-                    <a href="@Url.Action(v[2], v[1], new { Area = v[0], qi = v[5] })" class="sidenav-link"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
-                </li>
-            }
+                string[] v = GetMenuPath(row);
 
+                if (v[0] != "" || v[1] != "")
+                {
+                    if (v[1] != "" && v[1] == "_url_")
+                    {
+                        <li class="sidenav-item" data-navmenu="@row["CTAlias"].ToString().ToLower()">
+                            <a href="javascript:void(0)" class="sidenav-link"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
+                        </li>
+                    }
+                    else
+                    {
+                        dicChild = null;
+                        dicChild = GetChildMenu(row["CT_ID"].ToString());
+
+                        if (dicChild.Count > 0)
+                        {
+                            <li class="sidenav-item@(currentCategory == row["CT_ID"].ToString() || dicChild.ContainsKey(currentCategory) ? " active open" : "")">
+                                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
+                                
+                                <ul class="sidenav-menu my-0">
+                                    <li class="sidenav-item@(currentCategory == row["CT_ID"].ToString() ? " active" : "")">
+                                        <a href="@Url.Action(v[2], v[1], new { Area = v[0], qi = v[5] })" class="sidenav-link"><div>@row["DisplayName"]</div></a>
+                                    </li>
+
+                                    @foreach (string k in dicChild.Keys)
+                                    {
+                                        string[] c = GetMenuPath(dicChild[k]);
+                                        if (c[0] != "" || c[1] != "")
+                                        {
+                                            if (c[1] == "_url_")
+                                            {
+                                                <li class="sidenav-item" data-navmenu="@dicChild[k]["CTAlias"].ToString().ToLower()">
+                                                    <a href="javascript:void(0)" class="sidenav-link"><div>@dicChild[k]["DisplayName"]</div></a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="sidenav-item@(currentCategory == k ? " active" : "")">
+                                                    <a href="@Url.Action(c[2], c[1], new { Area = c[0], qi = c[5] })" class="sidenav-link"><div>@dicChild[k]["DisplayName"]</div></a>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="sidenav-item@(currentCategory == row["CT_ID"].ToString() ? " active" : "")">
+                                <a href="@Url.Action(v[2], v[1], new { Area = v[0], qi = v[5] })" class="sidenav-link"><i class="@v[4] sidenav-icon"></i><div>@row["DisplayName"]</div></a>
+                            </li>
+                        }
+                        
+                    }
+                }
+            }
         }
-    }
-
-
-
-</ul>
+    </ul>
 </div>
 <!-- / Layout sidenav -->

@@ -1,0 +1,70 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = ViewBag.R["ttl"];
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    <div class="messages-sidebox messages-scroll border-right">
+        <div class="py-3 px-4">
+            <div class="media align-items-center">
+                <div class="media-body">
+                    <a id="__NewDoc" href="javascript:void(0)" class="btn btn-teal rounded-pill btn-block">게시물작성</a>
+                </div>
+                <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-block text-muted text-large font-weight-light">&times;</a>
+            </div>
+        </div>
+        <!-- sidebox tree -->
+        <div id="__FolderTree" class="px-3"></div>
+        <!-- / sidebox tree -->
+    </div>
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex justify-content-between font-weight-bold container-p-x py-3 py-lg-4 m-0">
+                <div class="h5 font-weight-bold mb-0 z-ttl">
+                    <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                </div>
+                <div class="h5">
+                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-inline-block align-self-center px-2"><i class="fe-more-vertical"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- / Header -->
+        <!-- Wrap `.messages-scroll` to properly position scroll area. Remove this wrapper if you don't need scroll -->
+        <div class="flex-grow-0">&nbsp;</div>
+
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="messages-content flex-grow-0">
+                <ul id="__ListView" class="list-group messages-list">
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+
+</div><!-- / .messages-wrapper -->

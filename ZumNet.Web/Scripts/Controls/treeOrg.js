@@ -31,6 +31,9 @@ $(function () {
                         success: function (res) {
                             if (res.substr(0, 2) == "OK") $('#__OrgList').html(res.substr(2));
                             else alert(res);
+                        },
+                        beforeSend: function () {//jstree ajax event와 충돌하는 듯....pace.js가 이벤트 종료가 안됨!!
+                            //$('#ajaxLoader').modal('show');
                         }
                     });
                 }

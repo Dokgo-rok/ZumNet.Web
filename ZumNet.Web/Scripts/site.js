@@ -82,10 +82,13 @@ $(function () {
                 var url = "http://meeting.cresyn.com/app/?uid=";
                 _zw.ut.openWnd(url, "meeting", 800, 500, "fix");
                 break;
+            case "external.post": //alert($('#auth_external').val()); return;
+                var url = "http://192.168.100.35:8080/login?USER_ID=" + $('#auth_external').val() + "&LOGIN_DIV=S";
+                _zw.ut.openWnd(url, "externalWin");
+                break;
             case "edm.new":
                 _zw.ut.ajaxLoader(true, "불러오는 중..")
                 //bootbox.alert("문서관리 신규 문서 등록", function () { _zw.ut.ajaxLoader(false) });
-                
                 break;
             case "ea.newdoc":
                 bootbox.confirm("전자결재 신규 양식 작성 하시겠습니까?", function (rt) { alert(rt) });
@@ -95,8 +98,6 @@ $(function () {
                 break;
         }
     });
-
-    
 });
 
 

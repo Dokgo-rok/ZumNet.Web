@@ -485,7 +485,6 @@
     <Folder Include="Views\Common\" />
     <Folder Include="Views\Env\" />
     <Folder Include="Views\External\" />
-    <Folder Include="Views\LinkSite\" />
     <Folder Include="Views\Report\" />
     <Folder Include="Views\Search\" />
   </ItemGroup>
@@ -568,6 +567,7 @@
     <Content Include="Views\Shared\Layouts\_LayoutNone.cshtml" />
     <Content Include="Views\Shared\_Error.cshtml" />
     <Content Include="Views\Shared\_NoPermission.cshtml" />
+    <Content Include="Views\LinkSite\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
