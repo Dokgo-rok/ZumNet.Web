@@ -18,25 +18,18 @@ namespace ZumNet.Web.Controllers
         public ActionResult Index()
         {
             string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = "잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
-
-            //using (ZumNet.BSL.ServiceBiz.CommonBiz com = new ZumNet.BSL.ServiceBiz.CommonBiz())
-            //{
-            //    svcRt = com.GetTreeInformation(1, 103, "", "", 0, 101374, "0.0.14502", "Y", "", 0, 0, "");
-            //}
-
-            //if (svcRt != null && svcRt.ResultCode == 0)
-            //{
-            //    ViewBag.FolderTree = svcRt.ResultDataRowCollection;
-            //    ViewBag.TreeOpenNode = svcRt.ResultDataDetail["openNode"];
-            //}
-            //else
-            //{
-            //    //에러페이지
-            //}
-
-            //svcRt = null;
 
             int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
             int iOpenNode = 0;
@@ -62,8 +55,8 @@ namespace ZumNet.Web.Controllers
             }
             else
             {
-                //에러페이지
-                //return View("~/Views/Shared/Error/_404");
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
             return View();

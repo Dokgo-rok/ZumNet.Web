@@ -234,10 +234,10 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"operator\":\"{0}\"", "");
                 sb.Append("}"); //current
                 sb.AppendFormat(",\"mode\":\"{0}\"", StringHelper.SafeString(jReq["M"], ""));
-                sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], ""));
+                sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));
                 sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"], ""));
-                sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], ""));
-                sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], ""));
+                sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
+                sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
                 sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"], ""));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
                 sb.AppendFormat(",\"qi\":\"{0}\"", req);

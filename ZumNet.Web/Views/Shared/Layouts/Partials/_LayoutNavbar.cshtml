@@ -1,6 +1,53 @@
-﻿@using System.Data;
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
 
-@{bool hideToggle = ViewData["LayoutNavbarHideToggle"] != null && ViewData["LayoutNavbarHideToggle"].ToString() == "True";}
+@{
+    bool hideToggle = ViewData["LayoutNavbarHideToggle"] != null && ViewData["LayoutNavbarHideToggle"].ToString() == "True";
+
+    StringBuilder sb = new StringBuilder();
+    if (ViewBag.LinkSite != null && ViewBag.LinkSite.Tables.Count > 0)
+    {
+        sb.Append("<div class=\"dropdown-menu dropdown-menu-right mt-0 py-0\" style=\"min-width: 30rem; width: 30rem\">");
+        sb.Append("<div class=\"bg-purple text-center text-white py-2\">링크사이트</div>");
+        sb.Append("<div class=\"list-group list-group-flush\">");
+
+        Dictionary<string, string> dic = new Dictionary<string, string>(); //해시테이블 보다 형식을 규정해야 함
+
+        foreach (DataRow row in ViewBag.LinkSite.Tables[0].Rows)
+        {
+            if (!dic.ContainsKey(row["FD_ID"].ToString()))
+            {
+                dic.Add(row["FD_ID"].ToString(), row["DisplayName"].ToString());
+            }
+        }
+
+        foreach (string k in dic.Keys)
+        {
+            //Response.Write(k + " => " + dic[k].ToString() + "<br />");
+            DataRow[] q = ViewBag.LinkSite.Tables[0].Select("FD_ID = " + k);
+
+            if (q.Length > 0)
+            {
+                sb.Append("<div class=\"row\">");
+                sb.AppendFormat("<div class=\"col-3\">{0}</div>", dic[k].ToString());
+                sb.Append("<div class=\"col-9\">");
+
+                foreach (DataRow row in q)
+                {
+                    sb.AppendFormat("<a href=\"{0}\" target=\"_blank\" class=\"{1}\">{2}</a>", row["Url"].ToString(), (Convert.ToInt32(row["SortKey"]) < 3 ? "font-weight-bold" : ""), row["SiteName"].ToString());
+                }
+
+                sb.Append("</div>");
+                sb.Append("</div>");
+            }
+        }
+
+        sb.Append("</div>");
+        sb.Append("</div>");
+    }
+}
+
 
 <!-- Layout navbar -->
 <nav class="layout-navbar navbar navbar-expand-md align-items-lg-center bg-navbar-theme" id="layout-navbar">
@@ -16,14 +63,14 @@
 
     @if (!hideToggle)
     {<!-- Sidenav toggle -->
-    <div class="layout-sidenav-toggle navbar-nav align-items-lg-center mr-auto mr-lg-4">
-        <a class="nav-item nav-link px-2" href="javascript:void(0)">
-            <i class="fe-menu text-large align-middle"></i>
-        </a>
-    </div>}
+        <div class="layout-sidenav-toggle navbar-nav align-items-lg-center mr-auto mr-lg-4">
+            <a class="nav-item nav-link z-wave px-2" href="javascript:void(0)">
+                <i class="fe-menu text-large align-middle"></i>
+            </a>
+        </div>}
 
     <!-- Navbar toggle -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
+    <button class="navbar-toggler z-wave" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -43,52 +90,66 @@
             </li>
 
             <li class="nav-item mr-lg-2">
-                <a class="nav-link text-large px-2" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="근무상태">
+                <a class="nav-link z-wave text-large px-2" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="근무상태">
                     <i class="mdi mdi-timer-sand"></i>
                 </a>
             </li>
 
             <li class="nav-item mr-lg-2">
-                <a class="nav-link text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="전화번호 찾기">
+                <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="전화번호 찾기">
                     <i class="fe-phone"></i>
                 </a>
             </li>
 
             <li class="nav-item mr-lg-2">
-                <a class="nav-link text-large" href="@Url.Action("Index", "Organ", new { Area = "" })" data-toggle="tooltip" data-placement="bottom" title="조직도">
+                <a class="nav-link z-wave text-large" href="@Url.Action("Index", "Organ", new { Area = "" })" data-toggle="tooltip" data-placement="bottom" title="조직도">
                     <i class="mdi mdi-sitemap"></i>
                 </a>
             </li>
 
             <li class="nav-item dropdown mr-lg-2">
-                <a class="nav-link text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="링크사이트">
+                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="링크사이트">
                     <i class="mdi mdi-map-search noti-icon"></i>
                     @*<span>@ViewBag.LinkSite.Tables.Count</span>*@
                 </a>
-                @if (@ViewBag.LinkSite != null && ViewBag.LinkSite.Tables.Count > 0)
-                {
-
-                }
+                @Html.Raw(sb.ToString())
             </li>
 
             <li class="nav-item dropdown mr-lg-2">
-                <a class="nav-link text-large dropdown-toggle dropdown-menu-right hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="바로가기 메뉴">
+                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="바로가기 메뉴">
                     <i class="fe-navigation"></i>
                     @*<span>@ViewBag.ShoutLnk.Count.ToString(),  @(ViewBag.DeptList != null ? ViewBag.DeptList.Count.ToString() : "")</span>*@
                 </a>
                 @if (@ViewBag.ShortLink != null && ViewBag.ShortLink.Count > 0)
                 {
-                    <div class="dropdown-menu">
-                        @foreach (DataRow row in ViewBag.ShortLink)
-                        {
-                            <a class="dropdown-item" href="javascript:void(0)">@row["DisplayName"]</a>
-                        }
+                    <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
+                        <div class="bg-purple text-center text-white py-2">바로가기 메뉴</div>
+                        <div class="list-group list-group-flush">
+                            @foreach (DataRow row in ViewBag.ShortLink)
+                            {
+                                <a class="dropdown-item list-group-item list-group-item-action" href="javascript:void(0)" data-navmenu="@row["CTAlias"]">
+                                    @if (row["CTAlias"].ToString() == "edm.new")
+                                    {
+                                        <i class="fe-file-text"></i>
+                                    }
+                                    else if (row["CTAlias"].ToString() == "ea.newdoc")
+                                    {
+                                        <i class="fe-edit"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fe-edit"></i>
+                                    }
+                                    &nbsp;@row["DisplayName"]
+                                </a>
+                            }
+                        </div>
                     </div>
                 }
             </li>
 
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
+                <a class="nav-link z-wave dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
                     <img src="~/images/users/avatar-6.jpg" alt="User Image" class="ui-w-30 rounded-circle">
                     <span class="px-0 mr-lg-0 ml-2 ml-lg-0">김영수 부장</span>
                 </a>

@@ -49,6 +49,7 @@ namespace ZumNet.Web
             
             bundles.Add(new StyleBundle("~/bundle/css/site").Include("~/Content/site.css"));
             bundles.Add(new ScriptBundle("~/bundle/js/site").Include("~/Vendor/libs/waves/waves.min.js")
+                                                            .Include("~/Vendor/libs/bootbox/bootbox.js")
                                                             .Include("~/Scripts/site.js")
                                                             .Include("~/Scripts/Controls/treeOrg.js")
                                                             .Include("~/Scripts/Controls/treeFolder.js"));
@@ -72,7 +73,8 @@ namespace ZumNet.Web
             //bundles.Add(SassBundle("~/bundle/vendor/css/uikit").Include("~/Vendor/css/uikit.scss"));
             bundles.Add(SassBundle("~/bundle/vendor/css/csskit").Include("~/Vendor/css/colors.scss")
                                                                 .Include("~/Vendor/css/uikit.scss")
-                                                                .Include("~/Vendor/libs/waves/waves.scss"));
+                                                                .Include("~/Vendor/libs/waves/waves.scss")
+                                                                );
 
             // ------------------------------------------------------------------------------------
             // Automatically bundle ~/Vendor/js directory

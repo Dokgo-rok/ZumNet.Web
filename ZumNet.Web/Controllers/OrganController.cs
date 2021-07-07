@@ -34,6 +34,7 @@ namespace ZumNet.Web.Controllers
                 else
                 {
                     //에러페이지
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
                 }
 
                 svcRt = null;
@@ -48,10 +49,9 @@ namespace ZumNet.Web.Controllers
                 else
                 {
                     //에러페이지
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
                 }
             }
-
-            svcRt = null;
 
             return View();
         }

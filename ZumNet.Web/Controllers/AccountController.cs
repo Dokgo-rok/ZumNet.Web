@@ -40,7 +40,6 @@ namespace ZumNet.Web.Controllers
                 string sEncrypt = ZumNet.Framework.Util.SecurityHelper.AESEncryp(model.Password);
                 result = auth.SessionStart(model.LoginId, sEncrypt);
             }
-            auth = null;
 
             if (result == "OK")
             {

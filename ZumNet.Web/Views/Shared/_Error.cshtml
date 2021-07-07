@@ -1,0 +1,42 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = Model.Exception.Message;
+    Layout = "~/Views/Shared/Layouts/_LayoutNone.cshtml";
+}
+
+@section Styles {
+
+}
+
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+
+<div class="my-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-4">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <div class="text-center mt-3 mb-5">
+                            <h3 class="text-uppercase fw-bold">Application Error </h3>
+                        </div>
+                        <div class="text-center">
+                            <h4>@Model.ControllerName / @Model.ActionName</h4>
+                            <p class="text-muted mb-0 mt-3" style="line-height: 20px;">
+                                @Model.Exception.Message
+                            </p>
+
+                            <a class="btn btn-primary mt-3" href="/"><i class="mdi mdi-reply me-1"></i> Return Home</a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

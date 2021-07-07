@@ -39,9 +39,8 @@ namespace ZumNet.Web.Bc
             else
             {
                 //에러페이지
+                return svcRt.ResultMessage;
             }
-
-
 
             //보안상 계정이 없거나 비밀번호가 틀린 경우를 구분하면 안됨!!
             if (strPassword == "" || strPassword == "NO USER")
@@ -63,7 +62,6 @@ namespace ZumNet.Web.Bc
                 }
                 strReturn = "OK";
             }
-            svcRt = null;
 
             return strReturn;
         }
@@ -238,8 +236,12 @@ namespace ZumNet.Web.Bc
                     }
                 }
             }
+            else
+            {
+                strReturn = svcRt.ResultMessage;
+            }
 
-            if (svcRt != null) svcRt = null;
+            //if (svcRt != null) svcRt = null;
 
             return strReturn;
         }

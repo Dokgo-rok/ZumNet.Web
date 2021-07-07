@@ -566,7 +566,8 @@
     <Content Include="Vendor\libs\waves\waves.scss" />
     <Content Include="Views\Portal\SSOerp.cshtml" />
     <Content Include="Views\Shared\Layouts\_LayoutNone.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Error.cshtml" />
+    <Content Include="Views\Shared\_NoPermission.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -12,7 +12,37 @@ $(function () {
     });
 
     // wave
-    Waves.attach('a, .btn', 'waves-light'); Waves.init();
+    Waves.attach('.app-brand, .sidenav-item a, .btn, .z-wave', 'waves-light'); Waves.init();
+
+    // bootbox
+    bootbox.setDefaults({
+        locale: "ko",
+        size: "sm"
+    });
+
+    //bootbox.setLocale({ locale: "ko", values: { OK: "확인", CANCEL: "취소", CONFIRM: "확인" }});
+
+    // jquery ajax setup
+    $.ajaxSetup({
+        error: function (res) {
+            if (res.status == 403) {
+                
+            } else {
+                bootbox.alert({ title: "Ajax Error", message: res.responseText});
+            }
+        },
+        failure: function (res) {
+            bootbox.alert({ title: "Ajax Failure", message: res.responseText });
+        },
+        beforeSend: function () {
+            _zw.ut.ajaxLoader(true);
+        },
+        complete: function (res) {
+            _zw.ut.ajaxLoader(false);
+        }
+    });
+
+    $('.modal-ajaxloader .modal-title').html('불러오는 중...');
 
     // Initialize sidenav togglers
     $('body').on('click', '.layout-sidenav-toggle', function (e) {
@@ -40,7 +70,7 @@ $(function () {
         $('.messages-wrapper, .messages-card').toggleClass('messages-sidebox-open');
     });
 
-    $('.sidenav-item[data-navmenu]').on('click', function () {
+    $('.sidenav-item[data-navmenu], .navbar-nav .dropdown-item[data-navmenu]').on('click', function () {
         switch ($(this).attr('data-navmenu')) {
             case "mail":
                 _zw.ut.openWnd("https://email.cresyn.com/owa ", "owaWim");
@@ -52,7 +82,16 @@ $(function () {
                 var url = "http://meeting.cresyn.com/app/?uid=";
                 _zw.ut.openWnd(url, "meeting", 800, 500, "fix");
                 break;
+            case "edm.new":
+                _zw.ut.ajaxLoader(true, "불러오는 중..")
+                //bootbox.alert("문서관리 신규 문서 등록", function () { _zw.ut.ajaxLoader(false) });
+                
+                break;
+            case "ea.newdoc":
+                bootbox.confirm("전자결재 신규 양식 작성 하시겠습니까?", function (rt) { alert(rt) });
+                break;
             default:
+                
                 break;
         }
     });
@@ -221,8 +260,22 @@ $(function () {
                 }
                 window.open(url, wnd, etcParam + ",width=" + w + ",height=" + h + sz);
             }
-            
-        }
+        },
+        "ajaxLoader": function (b) {
+            b ? $('#ajaxLoader').modal('show') : $('#ajaxLoader').modal('hide');
+
+            //아래 구문 ajax event 미동작
+            //if (b) {
+            //    bootbox.dialog({
+            //        message: $('.modal-ajaxloader').html(),
+            //        closeButton: false,
+            //        className: 'bootbox-ajax',
+            //        centerVertical: true
+            //    });
+            //} else {
+            //    bootbox.hideAll();
+            //}
+        }               
     };
 
 }());

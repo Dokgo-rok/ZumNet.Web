@@ -56,30 +56,32 @@
     <div class="page-loader"><div class="bg-info"></div></div>
     @RenderBody()
 
-    <!-- Modal Loader, Alert, Confirm, Prompt -->
-    <div class="modal" id="ajaxLoader" tabindex="-1" role="dialog" aria-labelledby="ajaxModalLabel" aria-hidden="true">
+    <!-- Modal Loader -->
+    <div class="modal modal-ajaxloader" id="ajaxLoader" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-body row px-3 py-3">
-                    @*<div class="sk-circle sk-primary">
-                            <div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div><div class="sk-circle-dot"></div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center align-items-center">
+                        @*<div class="sk-circle-fade sk-primary">
+                            <div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div>
                         </div>*@
-                    <div class="col-3 text-center"><img alt="loader" src="/Images/loader.gif" /></div>
-                    <div class="h4 col-9 modal-title" id="ajaxModalLabel" style="font-weight: 700;">불러오는 중입니다</div>
+                        <div><img alt="loader" src="/Images/loader.gif" /></div>
+                        @*<div class="spinner-border text-success" role="status"><span class="sr-only"></span></div>*@
+                        <div class="modal-title h4 pl-4 text-muted"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    @*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ajaxLoader">Show</button>*@
-    <div class="modal" id="modalAlert" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-                    <h6 class="modal-title" id="alertModalLabel"></h6>
-                </div>
-                <div class="modal-footer"><button class="btn btn-primary" type="button" data-dismiss="modal">확인</button></div>
-            </div>
+
+    <div class="modal-ajaxloader">
+        <div class="d-flex justify-content-center align-items-center">
+            @*<div class="sk-circle-fade sk-primary">
+                    <div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div><div class="sk-circle-fade-dot"></div>
+                </div>*@
+            <div><img alt="loader" src="/Images/loader.gif" /></div>
+            @*<div class="spinner-border text-success" role="status"><span class="sr-only"></span></div>*@
+            <div class="modal-title h4 pl-4 text-muted"></div>
         </div>
     </div>
 
@@ -88,7 +90,6 @@
 
     <!-- Uncomment the following line to enable unobtrusive validation -->
     <!-- @Html.Partial("_ValidationScriptsPartial") -->
-
     @Scripts.Render("~/bundle/vendor/js/popper/popper")
     @Scripts.Render("~/bundle/vendor/js/bootstrap")
     @Scripts.Render("~/bundle/vendor/js/sidenav")
