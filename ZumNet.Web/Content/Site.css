@@ -104,13 +104,13 @@
     border-radius: .45rem;
 }
 .modal-ajaxloader .modal-dialog {
-    max-width: 18rem;
+    max-width: 15rem;
     margin-left: auto;
     margin-right: auto;
 }
 .modal-ajaxloader .modal-body {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: .7rem;
+    padding-bottom: .7rem;
 }
 .modal-ajaxloader .modal-title {
     color: #337ab7;

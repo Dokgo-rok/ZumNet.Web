@@ -72,7 +72,7 @@ namespace ZumNet.Web.Controllers
         /// <param name="model"></param>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
-        public ActionResult LogOut(AccountViewModels model, string returnUrl)
+        public ActionResult Logout(AccountViewModels model, string returnUrl)
         {
             FormsAuthentication.SignOut();
             foreach (var cookie in Request.Cookies.AllKeys)
@@ -82,7 +82,7 @@ namespace ZumNet.Web.Controllers
 
             Session.Clear();
 
-            return RedirectToLocal("/Account/Login");
+            return RedirectToLocal("/Account/Login?returnUrl=" + returnUrl);
         }
 
         /// <summary>

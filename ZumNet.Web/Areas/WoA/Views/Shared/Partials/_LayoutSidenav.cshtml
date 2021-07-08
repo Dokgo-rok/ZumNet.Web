@@ -1,0 +1,117 @@
+﻿@using System.Data;
+
+@{
+    bool isHorizontal = ViewData["LayoutSidenavHorizontal"] != null && ViewData["LayoutSidenavHorizontal"].ToString() == "True";
+    string currentPage = ViewContext.RouteData.Values["Controller"].ToString() + "/" + ViewContext.RouteData.Values["Action"].ToString();
+    //string currentPath = @Request.Url.PathAndQuery;
+
+}
+
+<!-- Layout sidenav -->
+<div id="layout-sidenav" class="@(isHorizontal ? "layout-sidenav-horizontal sidenav-horizontal container-p-x flex-grow-0" : "layout-sidenav sidenav-vertical") sidenav bg-sidenav-theme">
+    @if (!isHorizontal)
+    {
+        <a href="/" class="app-brand">
+            <span class="app-brand-logo">
+                <img src="~/images/logo-sm.png" />
+            </span>
+            <span class="app-brand-text sidenav-text font-weight-normal ml-2">
+                <img src="~/images/logo-2-light.png" />
+            </span>
+        </a>
+
+        <div class="sidenav-divider mt-0"></div>
+    }
+
+    <!-- Inner -->
+<ul class="sidenav-inner@(!isHorizontal ? " py-1" : "")">
+
+    @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin")
+    {
+        <!-- 포탈, 메뉴 관리 -->
+        <li class="sidenav-item@(currentPage.StartsWith("Dashboard") ? " active open" : "")">
+            <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-laptop"></i><div>포탈 관리</div></a>
+
+            <ul class="sidenav-menu">
+                <li class="sidenav-item@(currentPage == "Dashboard/Index" ? " active" : "")">
+                    <a href="@Url.Action("Index", "Dashboard")" class="sidenav-link"><div>포탈 구성</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Dashboard" || currentPage == "Dashboard/Webpart" ? " active" : "")">
+                    <a href="@Url.Action("Webpart", "Dashboard")" class="sidenav-link"><div>웹파트 관리</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Dashboard" || currentPage == "Dashboard/Code" ? " active" : "")">
+                    <a href="@Url.Action("Code", "Dashboard")" class="sidenav-link"><div>코드 관리</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Dashboard" || currentPage == "Dashboard/Policy" ? " active" : "")">
+                    <a href="@Url.Action("Policy", "Dashboard")" class="sidenav-link"><div>암호 정책</div></a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="sidenav-divider mb-1"></li>
+
+        <!-- 메뉴 관리 -->
+        <li class="sidenav-item@(currentPage.StartsWith("Menu") ? " active open" : "")">
+            <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-sitemap"></i><div>메뉴 관리</div></a>
+
+            <ul class="sidenav-menu">
+                <li class="sidenav-item@(currentPage == "Menu/Index" ? " active" : "")">
+                    <a href="@Url.Action("Index", "Menu")" class="sidenav-link"><div>메뉴 목록</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Menu/Setting" ? " active" : "")">
+                    <a href="@Url.Action("Setting", "Menu")" class="sidenav-link"><div>메뉴 구성</div></a>
+                </li>
+            </ul>
+        </li>
+    }
+
+    @if (Session["WoA"].ToString() != "")
+    {
+        <!-- 조직 관리 -->
+        <li class="sidenav-item@(currentPage.StartsWith("Organ") ? " active open" : "")">
+            <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-user-friends"></i><div>조직 관리</div></a>
+
+            <ul class="sidenav-menu">
+                <li class="sidenav-item@(currentPage == "Organ/Index" ? " active" : "")">
+                    <a href="@Url.Action("Index", "Organ")" class="sidenav-link"><div>사용자</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Organ/Dept" ? " active" : "")">
+                    <a href="@Url.Action("Dept", "Organ")" class="sidenav-link"><div>부서</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Organ/Group" ? " active" : "")">
+                    <a href="@Url.Action("Group", "Organ")" class="sidenav-link"><div>기타 그룹</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Organ/Group" ? " active" : "")">
+                    <a href="@Url.Action("Group", "Organ")" class="sidenav-link"><div>직급 관리</div></a>
+                </li>
+            </ul>
+        </li>
+    }
+
+    @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin")
+    {
+        <!-- 이벤트 로그 -->
+        <li class="sidenav-item@(currentPage.StartsWith("Event") ? " active open" : "")">
+            <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-history"></i><div>이벤트 로그</div></a>
+
+            <ul class="sidenav-menu">
+                <li class="sidenav-item@(currentPage == "Event/Index" ? " active" : "")">
+                    <a href="@Url.Action("Index", "Event")" class="sidenav-link"><div>접속이력(근무정보)</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Event/Logon" ? " active" : "")">
+                    <a href="@Url.Action("Logon", "Event")" class="sidenav-link"><div>로그온 정보</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Event/Write" ? " active" : "")">
+                    <a href="@Url.Action("Write", "Event")" class="sidenav-link"><div>문서 등록 로그</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage == "Event/View" ? " active" : "")">
+                    <a href="@Url.Action("View", "Event")" class="sidenav-link"><div>문서 조회 로그</div></a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="sidenav-divider mb-1"></li>
+    }
+</ul>
+</div>
+<!-- / Layout sidenav -->

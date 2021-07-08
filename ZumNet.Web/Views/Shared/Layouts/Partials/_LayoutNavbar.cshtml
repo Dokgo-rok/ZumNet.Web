@@ -67,6 +67,15 @@
         sb.Append("</div>");
         sb.Append("</div>");
     }
+
+    string imagepath = Server.MapPath("~/images/users/" + Session["LogonID"].ToString() + ".jpg");
+    FileStream fs = new FileStream(imagepath, FileMode.Open);
+    byte[] byData = new byte[fs.Length];
+    fs.Read(byData, 0, byData.Length);
+    fs.Close(); 
+
+    var base64 = Convert.ToBase64String(byData);
+    var imgSrc = String.Format("data:image/jpg;base64,{0}", base64);
 }
 
 
@@ -110,11 +119,11 @@
                 </form>
             </li>
 
-            <li class="nav-item mr-lg-2">
+            @*<li class="nav-item mr-lg-2">
                 <a class="nav-link z-wave text-large px-2" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="근무상태">
                     <i class="mdi mdi-timer-sand"></i>
                 </a>
-            </li>
+            </li>*@
 
             <li class="nav-item mr-lg-2">
                 <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="전화번호 찾기">
@@ -122,11 +131,11 @@
                 </a>
             </li>
 
-            <li class="nav-item mr-lg-2">
+            @*<li class="nav-item mr-lg-2">
                 <a class="nav-link z-wave text-large" href="@Url.Action("Index", "Organ", new { Area = "", qi = @sOrganQuery[1] })" data-toggle="tooltip" data-placement="bottom" title="@sOrganQuery[0]">
                     <i class="mdi mdi-sitemap"></i>
                 </a>
-            </li>
+            </li>*@
 
             <li class="nav-item dropdown mr-lg-2">
                 <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@sLinkSiteQuery[0]">
@@ -169,11 +178,35 @@
                 }
             </li>
 
-            <li class="nav-item dropdown">
-                <a class="nav-link z-wave dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
-                    <img src="~/images/users/avatar-6.jpg" alt="User Image" class="ui-w-30 rounded-circle">
-                    <span class="px-0 mr-lg-0 ml-2 ml-lg-0">김영수 부장</span>
+            <li class="nav-item mr-lg-2">
+                <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="알림">
+                    <i class="fe-bell"></i>
+                    <span class="badge badge-pill badge-blue indicator mt-3">10</span>
                 </a>
+            </li>
+
+            <li class="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-50 mr-2 ml-1">|</li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link z-wave dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown">
+                    <img src="@imgSrc" alt="User Image" class="rounded-circle" style="width: 30px; height: 30px">
+                    <span class="px-0 mr-lg-0 ml-2 ml-lg-1">@Session["URName"]</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right mt-0">
+                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-user mr-2"></i>내 정보</a>
+                    <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-timer-sand mr-2"></i>근무상태</a>
+                    <a class="dropdown-item" href="@Url.Action("Index", "Organ", new { Area = "", qi = @sOrganQuery[1] })"><i class="mdi mdi-sitemap mr-2"></i>@sOrganQuery[0]</a>
+                    <div class="dropdown-divider"></div>
+                    @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin") //fas fa-tools
+                    {
+                        <a class="dropdown-item" href="/WoA/Dashboard"><i class="fe-settings mr-2"></i>관리툴</a>
+                    }
+                    else if (Session["WoA"].ToString() == "orgadmin")
+                    {
+                        <a class="dropdown-item" href="/WoA/Organ"><i class="fe-settings mr-2"></i>조직관리자</a>
+                    }
+                    <a class="dropdown-item" href="/Account/Logout"><i class="fas fa-sign-out-alt mr-2"></i>로그아웃</a>
+                </div>
             </li>
         </ul>
     </div>

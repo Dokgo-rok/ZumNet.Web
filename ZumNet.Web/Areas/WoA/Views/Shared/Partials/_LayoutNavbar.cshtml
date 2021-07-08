@@ -1,0 +1,67 @@
+﻿@{
+    bool hideToggle = ViewData["LayoutNavbarHideToggle"] != null && ViewData["LayoutNavbarHideToggle"].ToString() == "True";
+
+    string imagepath = Server.MapPath("~/images/users/" + Session["LogonID"].ToString() + ".jpg");
+    FileStream fs = new FileStream(imagepath, FileMode.Open);
+    byte[] byData = new byte[fs.Length];
+    fs.Read(byData, 0, byData.Length);
+    fs.Close();
+
+    var base64 = Convert.ToBase64String(byData);
+    var imgSrc = String.Format("data:image/jpg;base64,{0}", base64);
+}
+
+
+<!-- Layout navbar -->
+<nav class="layout-navbar navbar navbar-expand-md align-items-lg-center bg-navbar-theme" id="layout-navbar">
+    <!-- Brand -->
+    <a href="/" class="navbar-brand app-brand d-lg-none">
+        <span class="app-brand-logo">
+            <img src="~/images/logo-sm.png" />
+        </span>
+        <span class="app-brand-text d-none d-sm-block font-weight-normal ml-2">
+            <img src="~/images/logo-2-light.png" />
+        </span>
+    </a>
+
+    @if (!hideToggle)
+    {<!-- Sidenav toggle -->
+        <div class="layout-sidenav-toggle navbar-nav align-items-lg-center mr-auto mr-lg-4">
+            <a class="nav-item nav-link z-wave px-2" href="javascript:void(0)">
+                <i class="ion ion-md-menu text-large align-middle"></i>
+            </a>
+        </div>}
+
+    <!-- Navbar toggle -->
+    <button class="navbar-toggler z-wave" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse collapse" id="layout-navbar-collapse">
+        <!-- Divider -->
+        <hr class="d-md-none w-100 py-0">
+
+        <ul class="navbar-nav align-items-lg-center ml-auto my-0">
+            @*<li class="nav-item mr-lg-2">
+                <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="관리자 설정">
+                    <i class="fas fa-users-cog"></i>
+                </a>
+            </li>
+
+            <li class="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-50 mr-2 ml-1">|</li>*@
+
+            <li class="nav-item dropdown">
+                <a class="nav-link z-wave dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown">
+                    <img src="@imgSrc" alt="User Image" class="rounded-circle" style="width: 30px; height: 30px">
+                    <span class="px-0 mr-lg-0 ml-2 ml-lg-1">@Session["URName"]</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right mt-0">
+                    @*<a class="dropdown-item" href="javascript:void(0)"><i class="fe-user mr-2"></i>내 정보</a>*@
+                    <a class="dropdown-item" href="/"><i class="fab fa-internet-explorer mr-2"></i>EKP 메인</a>
+                    <a class="dropdown-item" href="/Account/Logout"><i class="fas fa-sign-out-alt mr-2"></i>로그아웃</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- / Layout navbar -->

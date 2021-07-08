@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+using ZumNet.Web.Filter;
+
+namespace ZumNet.Web.Areas.WoA.Controllers
+{
+    public class DashboardController : Controller
+    {
+        // GET: WoA/Dashboard
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Index()
+        {
+            
+
+            return View();
+        }
+    }
+}

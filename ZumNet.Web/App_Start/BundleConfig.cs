@@ -65,16 +65,26 @@ namespace ZumNet.Web
             //                                               .Include("~/Vendor/fonts/materialdesignicons.css")
             //                                               .Include("~/Vendor/fonts/feather.css"));
 
-            bundles.Add(SassBundle("~/bundle/vendor/css/bootstrap").Include("~/Vendor/css/bootstrap.scss"));
-            bundles.Add(SassBundle("~/bundle/vendor/css/appwork").Include("~/Vendor/css/appwork.scss"));
+            //bundles.Add(SassBundle("~/bundle/vendor/css/bootstrap").Include("~/Vendor/css/bootstrap.scss"));
+            //bundles.Add(SassBundle("~/bundle/vendor/css/appwork").Include("~/Vendor/css/appwork.scss"));
             //bundles.Add(SassBundle("~/bundle/vendor/css/zumworks").Include("~/Vendor/css/bootstrap.scss").Include("~/Vendor/css/appwork.scss"));
-            bundles.Add(SassBundle("~/bundle/vendor/css/theme-corporate").Include("~/Vendor/css/theme-corporate.scss"));
+            //bundles.Add(SassBundle("~/bundle/vendor/css/theme-corporate").Include("~/Vendor/css/theme-corporate.scss"));
             //bundles.Add(SassBundle("~/bundle/vendor/css/colors").Include("~/Vendor/css/colors.scss"));
             //bundles.Add(SassBundle("~/bundle/vendor/css/uikit").Include("~/Vendor/css/uikit.scss"));
             bundles.Add(SassBundle("~/bundle/vendor/css/csskit").Include("~/Vendor/css/colors.scss")
                                                                 .Include("~/Vendor/css/uikit.scss")
                                                                 .Include("~/Vendor/libs/waves/waves.scss")
                                                                 );
+
+            // ------------------------------------------------------------------------------------
+            // Automatically bundle ~/Vendor/css directory
+            //
+
+            // Bundle path: ~/bundle/vendor/css/{filename}
+            foreach (string[] bundleFile in GetVendorBundles("css", "css", "**/*", "scss"))
+            {
+                bundles.Add(SassBundle(bundleFile[0]).Include(bundleFile[1]));
+            }
 
             // ------------------------------------------------------------------------------------
             // Automatically bundle ~/Vendor/js directory

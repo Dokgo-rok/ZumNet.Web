@@ -42,7 +42,7 @@ $(function () {
         }
     });
 
-    $('.modal-ajaxloader .modal-title').html('불러오는 중...');
+    $('.modal-ajaxloader .modal-title').html('Loading ...');
 
     // Initialize sidenav togglers
     $('body').on('click', '.layout-sidenav-toggle', function (e) {

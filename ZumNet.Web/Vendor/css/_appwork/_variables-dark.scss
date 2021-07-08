@@ -6,7 +6,8 @@
 
 $white:        #fff !default;
 $black:        #25282E !default;
-
+$theme-white: #fff !default;
+$theme-black: #181C21 !default;
 $gray-25:      rgba($white, .015) !default;
 $gray-50:      rgba($white, .03) !default;
 $gray-100:     rgba($white, .06) !default;
@@ -34,6 +35,7 @@ $yellow:       #FFD950 !default;
 $green:        #02BC77 !default;
 $teal:         #20c997 !default;
 $cyan:         #28c3d7 !default;
+$third: #0062ff !default; /*Ãß°¡*/
 
 $theme-colors: (
   "primary":   $indigo,
@@ -98,6 +100,7 @@ $display4-size:          2rem !default;
 
 $tiny-font-size:         70% !default;
 $small-font-size:        85% !default;
+$semibig-font-size: 107% !default;
 $big-font-size:          112% !default;
 $large-font-size:        150% !default;
 $xlarge-font-size:       170% !default;

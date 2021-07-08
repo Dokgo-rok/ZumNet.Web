@@ -291,6 +291,7 @@
     <Compile Include="Areas\TnC\Controllers\ScheduleController.cs" />
     <Compile Include="Areas\TnC\Controllers\ToDoController.cs" />
     <Compile Include="Areas\TnC\TnCAreaRegistration.cs" />
+    <Compile Include="Areas\WoA\Controllers\DashboardController.cs" />
     <Compile Include="Areas\WoA\WoAAreaRegistration.cs" />
     <Compile Include="Bc\AuthManager.cs" />
     <Compile Include="Bc\CommonUtils.cs" />
@@ -478,9 +479,7 @@
     <Folder Include="Areas\ExS\Views\Shared\" />
     <Folder Include="Areas\TnC\Data\" />
     <Folder Include="Areas\TnC\Views\Shared\" />
-    <Folder Include="Areas\WoA\Controllers\" />
-    <Folder Include="Areas\WoA\Data\" />
-    <Folder Include="Areas\WoA\Views\Shared\" />
+    <Folder Include="Areas\WoA\lib\" />
     <Folder Include="Views\Addr\" />
     <Folder Include="Views\Common\" />
     <Folder Include="Views\Env\" />
@@ -515,6 +514,14 @@
     <Content Include="Areas\Club\Views\_ViewStart.cshtml" />
     <Content Include="Areas\ExS\Views\_ViewStart.cshtml" />
     <Content Include="Areas\TnC\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\WoA\Views\Shared\Partials\_LayoutFooter.cshtml" />
+    <Content Include="Areas\WoA\Views\Shared\Partials\_LayoutNavbar.cshtml" />
+    <Content Include="Areas\WoA\Views\Shared\Partials\_LayoutSidenav.cshtml" />
+    <Content Include="Areas\WoA\Views\Shared\_Application.cshtml" />
+    <Content Include="Areas\WoA\Views\Shared\_Layout2Flex.cshtml" />
+    <Content Include="Areas\WoA\Views\Dashboard\Index.cshtml" />
+    <Content Include="Areas\WoA\Views\Shared\_Layout2.cshtml" />
+    <Content Include="Areas\WoA\Views\_ViewStart.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -561,7 +568,6 @@
     <Content Include="Vendor\fonts\font-noto\roboto-v27-latin-regular.ttf" />
     <Content Include="Vendor\fonts\font-noto\roboto-v27-latin-regular.woff" />
     <Content Include="Vendor\fonts\font-noto\roboto-v27-latin-regular.woff2" />
-    <Content Include="Vendor\fonts\fonts.scss" />
     <Content Include="Vendor\libs\waves\waves.scss" />
     <Content Include="Views\Portal\SSOerp.cshtml" />
     <Content Include="Views\Shared\Layouts\_LayoutNone.cshtml" />
