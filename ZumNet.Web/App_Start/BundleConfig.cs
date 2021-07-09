@@ -52,8 +52,18 @@ namespace ZumNet.Web
                                                             .Include("~/Vendor/libs/bootbox/bootbox.js")
                                                             .Include("~/Scripts/site.js")
                                                             .Include("~/Scripts/Controls/treeOrg.js")
-                                                            .Include("~/Scripts/Controls/treeFolder.js"));
+                                                            .Include("~/Scripts/Controls/treeFolder.js")
+                                                            );
+
+
             bundles.Add(SassBundle("~/bundle/css/theme-cresyn").Include("~/Content/theme-cresyn.scss"));
+
+            //관리툴 용 js
+            bundles.Add(new ScriptBundle("~/bundle/js/main").Include("~/Vendor/libs/waves/waves.min.js")
+                                                            .Include("~/Vendor/libs/bootbox/bootbox.js")
+                                                            .Include("~/Areas/WoA/Scripts/main.js")
+                                                            .Include("~/Areas/WoA/Scripts/tree.js")
+                                                            );
 
             // ------------------------------------------------------------------------------------
             // Core stylesheets

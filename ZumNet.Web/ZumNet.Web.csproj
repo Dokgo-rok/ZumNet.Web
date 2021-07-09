@@ -291,7 +291,14 @@
     <Compile Include="Areas\TnC\Controllers\ScheduleController.cs" />
     <Compile Include="Areas\TnC\Controllers\ToDoController.cs" />
     <Compile Include="Areas\TnC\TnCAreaRegistration.cs" />
+    <Compile Include="Areas\WoA\Controllers\AppController.cs" />
     <Compile Include="Areas\WoA\Controllers\DashboardController.cs" />
+    <Compile Include="Areas\WoA\Controllers\EAController.cs" />
+    <Compile Include="Areas\WoA\Controllers\EventController.cs" />
+    <Compile Include="Areas\WoA\Controllers\InterfaceController.cs" />
+    <Compile Include="Areas\WoA\Controllers\MenuController.cs" />
+    <Compile Include="Areas\WoA\Controllers\OrganController.cs" />
+    <Compile Include="Areas\WoA\Controllers\ProcController.cs" />
     <Compile Include="Areas\WoA\WoAAreaRegistration.cs" />
     <Compile Include="Bc\AuthManager.cs" />
     <Compile Include="Bc\CommonUtils.cs" />
@@ -315,6 +322,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\WoA\Scripts\main.js" />
+    <Content Include="Areas\WoA\Scripts\tree.js" />
     <Content Include="Content\auth.css" />
     <Content Include="Content\site.css" />
     <Content Include="favicon.ico" />
@@ -479,7 +488,7 @@
     <Folder Include="Areas\ExS\Views\Shared\" />
     <Folder Include="Areas\TnC\Data\" />
     <Folder Include="Areas\TnC\Views\Shared\" />
-    <Folder Include="Areas\WoA\lib\" />
+    <Folder Include="Areas\WoA\Content\" />
     <Folder Include="Views\Addr\" />
     <Folder Include="Views\Common\" />
     <Folder Include="Views\Env\" />
@@ -522,6 +531,13 @@
     <Content Include="Areas\WoA\Views\Dashboard\Index.cshtml" />
     <Content Include="Areas\WoA\Views\Shared\_Layout2.cshtml" />
     <Content Include="Areas\WoA\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\WoA\Views\Organ\Index.cshtml" />
+    <Content Include="Areas\WoA\Views\Event\Index.cshtml" />
+    <Content Include="Areas\WoA\Views\Interface\Index.cshtml" />
+    <Content Include="Areas\WoA\Views\Proc\Index.cshtml" />
+    <Content Include="Areas\WoA\Views\EA\Index.cshtml" />
+    <Content Include="Areas\WoA\Views\App\Index.cshtml" />
+    <Content Include="Areas\WoA\Views\Menu\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
