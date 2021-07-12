@@ -3,8 +3,8 @@
 @import "../Vendor/css/_theme/libs";
 @import "../Vendor/css/_theme/uikit";
 
-$primary-color: #ff8617;
-$body-bg: #ffffff;
+$primary-color: #0062ff;
+$body-bg: #f5f6f8;
 
 body {
     background: $body-bg;
@@ -19,10 +19,10 @@ body {
 @include appwork-uikit-theme($primary-color);
 
 // Navbar
-@include appwork-navbar-variant('.bg-navbar-theme', #f78429);
+@include appwork-navbar-variant('.bg-navbar-theme', #ffffff);
 
 // Sidenav
-@include appwork-sidenav-variant('.bg-sidenav-theme', #0c223a, $color: #96a1a9);
+@include appwork-sidenav-variant('.bg-sidenav-theme', #0062ff, $color: #d3e0fd);
 
 .bg-sidenav-theme {
     .sidenav-item.active > .sidenav-link:not(.sidenav-toggle) {
@@ -38,7 +38,7 @@ body {
         top: 0;
         bottom: 0;
         left: 0;
-        border-left: 4px solid $primary-color;
+        border-left: 4px solid $cyan;
     }
 
     .layout-collapsed &:not(:hover),
@@ -94,6 +94,10 @@ body {
 
     .ml-24 {
         margin-left: 24px;
+    }
+
+    .ml-33 {
+        margin-left: 33px;
     }
 
     .ml-18 {
@@ -188,4 +192,10 @@ body {
 
 .table-gray > :not(:last-child) > :last-child > * {
     border-bottom-color: gray;
+}
+
+.comment-inner {
+    max-width: 64px !important;
+    border-radius: 6px;
+    background-color: #f5f6f8;
 }

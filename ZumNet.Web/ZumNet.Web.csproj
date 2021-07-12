@@ -538,6 +538,7 @@
     <Content Include="Areas\WoA\Views\EA\Index.cshtml" />
     <Content Include="Areas\WoA\Views\App\Index.cshtml" />
     <Content Include="Areas\WoA\Views\Menu\Index.cshtml" />
+    <Content Include="Content\theme-cresyn-blue.scss" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -590,6 +591,8 @@
     <Content Include="Views\Shared\_Error.cshtml" />
     <Content Include="Views\Shared\_NoPermission.cshtml" />
     <Content Include="Views\LinkSite\Index.cshtml" />
+    <Content Include="Views\ZPage\Board.cshtml" />
+    <Content Include="Views\ZPage\Docu.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

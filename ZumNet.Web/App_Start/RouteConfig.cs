@@ -22,7 +22,8 @@ namespace ZumNet.Web
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Portal", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Portal", action = "Index", id = UrlParameter.Optional },
+                new String[] { "ZumNet.Web.Controllers" }
             );
         }
     }

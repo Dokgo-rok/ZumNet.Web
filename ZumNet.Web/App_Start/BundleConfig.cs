@@ -57,6 +57,7 @@ namespace ZumNet.Web
 
 
             bundles.Add(SassBundle("~/bundle/css/theme-cresyn").Include("~/Content/theme-cresyn.scss"));
+            bundles.Add(SassBundle("~/bundle/css/theme-cresyn-blue").Include("~/Content/theme-cresyn-blue.scss"));
 
             //관리툴 용 js
             bundles.Add(new ScriptBundle("~/bundle/js/main").Include("~/Vendor/libs/waves/waves.min.js")

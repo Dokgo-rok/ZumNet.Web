@@ -60,6 +60,9 @@
   .modal-sm .modal-dialog {
     max-width: $modal-sm;
   }
+  .modal-xs .modal-dialog {
+      max-width: $modal-xs;
+  }
 }
 
 @include media-breakpoint-up(lg) {

@@ -126,3 +126,32 @@ label.btn {
     box-shadow: none;
   }
 }
+
+// Soft Buttons
+//
+
+@mixin button-variant-soft($bg) {
+    color: $bg;
+    background-color: rgba($bg, 0.1);
+    border-color: rgba($bg, 0.12);
+
+    &:hover {
+        color: $white;
+        background-color: $bg;
+    }
+    // @include hover {
+    //     color: $white;
+    //     background-color: $bg;
+    // }
+
+    &:focus,
+    &.focus {
+        box-shadow: 0 0 0 $btn-focus-width rgba($bg, .3);
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .btn-soft-#{$color} {
+        @include button-variant-soft($value);
+    }
+}

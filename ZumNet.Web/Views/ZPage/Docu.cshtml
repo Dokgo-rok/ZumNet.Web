@@ -1,0 +1,1137 @@
+﻿@{
+    ViewBag.Title = "Docu";
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+}
+
+@section Styles {
+    <!-- Page -->
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render("~/bundle/vendor/css/perfect-scrollbar/perfect-scrollbar")
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/js/pages_messages")
+    @Scripts.Render("~/bundle/vendor/js/sidenav")
+    @Scripts.Render("~/bundle/js/ui_sidenav")
+    @Scripts.Render("~/bundle/vendor/js/bootbox/bootbox")
+
+    @Scripts.Render("~/bundle/js/ui_modals")
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+
+    @Scripts.Render("~/bundle/js/ui_treeview")
+    @Scripts.Render("~/bundle/vendor/js/perfect-scrollbar/perfect-scrollbar")
+
+    @Scripts.Render("~/bundle/js/misc_perfect-scrollbar")
+}
+
+<style>
+    .waves-effect {
+        position: relative;
+        cursor: pointer;
+        display: inline-block;
+        overflow: hidden;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        vertical-align: middle;
+        z-index: 1;
+        will-change: opacity, transform;
+        -webkit-transition: all 0.3s ease-out;
+        -moz-transition: all 0.3s ease-out;
+        -o-transition: all 0.3s ease-out;
+        -ms-transition: all 0.3s ease-out;
+        transition: all 0.3s ease-out;
+    }
+
+        .waves-effect .waves-ripple {
+            position: absolute;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            opacity: 0;
+            background: rgba(0, 0, 0, 0.2);
+            -webkit-transition: all 0.7s ease-out;
+            -moz-transition: all 0.7s ease-out;
+            -o-transition: all 0.7s ease-out;
+            -ms-transition: all 0.7s ease-out;
+            transition: all 0.7s ease-out;
+            -webkit-transition-property: -webkit-transform, opacity;
+            -moz-transition-property: -moz-transform, opacity;
+            -o-transition-property: -o-transform, opacity;
+            transition-property: transform, opacity;
+            -webkit-transform: scale(0);
+            -moz-transform: scale(0);
+            -ms-transform: scale(0);
+            -o-transform: scale(0);
+            transform: scale(0);
+            pointer-events: none;
+        }
+
+        .waves-effect.waves-light .waves-ripple {
+            background-color: rgba(255, 255, 255, 0.45);
+        }
+
+        .waves-effect.waves-red .waves-ripple {
+            background-color: rgba(244, 67, 54, 0.7);
+        }
+
+        .waves-effect.waves-yellow .waves-ripple {
+            background-color: rgba(255, 235, 59, 0.7);
+        }
+
+        .waves-effect.waves-orange .waves-ripple {
+            background-color: rgba(255, 152, 0, 0.7);
+        }
+
+        .waves-effect.waves-purple .waves-ripple {
+            background-color: rgba(156, 39, 176, 0.7);
+        }
+
+        .waves-effect.waves-green .waves-ripple {
+            background-color: rgba(76, 175, 80, 0.7);
+        }
+
+        .waves-effect.waves-teal .waves-ripple {
+            background-color: rgba(0, 150, 136, 0.7);
+        }
+
+    /* Firefox Bug: link not triggered */
+    a.waves-effect .waves-ripple {
+        z-index: -1;
+    }
+</style>
+
+<script>
+
+    ; (function (window) {
+        'use strict';
+
+        var Waves = Waves || {};
+        var $$ = document.querySelectorAll.bind(document);
+
+        // Find exact position of element
+        function isWindow(obj) {
+            return obj !== null && obj === obj.window;
+        }
+
+        function getWindow(elem) {
+            return isWindow(elem) ? elem : elem.nodeType === 9 && elem.defaultView;
+        }
+
+        function offset(elem) {
+            var docElem, win,
+                box = { top: 0, left: 0 },
+                doc = elem && elem.ownerDocument;
+
+            docElem = doc.documentElement;
+
+            if (typeof elem.getBoundingClientRect !== typeof undefined) {
+                box = elem.getBoundingClientRect();
+            }
+            win = getWindow(doc);
+            return {
+                top: box.top + win.pageYOffset - docElem.clientTop,
+                left: box.left + win.pageXOffset - docElem.clientLeft
+            };
+        }
+
+        function convertStyle(obj) {
+            var style = '';
+
+            for (var a in obj) {
+                if (obj.hasOwnProperty(a)) {
+                    style += (a + ':' + obj[a] + ';');
+                }
+            }
+
+            return style;
+        }
+
+        var Effect = {
+
+            // Effect delay
+            duration: 750,
+
+            show: function (e, element) {
+
+                // Disable right click
+                if (e.button === 2) {
+                    return false;
+                }
+
+                var el = element || this;
+
+                // Create ripple
+                var ripple = document.createElement('div');
+                ripple.className = 'waves-ripple';
+                el.appendChild(ripple);
+
+                // Get click coordinate and element witdh
+                var pos = offset(el);
+                var relativeY = (e.pageY - pos.top);
+                var relativeX = (e.pageX - pos.left);
+                var scale = 'scale(' + ((el.clientWidth / 100) * 10) + ')';
+
+                // Support for touch devices
+                if ('touches' in e) {
+                    relativeY = (e.touches[0].pageY - pos.top);
+                    relativeX = (e.touches[0].pageX - pos.left);
+                }
+
+                // Attach data to element
+                ripple.setAttribute('data-hold', Date.now());
+                ripple.setAttribute('data-scale', scale);
+                ripple.setAttribute('data-x', relativeX);
+                ripple.setAttribute('data-y', relativeY);
+
+                // Set ripple position
+                var rippleStyle = {
+                    'top': relativeY + 'px',
+                    'left': relativeX + 'px'
+                };
+
+                ripple.className = ripple.className + ' waves-notransition';
+                ripple.setAttribute('style', convertStyle(rippleStyle));
+                ripple.className = ripple.className.replace('waves-notransition', '');
+
+                // Scale the ripple
+                rippleStyle['-webkit-transform'] = scale;
+                rippleStyle['-moz-transform'] = scale;
+                rippleStyle['-ms-transform'] = scale;
+                rippleStyle['-o-transform'] = scale;
+                rippleStyle.transform = scale;
+                rippleStyle.opacity = '1';
+
+                rippleStyle['-webkit-transition-duration'] = Effect.duration + 'ms';
+                rippleStyle['-moz-transition-duration'] = Effect.duration + 'ms';
+                rippleStyle['-o-transition-duration'] = Effect.duration + 'ms';
+                rippleStyle['transition-duration'] = Effect.duration + 'ms';
+
+                rippleStyle['-webkit-transition-timing-function'] = 'cubic-bezier(0.250, 0.460, 0.450, 0.940)';
+                rippleStyle['-moz-transition-timing-function'] = 'cubic-bezier(0.250, 0.460, 0.450, 0.940)';
+                rippleStyle['-o-transition-timing-function'] = 'cubic-bezier(0.250, 0.460, 0.450, 0.940)';
+                rippleStyle['transition-timing-function'] = 'cubic-bezier(0.250, 0.460, 0.450, 0.940)';
+
+                ripple.setAttribute('style', convertStyle(rippleStyle));
+            },
+
+            hide: function (e) {
+                TouchHandler.touchup(e);
+
+                var el = this;
+                var width = el.clientWidth * 1.4;
+
+                // Get first ripple
+                var ripple = null;
+                var ripples = el.getElementsByClassName('waves-ripple');
+                if (ripples.length > 0) {
+                    ripple = ripples[ripples.length - 1];
+                } else {
+                    return false;
+                }
+
+                var relativeX = ripple.getAttribute('data-x');
+                var relativeY = ripple.getAttribute('data-y');
+                var scale = ripple.getAttribute('data-scale');
+
+                // Get delay beetween mousedown and mouse leave
+                var diff = Date.now() - Number(ripple.getAttribute('data-hold'));
+                var delay = 350 - diff;
+
+                if (delay < 0) {
+                    delay = 0;
+                }
+
+                // Fade out ripple after delay
+                setTimeout(function () {
+                    var style = {
+                        'top': relativeY + 'px',
+                        'left': relativeX + 'px',
+                        'opacity': '0',
+
+                        // Duration
+                        '-webkit-transition-duration': Effect.duration + 'ms',
+                        '-moz-transition-duration': Effect.duration + 'ms',
+                        '-o-transition-duration': Effect.duration + 'ms',
+                        'transition-duration': Effect.duration + 'ms',
+                        '-webkit-transform': scale,
+                        '-moz-transform': scale,
+                        '-ms-transform': scale,
+                        '-o-transform': scale,
+                        'transform': scale,
+                    };
+
+                    ripple.setAttribute('style', convertStyle(style));
+
+                    setTimeout(function () {
+                        try {
+                            el.removeChild(ripple);
+                        } catch (e) {
+                            return false;
+                        }
+                    }, Effect.duration);
+                }, delay);
+            },
+
+            // Little hack to make <input> can perform waves effect
+            wrapInput: function (elements) {
+                for (var a = 0; a < elements.length; a++) {
+                    var el = elements[a];
+
+                    if (el.tagName.toLowerCase() === 'input') {
+                        var parent = el.parentNode;
+
+                        // If input already have parent just pass through
+                        if (parent.tagName.toLowerCase() === 'i' && parent.className.indexOf('waves-effect') !== -1) {
+                            continue;
+                        }
+
+                        // Put element class and style to the specified parent
+                        var wrapper = document.createElement('i');
+                        wrapper.className = el.className + ' waves-input-wrapper';
+
+                        var elementStyle = el.getAttribute('style');
+
+                        if (!elementStyle) {
+                            elementStyle = '';
+                        }
+
+                        wrapper.setAttribute('style', elementStyle);
+
+                        el.className = 'waves-button-input';
+                        el.removeAttribute('style');
+
+                        // Put element as child
+                        parent.replaceChild(wrapper, el);
+                        wrapper.appendChild(el);
+                    }
+                }
+            }
+        };
+
+
+        /**
+         * Disable mousedown event for 500ms during and after touch
+         */
+        var TouchHandler = {
+            /* uses an integer rather than bool so there's no issues with
+             * needing to clear timeouts if another touch event occurred
+             * within the 500ms. Cannot mouseup between touchstart and
+             * touchend, nor in the 500ms after touchend. */
+            touches: 0,
+            allowEvent: function (e) {
+                var allow = true;
+
+                if (e.type === 'touchstart') {
+                    TouchHandler.touches += 1; //push
+                } else if (e.type === 'touchend' || e.type === 'touchcancel') {
+                    setTimeout(function () {
+                        if (TouchHandler.touches > 0) {
+                            TouchHandler.touches -= 1; //pop after 500ms
+                        }
+                    }, 500);
+                } else if (e.type === 'mousedown' && TouchHandler.touches > 0) {
+                    allow = false;
+                }
+
+                return allow;
+            },
+            touchup: function (e) {
+                TouchHandler.allowEvent(e);
+            }
+        };
+
+
+        /**
+         * Delegated click handler for .waves-effect element.
+         * returns null when .waves-effect element not in "click tree"
+         */
+        function getWavesEffectElement(e) {
+            if (TouchHandler.allowEvent(e) === false) {
+                return null;
+            }
+
+            var element = null;
+            var target = e.target || e.srcElement;
+
+            while (target.parentElement !== null) {
+                if (!(target instanceof SVGElement) && target.className.indexOf('waves-effect') !== -1) {
+                    element = target;
+                    break;
+                } else if (target.classList.contains('waves-effect')) {
+                    element = target;
+                    break;
+                }
+                target = target.parentElement;
+            }
+
+            return element;
+        }
+
+        /**
+         * Bubble the click and show effect if .waves-effect elem was found
+         */
+        function showEffect(e) {
+            var element = getWavesEffectElement(e);
+
+            if (element !== null) {
+                Effect.show(e, element);
+
+                if ('ontouchstart' in window) {
+                    element.addEventListener('touchend', Effect.hide, false);
+                    element.addEventListener('touchcancel', Effect.hide, false);
+                }
+
+                element.addEventListener('mouseup', Effect.hide, false);
+                element.addEventListener('mouseleave', Effect.hide, false);
+            }
+        }
+
+        Waves.displayEffect = function (options) {
+            options = options || {};
+
+            if ('duration' in options) {
+                Effect.duration = options.duration;
+            }
+
+            //Wrap input inside <i> tag
+            Effect.wrapInput($$('.waves-effect'));
+
+            if ('ontouchstart' in window) {
+                document.body.addEventListener('touchstart', showEffect, false);
+            }
+
+            document.body.addEventListener('mousedown', showEffect, false);
+        };
+
+        /**
+         * Attach Waves to an input element (or any element which doesn't
+         * bubble mouseup/mousedown events).
+         *   Intended to be used with dynamically loaded forms/inputs, or
+         * where the user doesn't want a delegated click handler.
+         */
+        Waves.attach = function (element) {
+            //FUTURE: automatically add waves classes and allow users
+            // to specify them with an options param? Eg. light/classic/button
+            if (element.tagName.toLowerCase() === 'input') {
+                Effect.wrapInput([element]);
+                element = element.parentElement;
+            }
+
+            if ('ontouchstart' in window) {
+                element.addEventListener('touchstart', showEffect, false);
+            }
+
+            element.addEventListener('mousedown', showEffect, false);
+        };
+
+        window.Waves = Waves;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            Waves.displayEffect();
+        }, false);
+
+    })(window);
+
+</script>
+
+
+<!DOCTYPE html>
+
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- Messages sidebox -->
+    <div class="messages-sidebox messages-scroll bg-body border-right">
+
+        <div class="pt-3 pb-0 px-4">
+            <div class="media align-items-center">
+                <div class="media-body">
+                    <button type="button" class="btn btn-a-primary rounded-pill btn-block waves-effect waves-light">양식작성</button>                   
+                </div>
+                <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-block text-muted text-large font-weight-light pl-4">&times;</a>
+
+            </div>
+            <div class="row mt-3">
+                <div class="col-6 text-center">
+                    <h6 class="font-weight-bold">개인결재선</h6>
+                </div>
+                <div class="col-6 text-center">
+                    <h6 class="font-weight-bold">결재 현황</h6>
+                </div>
+            </div>
+        </div>
+        <hr class="border-light mx-4 mt-0 mb-0">
+
+
+
+
+
+
+
+        <div id="sidenav-1" class="sidenav sidenav-vertical">
+            <ul class="sidenav-inner py-3">
+
+                <li class="sidenav-item">
+                    <a href="javascript:void(0)" class="sidenav-link sidenav-toggle">
+                        <div class="font-weight-bold text-a-primary">개인문서함</div>
+                    </a>
+                    <ul class="sidenav-menu">
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link font-weight-semibold" style="background: #f0f8ff;">
+                                <div>예정함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>결재함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="sidenav-item">
+                    <a href="javascript:void(0)" class="sidenav-link sidenav-toggle">
+                        <div class="font-weight-bold">시스템문서함</div>
+                    </a>
+                    <ul class="sidenav-menu">
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>예정함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>결재함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidenav-item">
+                    <a href="javascript:void(0)" class="sidenav-link sidenav-toggle">
+                        <div class="font-weight-bold">추가문서함</div>
+                    </a>
+                    <ul class="sidenav-menu">
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>예정함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>결재함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                        <li class="sidenav-item">
+                            <a href="javascript:void(0)" class="sidenav-link">
+                                <div>진행함</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+
+
+
+        
+
+    </div>
+    <!-- / Messages sidebox -->
+    <!-- Messages content wrapper -->
+    <div class="d-flex flex-column w-100">
+
+        <!-- Header -->
+        <div class="flex-grow-0">
+
+            <h4 class="media align-items-center font-weight-bold container-p-x py-3 m-0">
+                <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-block align-self-center text-muted px-3 mr-3"><i class="ion ion-md-more"></i></a>
+                <div class="media-body">
+                    <i class="ion ion-ios-filing"></i> &nbsp; 문서관리
+                </div>
+                <input type="text" class="form-control form-control-sm" placeholder="Search..." style="max-width: 10rem;">
+            </h4>
+            <hr class="border-light m-0">
+
+            <!-- Controls -->
+            <div class="media flex-wrap align-items-center py-2 px-3 px-lg-4">
+                <div class="media-body d-flex flex-wrap flex-basis-100 flex-basis-sm-auto">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default borderless text-a-primary md-btn-flat icon-btn messages-tooltip" title="Refresh"><span class="ion ion-md-refresh"></span></button>
+                        <button type="button" class="btn btn-default borderless text-a-primary md-btn-flat icon-btn messages-tooltip" title="Mark as unread"><i class="fe-edit-2"></i></button>
+                    </div>
+
+                </div>
+
+                <div class="text-muted mr-3 ml-auto">1-25 of 91</div>
+
+                <div class="d-flex flex-wrap">
+                    <button type="button" class="btn btn-default borderless md-btn-flat icon-btn text-muted"><i class="ion ion-ios-arrow-back"></i></button>
+                    <button type="button" class="btn btn-default borderless md-btn-flat icon-btn text-muted"><i class="ion ion-ios-arrow-forward"></i></button>
+                </div>
+            </div>
+            
+            <!-- / Controls -->
+
+        </div>
+        <!-- / Header -->
+        <!-- Wrap `.messages-scroll` to properly position scroll area. Remove this wrapper if you don't need scroll -->
+        
+        <div class="flex-grow-0 d-none d-md-block">
+
+            <ul class="list-group mx-2">
+                <li class="list-group-item list-group-item-action d-flex app-thead text-truncate" style="border:none; background-color:whitesmoke">
+                    <div class="col order-md-1 wd-xl-5 wd-lg-5 wd-75 t-sm">
+                        <span class="flex-fill">NO</span>
+                    </div>
+
+                    <div class="col d-flex align-items-center order-md-2 wd-xl-5 wd-lg-5 m-24">
+                        형식
+                    </div>
+
+
+                    <div class="col order-md-4 wd-xl-10 wd-lg-10 wd-20 t-sm">
+                        <span class="flex-fill">작성부서</span>
+
+                    </div>
+
+                    <div class="col order-md-5 wd-xl-8 wd-lg-8 wd-10 t-sm">
+                        <span class="flex-fill">작성자</span>
+
+                    </div>
+
+                    <div class="col order-md-last wd-xl-8 wd-lg-8 wd-10 t-sm">조회수</div>
+
+                    <div class="w-100 pt-1 d-block d-md-none"></div>
+                    <div class="d-block d-md-none"></div>
+
+                    <div class="subject col order-md-3 wd-xl-55 wd-lg-53 wd-55 t-lg ml-24">
+                        <span>제목</span>
+                    </div>
+
+                    <div class="col order-md-5 wd-xl-9 wd-lg-10 wd-20">
+                        <span class="flex-fill">작성일</span>
+
+                    </div>
+
+                </li>
+
+
+            </ul>
+        </div>
+
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="messages-content messages-scroll">
+                <ul class="list-group  messages-list mx-2">
+
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-92 docu-s">
+                            <img src="~/images/xls-icon.svg" width="20" />
+                            <span class="text-dark ml-2 d-sm-none d-xl-none d-lg-none d-md-none t-lg">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </span>
+                        </div>
+
+                        <div class="col d-none d-sm-block order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">프로덕트 커뮤니케이션팀</span>
+                        </div>
+
+                        <div class="col d-none d-sm-block order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col d-none d-sm-block order-sm-3 wd-xl-55 wd-lg-53 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-60 t-sm ml-24 docu">
+                            <span class="flex-fill d-sm-none d-md-none d-lg-none d-xl-none mr-3">프로덕트 커뮤니케이션팀</span>
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-25 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/pdf-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">인사총무팀</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                8-품보팀 주간 착하품질현황 및 고객불만현황(1월 2주)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/doc-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">경영혁신실</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/zip-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">제조혁신팀</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/jpg-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">프로덕트 커뮤니케이션팀</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/ppt-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">프로덕트 커뮤니케이션팀</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/xls-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col d-none d-sm-block order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">프로덕트 커뮤니케이션팀</span>
+                        </div>
+
+                        <div class="col d-none d-sm-block order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/pdf-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">인사총무팀</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                8-품보팀 주간 착하품질현황 및 고객불만현황(1월 2주)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/doc-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">경영혁신실</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/zip-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">제조혁신팀</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/jpg-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">프로덕트 커뮤니케이션팀</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-group-item-action b-t-1 d-flex text-dark">
+
+                        <div class="col d-flex align-items-center order-sm-1 wd-xl-5 wd-lg-5 wd-5 m-24">
+                            <span class="flex-fill">1</span>
+                        </div>
+
+                        <div class="col order-sm-2 wd-xl-5 wd-lg-5 wd-58">
+                            <img src="~/images/ppt-icon.svg" width="20" />
+
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-10 wd-lg-10 wd-20 t-sm-muted docu">
+                            <span class="flex-fill">프로덕트 커뮤니케이션팀</span>
+                        </div>
+
+                        <div class="col order-sm-last wd-xl-8 wd-lg-8 wd-12 t-sm">
+                            <span class="flex-fill">7777</span>
+                        </div>
+
+
+                        <div class="subject col order-sm-3 wd-xl-55 wd-lg-53 wd-58 t-lg ml-24 docu">
+                            <a href="pages-게시판본문.html" class="text-dark">
+                                7-자사_신상품 기획개발 회의자료(3월 4주차)
+                            </a>
+                        </div>
+
+                        <div class="col order-sm-4 wd-xl-8 wd-lg-8 wd-20 t-sm docu">
+                            <span class="flex-fill">김현국</span>
+                        </div>
+                        <div class="col order-sm-5 wd-xl-9 wd-lg-10 wd-12 docu">
+                            <span class="flex-fill">20-01-07</span>
+                        </div>
+                    </li>
+
+
+
+
+
+
+
+
+
+
+                </ul>
+
+
+            </div>
+        </div>
+
+    </div>
+
+</div><!-- / .messages-wrapper -->

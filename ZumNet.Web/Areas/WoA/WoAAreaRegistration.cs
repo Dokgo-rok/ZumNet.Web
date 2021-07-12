@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 
 namespace ZumNet.Web.Areas.WoA
 {
@@ -17,7 +18,8 @@ namespace ZumNet.Web.Areas.WoA
             context.MapRoute(
                 "WoA_default",
                 "WoA/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { action = "Index", id = UrlParameter.Optional },
+                new String[] { "ZumNet.Web.Areas.WoA.Controllers" }
             );
         }
     }

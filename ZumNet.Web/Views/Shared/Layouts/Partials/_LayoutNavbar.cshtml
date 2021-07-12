@@ -30,7 +30,7 @@
         //string sQuery = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"130\",ctalias:\"linksite\",ttl:\"링크사이트\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
 
         sb.Append("<div class=\"dropdown-menu dropdown-menu-right mt-0 py-0\" style=\"min-width: 26rem; width: 26rem\">");
-        sb.AppendFormat("<div class=\"bg-info text-center py-1\"><a class=\"dropdown-item z-wave data-navmenu text-white\" href=\"/LinkSite?qi={0}\">{1}</a></div>", sLinkSiteQuery[1], sLinkSiteQuery[0]);
+        sb.AppendFormat("<div class=\"bg-teal text-center py-1\"><a class=\"dropdown-item z-wave data-navmenu text-white\" href=\"/LinkSite?qi={0}\">{1}</a></div>", sLinkSiteQuery[1], sLinkSiteQuery[0]);
         sb.Append("<div class=\"list-group\">");
 
         Dictionary<string, string> dic = new Dictionary<string, string>(); //해시테이블 보다 형식을 규정해야 함
@@ -165,7 +165,7 @@
                 @if (@ViewBag.ShortLink != null && ViewBag.ShortLink.Count > 0)
                 {
                     <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
-                        <div class="bg-info text-center text-white py-2">바로가기 메뉴</div>
+                        <div class="bg-teal text-center text-white py-2">바로가기 메뉴</div>
                         <div class="list-group list-group-flush">
                             @foreach (DataRow row in ViewBag.ShortLink)
                             {

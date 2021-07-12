@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 
 namespace ZumNet.Web.Areas.TnC
 {
@@ -23,7 +24,8 @@ namespace ZumNet.Web.Areas.TnC
             context.MapRoute(
                 "TnC_default",
                 "TnC/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { action = "Index", id = UrlParameter.Optional },
+                new String[] { "ZumNet.Web.Areas.TnC.Controllers" }
             );
         }
     }

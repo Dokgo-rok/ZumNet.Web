@@ -30,119 +30,119 @@
 
     @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin")
     {
-        if (currentPage.StartsWith("Menu"))
+        if (currentPage.ToLower().StartsWith("menu"))
         {
             <!-- 메뉴 설정 -->
-            <li class="sidenav-item@(currentPage.StartsWith("Menu") ? " active open" : "")">
+            <li class="sidenav-item@(currentPage.ToLower().StartsWith("menu") ? " active open" : "")">
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>메뉴 설정</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage == "Menu/Index" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "menu/index" ? " active" : "")">
                         <a href="@Url.Action("Index", "Menu")" class="sidenav-link"><div>메뉴 목록</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Menu/Setting" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "menu/setting" ? " active" : "")">
                         <a href="@Url.Action("Setting", "Menu")" class="sidenav-link"><div>메뉴 구성</div></a>
                     </li>
                 </ul>
             </li>
 
             <!-- 메뉴별 폴더 및 목록 관리 -->
-            <li class="sidenav-item@(currentPage.StartsWith("Menu/Option") ? " active open" : "")">
+            <li class="sidenav-item@(currentPage.ToLower().StartsWith("menu/option") ? " active open" : "")">
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>메뉴별 관리</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage == "Menu/Option" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "menu/option" ? " active" : "")">
                         <a href="@Url.Action("Index", "Menu")" class="sidenav-link"><div>메뉴 목록</div></a>
                     </li>
                 </ul>
             </li>
         }
-        else if (currentPage.StartsWith("App") || currentPage.StartsWith("Proc") || currentPage.StartsWith("EA") || currentPage.StartsWith("Interface"))
+        else if (currentPage.ToLower().StartsWith("app") || currentPage.ToLower().StartsWith("proc") || currentPage.ToLower().StartsWith("ea") || currentPage.ToLower().StartsWith("interface"))
         {
             <!-- 전자결재 양식 관리 -->
-            <li class="sidenav-item@(currentPage.StartsWith("App") ? " active open" : "")">
+            <li class="sidenav-item@(currentPage.ToLower().StartsWith("app") ? " active open" : "")">
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>양식 관리</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage == "App/Index" ? " active" : "")">
-                        <a href="@Url.Action("Index", "App")" class="sidenav-link"><div>문서 목록</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "app/index" ? " active" : "")">
+                        <a href="@Url.Action("Index", "App")" class="sidenav-link"><div>결재 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "App/Class" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "app/class" ? " active" : "")">
                         <a href="@Url.Action("Class", "App")" class="sidenav-link"><div>분류 관리</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "App/Mgr" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "app/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "App")" class="sidenav-link"><div>양식 관리</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "App/Charge" ? " active" : "")">
-                        <a href="@Url.Action("Charge", "App")" class="sidenav-link"><div>양식별 담당 설정</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "app/charge" ? " active" : "")">
+                        <a href="@Url.Action("Charge", "App")" class="sidenav-link"><div>양식 담당 관리</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "App/Option" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "app/option" ? " active" : "")">
                         <a href="@Url.Action("Option", "App")" class="sidenav-link"><div>양식별 부가 설정</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "App/Notice" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "app/notice" ? " active" : "")">
                         <a href="@Url.Action("Notice", "App")" class="sidenav-link"><div>양식별 알림 설정</div></a>
                     </li>
                 </ul>
             </li>
 
             <!-- 전자결재 프로세스 관리 -->
-            <li class="sidenav-item@(currentPage.StartsWith("Proc") ? " active open" : "")">
+            <li class="sidenav-item@(currentPage.ToLower().StartsWith("proc") ? " active open" : "")">
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>프로세스 관리</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage == "Proc/Index" ? " active" : "")">
-                        <a href="@Url.Action("Index", "Proc")" class="sidenav-link"><div>프로세스</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "proc/index" ? " active" : "")">
+                        <a href="@Url.Action("Index", "Proc")" class="sidenav-link"><div>프로세스 관리</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Proc/Import" ? " active" : "")">
-                        <a href="@Url.Action("Class", "Proc")" class="sidenav-link"><div>정보(XML) 가져오기</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "proc/import" ? " active" : "")">
+                        <a href="@Url.Action("Class", "Proc")" class="sidenav-link"><div>프로세스(XML) 가져오기</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Proc/Mgr" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "proc/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "Proc")" class="sidenav-link"><div>서비스 / 선결 모드 설정</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Proc/Mgr" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "proc/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "Proc")" class="sidenav-link"><div>서비스 처리 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Proc/Mgr" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "proc/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "Proc")" class="sidenav-link"><div>처리 기록(WorkItem)</div></a>
                     </li>
                 </ul>
             </li>
 
             <!-- 전자결재 부가 설정 -->
-            <li class="sidenav-item@(currentPage.StartsWith("EA") ? " active open" : "")">
+            <li class="sidenav-item@(currentPage.ToLower().StartsWith("ea") ? " active open" : "")">
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>결재 부가 설정</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage == "EA/Charge" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/charge" ? " active" : "")">
                         <a href="@Url.Action("Charge", "EA")" class="sidenav-link"><div>문서 수신 정책</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "EA/Class" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/class" ? " active" : "")">
                         <a href="@Url.Action("Class", "EA")" class="sidenav-link"><div>문서 수신담당자</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "EA/Mgr" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "EA")" class="sidenav-link"><div>문서함 공유 설정</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "EA/Mgr" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "EA")" class="sidenav-link"><div>코드 및 상태값  설정</div></a>
                     </li>
                 </ul>
             </li>
 
             <!-- 프로세스 조건 처리 현황 -->
-            <li class="sidenav-item@(currentPage.StartsWith("Interface") ? " active open" : "")">
+            <li class="sidenav-item@(currentPage.ToLower().StartsWith("interface") ? " active open" : "")">
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>연동 처리 현황</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage == "Interface/Charge" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "interface/charge" ? " active" : "")">
                         <a href="@Url.Action("Charge", "Interface")" class="sidenav-link"><div>문서 이관 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Interface/Class" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "interface/class" ? " active" : "")">
                         <a href="@Url.Action("Class", "Interface")" class="sidenav-link"><div>ERP 연동 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Interface/Mgr" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "interface/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "Interface")" class="sidenav-link"><div>메일 발송 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Interface/Mgr" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "interface/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "Interface")" class="sidenav-link"><div>기타 현황</div></a>
                     </li>
                 </ul>
@@ -151,21 +151,21 @@
         else
         {
             <!-- 포탈, 메뉴 관리 -->
-            <li class="sidenav-item@(currentPage.StartsWith("Dashboard") ? " active open" : "")">
+            <li class="sidenav-item@(currentPage.ToLower().StartsWith("dashboard") ? " active open" : "")">
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon ion ion-md-speedometer"></i><div>포탈 관리</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage == "Dashboard/Index" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "dashboard/index" ? " active" : "")">
                         <a href="@Url.Action("Index", "Dashboard")" class="sidenav-link"><div>포탈 구성</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Dashboard" || currentPage == "Dashboard/Webpart" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "dashboard/webpart" ? " active" : "")">
                         <a href="@Url.Action("Webpart", "Dashboard")" class="sidenav-link"><div>웹파트 관리</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Dashboard" || currentPage == "Dashboard/Code" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "dashboard/code" ? " active" : "")">
                         <a href="@Url.Action("Code", "Dashboard")" class="sidenav-link"><div>코드 관리</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Dashboard" || currentPage == "Dashboard/Policy" ? " active" : "")">
-                        <a href="@Url.Action("Policy", "Dashboard")" class="sidenav-link"><div>암호 정책</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "dashboard/policy" ? " active" : "")">
+                        <a href="@Url.Action("Policy", "Dashboard")" class="sidenav-link"><div>정책 설정</div></a>
                     </li>
                 </ul>
             </li>
@@ -173,20 +173,20 @@
             <li class="sidenav-divider mb-1"></li>
 
             <!-- 이벤트 로그 -->
-            <li class="sidenav-item@(currentPage.StartsWith("Event") ? " active open" : "")">
+            <li class="sidenav-item@(currentPage.ToLower().StartsWith("event") ? " active open" : "")">
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-history"></i><div>이벤트 로그</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage == "Event/Index" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "event/index" ? " active" : "")">
                         <a href="@Url.Action("Index", "Event")" class="sidenav-link"><div>접속이력(근무정보)</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Event/Logon" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "event/logon" ? " active" : "")">
                         <a href="@Url.Action("Logon", "Event")" class="sidenav-link"><div>로그온 정보</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Event/Write" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "event/write" ? " active" : "")">
                         <a href="@Url.Action("Write", "Event")" class="sidenav-link"><div>문서 등록 로그</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage == "Event/View" ? " active" : "")">
+                    <li class="sidenav-item@(currentPage.ToLower() == "event/view" ? " active" : "")">
                         <a href="@Url.Action("View", "Event")" class="sidenav-link"><div>문서 조회 로그</div></a>
                     </li>
                 </ul>
@@ -194,27 +194,27 @@
         }
     }
 
-    @if (Session["WoA"].ToString() != "" && currentPage.StartsWith("Dashboard"))
+    @if (Session["WoA"].ToString() != "" && (currentPage.ToLower().StartsWith("dashboard") || currentPage.ToLower().StartsWith("organ")))
     {
         <!-- 조직 관리 -->
-        <li class="sidenav-item@(currentPage.StartsWith("Organ") ? " active open" : "")">
+        <li class="sidenav-item@(currentPage.ToLower().StartsWith("organ") ? " active open" : "")">
             <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-user-friends"></i><div>조직 관리</div></a>
 
             <ul class="sidenav-menu">
-                <li class="sidenav-item@(currentPage == "Organ/Index" ? " active" : "")">
-                    <a href="@Url.Action("Index", "Organ")" class="sidenav-link"><div>사용자</div></a>
+                <li class="sidenav-item@(currentPage.ToLower() == "organ/index" ? " active" : "")">
+                    <a href="@Url.Action("Index", "Organ")" class="sidenav-link"><div>사용자 관리</div></a>
                 </li>
-                <li class="sidenav-item@(currentPage == "Organ/Dept" ? " active" : "")">
-                    <a href="@Url.Action("Dept", "Organ")" class="sidenav-link"><div>부서 목록</div></a>
+                <li class="sidenav-item@(currentPage.ToLower() == "organ/dept" ? " active" : "")">
+                    <a href="@Url.Action("Dept", "Organ")" class="sidenav-link"><div>부서 관리</div></a>
                 </li>
-                <li class="sidenav-item@(currentPage == "Organ/Map" ? " active" : "")">
+                <li class="sidenav-item@(currentPage.ToLower() == "organ/map" ? " active" : "")">
                     <a href="@Url.Action("Map", "Organ")" class="sidenav-link"><div>조직도</div></a>
                 </li>
-                <li class="sidenav-item@(currentPage == "Organ/Group" ? " active" : "")">
+                <li class="sidenav-item@(currentPage.ToLower() == "organ/group" ? " active" : "")">
                     <a href="@Url.Action("Group", "Organ")" class="sidenav-link"><div>기타 그룹</div></a>
                 </li>
-                <li class="sidenav-item@(currentPage == "Organ/Grade" ? " active" : "")">
-                    <a href="@Url.Action("Grade", "Organ")" class="sidenav-link"><div>직급 관리</div></a>
+                <li class="sidenav-item@(currentPage.ToLower() == "organ/grade" ? " active" : "")">
+                    <a href="@Url.Action("Grade", "Organ")" class="sidenav-link"><div>직위/직급 관리</div></a>
                 </li>
             </ul>
         </li>

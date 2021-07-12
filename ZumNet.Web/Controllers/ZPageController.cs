@@ -37,6 +37,20 @@ namespace ZumNet.Web.Controllers
             return View();
         }
 
+        public ActionResult Board()
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+
+            return View();
+        }
+
+        public ActionResult Docu()
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+
+            return View();
+        }
+
         public ActionResult Organization_chart()
         {
             string rt = Bc.CtrlHandler.PageInit(this, false);

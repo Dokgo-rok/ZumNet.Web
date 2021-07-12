@@ -23,7 +23,18 @@
     }
 }
 
-@media only all and (max-width:576px) {
+@media only all and (max-width:767px) {
+    @for $i from 1 through 99 {
+        .wd-md-#{$i} {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 $i*1%;
+            flex: 0 0 $i*1%;
+            max-width: $i*1%;
+        }
+    }
+}
+
+@media only all and (max-width:575px) {
     @for $i from 1 through 99 {
         .wd-#{$i} {
             -webkit-box-flex: 0;
@@ -33,3 +44,13 @@
         }
     }
 }
+
+@media only all and (max-width:575px) {
+    @for $i from 1 through 99 {
+        .m-l-#{$i} {
+            margin-left: $i*1px;
+        }
+    }
+}
+
+
