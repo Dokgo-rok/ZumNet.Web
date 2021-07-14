@@ -1,7 +1,9 @@
 ﻿@model ZumNet.Web.Models.AccountViewModels
 @{
-    ViewBag.Title = "로그인";
+    ViewBag.Title = Resources.Global.ttl_Login;
     Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+
+    Response.Write("lang => " + Request.UserLanguages[0]);
 }
 
 @section Styles {
@@ -78,7 +80,7 @@
                             </label>
                         </div>
                         <div class="form-group text-center">
-                            <button class="btn btn-primary btn-block" type="submit">로그인</button>
+                            <button class="btn btn-primary btn-block" type="submit">@Resources.Global.btn_Login</button>
                         </div>
                     }
                     <!-- / Form -->
