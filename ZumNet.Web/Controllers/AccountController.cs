@@ -58,13 +58,13 @@ namespace ZumNet.Web.Controllers
             }
             else
             {
-                if (result == "NOUSER") strDesc = Resources.Global.msg_Auth_NOUSER; //"사용자 정보가 없습니다.";
-                else if (result == "FAIL") strDesc = Resources.Global.msg_Auth_FAIL; //"아이디나 암호가 틀렸거나 잘못된 경로로 접근했습니다.";
-                else if (result == "SYSDOWN") strDesc = Resources.Global.msg_Auth_SYSDOWN; //"서비스가 정지 되었습니다. 관리자에게 문의하세요";
-                else if (result == "NOACT") strDesc = Resources.Global.msg_Auth_NOACT; //"사용이 일시 정지 되었습니다. 관리자에게 문의하세요.";
-                else if (result == "DBLACCOUNT") strDesc = Resources.Global.msg_Auth_DBLACCOUNT; //"계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.";
+                if (result == "NOUSER") strDesc = Resources.Global.Auth_NoUser; //"사용자 정보가 없습니다.";
+                else if (result == "FAIL") strDesc = Resources.Global.Auth_Fail; //"아이디나 암호가 틀렸거나 잘못된 경로로 접근했습니다.";
+                else if (result == "SYSDOWN") strDesc = Resources.Global.Auth_SysDown; //"서비스가 정지 되었습니다. 관리자에게 문의하세요";
+                else if (result == "NOACT") strDesc = Resources.Global.Auth_UseStop; //"사용이 일시 정지 되었습니다. 관리자에게 문의하세요.";
+                else if (result == "DBLACCOUNT") strDesc = Resources.Global.Auth_DoubleAccount; //"계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.";
                 //else if (result == "NODB") strDesc = "존재하지 않는 아이디 이거나 사용 중지된 아이디 입니다.";
-                else strDesc = Resources.Global.msg_Auth_FAULT; //"잘못된 로그인 시도입니다.";
+                else strDesc = Resources.Global.Auth_Fault; //"잘못된 로그인 시도입니다.";
 
                 ModelState.AddModelError("", strDesc);
                 return View(model);

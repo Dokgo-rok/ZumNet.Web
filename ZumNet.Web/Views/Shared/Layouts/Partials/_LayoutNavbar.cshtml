@@ -150,7 +150,7 @@
                 </li>*@
 
             <li class="nav-item mr-lg-2">
-                <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="전화번호 찾기">
+                <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.FindPhoneNum">
                     <i class="fe-phone"></i>
                 </a>
             </li>
@@ -170,14 +170,14 @@
             </li>
 
             <li class="nav-item dropdown mr-lg-2">
-                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="바로가기 메뉴">
+                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.Shortcut">
                     <i class="fe-navigation"></i>
                     @*<span>@ViewBag.ShoutLnk.Count.ToString(),  @(ViewBag.DeptList != null ? ViewBag.DeptList.Count.ToString() : "")</span>*@
                 </a>
                 @if (@ViewBag.ShortLink != null && ViewBag.ShortLink.Count > 0)
                 {
                     <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
-                        <div class="bg-teal text-center text-white py-2">바로가기 메뉴</div>
+                        <div class="bg-teal text-center text-white py-2">@Resources.Global.Shortcut</div>
                         <div class="list-group list-group-flush">
                             @foreach (DataRow row in ViewBag.ShortLink)
                             {
@@ -203,23 +203,27 @@
             </li>
 
             <li class="nav-item mr-lg-2">
-                <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="알림">
+                <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Alarm">
                     <i class="fe-bell"></i>
                     <span class="badge badge-pill badge-blue indicator mt-3">10</span>
                 </a>
             </li>
 
             <li class="nav-item dropdown">
-                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="사용 언어 설정">
+                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.LangSet">
                     @*<i class="fe-navigation"></i>*@
-                    <span class="btn btn-indigo btn-sm px-1" style="width: 26px">@sCurrentLocale.Substring(0, 2).ToUpper()</span>
+                    <span class="btn btn-indigo btn-sm px-1" style="width: 28px">@sCurrentLocale.Substring(0, 2).ToUpper()</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
                     <div class="list-group list-group-flush">
 
-                        @for(int i = 0; i < vLocale.GetLength(0); i++)
+                        @for (int i = 0; i < vLocale.GetLength(0); i++)
                         {
-                            if (!vLocale[i, 0].Contains(sCurrentLocale))
+                            if (vLocale[i, 0].Contains(sCurrentLocale))
+                            {
+                                <a class="dropdown-item list-group-item list-group-item-action disabled" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
+                            }
+                            else
                             {
                                 <a class="dropdown-item list-group-item list-group-item-action" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
                             }
@@ -236,19 +240,19 @@
                     <span class="px-0 mr-lg-0 ml-2 ml-lg-1">@Session["URName"]</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right mt-0">
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-user mr-2"></i>내 정보</a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-clock mr-2"></i>근무상태</a>
+                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-user mr-2"></i>@Resources.Global.MyInfo</a>
+                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-clock mr-2"></i>@Resources.Global.WorkCond</a>
                     <a class="dropdown-item" href="@Url.Action("Index", "Organ", new { Area = "", qi = @vOrganQuery[1] })"><i class="fe-users mr-2"></i>@vOrganQuery[0]</a>
                     <div class="dropdown-divider"></div>
                     @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin") //fas fa-tools, fe-wifi
                     {
-                        <a class="dropdown-item" href="/WoA/Dashboard"><i class="fe-settings mr-2"></i>관리툴</a>
+                    <a class="dropdown-item" href="/WoA/Dashboard"><i class="fe-settings mr-2"></i>@Resources.Global.MgtTool</a>
                     }
                     else if (Session["WoA"].ToString() == "orgadmin")
                     {
-                        <a class="dropdown-item" href="/WoA/Organ"><i class="fe-settings mr-2"></i>조직관리자</a>
+                    <a class="dropdown-item" href="/WoA/Organ"><i class="fe-settings mr-2"></i>@Resources.Global.OrganMgr</a>
                     }
-                    <a class="dropdown-item" href="/Account/Logout"><i class="fe-log-out mr-2"></i>로그아웃</a>
+                    <a class="dropdown-item" href="/Account/Logout"><i class="fe-log-out mr-2"></i>@Resources.Global.Logout</a>
                 </div>
             </li>
         </ul>

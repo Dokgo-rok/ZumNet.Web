@@ -61,119 +61,209 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Log In과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Alarm과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string btn_Login {
+        public static string Alarm {
             get {
-                return ResourceManager.GetString("btn_Login", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Login ID과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string lbl_LoginId {
-            get {
-                return ResourceManager.GetString("lbl_LoginId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Password과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string lbl_Password {
-            get {
-                return ResourceManager.GetString("lbl_Password", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Save ID과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string lbl_RememberMe {
-            get {
-                return ResourceManager.GetString("lbl_RememberMe", resourceCulture);
+                return ResourceManager.GetString("Alarm", resourceCulture);
             }
         }
         
         /// <summary>
         ///   One or more accounts exist. Please contact the administrator.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string msg_Auth_DBLACCOUNT {
+        public static string Auth_DoubleAccount {
             get {
-                return ResourceManager.GetString("msg_Auth_DBLACCOUNT", resourceCulture);
+                return ResourceManager.GetString("Auth_DoubleAccount", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Wrong ID or password, or access through the wrong path.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string msg_Auth_FAIL {
+        public static string Auth_Fail {
             get {
-                return ResourceManager.GetString("msg_Auth_FAIL", resourceCulture);
+                return ResourceManager.GetString("Auth_Fail", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Invalid login attempt.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string msg_Auth_FAULT {
+        public static string Auth_Fault {
             get {
-                return ResourceManager.GetString("msg_Auth_FAULT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Usage has been suspended. Please contact the administrator.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string msg_Auth_NOACT {
-            get {
-                return ResourceManager.GetString("msg_Auth_NOACT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   You do not have permission.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string msg_Auth_NOAUTH {
-            get {
-                return ResourceManager.GetString("msg_Auth_NOAUTH", resourceCulture);
+                return ResourceManager.GetString("Auth_Fault", resourceCulture);
             }
         }
         
         /// <summary>
         ///   ID does not exist.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string msg_Auth_NODB {
+        public static string Auth_NoDB {
             get {
-                return ResourceManager.GetString("msg_Auth_NODB", resourceCulture);
+                return ResourceManager.GetString("Auth_NoDB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   You do not have permission.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Auth_NoPermission {
+            get {
+                return ResourceManager.GetString("Auth_NoPermission", resourceCulture);
             }
         }
         
         /// <summary>
         ///   No user information.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string msg_Auth_NOUSER {
+        public static string Auth_NoUser {
             get {
-                return ResourceManager.GetString("msg_Auth_NOUSER", resourceCulture);
+                return ResourceManager.GetString("Auth_NoUser", resourceCulture);
             }
         }
         
         /// <summary>
         ///   The service has been stopped. Please contact the administrator.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string msg_Auth_SYSDOWN {
+        public static string Auth_SysDown {
             get {
-                return ResourceManager.GetString("msg_Auth_SYSDOWN", resourceCulture);
+                return ResourceManager.GetString("Auth_SysDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Usage has been suspended. Please contact the administrator.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Auth_UseStop {
+            get {
+                return ResourceManager.GetString("Auth_UseStop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Find a phone number과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string FindPhoneNum {
+            get {
+                return ResourceManager.GetString("FindPhoneNum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Home과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Home {
+            get {
+                return ResourceManager.GetString("Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Language settings과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string LangSet {
+            get {
+                return ResourceManager.GetString("LangSet", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Log In과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string ttl_Login {
+        public static string Login {
             get {
-                return ResourceManager.GetString("ttl_Login", resourceCulture);
+                return ResourceManager.GetString("Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Login ID과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string LoginId {
+            get {
+                return ResourceManager.GetString("LoginId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Log Out과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Logout {
+            get {
+                return ResourceManager.GetString("Logout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Management Tool과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MgtTool {
+            get {
+                return ResourceManager.GetString("MgtTool", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   My Info과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MyInfo {
+            get {
+                return ResourceManager.GetString("MyInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Organization Mgr과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string OrganMgr {
+            get {
+                return ResourceManager.GetString("OrganMgr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Password과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Portal과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Portal {
+            get {
+                return ResourceManager.GetString("Portal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Save ID과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string RememberMe {
+            get {
+                return ResourceManager.GetString("RememberMe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Shortcut menu과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Shortcut {
+            get {
+                return ResourceManager.GetString("Shortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Working Condition과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WorkCond {
+            get {
+                return ResourceManager.GetString("WorkCond", resourceCulture);
             }
         }
     }

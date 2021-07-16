@@ -27,7 +27,6 @@ namespace ZumNet.Web.Filter
                 else
                 {
                     culture = ConfigurationManager.AppSettings["DefaultLocale"];  //"ko-KR";    
-
                 }
             }
 

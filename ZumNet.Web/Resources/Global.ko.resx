@@ -117,43 +117,73 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="btn_Login" xml:space="preserve">
-    <value>로그인</value>
+  <data name="Alarm" xml:space="preserve">
+    <value>알림</value>
   </data>
-  <data name="lbl_LoginId" xml:space="preserve">
-    <value>로그인 아이디</value>
-  </data>
-  <data name="lbl_Password" xml:space="preserve">
-    <value>비밀번호</value>
-  </data>
-  <data name="lbl_RememberMe" xml:space="preserve">
-    <value>아이디 저장</value>
-  </data>
-  <data name="msg_Auth_DBLACCOUNT" xml:space="preserve">
+  <data name="Auth_DoubleAccount" xml:space="preserve">
     <value>계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.</value>
   </data>
-  <data name="msg_Auth_FAIL" xml:space="preserve">
+  <data name="Auth_Fail" xml:space="preserve">
     <value>아이디나 암호가 틀렸거나 잘못된 경로로 접근했습니다.</value>
   </data>
-  <data name="msg_Auth_FAULT" xml:space="preserve">
+  <data name="Auth_Fault" xml:space="preserve">
     <value>잘못된 로그인 시도입니다.</value>
   </data>
-  <data name="msg_Auth_NOACT" xml:space="preserve">
-    <value>사용이 일시 정지 되었습니다. 관리자에게 문의 바랍니다.</value>
-  </data>
-  <data name="msg_Auth_NOAUTH" xml:space="preserve">
-    <value>권한이 없습니다.</value>
-  </data>
-  <data name="msg_Auth_NODB" xml:space="preserve">
+  <data name="Auth_NoDB" xml:space="preserve">
     <value>존재하지 않는 아이디입니다.</value>
   </data>
-  <data name="msg_Auth_NOUSER" xml:space="preserve">
+  <data name="Auth_NoPermission" xml:space="preserve">
+    <value>권한이 없습니다.</value>
+  </data>
+  <data name="Auth_NoUser" xml:space="preserve">
     <value>사용자 정보가 없습니다.</value>
   </data>
-  <data name="msg_Auth_SYSDOWN" xml:space="preserve">
+  <data name="Auth_SysDown" xml:space="preserve">
     <value>서비스가 정지 되었습니다. 관리자에게 문의 바랍니다.</value>
   </data>
-  <data name="ttl_Login" xml:space="preserve">
+  <data name="Auth_UseStop" xml:space="preserve">
+    <value>사용이 일시 정지 되었습니다. 관리자에게 문의 바랍니다.</value>
+  </data>
+  <data name="FindPhoneNum" xml:space="preserve">
+    <value>전화번호 찾기</value>
+  </data>
+  <data name="Home" xml:space="preserve">
     <value>로그인</value>
+  </data>
+  <data name="LangSet" xml:space="preserve">
+    <value>언어 설정</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>로그인</value>
+  </data>
+  <data name="LoginId" xml:space="preserve">
+    <value>로그인 아이디</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>로그아웃</value>
+  </data>
+  <data name="MgtTool" xml:space="preserve">
+    <value>관리툴</value>
+  </data>
+  <data name="MyInfo" xml:space="preserve">
+    <value>내 정보</value>
+  </data>
+  <data name="OrganMgr" xml:space="preserve">
+    <value>조직관리자</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>비밀번호</value>
+  </data>
+  <data name="Portal" xml:space="preserve">
+    <value>포탈</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>아이디 저장</value>
+  </data>
+  <data name="Shortcut" xml:space="preserve">
+    <value>바로가기 메뉴</value>
+  </data>
+  <data name="WorkCond" xml:space="preserve">
+    <value>근무상태</value>
   </data>
 </root>
