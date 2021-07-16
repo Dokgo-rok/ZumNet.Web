@@ -117,8 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdminTool" xml:space="preserve">
+    <value>관리툴</value>
+  </data>
   <data name="Alarm" xml:space="preserve">
     <value>알림</value>
+  </data>
+  <data name="AttendWork" xml:space="preserve">
+    <value>출근</value>
   </data>
   <data name="Auth_DoubleAccount" xml:space="preserve">
     <value>계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.</value>
@@ -147,11 +153,20 @@
   <data name="FindPhoneNum" xml:space="preserve">
     <value>전화번호 찾기</value>
   </data>
+  <data name="GotoWork" xml:space="preserve">
+    <value>출근하기</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>로그인</value>
   </data>
   <data name="LangSet" xml:space="preserve">
     <value>언어 설정</value>
+  </data>
+  <data name="LeaveTime" xml:space="preserve">
+    <value>퇴근시간</value>
+  </data>
+  <data name="LeaveWork" xml:space="preserve">
+    <value>퇴근</value>
   </data>
   <data name="Login" xml:space="preserve">
     <value>로그인</value>
@@ -162,17 +177,23 @@
   <data name="Logout" xml:space="preserve">
     <value>로그아웃</value>
   </data>
-  <data name="MgtTool" xml:space="preserve">
-    <value>관리툴</value>
-  </data>
   <data name="MyInfo" xml:space="preserve">
     <value>내 정보</value>
+  </data>
+  <data name="OffWork" xml:space="preserve">
+    <value>퇴근하기</value>
   </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>조직관리자</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>비밀번호</value>
+  </data>
+  <data name="PlanLeaveTime" xml:space="preserve">
+    <value>계획퇴근시간</value>
+  </data>
+  <data name="PlanWorktTime" xml:space="preserve">
+    <value>계획출근시간</value>
   </data>
   <data name="Portal" xml:space="preserve">
     <value>포탈</value>
@@ -183,7 +204,13 @@
   <data name="Shortcut" xml:space="preserve">
     <value>바로가기 메뉴</value>
   </data>
+  <data name="Skip" xml:space="preserve">
+    <value>건너뛰기</value>
+  </data>
   <data name="WorkCond" xml:space="preserve">
     <value>근무상태</value>
+  </data>
+  <data name="WorktTime" xml:space="preserve">
+    <value>출근시간</value>
   </data>
 </root>

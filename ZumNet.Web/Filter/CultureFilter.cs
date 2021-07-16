@@ -35,7 +35,7 @@ namespace ZumNet.Web.Filter
                 Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(culture);
                 Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture;
             }
-            ZumNet.Framework.Log.Logging.WriteDebug(HttpContext.Current.Request.CurrentExecutionFilePath + " => " + DateTime.Now.ToString() + " : " + culture + Environment.NewLine);
+            //ZumNet.Framework.Log.Logging.WriteDebug(HttpContext.Current.Request.CurrentExecutionFilePath + " => " + DateTime.Now.ToString() + " : " + culture + Environment.NewLine);
         }
     }
 }

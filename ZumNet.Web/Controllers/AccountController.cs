@@ -46,15 +46,28 @@ namespace ZumNet.Web.Controllers
                 result = auth.SessionStart(model.LoginId, sEncrypt);
             }
 
-            if (result == "OK")
+            if (result == "OK" || result == "PWC")
             {
                 FormsAuthentication.SetAuthCookie(model.LoginId, false); //세션값이 정상 생성되면 인증권한을 준다.
-                return RedirectToLocal(returnUrl);
-            }
-            else if (result == "PWC")
-            {
-                FormsAuthentication.SetAuthCookie(model.LoginId, false); //세션값이 정상 생성되면 인증권한을 준다.
-                return RedirectToAction("PWChange", "Account");
+
+                Dictionary<string, string> dicWorkTime = auth.CheckWorkTimeStatus(Session["URName"].ToString(), Session["DeptName"].ToString(), Request.ServerVariables["REMOTE_HOST"]);
+
+                if (dicWorkTime["WorkStatus"] == "A" || dicWorkTime["WorkStatus"] == "Z")
+                {
+                    Models.WorkTimeViewModels m = new WorkTimeViewModels();
+                    m.WorkStatus = dicWorkTime["WorkStatus"];
+                    m.PlanInTime = dicWorkTime["PlanInTime"];
+                    m.PlanOutTime = dicWorkTime["PlanOutTime"];
+                    m.InTime = dicWorkTime["InTime"];
+                    m.OutTime = dicWorkTime["OutTime"];
+
+                    return RedirectToAction("ClockIn", "Portal", m);
+                }
+                else
+                {
+                    if (result == "PWC") return RedirectToAction("PwdChange", "Portal"); 
+                    else return RedirectToLocal(returnUrl);
+                }
             }
             else
             {

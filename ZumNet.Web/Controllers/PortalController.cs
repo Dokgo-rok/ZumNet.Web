@@ -48,9 +48,9 @@ namespace ZumNet.Web.Controllers
         /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
-        public ActionResult ClockIn()
+        public ActionResult ClockIn(ZumNet.Web.Models.WorkTimeViewModels workTime)
         {
-            return View();
+            return View(workTime);
         }
 
         [SessionExpireFilter]

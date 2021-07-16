@@ -67,7 +67,9 @@
 .sidenav-horizontal .sidenav-item .sidenav-link {
     padding: 0.75rem 1rem;
 }
-
+.sidenav-horizontal .sidenav-item .sidenav-toggle::after {
+    right: .2rem;
+}
 .layout-navbar .navbar-nav .app-search {
     max-width: 180px;
     width: 180px; /* IE */

@@ -117,8 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdminTool" xml:space="preserve">
+    <value>管理工具</value>
+  </data>
   <data name="Alarm" xml:space="preserve">
     <value>警报</value>
+  </data>
+  <data name="AttendWork" xml:space="preserve">
+    <value>去工作</value>
   </data>
   <data name="Auth_DoubleAccount" xml:space="preserve">
     <value>存在一个或多个帐户。请联系管理员。</value>
@@ -147,11 +153,20 @@
   <data name="FindPhoneNum" xml:space="preserve">
     <value>查找电话号码</value>
   </data>
+  <data name="GotoWork" xml:space="preserve">
+    <value>去工作</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>家</value>
   </data>
   <data name="LangSet" xml:space="preserve">
     <value>语言设定</value>
+  </data>
+  <data name="LeaveTime" xml:space="preserve">
+    <value>下班时间</value>
+  </data>
+  <data name="LeaveWork" xml:space="preserve">
+    <value>下班</value>
   </data>
   <data name="Login" xml:space="preserve">
     <value>登录</value>
@@ -162,17 +177,23 @@
   <data name="Logout" xml:space="preserve">
     <value>登出</value>
   </data>
-  <data name="MgtTool" xml:space="preserve">
-    <value>管理工具</value>
-  </data>
   <data name="MyInfo" xml:space="preserve">
     <value>我的信息</value>
   </data>
+  <data name="OffWork" xml:space="preserve">
+    <value>下班</value>
+  </data>
   <data name="OrganMgr" xml:space="preserve">
-    <value>组织经理</value>
+    <value>组织管理</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>密码</value>
+  </data>
+  <data name="PlanLeaveTime" xml:space="preserve">
+    <value>计划下班时间</value>
+  </data>
+  <data name="PlanWorktTime" xml:space="preserve">
+    <value>计划工作时间</value>
   </data>
   <data name="Portal" xml:space="preserve">
     <value>门户网站</value>
@@ -183,7 +204,13 @@
   <data name="Shortcut" xml:space="preserve">
     <value>快捷菜单</value>
   </data>
+  <data name="Skip" xml:space="preserve">
+    <value>跳过</value>
+  </data>
   <data name="WorkCond" xml:space="preserve">
     <value>工作条件</value>
+  </data>
+  <data name="WorktTime" xml:space="preserve">
+    <value>工作时间</value>
   </data>
 </root>

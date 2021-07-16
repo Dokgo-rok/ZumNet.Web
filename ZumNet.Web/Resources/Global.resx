@@ -117,8 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdminTool" xml:space="preserve">
+    <value>Admin Tool</value>
+  </data>
   <data name="Alarm" xml:space="preserve">
     <value>Alarm</value>
+  </data>
+  <data name="AttendWork" xml:space="preserve">
+    <value>Go to Work</value>
   </data>
   <data name="Auth_DoubleAccount" xml:space="preserve">
     <value>One or more accounts exist. Please contact the administrator.</value>
@@ -147,11 +153,20 @@
   <data name="FindPhoneNum" xml:space="preserve">
     <value>Find a phone number</value>
   </data>
+  <data name="GotoWork" xml:space="preserve">
+    <value>Go to Work</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>Home</value>
   </data>
   <data name="LangSet" xml:space="preserve">
     <value>Language settings</value>
+  </data>
+  <data name="LeaveTime" xml:space="preserve">
+    <value>Leave Time</value>
+  </data>
+  <data name="LeaveWork" xml:space="preserve">
+    <value>Off Work</value>
   </data>
   <data name="Login" xml:space="preserve">
     <value>Log In</value>
@@ -162,17 +177,23 @@
   <data name="Logout" xml:space="preserve">
     <value>Log Out</value>
   </data>
-  <data name="MgtTool" xml:space="preserve">
-    <value>Management Tool</value>
-  </data>
   <data name="MyInfo" xml:space="preserve">
     <value>My Info</value>
+  </data>
+  <data name="OffWork" xml:space="preserve">
+    <value>Off Work</value>
   </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>Organization Mgr</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="PlanLeaveTime" xml:space="preserve">
+    <value>Planned Leave</value>
+  </data>
+  <data name="PlanWorktTime" xml:space="preserve">
+    <value>Planned Work</value>
   </data>
   <data name="Portal" xml:space="preserve">
     <value>Portal</value>
@@ -183,7 +204,13 @@
   <data name="Shortcut" xml:space="preserve">
     <value>Shortcut menu</value>
   </data>
+  <data name="Skip" xml:space="preserve">
+    <value>Skip</value>
+  </data>
   <data name="WorkCond" xml:space="preserve">
     <value>Working Condition</value>
+  </data>
+  <data name="WorktTime" xml:space="preserve">
+    <value>Work Time</value>
   </data>
 </root>

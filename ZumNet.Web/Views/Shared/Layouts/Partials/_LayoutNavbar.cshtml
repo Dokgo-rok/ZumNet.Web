@@ -246,7 +246,7 @@
                     <div class="dropdown-divider"></div>
                     @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin") //fas fa-tools, fe-wifi
                     {
-                    <a class="dropdown-item" href="/WoA/Dashboard"><i class="fe-settings mr-2"></i>@Resources.Global.MgtTool</a>
+                    <a class="dropdown-item" href="/WoA/Dashboard"><i class="fe-settings mr-2"></i>@Resources.Global.AdminTool</a>
                     }
                     else if (Session["WoA"].ToString() == "orgadmin")
                     {

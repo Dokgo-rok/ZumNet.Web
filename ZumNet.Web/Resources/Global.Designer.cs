@@ -61,11 +61,29 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Admin Tool과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AdminTool {
+            get {
+                return ResourceManager.GetString("AdminTool", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Alarm과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Alarm {
             get {
                 return ResourceManager.GetString("Alarm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Go to Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AttendWork {
+            get {
+                return ResourceManager.GetString("AttendWork", resourceCulture);
             }
         }
         
@@ -151,6 +169,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Go to Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string GotoWork {
+            get {
+                return ResourceManager.GetString("GotoWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Home과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Home {
@@ -165,6 +192,24 @@ namespace Resources {
         public static string LangSet {
             get {
                 return ResourceManager.GetString("LangSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Leave Time과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string LeaveTime {
+            get {
+                return ResourceManager.GetString("LeaveTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Off Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string LeaveWork {
+            get {
+                return ResourceManager.GetString("LeaveWork", resourceCulture);
             }
         }
         
@@ -196,20 +241,20 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Management Tool과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string MgtTool {
-            get {
-                return ResourceManager.GetString("MgtTool", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   My Info과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string MyInfo {
             get {
                 return ResourceManager.GetString("MyInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Off Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string OffWork {
+            get {
+                return ResourceManager.GetString("OffWork", resourceCulture);
             }
         }
         
@@ -228,6 +273,24 @@ namespace Resources {
         public static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Planned Leave과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string PlanLeaveTime {
+            get {
+                return ResourceManager.GetString("PlanLeaveTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Planned Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string PlanWorktTime {
+            get {
+                return ResourceManager.GetString("PlanWorktTime", resourceCulture);
             }
         }
         
@@ -259,11 +322,29 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Skip과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Skip {
+            get {
+                return ResourceManager.GetString("Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Working Condition과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string WorkCond {
             get {
                 return ResourceManager.GetString("WorkCond", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Work Time과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WorktTime {
+            get {
+                return ResourceManager.GetString("WorktTime", resourceCulture);
             }
         }
     }
