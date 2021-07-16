@@ -97,7 +97,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   One or more accounts exist. Please contact the administrator.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string msg_Auth_DBLACCOUNT {
             get {
@@ -106,7 +106,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   아이디나 암호가 틀렸거나 잘못된 경로로 접근했습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Wrong ID or password, or access through the wrong path.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string msg_Auth_FAIL {
             get {
@@ -115,7 +115,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   잘못된 로그인 시도입니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Invalid login attempt.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string msg_Auth_FAULT {
             get {
@@ -124,7 +124,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   사용이 일시 정지 되었습니다. 관리자에게 문의 바랍니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Usage has been suspended. Please contact the administrator.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string msg_Auth_NOACT {
             get {
@@ -133,7 +133,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   권한이 없습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   You do not have permission.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string msg_Auth_NOAUTH {
             get {
@@ -142,7 +142,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   존재하지 않는 아이디입니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   ID does not exist.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string msg_Auth_NODB {
             get {
@@ -151,7 +151,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   사용자 정보가 없습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   No user information.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string msg_Auth_NOUSER {
             get {
@@ -160,7 +160,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   서비스가 정지 되었습니다. 관리자에게 문의 바랍니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   The service has been stopped. Please contact the administrator.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string msg_Auth_SYSDOWN {
             get {

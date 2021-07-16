@@ -7,6 +7,9 @@ using System.Web.Security;
 
 using ZumNet.Framework.Util;
 using ZumNet.BSL.ServiceBiz;
+using System.Configuration;
+using System.Globalization;
+using System.Threading;
 
 namespace ZumNet.Web.Bc
 {
@@ -244,6 +247,79 @@ namespace ZumNet.Web.Bc
             //if (svcRt != null) svcRt = null;
 
             return strReturn;
+        }
+
+        /// <summary>
+        /// CurrentCulture 및 쿠키 설정
+        /// </summary>
+        public static void SetLocaleCookie()
+        {
+            string culture = "";
+
+            HttpCookie ck = HttpContext.Current.Request.Cookies["locale"];
+
+            if (ck != null)
+            {
+                culture = ck.Value; // HttpContext.Current.Request.Cookies["locale"].Value;
+            }
+            else
+            {
+                if (HttpContext.Current.Request.UserLanguages != null)
+                {
+                    culture = HttpContext.Current.Request.UserLanguages[0];
+                }
+                else
+                {
+                    culture = ConfigurationManager.AppSettings["DefaultLocale"];  //"ko-KR";    
+                }
+
+                ck = new HttpCookie("locale");
+                ck.Name = "locale";
+                ck.Value = culture;
+            }
+
+            ck.Expires = DateTime.Now.AddDays(7);
+
+            HttpContext.Current.Response.Cookies.Add(ck);
+
+            //if (cultureSet)
+            //{
+            //    CultureInfo ci = new CultureInfo(culture);
+
+            //    Thread.CurrentThread.CurrentCulture = ci; // CultureInfo.GetCultureInfo(culture);
+            //    Thread.CurrentThread.CurrentUICulture = ci; // CultureInfo.GetCultureInfo(culture);
+            //}
+            
+        }
+
+        /// <summary>
+        /// CurrentCulture 및 쿠키 설정
+        /// </summary>
+        /// <param name="culture"></param>
+        public static void SetLocaleCookie(string culture)
+        {
+            if (culture != "")
+            {
+                HttpCookie ck = HttpContext.Current.Request.Cookies["locale"];
+                if (ck == null)
+                {
+                    ck = new HttpCookie("locale");
+                    ck.Name = "locale";
+                }
+
+                ck.Value = culture;
+                ck.Expires = DateTime.Now.AddDays(7);
+
+                HttpContext.Current.Response.Cookies.Add(ck);
+
+                //if (cultureSet)
+                //{
+                //    CultureInfo ci = new CultureInfo(culture);
+
+                //    Thread.CurrentThread.CurrentCulture = ci; // CultureInfo.GetCultureInfo(culture);
+                //    Thread.CurrentThread.CurrentUICulture = ci; // CultureInfo.GetCultureInfo(culture);
+                //}
+            }
         }
     }
 }

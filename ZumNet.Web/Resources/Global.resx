@@ -130,28 +130,28 @@
     <value>Save ID</value>
   </data>
   <data name="msg_Auth_DBLACCOUNT" xml:space="preserve">
-    <value>계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.</value>
+    <value>One or more accounts exist. Please contact the administrator.</value>
   </data>
   <data name="msg_Auth_FAIL" xml:space="preserve">
-    <value>아이디나 암호가 틀렸거나 잘못된 경로로 접근했습니다.</value>
+    <value>Wrong ID or password, or access through the wrong path.</value>
   </data>
   <data name="msg_Auth_FAULT" xml:space="preserve">
-    <value>잘못된 로그인 시도입니다.</value>
+    <value>Invalid login attempt.</value>
   </data>
   <data name="msg_Auth_NOACT" xml:space="preserve">
-    <value>사용이 일시 정지 되었습니다. 관리자에게 문의 바랍니다.</value>
+    <value>Usage has been suspended. Please contact the administrator.</value>
   </data>
   <data name="msg_Auth_NOAUTH" xml:space="preserve">
-    <value>권한이 없습니다.</value>
+    <value>You do not have permission.</value>
   </data>
   <data name="msg_Auth_NODB" xml:space="preserve">
-    <value>존재하지 않는 아이디입니다.</value>
+    <value>ID does not exist.</value>
   </data>
   <data name="msg_Auth_NOUSER" xml:space="preserve">
-    <value>사용자 정보가 없습니다.</value>
+    <value>No user information.</value>
   </data>
   <data name="msg_Auth_SYSDOWN" xml:space="preserve">
-    <value>서비스가 정지 되었습니다. 관리자에게 문의 바랍니다.</value>
+    <value>The service has been stopped. Please contact the administrator.</value>
   </data>
   <data name="ttl_Login" xml:space="preserve">
     <value>Log In</value>

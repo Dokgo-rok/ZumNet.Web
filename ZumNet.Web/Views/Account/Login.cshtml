@@ -1,9 +1,19 @@
-﻿@model ZumNet.Web.Models.AccountViewModels
+﻿@using System.Threading;
+
+@model ZumNet.Web.Models.AccountViewModels
 @{
+    //string[] v = { "en-US", "ko-KR", "zh-CN", "ja-JP" };
+    //Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(v[0]);
+    //Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(v[0]);
+
     ViewBag.Title = Resources.Global.ttl_Login;
     Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
 
-    Response.Write("lang => " + Request.UserLanguages[0]);
+    //Response.Write("lang => " + Request.UserLanguages[0]);
+
+    //string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+    //Response.Write("lang => " + sCurrentLocale);
+
 }
 
 @section Styles {
@@ -75,7 +85,7 @@
                         <div class="form-group d-flex justify-content-between align-items-center">
                             <label class="custom-control custom-checkbox m-0">
                                 @Html.CheckBoxFor(m => m.RememberMe, new { @class = "custom-control-input" })
-                                @Html.LabelFor(m => m.RememberMe, new { @class="custom-control-label" })
+                                @Html.LabelFor(m => m.RememberMe, new { @class = "custom-control-label" })
                                 @*<label class="custom-control-label" for="@(">아이디 저장</label>*@
                             </label>
                         </div>
@@ -101,28 +111,28 @@
     @Scripts.Render("~/bundle/jqueryval")
 
     <script type="text/javascript">
-    $(function () {
-        var userId = _zw.ut.getCookie("accountField"); //console.log('cookie -> ' + userId)
-        if (userId && userId != 'null' && userId != '') {
-            $("#LoginId").val(userId);
-            $("#RememberMe").prop('checked', true);
-            $("#Password").focus();
-        } else {
-            $("#LoginId").focus();
-        }
-
-        $("#loginForm").submit(function () {
-            //console.log(event);
-
-            if ($("#RememberMe").prop('checked')) {
-                _zw.ut.setCookie("accountField", $("#LoginId").val(), 1);
+        $(function () {
+            var userId = _zw.ut.getCookie("accountField"); //console.log('cookie -> ' + userId)
+            if (userId && userId != 'null' && userId != '') {
+                $("#LoginId").val(userId);
+                $("#RememberMe").prop('checked', true);
+                $("#Password").focus();
             } else {
-                _zw.ut.deleteCookie("accountField");
+                $("#LoginId").focus();
             }
 
-            //event.cancelBubble = true;
-            //event.preventDefault();
+            $("#loginForm").submit(function () {
+                //console.log(event);
+
+                if ($("#RememberMe").prop('checked')) {
+                    _zw.ut.setCookie("accountField", $("#LoginId").val(), 1);
+                } else {
+                    _zw.ut.deleteCookie("accountField");
+                }
+
+                //event.cancelBubble = true;
+                //event.preventDefault();
+            });
         });
-    });
     </script>
 }

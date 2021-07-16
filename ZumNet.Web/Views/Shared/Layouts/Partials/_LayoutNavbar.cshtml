@@ -1,11 +1,23 @@
 ﻿@using System.Data;
 @using System.Text;
+@using System.Threading;
 
 @{
     bool hideToggle = ViewData["LayoutNavbarHideToggle"] != null && ViewData["LayoutNavbarHideToggle"].ToString() == "True";
 
-    string[] sOrganQuery = { "", "" };
-    string[] sLinkSiteQuery = { "", "" };
+    string[,] vLocale = { {"en-US", "English (US)"}, {"ko-KR", "한국어"}, {"zh-CN", "中文(简体)"}, {"ja-JP", "日本語" }};
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+    //Response.Write("lang => " + sCurrentLocale);
+
+    //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(vLocale[2]);
+
+    //Response.Write(Thread.CurrentThread.CurrentUICulture);
+
+    //ZumNet.Framework.Log.Logging.WriteDebug(HttpContext.Current.Request.CurrentExecutionFilePath + " => " + DateTime.Now.ToString() + " : " + sCurrentLocale);
+
+    string[] vOrganQuery = { "", "" };
+    string[] vLinkSiteQuery = { "", "" };
 
     foreach (DataRow row in ViewBag.MainMenu.Rows)
     {
@@ -13,13 +25,13 @@
         {
             if (row["CTAlias"].ToString() == "orgmap")
             {
-                sOrganQuery[0] = row["DisplayName"].ToString();
-                sOrganQuery[1] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
+                vOrganQuery[0] = row["DisplayName"].ToString();
+                vOrganQuery[1] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
             }
             else if (row["CTAlias"].ToString() == "linksite")
             {
-                sLinkSiteQuery[0] = row["DisplayName"].ToString();
-                sLinkSiteQuery[1] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
+                vLinkSiteQuery[0] = row["DisplayName"].ToString();
+                vLinkSiteQuery[1] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
             }
         }
     }
@@ -30,7 +42,7 @@
         //string sQuery = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"130\",ctalias:\"linksite\",ttl:\"링크사이트\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
 
         sb.Append("<div class=\"dropdown-menu dropdown-menu-right mt-0 py-0\" style=\"min-width: 26rem; width: 26rem\">");
-        sb.AppendFormat("<div class=\"bg-teal text-center py-1\"><a class=\"dropdown-item z-wave data-navmenu text-white\" href=\"/LinkSite?qi={0}\">{1}</a></div>", sLinkSiteQuery[1], sLinkSiteQuery[0]);
+        sb.AppendFormat("<div class=\"bg-teal text-center py-1\"><a class=\"dropdown-item z-wave data-navmenu text-white\" href=\"/LinkSite?qi={0}\">{1}</a></div>", vLinkSiteQuery[1], vLinkSiteQuery[0]);
         sb.Append("<div class=\"list-group\">");
 
         Dictionary<string, string> dic = new Dictionary<string, string>(); //해시테이블 보다 형식을 규정해야 함
@@ -132,10 +144,10 @@
             </li>
 
             @*<li class="nav-item mr-lg-2">
-                <a class="nav-link z-wave text-large px-2" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="근무상태">
-                    <i class="mdi mdi-timer-sand"></i>
-                </a>
-            </li>*@
+                    <a class="nav-link z-wave text-large px-2" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="근무상태">
+                        <i class="mdi mdi-timer-sand"></i>
+                    </a>
+                </li>*@
 
             <li class="nav-item mr-lg-2">
                 <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="전화번호 찾기">
@@ -144,13 +156,13 @@
             </li>
 
             @*<li class="nav-item mr-lg-2">
-                <a class="nav-link z-wave text-large" href="@Url.Action("Index", "Organ", new { Area = "", qi = @sOrganQuery[1] })" data-toggle="tooltip" data-placement="bottom" title="@sOrganQuery[0]">
-                    <i class="mdi mdi-sitemap"></i>
-                </a>
-            </li>*@
+                    <a class="nav-link z-wave text-large" href="@Url.Action("Index", "Organ", new { Area = "", qi = @vOrganQuery[1] })" data-toggle="tooltip" data-placement="bottom" title="@vOrganQuery[0]">
+                        <i class="mdi mdi-sitemap"></i>
+                    </a>
+                </li>*@
 
             <li class="nav-item dropdown mr-lg-2">
-                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@sLinkSiteQuery[0]">
+                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@vLinkSiteQuery[0]">
                     <i class="fas fa-map-marker-alt noti-icon"></i>
                     @*<span>@ViewBag.LinkSite.Tables.Count</span>*@
                 </a>
@@ -197,6 +209,25 @@
                 </a>
             </li>
 
+            <li class="nav-item dropdown">
+                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="사용 언어 설정">
+                    @*<i class="fe-navigation"></i>*@
+                    <span class="btn btn-indigo btn-sm px-1" style="width: 26px">@sCurrentLocale.Substring(0, 2).ToUpper()</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
+                    <div class="list-group list-group-flush">
+
+                        @for(int i = 0; i < vLocale.GetLength(0); i++)
+                        {
+                            if (!vLocale[i, 0].Contains(sCurrentLocale))
+                            {
+                                <a class="dropdown-item list-group-item list-group-item-action" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
+                            }
+                        }
+                    </div>
+                </div>
+            </li>
+
             <li class="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-50 mr-2 ml-1">|</li>
 
             <li class="nav-item dropdown">
@@ -207,7 +238,7 @@
                 <div class="dropdown-menu dropdown-menu-right mt-0">
                     <a class="dropdown-item" href="javascript:void(0)"><i class="fe-user mr-2"></i>내 정보</a>
                     <a class="dropdown-item" href="javascript:void(0)"><i class="fe-clock mr-2"></i>근무상태</a>
-                    <a class="dropdown-item" href="@Url.Action("Index", "Organ", new { Area = "", qi = @sOrganQuery[1] })"><i class="fe-users mr-2"></i>@sOrganQuery[0]</a>
+                    <a class="dropdown-item" href="@Url.Action("Index", "Organ", new { Area = "", qi = @vOrganQuery[1] })"><i class="fe-users mr-2"></i>@vOrganQuery[0]</a>
                     <div class="dropdown-divider"></div>
                     @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin") //fas fa-tools, fe-wifi
                     {
@@ -226,5 +257,6 @@
 
 <form id="fmExternal" method="post" action="" class="d-none">
     <input type="hidden" id="auth_external" name="auth_external" value="@Session["LogonID"]" />
+    <input type="hidden" id="current_culture" name="auth_external" value="@sCurrentLocale" />
 </form>
 <!-- / Layout navbar -->

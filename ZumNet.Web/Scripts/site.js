@@ -16,7 +16,7 @@ $(function () {
 
     // bootbox
     bootbox.setDefaults({
-        locale: "ko",
+        locale: $('#current_culture').val(), //"ko",
         size: "sm"
     });
 
@@ -93,6 +93,17 @@ $(function () {
             case "ea.newdoc":
                 bootbox.confirm("전자결재 신규 양식 작성 하시겠습니까?", function (rt) { alert(rt) });
                 break;
+            case "locale": //언어설정
+                $.ajax({
+                    type: "POST",
+                    url: "/Portal/locale",
+                    data: '{locale:"' + $(this).attr('data-navval') + '"}',
+                    success: function (res) {
+                        if (res == "OK") window.location.reload();
+                        else alert(res);
+                    }
+                });
+
             default:
                 
                 break;

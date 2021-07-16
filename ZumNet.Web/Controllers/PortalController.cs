@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
+using Newtonsoft.Json.Linq;
+using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
 
 namespace ZumNet.Web.Controllers
@@ -59,6 +58,39 @@ namespace ZumNet.Web.Controllers
         public ActionResult SSOerp()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 언어 설정
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Locale()
+        {
+            string strView = "";
+            try
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if ((jPost == null || jPost.Count == 0) && jPost["locale"].ToString() == "")
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    AuthManager.SetLocaleCookie(jPost["locale"].ToString());
+
+                    strView = "OK";
+                }
+            }
+            catch(Exception ex)
+            {
+                strView = ex.Message;
+            }
+            return strView;
         }
     }
 }

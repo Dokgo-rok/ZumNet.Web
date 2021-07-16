@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -19,6 +20,8 @@ namespace ZumNet.Web.Controllers
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
         public ActionResult Login(string returnUrl)
         {
+            //AuthManager.SetLocaleCookie(true);
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -33,6 +36,8 @@ namespace ZumNet.Web.Controllers
         {
             AuthManager auth = new AuthManager();
             string strDesc = "";
+
+            AuthManager.SetLocaleCookie(); //로그인 마다 언어 쿠키만료일 설정
 
             string result = auth.AuthenticateUser(model.LoginId, model.Password);
             if (result == "OK")

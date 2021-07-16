@@ -118,42 +118,42 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="btn_Login" xml:space="preserve">
-    <value>Log In</value>
+    <value>登录</value>
   </data>
   <data name="lbl_LoginId" xml:space="preserve">
-    <value>Login ID</value>
+    <value>登录ID</value>
   </data>
   <data name="lbl_Password" xml:space="preserve">
-    <value>Password</value>
+    <value>密码</value>
   </data>
   <data name="lbl_RememberMe" xml:space="preserve">
-    <value>Save ID</value>
+    <value>保存 ID</value>
   </data>
   <data name="msg_Auth_DBLACCOUNT" xml:space="preserve">
-    <value>계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.</value>
+    <value>存在一个或多个帐户。请联系管理员。</value>
   </data>
   <data name="msg_Auth_FAIL" xml:space="preserve">
-    <value>아이디나 암호가 틀렸거나 잘못된 경로로 접근했습니다.</value>
+    <value>错误的 ID 或密码，或通过错误的路径访问。</value>
   </data>
   <data name="msg_Auth_FAULT" xml:space="preserve">
-    <value>잘못된 로그인 시도입니다.</value>
+    <value>无效的登录尝试。</value>
   </data>
   <data name="msg_Auth_NOACT" xml:space="preserve">
-    <value>사용이 일시 정지 되었습니다. 관리자에게 문의 바랍니다.</value>
+    <value>已暂停使用。 请联系管理员</value>
   </data>
   <data name="msg_Auth_NOAUTH" xml:space="preserve">
-    <value>권한이 없습니다.</value>
+    <value>你没有许可。</value>
   </data>
   <data name="msg_Auth_NODB" xml:space="preserve">
-    <value>존재하지 않는 아이디입니다.</value>
+    <value>身份证不存在。</value>
   </data>
   <data name="msg_Auth_NOUSER" xml:space="preserve">
-    <value>사용자 정보가 없습니다.</value>
+    <value>没有用户信息。</value>
   </data>
   <data name="msg_Auth_SYSDOWN" xml:space="preserve">
-    <value>서비스가 정지 되었습니다. 관리자에게 문의 바랍니다.</value>
+    <value>服务已停止。 请联系管理员。</value>
   </data>
   <data name="ttl_Login" xml:space="preserve">
-    <value>Log In</value>
+    <value>登录</value>
   </data>
 </root>

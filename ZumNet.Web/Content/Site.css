@@ -22,6 +22,9 @@
     padding-bottom: 0;
     line-height: 56px;
 }
+.navbar-nav .dropdown-menu {
+    min-width: 7.5rem;
+}
 .app-brand .app-brand-logo img {
     height: 28px;
     vertical-align: middle;

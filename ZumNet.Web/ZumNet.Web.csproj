@@ -314,6 +314,7 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\ZPageController.cs" />
+    <Compile Include="Filter\CultureFilter.cs" />
     <Compile Include="Filter\SessionExpireFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -600,13 +601,13 @@
     <Content Include="Views\ZPage\Docu.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Global.ko-KR.resx" />
+    <EmbeddedResource Include="Resources\Global.ko.resx" />
     <EmbeddedResource Include="Resources\Global.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Global.Designer.cs</LastGenOutput>
       <CustomToolNamespace>Resources</CustomToolNamespace>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Global.zh-CN.resx" />
+    <EmbeddedResource Include="Resources\Global.zh.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

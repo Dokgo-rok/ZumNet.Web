@@ -167,11 +167,13 @@ namespace ZumNet.Web.Bc
 
             if (!useCache)
             {
+                string strLocale = System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
+
                 //캐쉬 미사용
                 using (ZumNet.BSL.ServiceBiz.CommonBiz com = new ZumNet.BSL.ServiceBiz.CommonBiz())
                 {
                     //svcRt = com.GetMenuInformation(1, 0, 101374, "N", "0", "KO");
-                    svcRt = com.GetMenuTop(1, Convert.ToInt32(HttpContext.Current.Session["URID"]), HttpContext.Current.Session["Admin"].ToString(), "KO");
+                    svcRt = com.GetMenuTop(1, Convert.ToInt32(HttpContext.Current.Session["URID"]), HttpContext.Current.Session["Admin"].ToString(), strLocale);
                 }
 
                 if (svcRt != null && svcRt.ResultCode == 0)
