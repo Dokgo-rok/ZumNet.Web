@@ -150,6 +150,9 @@
   <data name="Auth_UseStop" xml:space="preserve">
     <value>已暂停使用。 请联系管理员</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>确认</value>
+  </data>
   <data name="FindPhoneNum" xml:space="preserve">
     <value>查找电话号码</value>
   </data>
@@ -183,17 +186,32 @@
   <data name="OffWork" xml:space="preserve">
     <value>下班</value>
   </data>
+  <data name="OffWorkCancel" xml:space="preserve">
+    <value>取消工作</value>
+  </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>组织管理</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>密码</value>
   </data>
+  <data name="Password_Change" xml:space="preserve">
+    <value>更改密码</value>
+  </data>
+  <data name="Password_Confirm" xml:space="preserve">
+    <value>新密码确认</value>
+  </data>
+  <data name="Password_Current" xml:space="preserve">
+    <value>当前密码</value>
+  </data>
+  <data name="Password_New" xml:space="preserve">
+    <value>新密码</value>
+  </data>
   <data name="PlanLeaveTime" xml:space="preserve">
-    <value>计划下班时间</value>
+    <value>计划下班</value>
   </data>
   <data name="PlanWorktTime" xml:space="preserve">
-    <value>计划工作时间</value>
+    <value>计划工作</value>
   </data>
   <data name="Portal" xml:space="preserve">
     <value>门户网站</value>

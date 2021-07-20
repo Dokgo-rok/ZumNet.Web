@@ -50,24 +50,7 @@ namespace ZumNet.Web.Controllers
             {
                 FormsAuthentication.SetAuthCookie(model.LoginId, false); //세션값이 정상 생성되면 인증권한을 준다.
 
-                Dictionary<string, string> dicWorkTime = auth.CheckWorkTimeStatus(Session["URName"].ToString(), Session["DeptName"].ToString(), Request.ServerVariables["REMOTE_HOST"]);
-
-                if (dicWorkTime["WorkStatus"] == "A" || dicWorkTime["WorkStatus"] == "Z")
-                {
-                    Models.WorkTimeViewModels m = new WorkTimeViewModels();
-                    m.WorkStatus = dicWorkTime["WorkStatus"];
-                    m.PlanInTime = dicWorkTime["PlanInTime"];
-                    m.PlanOutTime = dicWorkTime["PlanOutTime"];
-                    m.InTime = dicWorkTime["InTime"];
-                    m.OutTime = dicWorkTime["OutTime"];
-
-                    return RedirectToAction("ClockIn", "Portal", m);
-                }
-                else
-                {
-                    if (result == "PWC") return RedirectToAction("PwdChange", "Portal"); 
-                    else return RedirectToLocal(returnUrl);
-                }
+                return RedirectToAction("AddCheck", "Portal", new { Qi = (result == "PWC" ? result : "") }); //세션 생성 후 추가 작업
             }
             else
             {

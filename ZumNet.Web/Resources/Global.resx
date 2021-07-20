@@ -150,6 +150,9 @@
   <data name="Auth_UseStop" xml:space="preserve">
     <value>Usage has been suspended. Please contact the administrator.</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
   <data name="FindPhoneNum" xml:space="preserve">
     <value>Find a phone number</value>
   </data>
@@ -183,11 +186,26 @@
   <data name="OffWork" xml:space="preserve">
     <value>Off Work</value>
   </data>
+  <data name="OffWorkCancel" xml:space="preserve">
+    <value>Off Work Cancel</value>
+  </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>Organization Mgr</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="Password_Change" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Password_Confirm" xml:space="preserve">
+    <value>New password confirmation</value>
+  </data>
+  <data name="Password_Current" xml:space="preserve">
+    <value>Current Password</value>
+  </data>
+  <data name="Password_New" xml:space="preserve">
+    <value>New Password</value>
   </data>
   <data name="PlanLeaveTime" xml:space="preserve">
     <value>Planned Leave</value>

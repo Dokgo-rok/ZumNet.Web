@@ -160,6 +160,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Confirm과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Confirm {
+            get {
+                return ResourceManager.GetString("Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Find a phone number과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string FindPhoneNum {
@@ -259,6 +268,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Off Work Cancel과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string OffWorkCancel {
+            get {
+                return ResourceManager.GetString("OffWorkCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Organization Mgr과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string OrganMgr {
@@ -273,6 +291,42 @@ namespace Resources {
         public static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Change Password과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Password_Change {
+            get {
+                return ResourceManager.GetString("Password_Change", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   New password confirmation과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Password_Confirm {
+            get {
+                return ResourceManager.GetString("Password_Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Current Password과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Password_Current {
+            get {
+                return ResourceManager.GetString("Password_Current", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   New Password과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Password_New {
+            get {
+                return ResourceManager.GetString("Password_New", resourceCulture);
             }
         }
         

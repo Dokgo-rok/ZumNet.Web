@@ -1,0 +1,199 @@
+﻿
+@{
+    ViewBag.Title = Resources.Global.GotoWork;
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+
+    //Response.Write("WorkStatus => " + Model["PwdChange"]);
+
+    //Model["WorkStatus"] = "_";
+    Model["PwdChange"] = "Y";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/pages/authentication")
+
+    <style type="text/css">
+        .card {
+            border-radius: 1.5rem !important;
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 320px;
+            flex: 0 0 320px;
+            max-width: 320px;
+            border: .5rem solid #ccc;
+        }
+
+        .card-header {
+            /*border-top-left-radius: 1rem !important;
+            border-top-right-radius: 1rem !important;*/
+            font-size: .9rem;
+        }
+
+        .ccircle {
+            width: 180px;
+            border-radius: 50%;
+            border: 1rem solid #26AAE1;
+            font-size: 1.5rem;
+            letter-spacing: 0px;
+            line-height: 8rem;
+        }
+
+        .vl {
+            border-left: 2px solid #e2e2e2;
+        }
+
+        h3 {
+            margin-bottom: 0;
+            color: #878787;
+        }
+    </style>
+}
+
+<div class="authentication-wrapper authentication-1 px-4 bg-light">
+    <div class="authentication-inner">
+
+        @if (Model["WorkStatus"] == "A" || Model["WorkStatus"] == "Z")
+        {
+            <div id="__ClockIn" class="card">
+                <div class="m-2 card-header d-flex justify-content-between p-2 border-secondary">
+                    <div class="pt-1"><i class="fas fa-angle-right"></i> @Resources.Global.WorkCond</div>
+                    <div class="btn btn-secondary text-white font-weight-bold text-big py-1" id="lblClock">@DateTime.Now.ToString("HH:mm:ss")</div>
+                </div>
+                <div class="card-body p-2">
+                    <div class="row d-flex">
+                        @if (Model["InTime"] == "")
+                        {
+                            <div class="col-6 flex-fill text-center">
+                                <h5 class="text-windows"><i class="mdi mdi-clock-time-nine-outline"></i><span class="ml-1"> @Resources.Global.PlanWorktTime</span></h5>
+                                <p class="text-muted text-big">@DateTime.Now.ToShortDateString()</p>
+                                <h3>@Convert.ToDateTime(Model["PlanInTime"]).ToLongTimeString()</h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-6 flex-fill text-center">
+                                <h5 class="text-windows"><i class="mdi mdi-clock-time-nine-outline"></i><span class="ml-1"> @Resources.Global.WorktTime</span></h5>
+                                <p class="text-muted text-big">@DateTime.Now.ToShortDateString()</p>
+                                <h3>@Convert.ToDateTime(Model["InTime"]).ToLongTimeString()</h3>
+                            </div>
+                        }
+
+                        @if (Model["OutTime"] == "")
+                        {
+                            <div class="col-6 flex-fill text-center vl">
+                                <h5 class="" style="color: rgb(255, 117, 16)"><i class="mdi mdi-clock-time-five-outline"></i><span class="ml-1"> @Resources.Global.PlanLeaveTime</span></h5>
+                                <p class="text-muted text-big">@DateTime.Now.ToShortDateString()</p>
+                                <h3>@Convert.ToDateTime(Model["PlanOutTime"]).ToLongTimeString()</h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-6 flex-fill text-center vl">
+                                <h5 class="" style="color: rgb(255, 117, 16)"><i class="mdi mdi-clock-time-five-outline"></i><span class="ml-1"> @Resources.Global.LeaveTime</span></h5>
+                                <p class="text-muted text-big">@DateTime.Now.ToShortDateString()</p>
+                                <h3>@Convert.ToDateTime(Model["OutTime"]).ToLongTimeString()</h3>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="col-12 my-4 text-center">
+                        @if (Model["WorkStatus"] == "Z")
+                        {
+                            <button class="btn btn-outline-windows ccircle" data-menu="checkWorkTime">@Resources.Global.OffWorkCancel</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-windows ccircle" data-menu="checkWorkTime">@Resources.Global.GotoWork</button>
+                        }
+                    </div>
+
+                    <div class="text-center px-2 my-2">
+                        <button class="btn btn-outline-windows btn-block font-weight-bold text-big" data-menu="skipNext">@Resources.Global.Skip</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model["PwdChange"] == "Y")
+        {
+        <div id="__PwdChange" class="@((Model["WorkStatus"] == "A" || Model["WorkStatus"] == "Z") ? "d-none" : "")">
+            <div class="mb-3">
+                <div class="h3 text-primary">@Resources.Global.Password_Change</div>
+            </div>
+
+            <!-- Form -->
+            <form>
+                <div class="form-group">
+                    @*<label class="form-label">현재 비밀번호</label>
+                    <input type="password" class="form-control" id="prevPassword" placeholder="">*@
+                    @Html.Password("Password", "", new { @class = "form-control", placeholder = @Resources.Global.Password_Current })
+                    @Html.ValidationMessage("Password", "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.Password("NewPassword", "", new { @class = "form-control", placeholder = @Resources.Global.Password_New })
+                    @Html.ValidationMessage("NewPassword", "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.Password("NewPassword2", "", new { @class = "form-control", placeholder = @Resources.Global.Password_Confirm })
+                    @Html.ValidationMessage("NewPassword2", "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group text-center">
+                    <button class="btn btn-primary btn-block" data-menu="changePwd">@Resources.Global.Confirm</button>
+                </div>
+            </form>
+            <!-- / Form -->
+        </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundle/Vendor/js/moment/moment")
+
+    <script type="text/javascript">
+        $(function () {
+            var workTimeStatus = "@Model["WorkStatus"]";
+            var passwordChange = "@Model["PwdChange"]";
+
+            $('.btn[data-menu]').on('click', function () {
+
+                if ($(this).attr('data-menu') == "checkWorkTime") {
+                    //bootbox.alert($(this).attr('data-menu')); return;
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/ExS/WorkTime/StatusEvent",
+                        data: '{ss:"' + (workTimeStatus == 'Z' ? 'N' : 'A') + '"}',
+                        success: function (res) {
+                            if (res == "OK") $('.btn[data-menu="skipNext"]').click();
+                            else bootbox.alert(res);
+                        }
+                    });
+
+                } else if ($(this).attr('data-menu') == "skipNext") {
+                    $('#__ClockIn').hide();
+
+                    if (passwordChange == 'Y') $('#__PwdChange').removeClass('d-none');
+                    else window.location.href = '/';
+
+                } else if ($(this).attr('data-menu') == "changePwd") {
+
+                }
+            });
+        });
+    </script>
+
+    @if (Model["WorkStatus"] == "A" || Model["WorkStatus"] == "Z")
+    {
+        <script type="text/javascript">
+            $(function () {
+
+                var clock = function () {
+                    $('#lblClock').html(moment().format('HH:mm:ss'));
+                }
+
+                setInterval(clock, 1000);
+            });
+        </script>
+    }
+}

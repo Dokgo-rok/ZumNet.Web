@@ -17,6 +17,7 @@ $(function () {
     // bootbox
     bootbox.setDefaults({
         locale: $('#current_culture').val(), //"ko",
+        //centerVertical: true,
         size: "sm"
     });
 
