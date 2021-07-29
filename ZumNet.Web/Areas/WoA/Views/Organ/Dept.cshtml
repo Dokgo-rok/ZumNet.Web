@@ -227,6 +227,8 @@
 		};
 
 		function resetModelInfo() {
+			$("#modalsDefaultDept").find("input").val("");
+
 			$("#txtDeptType").val($("#ulDeptType").find("a.nav-link.active").text());
 		}
 
@@ -247,10 +249,9 @@
 			}
 
             if ($("#txtUpperDept").val() == "") {
-				if(window.confirm("소속그룹을 지정하지 않으셨습니다.\n소속그룹이 지정되지 않으면 최상위에 위치하게 됩니다.\n계속하시겠습니까?")){
+				if (!window.confirm("소속그룹을 지정하지 않으셨습니다.\n소속그룹이 지정되지 않으면 최상위에 위치하게 됩니다.\n계속하시겠습니까?")) {
 				    return false;
 			    }
-				return false;
 			}
 
             $.ajax({
@@ -272,21 +273,23 @@
                 }
 			});
 
+            // // CreateGroup(int domainID, string groupType, string groupAlias, string parentAlias, string groupName, string groupShortName, int sortKey, string pdmgrCode)
             $.ajax({
                 url: '@Url.Action("CreateGroup", "Organ")',
 				type: 'POST',
                 dataType: 'JSON',
-				data: '{alias:"' + $("#txtDeptCode").val() + '", objectType: ""}',
+				data: '{domainID:"1", groupType: "' + search_dept + '", groupAlias: "' + $("#txtDeptCode").val() + '", parentAlias: "' + "" + '", groupName: "' + $("#txtDeptName").val() + '", groupShortName: "' + $("#txtDeptAlias").val() + '", sortKey: "' + $("#txtDeptPriority").val() + '", pdmgrCode: ""}',
 				success: function (data) {
 					if (data.resultCode != "OK") {
 						alert(data.resultMessage);
 						return;
 					}
 
-					if (data.resultMessage == "Y") {
-						alert("[" + $("#txtDeptCode").val() + "] 는 DB에 존재하는 그룹코드입니다.");
-						return false;
-					}
+					alert("정상적으로 처리되었습니다.");
+
+					$("button[data-dismiss='modal']").trigger("click");
+
+                    searchDept("");
                 }
 			});
 		}

@@ -453,5 +453,56 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             return CreateJsonData();
         }
+
+        [HttpPost]
+        [Authorize]
+        public string CreateGroup()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.CreateGroup(StringHelper.SafeInt(jPost["domainID"].ToString())
+                            , StringHelper.SafeString(jPost["groupType"].ToString())
+                            , StringHelper.SafeString(jPost["groupAlias"].ToString())
+                            , StringHelper.SafeString(jPost["parentAlias"].ToString())
+                            , StringHelper.SafeString(jPost["groupName"].ToString())
+                            , StringHelper.SafeString(jPost["groupShortName"].ToString())
+                            , StringHelper.SafeInt(jPost["sortKey"].ToString())
+                            , StringHelper.SafeString(jPost["pdmgrCode"].ToString()));
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultMessage = result.ResultDataString;
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
     }
 }
