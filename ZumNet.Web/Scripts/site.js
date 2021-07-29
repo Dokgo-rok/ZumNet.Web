@@ -1,7 +1,19 @@
-﻿// Auto update layout
-if (window.layoutHelpers) {
-    window.layoutHelpers.setAutoUpdate(true);
-}
+﻿$(function () {
+    if (window.layoutHelpers) {
+
+        // Auto update layout
+        window.layoutHelpers.setAutoUpdate(true);
+
+        // Collapse menu
+        if ($('#layout-sidenav').hasClass('sidenav-horizontal') || window.layoutHelpers.isSmallScreen()) {
+            return;
+        }
+
+        try {
+            window.layoutHelpers.setCollapsed(true,false);
+        } catch (e) { }
+    }
+});
 
 $(function () {
     // Initialize sidenav
@@ -11,12 +23,82 @@ $(function () {
         });
     });
 
+    // Initialize sidenav togglers
+    $('body').on('click', '.layout-sidenav-toggle', function (e) {
+        e.preventDefault();
+        window.layoutHelpers.toggleCollapsed();
+    });
+
+    // Swap dropdown menus in RTL mode
+    if ($('html').attr('dir') === 'rtl') {
+        $('#layout-navbar .dropdown-menu').toggleClass('dropdown-menu-right');
+    }
+
+    // Message-sidebox ==========>
+    $('.messages-scroll').each(function () {
+        new PerfectScrollbar(this, {
+            suppressScrollX: true,
+            wheelPropagation: true
+        });
+    });
+
+    //$('.messages-sidebox-toggler').click(function (e) {
+    //    e.preventDefault();
+    //    $('.messages-wrapper, .messages-card').toggleClass('messages-sidebox-open');
+    //});
+
+    $('.navbar-toggler, .messages-sidebox-toggler').click(function (e) {
+        e.preventDefault();
+
+        //alert($('.layout-content').find('.messages-wrapper').length)
+
+        if ($('.layout-content').find('.messages-wrapper').length > 0) {
+            //alert($('.messages-wrapper, .messages-card').hasClass('messages-sidebox-open'))
+
+            if ($('.messages-wrapper, .messages-card').hasClass('messages-sidebox-open')) $('#layout-navbar-rightbar .modal-dialog').append($('.messages-sidebox .z-mobile-navbar .modal-content'));
+            //else $('.messages-sidebox .z-mobile-navbar').html($('#layout-navbar-rightbar .modal-content').html());
+            else {
+                $('.messages-sidebox .z-mobile-navbar').append($('#layout-navbar-rightbar .modal-content')); $('[data-toggle="tooltip"]').tooltip();
+            }
+
+            $('.messages-wrapper, .messages-card').toggleClass('messages-sidebox-open');
+
+        } else {
+            $('#layout-navbar-rightbar').modal('show');
+        }
+    });
+
+    //$('.messages-sidebox').on('show.bs.modal', function (e) {
+    //    $('.messages-sidebox .z-mobile-navbar').html($('#layout-navbar-rightbar .modal-content').html());
+    //    $(this).addClass('mobile');
+    //});
+
+    $('.messages-sidebox').on('hidden.bs.modal', function (e) {
+        //$('.messages-sidebox .z-mobile-navbar').html('');
+        $('#layout-navbar-rightbar .modal-dialog').append($('.messages-sidebox .z-mobile-navbar .modal-content'));
+
+        //$(this).removeClass('mobile');
+        $(this).css('display', '');
+        //$(this).css('transform', 'translateX(-15%)');
+        //$(this).css('transition', 'transform .2s ease-out');
+
+        $('.messages-wrapper, .messages-card').removeClass('messages-sidebox-open');
+    });
+
+    $('.linksite-toggler').click(function (e) {
+        //e.preventDefault();
+        //$('#layout-navbar-rightbar').modal('hide');
+        $('#__linkSite').modal('show');
+    });
+    // <========== Message-sidebox
+
     // wave
     Waves.attach('.app-brand, .sidenav-item a, .btn, .z-wave', 'waves-light'); Waves.init();
 
     // bootbox
     bootbox.setDefaults({
-        locale: "ko",
+        locale: $('#current_culture').val(), //"ko",
+        //centerVertical: true,
         size: "sm"
     });
 
@@ -44,33 +126,10 @@ $(function () {
 
     $('.modal-ajaxloader .modal-title').html('Loading ...');
 
-    // Initialize sidenav togglers
-    $('body').on('click', '.layout-sidenav-toggle', function (e) {
-        e.preventDefault();
-        window.layoutHelpers.toggleCollapsed();
-    });
-
-    // Swap dropdown menus in RTL mode
-    if ($('html').attr('dir') === 'rtl') {
-        $('#layout-navbar .dropdown-menu').toggleClass('dropdown-menu-right');
-    }
-
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip();
 
-    $('.messages-scroll').each(function () {
-        new PerfectScrollbar(this, {
-            suppressScrollX: true,
-            wheelPropagation: true
-        });
-    });
-
-    $('.messages-sidebox-toggler').click(function (e) {
-        e.preventDefault();
-        $('.messages-wrapper, .messages-card').toggleClass('messages-sidebox-open');
-    });
-
-    $('.sidenav-item[data-navmenu], .navbar-nav .dropdown-item[data-navmenu]').on('click', function () {
+    $('.sidenav-item[data-navmenu], .navbar-nav .dropdown-item[data-navmenu], #layout-navbar-rightbar .dropdown-item[data-navmenu]').on('click', function () {
         switch ($(this).attr('data-navmenu')) {
             case "mail":
                 _zw.ut.openWnd("https://email.cresyn.com/owa ", "owaWim");
@@ -93,6 +152,17 @@ $(function () {
             case "ea.newdoc":
                 bootbox.confirm("전자결재 신규 양식 작성 하시겠습니까?", function (rt) { alert(rt) });
                 break;
+            case "locale": //언어설정
+                $.ajax({
+                    type: "POST",
+                    url: "/Portal/locale",
+                    data: '{locale:"' + $(this).attr('data-navval') + '"}',
+                    success: function (res) {
+                        if (res == "OK") window.location.reload();
+                        else alert(res);
+                    }
+                });
+
             default:
                 
                 break;

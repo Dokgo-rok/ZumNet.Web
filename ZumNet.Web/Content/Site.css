@@ -22,6 +22,9 @@
     padding-bottom: 0;
     line-height: 56px;
 }
+.navbar-nav .dropdown-menu {
+    min-width: 7.5rem;
+}
 .app-brand .app-brand-logo img {
     height: 28px;
     vertical-align: middle;
@@ -64,7 +67,9 @@
 .sidenav-horizontal .sidenav-item .sidenav-link {
     padding: 0.75rem 1rem;
 }
-
+.sidenav-horizontal .sidenav-item .sidenav-toggle::after {
+    right: .2rem;
+}
 .layout-navbar .navbar-nav .app-search {
     max-width: 180px;
     width: 180px; /* IE */
@@ -97,6 +102,74 @@
     -webkit-box-shadow: none;
     box-shadow: none;
     border-radius: 30px 0 0 30px;
+}
+
+/* modal, navbar-right */
+@media (min-width: 992px) {
+    .z-mobile-navbar {
+        display: none;
+    }
+    .light-style .messages-wrapper .messages-sidebox {
+        width: 14rem !important;
+        -webkit-transform: translateX(0) !important; 
+        transform: translateX(0) !important;
+    }
+}
+@media (max-width: 992px) {
+    
+    /*.messages-wrapper .messages-sidebox.mobile {
+        position: fixed;
+        width: 70vw !important;
+        max-width: none;
+        margin: 0;
+        right: 0;
+        left: calc(45vw);
+        height: 100%;
+        z-index: 1200 !important;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        background-color: #fff;
+        align-content: center;
+    }
+
+    .messages-wrapper .messages-sidebox.mobile.show {
+        -webkit-transform: translateX(-15vw);
+        transform: translateX(-15vw);
+        transition: transform .2s ease-out;
+    }
+
+    .messages-wrapper .messages-sidebox.hide {
+        -webkit-transform: translateX(15vw);
+        transform: translateX(15vw);
+        transition: transform .2s ease-out;
+    }*/
+}
+.modal-fullscreen {
+    position: absolute;
+    width: 100vw;
+    max-width: none;
+    height: 100%;
+    margin: 0;
+    right: 0;
+}
+.modal-right {
+    position: absolute;
+    width: 65vw;
+    max-width: none;
+    height: 100%;
+    margin: 0;
+    right: 0;
+
+    display: flex;
+    /*flex-flow: column nowrap;*/
+    justify-content: center;
+    background-color: #fff;
+    align-content: center;
+    transform: translate(25%,0) !important;
+}
+.modal.show .modal-left, .modal.show .modal-right {
+    transform: translate(0,0) !important;
 }
 
 /* ajax loader */

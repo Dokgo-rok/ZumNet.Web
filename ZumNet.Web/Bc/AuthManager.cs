@@ -7,6 +7,9 @@ using System.Web.Security;
 
 using ZumNet.Framework.Util;
 using ZumNet.BSL.ServiceBiz;
+using System.Configuration;
+using System.Globalization;
+using System.Threading;
 
 namespace ZumNet.Web.Bc
 {
@@ -244,6 +247,193 @@ namespace ZumNet.Web.Bc
             //if (svcRt != null) svcRt = null;
 
             return strReturn;
+        }
+
+        /// <summary>
+        /// 근무상태
+        /// </summary>
+        /// <param name="logonUser"></param>
+        /// <param name="logonDept"></param>
+        /// <param name="logonIP"></param>
+        /// <returns></returns>
+        public Dictionary<string, string> CheckWorkTimeStatus(string logonUser, string logonDept, string logonIP)
+        {
+            //string sIP = HttpContext.Current.Request.ServerVariables["REMOTE_HOST"];
+            string sUA = CommonUtils.UserAgent(HttpContext.Current.Request.ServerVariables["HTTP_USER_AGENT"]);
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            //근무상태체크 제외 세션으로 설정
+            HttpContext.Current.Session["UseWorkTime"] = "Y"; //허용
+
+            if (HttpContext.Current.Session["LogonID"].ToString() != "byrlee") //개발자 제외
+            {
+                //허용IP : 10.212.134.1 - 10.212.134.250
+                //         "192.168" 대역대 중 아래
+                string[] vIP = logonIP.Split('.');
+                string[] vAllowIP = { "4", "10", "20", "30", "50", "60", "70", "80", "200" };
+                bool bIp = false;
+
+                if (vIP[0] == "192" && vIP[1] == "168")
+                {
+                    //foreach (string s in vExceptionIP)
+                    //{
+                    //    if (s == vIP[2])
+                    //    {
+                    //        bIp = true; break;
+                    //    }
+                    //}
+
+                    if (Array.IndexOf(vAllowIP, vIP[2]) >= 0) bIp = true;
+
+                }
+                else if (vIP[0] == "10" && vIP[1] == "212" && vIP[2] == "134")
+                {
+                    //if (Convert.ToInt16(vIP[3]) >= 1 && Convert.ToInt16(vIP[3]) <= 250) bIp = true;
+                }
+                else if (vIP[0] == "::1")
+                {
+                    bIp = true; //테스트 용
+                }
+
+                if (!bIp)
+                {
+                    return SetNonWorkTime();
+                }
+
+                if (HttpContext.Current.Session["LogonID"].ToString() != "swjeong" && HttpContext.Current.Session["LogonID"].ToString() != "kimsj") //아래 조건에 속하나 포함 할 대상자
+                {
+                    //제외부서 : 부서명 영문 I, C, V, G가 들어가는 경우, 재무광동, 재무베트남, 재무인니, 업무지원, 금형관리, 임원실(산업)
+                    if (logonDept.IndexOf('I') != -1 || logonDept.IndexOf('C') != -1 || logonDept.IndexOf('V') != -1 || logonDept.IndexOf('G') != -1 || logonDept.IndexOf("하노이") != -1
+                        || logonDept == "재무광동" || logonDept == "재무베트남" || logonDept == "재무인니" || logonDept == "업무지원" || logonDept == "금형관리" || logonDept == "임원실(산업)" || logonDept == "광동기구"
+                        || logonDept == "재무팀광동" || logonDept == "재무팀베트남" || logonDept == "재무팀인니")
+                    {
+                        return SetNonWorkTime();
+                    }
+
+                    //제외사용자
+                    string[] vExceptionUser = { "이종배", "배경태", "오우동", "홍순경", "이태윤", "김경덕", "민팀윤", "허영세", "이효정", "양병일", "방철군", "김우진", "엄이식", "이정근", "지재용", "윤도현", "박정규", "최우원", "박형열", "안내데스크", "변가윤", "박재천" };
+                    foreach (string s in vExceptionUser)
+                    {
+                        if (s == logonUser)
+                        {
+                            return SetNonWorkTime();
+                        }
+                    }
+                }
+            }
+
+            Dictionary<string, string> dicReturn = new Dictionary<string, string>();
+
+            //0시~6시 사이는 기준 근무일자를 하루전으로
+            string sWorkDate = (DateTime.Now.Hour < 6) ? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd");
+
+            //근무상태확인 20-03-04
+            using (WorkTimeBiz wtBiz = new WorkTimeBiz())
+            {
+                svcRt = wtBiz.CheckWorkTimeStatus("", Convert.ToInt32(HttpContext.Current.Session["URID"]), sWorkDate, 0, logonIP, sUA);
+            }
+
+            if (svcRt.ResultDataDetail.Count > 0)
+            {
+                foreach(string key in svcRt.ResultDataDetail.Keys)
+                {
+                    dicReturn.Add(key, svcRt.ResultDataDetail[key].ToString());
+                }
+            }
+            else
+            {
+                return SetNonWorkTime();
+            }
+
+            return dicReturn;
+        }
+
+        private Dictionary<string, string> SetNonWorkTime()
+        {
+            HttpContext.Current.Session["UseWorkTime"] = "N";
+
+            Dictionary<string, string> dicReturn = new Dictionary<string, string>();
+
+            dicReturn.Add("WorkStatus", "_");
+            dicReturn.Add("PlanInTime", "");
+            dicReturn.Add("PlanOutTime", "");
+            dicReturn.Add("InTime", "");
+            dicReturn.Add("OutTime", "");
+
+            return dicReturn;
+        }
+
+        /// <summary>
+        /// CurrentCulture 및 쿠키 설정
+        /// </summary>
+        public static void SetLocaleCookie()
+        {
+            string culture = "";
+
+            HttpCookie ck = HttpContext.Current.Request.Cookies["locale"];
+
+            if (ck != null)
+            {
+                culture = ck.Value; // HttpContext.Current.Request.Cookies["locale"].Value;
+            }
+            else
+            {
+                if (HttpContext.Current.Request.UserLanguages != null)
+                {
+                    culture = HttpContext.Current.Request.UserLanguages[0];
+                }
+                else
+                {
+                    culture = ConfigurationManager.AppSettings["DefaultLocale"];  //"ko-KR";    
+                }
+
+                ck = new HttpCookie("locale");
+                ck.Name = "locale";
+                ck.Value = culture;
+            }
+
+            ck.Expires = DateTime.Now.AddDays(7);
+
+            HttpContext.Current.Response.Cookies.Add(ck);
+
+            //if (cultureSet)
+            //{
+            //    CultureInfo ci = new CultureInfo(culture);
+
+            //    Thread.CurrentThread.CurrentCulture = ci; // CultureInfo.GetCultureInfo(culture);
+            //    Thread.CurrentThread.CurrentUICulture = ci; // CultureInfo.GetCultureInfo(culture);
+            //}
+            
+        }
+
+        /// <summary>
+        /// CurrentCulture 및 쿠키 설정
+        /// </summary>
+        /// <param name="culture"></param>
+        public static void SetLocaleCookie(string culture)
+        {
+            if (culture != "")
+            {
+                HttpCookie ck = HttpContext.Current.Request.Cookies["locale"];
+                if (ck == null)
+                {
+                    ck = new HttpCookie("locale");
+                    ck.Name = "locale";
+                }
+
+                ck.Value = culture;
+                ck.Expires = DateTime.Now.AddDays(7);
+
+                HttpContext.Current.Response.Cookies.Add(ck);
+
+                //if (cultureSet)
+                //{
+                //    CultureInfo ci = new CultureInfo(culture);
+
+                //    Thread.CurrentThread.CurrentCulture = ci; // CultureInfo.GetCultureInfo(culture);
+                //    Thread.CurrentThread.CurrentUICulture = ci; // CultureInfo.GetCultureInfo(culture);
+                //}
+            }
         }
     }
 }

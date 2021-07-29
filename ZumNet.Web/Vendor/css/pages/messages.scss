@@ -168,10 +168,20 @@ $message-attachment-size: 4rem !default;
 
     .messages-sidebox-open .messages-sidebox {
         /*left: 0;*/
+        z-index: 1090;
         right: 0;
-        left: auto;
-        border-left: 1px solid rgba(24,28,33,0.06)!important;
-        width: 70%;
+        left: calc(45vw);
+        display: flex;
+        width: 70vw;
+        max-width: none;
+        /*border-left: 2px solid rgba(24,28,33,0.06)!important;*/
+        
+        justify-content: center;
+        background-color: #fff;
+        align-content: center;
+        -webkit-transform: translateX(-15vw);
+        transform: translateX(-15vw);
+        -webkit-transition: transform .2s ease-out;
     }
 
     .messages-card .messages-sidebox {

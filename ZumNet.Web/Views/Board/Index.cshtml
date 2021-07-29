@@ -104,30 +104,37 @@
 <div class="messages-wrapper">
 
     <!-- sidebox -->
-    <div class="messages-sidebox messages-scroll border-right">
+    <div class="messages-sidebox messages-scroll bg-body border-right">
+        <div class="z-mobile-navbar"></div>
+            
         <div class="py-3 px-4">
             <div class="media align-items-center">
                 <div class="media-body">
                     <a id="__NewDoc" href="javascript:void(0)" class="btn btn-teal rounded-pill btn-block">게시물작성</a>
                 </div>
-                <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-block text-muted text-large font-weight-light">&times;</a>
+                <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
             </div>
         </div>
+
+        <hr class="border-light mx-4 mt-0 mb-3">
+
         <!-- sidebox tree -->
         <div id="__FolderTree" class="px-3"></div>
         <!-- / sidebox tree -->
     </div>
     <!-- / sidebox -->
+
     <!-- content -->
     <div class="d-flex flex-column w-100">
         <!-- Header -->
         <div class="flex-grow-0">
-            <div class="d-flex justify-content-between font-weight-bold container-p-x py-3 py-lg-4 m-0">
+            <div class="d-flex align-items-center font-weight-bold container-p-x py-3 py-lg-4 m-0">
+                <div class="h5 mb-0">
+                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                </div>
+                
                 <div class="h5 font-weight-bold mb-0 z-ttl">
                     <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
-                </div>
-                <div class="h5">
-                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-inline-block align-self-center px-2"><i class="fe-more-vertical"></i></a>
                 </div>
             </div>
         </div>

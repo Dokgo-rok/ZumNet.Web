@@ -315,12 +315,18 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\ZPageController.cs" />
+    <Compile Include="Filter\CultureFilter.cs" />
     <Compile Include="Filter\SessionExpireFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Global.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Global.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
@@ -596,6 +602,16 @@
     <Content Include="Views\LinkSite\Index.cshtml" />
     <Content Include="Views\ZPage\Board.cshtml" />
     <Content Include="Views\ZPage\Docu.cshtml" />
+    <Content Include="Views\Portal\AddCheck.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Global.ko.resx" />
+    <EmbeddedResource Include="Resources\Global.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Global.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Resources</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Global.zh.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

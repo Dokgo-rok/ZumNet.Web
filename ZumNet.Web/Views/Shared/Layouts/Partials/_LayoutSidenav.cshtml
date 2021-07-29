@@ -170,11 +170,11 @@
         }
 
         <li class="sidenav-item@(currentCategory == "" || currentCategory == "0" || dicChild.ContainsKey(currentCategory) ? " active open" : "")">
-            <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="fe-home sidenav-icon"></i><div>홈</div></a>
+            <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="fe-home sidenav-icon"></i><div>@Resources.Global.Home</div></a>
 
             <ul class="sidenav-menu my-0">
                 <li class="sidenav-item@(currentCategory == "" || currentCategory == "0" ? " active" : "")">
-                    <a href="/" class="sidenav-link"><div>포탈</div></a>
+                    <a href="/" class="sidenav-link"><div>@Resources.Global.Portal</div></a>
                 </li>
 
                 @foreach (string k in dicChild.Keys)
