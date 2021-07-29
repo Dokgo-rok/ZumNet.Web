@@ -264,7 +264,8 @@
     <Reference Include="ZumNet.Framework.Oracle">
       <HintPath>..\..\Library\Framework\bin\Debug\ZumNet.Framework.Oracle.dll</HintPath>
     </Reference>
-    <Reference Include="ZumNet.Framework.Web">
+    <Reference Include="ZumNet.Framework.Web, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Library\Framework\bin\Debug\ZumNet.Framework.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -539,6 +540,8 @@
     <Content Include="Areas\WoA\Views\App\Index.cshtml" />
     <Content Include="Areas\WoA\Views\Menu\Index.cshtml" />
     <Content Include="Content\theme-cresyn-blue.scss" />
+    <Content Include="Areas\WoA\Views\Organ\Member.cshtml" />
+    <Content Include="Areas\WoA\Views\Organ\Dept.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

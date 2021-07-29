@@ -1,0 +1,448 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@model DataTable
+
+@{
+    ViewBag.Title = "부서";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+
+    <script type="text/javascript">
+        var sortColumn = "DisplayName";
+		var sortType = "ASC";
+		var tbl_dept_list;
+		var tbl_dept_deleted_list;
+		var tbl_dept_member_list;
+		var search_dept = "D";
+
+		$(document).ready(function () {
+			searchDept("");
+
+			$("#txtSearch").on("keyup", function (e) {
+				if (e.keyCode == 13 && $.trim($(this).val()) != "") {
+					searchDept($(this).val());
+				}
+			});
+
+			$("#btnSearch").on("click", function () {
+				searchDept($("#txtSearch").val());
+			});
+		});
+
+		function changeDeptAndSearch(dept_type) {
+            if (dept_type == "org.gr.dept") {
+                search_dept = "D";
+			} else if (dept_type == "org.gr.club") {
+                search_dept = "C";
+			} else if (dept_type == "org.gr.task") {
+                search_dept = "T";
+			} else if (dept_type == "org.gr.sec") {
+                search_dept = "S";
+			} else if (dept_type == "org.gr.auth") {
+                search_dept = "A";
+			} else if (dept_type == "org.gr.jik") {
+                search_dept = "J";
+			}
+
+			searchDept("");
+		}
+
+		function searchDept(searchText) {
+            $("#tbl_dept_list_wrapper,#tbl_dept_list").show();
+			$("#tbl_dept_deleted_list_wrapper,#tbl_dept_deleted_list").hide();
+
+			if (searchText == "") {
+				$("#txtSearch").val("");
+			}
+
+			$.ajax({
+                url: '@Url.Action("SearchGroupInfoJson", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{domainID: 1, memberOf: "", groupType: "' + search_dept + '", sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchText: "' + searchText + '", admin: "Y"}',
+				success: function (data) {
+					$("#lblDeptCount").text($("#ulDeptType").find("a.nav-link.active").text() + ": 0개");
+
+                    if (data.resultCode != "OK") {
+						alert(data.resultMessage);
+						return;
+					}
+
+                    if (tbl_dept_list) {
+						tbl_dept_list.destroy();
+					}
+
+                    $("#lblDeptCount").text($("#ulDeptType").find("a.nav-link.active").text() + " : " + data.itemCount + "개");
+
+                    tbl_dept_list = $('#tbl_dept_list').DataTable({
+                        data: $(data.resultData),
+                        columns: [
+	                        { data: "DisplayName" },
+	                        { data: "GRAlias" },
+	                        { data: "CreateDate" }
+                        ],
+                        lengthChange: false,
+                        searching: false,
+                        info: false,
+                        displayLength: 5,
+                        order: [[0, "asc"]],
+                        ordering: true,
+                        language: dataTable_lang_kor,
+                        createdRow: function (row, data, index) {
+                            $('td', row).eq(0).html('').append(
+                                "<a onclick='searchDeptMember(\"" + data["GR_ID"] + "\")'>" + data["DisplayName"] + "</a>"
+							);
+
+							$('td', row).eq(2).html('').append(
+								data["CreateDate"].substring(0, 10)
+							);
+                        }
+                    });
+                }
+			});
+		}
+
+		function searchDeletedDeptInfo(searchText) {
+            $("#tbl_dept_list_wrapper,#tbl_dept_list").hide();
+			$("#tbl_dept_deleted_list_wrapper,#tbl_dept_deleted_list").show();
+
+			$.ajax({
+                url: '@Url.Action("SearchDeletedGroupInfoJson", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{domainID: 1, groupType:"D", pageIndex: 1, pageCount: 10000, sortColumn: "GRName", sortType: "' + sortType + '", searchColumn: "", searchText: "' + searchText + '", searchStartDate: "", searchEndDate: ""}',
+				success: function (data) {
+					$("#lblDeptCount").text("부서 : 0개");
+
+                    if (data.resultCode != "OK") {
+						alert(data.resultMessage);
+						return;
+					}
+
+                    if (tbl_dept_deleted_list) {
+						tbl_dept_deleted_list.destroy();
+					}
+
+					$("#lblDeptCount").text("부서 : " + data.itemCount + "개");
+
+                    tbl_dept_deleted_list = $('#tbl_dept_deleted_list').DataTable({
+                        data: $(data.resultData),
+                        columns: [
+	                        { data: "GRName" },
+	                        { data: "GRAlias" },
+							{ data: "CreateDate" },
+                            { data: "DeleteDate" }
+                        ],
+                        lengthChange: false,
+                        searching: false,
+                        info: false,
+                        displayLength: 10,
+                        order: [[0, "asc"]],
+                        ordering: true,
+                        language: dataTable_lang_kor,
+                        createdRow: function (row, data, index) {
+                            $('td', row).eq(2).html('').append(
+								data["CreateDate"].substring(0, 10)
+							);
+
+                            $('td', row).eq(3).html('').append(
+								data["DeleteDate"].substring(0, 10)
+							);
+                        }
+                    });
+                }
+			});
+		}
+
+        function searchDeptMember(grID) {
+            $.ajax({
+                url: '@Url.Action("SearchGroupMemberInfoJson", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{domainID: 1, groupID:"' + grID + '", sort: "", order: "", admin: "Y"}',
+				success: function (data) {
+					if (data.resultCode != "OK") {
+						alert(data.resultMessage);
+						return;
+					}
+
+					if (tbl_dept_member_list) {
+						tbl_dept_member_list.destroy();
+					}
+
+                    tbl_dept_member_list = $('#tbl_dept_member_list').DataTable({
+                        data: $(data.resultData),
+                        columns: [
+	                        { data: "DisplayName" },
+							{ data: "Role" },
+							{ data: "Grade1" },
+                            { data: "Secondmail" }
+                        ],
+                        lengthChange: false,
+                        searching: false,
+                        info: false,
+                        displayLength: 10,
+                        order: [[0, "asc"]],
+                        ordering: true,
+                        language: dataTable_lang_kor,
+                        createdRow: function (row, data, index) {
+
+                        }
+                    });
+                }
+			});
+		}
+
+        // Korean
+        var dataTable_lang_kor = {
+            "decimal" : "",
+            "emptyTable" : "데이터가 없습니다.",
+            "info" : "_START_ - _END_ (총 _TOTAL_ 명)",
+            "infoEmpty" : "0명",
+            "infoFiltered" : "(전체 _MAX_ 명 중 검색결과)",
+            "infoPostFix" : "",
+            "thousands" : ",",
+            "lengthMenu" : "_MENU_ 개씩 보기",
+            "loadingRecords" : "로딩중...",
+            "processing" : "처리중...",
+            "search" : "검색 : ",
+            "zeroRecords" : "검색된 데이터가 없습니다.",
+            "paginate" : {
+                "first" : "첫 페이지",
+                "last" : "마지막 페이지",
+                "next" : "다음",
+                "previous" : "이전"
+            },
+            "aria" : {
+                "sortAscending" : " :  오름차순 정렬",
+                "sortDescending" : " :  내림차순 정렬"
+            }
+		};
+
+		function resetModelInfo() {
+			$("#txtDeptType").val($("#ulDeptType").find("a.nav-link.active").text());
+		}
+
+		function saveGroup() {
+			if ($("#txtDeptCode").val() == "") {
+				alert("그룹코드를 입력하세요");
+				return false;
+			}
+
+            if ($("#txtDeptName").val() == "") {
+				alert("그룹 이름을 입력하세요");
+				return false;
+			}
+
+            if ($("#txtDeptPriority").val() == "") {
+				alert("정렬 순서를 입력하세요");
+				return false;
+			}
+
+            if ($("#txtUpperDept").val() == "") {
+				if(window.confirm("소속그룹을 지정하지 않으셨습니다.\n소속그룹이 지정되지 않으면 최상위에 위치하게 됩니다.\n계속하시겠습니까?")){
+				    return false;
+			    }
+				return false;
+			}
+
+            $.ajax({
+                url: '@Url.Action("CheckObjectDoubleAliasJson", "Organ")',
+				type: 'POST',
+				async: false, 
+                dataType: 'JSON',
+				data: '{alias:"' + $("#txtDeptCode").val() + '", objectType: ""}',
+				success: function (data) {
+					if (data.resultCode != "OK") {
+						alert(data.resultMessage);
+						return;
+					}
+
+					if (data.resultMessage == "Y") {
+						alert("[" + $("#txtDeptCode").val() + "] 는 DB에 존재하는 그룹코드입니다.");
+						return false;
+					}
+                }
+			});
+
+            $.ajax({
+                url: '@Url.Action("CreateGroup", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{alias:"' + $("#txtDeptCode").val() + '", objectType: ""}',
+				success: function (data) {
+					if (data.resultCode != "OK") {
+						alert(data.resultMessage);
+						return;
+					}
+
+					if (data.resultMessage == "Y") {
+						alert("[" + $("#txtDeptCode").val() + "] 는 DB에 존재하는 그룹코드입니다.");
+						return false;
+					}
+                }
+			});
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    <div>부서 관리</div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalsDefaultDept" onclick="resetModelInfo()">신규</button>
+</h4>
+
+<!-- Modal template -->
+<div class="modal fade" id="modalsDefaultDept">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    그룹 생성
+                    <br>
+                    <small class="text-muted">기본정보 및 소속그룹, OU Path 설정</small>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">그룹코드</label>
+                        <input type="text" id="txtDeptCode" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">PDM그룹코드</label>
+                        <input type="text" id="txtPDMDeptCode" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">그룹이름</label>
+                        <input type="text" id="txtDeptName" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">그룹약어</label>
+                        <input type="text" id="txtDeptAlias" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">그룹유형</label>
+                        <input type="text" id="txtDeptType" class="form-control" readonly="readonly" value="부서 그룹">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">정렬순서</label>
+                        <input type="text" id="txtDeptPriority" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">소속그룹</label>
+                        <input type="text" id="txtUpperDept" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">OU경로</label>
+                        <input type="text" id="txtDeptOUPath" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" onclick="saveGroup();">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<ul class="search-nav nav nav-tabs tabs-alt container-m-nx container-p-x mb-4" id="ulDeptType">
+    @for (int i = 0; i < Model.Rows.Count; i++)
+    {
+        DataRow dr = Model.Rows[i];
+
+    <li class="nav-item">
+
+        @if (i == 0)
+        {
+            <a class="nav-link active" data-toggle="tab" onclick="changeDeptAndSearch('@dr["Command"].ToString()');" data-command="@dr["Command"].ToString()"><i class="ion ion-md-copy"></i>@dr["DisplayName"].ToString()</a>
+        }
+        else
+        {
+            <a class="nav-link" data-toggle="tab" onclick="changeDeptAndSearch('@dr["Command"].ToString()');" data-command="@dr["Command"].ToString()"><i class="ion ion-md-copy"></i>@dr["DisplayName"].ToString()</a>
+        }
+    </li>
+    }
+</ul>
+
+<ul class="search-nav nav nav-tabs tabs-alt container-m-nx container-p-x mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" onclick="searchDept('');"><i class="ion ion-md-copy"></i>&nbsp; 전체</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" onclick="searchDeletedDeptInfo('')"><i class="ion ion-ios-people"></i>&nbsp; 퇴사</a>
+    </li>
+</ul>
+
+<!-- Filters -->
+<div class="ui-bordered px-4 pt-4 mb-4">
+    <div class="form-row">
+        <div class="col-md mb-4">
+            <label id="lblDeptCount" class="form-label">부서 : 0개</label>
+        </div>
+        <div class="col-md col-xl-2 mb-4">
+            <input type="search" id="txtSearch" class="form-control form-control-sm" placeholder="" aria-controls="product-list">
+            <button type="button" id="btnSearch" class="btn btn-secondary btn-block">Show</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-datatable table-responsive">
+        <table id="tbl_dept_list" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>부서명</th>
+                    <th>코드</th>
+                    <th>생성일</th>
+                </tr>
+            </thead>
+        </table>
+
+        <table id="tbl_dept_deleted_list" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>부서명</th>
+                    <th>코드</th>
+                    <th>생성일</th>
+                    <th>삭제일</th>
+                </tr>
+            </thead>
+        </table>
+
+        <hr class="border-light m-0">
+
+        <table id="tbl_dept_member_list" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>역할</th>
+                    <th>직위</th>
+                    <th>이메일</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,200 @@
+﻿@using System.Data
+@model DataSet
+
+@{
+	ViewBag.Title = "사용자";
+
+	bool isExistsUser = (Model?.Tables?.Count ?? 0) > 0;
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+    </script>
+}
+
+<h4 class="font-weight-bold py-3 mb-4">
+    @if (isExistsUser)
+	{
+        @:사용자 관리
+	}
+	else
+	{
+        @:사용자 등록
+	}
+</h4>
+
+<div class="nav-tabs-top">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#user-edit-account">기본 정보</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#user-edit-info">추가 정보</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="user-edit-account">
+            <div class="card-body">
+                <div class="media align-items-center">
+                    <img src="~/Images/avatars/5-small.png" alt="" class="d-block ui-w-80">
+                    <div class="media-body ml-3">
+                        <label class="form-label d-block mb-2">Avatar</label>
+                        <button type="button" class="btn btn-default btn-sm md-btn-flat">Reset</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-light m-0">
+            <div class="card-body pb-2">
+                <div class="form-group">
+                    <label class="form-label">ID</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["LogonID"], new Dictionary<string, object> { { "class" , "form-control" }, {(isExistsUser) ? "readonly": "data-readonly", "" }})
+                </div>
+                <div class="form-group">
+                    <label class="form-label">성</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["LastName"], new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">이름</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["FirstName"], new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">사번</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["EmpID"], new { @class = "form-control", @readonly = (isExistsUser) ? "true" : "false" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">입사일</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["InDate"], new { @class = "form-control" })
+                </div>
+            </div>
+            <hr class="border-light m-0">
+            <div class="card-body pb-2">
+                <div class="form-group">
+                    <label class="form-label">메일계정</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["MailAccount"], new { @class = "form-control", @readonly = "true" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">보조메일계정</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["SecondMail"], new { @class = "form-control", @readonly = "true" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">OU명</label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">메일서버</label>
+                </div>
+            </div>
+            <hr class="border-light m-0">
+            <div class="table-responsive">
+                <table class="table card-table m-0">
+                    <tbody>
+                        <tr>
+                            <th rowspan="2">시스템 설정</th>
+                            <th>그룹웨어</th>
+                            <th>PDM</th>
+                            <th>ERP</th>
+                            <th>메신저</th>
+                        </tr>
+                        <tr>
+                            @{
+								bool b_IsGW = (isExistsUser) ? bool.Parse(Model.Tables[1].Rows[0]["b_IsGw"].ToString()) : false;
+								bool b_IsPDM = (isExistsUser) ? bool.Parse(Model.Tables[1].Rows[0]["b_IsPDM"].ToString()) : false;
+								bool b_IsERP = (isExistsUser) ? bool.Parse(Model.Tables[1].Rows[0]["b_IsERP"].ToString()) : false;
+								bool b_IsMSG = (isExistsUser) ? bool.Parse(Model.Tables[1].Rows[0]["b_IsMSG"].ToString()) : false;
+                            }
+                            <td>
+                                <label class="custom-control custom-checkbox px-2 m-0">
+                                    @Html.CheckBoxFor(m => b_IsGW, new { @class = "custom-control-input", @checked = "checked" })
+                                    <span class="custom-control-label"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <label class="custom-control custom-checkbox px-2 m-0">
+                                    @Html.CheckBoxFor(m => b_IsPDM, new { @class = "custom-control-input", @checked = "checked" })
+                                    <span class="custom-control-label"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <label class="custom-control custom-checkbox px-2 m-0">
+                                    @Html.CheckBoxFor(m => b_IsERP, new { @class = "custom-control-input", @checked = "checked" })
+                                    <span class="custom-control-label"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <label class="custom-control custom-checkbox px-2 m-0">
+                                    @Html.CheckBoxFor(m => b_IsMSG, new { @class = "custom-control-input", @checked = "checked" })
+                                    <span class="custom-control-label"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="user-edit-info">
+            <div class="card-body pb-2">
+                <div class="form-group">
+                    <label class="form-label">주민등록번호</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["PersonNo1"], new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">주민등록번호</label>
+                    @Html.TextBoxFor(m => m.Tables[1].Rows[0]["PersonNo2"], new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Google+</label>
+                    <input type="text" class="form-control" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">LinkedIn</label>
+                    <input type="text" class="form-control" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Instagram</label>
+                    <input type="text" class="form-control" value="https://www.instagram.com/user">
+                </div>
+            </div>
+            <hr class="border-light m-0">
+            <div class="card-body pb-2">
+                <h6 class="mb-4">Personal info</h6>
+                <div class="form-group">
+                    <label class="form-label">Birthday</label>
+                    <input type="text" class="form-control" value="May 3, 1995">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Country</label>
+                    <select class="custom-select">
+                        <option>USA</option>
+                        <option selected>Canada</option>
+                        <option>UK</option>
+                        <option>Germany</option>
+                        <option>France</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Languages</label>
+                    <select multiple class="user-edit-multiselect form-control w-100">
+                        <option selected>English</option>
+                        <option>German</option>
+                        <option>French</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-right mt-3">
+    @if (isExistsUser)
+    {
+        <button type="button" class="btn btn-primary">편집</button>
+    }
+    else
+    {
+        <button type="button" class="btn btn-primary">신규</button>
+    }
+
+    &nbsp;<button type="button" class="btn btn-default" onclick="location.href='@Url.Action("Index", "Organ")'">취소</button>
+</div>
