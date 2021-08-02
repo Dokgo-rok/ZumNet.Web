@@ -67,11 +67,11 @@
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{domainID: 1, memberOf: "", groupType: "' + search_dept + '", sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchText: "' + searchText + '", admin: "Y"}',
-				success: function (data) {
+				success: function (result) {
 					$("#lblDeptCount").text($("#ulDeptType").find("a.nav-link.active").text() + ": 0개");
 
-                    if (data.resultCode != "OK") {
-						alert(data.resultMessage);
+                    if (result.code != "OK") {
+						alert(result.message);
 						return;
 					}
 
@@ -79,10 +79,10 @@
 						tbl_dept_list.destroy();
 					}
 
-                    $("#lblDeptCount").text($("#ulDeptType").find("a.nav-link.active").text() + " : " + data.itemCount + "개");
+                    $("#lblDeptCount").text($("#ulDeptType").find("a.nav-link.active").text() + " : " + result.recordsTotal + "개");
 
                     tbl_dept_list = $('#tbl_dept_list').DataTable({
-                        data: $(data.resultData),
+                        data: $(result.data),
                         columns: [
 	                        { data: "DisplayName" },
 	                        { data: "GRAlias" },
@@ -118,11 +118,11 @@
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{domainID: 1, groupType:"D", pageIndex: 1, pageCount: 10000, sortColumn: "GRName", sortType: "' + sortType + '", searchColumn: "", searchText: "' + searchText + '", searchStartDate: "", searchEndDate: ""}',
-				success: function (data) {
+				success: function (result) {
 					$("#lblDeptCount").text("부서 : 0개");
 
-                    if (data.resultCode != "OK") {
-						alert(data.resultMessage);
+                    if (result.code != "OK") {
+						alert(result.message);
 						return;
 					}
 
@@ -130,10 +130,10 @@
 						tbl_dept_deleted_list.destroy();
 					}
 
-					$("#lblDeptCount").text("부서 : " + data.itemCount + "개");
+					$("#lblDeptCount").text("부서 : " + result.recordsTotal + "개");
 
                     tbl_dept_deleted_list = $('#tbl_dept_deleted_list').DataTable({
-                        data: $(data.resultData),
+                        data: $(result.data),
                         columns: [
 	                        { data: "GRName" },
 	                        { data: "GRAlias" },
@@ -167,9 +167,9 @@
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{domainID: 1, groupID:"' + grID + '", sort: "", order: "", admin: "Y"}',
-				success: function (data) {
-					if (data.resultCode != "OK") {
-						alert(data.resultMessage);
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
 						return;
 					}
 
@@ -178,7 +178,7 @@
 					}
 
                     tbl_dept_member_list = $('#tbl_dept_member_list').DataTable({
-                        data: $(data.resultData),
+                        data: $(result.data),
                         columns: [
 	                        { data: "DisplayName" },
 							{ data: "Role" },
@@ -260,13 +260,13 @@
 				async: false, 
                 dataType: 'JSON',
 				data: '{alias:"' + $("#txtDeptCode").val() + '", objectType: ""}',
-				success: function (data) {
-					if (data.resultCode != "OK") {
-						alert(data.resultMessage);
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
 						return;
 					}
 
-					if (data.resultMessage == "Y") {
+					if (result.message == "Y") {
 						alert("[" + $("#txtDeptCode").val() + "] 는 DB에 존재하는 그룹코드입니다.");
 						return false;
 					}
@@ -279,9 +279,9 @@
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{domainID:"1", groupType: "' + search_dept + '", groupAlias: "' + $("#txtDeptCode").val() + '", parentAlias: "' + "" + '", groupName: "' + $("#txtDeptName").val() + '", groupShortName: "' + $("#txtDeptAlias").val() + '", sortKey: "' + $("#txtDeptPriority").val() + '", pdmgrCode: ""}',
-				success: function (data) {
-					if (data.resultCode != "OK") {
-						alert(data.resultMessage);
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
 						return;
 					}
 

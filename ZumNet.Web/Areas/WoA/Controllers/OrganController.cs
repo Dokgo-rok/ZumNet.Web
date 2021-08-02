@@ -174,7 +174,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 if (result.ResultCode == 0)
                 {
-                    ItemCount = result.ResultItemCount;
+                    ResultItemCount = result.ResultItemCount;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
@@ -227,7 +227,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 if (result.ResultCode == 0)
                 {
-                    ItemCount = result.ResultItemCount;
+                    ResultItemCount = result.ResultItemCount;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
@@ -285,7 +285,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 if (result.ResultCode == 0)
                 {
-                    ItemCount = result.ResultItemCount;
+                    ResultItemCount = result.ResultItemCount;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
@@ -339,7 +339,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 if (result.ResultCode == 0)
                 {
-                    ItemCount = result.ResultItemCount;
+                    ResultItemCount = result.ResultItemCount;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
@@ -389,7 +389,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 if (result.ResultCode == 0)
                 {
-                    ItemCount = result.ResultItemCount;
+                    ResultItemCount = result.ResultItemCount;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();

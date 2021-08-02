@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "접속 이력(근무정보)";
+    ViewBag.Title = "로그온 정보";
 }
 
 @section Styles {
@@ -54,12 +54,12 @@
             tbl_list = $('#tbl_list').DataTable({
                 "serverSide": true,
                 "ajax": {
-                    "url": '@Url.Action("SearchConnectLogList", "Event")',
+                    "url": '@Url.Action("SearchLogonLogList", "Event")',
 					"type": "POST",
 					"data": function (p) {
 						p.prevSortColumn = prevSortColumn;
 						p.prevSortType = prevSortType;
-						p.eventViewName = "ph_VIEW_BASE_WORKTIME_LIST";
+						p.eventViewName = "ph_VIEW_BASE_LOGON_LIST";
 						p.searchColumn = $("#selSearchType").val();
 						p.searchText = $("#txtSearch").val();
 						p.searchStartDate = $("#datepicker-range input[name='start']").val();
@@ -75,10 +75,8 @@
                     { data: "UserName" },
                     { data: "DeptName" },
                     { data: "EventTime" },
-                    { data: "UserID" },
                     { data: "LogonID" },
-					{ data: "StartTime" },
-                    { data: "EndTime" }
+					{ data: "IP" }
                 ],
                 "language": dataTable_lang_kor,
                 "searching": false
@@ -114,7 +112,7 @@
 }
 
 <h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
-    <div>접속 이력(근무정보)</div>
+    <div>로그온 정보</div>
 </h4>
 
 <div class="card mb-4">
@@ -138,10 +136,8 @@
                         <option selected value="">선택</option>
                         <option value="UserName">이름</option>
                         <option value="DeptName">부서(팀점)</option>
-                        <option value="UserID">사용자 ID</option>
                         <option value="LogonID">로그온 ID</option>
-                        <option value="StartTime">시작시간</option>
-                        <option value="EndTime">종료시간</option>
+                        <option value="IP">IP</option>
                     </select>
                 </div>
                 <div class="form-group col-md-4">
@@ -162,11 +158,9 @@
                 <tr>
                     <th>이름</th>
                     <th>부서(팀점)</th>
-                    <th>작업일자</th>
-                    <th>사용자ID</th>
+                    <th>로그온 시간</th>
                     <th>로그온ID</th>
-                    <th>시작시간</th>
-                    <th>종료시간</th>
+                    <th>IP</th>
                 </tr>
             </thead>
         </table>

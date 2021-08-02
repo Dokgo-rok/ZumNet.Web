@@ -52,11 +52,11 @@
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{domainID: 1, groupID: "", groupType: "D", pageIndex: 0, pageCount: 0, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchType: "' + searchType + '", searchText: "' + searchText + '", admin: "Y"}',
-				success: function (data) {
+				success: function (result) {
 					$("#lblMemberCount").text("인원 : 0명");
 
-                    if (data.resultCode != "OK") {
-						alert(data.resultMessage);
+                    if (result.code != "OK") {
+						alert(result.message);
 						return;
 					}
 
@@ -64,10 +64,10 @@
 						tbl_user_list.destroy();
 					}
 
-					$("#lblMemberCount").text("인원 : " + data.itemCount + "명");
+					$("#lblMemberCount").text("인원 : " + result.recordsTotal + "명");
 
                     tbl_user_list = $('#tbl_user_list').DataTable({
-                        data: $(data.resultData),
+                        data: $(result.data),
                         columns: [
 	                        { data: "DisplayName" },
 	                        { data: "GroupName" },
@@ -102,11 +102,11 @@
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{domainID: 1, pageIndex: 1, pageCount: 10000, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchColumn: "", searchText: "' + searchText + '", searchStartDate: "", searchEndDate: ""}',
-				success: function (data) {
+				success: function (result) {
 					$("#lblMemberCount").text("인원 : 0명");
 
-                    if (data.resultCode != "OK") {
-						alert(data.resultMessage);
+                    if (result.code != "OK") {
+						alert(result.message);
 						return;
 					}
 
@@ -114,10 +114,10 @@
 						tbl_user_retired_list.destroy();
 					}
 
-					$("#lblMemberCount").text("인원 : " + data.itemCount + "명");
+					$("#lblMemberCount").text("인원 : " + result.recordsTotal + "명");
 
                     tbl_user_retired_list = $('#tbl_user_retired_list').DataTable({
-                        data: $(data.resultData),
+                        data: $(result.data),
                         columns: [
 	                        { data: "DisplayName" },
 	                        { data: "GroupName" },
