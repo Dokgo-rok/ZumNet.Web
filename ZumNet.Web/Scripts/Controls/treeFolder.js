@@ -88,8 +88,11 @@ $(function () {
                         url: "?qi=",
                         data: '{page:1,count:20,tgt:"' + vId[vId.length - 1] + '"}',
                         success: function (res) {
-                            if (res.substr(0, 2) == "OK") $('#__ListView').html(res.substr(2));
-                            else alert(res);
+                            if (res.substr(0, 2) == "OK") {
+                                $('#__ListView').html(res.substr(2));
+                                $('#__CtDashboard').addClass('d-none');
+                                $('#__ListView').removeClass('d-none');
+                            } else alert(res);
                         }                        
                     });
                 }

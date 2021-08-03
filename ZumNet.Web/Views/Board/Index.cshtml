@@ -106,13 +106,22 @@
     <!-- sidebox -->
     <div class="messages-sidebox messages-scroll bg-body border-right">
         <div class="z-mobile-navbar"></div>
-            
+
         <div class="py-3 px-4">
             <div class="media align-items-center">
                 <div class="media-body">
                     <a id="__NewDoc" href="javascript:void(0)" class="btn btn-teal rounded-pill btn-block">게시물작성</a>
                 </div>
                 <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
+            </div>
+            <div class="row mt-3">
+                <div class="col-6 text-center px-0">
+                    <a class="" href="/Board/Recent"><i class="mdi mdi-clock-check-outline"></i> 최근게시물</a>
+                </div>
+                <div class="col-6 text-center px-1">
+                    <a class="" href="/Board/Save"><i class="mdi mdi-circle-edit-outline"></i> 임시저장함</a>
+                </div>
+
             </div>
         </div>
 
@@ -123,7 +132,6 @@
         <!-- / sidebox tree -->
     </div>
     <!-- / sidebox -->
-
     <!-- content -->
     <div class="d-flex flex-column w-100">
         <!-- Header -->
@@ -132,21 +140,73 @@
                 <div class="h5 mb-0">
                     <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
                 </div>
-                
+
                 <div class="h5 font-weight-bold mb-0 z-ttl">
                     <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
                 </div>
             </div>
         </div>
         <!-- / Header -->
-        <!-- Wrap `.messages-scroll` to properly position scroll area. Remove this wrapper if you don't need scroll -->
-        <div class="flex-grow-0">&nbsp;</div>
 
         <div class="flex-grow-1 position-relative">
             <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
             <div class="messages-content flex-grow-0">
-                <ul id="__ListView" class="list-group messages-list">
-                    @Html.Partial("_ListView")
+                <div id="__CtDashboard" class="row container-p-x">
+                    <div class="col col-md-7">
+                        <div class="font-weight-bold text-black-50">
+                            <i class="mdi mdi-clock-check-outline"></i> &nbsp;<span>최근게시물</span>
+                        </div>
+                        <div>
+                            @for(int i = 0; i < ViewBag.RecentBBS.Count; i++)
+                            {
+                                DataRow row = ViewBag.RecentBBS[i];
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <div class="">
+                                    @if (i % 3 == 0)
+                                    {
+                                        <div class="badge badge-pill badge-teal">@row["DisplayName"]</div>
+                                    }
+                                    else if (i % 3 == 1)
+                                    {
+                                        <div class="badge badge-pill badge-warning">@row["DisplayName"]</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="badge badge-pill badge-primary">@row["DisplayName"]</div>
+                                    }
+                                    <div class="mt-1"><a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
+                                </div>
+                                <div class="text-truncate">
+                                    @if (Convert.ToInt32(row["CommentCount"]) > 0)
+                                    {
+                                        <span class="text-blue">(@row["CommentCount"])&nbsp;</span>
+                                    }
+                                    @Convert.ToDateTime(row["CreateDate"]).ToShortDateString()
+                                </div>
+                                
+                            </div>
+                            }                            
+                        </div>
+                    </div>
+                    @*<div class="col-1 d-none d-md-block"></div>*@
+                    <div class="col-5 d-none d-md-block pl-4 pr-0">
+                        <div class="font-weight-bold text-black-50">
+                            <i class="fe-message-circle"></i> &nbsp;<span>최근공지</span>
+                        </div>
+                        <div>
+                            @foreach(DataRow row in ViewBag.RecentNotice)
+                            {
+                            <div class="text-truncate py-2">
+                                <a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom"><span class="badge badge-pill badge-default">@row["DisplayName"]</span> @row["Subject"]</a>
+                            </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+
+                <ul id="__ListView" class="list-group messages-list d-none">
+                    @*@Html.Partial("_ListView")*@
                 </ul>
             </div>
         </div>

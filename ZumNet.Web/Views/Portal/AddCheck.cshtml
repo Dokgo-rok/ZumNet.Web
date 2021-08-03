@@ -154,6 +154,7 @@
         $(function () {
             var workTimeStatus = "@Model["WorkStatus"]";
             var passwordChange = "@Model["PwdChange"]";
+            var returnUrl = "@ViewBag.ReturnUrl";
 
             $('.btn[data-menu]').on('click', function () {
 
@@ -174,7 +175,7 @@
                     $('#__ClockIn').hide();
 
                     if (passwordChange == 'Y') $('#__PwdChange').removeClass('d-none');
-                    else window.location.href = '/';
+                    else window.location.href = '/'; //returnUrl != '' ? returnUrl : '/';
 
                 } else if ($(this).attr('data-menu') == "changePwd") {
 

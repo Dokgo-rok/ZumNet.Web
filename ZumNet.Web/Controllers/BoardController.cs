@@ -30,28 +30,31 @@ namespace ZumNet.Web.Controllers
             }
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
+            ZumNet.Framework.Core.ServiceResult svcRt2 = null;
 
             int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
-            int iOpenNode = 0;
-            if (ViewBag.R.opnode.Value != "")
-            {
-                if (ViewBag.R.opnode.Value.IndexOf('.') > 0)
-                {
-                    string[] v = ViewBag.R.opnode.Value.Split('.');
-                    iOpenNode = Convert.ToInt32(v[v.Length - 1]);
-                }
-                else iOpenNode = Convert.ToInt32(ViewBag.R.opnode.Value);
-            }
+            //int iOpenNode = 0;
+            //if (ViewBag.R.opnode.Value != "")
+            //{
+            //    if (ViewBag.R.opnode.Value.IndexOf('.') > 0)
+            //    {
+            //        string[] v = ViewBag.R.opnode.Value.Split('.');
+            //        iOpenNode = Convert.ToInt32(v[v.Length - 1]);
+            //    }
+            //    else iOpenNode = Convert.ToInt32(ViewBag.R.opnode.Value);
+            //}
 
             using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
             {
-                svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iOpenNode, Convert.ToInt32(Session["URID"]), Session["Admin"].ToString(), "", 1, 20, "SeqID", "DESC", "", "", "", "");
+                //svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iOpenNode, Convert.ToInt32(Session["URID"]), Session["Admin"].ToString(), "", 1, 20, "SeqID", "DESC", "", "", "", "");
+                svcRt = bd.GetRecentNoticeList(1, 0, "", "notice", iCategoryId, Convert.ToInt32(Session["URID"]), 5, "N", Session["Admin"].ToString(), "");
+                svcRt2 = bd.GetRecentNoticeList(1, 0, "650", "bbs", iCategoryId, Convert.ToInt32(Session["URID"]), 10, "B", Session["Admin"].ToString(), "");
             }
 
-            if (svcRt != null && svcRt.ResultCode == 0)
+            if (svcRt != null && svcRt.ResultCode == 0 && svcRt2 != null && svcRt2.ResultCode == 0)
             {
-                ViewBag.BoardList = svcRt.ResultDataRowCollection;
-                ViewBag.BoardTotal = svcRt.ResultItemCount;
+                ViewBag.RecentNotice = svcRt.ResultDataRowCollection;
+                ViewBag.RecentBBS = svcRt2.ResultDataRowCollection;
             }
             else
             {

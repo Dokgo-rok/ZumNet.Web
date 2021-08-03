@@ -50,7 +50,7 @@ namespace ZumNet.Web.Controllers
             {
                 FormsAuthentication.SetAuthCookie(model.LoginId, false); //세션값이 정상 생성되면 인증권한을 준다.
 
-                return RedirectToAction("AddCheck", "Portal", new { Qi = (result == "PWC" ? result : "") }); //세션 생성 후 추가 작업
+                return RedirectToAction("AddCheck", "Portal", new { Qi = (result == "PWC" ? result : ""), returnUrl }); //세션 생성 후 추가 작업
             }
             else
             {

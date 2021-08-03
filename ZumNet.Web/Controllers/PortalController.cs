@@ -49,11 +49,12 @@ namespace ZumNet.Web.Controllers
         /// <summary>
         /// 세션생성 이후 추가 확인 작업 - 출근 체크 및 비밀번호 변경
         /// </summary>
-        /// <param name="Qi">비밀번호 변경여부</param>
+        /// <param name="Qi"></param>
+        /// <param name="returnUrl"></param>
         /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
-        public ActionResult AddCheck(string Qi)
+        public ActionResult AddCheck(string Qi, string returnUrl)
         {
             string sIP = Request.ServerVariables["REMOTE_HOST"];
             string sUA = CommonUtils.UserAgent(Request.ServerVariables["HTTP_USER_AGENT"]);
@@ -142,16 +143,17 @@ namespace ZumNet.Web.Controllers
                     else
                     {
                         //출퇴근 체크 X. 비밀번호 변경 X
-                        return RedirectToAction("Index", "Portal");
+                        return RedirectToLocal(returnUrl);
                     }
                 }
                 else
                 {
                     Session["UseWorkTime"] = "N";
 
-                    if (dicStatus["PwdChange"] == "N") return RedirectToAction("Index", "Portal");
+                    if (dicStatus["PwdChange"] == "N") return RedirectToLocal(returnUrl);
                 }
-                
+
+                ViewBag.ReturnUrl = returnUrl;
                 return View(dicStatus);
             }
             catch(Exception ex)
@@ -198,6 +200,20 @@ namespace ZumNet.Web.Controllers
                 strView = ex.Message;
             }
             return strView;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        private ActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return RedirectToAction("Index", "Portal");
         }
     }
 }
