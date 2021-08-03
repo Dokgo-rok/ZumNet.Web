@@ -54,7 +54,7 @@ $(function () {
                         //console.log(JSON.stringify(node));
                         //console.log('id => ' + node.id + ' : selType => ' + selType + ' : level => ' + lvl);
 
-                        return '{ct:"' + _zw.V.ct + '",selected:"' + node.id + '",seltype:"' + selType + '",lvl:"' + lvl + '",open:"' + _zw.V.openNode + '"}'
+                        return '{ct:"' + _zw.V.ct + '",selected:"' + node.id + '",seltype:"' + selType + '",lvl:"' + lvl + '",open:"' + _zw.V.opnode + '"}'
                     },
                     dataType: 'json',
                     beforeSend: function () {//jstree ajax event와 충돌하는 듯....pace.js가 이벤트 종료가 안됨!!
@@ -81,12 +81,14 @@ $(function () {
                 $('.z-ttl span').html(vPath.join(' / '));
 
                 var n = d.instance.get_node(d.selected[0]);
+                //alert(n.li_attr.objecttype + ' : ' + n.li_attr.alias + ' : ' + n.li_attr.xfalias + ' : ' + n.li_attr.permission.substr(n.li_attr.permission.length-1, 1))
                 var vId = n.id.split('.');
-                if (n.li_attr.hassub) {
+                if (n.li_attr.permission.substr(n.li_attr.permission.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
                     $.ajax({
                         type: "POST",
-                        url: "?qi=",
-                        data: '{page:1,count:20,tgt:"' + vId[vId.length - 1] + '"}',
+                        url: "/Common/List",
+                        data: '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xf:"' + n.li_attr.xfalias
+                            + '",permission:"' + n.li_attr.permission + '",page:1,count:20,tgt:"' + vId[vId.length - 1] + '"}',
                         success: function (res) {
                             if (res.substr(0, 2) == "OK") {
                                 $('#__ListView').html(res.substr(2));

@@ -16,7 +16,7 @@ namespace ZumNet.Web.Controllers
     public class CommonController : Controller
     {
         /// <summary>
-        /// 폴더 트리구조 가져오기
+        /// Ajax 폴더 트리구조 가져오기
         /// </summary>
         /// <returns></returns>
         [SessionExpireFilter]
@@ -135,6 +135,52 @@ namespace ZumNet.Web.Controllers
                     strView = svcRt.ResultMessage;
                 }
             }
+            return strView;
+        }
+
+        /// <summary>
+        /// Ajax 리스트뷰 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string List()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    return "필수값 누락!";
+                }
+
+                switch (jPost["ot"].ToString())
+                {
+                    case "G":
+                        switch (jPost["xf"].ToString())
+                        {
+                            case "":
+                                break;
+
+                            default:
+                                break;
+                        }
+
+                        break;
+
+                    case "F":
+                        
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
             return strView;
         }
     }

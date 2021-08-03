@@ -108,7 +108,8 @@ $(function () {
     $.ajaxSetup({
         error: function (res) {
             if (res.status == 403) {
-                
+                //alert(JSON.parse(res.responseText));
+                window.location.reload();
             } else {
                 bootbox.alert({ title: "Ajax Error", message: res.responseText});
             }

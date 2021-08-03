@@ -548,6 +548,9 @@
     <Content Include="Content\theme-cresyn-blue.scss" />
     <Content Include="Areas\WoA\Views\Organ\Member.cshtml" />
     <Content Include="Areas\WoA\Views\Organ\Dept.cshtml" />
+    <Content Include="MultiLangs\category.lang" />
+    <Content Include="MultiLangs\en\woa_event_logon.lang" />
+    <Content Include="MultiLangs\ko\woa_event_logon.lang" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
