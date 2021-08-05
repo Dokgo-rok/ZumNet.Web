@@ -265,7 +265,7 @@ namespace ZumNet.Web.Bc
             try
             {
                 //R.ct, R.ttl, R.opnode, R.ctalias, R.fdid 등등
-                string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], "");
+                string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], ""); //.Replace("+", " ");
                 if (req != "")
                 {
                     jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
@@ -292,7 +292,7 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"], ""));
                 sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
                 sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
-                sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"], ""));
+                sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.UrlDecode(StringHelper.SafeString(jReq["ttl"], "")));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
                 sb.AppendFormat(",\"qi\":\"{0}\"", req);
                 sb.Append(",\"lv\": {");

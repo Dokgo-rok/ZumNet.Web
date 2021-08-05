@@ -439,6 +439,7 @@
     <Content Include="images\users\siko.jpg" />
     <Content Include="images\users\sjaekim.jpg" />
     <Content Include="package.json" />
+    <Content Include="Scripts\Board\List.js" />
     <Content Include="Scripts\Controls\treeFolder.js" />
     <Content Include="Scripts\Controls\treeOrg.js" />
     <Content Include="Scripts\site.js" />
@@ -606,6 +607,7 @@
     <Content Include="Views\ZPage\Board.cshtml" />
     <Content Include="Views\ZPage\Docu.cshtml" />
     <Content Include="Views\Portal\AddCheck.cshtml" />
+    <Content Include="Views\Board\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Global.ko.resx" />
