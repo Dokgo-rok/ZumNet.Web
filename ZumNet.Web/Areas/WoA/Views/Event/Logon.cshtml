@@ -1,5 +1,6 @@
-﻿@{
-    ViewBag.Title = "로그온 정보";
+﻿@using ZumNet.Framework.Web.MultiLang
+@{
+	ViewBag.Title = MultiLangHelper.GetMultiLangPageResource(ViewBag.MultiLangItems, "title");
 }
 
 @section Styles {
@@ -112,7 +113,9 @@
 }
 
 <h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
-    <div>로그온 정보</div>
+    <div>
+        @MultiLangHelper.GetMultiLangPageResource(ViewBag.MultiLangItems, "title")
+    </div>
 </h4>
 
 <div class="card mb-4">

@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<category>
-	<langSet id="/WoA/Organ" langfile="woa_organ_index.lang" />
-	<langSet id="/WoA/Event" langfile="woa_event_index.lang" />
-	<langSet id="/WoA/Event/Logon" langfile="woa_event_logon.lang" />
-	<langSet id="/WoA/Event/WriteLog" langfile="woa_event_writelog.lang" />
-	<langSet id="/WoA/Event/ViewLog" langfile="woa_event_viewlog.lang" />
-</category>
