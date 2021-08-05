@@ -158,12 +158,23 @@ namespace ZumNet.Web.Controllers
                     return "필수값 누락!";
                 }
 
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+                int iCategoryId = Convert.ToInt32(jPost["ct"]);
+                int iFolderId = Convert.ToInt32(jPost["tgt"]);
+
                 switch (jPost["ot"].ToString())
                 {
                     case "G":
                         switch (jPost["xf"].ToString())
                         {
-                            case "":
+                            case "notice":
+                            case "bbs":
+                            case "file":
+                                using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+                                {
+                                    svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), Session["Admin"].ToString()
+                                                , jPost["permission"].ToString(), Convert.ToInt32(jPost["page"]), Convert.ToInt32(jPost["cnt"]), "SeqID", "DESC", "", "", "", "");
+                                }
                                 break;
 
                             default:

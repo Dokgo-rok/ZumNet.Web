@@ -76,27 +76,70 @@ $(function () {
         })
         .on('changed.jstree', function (e, d) {
             if (d.selected.length == 1) {
-                //var vPath = $("#__FolderTree").jstree("get_path", d.selected[0]);
-                var vPath = d.instance.get_path(d.selected[0]);
-                $('.z-ttl span').html(vPath.join(' / '));
-
-                var n = d.instance.get_node(d.selected[0]);
+                var n = d.instance.get_node(d.selected[0]); //alert(n.text)
                 //alert(n.li_attr.objecttype + ' : ' + n.li_attr.alias + ' : ' + n.li_attr.xfalias + ' : ' + n.li_attr.permission.substr(n.li_attr.permission.length-1, 1))
                 var vId = n.id.split('.');
+
+                if (vId[vId.length - 1] == _zw.V.fdid) return false;
+
+                //var vPath = $("#__FolderTree").jstree("get_path", d.selected[0]);
+                var vPath = d.instance.get_path(d.selected[0]);
+                //$('.z-ttl span').html(vPath.join(' / '));
+                var ttl = vPath.join(' / ')
+
+                
                 if (n.li_attr.permission.substr(n.li_attr.permission.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
-                    $.ajax({
-                        type: "POST",
-                        url: "/Common/List",
-                        data: '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xf:"' + n.li_attr.xfalias
-                            + '",permission:"' + n.li_attr.permission + '",page:1,count:20,tgt:"' + vId[vId.length - 1] + '"}',
-                        success: function (res) {
-                            if (res.substr(0, 2) == "OK") {
-                                $('#__ListView').html(res.substr(2));
-                                $('#__CtDashboard').addClass('d-none');
-                                $('#__ListView').removeClass('d-none');
-                            } else alert(res);
-                        }                        
-                    });
+                    //alert(_zw.base64.decode('e2N0OiIxMDMiLGN0YWxpYXM6ImJib2FyZCIsb3Q6IkciLHhmOiJiYnMiLGZkaWQ6IjE0NDk5IixvcG5vZGU6IjAuMC4xNDQ5OSIsdHRsOiIyMDIw64WE64+EIixwZXJtaXNzaW9uOiJTRkRFUlZTREVNV1JWIn0='))
+                    var encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xf:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + encodeURIComponent(ttl) + '",permission:"' + n.li_attr.permission + '"}');
+                    //encQi = encQi.replace(/ /gi, '+');
+                    switch (n.li_attr.xfalias) {
+                        case "notice":
+                        case "bbs":
+                        case "file":
+                            if (_zw.V.current.page.toLowerCase() == '/board/list') {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "?qi=",
+                                    data: '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xf:"' + n.li_attr.xfalias
+                                            + '",permission:"' + n.li_attr.permission + '",page:1,count:20,tgt:"' + vId[vId.length - 1]
+                                        + '",sort:"' + _zw.V.lv.sort + '",sortdir:"' + _zw.V.lv.sort + '",search:"' + _zw.V.lv.sort + '",searchtext:"",start:"",end:""}',
+                                    success: function (res) {
+                                        if (res.substr(0, 2) == "OK") {
+                                            $('.z-ttl span').html(ttl);
+                                            $('#__ListView').html(res.substr(2));
+                                            //$('#__CtDashboard').addClass('d-none');
+                                            //$('#__ListView').removeClass('d-none');
+                                            _zw.fn.org();
+                                            _zw.fn.loadList();
+                                        } else alert(res);
+                                    }                        
+                                });
+                            } else {
+                                window.location.href = '/Board/List?qi=' + encQi;
+                            }
+                            
+                            break;
+                        default:
+                            break;
+                    }
+                    
+
+
+                    //window.location.href = '?qi=' + window.atob(_zw.V.qi)
+                    //$.ajax({
+                    //    type: "POST",
+                    //    url: "/Common/List",
+                    //    data: '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xf:"' + n.li_attr.xfalias
+                    //            + '",permission:"' + n.li_attr.permission + '",page:1,count:20,tgt:"' + vId[vId.length - 1]
+                    //        + '",sort:"' + _zw.V.lv.sort + '",sortdir:"' + _zw.V.lv.sort + '",search:"' + _zw.V.lv.sort + '",searchtext:"",start:"",end:""}',
+                    //    success: function (res) {
+                    //        if (res.substr(0, 2) == "OK") {
+                    //            $('#__ListView').html(res.substr(2));
+                    //            $('#__CtDashboard').addClass('d-none');
+                    //            $('#__ListView').removeClass('d-none');
+                    //        } else alert(res);
+                    //    }                        
+                    //});
                 }
             }
         })

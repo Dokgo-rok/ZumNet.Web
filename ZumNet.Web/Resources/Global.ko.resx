@@ -160,7 +160,7 @@
     <value>출근하기</value>
   </data>
   <data name="Home" xml:space="preserve">
-    <value>로그인</value>
+    <value>홈</value>
   </data>
   <data name="LangSet" xml:space="preserve">
     <value>언어 설정</value>
