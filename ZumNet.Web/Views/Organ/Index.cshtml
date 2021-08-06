@@ -6,6 +6,7 @@
     ViewBag.Title = "크레신 조직도";
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
+    string sIconType = "";
     StringBuilder sb = new StringBuilder();
     sb.Append("{");
     sb.AppendFormat("selected:\"{0}\"", ViewBag.TreeOpenNode);
@@ -16,13 +17,23 @@
 
     foreach (DataRow row in ViewBag.OrgTree)
     {
+        if (row["NodeLevel"].ToString() == "0")
+        {
+            sIconType = "root";
+        }
+        else
+        {
+            sIconType = "";
+        }
+
         if (i > 0) { sb.Append(",{"); }
         else { sb.Append("{"); }
 
         sb.AppendFormat("id:\"{0}\"", row["GR_ID"].ToString());
         sb.AppendFormat(",parent:\"{0}\"", row["MemberOf"].ToString() == "0" ? "#" : row["MemberOf"].ToString());
         sb.AppendFormat(",text:\"{0}\"", row["DisplayName"].ToString());
-        sb.AppendFormat(",icon:\"{0}\"", "");
+        //sb.AppendFormat(",icon:\"{0}\"", "");
+        sb.AppendFormat(",type:\"{0}\"", sIconType);
 
         if (v.Contains(row["GR_ID"].ToString()))
         {

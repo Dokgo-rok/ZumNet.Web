@@ -77,7 +77,7 @@ namespace ZumNet.Web.Controllers
             }
 
             rt = "잘못된 경로로 접근했습니다!!";
-            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0")
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
@@ -89,7 +89,7 @@ namespace ZumNet.Web.Controllers
 
             using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
             {
-                svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), Session["Admin"].ToString(), "", 1, 20, "SeqID", "DESC", "", "", "", "");
+                svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), Session["Admin"].ToString(), ViewBag.R.current.acl.ToString(), 1, 20, "SeqID", "DESC", "", "", "", "");
             }
 
             if (svcRt != null && svcRt.ResultCode == 0)

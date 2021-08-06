@@ -61,7 +61,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Admin Tool과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Admin Tool ~~~~~~~과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AdminTool {
             get {

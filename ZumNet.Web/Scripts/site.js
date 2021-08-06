@@ -160,7 +160,7 @@ $(function () {
                     data: '{locale:"' + $(this).attr('data-navval') + '"}',
                     success: function (res) {
                         if (res == "OK") window.location.reload();
-                        else alert(res);
+                        else bootbox.alert(res);
                     }
                 });
 

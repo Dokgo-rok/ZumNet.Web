@@ -7,7 +7,11 @@ $(function () {
             core: {
                 data: _zw.V.tree.data
             },
-            plugins: ["wholerow"]
+            plugins: ["types", "wholerow"],
+            types: {
+                default: { icon: "fas fa-user-friends text-warning" },
+                root: { icon: "fas fa-city text-indigo" }
+            }
         })
         .on('loaded.jstree', function (e, data) {
             //data.instance.open_node('1350', function () {

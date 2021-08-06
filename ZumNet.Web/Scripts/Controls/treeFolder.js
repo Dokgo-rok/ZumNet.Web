@@ -51,10 +51,14 @@ $(function () {
                     data: function (node) {
                         var lvl = node.id == '#' ? '0' : node.li_attr.level;
                         var selType = node.id == '#' ? '' : node.li_attr.objecttype;
-                        //console.log(JSON.stringify(node));
-                        //console.log('id => ' + node.id + ' : selType => ' + selType + ' : level => ' + lvl);
+                        var acl = node.id == '#' ? _zw.V.current.acl : node.li_attr.permission;
+                        var openNode = '';
+                        if (_zw.V.opnode != '' && _zw.V.opnode.indexOf('.') != -1) {
+                            var v = _zw.V.opnode.split('.');
+                            openNode = node.id == v[v.length - 1] ? '' : _zw.V.opnode;
+                        }
 
-                        return '{ct:"' + _zw.V.ct + '",selected:"' + node.id + '",seltype:"' + selType + '",lvl:"' + lvl + '",open:"' + _zw.V.opnode + '"}'
+                        return '{ct:"' + _zw.V.ct + '",selected:"' + node.id + '",seltype:"' + selType + '",lvl:"' + lvl + '",open:"' + openNode + '",acl:"' + acl + '"}'
                     },
                     dataType: 'json',
                     beforeSend: function () {//jstree ajax event와 충돌하는 듯....pace.js가 이벤트 종료가 안됨!!
@@ -62,10 +66,28 @@ $(function () {
                     },
                 }
             },
-            plugins: ["types", "wholerow"]
+            plugins: ["types", "wholerow"],
             //plugins: ["dnd", "massload", "search", "state", "types", "unique", "wholerow", "changed", "conditionalselect"]
+            types: {
+                default: { icon: "fas fa-folder" },
+                folder: { icon: "fas fa-folder text-warning" },
+                //fdopen: { icon: "fas fa-folder-open text-warning" },
+                group: { icon: "fas fa-user-friends" },
+                user: { icon: "fas fa-user" },
+                cat: { icon: "fas fa-desktop text-indigo" },
+                res: { icon: "fas fa-chalkboard text-danger" },
+                sch: { icon: "fas fa-calendar-alt text-danger" },
+                lnk: { icon: "fas fa-globe text-blue" },
+                short: { icon: "fas fa-folder" },
+                fav: { icon: "fas fa-star text-warning" },
+                shared: { icon: "fas fa-share-square text-teal" }
+            }
         })
-        .on('loaded.jstree', function (e, data) {
+        .on('loaded.jstree', function (e, d) {
+            //if (d.selected && d.selected.length == 1) {
+            //    var n = d.instance.get_node(d.selected[0]);
+            //    n.find("a").attr('aria-selected', true); n.find("a").addClass('jstree-clicked');
+            //}
             //alert(_zw.V.tree.selected)
             //data.instance.open_node('1350', function () {
 
@@ -85,8 +107,7 @@ $(function () {
                 //var vPath = $("#__FolderTree").jstree("get_path", d.selected[0]);
                 var vPath = d.instance.get_path(d.selected[0]);
                 //$('.z-ttl span').html(vPath.join(' / '));
-                var ttl = vPath.join(' / ')
-
+                var ttl = vPath.join(' / ');
                 
                 if (n.li_attr.permission.substr(n.li_attr.permission.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
                     //alert(_zw.base64.decode('e2N0OiIxMDMiLGN0YWxpYXM6ImJib2FyZCIsb3Q6IkciLHhmOiJiYnMiLGZkaWQ6IjE0NDk5IixvcG5vZGU6IjAuMC4xNDQ5OSIsdHRsOiIyMDIw64WE64+EIixwZXJtaXNzaW9uOiJTRkRFUlZTREVNV1JWIn0='))
@@ -97,27 +118,16 @@ $(function () {
                         case "bbs":
                         case "file":
                             if (_zw.V.current.page.toLowerCase() == '/board/list') {
-                                $.ajax({
-                                    type: "POST",
-                                    url: "?qi=",
-                                    data: '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xf:"' + n.li_attr.xfalias
-                                            + '",permission:"' + n.li_attr.permission + '",page:1,count:20,tgt:"' + vId[vId.length - 1]
-                                        + '",sort:"' + _zw.V.lv.sort + '",sortdir:"' + _zw.V.lv.sort + '",search:"' + _zw.V.lv.sort + '",searchtext:"",start:"",end:""}',
-                                    success: function (res) {
-                                        if (res.substr(0, 2) == "OK") {
-                                            $('.z-ttl span').html(ttl);
-                                            $('#__ListView').html(res.substr(2));
-                                            //$('#__CtDashboard').addClass('d-none');
-                                            //$('#__ListView').removeClass('d-none');
-                                            _zw.fn.org();
-                                            _zw.fn.loadList();
-                                        } else alert(res);
-                                    }                        
-                                });
+                                _zw.V.current.acl = n.li_attr.permission;
+                                _zw.V.fdid = vId[vId.length - 1];
+                                _zw.V.ttl = ttl;
+
+                                _zw.fn.initLv(vId[vId.length - 1]);
+                                _zw.fn.loadList();
+
                             } else {
                                 window.location.href = '/Board/List?qi=' + encQi;
                             }
-                            
                             break;
                         default:
                             break;
@@ -144,6 +154,7 @@ $(function () {
             }
         })
         .on("open_node.jstree", function (e, d) {
+            //$("#" + d.node.id).find('i').eq(1).toggleClass('fa-folder', 'fa-folder-open');
             //var p = d.instance.get_node(d.node.id);
             ////p.remove(p.children);
             //p.state.loaded = true; //중요 !!!!!!!

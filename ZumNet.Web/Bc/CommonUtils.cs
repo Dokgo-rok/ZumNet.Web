@@ -283,7 +283,7 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
                 sb.AppendFormat(",\"date\":\"{0}\"", DateTime.Now.ToString("yyyy-MM-dd"));
                 sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
-                sb.AppendFormat(",\"acl\":\"{0}\"", "");
+                sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["permission"], ""));
                 sb.AppendFormat(",\"chief\":\"{0}\"", "");
                 sb.AppendFormat(",\"operator\":\"{0}\"", "");
                 sb.Append("}"); //current

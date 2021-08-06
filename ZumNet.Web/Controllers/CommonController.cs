@@ -35,20 +35,29 @@ namespace ZumNet.Web.Controllers
                     return "필수값 누락!";
                 }
 
+                if (jPost["ct"].ToString() == "" || jPost["ct"].ToString() == "0")
+                {
+                    return "[CategoryID] 누락!";
+                }
+
                 ZumNet.Framework.Core.ServiceResult svcRt = null;
                 string sSelected = jPost["selected"].ToString() == "#" ? "" : jPost["selected"].ToString();
                 int iLevel = StringHelper.SafeInt(jPost["lvl"], 0);
 
+                //jstree ajax 방식일 경우 opennode 까지 폴더들을 미리 불러올 필요 없음 !! (StringHelper.SafeString(jPost["open"], ""))
+                //selected : 0.0.13257, open : 0.0.12851
+                //ResultDataDetail openNode 값 : 0.0.13257;0.0.12851
+
                 using (ZumNet.BSL.ServiceBiz.CommonBiz com = new ZumNet.BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = com.GetTreeInformation(1, StringHelper.SafeInt(jPost["ct"], 103), sSelected
-                                        , StringHelper.SafeString(jPost["seltype"], ""), iLevel
-                                        , StringHelper.SafeInt(jPost["ur"], 101374), StringHelper.SafeString(jPost["open"], "")
-                                        , "Y", "", 0, 0, "");
+                    svcRt = com.GetTreeInformation(1, Convert.ToInt32(jPost["ct"]), sSelected, StringHelper.SafeString(jPost["seltype"], "")
+                                        , iLevel, Convert.ToInt32(Session["URID"]), StringHelper.SafeString(jPost["open"], "")
+                                        , Session["Admin"].ToString(), StringHelper.SafeString(jPost["acl"], ""), 0, 0, "");
                 }
                 
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
+                    string sIconType = "";
                     StringBuilder sb = new StringBuilder();
                     sb.Append("[");
 
@@ -59,15 +68,38 @@ namespace ZumNet.Web.Controllers
                     {
                         if (Convert.ToInt32(row["NodeLevel"]) >= iLevel + 2) break; //jstree ajax 처리시 여러 레벨 가져올 경우 오류 발생으로 막음
 
+                        if (row["ObjectType"].ToString() == "CT") sIconType = "cat";
+                        else if (row["ObjectType"].ToString() == "B" || row["ObjectType"].ToString() == "W" || row["ObjectType"].ToString() == "R") sIconType = "res";
+                        else if (row["ObjectType"].ToString() == "C" || row["ObjectType"].ToString() == "D" || row["ObjectType"].ToString() == "T") sIconType = "group";
+                        else if (row["ObjectType"].ToString() == "P") sIconType = "user";
+                        else if (row["ObjectType"].ToString() == "S") sIconType = "sch";
+                        else if (row["ObjectType"].ToString() == "L") sIconType = "lnk";
+                        else
+                        {
+                            if (row["AttType"].ToString() == "S") sIconType = "short";
+                            else if (row["AttType"].ToString() == "F") sIconType = "fav";
+                            else if (row["Shared"].ToString() == "Y") sIconType = "shared";
+                            else
+                            {
+                                //sIconType = (sSelected == row["NodeID"].ToString() || v.Contains(row["NodeID"].ToString())) ? "fdopen" : "fdclose";
+                                sIconType = "folder";
+                            }
+                        }
+
                         if (i > 0) { sb.Append(",{"); }
                         else { sb.Append("{"); }
 
                         sb.AppendFormat("\"id\":\"{0}\"", row["NodeID"].ToString());
                         sb.AppendFormat(",\"parent\":\"{0}\"", row["MemberOf"].ToString() == "0.0.0" ? "#" : row["MemberOf"].ToString());
                         sb.AppendFormat(",\"text\":\"{0}\"", row["DisplayName"].ToString());
-                        sb.AppendFormat(",\"icon\":\"{0}\"", "");
+                        //sb.AppendFormat(",\"icon\":\"{0}\"", "");
+                        sb.AppendFormat(",\"type\":\"{0}\"", sIconType);
 
-                        if (v.Contains(row["NodeID"].ToString()))
+                        if (sSelected == row["NodeID"].ToString())
+                        {
+                            sb.Append(",\"state\":{\"opened\":true,\"disabled\":false,\"selected\":true}");
+                        }
+                        else if (v.Contains(row["NodeID"].ToString()))
                         {
                             if (v[v.Length - 1] == row["NodeID"].ToString())
                             {
