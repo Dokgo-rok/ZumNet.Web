@@ -10,6 +10,7 @@ using ZumNet.BSL.ServiceBiz;
 using System.Configuration;
 using System.Globalization;
 using System.Threading;
+using ZumNet.Framework.Model;
 
 namespace ZumNet.Web.Bc
 {
@@ -108,8 +109,13 @@ namespace ZumNet.Web.Bc
                     if (svcRt.ResultDataSet.Tables[0].Rows.Count == 1)
                     {
                         DataRow dr = svcRt.ResultDataSet.Tables[0].Rows[0];
+
                         if (dr["PerLogon"].ToString() == "Y")
                         {
+                            // MemberModel 객체 생성하여 세션에 저장
+                            MemberModel model = new MemberModel(svcRt.ResultDataTable);
+                            HttpContext.Current.Session.Add("UserInfo", model);
+
                             HttpContext.Current.Session["URID"] = dr["UserID"].ToString();
                             HttpContext.Current.Session["URACCOUNT"] = dr["MailAccount"].ToString();
                             HttpContext.Current.Session["LogonID"] = dr["LogonID"].ToString();

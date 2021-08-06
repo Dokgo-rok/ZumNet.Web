@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?> 
+<languages>
+	<lang code="KO">
+		<item id="title"><![CDATA[로그온 정보 - 어드민 사용]]></item>
+		<item id="title1"><![CDATA[로그온 정보22222]]></item>
+	</lang>
+	<lang code="EN">
+		<item id="title"><![CDATA[Logon Information EN]]></item>
+		<item id="title1"><![CDATA[Logon Information EN1]]></item>
+	</lang>
+	<lang code="ZH">
+		<item id="title"><![CDATA[Logon Information ZH]]></item>
+		<item id="title1"><![CDATA[Logon Information ZH1]]></item>
+	</lang>
+	<lang code="JA">
+		<item id="title"><![CDATA[Logon Information JA]]></item>
+		<item id="title1"><![CDATA[Logon Information JA1]]></item>
+	</lang>
+</languages>

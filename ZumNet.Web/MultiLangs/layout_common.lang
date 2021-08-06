@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?> 
+<languages>
+	<lang code="KO">
+		<item id="AdminTool"><![CDATA[관리툴 파일]]></item>
+		<item id="MyInfo"><![CDATA[내 정보 파일]]></item>
+		<item id="WorkCond"><![CDATA[근무상태 파일]]></item>
+		<item id="OrganMgr"><![CDATA[조직관리자 파일]]></item>
+		<item id="Logout"><![CDATA[로그아웃 파일]]></item>
+	</lang>
+	<lang code="EN">
+		<item id="AdminTool"><![CDATA[Admin Tool]]></item>
+		<item id="MyInfo"><![CDATA[My Info file]]></item>
+		<item id="WorkCond"><![CDATA[Working Condition file]]></item>
+		<item id="OrganMgr"><![CDATA[Organization Mgr file]]></item>
+		<item id="Logout"><![CDATA[Log Out file]]></item>
+	</lang>
+	<lang code="ZH">
+		<item id="AdminTool"><![CDATA[관리툴 파일]]></item>
+		<item id="MyInfo"><![CDATA[내 정보 파일]]></item>
+		<item id="WorkCond"><![CDATA[근무상태 파일]]></item>
+		<item id="OrganMgr"><![CDATA[조직관리자 파일]]></item>
+		<item id="Logout"><![CDATA[로그아웃 파일]]></item>
+	</lang>
+	<lang code="JA">
+		<item id="AdminTool"><![CDATA[관리툴 파일]]></item>
+		<item id="MyInfo"><![CDATA[내 정보 파일]]></item>
+		<item id="WorkCond"><![CDATA[근무상태 파일]]></item>
+		<item id="OrganMgr"><![CDATA[조직관리자 파일]]></item>
+		<item id="Logout"><![CDATA[로그아웃 파일]]></item>
+	</lang>
+</languages>

@@ -1,6 +1,7 @@
 ﻿@using System.Data;
 @using System.Text;
 @using System.Threading;
+@using ZumNet.Framework.Web.MultiLang
 
 @{
     bool hideToggle = ViewData["LayoutNavbarHideToggle"] != null && ViewData["LayoutNavbarHideToggle"].ToString() == "True";
@@ -175,10 +176,10 @@
                 </a>
                 @if (ViewBag.LinkSite != null && ViewBag.LinkSite.Tables.Count > 0)
                 {
-                <div class="dropdown-menu dropdown-menu-right mt-0 py-0" style="min-width: 26rem; width: 26rem">
-                    <div class="bg-teal text-center py-1"><a class="dropdown-item z-wave data-navmenu text-white" href="/LinkSite?qi=@vLinkSiteQuery[1]">@vLinkSiteQuery[0]</a></div>
-                    @Html.Raw(sb.ToString())
-                </div>
+                    <div class="dropdown-menu dropdown-menu-right mt-0 py-0" style="min-width: 26rem; width: 26rem">
+                        <div class="bg-teal text-center py-1"><a class="dropdown-item z-wave data-navmenu text-white" href="/LinkSite?qi=@vLinkSiteQuery[1]">@vLinkSiteQuery[0]</a></div>
+                        @Html.Raw(sb.ToString())
+                    </div>
                 }
             </li>
 
@@ -253,19 +254,19 @@
                     <span class="px-0 mr-lg-0 ml-2 ml-lg-1">@Session["URName"]</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right mt-0">
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-user mr-2"></i>@Resources.Global.MyInfo</a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-clock mr-2"></i>@Resources.Global.WorkCond</a>
+                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-user mr-2"></i>@MultiLangHelper.GetMultiLangCommonResource("layout_common", "MyInfo")</a>
+                    <a class="dropdown-item" href="javascript:void(0)"><i class="fe-clock mr-2"></i>@MultiLangHelper.GetMultiLangCommonResource("layout_common", "WorkCond")</a>
                     <a class="dropdown-item" href="@Url.Action("Index", "Organ", new { Area = "", qi = @vOrganQuery[1] })"><i class="fe-users mr-2"></i>@vOrganQuery[0]</a>
                     <div class="dropdown-divider"></div>
                     @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin") //fas fa-tools, fe-wifi
                     {
-                        <a class="dropdown-item" href="/WoA/Dashboard"><i class="fe-settings mr-2"></i>@Resources.Global.AdminTool</a>
+                        <a class="dropdown-item" href="/WoA/Dashboard"><i class="fe-settings mr-2"></i>@MultiLangHelper.GetMultiLangCommonResource("layout_common", "AdminTool")</a>
                     }
                     else if (Session["WoA"].ToString() == "orgadmin")
                     {
-                        <a class="dropdown-item" href="/WoA/Organ"><i class="fe-settings mr-2"></i>@Resources.Global.OrganMgr</a>
+                        <a class="dropdown-item" href="/WoA/Organ"><i class="fe-settings mr-2"></i>@MultiLangHelper.GetMultiLangCommonResource("layout_common", "OrganMgr")</a>
                     }
-                    <a class="dropdown-item" href="/Account/Logout"><i class="fe-power mr-2 text-danger"></i>@Resources.Global.Logout</a>
+                    <a class="dropdown-item" href="/Account/Logout"><i class="fe-power mr-2 text-danger"></i>@MultiLangHelper.GetMultiLangCommonResource("layout_common", "Logout")</a>
                 </div>
             </li>
         </ul>
@@ -282,16 +283,16 @@
                     <div class="h6 mb-0 mt-2 font-weight-normal d-none d-sm-block">(@Session["LogonID"])</div>
                 </div>
                 @*<div class="h5 mb-0 mt-2">@Session["URName"] <span class="h6 font-weight-normal d-none d-sm-inline-block">(@Session["LogonID"])</span></div>*@
-                
+
                 <div class="align-self-end">
-                @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin") //fas fa-tools, fe-wifi
-                {
-                    <a class="text-large mr-3" href="/WoA/Dashboard" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.AdminTool"><i class="fe-settings"></i></a>
-                }
-                else if (Session["WoA"].ToString() == "orgadmin")
-                {
-                    <a class="text-large mr-3" href="/WoA/Organ" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.OrganMgr"><i class="fe-settings"></i></a>
-                }
+                    @if (Session["WoA"].ToString() == "sysadmin" || Session["WoA"].ToString() == "dnadmin") //fas fa-tools, fe-wifi
+                    {
+                        <a class="text-large mr-3" href="/WoA/Dashboard" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.AdminTool"><i class="fe-settings"></i></a>
+                    }
+                    else if (Session["WoA"].ToString() == "orgadmin")
+                    {
+                        <a class="text-large mr-3" href="/WoA/Organ" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.OrganMgr"><i class="fe-settings"></i></a>
+                    }
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -308,7 +309,7 @@
                     <a class="btn text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.WorkCond"><i class="fe-clock"></i></a>
                     <a class="btn text-large" href="@Url.Action("Index", "Organ", new { Area = "", qi = @vOrganQuery[1] })" data-toggle="tooltip" data-placement="bottom" title="@vOrganQuery[0]"><i class="fe-users"></i></a>
 
-                    
+
 
                     <a class="btn text-large text-warning" href="/Account/Logout" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Logout"><i class="fe-power"></i></a>
                 </div>
@@ -317,7 +318,7 @@
 
                 <div class="d-flex justify-content-between">
                     <a class="btn text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.FindPhoneNum"><i class="fe-phone"></i></a>
-                    
+
                     <a class="linksite-toggler btn text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@vLinkSiteQuery[0]">
                         <i class="fas fa-map-marker-alt noti-icon"></i>
                     </a>
