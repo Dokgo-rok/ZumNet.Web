@@ -87,15 +87,55 @@ namespace ZumNet.Web.Controllers
             int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
             int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
 
+            //권한체크
+            if (Session["Admin"].ToString() == "Y")
+            {
+                ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+
+                    ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                    ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+
+                    //svcRt = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
+                    //xfalias에 따라 폴더환경설정 고정 (공지 경우만 popup, topline 사용)
+                }
+            }
+
+            rt = "권한이 없습니다!!";
+            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+            {
+                return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ViewBag.R.lv["page"] = "1";
+            ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("").ToString();
+            ViewBag.R.lv["basesort"] = "SeqID";
+            ViewBag.R.lv["sort"] = "SeqID";
+
             using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
             {
-                svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), Session["Admin"].ToString(), ViewBag.R.current.acl.ToString(), 1, 20, "SeqID", "DESC", "", "", "", "");
+                if (ViewBag.R.xfalias.ToString() == "notice")
+                {
+                    svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
+                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC", "", "", "", "");
+                }
+                else
+                {
+                    svcRt = bd.GetMessgaeListInfo(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
+                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC", "", "", "", "");
+                }
             }
 
             if (svcRt != null && svcRt.ResultCode == 0)
             {
                 ViewBag.BoardList = svcRt.ResultDataRowCollection;
-                ViewBag.BoardTotal = svcRt.ResultItemCount;
+                //ViewBag.BoardTotal = svcRt.ResultItemCount;
+                ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
             }
             else
             {
@@ -111,40 +151,90 @@ namespace ZumNet.Web.Controllers
         [Authorize]
         public string List()
         {
-            string strView = "";
-            if (Request.IsAjaxRequest())
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+           
+            if (rt == "")
             {
-                JObject jPost = CommonUtils.PostDataToJson();
-
-                if (jPost == null || jPost.Count == 0)
+                try
                 {
-                    return "필수값 누락!";
-                }
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
 
-                ZumNet.Framework.Core.ServiceResult svcRt = null;
-                using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
-                using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
-                {
-                    svcRt = bd.GetMessgaeListInfoAddTopLine(1, Convert.ToInt32(jPost["ct"]), Convert.ToInt32(jPost["tgt"])
-                                                , Convert.ToInt32(Session["URID"]), Session["Admin"].ToString(), ""
-                                                , Convert.ToInt32(jPost["page"]), Convert.ToInt32(jPost["count"])
-                                                , "SeqID", "DESC", "", "", "", "");
-                }
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
 
-                if (svcRt != null && svcRt.ResultCode == 0)
-                {
-                    ViewBag.BoardList = svcRt.ResultDataRowCollection;
-                    ViewBag.BoardTotal = svcRt.ResultItemCount;
+                    sPos = "200";
+                    int iCategoryId = Convert.ToInt32(jPost["ct"]);
+                    int iFolderId = Convert.ToInt32(jPost["lv"]["tgt"]);
+                    string sOperator = "N";
+                    string sAcl = "";
 
-                    strView = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListView", ViewBag);
+                    //권한체크
+                    if (Session["Admin"].ToString() == "Y")
+                    {
+                        sOperator = "Y";
+                    }
+                    else
+                    {
+                        sPos = "300";
+                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        {
+                            svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+
+                            sPos = "310";
+                            sOperator = svcRt.ResultDataDetail["operator"].ToString();
+                            sAcl = svcRt.ResultDataDetail["acl"].ToString();
+                        }
+                    }
+
+                    if (sOperator == "N" && (sAcl == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(sAcl.Substring(0, 6), "V")))
+                    {
+                        return "권한이 없습니다!!";
+                    }
+
+                    sPos = "400";
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        if (jPost["xfalias"].ToString() == "notice")
+                        {
+                            svcRt = bd.GetMessgaeListInfoAddTopLine(1, Convert.ToInt32(jPost["ct"]), Convert.ToInt32(jPost["lv"]["tgt"]), Convert.ToInt32(Session["URID"])
+                                                    , sOperator, sAcl, Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
+                                                    , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString()
+                                                    , jPost["lv"]["searchtext"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString());
+                        }
+                        else
+                        {
+                            svcRt = bd.GetMessgaeListInfo(1, Convert.ToInt32(jPost["ct"]), Convert.ToInt32(jPost["lv"]["tgt"]), Convert.ToInt32(Session["URID"])
+                                                    , sOperator, sAcl, Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
+                                                    , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString()
+                                                    , jPost["lv"]["searchtext"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString());
+                        }
+
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "500";
+
+                        ViewBag.BoardList = svcRt.ResultDataRowCollection;
+                        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListView", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "_ListPagination", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
                 }
-                else
+                catch(Exception ex)
                 {
-                    //에러페이지
-                    strView = svcRt.ResultMessage;
+                    rt = "[" + sPos + "] " + ex.Message;
                 }
-            }
-            return strView;
+            }            
+            return rt;
         }
     }
 }

@@ -113,8 +113,8 @@ namespace ZumNet.Web.Bc
                         if (dr["PerLogon"].ToString() == "Y")
                         {
                             // MemberModel 객체 생성하여 세션에 저장
-                            MemberModel model = new MemberModel(svcRt.ResultDataTable);
-                            HttpContext.Current.Session.Add("UserInfo", model);
+                            //MemberModel model = new MemberModel(svcRt.ResultDataTable);
+                            //HttpContext.Current.Session.Add("UserInfo", model);
 
                             HttpContext.Current.Session["URID"] = dr["UserID"].ToString();
                             HttpContext.Current.Session["URACCOUNT"] = dr["MailAccount"].ToString();

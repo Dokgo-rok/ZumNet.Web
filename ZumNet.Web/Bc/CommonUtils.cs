@@ -173,6 +173,88 @@ namespace ZumNet.Web.Bc
             return (b.IsMatch(userAgent) || v.IsMatch(userAgent.Substring(0, 4)));
         }
         #endregion
+
+        #region [리스트뷰 게시물갯수 쿠키]
+        /// <summary>
+        /// 쿠키 설정
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public static void SetCookie(string name, string value)
+        {
+            if (value != "")
+            {
+                HttpCookie ck = HttpContext.Current.Request.Cookies[name];
+                if (ck == null)
+                {
+                    ck = new HttpCookie(name);
+                    ck.Name = name;
+                }
+
+                ck.Value = value;
+                ck.Expires = DateTime.Now.AddMonths(1); //기본 한달
+
+                HttpContext.Current.Response.Cookies.Add(ck);
+            }
+        }
+
+        /// <summary>
+        /// 쿠키값 가져오기
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string GetCookie(string name)
+        {
+            HttpCookie ck = HttpContext.Current.Request.Cookies[name];
+
+            return ck != null ? ZumNet.Framework.Util.StringHelper.SafeString(ck.Value, "") : "";
+        }
+
+        /// <summary>
+        /// 쿠키 리스트뷰 게시물 갯수 설정
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="value"></param>
+        public static void SetLvCookie(string category, string value)
+        {
+            if (value != "")
+            {
+                string sName = "";
+                if (category.ToLower() == "ea") sName = "eaLvCount";
+                else if (category.ToLower() == "doc") sName = "docLvCount";
+                else sName = "bbsLvCount";
+
+                HttpCookie ck = HttpContext.Current.Request.Cookies[sName];
+                if (ck == null)
+                {
+                    ck = new HttpCookie(sName);
+                    ck.Name = sName;
+                }
+
+                ck.Value = value;
+                ck.Expires = DateTime.Now.AddYears(1);
+
+                HttpContext.Current.Response.Cookies.Add(ck);
+            }
+        }
+
+        /// <summary>
+        /// 쿠키 리스트뷰 게시물 갯수 가져오기
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        public static int GetLvCookie(string category)
+        {
+            string sName = "";
+            if (category.ToLower() == "ea") sName = "eaLvCount";
+            else if (category.ToLower() == "doc") sName = "docLvCount";
+            else sName = "bbsLvCount";
+
+            HttpCookie ck = HttpContext.Current.Request.Cookies[sName];
+            
+            return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, 20) : 20;
+        }
+        #endregion
     }
 
     /// <summary>
@@ -291,6 +373,8 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));
                 sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"], ""));
                 sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
+                sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"], ""));
+                sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"], ""));
                 sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
                 sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.UrlDecode(StringHelper.SafeString(jReq["ttl"], "")));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
@@ -307,6 +391,7 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"start\":\"{0}\"", "");
                 sb.AppendFormat(",\"end\":\"{0}\"", "");
                 sb.AppendFormat(",\"basesort\":\"{0}\"", "");
+                sb.AppendFormat(",\"boundary\":\"{0}\"", CommonUtils.BOUNDARY());
                 sb.Append("}"); //lv (리스트뷰 요청 정보)
                 sb.AppendFormat(",\"tree\":\"{0}\"", "");
 
@@ -319,6 +404,83 @@ namespace ZumNet.Web.Bc
                 strReturn = ex.Message;
             }
 
+            return strReturn;
+        }
+
+        /// <summary>
+        /// Ajax 값 ViewBag 할당
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <returns></returns>
+        public static string AjaxInit(this Controller ctrl)
+        {
+            string strReturn;
+
+            if (ctrl.Request.IsAjaxRequest())
+            {
+                JObject jReq = CommonUtils.PostDataToJson();
+
+                if (jReq == null || jReq.Count == 0)
+                {
+                    strReturn = "필수값 누락!";
+                }
+                else
+                {
+                    try
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append("{");
+                        sb.Append("\"current\": {");
+                        sb.AppendFormat("\"urid\":\"{0}\"", HttpContext.Current.Session["URID"].ToString());
+                        sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
+                        sb.AppendFormat(",\"deid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
+                        sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
+                        sb.AppendFormat(",\"date\":\"{0}\"", DateTime.Now.ToString("yyyy-MM-dd"));
+                        sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
+                        sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["permission"], ""));
+                        sb.AppendFormat(",\"chief\":\"{0}\"", "");
+                        sb.AppendFormat(",\"operator\":\"{0}\"", "");
+                        sb.Append("}"); //current
+                        sb.AppendFormat(",\"mode\":\"{0}\"", StringHelper.SafeString(jReq["M"], ""));
+                        sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));
+                        sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"], ""));
+                        //sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
+                        sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"], ""));
+                        sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"], ""));
+                        sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
+                        //sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.UrlDecode(StringHelper.SafeString(jReq["ttl"], "")));
+                        //sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
+                        //sb.AppendFormat(",\"qi\":\"{0}\"", req);
+                        sb.Append(",\"lv\": {");
+                        sb.AppendFormat("\"tgt\":\"{0}\"", jReq["tgt"].ToString());
+                        sb.AppendFormat(",\"page\":\"{0}\"", jReq["page"].ToString());
+                        sb.AppendFormat(",\"count\":\"{0}\"", jReq["count"].ToString());
+                        sb.AppendFormat(",\"total\":\"{0}\"", "");
+                        sb.AppendFormat(",\"sort\":\"{0}\"", jReq["sort"].ToString());
+                        sb.AppendFormat(",\"sortdir\":\"{0}\"", jReq["sortdir"].ToString());
+                        sb.AppendFormat(",\"search\":\"{0}\"", jReq["search"].ToString());
+                        sb.AppendFormat(",\"searchtext\":\"{0}\"", jReq["searchtext"].ToString());
+                        sb.AppendFormat(",\"start\":\"{0}\"", jReq["start"].ToString());
+                        sb.AppendFormat(",\"end\":\"{0}\"", jReq["end"].ToString());
+                        sb.AppendFormat(",\"basesort\":\"{0}\"", jReq["basesort"].ToString());
+                        sb.AppendFormat(",\"boundary\":\"{0}\"", jReq["boundary"].ToString());
+                        sb.Append("}"); //lv (리스트뷰 요청 정보)
+                        sb.Append("}");
+
+                        ctrl.ViewBag.R = JObject.Parse(sb.ToString());
+
+                        strReturn = "";
+                    }
+                    catch (Exception ex)
+                    {
+                        strReturn = ex.Message;
+                    }
+                }
+            }
+            else
+            {
+                strReturn = "잘못된 경로로 접근했습니다!";
+            }
             return strReturn;
         }
     }

@@ -610,6 +610,7 @@
     <Content Include="Views\ZPage\Docu.cshtml" />
     <Content Include="Views\Portal\AddCheck.cshtml" />
     <Content Include="Views\Board\List.cshtml" />
+    <Content Include="Views\Board\_ListPagination.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Global.ko.resx" />

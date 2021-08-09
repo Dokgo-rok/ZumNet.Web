@@ -1,30 +1,32 @@
 ﻿@using System.Data;
 
-@foreach (DataRow row in ViewBag.BoardList)
-{
-    <li class="list-group-item d-flex container-p-x">
-        <div class="message-checkbox mr-1">
-            <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input">
-                <span class="custom-control-label"></span>
-            </label>
-        </div>
-        <a href="javascript:void(0)" class="ion ion-md-star-outline d-block text-lighter text-big mr-3"></a>
+<ul id="__ListView" class="list-group messages-list">
+    @foreach (DataRow row in ViewBag.BoardList)
+    {
+        <li class="list-group-item d-flex container-p-x">
+            <div class="message-checkbox mr-1">
+                <label class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input">
+                    <span class="custom-control-label"></span>
+                </label>
+            </div>
+            <a href="javascript:void(0)" class="ion ion-md-star-outline d-block text-lighter text-big mr-3"></a>
 
-        <div class="order-sm-2 wd-20 wd-xl-12 wd-lg-8 t-sm">
-            <span class="flex-fill">@row["CreatorName"]</span>
-        </div>
+            <div class="order-sm-2 wd-20 wd-xl-12 wd-lg-8 t-sm">
+                <span class="flex-fill">@row["CreatorName"]</span>
+            </div>
 
-        <div class="order-sm-4 wd-xl-10 wd-lg-15 wd-40 t-sm docu">
-            <span class="flex-fill">@row["CreatorDept"]</span>
-        </div>
+            <div class="order-sm-4 wd-xl-10 wd-lg-15 wd-40 t-sm docu">
+                <span class="flex-fill">@row["CreatorDept"]</span>
+            </div>
 
-        <div class="order-sm-last wd-xl-8 wd-lg-12 wd-20 t-sm docu" style="text-align:end;">@Convert.ToDateTime(row["PublishDate"]).ToString("yy-MM-dd HH:mm")</div>
+            <div class="order-sm-last wd-xl-8 wd-lg-12 wd-20 t-sm docu" style="text-align:end;">@Convert.ToDateTime(row["PublishDate"]).ToString("yy-MM-dd HH:mm")</div>
 
 
-        <div class="subject order-sm-3 ml-24 wd-lg-40 wd-xl-50 wd-95 t-lg">
-            <a href="" style="color:black">@row["Subject"].ToString()</a><i class="ion ion-md-attach ml-1"></i>
+            <div class="subject order-sm-3 ml-24 wd-lg-40 wd-xl-50 wd-95 t-lg">
+                <a href="" style="color:black">@row["Subject"].ToString()</a><i class="ion ion-md-attach ml-1"></i>
 
-        </div>
-    </li>
-}
+            </div>
+        </li>
+    }
+</ul>
