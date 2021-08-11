@@ -190,7 +190,69 @@
     color: #337ab7;
 }
 
+/* listview ---------------> */
 .pagination-sm .page-link, .pagination-sm > li > a:not(.page-link) {
     padding-top: .375rem;
     padding-bottom: .375rem;
 }
+
+.pagination > .disabled > a, .pagination > .disabled > a:focus, .pagination > .disabled > a:hover, .pagination > .disabled > span, .pagination > .disabled > span:focus, .pagination > .disabled > span:hover {
+    cursor: not-allowed;
+}
+
+.z-lv-menu, .z-lv-cond, .z-lv-page, .z-lv-page .z-lv-total {
+    white-space: nowrap;
+}
+
+.z-lv-topline {
+    background-color: rgba(32, 201, 151, 0.2);
+}
+
+@media (min-width: 992px) {
+    .container-p-x {
+        padding-right: 1.5rem !important;
+        padding-left: 1.5rem !important;
+    }
+}
+
+@media (max-width: 1400px) {
+    .z-lv-cond {
+        width: 65%;
+    }
+    .z-lv-cond .z-lv-date {
+        width: 40%;
+    }
+    .z-lv-cond .z-lv-search {
+        width: 60%;
+    }
+}
+@media (max-width: 768px) {
+    .z-lv-cond {
+        width: 40%;
+    }
+    .z-lv-cond .z-lv-search {
+        width: 100%;
+    }
+    .z-lv-page .z-lv-cnt, .z-lv-cond .z-lv-date, .z-lv-cond .z-lv-search select {
+        display: none !important;
+    }
+    .z-lv-cond .z-lv-search input.form-control {
+        border-top-left-radius: .25rem !important;
+        border-bottom-left-radius: .25rem !important;
+    }
+    .z-ttl {
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .z-ttl {
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+    }
+    .z-lv-page {
+        display: none !important;
+    }
+}
+/* listview <--------------- */

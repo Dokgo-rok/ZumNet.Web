@@ -61,7 +61,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Admin Tool ~~~~~~~과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Admin Tool과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AdminTool {
             get {
@@ -75,6 +75,15 @@ namespace Resources {
         public static string Alarm {
             get {
                 return ResourceManager.GetString("Alarm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Attach과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Attach {
+            get {
+                return ResourceManager.GetString("Attach", resourceCulture);
             }
         }
         
@@ -160,6 +169,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Compose과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Compose {
+            get {
+                return ResourceManager.GetString("Compose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Compose과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ComposeNew {
+            get {
+                return ResourceManager.GetString("ComposeNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Confirm과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Confirm {
@@ -169,11 +196,56 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Created과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Created {
+            get {
+                return ResourceManager.GetString("Date_Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Deleted과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Deleted {
+            get {
+                return ResourceManager.GetString("Date_Deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Delete과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Delete {
+            get {
+                return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Find a phone number과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string FindPhoneNum {
             get {
                 return ResourceManager.GetString("FindPhoneNum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   First과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string First {
+            get {
+                return ResourceManager.GetString("First", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   First과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string First2 {
+            get {
+                return ResourceManager.GetString("First2", resourceCulture);
             }
         }
         
@@ -201,6 +273,24 @@ namespace Resources {
         public static string LangSet {
             get {
                 return ResourceManager.GetString("LangSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Last과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Last {
+            get {
+                return ResourceManager.GetString("Last", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Last과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Last2 {
+            get {
+                return ResourceManager.GetString("Last2", resourceCulture);
             }
         }
         
@@ -250,11 +340,74 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Count과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Lv_Count {
+            get {
+                return ResourceManager.GetString("Lv_Count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   List Count과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Lv_ListCount {
+            get {
+                return ResourceManager.GetString("Lv_ListCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Page과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Lv_Page {
+            get {
+                return ResourceManager.GetString("Lv_Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Search과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Lv_Search {
+            get {
+                return ResourceManager.GetString("Lv_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Select과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Lv_Select {
+            get {
+                return ResourceManager.GetString("Lv_Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Total과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Lv_Total {
+            get {
+                return ResourceManager.GetString("Lv_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   My Info과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string MyInfo {
             get {
                 return ResourceManager.GetString("MyInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Next과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Next {
+            get {
+                return ResourceManager.GetString("Next", resourceCulture);
             }
         }
         
@@ -358,6 +511,33 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Previous과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Previous {
+            get {
+                return ResourceManager.GetString("Previous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recent Posts과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string RecentPosts {
+            get {
+                return ResourceManager.GetString("RecentPosts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Refresh과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Refresh {
+            get {
+                return ResourceManager.GetString("Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Save ID과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string RememberMe {
@@ -385,6 +565,51 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Subject과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Subject {
+            get {
+                return ResourceManager.GetString("Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Temporary Box과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TempBox {
+            get {
+                return ResourceManager.GetString("TempBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Temp Box과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TempBox2 {
+            get {
+                return ResourceManager.GetString("TempBox2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Title과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Views과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ViewCount {
+            get {
+                return ResourceManager.GetString("ViewCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Working Condition과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string WorkCond {
@@ -399,6 +624,15 @@ namespace Resources {
         public static string WorktTime {
             get {
                 return ResourceManager.GetString("WorktTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Writer과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Writer {
+            get {
+                return ResourceManager.GetString("Writer", resourceCulture);
             }
         }
     }

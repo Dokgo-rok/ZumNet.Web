@@ -74,23 +74,57 @@ namespace ZumNet.Web.Bc
         #endregion
 
         #region [날짜]
+
         /// <summary>
         /// 리스트뷰 날짜 표현
         /// </summary>
         /// <param name="d"></param>
-        /// <param name="lang"></param>
         /// <returns></returns>
-        public static string ListDateField(string d, string lang)
+        public static string LvDate(string d)
+        {
+            return LvDate(d, false);
+        }
+
+        /// <summary>
+        /// 리스트뷰 날짜 표현
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="showTime"></param>
+        /// <returns></returns>
+        public static string LvDate(string d, bool showTime)
         {
             string strRt = "";
 
             if (!String.IsNullOrWhiteSpace(d))
             {
-                DateTime n = DateTime.Now;
                 DateTime t = Convert.ToDateTime(d);
 
+                string sCurrentLocale = System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
+                string fShort;
+                string fLong;
 
+                if (sCurrentLocale.Substring(0, 2).ToLower() == "ko")
+                {
+                    fLong = "yy-MM-dd"; fShort = "MM-dd";
+                }
+                else if (sCurrentLocale.Substring(0, 2).ToLower() == "zh" || sCurrentLocale.Substring(0, 2).ToLower() == "ja")
+                {
+                    fLong = "yy/MM/dd"; fShort = "MM/dd";
+                }
+                else
+                {
+                    fLong = "MM/dd/yy"; fShort = "MM/dd";
+                }
 
+                if (showTime)
+                {
+                    fLong += " HH:mm";
+                    fShort += " HH:mm";
+                }
+
+                if (t.ToShortDateString() == DateTime.Now.ToShortDateString()) strRt = t.ToString("HH:mm");
+                else if (t.Year == DateTime.Now.Year) strRt = t.ToString(fShort);
+                else strRt = t.ToString(fLong);
             }
 
             return strRt;

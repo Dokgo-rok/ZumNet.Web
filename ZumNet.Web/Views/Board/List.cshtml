@@ -8,6 +8,17 @@
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+    int totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+    int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+    int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+    int totalPage = totalCount / pageCount;
+
+    if (totalCount % pageCount > 0) { totalPage++; }
+    if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+    string sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Lv_Total, totalCount.ToString(), Resources.Global.Lv_Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Lv_Page);
 }
 
 @section Styles {
@@ -42,16 +53,16 @@
         <div class="py-3 px-4">
             <div class="media align-items-center">
                 <div class="media-body">
-                    <a id="__NewMessage" href="javascript:void(0)" class="btn btn-teal rounded-pill btn-block">게시물작성</a>
+                    <a id="__NewMessage" href="javascript:void(0)" class="btn btn-teal rounded-pill btn-block"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeNew</a>
                 </div>
                 <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
             </div>
             <div class="row mt-3">
                 <div class="col-6 text-center px-0">
-                    <a class="" href="/Board/Recent"><i class="mdi mdi-clock-check-outline"></i> 최근게시물</a>
+                    <a class="" href="/Board/Recent"><i class="mdi mdi-clock-check-outline"></i> @Resources.Global.RecentPosts</a>
                 </div>
                 <div class="col-6 text-center px-1">
-                    <a class="" href="/Board/Save"><i class="mdi mdi-circle-edit-outline"></i> 임시저장함</a>
+                    <a class="" href="/Board/Save"><i class="mdi mdi-circle-edit-outline"></i> @Resources.Global.TempBox2</a>
                 </div>
 
             </div>
@@ -68,40 +79,66 @@
     <div class="d-flex flex-column w-100">
         <!-- Header -->
         <div class="flex-grow-0">
-            <div class="d-flex align-items-center font-weight-bold container-p-x py-3 py-lg-4 m-0">
-                <div class="h5 mb-0">
-                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
-                </div>
+            <div class="d-flex justify-content-between container-p-x pt-3 pb-2 m-0">
+                <div class="d-flex align-items-center font-weight-bold">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
 
-                <div class="h5 font-weight-bold mb-0 z-ttl">
-                    <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    <div class="h5 mb-0 z-ttl">
+                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
                 </div>
+                <div class="d-flex align-items-center z-lv-page">
+                    <div class="z-lv-total mr-1">
+                        <i class="fe-grid"></i> @sPage
+                    </div>
+                    <div class="input-group z-lv-cnt">
+                        <select class="custom-select">
+                            <option value="10" @(pageCount == 10 ? " selected" : "")>10</option>
+                            <option value="20" @(pageCount == 20 ? " selected" : "")>20</option>
+                            <option value="30" @(pageCount == 30 ? " selected" : "")>30</option>
+                            <option value="40" @(pageCount == 40 ? " selected" : "")>40</option>
+                            <option value="50" @(pageCount == 50 ? " selected" : "")>50</option>
+                        </select>
+                    </div>
+                </div>
+                
             </div>
 
-            <hr class="border-light m-0">
+            <hr class="border-light m-0 d-none">
 
-            <div class="d-flex align-items-center justify-content-between container-p-x py-1">
-                <div>
-                    <i class="fe-grid"></i> 총 @ViewBag.R.lv.total
+            <div class="d-flex align-items-center container-p-x pb-2">
+                <div class="z-lv-menu btn-group-sm">
+                    <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fas fa-redo"></i></button>
+                    @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W"))
+                    {
+                        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeNew" data-zv-menu="write"><i class="fas fa-pencil-alt"></i></button>
+                    }   
+                    @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "D"))
+                    {
+                        <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zv-menu="delete"><i class="fas fa-trash-alt"></i></button>
+                    }
+
                 </div>
-                <div class="d-flex justify-content-end">
-                    <div class="datepicker input-group input-daterange">
-                        <i class="fe-search"></i>
-                        <input type="text" class="form-control start-date px-0">
+                <div class="px-1 flex-grow-1"></div>
+                <div class="d-flex z-lv-cond">
+                    <div class="datepicker input-group input-daterange z-lv-date mr-1">
+                        <input type="text" class="form-control start-date px-1">
                         <div class="input-group-prepend">
                             <span class="input-group-text">~</span>
                         </div>
-                        <input type="text" class="form-control end-date px-0">
+                        <input type="text" class="form-control end-date px-1">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group z-lv-search">
                         <select class="custom-select">
-                            <option>선택...</option>
-                            <option>제목</option>
-                            <option>작성자</option>
+                            <option>@Resources.Global.Lv_Select...</option>
+                            <option>@Resources.Global.Title</option>
+                            <option>@Resources.Global.Writer</option>
                         </select>
-                        <input type="text" class="form-control" placeholder="">
+                        <input type="text" class="form-control" placeholder="@Resources.Global.Lv_Search">
                         <span class="input-group-append">
-                            <button class="btn btn-secondary" type="button">검색</button>
+                            <button class="btn btn-secondary" type="button"><i class="fe-search"></i></button>
                         </span>
                     </div>
                 </div>
@@ -111,31 +148,7 @@
 
         <div class="flex-grow-0">
             <ul class="list-group">
-                <li class="list-group-item d-flex container-p-x">
-                    <div class="message-checkbox mr-1">
-                        <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
-                            <span class="custom-control-label"></span>
-                        </label>
-                    </div>
-                    <a href="javascript:void(0)" class="ion ion-md-star-outline d-block text-lighter text-big mr-3"></a>
-
-                    <div class="order-sm-2 wd-20 wd-xl-12 wd-lg-8 t-sm">
-                        <span class="flex-fill">작성자</span>
-                    </div>
-
-                    <div class="order-sm-4 wd-xl-10 wd-lg-15 wd-40 t-sm docu">
-                        <span class="flex-fill">작성부서</span>
-                    </div>
-
-                    <div class="order-sm-last wd-xl-8 wd-lg-12 wd-20 t-sm docu" style="text-align:end;">작성일</div>
-
-
-                    <div class="subject order-sm-3 ml-24 wd-lg-40 wd-xl-50 wd-95 t-lg">
-                        <a href="" style="color:black">제목</a><i class="ion ion-md-attach ml-1"></i>
-
-                    </div>
-                </li>
+                
             </ul>
         </div>
 
