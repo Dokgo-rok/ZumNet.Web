@@ -117,19 +117,41 @@ $(function () {
                         case "notice":
                         case "bbs":
                         case "file":
-                            if (_zw.V.current.page.toLowerCase() == '/board/list') {
-                                _zw.V.current.acl = n.li_attr.permission;
-                                _zw.V.fdid = vId[vId.length - 1];
-                                _zw.V.ttl = ttl;
+                            window.location.href = '/Board/List?qi=' + encQi;
+                            //if (_zw.V.current.page.toLowerCase() == '/board/list') {
+                            //    _zw.V.current.acl = n.li_attr.permission;
+                            //    _zw.V.fdid = vId[vId.length - 1];
+                            //    _zw.V.ttl = ttl;
 
-                                _zw.fn.initLv(vId[vId.length - 1]);
-                                _zw.fn.loadList();
+                            //    _zw.fn.initLv(vId[vId.length - 1]);
+                            //    _zw.fn.loadList();
 
-                            } else {
-                                window.location.href = '/Board/List?qi=' + encQi;
-                            }
+                            //} else {
+                            //    window.location.href = '/Board/List?qi=' + encQi;
+                            //}
+                            break;
+                        case "album":
+                            break;
+                        case "anonymous":
+                            break;
+                        case "linksite":
+                            break;
+                        case "knowledge":
                             break;
                         default:
+                            window.location.href = '/Docs/Edm/List?qi=' + encQi;
+                            //아래 처리를 위해서는 _zw.V json 값 셋팅이 필요
+                            //if (_zw.V.current.page.toLowerCase() == '/docs/edm/list') {
+                            //    _zw.V.current.acl = n.li_attr.permission;
+                            //    _zw.V.fdid = vId[vId.length - 1];
+                            //    _zw.V.ttl = ttl;
+
+                            //    _zw.fn.initLv(vId[vId.length - 1]);
+                            //    _zw.fn.loadList();
+
+                            //} else {
+                            //    window.location.href = '/Docs/Edm/List?qi=' + encQi;
+                            //}
                             break;
                     }
                     

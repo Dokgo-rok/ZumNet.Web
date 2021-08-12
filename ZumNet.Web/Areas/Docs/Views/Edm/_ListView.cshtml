@@ -1,0 +1,178 @@
+﻿@using System.Data;
+
+@functions{
+    private string GetFileExt(string ext)
+    {
+        string rt = "";
+
+        switch (ext.ToLower())
+        {
+            case "mht":
+                rt = "far fa-file-alt text-danger";
+                break;
+
+            case "txt":
+                rt = "far fa-file-alt text-secondary";
+                break;
+
+            case "zip":
+                rt = "far fa-file-archive text-purple";
+                break;
+
+            case "doc":
+            case "docx":
+                rt = "far fa-file-word text-blue";
+                break;
+
+            case "xls":
+            case "xlsx":
+                rt = "far fa-file-excel text-teal";
+                break;
+
+            case "ppt":
+            case "pptx":
+                rt = "far fa-file-powerpoint text-danger";
+                break;
+
+            case "pdf":
+                rt = "far fa-file-pdf text-danger";
+                break;
+
+            case "png":
+            case "bmp":
+            case "jpg":
+            case "gif":
+                rt = "far fa-file-image text-secondary";
+                break;
+
+            case "avi":
+            case "mkv":
+            case "mov":
+            case "mp4":
+            case "mpg":
+            case "wmv":
+                rt = "far fa-file-video text-secondary";
+                break;
+
+            case "mp3":
+            case "ogg":
+            case "wma":
+            case "wav":
+                rt = "far fa-file-audio text-secondary";
+                break;
+
+            default:
+                rt = "far fa-file text-secondary";
+                break;
+        }
+
+        return rt;
+    }
+}
+
+<ul id="__ListView" class="list-group messages-list">
+    @*<li class="list-group-item list-group-item-action d-flex container-p-x">
+            @DateTime.Now.ToString("d") @DateTime.Now.ToString("t")
+        </li>*@
+    @if (ViewBag.BoardList != null && ViewBag.BoardList.Tables[0].Rows.Count > 0)
+    {
+        foreach (DataRow row in ViewBag.BoardList.Tables[0].Rows)
+        {
+            DataRow[] fileCol = ViewBag.BoardList.Tables[1].Select("MessageID = " + row["MessageID"].ToString());
+            string sLock = "";
+
+            foreach(DataRow r in fileCol)
+            {
+                if (r["IsLocked"].ToString() == "Y")
+                {
+                    sLock = "<i class=\"fe-lock mr-1\"></i>"; //fas fa-lock
+                    break;
+                }
+            }
+
+            <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x">
+                <div class="d-none d-md-block wd-lg-6 wd-xl-4 text-sm-center">
+                    <span class="flex-fill">@row["SeqID"]</span>
+                </div>
+
+                <div class="wd-14 wd-lg-10 wd-xl-8 text-sm-center t-sm">
+                    @if (row["AclKind"].ToString().Substring(4, 1) == "R" || row["Authority"].ToString() == "owner")
+                    {
+                        <i class="fab fa-sistrix rotate-90"></i>
+                    }
+                    else
+                    {
+                        <span class="px-1">&nbsp;</span>
+                    }
+                    @if (row["AclKind"].ToString().Substring(2, 1) 
+                        == "E" || row["Authority"].ToString() == "owner")
+                    {
+                        <i class="fe-edit-2"></i>
+                    }
+                    else
+                    {
+                        <span class="px-1">&nbsp;</span>
+                    }
+                    @if (row["AclKind"].ToString().Substring(1, 1) == "D" || row["Authority"].ToString() == "owner")
+                    {
+                        <i class="fe-x"></i>
+                    }
+                    else
+                    {
+                        <span class="px-1">&nbsp;</span>
+                    }
+                </div>
+
+                <div class="wd-86 flex-fill text-truncate d-flex align-items-center pr-1">
+                    @if (row["HasAttachFile"].ToString() == "1")
+                    {
+                        <i class="@GetFileExt(fileCol[0]["FileType"].ToString()) text-big  mr-1"></i>
+                    }
+                    else
+                    {
+                        <i class="far fa-copy text-secondary text-big  mr-1"></i>
+                    }
+                    <a class="text-truncate" href="javascript:void(0)">@(sLock)@row["Subject"].ToString()</a>
+                    @if (Convert.ToInt32(row["CommentCount"]) > 0)
+                    {
+                        <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>
+                    }
+                </div>
+
+                <div class="d-none d-md-block wd-lg-15 wd-xl-15 text-truncate px-2 text-secondary">
+                    <span class="">@row["DocNum"]</span>
+                </div>
+
+                <div class="w-100 d-sm-none py-0"></div>
+
+                <div class="wd-99 wd-lg-30 wd-xl-30 d-flex">
+                    <div class="d-none d-md-block wd-30 wd-lg-38 wd-xl-35 t-sm text-sm-center text-truncate pr-2">
+                        <span class="">@row["CreatorDept"]</span>
+                    </div>
+                    <div class="d-none d-sm-block wd-15 wd-md-40 wd-lg-25 wd-xl-30 t-sm text-sm-center text-truncate pr-2">
+                        <span class="">@row["Creator"]</span>
+                    </div>
+                    <div class="d-none d-sm-block wd-20 wd-md-40 wd-lg-25 wd-xl-25 t-sm text-sm-center text-truncate">
+                        <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</span>
+                    </div>
+
+                    <div class="d-block d-sm-none text-secondary">
+                        <span class="mr-2">@row["CreatorDept"]</span>
+                        <span class="mr-2">@row["Creator"]</span>
+                        <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</span>
+                    </div>
+
+                    <div class="text-right text-pink flex-fill pr-1">
+                        <span class="">@row["ViewCount"]</span>
+                    </div>
+                </div>
+            </li>
+        }
+    }
+    else
+    {
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x">
+            <div class="w-100 text-center pt-3">@Resources.Global.NoItemShow</div>
+        </li>
+    }
+</ul>

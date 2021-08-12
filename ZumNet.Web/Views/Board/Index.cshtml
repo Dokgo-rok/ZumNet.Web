@@ -119,7 +119,7 @@
                     <a class="" href="/Board/Recent"><i class="mdi mdi-clock-check-outline"></i> @Resources.Global.RecentPosts</a>
                 </div>
                 <div class="col-6 text-center px-1">
-                    <a class="" href="/Board/Save"><i class="mdi mdi-circle-edit-outline"></i> @Resources.Global.TempBox</a>
+                    <a class="" href="/Board/Save"><i class="mdi mdi-circle-edit-outline"></i> @Resources.Global.TempBox2</a>
                 </div>
 
             </div>
@@ -154,51 +154,65 @@
                 <div id="__CtDashboard" class="row container-p-x">
                     <div class="col col-md-7">
                         <div class="font-weight-bold text-black-50">
-                            <i class="mdi mdi-clock-check-outline"></i> &nbsp;<span>최근게시물</span>
+                            <i class="mdi mdi-clock-check-outline"></i> &nbsp;<span>@Resources.Global.RecentPosts</span>
                         </div>
                         <div>
-                            @for(int i = 0; i < ViewBag.RecentBBS.Count; i++)
+                            @if (ViewBag.RecentBBS.Rows.Count > 0)
                             {
-                                DataRow row = ViewBag.RecentBBS[i];
-                            <div class="d-flex justify-content-between align-items-center py-2">
-                                <div class="">
-                                    @if (i % 3 == 0)
-                                    {
-                                        <div class="badge badge-pill badge-teal">@row["DisplayName"]</div>
-                                    }
-                                    else if (i % 3 == 1)
-                                    {
-                                        <div class="badge badge-pill badge-warning">@row["DisplayName"]</div>
-                                    }
-                                    else
-                                    {
-                                        <div class="badge badge-pill badge-primary">@row["DisplayName"]</div>
-                                    }
-                                    <div class="mt-1"><a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
-                                </div>
-                                <div class="text-truncate">
-                                    @if (Convert.ToInt32(row["CommentCount"]) > 0)
-                                    {
-                                        <span class="text-blue">(@row["CommentCount"])&nbsp;</span>
-                                    }
-                                    @Convert.ToDateTime(row["CreateDate"]).ToShortDateString()
-                                </div>
-                                
-                            </div>
-                            }                            
+                                for (int i = 0; i < ViewBag.RecentBBS.Rows.Count; i++)
+                                {
+                                    DataRow row = ViewBag.RecentBBS.Rows[i];
+                                    <div class="d-flex justify-content-between align-items-center py-2">
+                                        <div class="">
+                                            @if (i % 3 == 0)
+                                            {
+                                                <div class="badge badge-pill badge-teal opacity-75">@row["DisplayName"]</div>
+                                            }
+                                            else if (i % 3 == 1)
+                                            {
+                                                <div class="badge badge-pill badge-warning opacity-75">@row["DisplayName"]</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="badge badge-pill badge-primary opacity-75">@row["DisplayName"]</div>
+                                            }
+                                            <div class="mt-1"><a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
+                                        </div>
+                                        <div class="text-truncate">
+                                            @if (Convert.ToInt32(row["CommentCount"]) > 0)
+                                            {
+                                                <span class="text-blue">(@row["CommentCount"])&nbsp;</span>
+                                            }
+                                            @Convert.ToDateTime(row["CreateDate"]).ToShortDateString()
+                                        </div>
+
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="d-flex justify-content-between align-items-center py-2">@Resources.Global.NoItemShow </div>
+                            }
                         </div>
                     </div>
                     @*<div class="col-1 d-none d-md-block"></div>*@
                     <div class="col-5 d-none d-md-block pl-4 pr-0">
                         <div class="font-weight-bold text-black-50">
-                            <i class="fe-message-circle"></i> &nbsp;<span>최근공지</span>
+                            <i class="fe-message-circle"></i> &nbsp;<span>@Resources.Global.RecentNotice</span>
                         </div>
                         <div>
-                            @foreach(DataRow row in ViewBag.RecentNotice)
+                            @if (ViewBag.RecentNotice.Rows.Count > 0)
                             {
-                            <div class="text-truncate py-2">
-                                <a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom"><span class="badge badge-pill badge-default">@row["DisplayName"]</span> @row["Subject"]</a>
-                            </div>
+                                foreach (DataRow row in ViewBag.RecentNotice.Rows)
+                                {
+                                    <div class="text-truncate py-2">
+                                        <a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom"><span class="badge badge-pill badge-default">@row["DisplayName"]</span> @row["Subject"]</a>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-truncate py-2">@Resources.Global.NoItemShow </div>
                             }
                         </div>
 

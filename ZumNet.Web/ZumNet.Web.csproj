@@ -442,6 +442,7 @@
     <Content Include="Scripts\Board\List.js" />
     <Content Include="Scripts\Controls\treeFolder.js" />
     <Content Include="Scripts\Controls\treeOrg.js" />
+    <Content Include="Scripts\Docs\List.js" />
     <Content Include="Scripts\site.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -554,6 +555,9 @@
     <Content Include="Areas\WoA\Views\Event\WriteLog.cshtml" />
     <Content Include="MultiLangs\layout_common.lang" />
     <Content Include="MultiLangs\woa_event_logon.lang" />
+    <Content Include="Areas\Docs\Views\Edm\List.cshtml" />
+    <Content Include="Areas\Docs\Views\Edm\_ListPagination.cshtml" />
+    <Content Include="Areas\Docs\Views\Edm\_ListView.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

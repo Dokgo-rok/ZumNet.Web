@@ -1,7 +1,123 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
 @{
     ViewBag.Title = ViewBag.R["ttl"];
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
 }
 
-<h2>Index</h2>
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+}
 
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    <div class="messages-sidebox messages-scroll bg-body border-right">
+        <div class="z-mobile-navbar"></div>
+
+        <div class="py-3 px-4">
+            <div class="media align-items-center">
+                <div class="media-body">
+                    <a id="__NewMessage" href="javascript:void(0)" class="btn btn-teal rounded-pill btn-block"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeNew</a>
+                </div>
+                <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
+            </div>
+            <div class="row mt-3">
+                <div class="col-6 text-center px-0">
+                    <a class="" href="/Board/Recent"><i class="mdi mdi-clock-check-outline"></i> @Resources.Global.RecentPosts</a>
+                </div>
+                <div class="col-6 text-center px-1">
+                    <a class="" href="/Board/Save"><i class="mdi mdi-circle-edit-outline"></i> @Resources.Global.TempBox2</a>
+                </div>
+
+            </div>
+        </div>
+
+        <hr class="border-light mx-4 mt-0 mb-3">
+
+        <!-- sidebox tree -->
+        <div id="__FolderTree" class="px-3"></div>
+        <!-- / sidebox tree -->
+    </div>
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex align-items-center font-weight-bold container-p-x py-3 py-lg-4 m-0">
+                <div class="h5 mb-0">
+                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                </div>
+
+                <div class="h5 font-weight-bold mb-0 z-ttl">
+                    <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                </div>
+            </div>
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="messages-content flex-grow-0">
+                <div id="__CtDashboard" class="row container-p-x">
+                    <div class="col col-md-7">
+                        <div class="font-weight-bold text-black-50">
+                            <i class="mdi mdi-clock-check-outline"></i> &nbsp;<span>@Resources.Global.RecentPosts</span>
+                        </div>
+                        <div>
+                            @if (ViewBag.RecentBBS.Rows.Count > 0)
+                            {
+                                for (int i = 0; i < ViewBag.RecentBBS.Rows.Count; i++)
+                                {
+                                    DataRow row = ViewBag.RecentBBS.Rows[i];
+                                    <div class="d-flex justify-content-between align-items-center py-2">
+                                        <div class="">
+                                            @if (i % 3 == 0)
+                                            {
+                                                <div class="badge badge-pill badge-teal opacity-75">@row["DisplayName"]</div>
+                                            }
+                                            else if (i % 3 == 1)
+                                            {
+                                                <div class="badge badge-pill badge-warning opacity-75">@row["DisplayName"]</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="badge badge-pill badge-primary opacity-75">@row["DisplayName"]</div>
+                                            }
+                                            <div class="mt-1"><a href="javascript:void(0)" class="" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
+                                        </div>
+                                        <div class="text-truncate">
+                                            <span class="text-blue mr-3">@row["CreatorName"]</span>
+                                            
+                                            @ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="d-flex justify-content-between align-items-center py-2">@Resources.Global.NoItemShow </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+
+</div><!-- / .messages-wrapper -->

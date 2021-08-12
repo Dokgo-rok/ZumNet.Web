@@ -204,6 +204,18 @@
     white-space: nowrap;
 }
 
+.z-lv-hdr {
+    border-top:1px solid #ededed;
+}
+.z-lv-hdr .list-group-item {
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+}
+.z-lv-hdr .list-group-item, .z-lv-item .list-group-item {
+    padding-top: .375rem;
+    padding-bottom: .375rem;
+}
 .z-lv-topline {
     background-color: rgba(32, 201, 151, 0.2);
 }

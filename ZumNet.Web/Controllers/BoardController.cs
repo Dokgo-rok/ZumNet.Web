@@ -53,8 +53,8 @@ namespace ZumNet.Web.Controllers
 
             if (svcRt != null && svcRt.ResultCode == 0 && svcRt2 != null && svcRt2.ResultCode == 0)
             {
-                ViewBag.RecentNotice = svcRt.ResultDataRowCollection;
-                ViewBag.RecentBBS = svcRt2.ResultDataRowCollection;
+                ViewBag.RecentNotice = svcRt.ResultDataTable;
+                ViewBag.RecentBBS = svcRt2.ResultDataTable;
             }
             else
             {

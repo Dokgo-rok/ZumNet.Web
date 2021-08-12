@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccessRights" xml:space="preserve">
+    <value>권한</value>
+  </data>
   <data name="AdminTool" xml:space="preserve">
     <value>관리툴</value>
   </data>
@@ -162,6 +165,9 @@
   <data name="Confirm" xml:space="preserve">
     <value>확인</value>
   </data>
+  <data name="Count" xml:space="preserve">
+    <value>개</value>
+  </data>
   <data name="Date_Created" xml:space="preserve">
     <value>작성일</value>
   </data>
@@ -170,6 +176,12 @@
   </data>
   <data name="Delete" xml:space="preserve">
     <value>삭제</value>
+  </data>
+  <data name="DocNumber" xml:space="preserve">
+    <value>문서번호</value>
+  </data>
+  <data name="FileExt" xml:space="preserve">
+    <value>파일확장자</value>
   </data>
   <data name="FindPhoneNum" xml:space="preserve">
     <value>전화번호 찾기</value>
@@ -201,6 +213,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>퇴근</value>
   </data>
+  <data name="ListCount" xml:space="preserve">
+    <value>목록수</value>
+  </data>
   <data name="Login" xml:space="preserve">
     <value>로그인</value>
   </data>
@@ -210,29 +225,14 @@
   <data name="Logout" xml:space="preserve">
     <value>로그아웃</value>
   </data>
-  <data name="Lv_Count" xml:space="preserve">
-    <value>개</value>
-  </data>
-  <data name="Lv_ListCount" xml:space="preserve">
-    <value>목록수</value>
-  </data>
-  <data name="Lv_Page" xml:space="preserve">
-    <value>페이지</value>
-  </data>
-  <data name="Lv_Search" xml:space="preserve">
-    <value>검색</value>
-  </data>
-  <data name="Lv_Select" xml:space="preserve">
-    <value>선택</value>
-  </data>
-  <data name="Lv_Total" xml:space="preserve">
-    <value>총</value>
-  </data>
   <data name="MyInfo" xml:space="preserve">
     <value>내 정보</value>
   </data>
   <data name="Next" xml:space="preserve">
     <value>다음</value>
+  </data>
+  <data name="NoItemShow" xml:space="preserve">
+    <value>표시할 항목이 없습니다.</value>
   </data>
   <data name="OffWork" xml:space="preserve">
     <value>퇴근하기</value>
@@ -240,8 +240,14 @@
   <data name="OffWorkCancel" xml:space="preserve">
     <value>퇴근취소</value>
   </data>
+  <data name="Order" xml:space="preserve">
+    <value>순서</value>
+  </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>조직관리자</value>
+  </data>
+  <data name="Page" xml:space="preserve">
+    <value>페이지</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>비밀번호</value>
@@ -258,6 +264,9 @@
   <data name="Password_New" xml:space="preserve">
     <value>새 비밀번호</value>
   </data>
+  <data name="Permission" xml:space="preserve">
+    <value>권한</value>
+  </data>
   <data name="PlanLeaveTime" xml:space="preserve">
     <value>계획퇴근시간</value>
   </data>
@@ -270,6 +279,9 @@
   <data name="Previous" xml:space="preserve">
     <value>이전</value>
   </data>
+  <data name="RecentNotice" xml:space="preserve">
+    <value>최근공지</value>
+  </data>
   <data name="RecentPosts" xml:space="preserve">
     <value>최근게시물</value>
   </data>
@@ -278,6 +290,15 @@
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>아이디 저장</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>선택</value>
+  </data>
+  <data name="SeqNo" xml:space="preserve">
+    <value>순번</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
     <value>바로가기 메뉴</value>
@@ -297,6 +318,12 @@
   <data name="Title" xml:space="preserve">
     <value>제목</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>총</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>유형</value>
+  </data>
   <data name="ViewCount" xml:space="preserve">
     <value>조회수</value>
   </data>
@@ -305,6 +332,9 @@
   </data>
   <data name="WorktTime" xml:space="preserve">
     <value>출근시간</value>
+  </data>
+  <data name="WriteDept" xml:space="preserve">
+    <value>작성부서</value>
   </data>
   <data name="Writer" xml:space="preserve">
     <value>작성자</value>

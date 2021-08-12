@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccessRights" xml:space="preserve">
+    <value>Access</value>
+  </data>
   <data name="AdminTool" xml:space="preserve">
     <value>Admin Tool</value>
   </data>
@@ -162,6 +165,9 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
   <data name="Date_Created" xml:space="preserve">
     <value>Created</value>
   </data>
@@ -170,6 +176,12 @@
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
+  </data>
+  <data name="DocNumber" xml:space="preserve">
+    <value>Doc Number</value>
+  </data>
+  <data name="FileExt" xml:space="preserve">
+    <value>File extension</value>
   </data>
   <data name="FindPhoneNum" xml:space="preserve">
     <value>Find a phone number</value>
@@ -201,6 +213,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>Off Work</value>
   </data>
+  <data name="ListCount" xml:space="preserve">
+    <value>List Count</value>
+  </data>
   <data name="Login" xml:space="preserve">
     <value>Log In</value>
   </data>
@@ -210,29 +225,14 @@
   <data name="Logout" xml:space="preserve">
     <value>Log Out</value>
   </data>
-  <data name="Lv_Count" xml:space="preserve">
-    <value>Count</value>
-  </data>
-  <data name="Lv_ListCount" xml:space="preserve">
-    <value>List Count</value>
-  </data>
-  <data name="Lv_Page" xml:space="preserve">
-    <value>Page</value>
-  </data>
-  <data name="Lv_Search" xml:space="preserve">
-    <value>Search</value>
-  </data>
-  <data name="Lv_Select" xml:space="preserve">
-    <value>Select</value>
-  </data>
-  <data name="Lv_Total" xml:space="preserve">
-    <value>Total</value>
-  </data>
   <data name="MyInfo" xml:space="preserve">
     <value>My Info</value>
   </data>
   <data name="Next" xml:space="preserve">
     <value>Next</value>
+  </data>
+  <data name="NoItemShow" xml:space="preserve">
+    <value>No items to show</value>
   </data>
   <data name="OffWork" xml:space="preserve">
     <value>Off Work</value>
@@ -240,8 +240,14 @@
   <data name="OffWorkCancel" xml:space="preserve">
     <value>Off Work Cancel</value>
   </data>
+  <data name="Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>Organization Mgr</value>
+  </data>
+  <data name="Page" xml:space="preserve">
+    <value>Page</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
@@ -258,6 +264,9 @@
   <data name="Password_New" xml:space="preserve">
     <value>New Password</value>
   </data>
+  <data name="Permission" xml:space="preserve">
+    <value>Permission</value>
+  </data>
   <data name="PlanLeaveTime" xml:space="preserve">
     <value>Planned Leave</value>
   </data>
@@ -270,6 +279,9 @@
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="RecentNotice" xml:space="preserve">
+    <value>Recent Notices</value>
+  </data>
   <data name="RecentPosts" xml:space="preserve">
     <value>Recent Posts</value>
   </data>
@@ -278,6 +290,15 @@
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Save ID</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="SeqNo" xml:space="preserve">
+    <value>Seq.</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
     <value>Shortcut menu</value>
@@ -297,6 +318,12 @@
   <data name="Title" xml:space="preserve">
     <value>Title</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
   <data name="ViewCount" xml:space="preserve">
     <value>Views</value>
   </data>
@@ -305,6 +332,9 @@
   </data>
   <data name="WorktTime" xml:space="preserve">
     <value>Work Time</value>
+  </data>
+  <data name="WriteDept" xml:space="preserve">
+    <value>Dept.</value>
   </data>
   <data name="Writer" xml:space="preserve">
     <value>Writer</value>

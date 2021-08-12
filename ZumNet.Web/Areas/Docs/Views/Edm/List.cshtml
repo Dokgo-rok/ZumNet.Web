@@ -4,7 +4,7 @@
 @using Newtonsoft.Json;
 
 @{
-    ViewBag.Title = ViewBag.R["ttl"]; //"게시판";
+    ViewBag.Title = ViewBag.R["ttl"];
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
@@ -30,7 +30,7 @@
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
-    @Scripts.Render("~/Scripts/Board/List.js")
+    @Scripts.Render("~/Scripts/Docs/List.js")
 
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
@@ -103,7 +103,7 @@
                         </select>
                     </div>
                 </div>
-                
+
             </div>
 
             <hr class="border-light m-0 d-none">
@@ -114,12 +114,7 @@
                     @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W"))
                     {
                         <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeNew" data-zv-menu="write"><i class="fe-edit-2"></i></button>
-                    }   
-                    @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "D"))
-                    {
-                        <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zv-menu="delete"><i class="fe-trash-2"></i></button>
                     }
-
                 </div>
                 <div class="px-1 flex-grow-1"></div>
                 <div class="d-flex z-lv-cond">
@@ -148,32 +143,33 @@
 
         <div class="flex-grow-0 z-lv-hdr">
             <ul class="list-group d-none d-sm-block">
-                <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x bg-light">
-                    <div class="wd-lg-5 wd-xl-4 message-checkbox">
-                        <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
-                            <span class="custom-control-label"></span>
-                        </label>
+                <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x" style="background-color: rgba(255, 217, 25, 0.2)">
+                    <div class="d-none d-md-block wd-lg-6 wd-xl-4 text-center">
+                        <span class="flex-fill">@Resources.Global.SeqNo</span>
                     </div>
 
-                    <div class="d-none d-md-block wd-lg-6 wd-xl-5 text-center pr-2">
-                        <span class="flex-fill">ID</span>
+                    <div class="wd-12 wd-lg-10 wd-xl-8 text-center text-truncate">
+                        <span class="flex-fill">@Resources.Global.AccessRights</span>
                     </div>
 
                     <div class="flex-fill text-truncate text-center">
                         <a href="javascript:void(0)">@Resources.Global.Title</a>
                     </div>
 
-                    <div class="wd-lg-34 wd-xl-32 d-flex">
-                        <div class="wd-lg-12 wd-xl-10">
-                            @Resources.Global.Attach
+                    <div class="d-none d-md-block wd-lg-15 wd-xl-15 pl-2">
+                        <a href="javascript:void(0)">@Resources.Global.DocNumber</a>
+                    </div>
+
+                    <div class="wd-lg-30 wd-xl-30 d-flex">
+                        <div class="d-none d-md-block wd-lg-38 wd-xl-35 text-center pr-2">
+                            <a href="javascript:void(0)">@Resources.Global.WriteDept</a>
                         </div>
-                        <div class="wd-15 wd-lg-35 wd-xl-35 t-sm text-sm-center text-center pr-2">
-                            <span class="">@Resources.Global.Writer</span>
+                        <div class="wd-md-40 wd-lg-25 wd-xl-30 text-center pr-2">
+                            <a href="javascript:void(0)">@Resources.Global.Writer</a>
                         </div>
 
-                        <div class="wd-20 wd-lg-35 wd-xl-30 t-sm text-sm-center text-center pr-2">
-                            <span class="">@Resources.Global.Date_Created</span>
+                        <div class="wd-md-40 wd-lg-25 wd-xl-25 text-center">
+                            <a href="javascript:void(0)">@Resources.Global.Date_Created</a>
                         </div>
 
                         <div class="text-right text-pink flex-fill">

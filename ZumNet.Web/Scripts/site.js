@@ -37,7 +37,7 @@ $(function () {
     // Message-sidebox ==========>
     $('.messages-scroll').each(function () {
         new PerfectScrollbar(this, {
-            suppressScrollX: true,
+            suppressScrollX: false,
             wheelPropagation: true
         });
     });

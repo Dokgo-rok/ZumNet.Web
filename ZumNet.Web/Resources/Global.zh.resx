@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccessRights" xml:space="preserve">
+    <value>访问权限</value>
+  </data>
   <data name="AdminTool" xml:space="preserve">
     <value>管理工具</value>
   </data>
@@ -162,6 +165,9 @@
   <data name="Confirm" xml:space="preserve">
     <value>确认</value>
   </data>
+  <data name="Count" xml:space="preserve">
+    <value>数字</value>
+  </data>
   <data name="Date_Created" xml:space="preserve">
     <value>创建日期</value>
   </data>
@@ -170,6 +176,12 @@
   </data>
   <data name="Delete" xml:space="preserve">
     <value>删除</value>
+  </data>
+  <data name="DocNumber" xml:space="preserve">
+    <value>文件编号</value>
+  </data>
+  <data name="FileExt" xml:space="preserve">
+    <value>文件扩展名</value>
   </data>
   <data name="FindPhoneNum" xml:space="preserve">
     <value>查找电话号码</value>
@@ -201,6 +213,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>下班</value>
   </data>
+  <data name="ListCount" xml:space="preserve">
+    <value>列表数</value>
+  </data>
   <data name="Login" xml:space="preserve">
     <value>登录</value>
   </data>
@@ -210,29 +225,14 @@
   <data name="Logout" xml:space="preserve">
     <value>登出</value>
   </data>
-  <data name="Lv_Count" xml:space="preserve">
-    <value>数字</value>
-  </data>
-  <data name="Lv_ListCount" xml:space="preserve">
-    <value>列表数</value>
-  </data>
-  <data name="Lv_Page" xml:space="preserve">
-    <value>页</value>
-  </data>
-  <data name="Lv_Search" xml:space="preserve">
-    <value>搜索</value>
-  </data>
-  <data name="Lv_Select" xml:space="preserve">
-    <value>选择</value>
-  </data>
-  <data name="Lv_Total" xml:space="preserve">
-    <value>总</value>
-  </data>
   <data name="MyInfo" xml:space="preserve">
     <value>我的信息</value>
   </data>
   <data name="Next" xml:space="preserve">
     <value>下一个</value>
+  </data>
+  <data name="NoItemShow" xml:space="preserve">
+    <value>没有要显示的项目。</value>
   </data>
   <data name="OffWork" xml:space="preserve">
     <value>下班</value>
@@ -240,8 +240,14 @@
   <data name="OffWorkCancel" xml:space="preserve">
     <value>取消工作</value>
   </data>
+  <data name="Order" xml:space="preserve">
+    <value>命令</value>
+  </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>组织管理</value>
+  </data>
+  <data name="Page" xml:space="preserve">
+    <value>页</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>密码</value>
@@ -258,6 +264,9 @@
   <data name="Password_New" xml:space="preserve">
     <value>新密码</value>
   </data>
+  <data name="Permission" xml:space="preserve">
+    <value>你没</value>
+  </data>
   <data name="PlanLeaveTime" xml:space="preserve">
     <value>计划下班</value>
   </data>
@@ -270,6 +279,9 @@
   <data name="Previous" xml:space="preserve">
     <value>以前</value>
   </data>
+  <data name="RecentNotice" xml:space="preserve">
+    <value>近期通知</value>
+  </data>
   <data name="RecentPosts" xml:space="preserve">
     <value>最近的帖子</value>
   </data>
@@ -278,6 +290,15 @@
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>保存 ID</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>选择</value>
+  </data>
+  <data name="SeqNo" xml:space="preserve">
+    <value>序号</value>
   </data>
   <data name="Shortcut" xml:space="preserve">
     <value>快捷菜单</value>
@@ -297,6 +318,12 @@
   <data name="Title" xml:space="preserve">
     <value>标题</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>总</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
   <data name="ViewCount" xml:space="preserve">
     <value>意见</value>
   </data>
@@ -305,6 +332,9 @@
   </data>
   <data name="WorktTime" xml:space="preserve">
     <value>工作时间</value>
+  </data>
+  <data name="WriteDept" xml:space="preserve">
+    <value>写作部</value>
   </data>
   <data name="Writer" xml:space="preserve">
     <value>作家</value>
