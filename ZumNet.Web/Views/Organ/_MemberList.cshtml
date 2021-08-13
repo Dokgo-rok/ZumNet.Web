@@ -11,7 +11,7 @@
         {
             imagepath = Server.MapPath("~/images/plugins/user.png");
             imageFormat = "image/png";
-            imageOpacity = " opacity-75";
+            imageOpacity = " opacity-50";
         }
         FileStream fs = new FileStream(imagepath, FileMode.Open);
         byte[] byData = new byte[fs.Length];
@@ -29,7 +29,7 @@
     {
         <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="card mb-4">
-                <div class="card-body">
+                <div class="card-body p-3">
                     @*<div class="contacts-dropdown btn-group">
                             <button type="button" class="btn btn-sm btn-default icon-btn borderless rounded-pill md-btn-flat dropdown-toggle hide-arrow" data-toggle="dropdown">
                                 <i class="fas fa-ellipsis-h"></i>
@@ -46,7 +46,7 @@
                                 <a href="javascript:void(0)" class="text-body">@row["DisplayName"]</a>
                                 <span class="text-secondary h6 ml-1">@row["Grade1"]</span>
                             </h5>
-                            <div class="contact-content-user text-muted small mb-2">
+                            <div class="contact-content-user text-muted mb-2">
                                 @if (row["SecondMail"].ToString() == "")
                                 {
                                     @(row["MailAccount"].ToString() + "@" + row["Domain"].ToString())

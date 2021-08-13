@@ -1,8 +1,29 @@
-﻿@{
-    ViewBag.Title = "Cresyn Groupware";
+﻿@{ ViewBag.Title = "Cresyn Groupware"; }
+@{ string sChart = "FusionCharts.ready(function() {var fusioncharts1 = new FusionCharts({type: \"mscolumn2d\",renderAt: \"chart-container1\",width: \"100%\",height: \"100%\",dataFormat: \"json\",dataSource: {\"chart\": {\"caption\": \"과입고율(%)\",\"subcaption\": \"\",\"xaxisname\": \"\",\"yaxisname\": \"\",\"formatnumberscale\": \"1\",\"plottooltext\": \"<b>$dataValue</b> <b>$seriesName</b> in $label\",\"palettecolors\": \"77be99,9dcdf6,87d130\",\"drawcrossline\": \"1\",\"labelDisplay\": \"wrap\",\"baseFontSize\": \"9\",\"rotateValues\": \"0\",\"placeValuesInside\": \"1\",\"captionPadding\": \"2\",\"chartTopMargin\": \"4\",\"chartLeftMargin\": \"4\",\"chartBottomMargin\": \"8\",\"chartRightMargin\": \"4\",\"yAxisValuesPadding\": \"4\",\"numberPrefix\": \"\",\"numberSuffix\": \"\",\"palette\": \"5\",\"showBorder\": \"0\",\"bgColor\": \"ffffff\",\"bgAlpha\": \"50\",\"useRoundEdges\": \"1\",\"legendBorderColor\": \"ffffff\"},\"categories\": [{\"category\": [{\"label\": \"VH\"},{\"label\": \"CD\"},{\"label\": \"IC\"},{\"label\": \"IS\"},{\"label\": \"VW\"}]}],\"dataset\": [{\"seriesname\": \"29주차\",\"data\": [{\"value\": \"31.30\"},{\"value\": \"32.30\"},{\"value\": \"58.10\"},{\"value\": \"52.30\"},{\"value\": \"0.40\"}]},{\"seriesname\": \"30주차\",\"data\": [{\"value\": \"42.30\"},{\"value\": \"20.20\"},{\"value\": \"50.10\"},{\"value\": \"53.30\"},{\"value\": \"70.20\"}]},{\"seriesname\": \"31주차\",\"data\": [{\"value\": \"24.00\"},{\"value\": \"32.60\"},{\"value\": \"31.00\"},{\"value\": \"60.30\"},{\"value\": \"67.10\"}]}]},\"events\": {}});fusioncharts1.render(); var fusioncharts3 = new FusionCharts({type: \"mscolumn2d\",renderAt: \"chart-container3\",width: \"100%\",height: \"100%\",dataFormat: \"json\",dataSource: {\"chart\": {\"caption\": \"과입고금액(만불)\",\"subcaption\": \"\",\"xaxisname\": \"\",\"yaxisname\": \"\",\"formatnumberscale\": \"1\",\"plottooltext\": \"<b>$dataValue</b> <b>$seriesName</b> in $label\",\"palettecolors\": \"77be99,9dcdf6,87d130\",\"drawcrossline\": \"1\",\"labelDisplay\": \"wrap\",\"baseFontSize\": \"9\",\"rotateValues\": \"0\",\"placeValuesInside\": \"1\",\"captionPadding\": \"2\",\"chartTopMargin\": \"4\",\"chartLeftMargin\": \"4\",\"chartBottomMargin\": \"8\",\"chartRightMargin\": \"4\",\"yAxisValuesPadding\": \"4\",\"numberPrefix\": \"\",\"numberSuffix\": \"\",\"palette\": \"5\",\"showBorder\": \"0\",\"bgColor\": \"ffffff\",\"bgAlpha\": \"50\",\"useRoundEdges\": \"1\",\"legendBorderColor\": \"ffffff\"},\"categories\": [{\"category\": [{\"label\": \"VH\"},{\"label\": \"CD\"},{\"label\": \"IC\"},{\"label\": \"IS\"},{\"label\": \"VW\"},{\"label\": \"TOTAL\"}]}],\"dataset\": [{\"seriesname\": \"29주차\",\"data\": [{\"value\": \"53.7\"},{\"value\": \"8.8\"},{\"value\": \"18.8\"},{\"value\": \"21.8\"},{\"value\": \"3.0\"},{\"value\": \"106.1\"}]},{\"seriesname\": \"30주차\",\"data\": [{\"value\": \"108.3\"},{\"value\": \"10.8\"},{\"value\": \"20.6\"},{\"value\": \"33.8\"},{\"value\": \"24.8\"},{\"value\": \"198.3\"}]},{\"seriesname\": \"31주차\",\"data\": [{\"value\": \"26.8\"},{\"value\": \"16.1\"},{\"value\": \"8.7\"},{\"value\": \"31.3\"},{\"value\": \"24.2\"},{\"value\": \"107.1\"}]}]},\"events\": {}});fusioncharts3.render(); });"; }
+@section Scripts {
+    <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
+    <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>
+    <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.charts.js"></script>
 
+
+
+    <script type="text/javascript">@Html.Raw(sChart)</script>
 }
+<div class="">
+    <div class="row">
+        <div class="col-12 col-sm-6 mb-3">
+            @Html.Partial("Webpart/_MailList")
+        </div>
+        <div class="col-12 col-sm-6 mb-3">
+            @Html.Partial("Webpart/_ApprovalList")
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-6 mb-3">
+            @Html.Partial("Webpart/_Kpi_A")
+        </div>
+        <div class="col-12 col-sm-6 mb-3">
 
-<h4 class="font-weight-bold py-3 mb-4">Home</h4>
-<p>This page is an example of basic layout. For more options use <strong>Asp.Net MVC starter template generator</strong> in the docs.</p>
-<p><button class="btn btn-primary btn-lg">Button</button></p>
+        </div>
+    </div>
+</div>
