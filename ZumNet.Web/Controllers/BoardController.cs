@@ -166,13 +166,11 @@ namespace ZumNet.Web.Controllers
                     sPos = "200";
                     int iCategoryId = Convert.ToInt32(jPost["ct"]);
                     int iFolderId = Convert.ToInt32(jPost["lv"]["tgt"]);
-                    string sOperator = "N";
-                    string sAcl = "";
 
                     //권한체크
                     if (Session["Admin"].ToString() == "Y")
                     {
-                        sOperator = "Y";
+                        ViewBag.R.current["operator"] = "Y";
                     }
                     else
                     {
@@ -182,12 +180,12 @@ namespace ZumNet.Web.Controllers
                             svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
                             sPos = "310";
-                            sOperator = svcRt.ResultDataDetail["operator"].ToString();
-                            sAcl = svcRt.ResultDataDetail["acl"].ToString();
+                            ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                            ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
                         }
                     }
 
-                    if (sOperator == "N" && (sAcl == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(sAcl.Substring(0, 6), "V")))
+                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
                     {
                         return "권한이 없습니다!!";
                     }
@@ -197,15 +195,17 @@ namespace ZumNet.Web.Controllers
                     {
                         if (jPost["xfalias"].ToString() == "notice")
                         {
-                            svcRt = bd.GetMessgaeListInfoAddTopLine(1, Convert.ToInt32(jPost["ct"]), Convert.ToInt32(jPost["lv"]["tgt"]), Convert.ToInt32(Session["URID"])
-                                                    , sOperator, sAcl, Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
+                            svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"])
+                                                    , ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
+                                                    , Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
                                                     , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString()
                                                     , jPost["lv"]["searchtext"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString());
                         }
                         else
                         {
-                            svcRt = bd.GetMessgaeListInfo(1, Convert.ToInt32(jPost["ct"]), Convert.ToInt32(jPost["lv"]["tgt"]), Convert.ToInt32(Session["URID"])
-                                                    , sOperator, sAcl, Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
+                            svcRt = bd.GetMessgaeListInfo(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"])
+                                                    , ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
+                                                    , Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
                                                     , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString()
                                                     , jPost["lv"]["searchtext"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString());
                         }

@@ -169,10 +169,10 @@
     <value>数字</value>
   </data>
   <data name="Date_Created" xml:space="preserve">
-    <value>创建日期</value>
+    <value>创建日</value>
   </data>
   <data name="Date_Deleted" xml:space="preserve">
-    <value>删除日期</value>
+    <value>删除日</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>删除</value>

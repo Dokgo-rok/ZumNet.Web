@@ -36,7 +36,7 @@
                 </div>
                 <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
             </div>
-            <div class="row mt-3">
+            @*<div class="row mt-3">
                 <div class="col-6 text-center px-0">
                     <a class="" href="/Board/Recent"><i class="mdi mdi-clock-check-outline"></i> @Resources.Global.RecentPosts</a>
                 </div>
@@ -44,7 +44,7 @@
                     <a class="" href="/Board/Save"><i class="mdi mdi-circle-edit-outline"></i> @Resources.Global.TempBox2</a>
                 </div>
 
-            </div>
+            </div>*@
         </div>
 
         <hr class="border-light mx-4 mt-0 mb-3">
@@ -73,48 +73,52 @@
         <div class="flex-grow-1 position-relative">
             <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
             <div class="messages-content flex-grow-0">
-                <div id="__CtDashboard" class="row container-p-x">
-                    <div class="col col-md-7">
-                        <div class="font-weight-bold text-black-50">
-                            <i class="mdi mdi-clock-check-outline"></i> &nbsp;<span>@Resources.Global.RecentPosts</span>
-                        </div>
-                        <div>
-                            @if (ViewBag.RecentBBS.Rows.Count > 0)
-                            {
-                                for (int i = 0; i < ViewBag.RecentBBS.Rows.Count; i++)
+                @if (ViewBag.R.ctalias == "kdoc")
+                {
+                    <div id="__CtDashboard" class="row container-p-x">
+                        <div class="col col-md-7">
+                            <div class="font-weight-bold text-black-50">
+                                <i class="mdi mdi-clock-check-outline"></i> &nbsp;<span>@Resources.Global.RecentPosts</span>
+                            </div>
+                            <div>
+                                @if (ViewBag.RecentBBS != null && ViewBag.RecentBBS.Rows.Count > 0)
                                 {
-                                    DataRow row = ViewBag.RecentBBS.Rows[i];
-                                    <div class="d-flex justify-content-between align-items-center py-2">
-                                        <div class="">
-                                            @if (i % 3 == 0)
-                                            {
-                                                <div class="badge badge-pill badge-teal opacity-75">@row["DisplayName"]</div>
-                                            }
-                                            else if (i % 3 == 1)
-                                            {
-                                                <div class="badge badge-pill badge-warning opacity-75">@row["DisplayName"]</div>
-                                            }
-                                            else
-                                            {
-                                                <div class="badge badge-pill badge-primary opacity-75">@row["DisplayName"]</div>
-                                            }
-                                            <div class="mt-1"><a href="javascript:void(0)" class="" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
+                                    for (int i = 0; i < ViewBag.RecentBBS.Rows.Count; i++)
+                                    {
+                                        DataRow row = ViewBag.RecentBBS.Rows[i];
+                                        <div class="d-flex justify-content-between align-items-center py-2">
+                                            <div class="">
+                                                @if (i % 3 == 0)
+                                                {
+                                                    <div class="badge badge-pill badge-teal opacity-75">@row["DisplayName"]</div>
+                                                }
+                                                else if (i % 3 == 1)
+                                                {
+                                                    <div class="badge badge-pill badge-warning opacity-75">@row["DisplayName"]</div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="badge badge-pill badge-primary opacity-75">@row["DisplayName"]</div>
+                                                }
+                                                <div class="mt-1"><a href="javascript:void(0)" class="" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
+                                            </div>
+                                            <div class="text-truncate">
+                                                <span class="text-blue mr-3">@row["CreatorName"]</span>
+
+                                                @ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())
+                                            </div>
                                         </div>
-                                        <div class="text-truncate">
-                                            <span class="text-blue mr-3">@row["CreatorName"]</span>
-                                            
-                                            @ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())
-                                        </div>
-                                    </div>
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                <div class="d-flex justify-content-between align-items-center py-2">@Resources.Global.NoItemShow </div>
-                            }
+                                else
+                                {
+                                    <div class="d-flex justify-content-between align-items-center py-2">@Resources.Global.NoItemShow </div>
+                                }
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+
             </div>
         </div>
     </div>

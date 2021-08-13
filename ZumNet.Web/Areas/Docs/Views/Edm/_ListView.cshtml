@@ -85,7 +85,7 @@
             {
                 if (r["IsLocked"].ToString() == "Y")
                 {
-                    sLock = "<i class=\"fe-lock mr-1\"></i>"; //fas fa-lock
+                    sLock = "<i class=\"fas fa-lock text-secondary mr-1\"></i>"; //fas fa-lock
                     break;
                 }
             }
@@ -104,8 +104,7 @@
                     {
                         <span class="px-1">&nbsp;</span>
                     }
-                    @if (row["AclKind"].ToString().Substring(2, 1) 
-                        == "E" || row["Authority"].ToString() == "owner")
+                    @if (row["AclKind"].ToString().Substring(2, 1) == "E" || row["Authority"].ToString() == "owner")
                     {
                         <i class="fe-edit-2"></i>
                     }
@@ -132,7 +131,7 @@
                     {
                         <i class="far fa-copy text-secondary text-big  mr-1"></i>
                     }
-                    <a class="text-truncate" href="javascript:void(0)">@(sLock)@row["Subject"].ToString()</a>
+                    <a class="text-truncate" href="javascript:void(0)">@(Html.Raw(sLock))@row["Subject"].ToString()</a>
                     @if (Convert.ToInt32(row["CommentCount"]) > 0)
                     {
                         <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>
@@ -145,14 +144,14 @@
 
                 <div class="w-100 d-sm-none py-0"></div>
 
-                <div class="wd-99 wd-lg-30 wd-xl-30 d-flex">
-                    <div class="d-none d-md-block wd-30 wd-lg-38 wd-xl-35 t-sm text-sm-center text-truncate pr-2">
+                <div class="wd-99 wd-lg-32 wd-xl-32 d-flex">
+                    <div class="d-none d-md-block wd-30 wd-lg-35 wd-xl-35 t-sm text-sm-center text-truncate pr-2">
                         <span class="">@row["CreatorDept"]</span>
                     </div>
-                    <div class="d-none d-sm-block wd-15 wd-md-40 wd-lg-25 wd-xl-30 t-sm text-sm-center text-truncate pr-2">
+                    <div class="d-none d-sm-block wd-15 wd-md-40 wd-lg-25 wd-xl-25 t-sm text-sm-center text-truncate pr-2">
                         <span class="">@row["Creator"]</span>
                     </div>
-                    <div class="d-none d-sm-block wd-20 wd-md-40 wd-lg-25 wd-xl-25 t-sm text-sm-center text-truncate">
+                    <div class="d-none d-sm-block wd-20 wd-md-40 wd-lg-23 wd-xl-25 t-sm text-sm-center text-truncate">
                         <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</span>
                     </div>
 

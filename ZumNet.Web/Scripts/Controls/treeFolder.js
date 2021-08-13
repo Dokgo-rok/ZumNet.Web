@@ -51,7 +51,7 @@ $(function () {
                     data: function (node) {
                         var lvl = node.id == '#' ? '0' : node.li_attr.level;
                         var selType = node.id == '#' ? '' : node.li_attr.objecttype;
-                        var acl = node.id == '#' ? _zw.V.current.acl : node.li_attr.permission;
+                        var acl = node.id == '#' ? _zw.V.current.acl : node.li_attr.acl;
                         var openNode = '';
                         if (_zw.V.opnode != '' && _zw.V.opnode.indexOf('.') != -1) {
                             var v = _zw.V.opnode.split('.');
@@ -99,7 +99,7 @@ $(function () {
         .on('changed.jstree', function (e, d) {
             if (d.selected.length == 1) {
                 var n = d.instance.get_node(d.selected[0]); //alert(n.text)
-                //alert(n.li_attr.objecttype + ' : ' + n.li_attr.alias + ' : ' + n.li_attr.xfalias + ' : ' + n.li_attr.permission.substr(n.li_attr.permission.length-1, 1))
+                //alert(n.li_attr.objecttype + ' : ' + n.li_attr.alias + ' : ' + n.li_attr.xfalias + ' : ' + n.li_attr.acl.substr(n.li_attr.acl.length-1, 1))
                 var vId = n.id.split('.');
 
                 if (vId[vId.length - 1] == _zw.V.fdid) return false;
@@ -109,9 +109,9 @@ $(function () {
                 //$('.z-ttl span').html(vPath.join(' / '));
                 var ttl = vPath.join(' / ');
                 
-                if (n.li_attr.permission.substr(n.li_attr.permission.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
+                if (n.li_attr.acl.substr(n.li_attr.acl.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
                     //alert(_zw.base64.decode('e2N0OiIxMDMiLGN0YWxpYXM6ImJib2FyZCIsb3Q6IkciLHhmOiJiYnMiLGZkaWQ6IjE0NDk5IixvcG5vZGU6IjAuMC4xNDQ5OSIsdHRsOiIyMDIw64WE64+EIixwZXJtaXNzaW9uOiJTRkRFUlZTREVNV1JWIn0='))
-                    var encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + encodeURIComponent(ttl) + '",permission:"' + n.li_attr.permission + '"}');
+                    var encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + encodeURIComponent(ttl) + '",acl:"' + n.li_attr.acl + '"}');
                     //encQi = encQi.replace(/ /gi, '+');
                     switch (n.li_attr.xfalias) {
                         case "notice":
@@ -119,11 +119,14 @@ $(function () {
                         case "file":
                             window.location.href = '/Board/List?qi=' + encQi;
                             //if (_zw.V.current.page.toLowerCase() == '/board/list') {
-                            //    _zw.V.current.acl = n.li_attr.permission;
+                            //    _zw.V.ot = n.li_attr.objecttype;
+                            //    _zw.V.xfalias = n.li_attr.xfalias;
                             //    _zw.V.fdid = vId[vId.length - 1];
+                            //    _zw.V.current.acl = n.li_attr.acl;
+                            //    _zw.V.opnode = n.id;
                             //    _zw.V.ttl = ttl;
 
-                            //    _zw.fn.initLv(vId[vId.length - 1]);
+                            //    _zw.fn.initLv(_zw.V.fdid);
                             //    _zw.fn.loadList();
 
                             //} else {
@@ -131,27 +134,34 @@ $(function () {
                             //}
                             break;
                         case "album":
+                            bootbox.alert('준비중!');
                             break;
                         case "anonymous":
+                            bootbox.alert('준비중!');
                             break;
                         case "linksite":
+                            bootbox.alert('준비중!');
                             break;
                         case "knowledge":
+                            window.location.href = '/Docs/Kms/List?qi=' + encQi;
                             break;
                         default:
-                            window.location.href = '/Docs/Edm/List?qi=' + encQi;
+                            //window.location.href = '/Docs/Edm/List?qi=' + encQi;
                             //아래 처리를 위해서는 _zw.V json 값 셋팅이 필요
-                            //if (_zw.V.current.page.toLowerCase() == '/docs/edm/list') {
-                            //    _zw.V.current.acl = n.li_attr.permission;
-                            //    _zw.V.fdid = vId[vId.length - 1];
-                            //    _zw.V.ttl = ttl;
+                            if (_zw.V.current.page.toLowerCase() == '/docs/edm/list') {
+                                _zw.V.ot = n.li_attr.objecttype;
+                                _zw.V.xfalias = n.li_attr.xfalias;
+                                _zw.V.fdid = vId[vId.length - 1];
+                                _zw.V.current.acl = n.li_attr.acl;
+                                _zw.V.opnode = n.id;
+                                _zw.V.ttl = ttl;
 
-                            //    _zw.fn.initLv(vId[vId.length - 1]);
-                            //    _zw.fn.loadList();
+                                _zw.fn.initLv(_zw.V.fdid);
+                                _zw.fn.loadList();
 
-                            //} else {
-                            //    window.location.href = '/Docs/Edm/List?qi=' + encQi;
-                            //}
+                            } else {
+                                window.location.href = '/Docs/Edm/List?qi=' + encQi;
+                            }
                             break;
                     }
                     

@@ -128,11 +128,12 @@ namespace ZumNet.Web.Controllers
                         sb.AppendFormat(",\"shared\":\"{0}\"", row["Shared"].ToString());
                         sb.AppendFormat(",\"attype\":\"{0}\"", row["AttType"].ToString());
                         sb.AppendFormat(",\"inuse\":\"{0}\"", row["InUse"].ToString());
-                        sb.AppendFormat(",\"permission\":\"{0}\"", row["Permission"].ToString());
+                        sb.AppendFormat(",\"acl\":\"{0}\"", row["Permission"].ToString());
                         sb.AppendFormat(",\"deleted\":\"{0}\"", row["Deleted"].ToString());
+                        //sb.AppendFormat(",\"desc\":\"{0}\"", row["URL"].ToString());
                         sb.Append("}");
                         sb.Append(",\"a_attr\":{");
-                        sb.AppendFormat("\"url\":\"{0}\"", row["URL"].ToString());
+                        sb.AppendFormat("\"url\":\"{0}\"", row["URL"].ToString().Trim()); //jstree ajax 처리시 속성값에 공백/특수문자 있으면 오류 발생
                         sb.Append("}");
                         sb.Append("}");
 

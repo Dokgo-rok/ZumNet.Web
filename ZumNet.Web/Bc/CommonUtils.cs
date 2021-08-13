@@ -399,7 +399,7 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
                 sb.AppendFormat(",\"date\":\"{0}\"", DateTime.Now.ToString("yyyy-MM-dd"));
                 sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
-                sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["permission"], ""));
+                sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"], ""));
                 sb.AppendFormat(",\"chief\":\"{0}\"", "");
                 sb.AppendFormat(",\"operator\":\"{0}\"", "");
                 sb.Append("}"); //current
@@ -452,7 +452,8 @@ namespace ZumNet.Web.Bc
 
             if (ctrl.Request.IsAjaxRequest())
             {
-                JObject jReq = CommonUtils.PostDataToJson();
+                string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], "");
+                JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //CommonUtils.PostDataToJson();
 
                 if (jReq == null || jReq.Count == 0)
                 {
@@ -471,20 +472,20 @@ namespace ZumNet.Web.Bc
                         sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
                         sb.AppendFormat(",\"date\":\"{0}\"", DateTime.Now.ToString("yyyy-MM-dd"));
                         sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
-                        sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["permission"], ""));
+                        sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"], ""));
                         sb.AppendFormat(",\"chief\":\"{0}\"", "");
                         sb.AppendFormat(",\"operator\":\"{0}\"", "");
                         sb.Append("}"); //current
                         sb.AppendFormat(",\"mode\":\"{0}\"", StringHelper.SafeString(jReq["M"], ""));
                         sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));
                         sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"], ""));
-                        //sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
+                        sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
                         sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"], ""));
                         sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"], ""));
                         sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
-                        //sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.UrlDecode(StringHelper.SafeString(jReq["ttl"], "")));
-                        //sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
-                        //sb.AppendFormat(",\"qi\":\"{0}\"", req);
+                        sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.UrlDecode(StringHelper.SafeString(jReq["ttl"], "")));
+                        sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
+                        sb.AppendFormat(",\"qi\":\"{0}\"", req);
                         sb.Append(",\"lv\": {");
                         sb.AppendFormat("\"tgt\":\"{0}\"", jReq["tgt"].ToString());
                         sb.AppendFormat(",\"page\":\"{0}\"", jReq["page"].ToString());
