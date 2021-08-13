@@ -177,6 +177,9 @@
   <data name="Delete" xml:space="preserve">
     <value>삭제</value>
   </data>
+  <data name="Department" xml:space="preserve">
+    <value>부서</value>
+  </data>
   <data name="DocNumber" xml:space="preserve">
     <value>문서번호</value>
   </data>
@@ -197,6 +200,15 @@
   </data>
   <data name="Home" xml:space="preserve">
     <value>홈</value>
+  </data>
+  <data name="ID" xml:space="preserve">
+    <value>아이디</value>
+  </data>
+  <data name="Jikchaek" xml:space="preserve">
+    <value>직책</value>
+  </data>
+  <data name="Jikwi" xml:space="preserve">
+    <value>직위</value>
   </data>
   <data name="LangSet" xml:space="preserve">
     <value>언어 설정</value>
@@ -228,6 +240,9 @@
   <data name="MyInfo" xml:space="preserve">
     <value>내 정보</value>
   </data>
+  <data name="Name" xml:space="preserve">
+    <value>이름</value>
+  </data>
   <data name="Next" xml:space="preserve">
     <value>다음</value>
   </data>
@@ -242,6 +257,9 @@
   </data>
   <data name="Order" xml:space="preserve">
     <value>순서</value>
+  </data>
+  <data name="OrganChart" xml:space="preserve">
+    <value>조직도</value>
   </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>조직관리자</value>
@@ -267,6 +285,9 @@
   <data name="Permission" xml:space="preserve">
     <value>권한</value>
   </data>
+  <data name="PersonName" xml:space="preserve">
+    <value>성명</value>
+  </data>
   <data name="PlanLeaveTime" xml:space="preserve">
     <value>계획퇴근시간</value>
   </data>
@@ -290,6 +311,9 @@
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>아이디 저장</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>초기화</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>검색</value>

@@ -111,27 +111,27 @@ $(function () {
                 
                 if (n.li_attr.acl.substr(n.li_attr.acl.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
                     //alert(_zw.base64.decode('e2N0OiIxMDMiLGN0YWxpYXM6ImJib2FyZCIsb3Q6IkciLHhmOiJiYnMiLGZkaWQ6IjE0NDk5IixvcG5vZGU6IjAuMC4xNDQ5OSIsdHRsOiIyMDIw64WE64+EIixwZXJtaXNzaW9uOiJTRkRFUlZTREVNV1JWIn0='))
-                    var encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + encodeURIComponent(ttl) + '",acl:"' + n.li_attr.acl + '"}');
+                    var encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                     //encQi = encQi.replace(/ /gi, '+');
                     switch (n.li_attr.xfalias) {
                         case "notice":
                         case "bbs":
                         case "file":
-                            window.location.href = '/Board/List?qi=' + encQi;
-                            //if (_zw.V.current.page.toLowerCase() == '/board/list') {
-                            //    _zw.V.ot = n.li_attr.objecttype;
-                            //    _zw.V.xfalias = n.li_attr.xfalias;
-                            //    _zw.V.fdid = vId[vId.length - 1];
-                            //    _zw.V.current.acl = n.li_attr.acl;
-                            //    _zw.V.opnode = n.id;
-                            //    _zw.V.ttl = ttl;
+                            //window.location.href = '/Board/List?qi=' + encQi;
+                            if (_zw.V.current.page.toLowerCase() == '/board/list') {
+                                _zw.V.ot = n.li_attr.objecttype;
+                                _zw.V.xfalias = n.li_attr.xfalias;
+                                _zw.V.fdid = vId[vId.length - 1];
+                                _zw.V.current.acl = n.li_attr.acl;
+                                _zw.V.opnode = n.id;
+                                _zw.V.ttl = ttl;
 
-                            //    _zw.fn.initLv(_zw.V.fdid);
-                            //    _zw.fn.loadList();
+                                _zw.fn.initLv(_zw.V.fdid);
+                                _zw.fn.loadList();
 
-                            //} else {
-                            //    window.location.href = '/Board/List?qi=' + encQi;
-                            //}
+                            } else {
+                                window.location.href = '/Board/List?qi=' + encQi;
+                            }
                             break;
                         case "album":
                             bootbox.alert('준비중!');

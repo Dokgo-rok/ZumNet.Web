@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -12,7 +14,7 @@ using ZumNet.Framework.Util;
 namespace ZumNet.Web.Bc
 {
     /// <summary>
-    /// 
+    /// 공통 유틸 클래스
     /// </summary>
     public class CommonUtils
     {
@@ -73,7 +75,7 @@ namespace ZumNet.Web.Bc
         }
         #endregion
 
-        #region [날짜]
+        #region [날짜 표현]
 
         /// <summary>
         /// 리스트뷰 날짜 표현
@@ -291,6 +293,7 @@ namespace ZumNet.Web.Bc
         #endregion
     }
 
+    #region [RazorViewToString 클래스]
     /// <summary>
     /// 뷰 페이지 문자열
     /// </summary>
@@ -316,7 +319,9 @@ namespace ZumNet.Web.Bc
             }
         }
     }
+    #endregion
 
+    #region [CtrlHandler 클래스]
     /// <summary>
     /// 컨트롤러 공통 작업
     /// </summary>
@@ -384,7 +389,8 @@ namespace ZumNet.Web.Bc
                 string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], ""); //.Replace("+", " ");
                 if (req != "")
                 {
-                    jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
+                    //jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
+                    jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req));
                 }
                 else
                 {
@@ -410,9 +416,9 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"], ""));
                 sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"], ""));
                 sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
-                sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.UrlDecode(StringHelper.SafeString(jReq["ttl"], "")));
+                sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"], ""));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
-                sb.AppendFormat(",\"qi\":\"{0}\"", req);
+                sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
                 sb.Append(",\"lv\": {");
                 sb.AppendFormat("\"tgt\":\"{0}\"", "");
                 sb.AppendFormat(",\"page\":\"{0}\"", "");
@@ -453,7 +459,8 @@ namespace ZumNet.Web.Bc
             if (ctrl.Request.IsAjaxRequest())
             {
                 string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], "");
-                JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //CommonUtils.PostDataToJson();
+                //JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //CommonUtils.PostDataToJson();
+                JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req)); //CommonUtils.PostDataToJson();
 
                 if (jReq == null || jReq.Count == 0)
                 {
@@ -483,9 +490,9 @@ namespace ZumNet.Web.Bc
                         sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"], ""));
                         sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"], ""));
                         sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
-                        sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.UrlDecode(StringHelper.SafeString(jReq["ttl"], "")));
+                        sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"], ""));
                         sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
-                        sb.AppendFormat(",\"qi\":\"{0}\"", req);
+                        sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
                         sb.Append(",\"lv\": {");
                         sb.AppendFormat("\"tgt\":\"{0}\"", jReq["tgt"].ToString());
                         sb.AppendFormat(",\"page\":\"{0}\"", jReq["page"].ToString());
@@ -518,5 +525,79 @@ namespace ZumNet.Web.Bc
             }
             return strReturn;
         }
+
+        /// <summary>
+        /// 조직도 트리구조 반환
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static JObject OrgTree(ZumNet.Framework.Core.ServiceResult data)
+        {
+            string sOpenNode = data.ResultDataDetail["openNode"].ToString();
+            string sIconType;
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("{");
+            sb.AppendFormat("selected:\"{0}\"", sOpenNode);
+            sb.Append(",data:[");
+
+            int i = 0;
+            string[] v = sOpenNode.Split(';');
+
+            foreach (DataRow row in data.ResultDataRowCollection)
+            {
+                if (row["NodeLevel"].ToString() == "0")
+                {
+                    sIconType = "root";
+                }
+                else
+                {
+                    sIconType = "";
+                }
+
+                if (i > 0) { sb.Append(",{"); }
+                else { sb.Append("{"); }
+
+                sb.AppendFormat("id:\"{0}\"", row["GR_ID"].ToString());
+                sb.AppendFormat(",parent:\"{0}\"", row["MemberOf"].ToString() == "0" ? "#" : row["MemberOf"].ToString());
+                sb.AppendFormat(",text:\"{0}\"", row["DisplayName"].ToString());
+                //sb.AppendFormat(",icon:\"{0}\"", "");
+                sb.AppendFormat(",type:\"{0}\"", sIconType);
+
+                if (v.Contains(row["GR_ID"].ToString()))
+                {
+                    if (v[v.Length - 1] == row["GR_ID"].ToString())
+                    {
+                        sb.Append(",state:{opened:true,disabled:false,selected:true}");
+                    }
+                    else
+                    {
+                        sb.Append(",state:{opened:true,disabled:false,selected:false}");
+                    }
+                }
+                else
+                {
+                    sb.Append(",state:{opened:false,disabled:false,selected:false}");
+                }
+                sb.Append(",li_attr:{");
+                sb.AppendFormat("level:\"{0}\"", row["NodeLevel"].ToString());
+                sb.AppendFormat(",gralias:\"{0}\"", row["GRAlias"].ToString());
+                sb.AppendFormat(",policy:\"{0}\"", row["Policy"].ToString());
+                sb.AppendFormat(",history:\"{0}\"", row["HasHistory"].ToString());
+                sb.AppendFormat(",inuse:\"{0}\"", row["InUse"].ToString());
+                sb.AppendFormat(",hasmember:\"{0}\"", row["HasMember"].ToString());
+                sb.AppendFormat(",rcv:\"{0}\"", row["Reserved1"].ToString());
+                sb.Append("}");
+                sb.Append(",a_attr:{}");
+                sb.Append("}");
+
+                i++;
+            }
+            sb.Append("]");
+            sb.Append("}");
+
+            return JObject.Parse(sb.ToString());
+        }
     }
+    #endregion
 }

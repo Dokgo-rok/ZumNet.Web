@@ -1,28 +1,77 @@
 ﻿@using System.Data;
 
-@foreach (DataRow row in ViewBag.MemberList)
+@functions {
+    private string GetOrgUserImage(string logonId)
+    {
+        string imagepath = Server.MapPath("~/Storage/cresyn/PersonPhoto/" + logonId + ".jpg");
+        string imageFormat = "image/jpg";
+        string imageOpacity = "";
+
+        if (!File.Exists(imagepath))
+        {
+            imagepath = Server.MapPath("~/images/plugins/user.png");
+            imageFormat = "image/png";
+            imageOpacity = " opacity-75";
+        }
+        FileStream fs = new FileStream(imagepath, FileMode.Open);
+        byte[] byData = new byte[fs.Length];
+        fs.Read(byData, 0, byData.Length);
+        fs.Close();
+
+        var base64 = Convert.ToBase64String(byData);
+
+        return String.Format("<img src=\"data:{0};base64,{1}\" alt=\"User Image\" class=\"contact-content-img rounded-circle{2}\">", imageFormat, base64, imageOpacity);
+    }
+}
+@if (ViewBag.MemberList != null && ViewBag.MemberList.Count > 0)
 {
-    <div class="contacts-col col-12">
-        <div class="card">
-            <div class="card-body">
-                <img src="http://ekp.cresyn.com/Storage/cresyn/PersonPhoto/@(row["LogonID"].ToString() + ".jpg")" class="contact-content-img rounded-circle" style="max-height: 120px" alt="">
-                <h5 class="card-title">@row["DisplayName"]</h5>
-                <div>
-                    @if (row["SecondMail"].ToString() == "")
-                    {
-                        @(row["MailAccount"].ToString() + "@" + row["Domain"].ToString())
-                    }
-                    else
-                    {
-                        @row["SecondMail"].ToString()
-                    }
+    foreach (DataRow row in ViewBag.MemberList)
+    {
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    @*<div class="contacts-dropdown btn-group">
+                            <button type="button" class="btn btn-sm btn-default icon-btn borderless rounded-pill md-btn-flat dropdown-toggle hide-arrow" data-toggle="dropdown">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                            <div class="contacts-dropdown-menu dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="javascript:void(0)">Edit</a>
+                                <a class="dropdown-item" href="javascript:void(0)">Remove</a>
+                            </div>
+                        </div>*@
+                    <div class="contact-content">
+                        @Html.Raw(GetOrgUserImage(row["LogonID"].ToString()))
+                        <div class="contact-content-about">
+                            <h5 class="contact-content-name mb-1">
+                                <a href="javascript:void(0)" class="text-body">@row["DisplayName"]</a>
+                                <span class="text-secondary h6 ml-1">@row["Grade1"]</span>
+                            </h5>
+                            <div class="contact-content-user text-muted small mb-2">
+                                @if (row["SecondMail"].ToString() == "")
+                                {
+                                    @(row["MailAccount"].ToString() + "@" + row["Domain"].ToString())
+                                }
+                                else
+                                {
+                                    @row["SecondMail"].ToString()
+                                }
+                            </div>
+                            <div class="small">
+                                <div><i class="fe-phone-call text-secondary font-weight-bold mr-1"></i>@row["Telephone"]</div>
+                                <div><i class="fas fa-mobile-alt text-facebook font-weight-bold mr-1"></i>@row["Mobile"]</div>
+                            </div>
+                            <hr class="border-light">
+                            <div>
+                                <span class="text-secondary">@row["Keyword1"]</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>@row["Mobile"]</div>
-                <div>@row["Grade1"]</div>
-                <div>@row["Telephone"]</div>
-                <div>@row["GroupName"]</div>
-                <div>@row["Keyword1"]</div>
             </div>
         </div>
-    </div>
+    }
+}
+else
+{
+    <div class="w-100 text-center pt-3">@Resources.Global.NoItemShow</div>
 }

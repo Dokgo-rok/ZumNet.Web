@@ -69,8 +69,7 @@
 
 @if (totalPage > 1)
 {
-    <ul class="pagination pagination-sm justify-content-center pt-3 border-top" id="__ListPage">
-    @if (pageIndex > 1)
+    if (pageIndex > 1)
     {
         <li class="page-item page-pre"><a class="page-link" title="@Resources.Global.Previous" href="javascript:void(0)" data-for="@(pageIndex - 1)"><i class="fe-chevron-left"></i></a></li>
         <li class="page-item"><a class="page-link" title="@Resources.Global.First @Resources.Global.Page" href="javascript:void(0)" data-for="1">1</a></li>
@@ -81,12 +80,12 @@
         <li class="page-item active"><a class="" title="@Resources.Global.First @Resources.Global.Page" href="javascript:void(0)" data-for="1">1</a></li>
     }
 
-    @if (totalPage > (maxPage + 2) && pageIndex >= maxPage)
+    if (totalPage > (maxPage + 2) && pageIndex >= maxPage)
     {
         <li class="page-item page-first-separator disabled"><a class="" title="" href="javascript:void(0)">...</a></li>
     }
 
-    @for (int i = iStart; i <= iEnd; i++)
+    for (int i = iStart; i <= iEnd; i++)
     {
         if (pageIndex == i)
         {
@@ -98,12 +97,12 @@
         }
     }
 
-    @if (totalPage > (maxPage + 2) && pageIndex > 0 && pageIndex <= (totalPage - maxPage + 1))
+    if (totalPage > (maxPage + 2) && pageIndex > 0 && pageIndex <= (totalPage - maxPage + 1))
     {
         <li class="page-item page-last-separator disabled"><a class="" title="" href="javascript:void(0)">...</a></li>
     }
 
-    @if (pageIndex < totalPage)
+    if (pageIndex < totalPage)
     {
         <li class="page-item"><a class="page-link" title="@Resources.Global.Last2 @Resources.Global.Page" href="javascript:void(0)" data-for="@totalPage">@totalPage</a></li>
         <li class="page-item page-next"><a class="page-link" title="@Resources.Global.Next" href="javascript:void(0)" data-for="@(pageIndex + 1)"><i class="fe-chevron-right"></i></a></li>
@@ -113,6 +112,4 @@
         <li class="page-item active"><a class="" title="@Resources.Global.Last2 @Resources.Global.Page" href="javascript:void(0)" data-for="@totalPage">@totalPage</a></li>
         <li class="page-item page-next disabled"><a class="" title="@Resources.Global.Next" href="javascript:void(0)" data-for=""><i class="fe-chevron-right"></i></a></li>
     }
-
-    </ul>
 }

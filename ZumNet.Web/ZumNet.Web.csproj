@@ -558,6 +558,7 @@
     <Content Include="Areas\Docs\Views\Edm\List.cshtml" />
     <Content Include="Areas\Docs\Views\Edm\_ListPagination.cshtml" />
     <Content Include="Areas\Docs\Views\Edm\_ListView.cshtml" />
+    <Content Include="Areas\Docs\Views\Edm\_ListCount.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -615,6 +616,7 @@
     <Content Include="Views\Portal\AddCheck.cshtml" />
     <Content Include="Views\Board\List.cshtml" />
     <Content Include="Views\Board\_ListPagination.cshtml" />
+    <Content Include="Views\Board\_ListCount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Global.ko.resx" />

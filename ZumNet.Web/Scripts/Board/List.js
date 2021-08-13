@@ -18,7 +18,7 @@ $(function () {
         //console.log(j.ctalias);
 
         var postData = _zw.fn.getLvQuery();
-        var url = '/Board/List?qi=' + _zw.base64.encode(postData);
+        var url = '/Board/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 
         $.ajax({
             type: "POST",
@@ -33,7 +33,8 @@ $(function () {
 
                     var v = res.substr(2).split(_zw.V.lv.boundary);
                     $('#__ListView').html(v[0]);
-                    $('#__ListPage').html(v[1]);
+                    $('#__ListCount').html(v[1]);
+                    $('#__ListPage').html(v[2]);
 
                 } else bootbox.alert(res);
             }
@@ -52,7 +53,7 @@ $(function () {
         j["fdid"] = _zw.V.fdid;
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
-        j["ttl"] = ''; //_zw.V.ttl; //encodeURIComponent(_zw.V.ttl);
+        j["ttl"] = _zw.V.ttl;
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;
         j["count"] = _zw.V.lv.count;

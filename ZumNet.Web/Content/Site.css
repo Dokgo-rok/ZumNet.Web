@@ -268,3 +268,15 @@
     }
 }
 /* listview <--------------- */
+.contacts-col-view .contact-content {
+    margin: 0 auto;
+    text-align: center;
+}
+.contacts-col-view .contact-content-img {
+    margin-bottom: 1.25rem;
+    width: 6.25rem;
+    height: 6.25rem;
+}
+.contacts-col-view .contact-content-name, .contacts-col-view .contact-content-user {
+    display: block;
+}

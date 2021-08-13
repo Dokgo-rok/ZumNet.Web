@@ -177,6 +177,9 @@
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Department" xml:space="preserve">
+    <value>Department</value>
+  </data>
   <data name="DocNumber" xml:space="preserve">
     <value>Doc Number</value>
   </data>
@@ -197,6 +200,15 @@
   </data>
   <data name="Home" xml:space="preserve">
     <value>Home</value>
+  </data>
+  <data name="ID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Jikchaek" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Jikwi" xml:space="preserve">
+    <value>Position</value>
   </data>
   <data name="LangSet" xml:space="preserve">
     <value>Language settings</value>
@@ -228,6 +240,9 @@
   <data name="MyInfo" xml:space="preserve">
     <value>My Info</value>
   </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="Next" xml:space="preserve">
     <value>Next</value>
   </data>
@@ -242,6 +257,9 @@
   </data>
   <data name="Order" xml:space="preserve">
     <value>Order</value>
+  </data>
+  <data name="OrganChart" xml:space="preserve">
+    <value>Organization Chart</value>
   </data>
   <data name="OrganMgr" xml:space="preserve">
     <value>Organization Mgr</value>
@@ -267,6 +285,9 @@
   <data name="Permission" xml:space="preserve">
     <value>Permission</value>
   </data>
+  <data name="PersonName" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="PlanLeaveTime" xml:space="preserve">
     <value>Planned Leave</value>
   </data>
@@ -290,6 +311,9 @@
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Save ID</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>Search</value>

@@ -27,12 +27,14 @@
             if (row["CTAlias"].ToString() == "orgmap")
             {
                 vOrganQuery[0] = row["DisplayName"].ToString();
-                vOrganQuery[1] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
+                //vOrganQuery[1] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
+                vOrganQuery[1] = Server.UrlEncode("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
             }
             else if (row["CTAlias"].ToString() == "linksite")
             {
                 vLinkSiteQuery[0] = row["DisplayName"].ToString();
-                vLinkSiteQuery[1] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
+                //vLinkSiteQuery[1] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
+                vLinkSiteQuery[1] = Server.UrlEncode("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"0.0.12029\"}"); //링크사이트 ct, opennode 지정
             }
         }
     }

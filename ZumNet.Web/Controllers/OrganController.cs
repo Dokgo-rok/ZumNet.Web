@@ -28,8 +28,10 @@ namespace ZumNet.Web.Controllers
 
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
-                    ViewBag.OrgTree = svcRt.ResultDataRowCollection;
-                    ViewBag.TreeOpenNode = svcRt.ResultDataDetail["openNode"];
+                    //ViewBag.OrgTree = svcRt.ResultDataRowCollection;
+                    //ViewBag.TreeOpenNode = svcRt.ResultDataDetail["openNode"];
+
+                    ViewBag.R.tree = CtrlHandler.OrgTree(svcRt);
                 }
                 else
                 {
@@ -45,6 +47,21 @@ namespace ZumNet.Web.Controllers
                 {
                     ViewBag.MemberList = svcRt.ResultDataRowCollection;
                     ViewBag.MemberCount = svcRt.ResultItemCount.ToString();
+                }
+                else
+                {
+                    //에러페이지
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+            {
+                svcRt = cb.GetGradeCode("1", Convert.ToInt32(Session["DNID"]), "A");
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.GradeCode = svcRt.ResultDataRowCollection;
                 }
                 else
                 {

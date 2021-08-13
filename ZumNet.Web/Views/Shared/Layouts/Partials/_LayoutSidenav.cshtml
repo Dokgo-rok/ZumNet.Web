@@ -51,7 +51,8 @@
     {
         string[] v = { "", "", "", "", "", "" }; //Area, Controller, Action, Path, Icon, QueryString
 
-        v[5] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"" + row["OpenNode"].ToString() + "\"}");
+        //v[5] = ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"" + row["OpenNode"].ToString() + "\"}");
+        v[5] = Server.UrlEncode("{ct:\"" + row["CT_ID"].ToString() + "\",ctalias:\"" + row["CTAlias"].ToString() + "\",ttl:\"" + row["DisplayName"].ToString() + "\",opnode:\"" + row["OpenNode"].ToString() + "\"}");
 
         switch (row["CTAlias"].ToString().ToLower())
         {

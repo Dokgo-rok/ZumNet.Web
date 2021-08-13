@@ -3,82 +3,83 @@
 @using Newtonsoft.Json;
 
 @{
-    ViewBag.Title = "크레신 조직도";
+    ViewBag.Title = Resources.Global.OrganChart;
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
-    string sIconType = "";
-    StringBuilder sb = new StringBuilder();
-    sb.Append("{");
-    sb.AppendFormat("selected:\"{0}\"", ViewBag.TreeOpenNode);
-    sb.Append(",data:[");
+    //string sIconType = "";
+    //StringBuilder sb = new StringBuilder();
+    //sb.Append("{");
+    //sb.AppendFormat("selected:\"{0}\"", ViewBag.TreeOpenNode);
+    //sb.Append(",data:[");
 
-    int i = 0;
-    string[] v = ViewBag.TreeOpenNode.Split(';');
+    //int i = 0;
+    //string[] v = ViewBag.TreeOpenNode.Split(';');
 
-    foreach (DataRow row in ViewBag.OrgTree)
-    {
-        if (row["NodeLevel"].ToString() == "0")
-        {
-            sIconType = "root";
-        }
-        else
-        {
-            sIconType = "";
-        }
+    //foreach (DataRow row in ViewBag.OrgTree)
+    //{
+    //    if (row["NodeLevel"].ToString() == "0")
+    //    {
+    //        sIconType = "root";
+    //    }
+    //    else
+    //    {
+    //        sIconType = "";
+    //    }
 
-        if (i > 0) { sb.Append(",{"); }
-        else { sb.Append("{"); }
+    //    if (i > 0) { sb.Append(",{"); }
+    //    else { sb.Append("{"); }
 
-        sb.AppendFormat("id:\"{0}\"", row["GR_ID"].ToString());
-        sb.AppendFormat(",parent:\"{0}\"", row["MemberOf"].ToString() == "0" ? "#" : row["MemberOf"].ToString());
-        sb.AppendFormat(",text:\"{0}\"", row["DisplayName"].ToString());
-        //sb.AppendFormat(",icon:\"{0}\"", "");
-        sb.AppendFormat(",type:\"{0}\"", sIconType);
+    //    sb.AppendFormat("id:\"{0}\"", row["GR_ID"].ToString());
+    //    sb.AppendFormat(",parent:\"{0}\"", row["MemberOf"].ToString() == "0" ? "#" : row["MemberOf"].ToString());
+    //    sb.AppendFormat(",text:\"{0}\"", row["DisplayName"].ToString());
+    //    //sb.AppendFormat(",icon:\"{0}\"", "");
+    //    sb.AppendFormat(",type:\"{0}\"", sIconType);
 
-        if (v.Contains(row["GR_ID"].ToString()))
-        {
-            if (v[v.Length - 1] == row["GR_ID"].ToString())
-            {
-                sb.Append(",state:{opened:true,disabled:false,selected:true}");
-            }
-            else
-            {
-                sb.Append(",state:{opened:true,disabled:false,selected:false}");
-            }
-        }
-        else
-        {
-            sb.Append(",state:{opened:false,disabled:false,selected:false}");
-        }
-        sb.Append(",li_attr:{");
-        sb.AppendFormat("level:\"{0}\"", row["NodeLevel"].ToString());
-        sb.AppendFormat(",gralias:\"{0}\"", row["GRAlias"].ToString());
-        sb.AppendFormat(",policy:\"{0}\"", row["Policy"].ToString());
-        sb.AppendFormat(",history:\"{0}\"", row["HasHistory"].ToString());
-        sb.AppendFormat(",inuse:\"{0}\"", row["InUse"].ToString());
-        sb.AppendFormat(",hasmember:\"{0}\"", row["HasMember"].ToString());
-        sb.AppendFormat(",rcv:\"{0}\"", row["Reserved1"].ToString());
-        sb.Append("}");
-        sb.Append(",a_attr:{}");
-        sb.Append("}");
+    //    if (v.Contains(row["GR_ID"].ToString()))
+    //    {
+    //        if (v[v.Length - 1] == row["GR_ID"].ToString())
+    //        {
+    //            sb.Append(",state:{opened:true,disabled:false,selected:true}");
+    //        }
+    //        else
+    //        {
+    //            sb.Append(",state:{opened:true,disabled:false,selected:false}");
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sb.Append(",state:{opened:false,disabled:false,selected:false}");
+    //    }
+    //    sb.Append(",li_attr:{");
+    //    sb.AppendFormat("level:\"{0}\"", row["NodeLevel"].ToString());
+    //    sb.AppendFormat(",gralias:\"{0}\"", row["GRAlias"].ToString());
+    //    sb.AppendFormat(",policy:\"{0}\"", row["Policy"].ToString());
+    //    sb.AppendFormat(",history:\"{0}\"", row["HasHistory"].ToString());
+    //    sb.AppendFormat(",inuse:\"{0}\"", row["InUse"].ToString());
+    //    sb.AppendFormat(",hasmember:\"{0}\"", row["HasMember"].ToString());
+    //    sb.AppendFormat(",rcv:\"{0}\"", row["Reserved1"].ToString());
+    //    sb.Append("}");
+    //    sb.Append(",a_attr:{}");
+    //    sb.Append("}");
 
-        i++;
-    }
-    sb.Append("]");
-    sb.Append("}");
+    //    i++;
+    //}
+    //sb.Append("]");
+    //sb.Append("}");
 
-    ViewBag.R.tree = Newtonsoft.Json.Linq.JObject.Parse(sb.ToString());
+    //ViewBag.R.tree = Newtonsoft.Json.Linq.JObject.Parse(sb.ToString());
 
 }
 
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
     @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @*@Styles.Render("~/bundle/vendor/css/pages/contacts")*@
 }
 
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
-<script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
 }
 
 <!--
@@ -90,16 +91,18 @@
 
     <!-- sidebox -->
     <div class="messages-sidebox messages-scroll bg-body border-right">
+        <div class="z-mobile-navbar"></div>
+
         <div class="py-3 px-3">
             <ul class="nav nav-tabs tabs-alt justify-content-center font-weight-bold">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" role="tab" href="#orgtree" aria-controls="orgtree" aria-selected="true">조직도</a>
+                    <a class="nav-link active" data-toggle="tab" role="tab" href="#orgtree" aria-controls="orgtree" aria-selected="true">@Resources.Global.OrganChart</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" href="#orgsearch" aria-controls="orgsearch" aria-selected="false">검색</a>
+                    <a class="nav-link" data-toggle="tab" role="tab" href="#orgsearch" aria-controls="orgsearch" aria-selected="false">@Resources.Global.Search</a>
                 </li>
             </ul>
-            <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-block text-muted text-large font-weight-light">&times;</a>
+            <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light">&times;</a>
         </div>
         <!-- sidebox tree -->
         <div class="tab-content px-3">
@@ -107,7 +110,42 @@
                 <div id="__OrgTree"></div>
             </div>
             <div class="tab-pane fade show" id="orgsearch" role="tabpanel" aria-labelledby="orgsearch-tab">
-                <div id="__OrgSearch"></div>
+                <div id="__OrgSearch">
+                    <div class="form-group row">
+                        <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.PersonName</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="@Resources.Global.PersonName">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.ID</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="@Resources.Global.ID">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.Department</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="@Resources.Global.Department">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.Jikwi</label>
+                        <div class="col-sm-8">
+                            <select class="custom-select">
+                                <option>@Resources.Global.Select</option>
+                                @foreach (DataRow row in ViewBag.GradeCode)
+                                {
+                                    <option value="@row["Code"]">@row["CodeName"]</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-outline-success py-1 mr-1">@Resources.Global.Search</button>
+                        <button class="btn btn-outline-secondary py-1 ml-1">@Resources.Global.Reset</button>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- / sidebox tree -->
@@ -117,18 +155,25 @@
     <div class="d-flex flex-column w-100">
         <!-- Header -->
         <div class="flex-grow-0">
-            <div class="d-flex justify-content-between font-weight-bold container-p-x py-3 py-lg-4 m-0">
-                <div class="h5 font-weight-bold mb-0 z-ttl">
-                    <i class="mdi mdi-account-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+            <div class="d-flex justify-content-between container-p-x py-3 py-md-4 m-0">
+                <div class="d-flex align-items-center font-weight-bold text-truncate">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
+
+                    <div class="h5 font-weight-bold mb-0 z-ttl text-truncate">
+                        <i class="mdi mdi-account-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
                 </div>
-                <div class="h5">
-                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-lg-none d-inline-block align-self-center px-2"><i class="fe-more-vertical"></i></a>
+                <div class="d-flex align-items-center z-lv-menu">
+                    @*<button class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zv-menu="exportExcel"><i class="fe-download"></i> 엑셀</button>*@
+                    <a href="javascript:void(0)" class="text-success" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zv-menu="exportExcel"><i class="fe-download"></i> 엑셀</a>
                 </div>
             </div>
         </div>
         <!-- / Header -->
         <!-- Set `.contacts-col-view` or '.contacts-row-view' to control view mode -->
-        <div id="__OrgList" class="flex-grow-0 contacts-col-view">
+        <div id="__OrgList" class="flex-grow-0 row contacts-col-view mx-1">
             @Html.Partial("_MemberList")
         </div>
     </div>

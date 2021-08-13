@@ -241,6 +241,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Department과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Department {
+            get {
+                return ResourceManager.GetString("Department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Doc Number과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string DocNumber {
@@ -300,6 +309,33 @@ namespace Resources {
         public static string Home {
             get {
                 return ResourceManager.GetString("Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ID과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ID {
+            get {
+                return ResourceManager.GetString("ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Title과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Jikchaek {
+            get {
+                return ResourceManager.GetString("Jikchaek", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Position과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Jikwi {
+            get {
+                return ResourceManager.GetString("Jikwi", resourceCulture);
             }
         }
         
@@ -394,6 +430,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Name과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Next과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Next {
@@ -435,6 +480,15 @@ namespace Resources {
         public static string Order {
             get {
                 return ResourceManager.GetString("Order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Organization Chart과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string OrganChart {
+            get {
+                return ResourceManager.GetString("OrganChart", resourceCulture);
             }
         }
         
@@ -511,6 +565,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Name과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string PersonName {
+            get {
+                return ResourceManager.GetString("PersonName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Planned Leave과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string PlanLeaveTime {
@@ -579,6 +642,15 @@ namespace Resources {
         public static string RememberMe {
             get {
                 return ResourceManager.GetString("RememberMe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Reset과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Reset {
+            get {
+                return ResourceManager.GetString("Reset", resourceCulture);
             }
         }
         
