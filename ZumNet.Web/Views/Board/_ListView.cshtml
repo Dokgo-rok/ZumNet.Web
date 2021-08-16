@@ -37,6 +37,10 @@
                     @*<i class="fe-award text-big text-danger font-weight-bold mr-1"></i>*@
                     <img src="~/images/plugins/hot.gif" alt="" />
                 }
+                @if (ZumNet.Web.Bc.CommonUtils.DateDiff(row["PublishDate"].ToString(), DateTime.Now.ToString()) <= 1)
+                {
+                    <img src="~/images/plugins/new.gif" alt="" />
+                }
                 <a class="text-truncate" href="javascript:void(0)">@row["Subject"].ToString()</a>
                 @if (Convert.ToInt32(row["CommentCount"]) > 0)
                 {

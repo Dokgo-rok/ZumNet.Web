@@ -22,13 +22,49 @@ namespace ZumNet.Web.Controllers
         public ActionResult Index()
         {
             string rt = Bc.CtrlHandler.PageInit(this, false);
-            //ZumNet.Framework.Core.ServiceResult svcRt = null;
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
 
-            //using (ZumNet.BSL.ServiceBiz.CommonBiz com = new ZumNet.BSL.ServiceBiz.CommonBiz())
-            //{
-            //    //svcRt = com.GetMenuInformation(1, 0, 101374, "N", "0", "KO");
-            //    svcRt = com.GetMenuTop(1, 101374, "N", "KO");
-            //}
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            using (BoardBiz bb = new BoardBiz())
+            {
+                //공지사항 : RECENT_NOTICE
+                svcRt = bb.GetPortalRecentlyMessageListOfCT(103, 1, 5, "CreateDate", "DESC", "", "", "", "", "notice", Convert.ToInt32(Session["URID"]));
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.RECENT_NOTICE = svcRt.ResultDataTable;
+                }
+                else
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+                rt = null;
+
+                //게시판 : RECENT_BOARD
+                svcRt = bb.GetPortalRecentlyMessageListOfCT(103, 1, 5, "CreateDate", "DESC", "", "", "", "", "bbs", Convert.ToInt32(Session["URID"]));
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.RECENT_BOARD = svcRt.ResultDataTable;
+                }
+                else
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+                rt = null;
+            }
+
+            ViewBag.ChartUse = "Y";
+            using (ZumNet.DAL.ExternalDac.PQmDac pb = new DAL.ExternalDac.PQmDac())
+            {
+                //KPI 지표현황_입고기준
+                //ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", DateTime.Now.ToString("yyyy-MM-dd"), "0", 0);
+                ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", "2021-01-01", "0", 0);
+            }
 
             //if (svcRt != null && svcRt.ResultCode == 0)
             //{

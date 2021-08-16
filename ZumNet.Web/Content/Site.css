@@ -290,8 +290,16 @@
 .z-webpart .card-header.with-elements {
     padding-bottom: .2rem;
 }
+.z-webpart .card-header-title {
+    font-weight: 500;
+}
 .z-webpart .card-body {
     padding: 1rem 1.5rem;
+}
+.z-webpart .fchart {
+    height: 160px;
+    width: 100%;
+    min-width: 100%;
 }
 
 /* portal <--------------- */

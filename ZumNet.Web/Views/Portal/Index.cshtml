@@ -1,29 +1,196 @@
-﻿@{ ViewBag.Title = "Cresyn Groupware"; }
-@{ string sChart = "FusionCharts.ready(function() {var fusioncharts1 = new FusionCharts({type: \"mscolumn2d\",renderAt: \"chart-container1\",width: \"100%\",height: \"100%\",dataFormat: \"json\",dataSource: {\"chart\": {\"caption\": \"과입고율(%)\",\"subcaption\": \"\",\"xaxisname\": \"\",\"yaxisname\": \"\",\"formatnumberscale\": \"1\",\"plottooltext\": \"<b>$dataValue</b> <b>$seriesName</b> in $label\",\"palettecolors\": \"77be99,9dcdf6,87d130\",\"drawcrossline\": \"1\",\"labelDisplay\": \"wrap\",\"baseFontSize\": \"9\",\"rotateValues\": \"0\",\"placeValuesInside\": \"1\",\"captionPadding\": \"2\",\"chartTopMargin\": \"4\",\"chartLeftMargin\": \"4\",\"chartBottomMargin\": \"8\",\"chartRightMargin\": \"4\",\"yAxisValuesPadding\": \"4\",\"numberPrefix\": \"\",\"numberSuffix\": \"\",\"palette\": \"5\",\"showBorder\": \"0\",\"bgColor\": \"ffffff\",\"bgAlpha\": \"50\",\"useRoundEdges\": \"1\",\"legendBorderColor\": \"ffffff\"},\"categories\": [{\"category\": [{\"label\": \"VH\"},{\"label\": \"CD\"},{\"label\": \"IC\"},{\"label\": \"IS\"},{\"label\": \"VW\"}]}],\"dataset\": [{\"seriesname\": \"29주차\",\"data\": [{\"value\": \"31.30\"},{\"value\": \"32.30\"},{\"value\": \"58.10\"},{\"value\": \"52.30\"},{\"value\": \"0.40\"}]},{\"seriesname\": \"30주차\",\"data\": [{\"value\": \"42.30\"},{\"value\": \"20.20\"},{\"value\": \"50.10\"},{\"value\": \"53.30\"},{\"value\": \"70.20\"}]},{\"seriesname\": \"31주차\",\"data\": [{\"value\": \"24.00\"},{\"value\": \"32.60\"},{\"value\": \"31.00\"},{\"value\": \"60.30\"},{\"value\": \"67.10\"}]}]},\"events\": {}});fusioncharts1.render(); var fusioncharts3 = new FusionCharts({type: \"mscolumn2d\",renderAt: \"chart-container3\",width: \"100%\",height: \"100%\",dataFormat: \"json\",dataSource: {\"chart\": {\"caption\": \"과입고금액(만불)\",\"subcaption\": \"\",\"xaxisname\": \"\",\"yaxisname\": \"\",\"formatnumberscale\": \"1\",\"plottooltext\": \"<b>$dataValue</b> <b>$seriesName</b> in $label\",\"palettecolors\": \"77be99,9dcdf6,87d130\",\"drawcrossline\": \"1\",\"labelDisplay\": \"wrap\",\"baseFontSize\": \"9\",\"rotateValues\": \"0\",\"placeValuesInside\": \"1\",\"captionPadding\": \"2\",\"chartTopMargin\": \"4\",\"chartLeftMargin\": \"4\",\"chartBottomMargin\": \"8\",\"chartRightMargin\": \"4\",\"yAxisValuesPadding\": \"4\",\"numberPrefix\": \"\",\"numberSuffix\": \"\",\"palette\": \"5\",\"showBorder\": \"0\",\"bgColor\": \"ffffff\",\"bgAlpha\": \"50\",\"useRoundEdges\": \"1\",\"legendBorderColor\": \"ffffff\"},\"categories\": [{\"category\": [{\"label\": \"VH\"},{\"label\": \"CD\"},{\"label\": \"IC\"},{\"label\": \"IS\"},{\"label\": \"VW\"},{\"label\": \"TOTAL\"}]}],\"dataset\": [{\"seriesname\": \"29주차\",\"data\": [{\"value\": \"53.7\"},{\"value\": \"8.8\"},{\"value\": \"18.8\"},{\"value\": \"21.8\"},{\"value\": \"3.0\"},{\"value\": \"106.1\"}]},{\"seriesname\": \"30주차\",\"data\": [{\"value\": \"108.3\"},{\"value\": \"10.8\"},{\"value\": \"20.6\"},{\"value\": \"33.8\"},{\"value\": \"24.8\"},{\"value\": \"198.3\"}]},{\"seriesname\": \"31주차\",\"data\": [{\"value\": \"26.8\"},{\"value\": \"16.1\"},{\"value\": \"8.7\"},{\"value\": \"31.3\"},{\"value\": \"24.2\"},{\"value\": \"107.1\"}]}]},\"events\": {}});fusioncharts3.render(); });"; }
+﻿@using System;
+@using System.Data;
+@using System.Text;
+
+@{ ViewBag.Title = "Cresyn Groupware"; }
+@{
+    StringBuilder sbChart = new StringBuilder();
+
+    if (ViewBag.KPI_A != null)
+    {
+        string[] vInv = "과입고율(%)^KPIB^%^^%;선입고일(일)^KPIC^일^^일;과입고금액(만불)^KPID^만불^$^;자동발주율(%)^KPIA^%^^%".Split(';');
+        int iStart = 0;
+        int iInterval = 1;
+
+        for (int i = iStart; i < vInv.Length; i = i + iInterval)
+        {
+            string[] v = vInv[i].Split('^');
+
+            sbChart.Append(RenderChartItem(ViewBag.KPI_A.Tables[0], ViewBag.KPI_A.Tables[1], ViewBag.KPI_A.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
+        }
+    }
+}
+
+@functions {
+    private string RenderChartItem(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
+    {
+        DataRow dr = null;
+        DataRow dr2 = null;
+        DataRow[] rowList = null;
+        double dTotal = 0;    //과입고금액 주차별 총합
+        int iCL = (inv == "KPIA") ? 1 : 0;    //19-04-08 CL 자동발주율 일시 막기 위함
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("var fusioncharts{0} = new FusionCharts", no);
+        sb.Append("({");
+        sb.Append("type: \"mscolumn2d\",");
+        sb.AppendFormat("renderAt: \"chart-container{0}\",", no);
+        sb.Append("width: \"100%\",");
+        sb.Append("height: \"100%\",");
+        sb.Append("dataFormat: \"json\",");
+        sb.Append("dataSource: {");
+
+        sb.Append("\"chart\": {");
+        sb.AppendFormat("\"caption\": \"{0}\",", invText);
+        sb.Append("\"subcaption\": \"\",");
+        sb.Append("\"xaxisname\": \"\",");
+        sb.AppendFormat("\"yaxisname\": \"{0}\",", yAxi);
+        sb.Append("\"formatnumberscale\": \"1\",");
+        sb.Append("\"plottooltext\": \"<b>$dataValue</b> <b>$seriesName</b> in $label\",");
+        //sb.Append("\"theme\": \"fusion\",");
+        sb.Append("\"palettecolors\": \"4169e1,8db3ff,cdc0f9\","); //77be99,9dcdf6,87d130 //a7dca6,77be99,4d998d,04476c //ffff99,ffc90e,ff6600,993300
+        sb.Append("\"drawcrossline\": \"1\",");
+        sb.Append("\"labelDisplay\": \"wrap\",");
+        sb.Append("\"baseFontSize\": \"9\",");
+        sb.Append("\"rotateValues\": \"0\",");
+        sb.Append("\"placeValuesInside\": \"1\",");
+        sb.Append("\"captionPadding\": \"2\",");
+        sb.Append("\"chartTopMargin\": \"4\",");
+        sb.Append("\"chartLeftMargin\": \"4\",");
+        sb.Append("\"chartBottomMargin\": \"8\",");
+        sb.Append("\"chartRightMargin\": \"4\",");
+        sb.Append("\"yAxisValuesPadding\": \"4\",");
+        sb.AppendFormat("\"numberPrefix\": \"{0}\",", numPrefix);
+        sb.AppendFormat("\"numberSuffix\": \"{0}\",", numSuffix);
+        sb.Append("\"palette\": \"5\",");
+        sb.Append("\"showBorder\": \"0\",");
+        sb.Append("\"bgColor\": \"ffffff\",");
+        sb.Append("\"bgAlpha\": \"50\",");
+        sb.Append("\"useRoundEdges\": \"1\",");
+        sb.Append("\"legendBorderColor\": \"ffffff\"");
+        sb.Append("},"); //chart
+
+        sb.Append("\"categories\": [{");
+        sb.Append("\"category\": [");
+
+        for (int i = 0; i < dtCorp.Rows.Count - iCL; i++)
+        {
+            dr = dtCorp.Rows[i];
+
+            sb.Append("{");
+            sb.AppendFormat("\"label\": \"{0}\"", dr["CORP"].ToString());
+
+            if (i == dtCorp.Rows.Count - 1 && inv == "KPID")
+            {
+                sb.Append("},");
+                sb.Append("{");
+                sb.AppendFormat("\"label\": \"{0}\"", "TOTAL");
+            }
+
+            if (i == dtCorp.Rows.Count - 1 - iCL) sb.Append("}");
+            else sb.Append("},");
+        }
+        dr = null;
+
+        sb.Append("]");
+        sb.Append("}],"); //categories
+
+        sb.Append("\"dataset\": [");
+
+        for (int i = 0; i < dtPeriod.Rows.Count; i++)
+        {
+            dTotal = 0;
+            dr = dtPeriod.Rows[i];
+            sb.Append("{");
+            sb.AppendFormat("\"seriesname\": \"{0}주차\",", dr["IWEEK"].ToString());
+            sb.Append("\"data\": [");
+
+            for (int j = 0; j < dtCorp.Rows.Count - iCL; j++)
+            {
+                dr2 = dtCorp.Rows[j];
+                rowList = dtData.Select("CORP='" + dr2["CORP"].ToString() + "' AND IYEAR='" + dr["IYEAR"].ToString() + "' AND IWEEK='" + dr["IWEEK"].ToString() + "'");
+
+                sb.Append("{");
+                if (rowList != null && rowList.Length > 0)
+                {
+                    sb.AppendFormat("\"value\": \"{0}\"", rowList[0][inv].ToString());
+                    if (inv == "KPID") dTotal += Convert.ToDouble(rowList[0][inv]);
+                }
+                else
+                {
+                    sb.Append("\"value\": \"0\"");
+                    if (inv == "KPID") dTotal += 0;
+                }
+
+                if (j == dtCorp.Rows.Count - 1 && inv == "KPID")
+                {
+                    sb.Append("},");
+                    sb.Append("{");
+                    sb.AppendFormat("\"value\": \"{0}\"", dTotal.ToString());
+                }
+
+                if (j == dtCorp.Rows.Count - 1 - iCL) sb.Append("}");
+                else sb.Append("},");
+            }
+
+            sb.Append("]");
+            if (i == dtPeriod.Rows.Count - 1) sb.Append("}");
+            else sb.Append("},");
+        }
+        dr = null;
+
+        sb.Append("");
+        sb.Append("]"); //dataset
+        sb.Append("},"); //datasource
+
+        sb.Append("\"events\": {");
+        //sb.Append("\"dataPlotClick\": function(e, d) {");
+        //sb.Append("ddl_onchange(d['datasetIndex']);");
+        //sb.Append("}"); //dataPlotClick
+        sb.Append("}"); //events
+        sb.Append("});");
+        sb.AppendFormat("fusioncharts{0}.render();", no);
+        sb.Append(" ");
+
+        dr = null;
+        dr2 = null;
+        rowList = null;
+
+        return sb.ToString();
+    }
+}
 @section Scripts {
-    <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
-    <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>
-    <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.charts.js"></script>
+    @if (ViewBag.ChartUse == "Y")
+    {
+        <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
+        <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>
+        <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.charts.js"></script>
+
+        <script type="text/javascript">@Html.Raw(sbChart.ToString())</script>
+    }
 
 
-
-    <script type="text/javascript">@Html.Raw(sChart)</script>
 }
 <div class="">
     <div class="row">
         <div class="col-12 col-sm-6 mb-3">
-            @Html.Partial("Webpart/_MailList")
+            @Html.Partial("Webpart/_MAIL_INBOX")
         </div>
         <div class="col-12 col-sm-6 mb-3">
-            @Html.Partial("Webpart/_ApprovalList")
+            @Html.Partial("Webpart/_EA_INBOX")
         </div>
     </div>
+
     <div class="row">
         <div class="col-12 col-sm-6 mb-3">
-            @Html.Partial("Webpart/_Kpi_A")
+            @Html.Partial("Webpart/_RECENT_NOTICE")
         </div>
         <div class="col-12 col-sm-6 mb-3">
-
+            @Html.Partial("Webpart/_RECENT_BOARD")
         </div>
     </div>
+
+    @Html.Partial("Webpart/_KPI_A")
+
+
 </div>

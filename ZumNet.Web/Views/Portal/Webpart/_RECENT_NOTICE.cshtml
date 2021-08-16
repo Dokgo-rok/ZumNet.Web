@@ -1,0 +1,99 @@
+﻿
+@using System.Data;
+
+<div class="z-webpart card">
+    <div class="card-header with-elements">
+        <div class="card-header-title"><i class="fe-volume-1 mr-1"></i>공지사항</div>
+        <div class="card-header-elements ml-auto">
+            <a href="javascript:void(0)" class="badge badge-pill badge-primary px-1"><i class="fe-plus"></i></a>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (ViewBag.RECENT_NOTICE != null && ViewBag.RECENT_NOTICE.Rows.Count > 0)
+        {
+            int iCnt = 0;
+            DataRow[] col = ViewBag.RECENT_NOTICE.Select("TopLine = 'Y'");
+            if (col.Length > 0)
+            {
+                foreach (DataRow row in col)
+                {
+                    string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
+                    string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
+
+                    <div class="@(iCnt < col.Length - 1 ? "mb-2" : "")@(sRead)@(sTopLine)">
+                        <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</div>
+                        <div class="text-truncate">
+                            @if (Convert.ToInt32(row["Depth"]) > 0)
+                            {
+                                for (int k = 1; k < Convert.ToInt32(row["Depth"]); k++)
+                                {
+                                    <span class="px-1"></span>
+                                }
+                                <i class="fe-corner-down-right text-big text-warning font-weight-bold mx-1"></i>
+                            }
+                            @if (row["Priority"].ToString() == "Y")
+                            {
+                                <img src="~/images/plugins/hot.gif" alt="" />
+                            }
+                            @if (ZumNet.Web.Bc.CommonUtils.DateDiff(row["CreateDate"].ToString(), DateTime.Now.ToString()) <= 1)
+                            {
+                                <img src="~/images/plugins/new.gif" alt="" />
+                            }
+                            <a class="text-truncate" href="javascript:void(0)">[@row["DisplayName"].ToString()] @row["Subject"].ToString()</a>
+                            @if (Convert.ToInt32(row["CommentCount"]) > 0)
+                            {
+                                <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>
+                            }
+                        </div>
+                    </div>
+
+                    iCnt++;
+                }
+            }
+
+            col = ViewBag.RECENT_NOTICE.Select("TopLine <> 'Y'");
+            if (col.Length > 0)
+            {
+                iCnt = 0;
+                foreach (DataRow row in col)
+                {
+                    string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
+                    string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
+
+                    <div class="@(iCnt < col.Length - 1 ? "mb-2" : "")@(sRead)@(sTopLine)">
+                        <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</div>
+                        <div class="text-truncate">
+                            @if (Convert.ToInt32(row["Depth"]) > 0)
+                            {
+                                for (int k = 1; k < Convert.ToInt32(row["Depth"]); k++)
+                                {
+                                    <span class="px-1"></span>
+                                }
+                                <i class="fe-corner-down-right text-big text-warning font-weight-bold mx-1"></i>
+                            }
+                            @if (row["Priority"].ToString() == "Y")
+                            {
+                                <img src="~/images/plugins/hot.gif" alt="" />
+                            }
+                            @if (ZumNet.Web.Bc.CommonUtils.DateDiff(row["CreateDate"].ToString(), DateTime.Now.ToString()) <= 1)
+                            {
+                                <img src="~/images/plugins/new.gif" alt="" />
+                            }
+                            <a class="text-truncate" href="javascript:void(0)">[@row["DisplayName"].ToString()] @row["Subject"].ToString()</a>
+                            @if (Convert.ToInt32(row["CommentCount"]) > 0)
+                            {
+                                <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>
+                            }
+                        </div>
+                    </div>
+
+                    iCnt++;
+                }
+            }
+        }
+        else
+        {
+            <div class="w-100 text-center pt-3 mb-3">@Resources.Global.NoItemShow</div>
+        }
+    </div>
+</div>

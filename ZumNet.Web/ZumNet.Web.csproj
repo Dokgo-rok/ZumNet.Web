@@ -255,6 +255,9 @@
     <Reference Include="ZumNet.BSL.ServiceBiz">
       <HintPath>..\..\Library\BSL\bin\Debug\ZumNet.BSL.ServiceBiz.dll</HintPath>
     </Reference>
+    <Reference Include="ZumNet.DAL.ExternalDac">
+      <HintPath>..\..\Library\DAL\bin\Debug\ZumNet.DAL.ExternalDac.dll</HintPath>
+    </Reference>
     <Reference Include="ZumNet.DAL.ServiceDac">
       <HintPath>..\..\Library\DAL\bin\Debug\ZumNet.DAL.ServiceDac.dll</HintPath>
     </Reference>
@@ -333,6 +336,28 @@
     <Content Include="Areas\WoA\Scripts\tree.js" />
     <Content Include="Content\auth.css" />
     <Content Include="Content\site.css" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.charts.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.gantt.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.maps.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.overlappedbar2d.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.overlappedcolumn2d.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.powercharts.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.treemap.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.vml.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.widgets.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.zoomline.js" />
+    <Content Include="External\FusionChartsXT\js\fusioncharts.zoomscatter.js" />
+    <Content Include="External\FusionChartsXT\js\maps\fusioncharts.usa.js" />
+    <Content Include="External\FusionChartsXT\js\maps\fusioncharts.world.js" />
+    <Content Include="External\FusionChartsXT\js\maps\readme.txt" />
+    <Content Include="External\FusionChartsXT\js\themes\fusioncharts.theme.candy.js" />
+    <Content Include="External\FusionChartsXT\js\themes\fusioncharts.theme.carbon.js" />
+    <Content Include="External\FusionChartsXT\js\themes\fusioncharts.theme.fint.js" />
+    <Content Include="External\FusionChartsXT\js\themes\fusioncharts.theme.fusion.js" />
+    <Content Include="External\FusionChartsXT\js\themes\fusioncharts.theme.gammel.js" />
+    <Content Include="External\FusionChartsXT\js\themes\fusioncharts.theme.ocean.js" />
+    <Content Include="External\FusionChartsXT\js\themes\fusioncharts.theme.zune.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="ApplicationInsights.config">
@@ -712,28 +737,6 @@
     <Content Include="Vendor\fonts\pe-icon-7-stroke\Pe-icon-7-stroke.svg" />
     <Content Include="Vendor\fonts\pe-icon-7-stroke\Pe-icon-7-stroke.ttf" />
     <Content Include="Vendor\fonts\pe-icon-7-stroke\Pe-icon-7-stroke.woff" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.charts.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.gantt.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.maps.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.overlappedbar2d.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.overlappedcolumn2d.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.powercharts.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.treemap.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.vml.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.widgets.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.zoomline.js" />
-    <Content Include="Vendor\FusionChartsXT\js\fusioncharts.zoomscatter.js" />
-    <Content Include="Vendor\FusionChartsXT\js\maps\fusioncharts.usa.js" />
-    <Content Include="Vendor\FusionChartsXT\js\maps\fusioncharts.world.js" />
-    <Content Include="Vendor\FusionChartsXT\js\maps\readme.txt" />
-    <Content Include="Vendor\FusionChartsXT\js\themes\fusioncharts.theme.candy.js" />
-    <Content Include="Vendor\FusionChartsXT\js\themes\fusioncharts.theme.carbon.js" />
-    <Content Include="Vendor\FusionChartsXT\js\themes\fusioncharts.theme.fint.js" />
-    <Content Include="Vendor\FusionChartsXT\js\themes\fusioncharts.theme.fusion.js" />
-    <Content Include="Vendor\FusionChartsXT\js\themes\fusioncharts.theme.gammel.js" />
-    <Content Include="Vendor\FusionChartsXT\js\themes\fusioncharts.theme.ocean.js" />
-    <Content Include="Vendor\FusionChartsXT\js\themes\fusioncharts.theme.zune.js" />
     <Content Include="Vendor\js\bootstrap.js" />
     <Content Include="Vendor\js\dropdown-hover.js" />
     <Content Include="Vendor\js\layout-helpers.js" />
@@ -1086,9 +1089,12 @@
     <Content Include="Views\Board\List.cshtml" />
     <Content Include="Views\Board\_ListPagination.cshtml" />
     <Content Include="Views\Board\_ListCount.cshtml" />
-    <Content Include="Views\Portal\Webpart\_ApprovalList.cshtml" />
-    <Content Include="Views\Portal\Webpart\_MailList.cshtml" />
-    <Content Include="Views\Portal\Webpart\_Kpi_A.cshtml" />
+    <Content Include="Views\Portal\Webpart\_EA_INBOX.cshtml" />
+    <Content Include="Views\Portal\Webpart\_MAIL_INBOX.cshtml" />
+    <Content Include="Views\Portal\Webpart\_KPI_A.cshtml" />
+    <Content Include="Views\Portal\Webpart\_RECENT_NOTICE.cshtml" />
+    <Content Include="Views\Portal\Webpart\_RECENT_BOARD.cshtml" />
+    <Content Include="Views\Portal\Webpart\_KPI_B.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Global.ko.resx" />
