@@ -12,9 +12,44 @@
     {
         sRt = ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
     }
+
+    //Response.Write(SendMail()); // SendMailSimple() ERROR: HTTP 상태 403: Forbidden(으)로 인해 요청하지 못했습니다.
 }
 
 @functions {
+    private string SendMail()
+    {
+        PhsFEMailEWS.MailWriteManager oMailWrite = null;
+        string errMsg = "";
+
+        try
+        {
+            string sDomainName = "cresyn.com";
+            string sUserID = "byrlee";
+            string sPassword = "P@ssw0rd";
+            string sMailServer = @"mail.cresyn.com";
+            string sFrom = "이병록<byrlee@cresyn.com>";
+            string sTo = "이병록<byrlee@cresyn.com>";
+            string sSubject = "신규 그룹웨어서버 메일 발송 요청";
+            string sBody = "신규 그룹웨어서버 메일 발송 요청 합니다!!!";
+
+
+            oMailWrite = new PhsFEMailEWS.MailWriteManager();
+
+            string sRt = oMailWrite.SendMailSimple(sUserID, sPassword, sDomainName, sMailServer, sFrom, sTo, sSubject, sBody, "", out errMsg);
+        }
+        catch(Exception ex)
+        {
+            errMsg += " => " + ex.Message;
+        }
+        finally
+        {
+            oMailWrite = null;
+        }
+        return errMsg;
+    }
+
+
     private string GetMailList(out string errMsg)
     {
         ExchangeServiceBinding esb = null;

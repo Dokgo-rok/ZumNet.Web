@@ -4,7 +4,7 @@
 	xmlns:msxsl="urn:schemas-microsoft-com:xslt"
 	xmlns:zsxsl="http://www.zumsoft.io/xslt/ea" exclude-result-prefixes="zsxsl">
 
-<xsl:output method="html" version="4.0"/>
+<!--<xsl:output method="html" version="4.0"/>-->
 <xsl:template  xmlns:d="urn:schemas:httpmail:" xmlns:a="DAV:" match="/">
   <div>
 		<xsl:for-each select="a:multistatus/a:response">

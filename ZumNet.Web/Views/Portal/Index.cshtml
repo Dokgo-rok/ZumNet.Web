@@ -42,13 +42,13 @@
 
         sb.Append("\"chart\": {");
         sb.AppendFormat("\"caption\": \"{0}\",", invText);
-        sb.Append("\"subcaption\": \"\",");
-        if (Convert.ToInt32(no) < 3)
-        {
-            sb.Append("\"showLegend\": \"0\",");
-        }
-        sb.Append("\"xaxisname\": \"\",");
-        sb.AppendFormat("\"yaxisname\": \"{0}\",", yAxi);
+        sb.Append("\"subCaption\": \"\",");
+        //if (Convert.ToInt32(no) < 3)
+        //{
+        //    sb.Append("\"showLegend\": \"0\",");
+        //}
+        sb.Append("\"xAxisName\": \"\",");
+        sb.AppendFormat("\"yAxisName\": \"{0}\",", yAxi);
         sb.Append("\"formatnumberscale\": \"1\",");
         sb.Append("\"plottooltext\": \"<b>$dataValue</b> <b>$seriesName</b> in $label\",");
         //sb.Append("\"theme\": \"fusion\",");
@@ -61,14 +61,7 @@
         sb.Append("\"captionPadding\": \"2\",");
         sb.Append("\"chartTopMargin\": \"4\",");
         sb.Append("\"chartLeftMargin\": \"4\",");
-        if (Convert.ToInt32(no) < 3)
-        {
-            sb.Append("\"chartBottomMargin\": \"0\",");
-        }
-        else
-        {
-            sb.Append("\"chartBottomMargin\": \"8\",");
-        }
+        sb.Append("\"chartBottomMargin\": \"8\",");
         sb.Append("\"chartRightMargin\": \"4\",");
         sb.Append("\"yAxisValuesPadding\": \"4\",");
         sb.AppendFormat("\"numberPrefix\": \"{0}\",", numPrefix);
