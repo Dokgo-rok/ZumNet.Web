@@ -1,4 +1,6 @@
-﻿<div class="z-webpart card">
+﻿@using System.Data;
+
+<div class="z-webpart card">
     <div class="card-header with-elements">
         <div class="card-header-title"><i class="fe-edit mr-1"></i>결재함</div>
         <div class="card-header-elements ml-auto">
@@ -6,25 +8,28 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="mb-2">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">입사,퇴사,전보 발령자 업무처리(송경수 3/1 VH 발령)</a></div>
-        </div>
-        <div class="mb-2">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">2020년 ISO인증 심사계획 보고의 건</a></div>
-        </div>
-        <div class="mb-2">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">신규 입사자 노트북 /모니터 구입의 件</a></div>
-        </div>
-        <div class="mb-2">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">설계사양(제조조건) 변경보고서 작성</a></div>
-        </div>
-        <div class="">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">입사,퇴사,전보 발령자 업무처리(송경수 3/1 VH 발령)</a></div>
-        </div>
+        @if (ViewBag.EA_INBOX != null && ViewBag.EA_INBOX.Rows.Count > 0)
+        {
+            int iCnt = 0;
+
+            foreach (DataRow row in ViewBag.EA_INBOX.Rows)
+            {
+                string sRead = row["Read"].ToString() == "N" ? " font-weight-bold" : "";
+
+                <div class="@(iCnt < ViewBag.EA_INBOX.Rows.Count - 1 ? "mb-2" : "")@sRead">
+                    <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ReceivedDate"].ToString())</div>
+                    <div class="text-truncate">
+                        @if (row["Priority"].ToString() == "H")
+                        {
+                            <i class="fe-info text-danger"></i>
+                        }
+                        
+                        <a class="text-truncate" href="javascript:void(0)">@row["PIName"].ToString()</a>
+                    </div>
+                </div>
+
+                iCnt++;
+            }
+        }
     </div>
 </div>

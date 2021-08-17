@@ -286,6 +286,8 @@
 /* portal ---------------> */
 .z-webpart {
     border-radius: .35rem;
+/*    max-height: 200px;
+    height: 200px;*/
 }
 .z-webpart .card-header.with-elements {
     padding-bottom: .2rem;
@@ -297,7 +299,7 @@
     padding: 1rem 1.5rem;
 }
 .z-webpart .fchart {
-    height: 160px;
+    /*height: 160px;*/
     width: 100%;
     min-width: 100%;
 }

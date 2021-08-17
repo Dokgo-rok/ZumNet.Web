@@ -1,4 +1,93 @@
-﻿<div class="z-webpart card">
+﻿@using System.IO;
+@using System.Xml;
+@using PhsFEMailEWS.ExchangeWebServices;
+
+@{
+    string sRt = "";
+    string sMailXml = GetMailList(out sRt);
+
+    //Response.Write(sError);
+
+    if (sRt == "OK")
+    {
+        sRt = ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
+    }
+}
+
+@functions {
+    private string GetMailList(out string errMsg)
+    {
+        ExchangeServiceBinding esb = null;
+        PhsFEMailEWS.MailListManager oMailList = null;
+        string sRt = "";
+        int iTotCount = 0;
+
+        try
+        {
+            string sDomainName = "cresyn.com";
+            string sUserID = "byrlee";
+            string sPassword = "P@ssw0rd";
+            string sEWSUrl = @"https://mail.cresyn.com/EWS/exchange.asmx";
+
+            esb = PhsFEMailEWS.CommonManager.GetExchangeServiceBinding(sUserID, sPassword, sDomainName, sEWSUrl, "ko");
+            oMailList = new PhsFEMailEWS.MailListManager();
+
+            sRt = oMailList.FindPortalMailItemXML(esb, sDomainName, "inbox", "datereceived", "desc", "", 5, 1, out iTotCount, out errMsg);
+        }
+        catch (Exception ex)
+        {
+            errMsg = ex.Message;
+        }
+        finally
+        {
+            esb.Dispose();
+            oMailList = null;
+        }
+        return sRt;
+    }
+
+    private string ConvertXmlToHtml(string xmlText, string xslPath)
+    {
+        XmlDocument xmlDoc = null;
+        System.Xml.Xsl.XslTransform xt = null;
+
+        string sRt = "";
+
+        try
+        {
+            xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(xmlText);
+
+            xt = new System.Xml.Xsl.XslTransform();
+            xt.Load(xslPath);
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Async = true;
+
+            StringWriter sw = new StringWriter();
+            XmlWriter xw = XmlWriter.Create(sw, settings);
+
+            xt.Transform(xmlDoc, null, xw);
+            xw.Flush();
+
+            //System.Xml.Xsl.XsltSettings xst = new System.Xml.Xsl.XsltSettings();
+            //xst.EnableScript = true;
+
+            sRt = sw.ToString();
+        }
+        catch (Exception ex)
+        {
+            sRt = ex.Message;
+        }
+        finally
+        {
+            xmlDoc = null;
+            xt = null;
+        }
+        return sRt;
+    }
+}
+<div class="z-webpart card">
     <div class="card-header with-elements">
         <div class="card-header-title"><i class="fe-mail align-middle mr-1"></i>받은편지함</div>
         <div class="card-header-elements ml-auto">
@@ -6,53 +95,6 @@
         </div>
     </div>
     <div class="card-body">
-        @*<div class="pb-1 mb-2">
-                <div class="badge badge-outline-warning float-right">Feature</div>
-                <a href="javascript:void(0)">Lorem ipsum dolor sit amet, vis erat denique in.</a>&nbsp;
-                <span class="text-muted">#34563</span>
-                <br>
-                <small class="text-muted">Created by <a href="javascript:void(0)" class="text-body">Mike Greene</a> &nbsp;·&nbsp; 1 day ago</small>
-            </div>
-            <div class="pb-1 mb-2">
-                <div class="badge badge-outline-warning float-right">Feature</div>
-                <a href="javascript:void(0)">Lorem ipsum dolor sit amet, vis erat denique in.</a>&nbsp;
-                <span class="text-muted">#34563</span>
-                <br>
-                <small class="text-muted">Created by <a href="javascript:void(0)" class="text-body">Mike Greene</a> &nbsp;·&nbsp; 1 day ago</small>
-            </div>
-            <div class="pb-1 mb-2">
-                <div class="badge badge-outline-warning float-right">Feature</div>
-                <a href="javascript:void(0)">Lorem ipsum dolor sit amet, vis erat denique in.</a>&nbsp;
-                <span class="text-muted">#34563</span>
-                <br>
-                <small class="text-muted">Created by <a href="javascript:void(0)" class="text-body">Mike Greene</a> &nbsp;·&nbsp; 1 day ago</small>
-            </div>
-            <div class="">
-                <div class="badge badge-outline-warning float-right">Feature</div>
-                <a href="javascript:void(0)">Lorem ipsum dolor sit amet, vis erat denique in.</a>&nbsp;
-                <span class="text-muted">#34563</span>
-                <br>
-                <small class="text-muted">Created by <a href="javascript:void(0)" class="text-body">Mike Greene</a> &nbsp;·&nbsp; 1 day ago</small>
-            </div>*@
-        <div class="mb-2">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">입사,퇴사,전보 발령자 업무처리(송경수 3/1 VH 발령)</a></div>
-        </div>
-        <div class="mb-2">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">2020년 ISO인증 심사계획 보고의 건</a></div>
-        </div>
-        <div class="mb-2">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">신규 입사자 노트북 /모니터 구입의 件</a></div>
-        </div>
-        <div class="mb-2">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">설계사양(제조조건) 변경보고서 작성</a></div>
-        </div>
-        <div class="">
-            <div class="float-right text-secondary">08-10</div>
-            <div class="text-truncate"><a href="javascript:void(0)">입사,퇴사,전보 발령자 업무처리(송경수 3/1 VH 발령)</a></div>
-        </div>
+        @Html.Raw(sRt)
     </div>
 </div>

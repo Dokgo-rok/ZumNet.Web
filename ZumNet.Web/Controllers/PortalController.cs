@@ -29,6 +29,22 @@ namespace ZumNet.Web.Controllers
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
+            using (ZumNet.BSL.FlowBiz.WorkList wList = new BSL.FlowBiz.WorkList())
+            {
+                //결재함
+                svcRt = wList.ViewProcessWorkList("av", Convert.ToInt32(Session["DNID"]), "ea", string.Empty, "", Session["URID"].ToString(), 1, 5, "", "ReceivedDate", "DESC", "", "", "", "", Convert.ToInt32(Session["URID"]));
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.EA_INBOX = svcRt.ResultDataTable;
+                }
+                else
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+                rt = null;
+            }
+
             using (BoardBiz bb = new BoardBiz())
             {
                 //공지사항 : RECENT_NOTICE

@@ -159,6 +159,9 @@
     <Reference Include="Oracle.ManagedDataAccess">
       <HintPath>..\..\Library\Framework\bin\Debug\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
+    <Reference Include="Phs.FEMail.EWS">
+      <HintPath>..\..\Library\Other\Phs.FEMail.EWS.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -252,17 +255,32 @@
     <Reference Include="Yahoo.Yui.Compressor, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\YUICompressor.NET.3.1.0\lib\net452\Yahoo.Yui.Compressor.dll</HintPath>
     </Reference>
+    <Reference Include="ZumNet.BSL.FlowBiz">
+      <HintPath>..\..\Library\BSL\bin\Debug\ZumNet.BSL.FlowBiz.dll</HintPath>
+    </Reference>
+    <Reference Include="ZumNet.BSL.InterfaceBiz">
+      <HintPath>..\..\Library\BSL\bin\Debug\ZumNet.BSL.InterfaceBiz.dll</HintPath>
+    </Reference>
     <Reference Include="ZumNet.BSL.ServiceBiz">
       <HintPath>..\..\Library\BSL\bin\Debug\ZumNet.BSL.ServiceBiz.dll</HintPath>
     </Reference>
     <Reference Include="ZumNet.DAL.ExternalDac">
       <HintPath>..\..\Library\DAL\bin\Debug\ZumNet.DAL.ExternalDac.dll</HintPath>
     </Reference>
+    <Reference Include="ZumNet.DAL.FlowDac">
+      <HintPath>..\..\Library\DAL\bin\Debug\ZumNet.DAL.FlowDac.dll</HintPath>
+    </Reference>
+    <Reference Include="ZumNet.DAL.InterfaceDac">
+      <HintPath>..\..\Library\DAL\bin\Debug\ZumNet.DAL.InterfaceDac.dll</HintPath>
+    </Reference>
     <Reference Include="ZumNet.DAL.ServiceDac">
       <HintPath>..\..\Library\DAL\bin\Debug\ZumNet.DAL.ServiceDac.dll</HintPath>
     </Reference>
     <Reference Include="ZumNet.Framework">
       <HintPath>..\..\Library\Framework\bin\Debug\ZumNet.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ZumNet.Framework.Entities">
+      <HintPath>..\..\Library\Framework\bin\Debug\ZumNet.Framework.Entities.dll</HintPath>
     </Reference>
     <Reference Include="ZumNet.Framework.Oracle">
       <HintPath>..\..\Library\Framework\bin\Debug\ZumNet.Framework.Oracle.dll</HintPath>
@@ -335,6 +353,7 @@
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
     <Content Include="Content\auth.css" />
+    <Content Include="Views\Portal\Webpart\Html\PortalMailList.xsl" />
     <Content Include="Content\site.css" />
     <Content Include="External\FusionChartsXT\js\fusioncharts.charts.js" />
     <Content Include="External\FusionChartsXT\js\fusioncharts.gantt.js" />
