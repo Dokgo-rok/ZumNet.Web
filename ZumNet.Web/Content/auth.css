@@ -3,11 +3,11 @@
 
 .auth-bg {
     background: url(/images/bg-md-1.jpg) center;
-    background-size: contain;
-    background-position: left;
+    background-size: cover;
+    background-position: center;
 }
 
-@media (min-width: 1035px) {
+@media (min-width: 992px) {
     .auth-bg {
         background: url(/images/bg-auth2.jpg) center;
         background-size: cover;
