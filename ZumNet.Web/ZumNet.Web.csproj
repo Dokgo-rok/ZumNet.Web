@@ -1110,10 +1110,10 @@
     <Content Include="Views\Board\_ListCount.cshtml" />
     <Content Include="Views\Portal\Webpart\_EA_INBOX.cshtml" />
     <Content Include="Views\Portal\Webpart\_MAIL_INBOX.cshtml" />
-    <Content Include="Views\Portal\Webpart\_KPI_A.cshtml" />
+    <Content Include="Views\Portal\Webpart\_ERP_KPI.cshtml" />
     <Content Include="Views\Portal\Webpart\_RECENT_NOTICE.cshtml" />
     <Content Include="Views\Portal\Webpart\_RECENT_BOARD.cshtml" />
-    <Content Include="Views\Portal\Webpart\_KPI_B.cshtml" />
+    <Content Include="Views\Portal\Webpart\_ERP_KPI_s.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Global.ko.resx" />

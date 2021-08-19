@@ -168,6 +168,9 @@
   <data name="Count" xml:space="preserve">
     <value>数字</value>
   </data>
+  <data name="Cresyn" xml:space="preserve">
+    <value>Cresyn</value>
+  </data>
   <data name="Date_Created" xml:space="preserve">
     <value>创建日</value>
   </data>
@@ -197,6 +200,9 @@
   </data>
   <data name="GotoWork" xml:space="preserve">
     <value>去工作</value>
+  </data>
+  <data name="Groupware" xml:space="preserve">
+    <value>Groupware</value>
   </data>
   <data name="Home" xml:space="preserve">
     <value>家</value>

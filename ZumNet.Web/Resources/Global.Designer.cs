@@ -214,6 +214,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Cresyn과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Cresyn {
+            get {
+                return ResourceManager.GetString("Cresyn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Created과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Date_Created {
@@ -300,6 +309,15 @@ namespace Resources {
         public static string GotoWork {
             get {
                 return ResourceManager.GetString("GotoWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Groupware과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Groupware {
+            get {
+                return ResourceManager.GetString("Groupware", resourceCulture);
             }
         }
         

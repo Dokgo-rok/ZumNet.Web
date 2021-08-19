@@ -168,6 +168,9 @@
   <data name="Count" xml:space="preserve">
     <value>개</value>
   </data>
+  <data name="Cresyn" xml:space="preserve">
+    <value>크레신</value>
+  </data>
   <data name="Date_Created" xml:space="preserve">
     <value>작성일</value>
   </data>
@@ -197,6 +200,9 @@
   </data>
   <data name="GotoWork" xml:space="preserve">
     <value>출근하기</value>
+  </data>
+  <data name="Groupware" xml:space="preserve">
+    <value>그룹웨어</value>
   </data>
   <data name="Home" xml:space="preserve">
     <value>홈</value>
