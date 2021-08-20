@@ -125,7 +125,7 @@
                 //console.log(event);
 
                 if ($("#RememberMe").prop('checked')) {
-                    _zw.ut.setCookie("accountField", $("#LoginId").val(), 1);
+                    _zw.ut.setCookie("accountField", $("#LoginId").val(), 30); //30일
                 } else {
                     _zw.ut.deleteCookie("accountField");
                 }

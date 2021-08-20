@@ -103,7 +103,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
             }
 
             ViewBag.R.lv["page"] = "1";
-            ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("").ToString();
+            ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("doc").ToString();
             ViewBag.R.lv["basesort"] = "SeqID";
             ViewBag.R.lv["sort"] = "SeqID";
 
@@ -176,7 +176,8 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                     using (ZumNet.BSL.ServiceBiz.DocBiz db = new BSL.ServiceBiz.DocBiz())
                     {
                         svcRt = db.GetDocumentMessageList(1, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
-                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC", "", "", "", "");
+                                        , Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"]), jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString()
+                                        , jPost["lv"]["search"].ToString(), jPost["lv"]["searchtext"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString());
                     }
 
                     if (svcRt != null && svcRt.ResultCode == 0)

@@ -1,0 +1,115 @@
+﻿@using System.Data;
+@using System.Text;
+
+@{
+    int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+    int totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+    int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+    int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+    int totalPage = totalCount / pageCount;
+
+    if (totalCount % pageCount > 0) { totalPage++; }
+    if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+    int iStart = 0;
+    int iEnd = 0;
+
+    if (totalPage <= maxPage)
+    {
+        iStart = 2;
+        iEnd = totalPage - 1;
+    }
+    else if (pageIndex >= maxPage && (totalPage - maxPage + 1 >= pageIndex))
+    {
+        iStart = pageIndex - 1;
+        iEnd = pageIndex + 1;
+    }
+    else if (pageIndex < maxPage)
+    {
+        iStart = 2;
+        iEnd = maxPage;
+    }
+    else if (pageIndex > totalPage - maxPage + 1)
+    {
+        iStart = totalPage - maxPage + 1;
+        iEnd = totalPage - 1;
+    }
+
+    //StringBuilder sb = new StringBuilder();
+
+    //sb.Append("<ul class=\"pagination justify-content-center\">");
+
+    //sb.AppendFormat("<li class=\"page-item page-pre{0}\"><a class=\"{1}\" aria-label=\"이전\" href=\"javascript:void(0)\" data-for=\"{2}\">‹</a></li>", pageIndex > 1 ? "" : " disabled", pageIndex > 1 ? "page-link" : "", pageIndex > 1 ? (pageIndex - 1).ToString() : "");
+
+    //sb.AppendFormat("<li class=\"page-item{0}\"><a class=\"{1}\" aria-label=\"첫페이지\" href=\"javascript:void(0)\" data-for=\"1\">1</a></li>", pageIndex > 1 ? "" : " active", pageIndex > 1 ? "page-link" : "");
+
+    //if (totalPage > (maxPage + 2) && pageIndex >= maxPage)
+    //{
+    //    sb.AppendFormat("<li class=\"page-item page-first-separator disabled\"><a class=\"\" aria-label=\"\" href=\"javascript:void(0)\">...</a></li>");
+    //}
+
+
+    //for (int i = iStart; i <= iEnd; i++)
+    //{
+    //    sb.AppendFormat("<li class=\"page-item{1}\"><a class=\"{2}\" aria-label=\"{0} 페이지\" href=\"javascript:void(0)\" data-for=\"{0}\">{0}</a></li>", i.ToString(), i == pageIndex ? " active" : "", i == pageIndex ? "" : "page-link");
+    //}
+
+    //if (totalPage > (maxPage + 2) && pageIndex > 0 && pageIndex <= (totalPage - maxPage + 1))
+    //{
+    //    sb.AppendFormat("<li class=\"page-item page-last-separator disabled\"><a class=\"\" aria-label=\"\" href=\"javascript:void(0)\">...</a></li>");
+    //}
+
+    //sb.AppendFormat("<li class=\"page-item{1}\"><a class=\"{2}\" aria-label=\"마지막페이지\" href=\"javascript:void(0)\" data-for=\"{0}\">{0}</a></li>", totalPage.ToString(), pageIndex < totalPage ? "" : " active", pageIndex < totalPage ? "page-link" : "");
+
+    //sb.AppendFormat("<li class=\"page-item page-next{0}\"><a class=\"{1}\" aria-label=\"다음\" href=\"javascript:void(0)\" data-for=\"{2}\">›</a></li>", pageIndex < totalPage ? "" : " disabled", pageIndex < totalPage ? "page-link" : "", pageIndex < totalPage ? (pageIndex + 1).ToString() : "");
+
+    //sb.Append("</ul>");
+
+}
+
+@if (totalPage > 1)
+{
+    if (pageIndex > 1)
+    {
+        <li class="page-item page-pre"><a class="page-link" title="@Resources.Global.Previous" href="javascript:void(0)" data-for="@(pageIndex - 1)"><i class="fe-chevron-left"></i></a></li>
+        <li class="page-item"><a class="page-link" title="@Resources.Global.First @Resources.Global.Page" href="javascript:void(0)" data-for="1">1</a></li>
+    }
+    else
+    {
+        <li class="page-item page-pre disabled"><a class="" title="@Resources.Global.Previous" href="javascript:void(0)" data-for=""><i class="fe-chevron-left"></i></a></li>
+        <li class="page-item active"><a class="" title="@Resources.Global.First @Resources.Global.Page" href="javascript:void(0)" data-for="1">1</a></li>
+    }
+
+    if (totalPage > (maxPage + 2) && pageIndex >= maxPage)
+    {
+        <li class="page-item page-first-separator disabled"><a class="" title="" href="javascript:void(0)">...</a></li>
+    }
+
+    for (int i = iStart; i <= iEnd; i++)
+    {
+        if (pageIndex == i)
+        {
+            <li class="page-item active"><a class="" title="@i @Resources.Global.Page" href="javascript:void(0)" data-for="@i">@i</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" title="@i @Resources.Global.Page" href="javascript:void(0)" data-for="@i">@i</a></li>
+        }
+    }
+
+    if (totalPage > (maxPage + 2) && pageIndex > 0 && pageIndex <= (totalPage - maxPage + 1))
+    {
+        <li class="page-item page-last-separator disabled"><a class="" title="" href="javascript:void(0)">...</a></li>
+    }
+
+    if (pageIndex < totalPage)
+    {
+        <li class="page-item"><a class="page-link" title="@Resources.Global.Last2 @Resources.Global.Page" href="javascript:void(0)" data-for="@totalPage">@totalPage</a></li>
+        <li class="page-item page-next"><a class="page-link" title="@Resources.Global.Next" href="javascript:void(0)" data-for="@(pageIndex + 1)"><i class="fe-chevron-right"></i></a></li>
+    }
+    else
+    {
+        <li class="page-item active"><a class="" title="@Resources.Global.Last2 @Resources.Global.Page" href="javascript:void(0)" data-for="@totalPage">@totalPage</a></li>
+        <li class="page-item page-next disabled"><a class="" title="@Resources.Global.Next" href="javascript:void(0)" data-for=""><i class="fe-chevron-right"></i></a></li>
+    }
+}

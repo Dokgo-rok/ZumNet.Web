@@ -159,8 +159,26 @@
   <data name="Compose" xml:space="preserve">
     <value>撰写</value>
   </data>
+  <data name="ComposeDoc" xml:space="preserve">
+    <value>写文件</value>
+  </data>
+  <data name="ComposeForm" xml:space="preserve">
+    <value>写表格</value>
+  </data>
+  <data name="ComposeKnowledge" xml:space="preserve">
+    <value>写知识</value>
+  </data>
+  <data name="ComposeLog" xml:space="preserve">
+    <value>写日志</value>
+  </data>
   <data name="ComposeNew" xml:space="preserve">
     <value>撰写帖子</value>
+  </data>
+  <data name="ComposeSchedule" xml:space="preserve">
+    <value>写时间表</value>
+  </data>
+  <data name="ComposeTask" xml:space="preserve">
+    <value>写任务</value>
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>确认</value>
@@ -305,6 +323,12 @@
   </data>
   <data name="Previous" xml:space="preserve">
     <value>以前</value>
+  </data>
+  <data name="RecentDocs" xml:space="preserve">
+    <value>最近文件</value>
+  </data>
+  <data name="RecentKnowledges" xml:space="preserve">
+    <value>最近知识</value>
   </data>
   <data name="RecentNotice" xml:space="preserve">
     <value>近期通知</value>

@@ -187,11 +187,65 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   New Document과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ComposeDoc {
+            get {
+                return ResourceManager.GetString("ComposeDoc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   New Form과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ComposeForm {
+            get {
+                return ResourceManager.GetString("ComposeForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   New Knowledge과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ComposeKnowledge {
+            get {
+                return ResourceManager.GetString("ComposeKnowledge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   New Log과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ComposeLog {
+            get {
+                return ResourceManager.GetString("ComposeLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Compose과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string ComposeNew {
             get {
                 return ResourceManager.GetString("ComposeNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   New Schedule과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ComposeSchedule {
+            get {
+                return ResourceManager.GetString("ComposeSchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   New Task과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ComposeTask {
+            get {
+                return ResourceManager.GetString("ComposeTask", resourceCulture);
             }
         }
         
@@ -624,6 +678,24 @@ namespace Resources {
         public static string Previous {
             get {
                 return ResourceManager.GetString("Previous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recent Document과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string RecentDocs {
+            get {
+                return ResourceManager.GetString("RecentDocs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recent Knowledge과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string RecentKnowledges {
+            get {
+                return ResourceManager.GetString("RecentKnowledges", resourceCulture);
             }
         }
         

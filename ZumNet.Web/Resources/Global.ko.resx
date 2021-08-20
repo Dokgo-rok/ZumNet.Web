@@ -159,8 +159,26 @@
   <data name="Compose" xml:space="preserve">
     <value>작성</value>
   </data>
+  <data name="ComposeDoc" xml:space="preserve">
+    <value>문서작성</value>
+  </data>
+  <data name="ComposeForm" xml:space="preserve">
+    <value>양식작성</value>
+  </data>
+  <data name="ComposeKnowledge" xml:space="preserve">
+    <value>지식작성</value>
+  </data>
+  <data name="ComposeLog" xml:space="preserve">
+    <value>일지작성</value>
+  </data>
   <data name="ComposeNew" xml:space="preserve">
     <value>게시글작성</value>
+  </data>
+  <data name="ComposeSchedule" xml:space="preserve">
+    <value>일정작성</value>
+  </data>
+  <data name="ComposeTask" xml:space="preserve">
+    <value>업무작성</value>
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>확인</value>
@@ -306,11 +324,17 @@
   <data name="Previous" xml:space="preserve">
     <value>이전</value>
   </data>
+  <data name="RecentDocs" xml:space="preserve">
+    <value>최근 문서</value>
+  </data>
+  <data name="RecentKnowledges" xml:space="preserve">
+    <value>최근 지식</value>
+  </data>
   <data name="RecentNotice" xml:space="preserve">
-    <value>최근공지</value>
+    <value>최근 공지</value>
   </data>
   <data name="RecentPosts" xml:space="preserve">
-    <value>최근게시물</value>
+    <value>최근 게시물</value>
   </data>
   <data name="Refresh" xml:space="preserve">
     <value>새로고침</value>

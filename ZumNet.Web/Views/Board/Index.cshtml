@@ -152,7 +152,7 @@
             <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
             <div class="messages-content flex-grow-0">
                 <div id="__CtDashboard" class="row container-p-x">
-                    <div class="col col-md-7">
+                    <div class="order-2 order-md-1 col-12 col-md-7">
                         <div class="font-weight-bold text-black-50">
                             <i class="mdi mdi-clock-check-outline"></i> &nbsp;<span>@Resources.Global.RecentPosts</span>
                         </div>
@@ -163,7 +163,7 @@
                                 {
                                     DataRow row = ViewBag.RecentBBS.Rows[i];
                                     <div class="d-flex justify-content-between align-items-center py-2">
-                                        <div class="">
+                                        <div class="text-truncate">
                                             @if (i % 3 == 0)
                                             {
                                                 <div class="badge badge-pill badge-teal opacity-75">@row["DisplayName"]</div>
@@ -176,7 +176,7 @@
                                             {
                                                 <div class="badge badge-pill badge-primary opacity-75">@row["DisplayName"]</div>
                                             }
-                                            <div class="mt-1"><a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
+                                            <div class="text-truncate mt-1"><a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
                                         </div>
                                         <div class="text-truncate">
                                             @if (Convert.ToInt32(row["CommentCount"]) > 0)
@@ -191,31 +191,42 @@
                             }
                             else
                             {
-                                <div class="d-flex justify-content-between align-items-center py-2">@Resources.Global.NoItemShow </div>
+                                <div class="w-100 text-center text-secondary pt-3">@Resources.Global.NoItemShow</div>
                             }
                         </div>
                     </div>
-                    @*<div class="col-1 d-none d-md-block"></div>*@
-                    <div class="col-5 d-none d-md-block pl-4 pr-0">
-                        <div class="font-weight-bold text-black-50">
-                            <i class="fe-message-circle"></i> &nbsp;<span>@Resources.Global.RecentNotice</span>
-                        </div>
-                        <div>
-                            @if (ViewBag.RecentNotice.Rows.Count > 0)
-                            {
-                                foreach (DataRow row in ViewBag.RecentNotice.Rows)
-                                {
-                                    <div class="text-truncate py-2">
-                                        <a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom"><span class="badge badge-pill badge-default">@row["DisplayName"]</span> @row["Subject"]</a>
-                                    </div>
-                                }
-                            }
-                            else
-                            {
-                                <div class="text-truncate py-2">@Resources.Global.NoItemShow </div>
-                            }
-                        </div>
 
+                    <div class="order-1 order-md-2 col-12 col-md-5 pl-md-4">
+                        <div class="">
+                            <div class="font-weight-bold text-black-50">
+                                <i class="fe-message-circle"></i> &nbsp;<span>@Resources.Global.RecentNotice</span>
+                            </div>
+                            <div>
+                                @if (ViewBag.RecentNotice.Rows.Count > 0)
+                                {
+                                    foreach (DataRow row in ViewBag.RecentNotice.Rows)
+                                    {
+                                        <div class="d-flex justify-content-between align-items-center py-2">
+                                            <div class="text-truncate">
+                                                <div class="badge badge-pill badge-default">@row["DisplayName"]</div>
+
+                                                <div class="text-truncate mt-1">
+                                                    <a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a>
+                                                </div>
+                                            </div>
+                                            <div class="text-truncate">
+                                                @ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="w-100 text-center text-secondary pt-3">@Resources.Global.NoItemShow</div>
+                                }
+                            </div>
+                        </div>
+                        <div class="py-3 d-block d-md-none"></div>
                     </div>
                 </div>
             </div>

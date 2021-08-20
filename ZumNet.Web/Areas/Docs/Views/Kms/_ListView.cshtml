@@ -1,17 +1,14 @@
 ﻿@using System.Data;
 
 
-@*<li class="list-group-item list-group-item-action d-flex container-p-x">
-        @DateTime.Now.ToString("d") @DateTime.Now.ToString("t")
-    </li>*@
-@if (ViewBag.BoardList != null && ViewBag.BoardList.Count > 0)
+@if (ViewBag.BoardList != null && ViewBag.BoardList.Rows.Count > 0)
 {
-    foreach (DataRow row in ViewBag.BoardList)
+    foreach (DataRow row in ViewBag.BoardList.Rows)
     {
-        string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
-        string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
+        //string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
+        //string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
 
-        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)@(sTopLine)">
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x">
             <div class="wd-8 wd-lg-5 wd-xl-4 message-checkbox">
                 <label class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input">

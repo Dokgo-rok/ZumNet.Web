@@ -398,7 +398,7 @@ namespace ZumNet.Web.Bc
                 ck.Value = culture;
             }
 
-            ck.Expires = DateTime.Now.AddDays(7);
+            ck.Expires = DateTime.Now.AddDays(30); //30일
 
             HttpContext.Current.Response.Cookies.Add(ck);
 
@@ -428,7 +428,7 @@ namespace ZumNet.Web.Bc
                 }
 
                 ck.Value = culture;
-                ck.Expires = DateTime.Now.AddDays(7);
+                ck.Expires = DateTime.Now.AddDays(30); //30일
 
                 HttpContext.Current.Response.Cookies.Add(ck);
 
