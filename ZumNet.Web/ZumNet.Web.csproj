@@ -352,8 +352,10 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="Content\ea.css" />
     <Content Include="Content\auth.css" />
     <Content Include="Scripts\Docs\kms.js" />
+    <Content Include="Scripts\EA\ea.js" />
     <Content Include="Views\Portal\Webpart\Html\PortalMailList.xsl" />
     <Content Include="Content\site.css" />
     <Content Include="External\FusionChartsXT\js\fusioncharts.charts.js" />
@@ -1055,6 +1057,7 @@
     <Content Include="Areas\Docs\Views\Kms\_ListPagination.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\_ListView.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\List.cshtml" />
+    <Content Include="Areas\EA\Views\Main\_LeftMenu.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
