@@ -1,0 +1,275 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "코드 관리";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+
+    <script type="text/javascript">
+        var tbl_list;
+		var memberOf = 35;
+
+		$(document).ready(function () {
+			searchList("");
+
+			$("#txtSearch").on("keyup", function (e) {
+				if (e.keyCode == 13 && $.trim($(this).val()) != "") {
+					searchList();
+				}
+			});
+
+			$("#btnSearch").on("click", function () {
+				searchList();
+			});
+		});
+
+		function searchList() {
+            $.ajax({
+                url: '@Url.Action("SearchCodeInfo", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{actionKind:"1", containerID: ' + memberOf + '}',
+				success: function (result) {
+					$("#lblCount").text("0개의 코드가 존재합니다.");
+
+                    if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+                    if (tbl_list) {
+						tbl_list.destroy();
+					}
+
+                    $("#lblCount").text(result.recordsTotal + "개의 코드가 존재합니다.");
+
+                    tbl_list = $('#tbl_list').DataTable({
+                        data: $(result.data),
+                        columns: [
+	                        { data: "DisplayName" },
+	                        { data: "Command" },
+							{ data: "Description" },
+                            { data: null }
+						],
+                        lengthChange: false,
+                        searching: true,
+                        info: false,
+                        displayLength: 50,
+                        order: [],
+                        ordering: true,
+                        language: dataTable_lang_kor,
+						createdRow: function (row, data, index) {
+							$('td', row).eq(0).attr("data-code", data["Command"]).attr("data-sortkey", data["SortKey"]).attr("data-cnid", data["CN_ID"]).html('').append("<a href='/Woa/DashBoard/CodeView/?code=" + data["Command"] + "&title=" + data["DisplayName"] + "&description=" + data["Description"] + "'>" + data["DisplayName"] + "</a>");
+
+                            $('td', row).eq(3).addClass('text-center text-nowrap').html('').append('<button type="button" class="btn btn-default btn-xs icon-btn md-btn-flat article-tooltip" title="편집" onclick="setPopupCode(\'' + $.trim(data["Command"]) + '\')"><i class="ion ion-md-create"></i></button><button type="button" class="btn btn-default btn-xs icon-btn md-btn-flat article-tooltip" title="삭제" onclick="deleteCode(\'' + $.trim(data["CN_ID"]) + '\')"><i class="ion ion-md-close"></i></button>');
+                        }
+                    });
+                }
+			});
+		}
+
+        // Korean
+        var dataTable_lang_kor = {
+            "decimal" : "",
+            "emptyTable" : "데이터가 없습니다.",
+            "info" : "_START_ - _END_ (총 _TOTAL_ 명)",
+            "infoEmpty" : "0명",
+            "infoFiltered" : "(전체 _MAX_ 명 중 검색결과)",
+            "infoPostFix" : "",
+            "thousands" : ",",
+            "lengthMenu" : "_MENU_ 개씩 보기",
+            "loadingRecords" : "로딩중...",
+            "processing" : "처리중...",
+            "search" : "검색 : ",
+            "zeroRecords" : "검색된 데이터가 없습니다.",
+            "paginate" : {
+                "first" : "첫 페이지",
+                "last" : "마지막 페이지",
+                "next" : "다음",
+                "previous" : "이전"
+            },
+            "aria" : {
+                "sortAscending" : " :  오름차순 정렬",
+                "sortDescending" : " :  내림차순 정렬"
+            }
+		};
+
+		var mode = "I";
+
+		function setPopupCode(command) {
+			resetModelInfo();
+
+			mode = "U";
+
+			var match_tr = $("td[data-code='" + command + "']").parent("tr");
+
+            $("#modalDefaultCode").find("#txtCodeName").val($(match_tr).find("td:eq(0)").text());
+			$("#modalDefaultCode").find("#txtCodeAlias").val($(match_tr).find("td:eq(1)").text());
+			$("#modalDefaultCode").find("#txtCodePriority").val($(match_tr).find("td:eq(0)").attr("data-sortkey"));
+			$("#modalDefaultCode").find("#txtContainerID").val($(match_tr).find("td:eq(0)").attr("data-cnid"));
+            $("#modalDefaultCode").find("#txtCodeDescription").val($(match_tr).find("td:eq(2)").text());
+
+            $("#modalDefaultCode").modal("show");
+		}
+
+		function resetModelInfo() {
+			mode = "I";
+
+			$("#modalDefaultCode").find("input").val("");
+		}
+
+		function deleteCode(cnID) {
+			if (!window.confirm("해당 코드를 삭제하시겠습니까?")) {
+				return false;
+			}
+
+            $.ajax({
+                url: '@Url.Action("HandleCode", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{actionKind:"D", containerID: ' + cnID + ', memberOf: ' + memberOf + ', displayName:"", sortKey: 0, command: "", description: ""}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					$("#modalDefaultCode").modal("hide");
+
+                    searchList();
+                }
+			});
+		}
+
+		function saveCode() {
+			if ($("#txtCodeName").val() == "") {
+				alert("코드명을 입력하세요");
+				return false;
+			}
+
+            if ($("#txtCodeAlias").val() == "") {
+				alert("코드 별칭을 입력하세요");
+				return false;
+			}
+
+            if ($("#txtCodePriority").val() == "") {
+				alert("코드 우선순위를 입력하세요");
+				return false;
+			}
+
+			var actionKind = mode;
+			var containerID = (mode == "I") ? 0 : $("#txtContainerID").val();
+			var displayName = $("#txtCodeName").val();
+			var sortKey = $("#txtCodePriority").val();
+			var command = $("#txtCodeAlias").val();
+			var description = $("#txtCodeDescription").val();
+
+            $.ajax({
+                url: '@Url.Action("HandleCode", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{actionKind:"' + actionKind + '", containerID: ' + containerID + ', memberOf: ' + memberOf + ', displayName: "' + displayName + '", sortKey: ' + sortKey + ', command: "' + command + '", description: "' + description + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					$("#modalDefaultCode").modal("hide");
+
+                    searchList();
+                }
+			});
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    코드 관리
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalDefaultCode" onclick="resetModelInfo()">신규</button>
+</h4>
+
+<!-- Modal template -->
+<div class="modal fade" id="modalDefaultCode">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    코드 등록 정보
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">이름</label>
+                        <input type="text" id="txtCodeName" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">별칭</label>
+                        <input type="text" id="txtCodeAlias" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">정렬순서</label>
+                        <input type="text" id="txtCodePriority" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">컨테이너 ID</label>
+                        <input type="text" id="txtContainerID" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">설명</label>
+                        <textarea class="form-control" id="txtCodeDescription" placeholder="설명"></textarea>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="btnCodePopupClose" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="btnCodeSave" onclick="saveCode();" data-savemode="I">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="form-inline">
+            <label id="lblCount" class="form-label">0개의 코드가 존재합니다.</label>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-datatable table-responsive">
+        <table id="tbl_list" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>별칭</th>
+                    <th>설명</th>
+                    <th>편집</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

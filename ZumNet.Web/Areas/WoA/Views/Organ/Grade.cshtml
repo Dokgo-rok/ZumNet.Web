@@ -1,0 +1,269 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "직위/직급 관리";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+
+    <script type="text/javascript">
+        var tbl_list;
+
+		$(document).ready(function () {
+			searchList("");
+
+			$("#txtSearch").on("keyup", function (e) {
+				if (e.keyCode == 13 && $.trim($(this).val()) != "") {
+					searchList();
+				}
+			});
+
+			$("#btnSearch").on("click", function () {
+				searchList();
+			});
+		});
+
+		function searchList() {
+            $.ajax({
+                url: '@Url.Action("SearchGradeInfoJson", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{actionKind:"2", domainID: 1, codeType: ""}',
+				success: function (result) {
+					$("#lblCount").text("직급: 0개");
+
+                    if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+                    if (tbl_list) {
+						tbl_list.destroy();
+					}
+
+                    $("#lblCount").text("직급 : " + result.recordsTotal + "개");
+
+                    tbl_list = $('#tbl_list').DataTable({
+                        data: $(result.data),
+                        columns: [
+	                        { data: "Type" },
+	                        { data: "Code" },
+							{ data: "CodeName" },
+							{ data: "InUse" },
+							{ data: "CUseCount" },
+                            { data: "TUseCount" }
+                        ],
+                        lengthChange: false,
+                        searching: false,
+                        info: false,
+                        displayLength: 50,
+                        order: [[0, "asc"]],
+                        ordering: true,
+                        language: dataTable_lang_kor,
+						createdRow: function (row, data, index) {
+							$("td", row).eq(0).attr("data-code", data["Type"] + "_" + data["Code"]);
+
+                            $("td", row).eq(2).html('').append(
+                                "<a onclick='setPopupGrade(\"" + data["Type"] + "\", \"" + data["Code"] + "\", \"" + data["CodeName"] + "\", \"" + data["InUse"] + "\")' href=\"#\">" + data["CodeName"] + "</a>"
+							);
+                        }
+                    });
+                }
+			});
+		}
+
+        // Korean
+        var dataTable_lang_kor = {
+            "decimal" : "",
+            "emptyTable" : "데이터가 없습니다.",
+            "info" : "_START_ - _END_ (총 _TOTAL_ 명)",
+            "infoEmpty" : "0명",
+            "infoFiltered" : "(전체 _MAX_ 명 중 검색결과)",
+            "infoPostFix" : "",
+            "thousands" : ",",
+            "lengthMenu" : "_MENU_ 개씩 보기",
+            "loadingRecords" : "로딩중...",
+            "processing" : "처리중...",
+            "search" : "검색 : ",
+            "zeroRecords" : "검색된 데이터가 없습니다.",
+            "paginate" : {
+                "first" : "첫 페이지",
+                "last" : "마지막 페이지",
+                "next" : "다음",
+                "previous" : "이전"
+            },
+            "aria" : {
+                "sortAscending" : " :  오름차순 정렬",
+                "sortDescending" : " :  내림차순 정렬"
+            }
+		};
+
+		var selectedGradeCodeType = "";
+
+		function setPopupGrade(type, code, codeName, inuse) {
+			resetModelInfo();
+
+			selectedGradeCodeType = type + "_" + code;
+
+            $("#modalDefaultGrade").find("#selType").val(type);
+			$("#modalDefaultGrade").find("#txtCode").val(code).attr("readonly", "readonly");
+			$("#modalDefaultGrade").find("#txtCodeName").val(codeName);
+            $("#modalDefaultGrade").find("#selUseYN").val(inuse);
+			$("#modalDefaultGrade").find("#btnGradeSave").attr("data-savemode", "U");
+
+            $("#modalDefaultGrade").modal("show");
+		}
+
+		function resetModelInfo() {
+			selectedGradeCodeType = "";
+
+			$("#modalDefaultGrade").find("input").val("");
+			$("#modalDefaultGrade").find("#txtCode").removeAttr("readonly");
+            $("#modalDefaultGrade").find("select").prop("selectedIndex", "0");
+			$("#modalDefaultGrade").find("#btnGradeSave").attr("data-savemode", "I");
+		}
+
+		function saveGrade() {
+			if ($("#txtCode").val() == "") {
+				alert("직위/직급 코드를 입력하세요");
+				return false;
+			}
+
+            if ($("#txtCodeName").val() == "") {
+				alert("직위/직급 이름을 입력하세요");
+				return false;
+			}
+
+			var saveMode = $("#modalDefaultGrade").find("#btnGradeSave").attr("data-savemode");
+
+            // 신규 추가일 경우에만 중복 체크
+			if (saveMode == "I") {
+				var dataCode = $("#selType").val() + "_" + $("#txtCode").val();
+
+				if ($("#tbl_list").find("td[data-code='" + dataCode + "']").length > 0) {
+					alert("동일한 유형에 같은 코드가 존재합니다.");
+                    return false;
+				}
+			}
+
+			var actionKind = (saveMode == "I") ? "cmd_gd_new" : "cmd_gd_mod";
+			var domainID = 1;
+			var type = (saveMode == "I") ? "" : selectedGradeCodeType.split('_')[0];
+            var code = (saveMode == "I") ? "" : selectedGradeCodeType.split('_')[1];
+			var newType = $("#selType").val();
+			var newCode = $("#txtCode").val();
+			var codeName = $("#txtCodeName").val();
+			var inUse = $("#selUseYN").val();
+
+            // public ServiceResult HandleGradeCode(string actionKind, int domainID, string type, string code, string newType, string newCode, string codeName, string inUse, string removeInfo)
+            $.ajax({
+                url: '@Url.Action("HandleGradeCode", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{actionKind:"' + actionKind + '", domainID: ' + domainID + ', type: "' + type + '", code: "' + code + '", newType: "' + newType + '", newCode: "' + newCode + '", codeName: "' + codeName + '", inUse: "' + inUse + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					//$("#btnGradePopupClose").trigger("click");
+                    $("#modalDefaultGrade").modal("hide");
+
+                    searchList();
+                }
+			});
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    직위/직급 관리
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalDefaultGrade" onclick="resetModelInfo()">신규</button>
+</h4>
+
+<!-- Modal template -->
+<div class="modal fade" id="modalDefaultGrade">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    직위/직급 생성
+                    <br>
+                    <small class="text-muted">직위/직급 등록 정보</small>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">직급 유형</label>
+                        <select class="custom-select" id="selType">
+                            <option selected value="A">A</option>
+                            <option value="B">B</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">직급코드</label>
+                        <input type="text" id="txtCode" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">직급이름</label>
+                        <input type="text" id="txtCodeName" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">사용여부</label>
+                        <select class="custom-select" id="selUseYN">
+                            <option selected value="Y">사용</option>
+                            <option value="N">미사용</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="btnGradePopupClose" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="btnGradeSave" onclick="saveGrade();" data-savemode="I">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="ui-bordered px-4 pt-4 mb-4">
+    <div class="form-row">
+        <div class="col-md mb-4">
+            <label id="lblCount" class="form-label">직급 : 0개</label>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-datatable table-responsive">
+        <table id="tbl_list" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>유형</th>
+                    <th>코드</th>
+                    <th>이름</th>
+                    <th>사용여부</th>
+                    <th>현 사용인원</th>
+                    <th>총 사용인원</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

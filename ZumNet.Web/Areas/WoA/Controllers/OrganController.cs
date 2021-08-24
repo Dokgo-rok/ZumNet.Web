@@ -18,11 +18,13 @@ namespace ZumNet.Web.Areas.WoA.Controllers
     public class OrganController : ControllerWebBase
     {
         // GET: WoA/Organ
+        [Authorize]
         public ActionResult Index()
         {
             return View();
         }
 
+        // GET: WoA/Organ/Member
         [Authorize]
         public ActionResult Member(int id = 0)
         {
@@ -61,6 +63,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return View();
         }
 
+        // GET: WoA/Organ/Dept
         [Authorize]
         public ActionResult Dept()
         {
@@ -76,6 +79,13 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 return View(result.ResultDataTable);
             }
 
+            return View();
+        }
+
+        // GET: WoA/Organ/Grade
+        [Authorize]
+        public ActionResult Grade()
+        {
             return View();
         }
 
@@ -482,6 +492,108 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                             , StringHelper.SafeString(jPost["groupShortName"].ToString())
                             , StringHelper.SafeInt(jPost["sortKey"].ToString())
                             , StringHelper.SafeString(jPost["pdmgrCode"].ToString()));
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultMessage = result.ResultDataString;
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public string SearchGradeInfoJson()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.GetGradeCode(StringHelper.SafeString(jPost["actionKind"].ToString())
+                            , StringHelper.SafeInt(jPost["domainID"].ToString())
+                            , StringHelper.SafeString(jPost["codeType"].ToString()));
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        // public ServiceResult HandleGradeCode(string actionKind, int domainID, string type, string code, string newType, string newCode, string codeName, string inUse, string removeInfo)
+        [HttpPost]
+        [Authorize]
+        public string HandleGradeCode()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string actionKind = StringHelper.SafeString(jPost["actionKind"].ToString());
+                int domainID = StringHelper.SafeInt(jPost["domainID"].ToString());
+                string type = StringHelper.SafeString(jPost["type"].ToString());
+                string code = StringHelper.SafeString(jPost["code"].ToString());
+                string newType = StringHelper.SafeString(jPost["newType"].ToString());
+                string newCode = StringHelper.SafeString(jPost["newCode"].ToString());
+                string codeName = StringHelper.SafeString(jPost["codeName"].ToString());
+                string inUse = StringHelper.SafeString(jPost["inUse"].ToString());
+                string removeInfo = "";
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.HandleGradeCode(actionKind, domainID, type, code, newType, newCode, codeName, inUse, removeInfo);
                 }
 
                 if (result.ResultCode == 0)

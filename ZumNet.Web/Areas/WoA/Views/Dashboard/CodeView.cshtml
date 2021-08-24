@@ -1,0 +1,386 @@
+﻿@using System.Data
+@using ZumNet.Framework.Util;
+@model DataTable
+
+@{
+	string title = StringHelper.SafeString(ViewData["description"]);
+	title = (String.IsNullOrWhiteSpace(title)) ? StringHelper.SafeString(ViewData["title"]) : title;
+
+	ViewBag.Title = title;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+
+	<script type="text/javascript">
+		var key1 = "@ViewData["key1"].ToString()";
+		var key2 = "@ViewData["key2"].ToString()";
+
+		$(document).ready(function () {
+			initializeForm();
+		});
+
+		function initializeForm() {
+			var title_desc = "";
+			var header_html = "";
+			var form_filter_html = "";
+
+			// 타이틀 옆 설명 및 테이블 헤더 구성
+			if (key1 == "system" && key2 == "holiday") {
+				title_desc = "일자 : yyyyMMdd 형식 (예 : 20220101)";
+
+				header_html += "<tr>";
+				header_html += "   <th style=\"width:10%\">일자</th>";
+				header_html += "   <th style=\"width:20%\">휴일명</th>";
+				header_html += "   <th style=\"width:15%\">공공기관휴일여부</th>";
+				header_html += "   <th style=\"width:15%\">설명</th>";
+				header_html += "   <th style=\"width:15%\">예약필드1</th>";
+				header_html += "   <th style=\"width:15%\">예약필드2</th>";
+				header_html += "   <th style=\"width:10%\">비고</th>";
+				header_html += "</tr>";
+
+				form_filter_html += "<label class=\"form-label\">공공 데이터</label>";
+				form_filter_html += "<select class=\"custom-select mx-sm-3\" id=\"selYear\">";
+
+				var year = @DateTime.Now.Year;
+
+				for (var i = 2015; i < year + 5; i++) {
+					if (year == i) {
+						form_filter_html += "<option value=\"" + i + "\" selected=\"selected\">" + i + "</option>";
+					} else {
+						form_filter_html += "<option value=\"" + i + "\">" + i + "</option>";
+					}
+				}
+
+				form_filter_html += "</select>";
+				form_filter_html += "<label class=\"form-label mx-sm-3\">휴일 정보</label>";
+				form_filter_html += "<button type=\"button\" class=\"btn btn-secondary\" onclick=\"getSpcdeInfoService()\">가져오기</button>";
+			} else if (key1 == "linksite" && key2 == "toplinkfolder") {
+				header_html += "<tr>";
+				header_html += "   <th style=\"width:10%\">순서</th>";
+				header_html += "   <th style=\"width:15%\">폴더ID</th>";
+				header_html += "   <th style=\"width:20%\">폴더명</th>";
+				header_html += "   <th style=\"width:15%\">색상1</th>";
+				header_html += "   <th style=\"width:15%\">색상2</th>";
+				header_html += "   <th style=\"width:15%\">색상3</th>";
+				header_html += "   <th style=\"width:10%\">비고</th>";
+				header_html += "</tr>";
+			} else if (key1 == "external" && (key2 == "centercode" || key2 == "centercode2")) {
+				header_html += "<tr>";
+				header_html += "   <th style=\"width:10%\">순서</th>";
+				header_html += "   <th style=\"width:15%\">코드</th>";
+				header_html += "   <th style=\"width:20%\">코드명</th>";
+				header_html += "   <th style=\"width:15%\">ERP ID</th>";
+				header_html += "   <th style=\"width:15%\">기본통화</th>";
+				header_html += "   <th style=\"width:15%\">예약필드1</th>";
+				header_html += "   <th style=\"width:10%\">비고</th>";
+				header_html += "</tr>";
+			} else if (key1 == "external" && key2 == "groupcode") {
+				header_html += "<tr>";
+				header_html += "   <th style=\"width:10%\">순서</th>";
+				header_html += "   <th style=\"width:15%\">코드</th>";
+				header_html += "   <th style=\"width:20%\">코드명</th>";
+				header_html += "   <th style=\"width:15%\">ERP ID</th>";
+				header_html += "   <th style=\"width:15%\">ERP SUB ID</th>";
+				header_html += "   <th style=\"width:15%\">예약필드1</th>";
+				header_html += "   <th style=\"width:10%\">비고</th>";
+				header_html += "</tr>";
+			} else if (key1 == "external" && key2 == "failexampleclass") {
+				header_html += "<tr>";
+				header_html += "   <th style=\"width:10%\">코드순서</th>";
+				header_html += "   <th style=\"width:15%\">품명</th>";
+				header_html += "   <th style=\"width:20%\">설계구분</th>";
+				header_html += "   <th style=\"width:15%\">발생부위</th>";
+				header_html += "   <th style=\"width:15%\">예약필드1</th>";
+				header_html += "   <th style=\"width:15%\">예약필드2</th>";
+				header_html += "   <th style=\"width:10%\">비고</th>";
+				header_html += "</tr>";
+			} else if (key1 == "external" && key2 == "conclassify") {
+				header_html += "<tr>";
+				header_html += "   <th style=\"width:10%\">순서</th>";
+				header_html += "   <th style=\"width:15%\">경조구분</th>";
+				header_html += "   <th style=\"width:20%\">상세구분</th>";
+				header_html += "   <th style=\"width:15%\">대상자</th>";
+				header_html += "   <th style=\"width:15%\">경조금</th>";
+				header_html += "   <th style=\"width:15%\">화환금액</th>";
+				header_html += "   <th style=\"width:10%\">비고</th>";
+				header_html += "</tr>";
+			} else if (key1 == "voc" && key2 == "prodmodel") {
+				header_html += "<tr>";
+				header_html += "   <th style=\"width:10%\">순서</th>";
+				header_html += "   <th style=\"width:15%\">코드</th>";
+				header_html += "   <th style=\"width:20%\">모델명</th>";
+				header_html += "   <th style=\"width:15%\">분류</th>";
+				header_html += "   <th style=\"width:15%\">색상</th>";
+				header_html += "   <th style=\"width:15%\">선택가능고장유형</th>";
+				header_html += "   <th style=\"width:10%\">비고</th>";
+				header_html += "</tr>";
+			} else {
+				header_html += "<tr>";
+				header_html += "   <th style=\"width:10%\">순서</th>";
+				header_html += "   <th style=\"width:20%\">코드</th>";
+				header_html += "   <th style=\"width:15%\">코드명</th>";
+				header_html += "   <th style=\"width:15%\">설명</th>";
+				header_html += "   <th style=\"width:15%\">예약필드1</th>";
+				header_html += "   <th style=\"width:15%\">예약필드2</th>";
+				header_html += "   <th style=\"width:10%\">비고</th>";
+				header_html += "</tr>";
+			}
+
+			$("#div_title_desc").text(title_desc);
+			$("#tbl_code").find("thead").append(header_html);
+
+			if (form_filter_html != "") {
+				$("#form_filter").append(form_filter_html);
+			} else {
+				$("#div_filter").hide();
+			}
+		}
+
+		// 코드 아이템 추가
+		function insertCodeItem(obj) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			// 빈 값 체크
+			if ($tr.find("td:eq(0)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(0)").find("input").focus();
+				return;
+			}
+
+			if ($tr.find("td:eq(1)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(1)").find("input").focus();
+				return;
+			}
+
+			// 중복 체크
+			var newKey3 = $tr.find("td:eq(0)").find("input").val();
+
+			$("#tbl_code").find("tr[data-key3]").each(function () {
+				if (newKey3 == $(this).find("td:eq(0)").find("input").val()) {
+					alert("신규 항목이 이미 정의되어 있습니다. 다시 확인해 주세요.");
+					return;
+				}
+			});
+
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"I", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + newKey3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		// 코드 아이템 편집
+		function editCodeItem(obj) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			if ($tr.find("td:eq(1)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(1)").find("input").focus();
+				return;
+			}
+
+			var key3 = $tr.find("td:eq(0)").find("input").val();
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"U", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		// 코드 아이템 삭제
+		function removeCodeItem(obj) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			var key3 = $tr.find("td:eq(0)").find("input").val();
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"D", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		// 목록 페이지로 이동
+		function moveListPage() {
+			document.location.href = "/Woa/DashBoard/Code";
+		}
+
+		function getSpcdeInfoService() {
+			var y = $("#selYear").val();
+			var m = "";
+			var szHtml = "";
+			var key = "B8xyPAtj8oU%2FeH508uYveJYkhQ6aR7%2BJVAQ34xWfPh%2BFUW6R4CF1mzTRbCB6mpU4T5scRBqWEGa1ZmxcoqxnMQ%3D%3D"; //10/25 인증키 갱신일
+			var url = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?ServiceKey=" + key + "&solYear=" + y + "&solMonth=";
+	    
+			for (var j = 1; j <= 12; j++) {
+				m = (j < 10) ? "0" + j.toString() : j.toString();
+				var res = httpRequest("get", url + m, false, null, "xml"); //alert(res)
+				var d = g_oXmlHttpRequest.responseXML; //alert(d.getElementsByTagName("resultCode")[0].text)
+				if (d.getElementsByTagName("resultCode")[0].text == "00") {
+					var col = d.getElementsByTagName("item");
+					for (var i = 0; i < col.length; i++) {
+						szHtml += "<tr><td><input type='checkbox' name='ckbHoliday' /></td>"
+							+ "<td>" + col[i].getElementsByTagName("locdate")[0].text + "</td>"
+							+ "<td>" + col[i].getElementsByTagName("dateName")[0].text + "</td>"
+							+ "<td>" + col[i].getElementsByTagName("isHoliday")[0].text + "</td></tr>";
+					}
+				}
+			}
+
+			if (szHtml == '') {
+				szHtml = "<tr><td class='nodata' colspan='5'>데이터가 없습니다!</td></tr>"
+			} else {
+				szHtml = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"
+				+ "<tr><th width='10%'><input type='checkbox' name='ckbAll' onclick=\"chkAll('ckbHoliday');\" /></th><th width='30%'>일자</th><th width='30%'>휴일명</th><th width='30%'>공공휴일여부</th></tr>"
+				+ szHtml + "</table>";
+			}
+			
+			//_byId("VIEW_List").innerHTML = szHtml;
+			//showLayer2("jsView", 400, 40, 90, 120);
+		}
+	</script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	@title
+	<div class="col">
+		<div id="div_title_desc" class="text-muted text-tiny font-weight-light">@ViewData["title_detail"]</div>
+	</div>
+</h4>
+
+<div id="div_filter" class="card mb-4">
+	<div class="card-body">
+		<form id="form_filter" class="form-inline">
+		</form>
+	</div>
+</div>
+
+<div class="table-responsive">
+	<table id="tbl_code" class="table table-bordered mb-0">
+		<thead>
+			
+		</thead>
+		<tbody>
+			@if (Model?.Rows?.Count > 0)
+			{
+				foreach (DataRow item in Model.Rows)
+				{
+					<tr data-key3="@item["ItemSubHandler"].ToString()">
+						<td>
+							<input type="text" class="form-control" value="@item["ItemSubHandler"].ToString()" readonly="readonly">
+						</td>
+						<td>
+							<input type="text" class="form-control" value="@item["Item1"].ToString()">
+						</td>
+						<td>
+							<input type="text" class="form-control" value="@item["Item2"].ToString()">
+						</td>
+						<td>
+							<input type="text" class="form-control" value="@item["Item3"].ToString()">
+						</td>
+						<td>
+							<input type="text" class="form-control" value="@item["Item4"].ToString()">
+						</td>
+						<td>
+							<input type="text" class="form-control" value="@item["Item5"].ToString()">
+						</td>
+						<td>
+							<button type="button" class="btn btn-default" onclick="editCodeItem(this)">변경</button>
+							<button type="button" class="btn btn-default" onclick="removeCodeItem(this)">제거</button>
+						</td>
+					</tr>
+				}
+				<tr>
+					@for (int i = 0; i < Model?.Columns?.Count - 2; i++)
+					{
+						<td>
+							<input type="text" class="form-control">
+						</td>
+					}
+					<td>
+						<button type="button" class="btn btn-default" onclick="insertCodeItem(this)">생성</button>
+					</td>
+				</tr>
+			}
+			else
+			{
+				<tr>
+					@for (int i = 0; i < 6; i++)
+					{
+						<td>
+							<input type="text" class="form-control">
+						</td>
+					}
+					<td>
+						<button type="button" class="btn btn-default" onclick="insertCodeItem(this)">생성</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+
+<div class="card mb-4">
+	<div class="card-body">
+		<form id="form_filter" class="form-inline">
+			<button type="button" class="btn btn-default" onclick="moveListPage()">목록으로</button>
+		</form>
+	</div>
+</div>
