@@ -987,7 +987,7 @@ namespace ZumNet.Web.Bc
                 sb.Append("\"current\": {");
                 sb.AppendFormat("\"urid\":\"{0}\"", HttpContext.Current.Session["URID"].ToString());
                 sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
-                sb.AppendFormat(",\"deid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
+                sb.AppendFormat(",\"deptid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
                 sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
                 sb.AppendFormat(",\"date\":\"{0}\"", DateTime.Now.ToString("yyyy-MM-dd"));
                 sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
@@ -1061,7 +1061,7 @@ namespace ZumNet.Web.Bc
                         sb.Append("\"current\": {");
                         sb.AppendFormat("\"urid\":\"{0}\"", HttpContext.Current.Session["URID"].ToString());
                         sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
-                        sb.AppendFormat(",\"deid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
+                        sb.AppendFormat(",\"deptid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
                         sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
                         sb.AppendFormat(",\"date\":\"{0}\"", DateTime.Now.ToString("yyyy-MM-dd"));
                         sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);

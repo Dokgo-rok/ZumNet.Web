@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
 
-using ZumNet.Framework.Util;
 using ZumNet.BSL.ServiceBiz;
-using System.Configuration;
-using System.Globalization;
-using System.Threading;
-using ZumNet.Framework.Model;
 
 namespace ZumNet.Web.Bc
 {
@@ -93,6 +89,9 @@ namespace ZumNet.Web.Bc
 
                 HttpContext.Current.Session.Clear();
             }
+
+            HttpContext.Current.Session["CompanyCode"] = Framework.Configuration.Config.Read("CompanyCode");
+            HttpContext.Current.Session["Company"] = Framework.Configuration.Config.Read("Company");
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 

@@ -33,5 +33,49 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
             return View();
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Count()
+        {
+            string sPos = "";
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    string[] vPostData = CommonUtils.PostDataToString().Split(','); //xfalias,location,actrole,userid,userdeptid,admin
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    sPos = "200";
+                    using (ZumNet.BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+                    {
+                        svcRt = wkList.GetWorkItemCount(Session["FlowSvcMode"].ToString(), Convert.ToInt32(Session["DNID"]), vPostData[0], "", vPostData[1], vPostData[2]
+                                                    , vPostData[3], "", vPostData[4], "", vPostData[5], Environment.MachineName, Session["CompanyCode"].ToString(), "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "300";
+                        rt = "OK" + svcRt.ResultDataString;
+                    }
+                    else
+                    {
+                        //에러페이지
+                        sPos = "400";
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
     }
 }
