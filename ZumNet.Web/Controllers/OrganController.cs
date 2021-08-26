@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 
 using Newtonsoft.Json.Linq;
+using ZumNet.Framework.Util;
 using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
 
@@ -41,7 +42,7 @@ namespace ZumNet.Web.Controllers
 
                 svcRt = null;
 
-                svcRt = op.GetDeptGroupList(Session["DNID"].ToString(), 1, 50, "", "", "", " AND GR_ID = " + Session["DeptID"].ToString());
+                svcRt = op.GetDeptGroupList(StringHelper.SafeInt(Session["DNID"].ToString()), 1, 50, "", "", "", " AND GR_ID = " + Session["DeptID"].ToString());
 
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
@@ -91,7 +92,7 @@ namespace ZumNet.Web.Controllers
                 ZumNet.Framework.Core.ServiceResult svcRt = null;
                 using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
                 {
-                    svcRt = op.GetDeptGroupList(Session["DNID"].ToString(), Convert.ToInt32(jPost["page"]), Convert.ToInt32(jPost["count"]), "", "", "", " AND GR_ID = " + jPost["tgt"].ToString());
+                    svcRt = op.GetDeptGroupList(StringHelper.SafeInt(Session["DNID"].ToString()), Convert.ToInt32(jPost["page"]), Convert.ToInt32(jPost["count"]), "", "", "", " AND GR_ID = " + jPost["tgt"].ToString());
                 }
 
                 if (svcRt != null && svcRt.ResultCode == 0)

@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -9,6 +10,7 @@ using System.Web.Mvc;
 using ZumNet.BSL.FlowBiz;
 using ZumNet.BSL.ServiceBiz;
 using ZumNet.Framework.Core;
+using ZumNet.Framework.Entities.Web;
 using ZumNet.Framework.Util;
 using ZumNet.Framework.Web.Base;
 using ZumNet.Web.Bc;
@@ -21,6 +23,79 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         // GET: WoA/App
         public ActionResult Index()
         {
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            List<WebTreeList> listTree = new List<WebTreeList>();
+
+            WebTreeList treeInfo = new WebTreeList();
+            treeInfo.id = "0";
+            treeInfo.parent = "#";
+            treeInfo.state = new Dictionary<string, bool>();
+            treeInfo.state.Add("opened", true);
+            treeInfo.text = "전체";
+
+            listTree.Add(treeInfo);
+
+            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            {
+                // 양식 분류 조회
+                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+
+                if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
+                {
+                    foreach (DataRow dr in resultClass.ResultDataTable.Rows)
+                    {
+                        treeInfo = new WebTreeList();
+                        treeInfo.id = StringHelper.SafeString(dr["ClassID"].ToString());
+                        treeInfo.parent = "0";
+                        treeInfo.state = new Dictionary<string, bool>();
+                        treeInfo.state.Add("opened", false);
+                        treeInfo.text = StringHelper.SafeString(dr["ClassName"].ToString());
+
+                        listTree.Add(treeInfo);
+                    }
+
+                    // 미분류 양식 추가
+                    treeInfo = new WebTreeList();
+                    treeInfo.id = "10000";
+                    treeInfo.parent = "0";
+                    treeInfo.state = new Dictionary<string, bool>();
+                    treeInfo.state.Add("opened", false);
+                    treeInfo.text = "미분류 양식들";
+
+                    listTree.Add(treeInfo);
+                }
+
+                // 양식 문서 리스트 조회
+                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+
+                if (resultList.ResultCode == 0)
+                {
+                    if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
+                    {
+                        foreach (DataRow dr in resultList.ResultDataTable.Rows)
+                        {
+                            if (StringHelper.SafeString(dr["ClassID"].ToString()) == "1012")
+                            {
+                                treeInfo = new WebTreeList();
+                                treeInfo.id = StringHelper.SafeString(dr["FormID"].ToString());
+                                treeInfo.parent = StringHelper.SafeString(dr["ClassID"].ToString());
+                                treeInfo.state = new Dictionary<string, bool>();
+                                treeInfo.state.Add("opened", false);
+                                //treeInfo.text = StringHelper.SafeString(dr["DocName"].ToString());
+                                treeInfo.text = $"{StringHelper.SafeString(dr["DocName"].ToString())} ({StringHelper.SafeString(dr["MainTable"].ToString())} , V{StringHelper.SafeString(dr["Version"].ToString())})";
+
+                                listTree.Add(treeInfo);
+                            }
+
+                            
+                        }
+                    }
+                }
+            }
+
+            ViewData["eaclassformlist"] = JsonConvert.SerializeObject(listTree);
+
             return View();
         }
 
@@ -29,6 +104,38 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             return View();
         }
+
+        // GET: WoA/App/Mgr
+        public ActionResult Mgr()
+        {
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            {
+                // 양식 분류 조회
+                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+
+                if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["formclass"] = JsonConvert.SerializeObject(resultClass.ResultDataTable);
+                }
+
+                // 양식 문서 리스트 조회
+                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+
+                if (resultList.ResultCode == 0)
+                {
+                    if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
+                    {
+                        ViewData["formlist"] = JsonConvert.SerializeObject(resultList.ResultDataTable);
+                    }
+                }
+            }
+
+            return View();
+        }
+
+        #region [ /Woa/App/Index ]
 
         /// <summary>
         /// 결재 문서 조회
@@ -162,10 +269,66 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         }
 
         /// <summary>
-        /// 결재 양식 분류 정보 조회
+        /// 결재 문서의 기본 정보 정보
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Authorize]
+        public string SelectEADocumentTotalData()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                int dnID = StringHelper.SafeInt(jPost["domainID"].ToString());
+                int messageID = StringHelper.SafeInt(jPost["messageID"].ToString());
+
+                ServiceResult result = new ServiceResult();
+
+                using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+                {
+                    result = eaProcessBiz.SelectEADocumentTotalData(dnID, messageID);
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+		#endregion
+
+		#region [ /Woa/App/Class ]
+
+		/// <summary>
+		/// 결재 양식 분류 정보 조회
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
         [Authorize]
         public string SearchEAFormClass()
         {
@@ -263,5 +426,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             return CreateJsonData();
         }
+
+        #endregion
     }
 }

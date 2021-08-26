@@ -1067,6 +1067,8 @@
     <Content Include="Areas\WoA\Views\Dashboard\CodeView.cshtml" />
     <Content Include="Areas\WoA\Views\Organ\Grade.cshtml" />
     <Content Include="Areas\WoA\Views\App\Class.cshtml" />
+    <Content Include="Areas\WoA\Views\App\Mgr.cshtml" />
+    <Content Include="Areas\WoA\Views\Organ\Map.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

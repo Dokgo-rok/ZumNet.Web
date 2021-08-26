@@ -1,0 +1,70 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "결재 현황";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default-dark/style")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+
+    <script type="text/javascript">
+		$(document).ready(function () {
+			var deptTreeJson = @Html.Raw(ViewData["deptlist"]);
+			var memberJson = '@Html.Raw(ViewData["memberlist"])';
+
+			$("#divDeptTree").jstree({
+				'core': {
+					'data': deptTreeJson,
+					themes: { name: "default-dark" }
+				}
+			}).bind('select_node.jstree', function (event, data) {
+				var id = data.instance.get_node(data.selected).id;        //id 가져오기
+				alert(id);
+				//var type = data.instance.get_node(data.selected).type;    //type 가져오기
+				//var path = data.instance.get_node(data.selected).path;    //paht 가져오기
+				//var a = data.instance.get_node(data.selected).data.a;    //data 에서 a 가져오기
+			});
+		});
+    </script>
+}
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    조직도
+</h4>
+
+<div class="row">
+    <div class="col-md-4">
+        <div id="divDeptTree" class="bg-transparent border jstree jstree-1 jstree-default-dark" style="min-height:200px;padding:20px;" role="tree" aria-multiselectable="true" tabindex="0" aria-activedescendant="j1_5" aria-busy="false">
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <table id="tbl_list" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>문서명</th>
+                            <th>단계</th>
+                            <th>제목</th>
+                            <th>작성부서</th>
+                            <th>작성자</th>
+                            <th>작성일</th>
+                            <th>완료일</th>
+                            <th>삭제일</th>
+                            <th>결재상태</th>
+                            <th>비고</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

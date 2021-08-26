@@ -8,17 +8,22 @@
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
     @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default-dark/style")
 }
 
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/moment/moment")
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
     @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
-    
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+
     <script type="text/javascript">
         var prevSortColumn = "";
 		var prevSortType = "";
 		var tbl_list;
+		var domainID = "@Session["DNID"].ToString()";
+		var treeJson = @Html.Raw(ViewData["eaclassformlist"]);
 
 		$(document).ready(function () {
             $('#datepicker-range').datepicker({
@@ -36,6 +41,13 @@
                 dateFormat: "yyyy-mm-dd"
 			});
 
+			$("#divFormClassTree").jstree({
+				'core': {
+					'data': treeJson,
+                    themes: { name: "default-dark" }
+				}
+			});
+
 			searchList("");
 
 			$("#txtSearch").on("keyup", function (e) {
@@ -47,59 +59,63 @@
 			$("#btnSearch").on("click", function () {
 				searchList();
 			});
-
-            function searchList() {
-                if (tbl_list) {
-                    tbl_list.destroy();
-			    }
-
-                tbl_list = $('#tbl_list').DataTable({
-                    "serverSide": true,
-                    "ajax": {
-                        "url": '@Url.Action("SearchEADocumentList", "App")',
-					    "type": "POST",
-					    "data": function (p) {
-						    p.mode = "";
-						    p.admin = "Y";
-							p.formId = "";
-							p.defId = 0;
-							p.viewer = 0;
-							p.state = 100;
-						    p.searchCol = $("#selSearchType").val();
-						    p.searchText = $("#txtSearch").val();
-						    p.searchStartDate = $("#datepicker-range input[name='start']").val();
-							p.searchEndDate = $("#datepicker-range input[name='end']").val();
-                            p.prevSortColumn = prevSortColumn;
-						    p.prevSortType = prevSortType;
-					    },
-				        "dataSrc": function (result) {
-						    prevSortColumn = result.sortColumn;
-                            prevSortType = result.sortType;
-
-                            return result.data;
-                        }
-				    },
-                    "columns": [
-                        { data: "OID" },
-                        { data: "DocName" },
-                        { data: "PIState" },
-                        { data: "PIName" },
-					    { data: "CreatorDept" },
-					    { data: "Creator" },
-					    { data: "CreateDate" },
-					    { data: "PIEnd" },
-						{ data: "DeleteDate" },
-                        { data: "DocStatus" }
-                    ],
-                    "language": dataTable_lang_kor,
-					"searching": false,
-					"displayLength": 30,
-					"order": [],
-					"info": false,
-                    "lengthChange": false,
-                });
-		    }
 		});
+
+        function searchList() {
+            if (tbl_list) {
+                tbl_list.destroy();
+			}
+
+            tbl_list = $('#tbl_list').DataTable({
+                "serverSide": true,
+                "ajax": {
+                    "url": '@Url.Action("SearchEADocumentList", "App")',
+					"type": "POST",
+					"data": function (p) {
+						p.mode = "";
+						p.admin = "Y";
+						p.formId = "";
+						p.defId = 0;
+						p.viewer = 0;
+						p.state = 100;
+						p.searchCol = $("#selSearchType").val();
+						p.searchText = $("#txtSearch").val();
+						p.searchStartDate = $("#datepicker-range input[name='start']").val();
+						p.searchEndDate = $("#datepicker-range input[name='end']").val();
+                        p.prevSortColumn = prevSortColumn;
+						p.prevSortType = prevSortType;
+					},
+				    "dataSrc": function (result) {
+						prevSortColumn = result.sortColumn;
+                        prevSortType = result.sortType;
+
+                        return result.data;
+                    }
+				},
+                "columns": [
+                    { data: "OID" },
+                    { data: "DocName" },
+                    { data: "PIState" },
+                    { data: "PIName" },
+					{ data: "CreatorDept" },
+					{ data: "Creator" },
+					{ data: "CreateDate" },
+					{ data: "PIEnd" },
+					{ data: "DeleteDate" },
+					{ data: "DocStatus" },
+                    { data: null }
+                ],
+                "language": dataTable_lang_kor,
+				"searching": false,
+				"displayLength": 30,
+				"order": [],
+				"info": false,
+				"lengthChange": false,
+                "createdRow": function (row, data, index) {
+                    $('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<select class='custom-select' onchange='viewWorkItemAction(this, \"" + data["MessageID"] + "\")'><option selected value=''>선택</option><option value='B'>기본 정보</option><option value='L'>결재선 정보</option><option value='I'>WorkItem 정보</option><option value='O'>문서열기</option><option value='D'>삭제</option></select>");
+				}
+            });
+		}
 
         // Korean
         var dataTable_lang_kor = {
@@ -125,7 +141,76 @@
                 "sortAscending" : " :  오름차순 정렬",
                 "sortDescending" : " :  내림차순 정렬"
             }
-        };
+		};
+
+		function viewWorkItemAction(obj, messageID) {
+            // B : 기본 정보
+            // L : 결재선 정보
+            // I : WorkItem 정보
+            // O : 문서열기
+            // D : 삭제
+			var selectedValue = $(obj).val();
+
+			if (selectedValue == "") {
+				return;
+			}
+
+			switch (selectedValue) {
+				case "B":
+                    // 기본 정보
+                    $.ajax({
+                        url: '@Url.Action("SelectEADocumentTotalData", "App")',
+				        type: 'POST',
+				        dataType: 'JSON',
+				        data: '{domainID:' + domainID + ', messageID: ' + messageID + '}',
+				        success: function (result) {
+					        if (result.code != "OK") {
+						        alert(result.message);
+						        return;
+							}
+
+							if (result.recordsTotal == 1) {
+								var basisResult = result.data[0];
+
+								$("#modalDocBasic").find("input").val("");
+
+								$("#modalDocBasic").find("#txtOID").val(basisResult.OID);
+								$("#modalDocBasic").find("#txtMessageID").val(messageID);
+								$("#modalDocBasic").find("#txtProcessID").val(basisResult.ProcessID);
+								$("#modalDocBasic").find("#txtPIState").val(basisResult.PIState);
+								$("#modalDocBasic").find("#txtDocNumber").val(basisResult.DocNumber);
+								$("#modalDocBasic").find("#txtDocStatus").val(basisResult.DocStatus);
+								$("#modalDocBasic").find("#txtDocLevel").val(basisResult.DocLevel);
+                                $("#modalDocBasic").find("#txtKeepYear").val(basisResult.KeepYear);
+								$("#modalDocBasic").find("#txtPIName").val(basisResult.PIName);
+                                $("#modalDocBasic").find("#txtSubject").val(basisResult.Subject);
+								$("#modalDocBasic").find("#txtCreator").val(basisResult.CreatorGrade + " " + basisResult.Creator + " (" + basisResult.CreatorID + "/" + basisResult.CreatorCN + ")");
+								$("#modalDocBasic").find("#txtCreatorDept").val(basisResult.CreatorDept + " (" + basisResult.CreatorDeptID + ")");
+
+								var started = basisResult.Started;
+
+								if (started != "" && (started.length == 19 || started.length == 23)) {
+                                    $("#modalDocBasic").find("#txtStarted").val(started.substring(2, 10) + " " + started.substring(11, 16));
+								}
+
+                                var completedDate = basisResult.CompletedDate;
+
+								if (completedDate != "" && (completedDate.length == 19 || completedDate.length == 23)) {
+                                    $("#modalDocBasic").find("#txtCompletedDate").val(completedDate.substring(2, 10) + " " + completedDate.substring(11, 16));
+								}
+
+								$("#modalDocBasic").find("#txtExternalKey1").val(basisResult.ExternalKey1);
+								$("#modalDocBasic").find("#txtExternalKey2").val(basisResult.ExternalKey2);
+
+                                $("#modalDocBasic").modal("show");
+							}
+                        }
+			        });
+					break;
+				default:
+					break;
+			}
+		}
     </script>
 }
 <h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
@@ -158,29 +243,134 @@
     </div>
 </div>
 
+<!-- Modal template -->
+<div class="modal fade" id="modalDocBasic">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    기본 정보
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">OID</label>
+                        <input type="text" id="txtOID" class="form-control" readonly="readonly">
+                    </div>
+                    <div class="form-group col mb-0">
+                        <label class="form-label">MessageID</label>
+                        <input type="text" id="txtMessageID" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">프로세스 정의</label>
+                        <input type="text" id="txtProcessID" class="form-control" readonly="readonly">
+                    </div>
+                    <div class="form-group col mb-0">
+                        <label class="form-label">프로세스 상태</label>
+                        <input type="text" id="txtPIState" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">문서번호</label>
+                        <input type="text" id="txtDocNumber" class="form-control" readonly="readonly">
+                    </div>
+                    <div class="form-group col mb-0">
+                        <label class="form-label">진행단계</label>
+                        <input type="text" id="txtDocStatus" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">문서등급</label>
+                        <input type="text" id="txtDocLevel" class="form-control" readonly="readonly">
+                    </div>
+                    <div class="form-group col mb-0">
+                        <label class="form-label">보존년한</label>
+                        <input type="text" id="txtKeepYear" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">프로세스명</label>
+                        <input type="text" id="txtPIName" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">제목</label>
+                        <input type="text" id="txtSubject" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">작성자</label>
+                        <input type="text" id="txtCreator" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">작성자 부서</label>
+                        <input type="text" id="txtCreatorDept" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">등록일</label>
+                        <input type="text" id="txtStarted" class="form-control" readonly="readonly">
+                    </div>
+                    <div class="form-group col mb-0">
+                        <label class="form-label">완료일</label>
+                        <input type="text" id="txtCompletedDate" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">외부키1</label>
+                        <input type="text" id="txtExternalKey1" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-0">
+                        <label class="form-label">외부키2</label>
+                        <input type="text" id="txtExternalKey2" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="btnPopupClose" data-dismiss="modal">확인</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-3">
-        <div id="jstree-example-1" class="bg-transparent border jstree jstree-1 jstree-default-dark" style="min-height:200px;padding:20px;" role="tree" aria-multiselectable="true" tabindex="0" aria-activedescendant="j1_5" aria-busy="false">
-            <ul class="jstree-container-ul jstree-children" role="group">
-                <li role="none" id="j1_1" class="jstree-node  jstree-closed">
-                    <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="false" id="j1_1_anchor">
-                        <i class="jstree-icon jstree-themeicon" role="presentation"></i>css
-                    </a>
-                </li>
-                <li role="none" id="j1_4" class="jstree-node  jstree-open">
-                    <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="true" id="j1_4_anchor">
-                        <i class="jstree-icon jstree-themeicon" role="presentation"></i>img
-                    </a><ul role="group" class="jstree-children"><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_5" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_5_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>bg.jpg</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_6" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_6_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>logo.png</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_7" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_7_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>avatar.png</a></li></ul>
-                </li>
-                <li role="none" id="j1_8" class="jstree-node  jstree-open">
-                    <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="true" id="j1_8_anchor">
-                        <i class="jstree-icon jstree-themeicon" role="presentation"></i>js
-                    </a><ul role="group" class="jstree-children"><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_9" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_9_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>jquery.js</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_10" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_10_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>app.js</a></li></ul>
-                </li>
-                <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_11" class="jstree-node text-primary jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_11_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> index.html</a></li>
-                <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_12" class="jstree-node text-primary jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_12_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> page-one.html</a></li>
-                <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_13" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_13_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> page-two.html</a></li>
-            </ul>
+        <div id="divFormClassTree" class="bg-transparent border jstree jstree-1 jstree-default-dark" style="min-height:200px;padding:20px;" role="tree" aria-multiselectable="true" tabindex="0" aria-activedescendant="j1_5" aria-busy="false">
+            @*<ul class="jstree-container-ul jstree-children" role="group">
+                    <li role="none" id="j1_1" class="jstree-node  jstree-closed">
+                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="false" id="j1_1_anchor">
+                            <i class="jstree-icon jstree-themeicon" role="presentation"></i>css
+                        </a>
+                    </li>
+                    <li role="none" id="j1_4" class="jstree-node  jstree-open">
+                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="true" id="j1_4_anchor">
+                            <i class="jstree-icon jstree-themeicon" role="presentation"></i>img
+                        </a><ul role="group" class="jstree-children"><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_5" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_5_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>bg.jpg</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_6" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_6_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>logo.png</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_7" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_7_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>avatar.png</a></li></ul>
+                    </li>
+                    <li role="none" id="j1_8" class="jstree-node  jstree-open">
+                        <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="true" id="j1_8_anchor">
+                            <i class="jstree-icon jstree-themeicon" role="presentation"></i>js
+                        </a><ul role="group" class="jstree-children"><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_9" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_9_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>jquery.js</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_10" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_10_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>app.js</a></li></ul>
+                    </li>
+                    <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_11" class="jstree-node text-primary jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_11_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> index.html</a></li>
+                    <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_12" class="jstree-node text-primary jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_12_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> page-one.html</a></li>
+                    <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_13" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_13_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> page-two.html</a></li>
+                </ul>*@
         </div>
     </div>
     <div class="col-md-9">

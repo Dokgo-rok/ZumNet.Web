@@ -1,0 +1,88 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "결재 양식 관리";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+
+    <script type="text/javascript">
+		var formClassJson = @Html.Raw(ViewData["formclass"]);
+		var formListJson = @Html.Raw(ViewData["formlist"]);
+
+		$(document).ready(function () {
+			if (formClassJson != "") {
+				var optionHtml = "";
+
+				for (var i = 0; i < formClassJson.length; i++) {
+					optionHtml += "<option value=\"" + formClassJson[i].ClassID + "\">" + formClassJson[i].ClassName + "</option>";
+				}
+
+				$("#selEAFormClass").append(optionHtml);
+			}
+
+            $("#btnSearch").on("click", function () {
+				if ($("#selEAFormClass").val() == "") {
+					alert("결재 분류를 선택하세요.");
+					return;
+				}
+
+                if ($("#selEAFormList").val() == "") {
+					alert("결재 양식을 선택하세요.");
+					return;
+				}
+
+
+			});
+		});
+
+		function setEAFormList() {
+			$("#selEAFormList").empty();
+
+			var formClass = $("#selEAFormClass").val();
+
+			if (formClass == "") {
+				$("#selEAFormList").append("<option value=\"\">분류를 선택하세요.</option>");
+			} else {
+                if (formListJson != "") {
+				    var optionHtml = "";
+
+					for (var i = 0; i < formListJson.length; i++) {
+						if (formListJson[i].ClassID == formClass) {
+                            optionHtml += "<option value=\"" + formListJson[i].FormID + "\">" + formListJson[i].DocName + " (" + formListJson[i].MainTable + " , V" + formListJson[i].Version + ")" + "</option>";
+						}
+				    }
+
+				    $("#selEAFormList").append(optionHtml);
+			    }
+			}
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    결재 양식 관리
+</h4>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="form-inline">
+            <label class="form-label">결재 분류 : </label>
+            <select class="custom-select mx-sm-3" id="selEAFormClass" onchange="setEAFormList()">
+                <option selected value="">선택</option>
+            </select>
+            <label class="form-label mx-sm-3">결재 양식 : </label>
+            <select class="custom-select mx-sm-3" id="selEAFormList">
+                <option value="">분류를 선택하세요.</option>
+            </select>
+            <button type="button" id="btnSearch" class="btn btn-default">조회</button>
+        </form>
+    </div>
+</div>
+

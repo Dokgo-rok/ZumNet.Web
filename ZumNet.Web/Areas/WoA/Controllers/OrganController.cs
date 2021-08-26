@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using ZumNet.BSL.ServiceBiz;
 using ZumNet.Framework.Core;
+using ZumNet.Framework.Entities.Web;
 using ZumNet.Framework.Util;
 using ZumNet.Framework.Web.Base;
 using ZumNet.Web.Bc;
@@ -86,6 +87,72 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         [Authorize]
         public ActionResult Grade()
         {
+            return View();
+        }
+
+        // GET: WoA/Organ/Map
+        [Authorize]
+        public ActionResult Map()
+        {
+            List<WebTreeList> listTree = new List<WebTreeList>();
+
+            WebTreeList treeInfo = null;
+
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+            int memberOf = 0;
+            string groupType = "D";
+            int groupID = 0;
+            string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string admin = "Y";
+            int pageIndex = 1;
+            int pageCount = 10000;
+            string sortColumn = "";
+            string sortType = "";
+            string searchColumn = "";
+            string searchText = "";
+
+            ServiceResult result = new ServiceResult();
+
+            using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+            {
+                // 부서 정보 조회
+                result = portalBiz.GetAdminOrgMapInfo(domainID, memberOf, groupType, groupID, viewDate, admin);
+
+                if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 1)
+                {
+                    foreach (DataRow dr in result.ResultDataSet.Tables[1].Rows)
+                    {
+                        treeInfo = new WebTreeList();
+                        treeInfo.id = StringHelper.SafeString(dr["GR_ID"].ToString());
+
+                        if (StringHelper.SafeString(dr["MemberOf"].ToString()) == "0")
+                        {
+                            treeInfo.parent = "#";
+                        }
+                        else
+                        {
+                            treeInfo.parent = StringHelper.SafeString(dr["MemberOf"].ToString());
+                        }
+                        
+                        treeInfo.state = new Dictionary<string, bool>();
+                        treeInfo.state.Add("opened", false);
+                        treeInfo.text = StringHelper.SafeString(dr["DisplayName"].ToString());
+
+                        listTree.Add(treeInfo);                        
+                    }
+                }
+
+                // 사용자 정보 조회
+                result = portalBiz.GetGroupSearchMemberList(domainID, pageIndex, pageCount, sortColumn, sortType, searchColumn, searchText);
+
+                if (result.ResultCode == 0)
+                {
+                    ViewData["memberlist"] = JsonConvert.SerializeObject(result.ResultDataTable);
+                }
+            }
+
+            ViewData["deptlist"] = JsonConvert.SerializeObject(listTree);
+
             return View();
         }
 
