@@ -21,19 +21,16 @@
     margin-right: .25rem;
 }
 .z-lm .sidenav-item.active > .sidenav-link:not(.sidenav-toggle) {
-    
-}
-.z-lm .sidenav-item.active > .sidenav-link:not(.sidenav-toggle) {
-
+    background: rgba(191, 191, 191, 0.2) !important;
 }
 
 .z-lm .sidenav-item.open:not(.sidenav-item-closing) > .sidenav-toggle, .z-lm .sidenav-item.active > .sidenav-link {
     
 }
-.z-lm .z-lm-cnt {
+.z-lm .sidenav-item .z-lm-cnt {
     margin-left: .25rem;
-    font-weight: bold;
-    color: blue;
+    font-weight: 600;
+    color: #344fe9;
 }
 .z-lm .sidenav-link.sidenav-toggle {
     /*color: #245580;*/

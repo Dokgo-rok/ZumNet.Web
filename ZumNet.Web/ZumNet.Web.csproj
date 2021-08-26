@@ -343,6 +343,11 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\EA.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EA.resx</DependentUpon>
+    </Compile>
     <Compile Include="Resources\Global.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1124,6 +1129,13 @@
     <Content Include="Views\Portal\Webpart\_ERP_KPI_s.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\EA.ko.resx" />
+    <EmbeddedResource Include="Resources\EA.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>EA.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Resources</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EA.zh.resx" />
     <EmbeddedResource Include="Resources\Global.ko.resx" />
     <EmbeddedResource Include="Resources\Global.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

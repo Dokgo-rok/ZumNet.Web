@@ -31,6 +31,44 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+            ViewBag.R["xfalias"] = "ea";
+
+            //메뉴 권한체크 (objecttype='' 이면 폴더권한 체크 X)
+            if (Session["Admin"].ToString() == "Y")
+            {
+                ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
+
+                    ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                    ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                }
+            }
+
+            using (ZumNet.BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+            {
+                svcRt = wkList.GetMenuConfig(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(Session["URID"]), Convert.ToInt32(Session["DeptID"]));
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ViewBag.FormCharger = svcRt.ResultDataDetail["FormCharger"];
+                ViewBag.RcvManager = svcRt.ResultDataDetail["RcvManager"];
+                ViewBag.SharedFolder = svcRt.ResultDataRowCollection;
+            }
+            else
+            {
+                //에러페이지
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
             return View();
         }
 
