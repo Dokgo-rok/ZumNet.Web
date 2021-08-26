@@ -19,7 +19,6 @@
 		var sortType = "ASC";
 		var tbl_dept_list;
 		var tbl_dept_deleted_list;
-		var tbl_dept_member_list;
 		var search_dept = "D";
 
 		$(document).ready(function () {
@@ -86,8 +85,11 @@
                         columns: [
 	                        { data: "DisplayName" },
 	                        { data: "GRAlias" },
-	                        { data: "CreateDate" }
-                        ],
+							{ data: "CreateDate" },
+							{
+								data: null
+							}
+						],
                         lengthChange: false,
                         searching: false,
                         info: false,
@@ -97,12 +99,16 @@
                         language: dataTable_lang_kor,
                         createdRow: function (row, data, index) {
                             $('td', row).eq(0).html('').append(
-                                "<a onclick='searchDeptMember(\"" + data["GR_ID"] + "\")'>" + data["DisplayName"] + "</a>"
+                                "<a onclick='setPopupGroup(\"" + data["GR_ID"] + "\")'>" + data["DisplayName"] + "</a>"
 							);
 
 							$('td', row).eq(2).html('').append(
 								data["CreateDate"].substring(0, 10)
 							);
+
+                            $('td', row).eq(3).addClass('text-center text-nowrap').html('').append(
+                                '<button type="button" class="btn btn-default btn-xs icon-btn md-btn-flat article-tooltip" title="보기" onclick="viewGroupMember(' + data["GR_ID"] + ')"><i class="ion ion-md-create"></i></button>'
+                            );
                         }
                     });
                 }
@@ -161,45 +167,6 @@
 			});
 		}
 
-        function searchDeptMember(grID) {
-            $.ajax({
-                url: '@Url.Action("SearchGroupMemberInfoJson", "Organ")',
-				type: 'POST',
-                dataType: 'JSON',
-				data: '{domainID: 1, groupID:"' + grID + '", sort: "", order: "", admin: "Y"}',
-				success: function (result) {
-					if (result.code != "OK") {
-						alert(result.message);
-						return;
-					}
-
-					if (tbl_dept_member_list) {
-						tbl_dept_member_list.destroy();
-					}
-
-                    tbl_dept_member_list = $('#tbl_dept_member_list').DataTable({
-                        data: $(result.data),
-                        columns: [
-	                        { data: "DisplayName" },
-							{ data: "Role" },
-							{ data: "Grade1" },
-                            { data: "Secondmail" }
-                        ],
-                        lengthChange: false,
-                        searching: false,
-                        info: false,
-                        displayLength: 10,
-                        order: [[0, "asc"]],
-                        ordering: true,
-                        language: dataTable_lang_kor,
-                        createdRow: function (row, data, index) {
-
-                        }
-                    });
-                }
-			});
-		}
-
         // Korean
         var dataTable_lang_kor = {
             "decimal" : "",
@@ -226,8 +193,36 @@
             }
 		};
 
+		var loadModelDept = false;
+
+		function setPopupGroup(grID) {
+
+		}
+
 		function resetModelInfo() {
 			$("#modalsDefaultDept").find("input").val("");
+			$("#modalsDefaultDept").find("select").prop("selectedIndex", "0");
+			$("#selUpperDept").empty();
+
+            // 그룹 정보 로드
+            $.ajax({
+                url: '@Url.Action("SearchGroupInfoJson", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{domainID: 1, memberOf: "", groupType: "' + search_dept + '", sortColumn: "DisplayName", sortType: "ASC", searchText: "", admin: "Y"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					$("#selUpperDept").append("<option value=''>선택하세요</option>");
+
+					for (var i = 0; i < result.data.length; i++) {
+						$("#selUpperDept").append("<option value='" + result.data[i].GRAlias + "'>" + result.data[i].DisplayName + "</option>");
+					}
+                }
+			});
 
 			$("#txtDeptType").val($("#ulDeptType").find("a.nav-link.active").text());
 		}
@@ -248,7 +243,7 @@
 				return false;
 			}
 
-            if ($("#txtUpperDept").val() == "") {
+            if ($("#selUpperDept").val() == "") {
 				if (!window.confirm("소속그룹을 지정하지 않으셨습니다.\n소속그룹이 지정되지 않으면 최상위에 위치하게 됩니다.\n계속하시겠습니까?")) {
 				    return false;
 			    }
@@ -257,7 +252,7 @@
             $.ajax({
                 url: '@Url.Action("CheckObjectDoubleAliasJson", "Organ")',
 				type: 'POST',
-				async: false, 
+				async: false,
                 dataType: 'JSON',
 				data: '{alias:"' + $("#txtDeptCode").val() + '", objectType: ""}',
 				success: function (result) {
@@ -278,7 +273,7 @@
                 url: '@Url.Action("CreateGroup", "Organ")',
 				type: 'POST',
                 dataType: 'JSON',
-				data: '{domainID:"1", groupType: "' + search_dept + '", groupAlias: "' + $("#txtDeptCode").val() + '", parentAlias: "' + "" + '", groupName: "' + $("#txtDeptName").val() + '", groupShortName: "' + $("#txtDeptAlias").val() + '", sortKey: "' + $("#txtDeptPriority").val() + '", pdmgrCode: ""}',
+				data: '{domainID:"1", groupType: "' + search_dept + '", groupAlias: "' + $("#txtDeptCode").val() + '", parentAlias: "' + $("#selUpperDept").val() + '", groupName: "' + $("#txtDeptName").val() + '", groupShortName: "' + $("#txtDeptAlias").val() + '", sortKey: "' + $("#txtDeptPriority").val() + '", pdmgrCode: ""}',
 				success: function (result) {
 					if (result.code != "OK") {
 						alert(result.message);
@@ -290,6 +285,58 @@
 					$("button[data-dismiss='modal']").trigger("click");
 
                     searchDept("");
+                }
+			});
+		}
+
+		function viewGroupMember(grID) {
+			$.ajax({
+				url: '@Url.Action("SearchGroupMemberInfoJson", "Organ")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{domainID: 1, groupID:"' + grID + '", sort: "", order: "", admin: "Y"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					$("#tblMemberList tbody").empty();
+
+					var html = "";
+
+					if (result.recordsTotal == 0) {
+                        html += "<tr>";
+						html += "   <td class=\"align-middle py-3\">";
+                        html += "구성원이 없습니다."
+						html += "   </td>";
+                        html += "</tr>";
+					} else {
+                        for (var i = 0; i < result.data.length; i++) {
+						    html += "<tr>";
+						    html += "   <td class=\"align-middle py-3\">";
+						    html += "       <div class=\"media align-items-center\">";
+						    html += "           <img src=\"https://uxpowered.com/products/appwork/v160/assets_/img/avatars/9-small.png\" class=\"d-block ui-w-40 rounded-circle\" alt=\"\">";
+						    html += "           <div class=\"media-body flex-basis-auto pl-3\">";
+						    html += "               <div>" + result.data[i].DisplayName + "</div>";
+						    html += "           </div>";
+						    html += "       </div>";
+						    html += "   </td>";
+						    html += "   <td class=\"align-middle py-3\">";
+						    html += result.data[i].Grade1
+						    html += "       <br/>"
+						    html += "(" + result.data[i].Role + ")"
+						    html += "   </td>";
+						    html += "   <td class=\"align-middle py-3\">";
+                            html += result.data[i].Secondmail
+						    html += "   </td>";
+                            html += "</tr>";
+					    }
+					}
+
+					$("#tblMemberList tbody").append(html);
+
+                    $("#modalsDefaultMember").modal("show");
                 }
 			});
 		}
@@ -353,7 +400,9 @@
                 <div class="form-row">
                     <div class="form-group col">
                         <label class="form-label">소속그룹</label>
-                        <input type="text" id="txtUpperDept" class="form-control">
+                        <select class="custom-select" id="selUpperDept">
+                            <option value="">선택하세요</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-row">
@@ -371,22 +420,48 @@
     </div>
 </div>
 
+<!-- Modal template -->
+<div class="modal fade" id="modalsDefaultMember">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    그룹원 정보
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive ui-bordered">
+                    <table id="tblMemberList" class="clients-table table table-hover m-0">
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <ul class="search-nav nav nav-tabs tabs-alt container-m-nx container-p-x mb-4" id="ulDeptType">
     @for (int i = 0; i < Model.Rows.Count; i++)
     {
         DataRow dr = Model.Rows[i];
 
-    <li class="nav-item">
+        <li class="nav-item">
 
-        @if (i == 0)
-        {
-            <a class="nav-link active" data-toggle="tab" onclick="changeDeptAndSearch('@dr["Command"].ToString()');" data-command="@dr["Command"].ToString()"><i class="ion ion-md-copy"></i>@dr["DisplayName"].ToString()</a>
-        }
-        else
-        {
-            <a class="nav-link" data-toggle="tab" onclick="changeDeptAndSearch('@dr["Command"].ToString()');" data-command="@dr["Command"].ToString()"><i class="ion ion-md-copy"></i>@dr["DisplayName"].ToString()</a>
-        }
-    </li>
+            @if (i == 0)
+            {
+                <a class="nav-link active" data-toggle="tab" onclick="changeDeptAndSearch('@dr["Command"].ToString()');" data-command="@dr["Command"].ToString()"><i class="ion ion-md-copy"></i>@dr["DisplayName"].ToString()</a>
+            }
+            else
+            {
+                <a class="nav-link" data-toggle="tab" onclick="changeDeptAndSearch('@dr["Command"].ToString()');" data-command="@dr["Command"].ToString()"><i class="ion ion-md-copy"></i>@dr["DisplayName"].ToString()</a>
+            }
+        </li>
     }
 </ul>
 
@@ -420,6 +495,7 @@
                     <th>부서명</th>
                     <th>코드</th>
                     <th>생성일</th>
+                    <th>그룹원</th>
                 </tr>
             </thead>
         </table>
@@ -431,19 +507,6 @@
                     <th>코드</th>
                     <th>생성일</th>
                     <th>삭제일</th>
-                </tr>
-            </thead>
-        </table>
-
-        <hr class="border-light m-0">
-
-        <table id="tbl_dept_member_list" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>이름</th>
-                    <th>역할</th>
-                    <th>직위</th>
-                    <th>이메일</th>
                 </tr>
             </thead>
         </table>

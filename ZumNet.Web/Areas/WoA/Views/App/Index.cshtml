@@ -1,7 +1,209 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "결재 현황";
 }
 
-<h2>Index</h2>
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+}
 
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/moment/moment")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+    
+    <script type="text/javascript">
+        var prevSortColumn = "";
+		var prevSortType = "";
+		var tbl_list;
+
+		$(document).ready(function () {
+            $('#datepicker-range').datepicker({
+				closeText: "닫기",
+				currentText: "오늘",
+				prevText: '이전 달',
+				nextText: '다음 달',
+				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+				monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+				dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+				dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+				dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+				weekHeader: "주",
+				yearSuffix: "년",
+                dateFormat: "yyyy-mm-dd"
+			});
+
+			searchList("");
+
+			$("#txtSearch").on("keyup", function (e) {
+				if (e.keyCode == 13 && $.trim($(this).val()) != "") {
+					searchList();
+				}
+			});
+
+			$("#btnSearch").on("click", function () {
+				searchList();
+			});
+
+            function searchList() {
+                if (tbl_list) {
+                    tbl_list.destroy();
+			    }
+
+                tbl_list = $('#tbl_list').DataTable({
+                    "serverSide": true,
+                    "ajax": {
+                        "url": '@Url.Action("SearchEADocumentList", "App")',
+					    "type": "POST",
+					    "data": function (p) {
+						    p.mode = "";
+						    p.admin = "Y";
+							p.formId = "";
+							p.defId = 0;
+							p.viewer = 0;
+							p.state = 100;
+						    p.searchCol = $("#selSearchType").val();
+						    p.searchText = $("#txtSearch").val();
+						    p.searchStartDate = $("#datepicker-range input[name='start']").val();
+							p.searchEndDate = $("#datepicker-range input[name='end']").val();
+                            p.prevSortColumn = prevSortColumn;
+						    p.prevSortType = prevSortType;
+					    },
+				        "dataSrc": function (result) {
+						    prevSortColumn = result.sortColumn;
+                            prevSortType = result.sortType;
+
+                            return result.data;
+                        }
+				    },
+                    "columns": [
+                        { data: "OID" },
+                        { data: "DocName" },
+                        { data: "PIState" },
+                        { data: "PIName" },
+					    { data: "CreatorDept" },
+					    { data: "Creator" },
+					    { data: "CreateDate" },
+					    { data: "PIEnd" },
+						{ data: "DeleteDate" },
+                        { data: "DocStatus" }
+                    ],
+                    "language": dataTable_lang_kor,
+					"searching": false,
+					"displayLength": 30,
+					"order": [],
+					"info": false,
+                    "lengthChange": false,
+                });
+		    }
+		});
+
+        // Korean
+        var dataTable_lang_kor = {
+            "decimal" : "",
+            "emptyTable" : "데이터가 없습니다.",
+            "info" : "_START_ - _END_ (총 _TOTAL_ 명)",
+            "infoEmpty" : "0명",
+            "infoFiltered" : "(전체 _MAX_ 명 중 검색결과)",
+            "infoPostFix" : "",
+            "thousands" : ",",
+            "lengthMenu" : "_MENU_ 개씩 보기",
+            "loadingRecords" : "로딩중...",
+            "processing" : "처리중...",
+            "search" : "검색 : ",
+            "zeroRecords" : "검색된 데이터가 없습니다.",
+            "paginate" : {
+                "first" : "첫 페이지",
+                "last" : "마지막 페이지",
+                "next" : "다음",
+                "previous" : "이전"
+            },
+            "aria" : {
+                "sortAscending" : " :  오름차순 정렬",
+                "sortDescending" : " :  내림차순 정렬"
+            }
+        };
+    </script>
+}
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    결재 현황
+</h4>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="form-inline">
+            <label class="form-label">날짜 : </label>
+            <div class="input-daterange input-group mx-sm-3" id="datepicker-range">
+                <input type="text" class="form-control" name="start">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"> ~ </span>
+                </div>
+                <input type="text" class="form-control" name="end">
+            </div>
+            <label class="form-label mx-sm-3">검색 조건 : </label>
+            <select class="custom-select mx-sm-3" id="selSearchType">
+                <option selected value="">선택</option>
+                <option value="DocName">문서명</option>
+                <option value="DocStatus">단계</option>
+                <option value="PIName">제목</option>
+                <option value="CreatorDept">작성부서</option>
+                <option value="Creator">작성자</option>
+            </select>
+            <input type="text" id="txtSearchText" class="form-control mx-sm-3">
+            <button type="button" id="btnSearch" class="btn btn-default">검색</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div id="jstree-example-1" class="bg-transparent border jstree jstree-1 jstree-default-dark" style="min-height:200px;padding:20px;" role="tree" aria-multiselectable="true" tabindex="0" aria-activedescendant="j1_5" aria-busy="false">
+            <ul class="jstree-container-ul jstree-children" role="group">
+                <li role="none" id="j1_1" class="jstree-node  jstree-closed">
+                    <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="false" id="j1_1_anchor">
+                        <i class="jstree-icon jstree-themeicon" role="presentation"></i>css
+                    </a>
+                </li>
+                <li role="none" id="j1_4" class="jstree-node  jstree-open">
+                    <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="true" id="j1_4_anchor">
+                        <i class="jstree-icon jstree-themeicon" role="presentation"></i>img
+                    </a><ul role="group" class="jstree-children"><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_5" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_5_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>bg.jpg</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_6" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_6_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>logo.png</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_7" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_7_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>avatar.png</a></li></ul>
+                </li>
+                <li role="none" id="j1_8" class="jstree-node  jstree-open">
+                    <i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" aria-expanded="true" id="j1_8_anchor">
+                        <i class="jstree-icon jstree-themeicon" role="presentation"></i>js
+                    </a><ul role="group" class="jstree-children"><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_9" class="jstree-node  jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_9_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>jquery.js</a></li><li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_10" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="2" id="j1_10_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i>app.js</a></li></ul>
+                </li>
+                <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_11" class="jstree-node text-primary jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_11_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> index.html</a></li>
+                <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_12" class="jstree-node text-primary jstree-leaf"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_12_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> page-one.html</a></li>
+                <li role="none" data-jstree="{&quot;icon&quot; : &quot;jstree-file&quot;}" id="j1_13" class="jstree-node  jstree-leaf jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="#" tabindex="-1" role="treeitem" aria-selected="false" aria-level="1" id="j1_13_anchor"><i class="jstree-icon jstree-themeicon jstree-file jstree-themeicon-custom" role="presentation"></i> page-two.html</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <table id="tbl_list" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>문서명</th>
+                            <th>단계</th>
+                            <th>제목</th>
+                            <th>작성부서</th>
+                            <th>작성자</th>
+                            <th>작성일</th>
+                            <th>완료일</th>
+                            <th>삭제일</th>
+                            <th>결재상태</th>
+                            <th>비고</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

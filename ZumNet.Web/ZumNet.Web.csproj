@@ -1063,6 +1063,10 @@
     <Content Include="Areas\Docs\Views\Kms\_ListView.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\List.cshtml" />
     <Content Include="Areas\EA\Views\Main\_LeftMenu.cshtml" />
+    <Content Include="Areas\WoA\Views\Dashboard\Code.cshtml" />
+    <Content Include="Areas\WoA\Views\Dashboard\CodeView.cshtml" />
+    <Content Include="Areas\WoA\Views\Organ\Grade.cshtml" />
+    <Content Include="Areas\WoA\Views\App\Class.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

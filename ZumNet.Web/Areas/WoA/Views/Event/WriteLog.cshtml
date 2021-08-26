@@ -8,7 +8,7 @@
 }
 
 @section Scripts {
-    <!-- Dependencies -->
+    @Scripts.Render("~/bundle/vendor/js/moment/moment")
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
     @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
 
@@ -116,48 +116,46 @@
     </script>
 }
 
-<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
-    <div>문서 등록 로그</div>
+<h4 class="font-weight-bold py-3 mb-4">
+    문서 등록 로그
 </h4>
 
-<div class="card mb-4">
-    <div class="card-body">
-        <form>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">날짜</label>
-                    <div class="input-daterange input-group" id="datepicker-range">
-                        <input type="text" class="form-control" name="start">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">to</span>
-                        </div>
-                        <input type="text" class="form-control" name="end">
-                    </div>
+<!-- Filters -->
+<div class="ui-bordered px-4 pt-4 mb-4">
+    <div class="form-row align-items-center">
+        <div class="col-md mb-4">
+            <label class="form-label">날짜</label>
+            <div class="input-daterange input-group" id="datepicker-range">
+                <input type="text" class="form-control" name="start">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">to</span>
                 </div>
+                <input type="text" class="form-control" name="end">
             </div>
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <select class="custom-select" id="selSearchType">
-                        <option selected value="">선택</option>
-                        <option value="UserName">이름</option>
-                        <option value="DeptName">부서(팀점)</option>
-                        <option value="UserID">등록자ID</option>
-                        <option value="ActType">등록형태</option>
-                        <option value="XfAlias">스키마</option>
-                        <option value="MessageID">게시물ID</option>
-                        <option value="Subject">제목</option>
-                        <option value="FD_ID">폴더ID</option>
-                        <option value="FDName">폴더이름</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-4">
-                    <input type="search" id="txtSearch" class="form-control form-control-sm" placeholder="" aria-controls="product-list">
-                </div>
-                <div class="form-group col-md-2">
-                    <button type="button" id="btnSearch" class="btn btn-secondary btn-block">검색</button>
-                </div>
-            </div>
-        </form>
+        </div>
+        <div class="col-md mb-4">
+            <label class="form-label">검색타입</label>
+            <select class="custom-select" id="selSearchType">
+                <option selected value="">선택</option>
+                <option value="UserName">이름</option>
+                <option value="DeptName">부서(팀점)</option>
+                <option value="UserID">등록자ID</option>
+                <option value="ActType">등록형태</option>
+                <option value="XfAlias">스키마</option>
+                <option value="MessageID">게시물ID</option>
+                <option value="Subject">제목</option>
+                <option value="FD_ID">폴더ID</option>
+                <option value="FDName">폴더이름</option>
+            </select>
+        </div>
+        <div class="col-md mb-4">
+            <label class="form-label">검색어</label>
+            <input type="search" id="txtSearch" class="form-control form-control-sm" placeholder="" aria-controls="product-list">
+        </div>
+        <div class="col-md col-xl-2 mb-4">
+            <label class="form-label d-none d-md-block">&nbsp;</label>
+            <button type="button" id="btnSearch" class="btn btn-secondary btn-block">검색</button>
+        </div>
     </div>
 </div>
 

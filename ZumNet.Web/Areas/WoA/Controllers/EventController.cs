@@ -104,15 +104,14 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 else
                 {
                     // sortcolumn이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortColumn, prevSortColumn, true) != 0)
+                    // sortType이 같지 않으면 페이지를 1로
+                    if (String.Compare(sortColumn, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
                     {
                         pageIndex = 1;
                     }
-
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortType, prevSortType, true) != 0)
-                    {
-                        pageIndex = 1;
+                    else
+                    { 
+                        pageIndex++; 
                     }
                 }
 
@@ -220,15 +219,14 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 else
                 {
                     // sortcolumn이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortColumn, prevSortColumn, true) != 0)
+                    // sortType이 같지 않으면 페이지를 1로
+                    if (String.Compare(sortColumn, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
                     {
                         pageIndex = 1;
                     }
-
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortType, prevSortType, true) != 0)
+                    else
                     {
-                        pageIndex = 1;
+                        pageIndex++;
                     }
                 }
 
@@ -351,15 +349,14 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 else
                 {
                     // sortcolumn이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortColumn, prevSortColumn, true) != 0)
+                    // sortType이 같지 않으면 페이지를 1로
+                    if (String.Compare(sortColumn, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
                     {
                         pageIndex = 1;
                     }
-
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortType, prevSortType, true) != 0)
+                    else
                     {
-                        pageIndex = 1;
+                        pageIndex++;
                     }
                 }
 
@@ -479,15 +476,14 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 else
                 {
                     // sortcolumn이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortColumn, prevSortColumn, true) != 0)
+                    // sortType이 같지 않으면 페이지를 1로
+                    if (String.Compare(sortColumn, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
                     {
                         pageIndex = 1;
                     }
-
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortType, prevSortType, true) != 0)
+                    else
                     {
-                        pageIndex = 1;
+                        pageIndex++;
                     }
                 }
 
