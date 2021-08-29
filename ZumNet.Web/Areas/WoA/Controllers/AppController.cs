@@ -20,93 +20,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 {
     public class AppController : ControllerWebBase
     {
+        #region [ /Woa/App/Index ]
+
         // GET: WoA/App
         public ActionResult Index()
-        {
-            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
-
-            List<WebTreeList> listTree = new List<WebTreeList>();
-
-            WebTreeList treeInfo = new WebTreeList();
-            treeInfo.id = "0";
-            treeInfo.parent = "#";
-            treeInfo.state = new Dictionary<string, bool>();
-            treeInfo.state.Add("opened", true);
-            treeInfo.text = "전체";
-
-            listTree.Add(treeInfo);
-
-            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
-            {
-                // 양식 분류 조회
-                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
-
-                if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
-                {
-                    foreach (DataRow dr in resultClass.ResultDataTable.Rows)
-                    {
-                        treeInfo = new WebTreeList();
-                        treeInfo.id = StringHelper.SafeString(dr["ClassID"].ToString());
-                        treeInfo.parent = "0";
-                        treeInfo.state = new Dictionary<string, bool>();
-                        treeInfo.state.Add("opened", false);
-                        treeInfo.text = StringHelper.SafeString(dr["ClassName"].ToString());
-
-                        listTree.Add(treeInfo);
-                    }
-
-                    // 미분류 양식 추가
-                    treeInfo = new WebTreeList();
-                    treeInfo.id = "10000";
-                    treeInfo.parent = "0";
-                    treeInfo.state = new Dictionary<string, bool>();
-                    treeInfo.state.Add("opened", false);
-                    treeInfo.text = "미분류 양식들";
-
-                    listTree.Add(treeInfo);
-                }
-
-                // 양식 문서 리스트 조회
-                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
-
-                if (resultList.ResultCode == 0)
-                {
-                    if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
-                    {
-                        foreach (DataRow dr in resultList.ResultDataTable.Rows)
-                        {
-                            if (StringHelper.SafeString(dr["ClassID"].ToString()) == "1012")
-                            {
-                                treeInfo = new WebTreeList();
-                                treeInfo.id = StringHelper.SafeString(dr["FormID"].ToString());
-                                treeInfo.parent = StringHelper.SafeString(dr["ClassID"].ToString());
-                                treeInfo.state = new Dictionary<string, bool>();
-                                treeInfo.state.Add("opened", false);
-                                //treeInfo.text = StringHelper.SafeString(dr["DocName"].ToString());
-                                treeInfo.text = $"{StringHelper.SafeString(dr["DocName"].ToString())} ({StringHelper.SafeString(dr["MainTable"].ToString())} , V{StringHelper.SafeString(dr["Version"].ToString())})";
-
-                                listTree.Add(treeInfo);
-                            }
-
-                            
-                        }
-                    }
-                }
-            }
-
-            ViewData["eaclassformlist"] = JsonConvert.SerializeObject(listTree);
-
-            return View();
-        }
-
-        // GET: WoA/App/Class
-        public ActionResult Class()
-        {
-            return View();
-        }
-
-        // GET: WoA/App/Mgr
-        public ActionResult Mgr()
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
@@ -133,9 +50,83 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return View();
-        }
 
-        #region [ /Woa/App/Index ]
+
+            //int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            //List<WebTreeList> listTree = new List<WebTreeList>();
+
+            //WebTreeList treeInfo = new WebTreeList();
+            //treeInfo.id = "0";
+            //treeInfo.parent = "#";
+            //treeInfo.state = new Dictionary<string, bool>();
+            //treeInfo.state.Add("opened", true);
+            //treeInfo.text = "전체";
+
+            //listTree.Add(treeInfo);
+
+            //using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            //{
+            //    // 양식 분류 조회
+            //    ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+
+            //    if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
+            //    {
+            //        foreach (DataRow dr in resultClass.ResultDataTable.Rows)
+            //        {
+            //            treeInfo = new WebTreeList();
+            //            treeInfo.id = StringHelper.SafeString(dr["ClassID"].ToString());
+            //            treeInfo.parent = "0";
+            //            treeInfo.state = new Dictionary<string, bool>();
+            //            treeInfo.state.Add("opened", false);
+            //            treeInfo.text = StringHelper.SafeString(dr["ClassName"].ToString());
+
+            //            listTree.Add(treeInfo);
+            //        }
+
+            //        // 미분류 양식 추가
+            //        treeInfo = new WebTreeList();
+            //        treeInfo.id = "10000";
+            //        treeInfo.parent = "0";
+            //        treeInfo.state = new Dictionary<string, bool>();
+            //        treeInfo.state.Add("opened", false);
+            //        treeInfo.text = "미분류 양식들";
+
+            //        listTree.Add(treeInfo);
+            //    }
+
+            //    // 양식 문서 리스트 조회
+            //    ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+
+            //    if (resultList.ResultCode == 0)
+            //    {
+            //        if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
+            //        {
+            //            foreach (DataRow dr in resultList.ResultDataTable.Rows)
+            //            {
+            //                if (StringHelper.SafeString(dr["ClassID"].ToString()) == "1012")
+            //                {
+            //                    treeInfo = new WebTreeList();
+            //                    treeInfo.id = StringHelper.SafeString(dr["FormID"].ToString());
+            //                    treeInfo.parent = StringHelper.SafeString(dr["ClassID"].ToString());
+            //                    treeInfo.state = new Dictionary<string, bool>();
+            //                    treeInfo.state.Add("opened", false);
+            //                    //treeInfo.text = StringHelper.SafeString(dr["DocName"].ToString());
+            //                    treeInfo.text = $"{StringHelper.SafeString(dr["DocName"].ToString())} ({StringHelper.SafeString(dr["MainTable"].ToString())} , V{StringHelper.SafeString(dr["Version"].ToString())})";
+
+            //                    listTree.Add(treeInfo);
+            //                }
+
+
+            //            }
+            //        }
+            //    }
+            //}
+
+            //ViewData["eaclassformlist"] = JsonConvert.SerializeObject(listTree);
+
+            //return View();
+        }
 
         /// <summary>
         /// 결재 문서 조회
@@ -320,15 +311,21 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return CreateJsonData();
         }
 
-		#endregion
+        #endregion
 
-		#region [ /Woa/App/Class ]
+        #region [ /Woa/App/Class ]
 
-		/// <summary>
-		/// 결재 양식 분류 정보 조회
-		/// </summary>
-		/// <returns></returns>
-		[HttpPost]
+        // GET: WoA/App/Class
+        public ActionResult Class()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 결재 양식 분류 정보 조회
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
         [Authorize]
         public string SearchEAFormClass()
         {
@@ -425,6 +422,165 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return CreateJsonData();
+        }
+
+        #endregion
+
+        #region [ /Woa/App/Mgr ]
+
+        public ActionResult Mgr()
+        {
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            {
+                // 양식 분류 조회
+                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+
+                if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["formclass"] = JsonConvert.SerializeObject(resultClass.ResultDataTable);
+                }
+
+                // 양식 문서 리스트 조회
+                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+
+                if (resultList.ResultCode == 0)
+                {
+                    if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
+                    {
+                        ViewData["formlist"] = JsonConvert.SerializeObject(resultList.ResultDataTable);
+                    }
+                }
+            }
+
+            return View();
+        }
+
+        #endregion
+
+        #region [ /Woa/App/Charge ]
+
+        public ActionResult Charge()
+        {
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            {
+                // 양식 분류 조회
+                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+
+                if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["formclass"] = resultClass.ResultDataTable;
+                }
+
+                // 양식 문서 리스트 조회
+                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+
+                if (resultList.ResultCode == 0)
+                {
+                    if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
+                    {
+                        ViewData["formlist"] = resultList.ResultDataTable;
+                    }
+                }
+            }
+
+            return View();
+        }
+
+        #endregion
+
+        #region [ /Woa/App/Option ]
+
+        public ActionResult Option()
+        {
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            {
+                // 양식 분류 조회
+                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+
+                if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["formclass"] = resultClass.ResultDataTable;
+                }
+
+                // 양식 문서 리스트 조회
+                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+
+                if (resultList.ResultCode == 0)
+                {
+                    if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
+                    {
+                        DataTable dtList = resultList.ResultDataTable;
+
+                        dtList.Columns.Add("DisplayUsage", typeof(string));             // 사용구분
+                        dtList.Columns.Add("DisplayPageSet", typeof(string));           // 양식형태
+                        dtList.Columns.Add("DisplayAddInfo1", typeof(string));          // 양식약식명
+                        dtList.Columns.Add("DisplayAddInfo2", typeof(string));          // 열람권한
+                        dtList.Columns.Add("DisplayAddInfo3", typeof(string));          // 보존년한
+                        dtList.Columns.Add("DisplayAddInfo4", typeof(string));          // 문서등급
+                        dtList.Columns.Add("DisplayAddInfo5", typeof(string));          // 문서분류
+
+                        foreach (DataRow dr in dtList.Rows)
+                        {
+                            string usageOrg = dr["UsageOrg"].ToString();
+                            string displayUsage = "";
+
+                            if (usageOrg == "0")
+                            {
+                                displayUsage = "테스트 작성중";
+                            }
+                            else if (usageOrg == "1")
+                            {
+                                displayUsage = "테스트 사용중";
+                            }
+                            else if (usageOrg == "7")
+                            {
+                                displayUsage = "사용중";
+                            }
+                            else if (usageOrg == "9")
+                            {
+                                displayUsage = "사용안함";
+                            }
+                            else
+                            {
+                                displayUsage = usageOrg;
+                            }
+
+                            dr["DisplayUsage"] = displayUsage;
+                            dr["DisplayPageSet"] = (String.Compare(dr["Reserved1"].ToString(), "w", true) == 0) ? "가로" : "세로";
+
+                            string reserved2 = StringHelper.SafeString(dr["Reserved2"]);
+
+                            if (!String.IsNullOrWhiteSpace(reserved2))
+                            {
+                                dr["DisplayAddInfo1"] = (reserved2.Split(';').Length > 0) ? dr["Reserved2"].ToString().Split(';')[0] : "";
+                                dr["DisplayAddInfo2"] = (reserved2.Split(';').Length > 1) ? dr["Reserved2"].ToString().Split(';')[1] : "";
+                                dr["DisplayAddInfo3"] = (reserved2.Split(';').Length > 2) ? dr["Reserved2"].ToString().Split(';')[2] : "";
+                                dr["DisplayAddInfo4"] = (reserved2.Split(';').Length > 3) ? dr["Reserved2"].ToString().Split(';')[3] : "";
+                                dr["DisplayAddInfo5"] = (reserved2.Split(';').Length > 4) ? dr["Reserved2"].ToString().Split(';')[4] : "";
+                            }
+                            else
+                            {
+                                dr["DisplayAddInfo1"] = "";
+                                dr["DisplayAddInfo2"] = "";
+                                dr["DisplayAddInfo3"] = "";
+                                dr["DisplayAddInfo4"] = "";
+                                dr["DisplayAddInfo5"] = "";
+                            }
+                        }
+
+                        dtList.AcceptChanges();
+                        ViewData["formlist"] = dtList;
+                    }
+                }
+            }
+
+            return View();
         }
 
         #endregion

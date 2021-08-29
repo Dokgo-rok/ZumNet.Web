@@ -1,0 +1,76 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using ZumNet.Framework.Util;
+@{
+    ViewBag.Title = "양식 담당 관리";
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    <script type="text/javascript">
+		$(document).ready(function () {
+		});
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	양식 담당 관리
+</h4>
+
+<div class="table-responsive">
+	<table id="tbl_code" class="table table-bordered mb-0">
+		<thead>
+			<tr>
+				<th style="width:5%">분류</th>
+				<th style="width:10%">양식명</th>
+				<th style="width:10%">테이블명</th>
+				<th style="width:5%">버전</th>
+				<th style="width:35%">담당부서</th>
+				<th style="width:35%">담당자</th>
+			</tr>
+		</thead>
+		<tbody>
+			@if ((ViewData["formclass"] as DataTable)?.Rows?.Count > 0)
+			{
+				foreach (DataRow drClass in (ViewData["formclass"] as DataTable).Rows)
+				{
+					if ((ViewData["formlist"] as DataTable)?.Rows?.Count > 0)
+					{
+						DataTable dtSubForm = (ViewData["formlist"] as DataTable).AsEnumerable().Where(x => StringHelper.SafeString(x["ClassID"]) == StringHelper.SafeString(drClass["ClassID"])).OrderBy(x => x["DocName"]).CopyToDataTable();
+
+						if (dtSubForm?.Rows?.Count > 0)
+						{
+							foreach (DataRow drList in dtSubForm.Rows)
+							{
+			<tr data-formid="@drList["FormID"].ToString()">
+				<td>
+					<input type="text" class="form-control" value="@drClass["ClassName"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DocName"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["MainTable"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["Version"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="" readonly="readonly">
+				</td>
+			</tr>
+							}
+						}
+					}
+				}
+			}
+		</tbody>
+	</table>
+</div>
+

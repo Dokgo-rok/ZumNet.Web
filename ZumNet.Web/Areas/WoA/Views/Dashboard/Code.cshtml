@@ -68,7 +68,8 @@
 						createdRow: function (row, data, index) {
 							$('td', row).eq(0).attr("data-code", data["Command"]).attr("data-sortkey", data["SortKey"]).attr("data-cnid", data["CN_ID"]).html('').append("<a href='/Woa/DashBoard/CodeView/?code=" + data["Command"] + "&title=" + data["DisplayName"] + "&description=" + data["Description"] + "'>" + data["DisplayName"] + "</a>");
 
-                            $('td', row).eq(3).addClass('text-center text-nowrap').html('').append('<button type="button" class="btn btn-default btn-xs icon-btn md-btn-flat article-tooltip" title="편집" onclick="setPopupCode(\'' + $.trim(data["Command"]) + '\')"><i class="ion ion-md-create"></i></button><button type="button" class="btn btn-default btn-xs icon-btn md-btn-flat article-tooltip" title="삭제" onclick="deleteCode(\'' + $.trim(data["CN_ID"]) + '\')"><i class="ion ion-md-close"></i></button>');
+							$('td', row).eq(3).addClass('text-center text-nowrap').html('').append(
+								"<button type='button' class='btn btn-default' onclick='setPopupCode(\"" + $.trim(data["Command"]) + "\")'>편집</button>&nbsp;&nbsp;<button type='button' class='btn btn-default' onclick='deleteCode(\"" + $.trim(data["CN_ID"]) + "\")'>삭제</button>");
                         }
                     });
                 }

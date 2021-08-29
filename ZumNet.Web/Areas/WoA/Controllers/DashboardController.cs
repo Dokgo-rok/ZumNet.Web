@@ -17,6 +17,8 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 {
     public class DashboardController : ControllerWebBase
     {
+        #region [ WoA/Dashboard/Index ]
+
         // GET: WoA/Dashboard
         [SessionExpireFilter]
         [Authorize]
@@ -25,46 +27,16 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return View();
         }
 
+        #endregion
+
+        #region [ WoA/Dashboard/Code ]
+
         // GET: WoA/Dashboard/Code
         [SessionExpireFilter]
         [Authorize]
         public ActionResult Code()
         {
             return View();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="title"></param>
-        /// <param name="description"></param>
-        /// <returns></returns>
-        [SessionExpireFilter]
-        [Authorize]
-        public ActionResult CodeView(string code, string title, string description)
-        {
-            if (String.IsNullOrWhiteSpace(code) || code.Split('.').Length != 2)
-            {
-                return Redirect("/Woa/DashBoard/Code");
-            }
-
-            string key1 = code.Split('.')[0];
-            string key2 = code.Split('.')[1];
-
-            ServiceResult result = new ServiceResult();
-
-            using (CommonBiz commonBiz = new CommonBiz())
-            {
-                result = commonBiz.SelectCodeDescription(key1, key2, "");
-            }
-
-            ViewData["key1"] = key1;
-            ViewData["key2"] = key2;
-            ViewData["title"] = title;
-            ViewData["description"] = description;
-
-            return View(result.ResultDataTable);
         }
 
         [HttpPost]
@@ -169,6 +141,44 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return CreateJsonData();
         }
 
+        #endregion
+
+        #region [ WoA/Dashboard/CodeView ]
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult CodeView(string code, string title, string description)
+        {
+            if (String.IsNullOrWhiteSpace(code) || code.Split('.').Length != 2)
+            {
+                return Redirect("/Woa/DashBoard/Code");
+            }
+
+            string key1 = code.Split('.')[0];
+            string key2 = code.Split('.')[1];
+
+            ServiceResult result = new ServiceResult();
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                result = commonBiz.SelectCodeDescription(key1, key2, "");
+            }
+
+            ViewData["key1"] = key1;
+            ViewData["key2"] = key2;
+            ViewData["title"] = title;
+            ViewData["description"] = description;
+
+            return View(result.ResultDataTable);
+        }
+
         /// <summary>
         /// 코드 Item 제어 
         /// </summary>
@@ -224,5 +234,96 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             return CreateJsonData();
         }
+
+        #endregion
+
+        #region [ WoA/Dashboard/Policy ]
+
+        // GET: WoA/Dashboard/Policy
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Policy()
+        {
+            ServiceResult result = new ServiceResult();
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                result = commonBiz.GetPasswordPolicy();
+            }
+
+            if (result.ResultCode == 0 && result.ResultDataTable?.Rows?.Count > 0)
+            {
+                ViewData["iscomplex"] = StringHelper.SafeString(result.ResultDataTable.Rows[0]["iscomplex"]).ToUpper();
+                ViewData["pwlenth"] = StringHelper.SafeString(result.ResultDataTable.Rows[0]["pwlenth"]);
+                ViewData["pwinterval"] = StringHelper.SafeString(result.ResultDataTable.Rows[0]["pwinterval"]);
+            }
+
+            return View();
+        }
+
+        /// <summary>
+        /// 정책 설정
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string HandlePolicy()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                // ServiceResult SetPasswordPolicy(string changeitem, string changevalue)
+
+                string changeitem = StringHelper.SafeString(jPost["changeitem"].ToString());
+                string changevalue = StringHelper.SafeString(jPost["changevalue"].ToString());
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.SetPasswordPolicy(changeitem, changevalue);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        #endregion
+
+        #region [ WoA/Dashboard/Webpart ]
+
+        // GET: WoA/Dashboard
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Webpart()
+        {
+            return View();
+        }
+
+        #endregion
     }
 }

@@ -1,0 +1,108 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "정책 설정";
+}
+
+@section Styles {
+}
+
+@section Scripts {
+
+    <script type="text/javascript">
+		$(document).ready(function () {
+
+		});
+
+        function processPolicy(cmd) {
+		    var row = event.srcElement.parentElement.parentElement;
+			var mode = "";
+
+			if ($("#txt" + cmd).val() == "") {
+                alert("저장할 데이터를 입력하지 않았습니다.");
+		        return false;
+			}
+
+            if (cmd == "PWLenth" && parseInt($("#txtPWLenth").val()) < 5) {
+                alert("최소 암호 길이는 5입니다.");
+		        return false;
+			}
+		
+		    if (window.confirm("실행 하시겠습니까?")) {
+			    var szPostURL = "/admin/process/objectmanager.aspx?cmd=cmd_pw_mod&changeitem=" + cmd + "&changevalue=" + document.all["txt" + cmd].value;
+
+	            $.ajax({
+                    url: '@Url.Action("HandlePolicy", "Dashboard")',
+				    type: 'POST',
+                    dataType: 'JSON',
+				    data: '{changeitem:"' + cmd + '", changevalue: "' + $("#txt" + cmd).val() + '"}',
+				    success: function (result) {
+					    if (result.code != "OK") {
+						    alert(result.message);
+						    return;
+					    }
+
+					    alert("정상적으로 처리되었습니다.");
+                    }
+			    });
+        	}
+	    }
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    정책 설정
+</h4>
+
+<div class="table-responsive">
+    <table id="tbl_code" class="table table-bordered mb-0">
+        <thead>
+            <tr>
+                <th style="width:15%">정책</th>
+                <th style="width:10%">정책상태</th>
+                <th style="width:60%">설명</th>
+                <th style="width:15%">적용</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>암호 복잡성</td>
+                <td>
+                    <input type="text" id="txtIsComplex" class="form-control" value="@ViewData["iscomplex"]">
+                </td>
+                <td>
+                    암호 복잡성이 설정되어 있습니다.<br />
+                    암호는 특수문자를 포함합니다.
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default" onclick="processPolicy('IsComplex')">변경</button>
+                </td>
+            </tr>
+            <tr>
+                <td>암호 길이</td>
+                <td>
+                    <input type="text" id="txtPWLenth" class="form-control" value="@ViewData["pwlenth"]">
+                </td>
+                <td>
+                    암호 길이가 @ViewData["pwlenth"]자리 이상으로 설정되어 있습니다.
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default" onclick="processPolicy('PWLenth')">변경</button>
+                </td>
+            </tr>
+            <tr>
+                <td>암호 사용 기간</td>
+                <td>
+                    <input type="text" id="txtPWInterval" class="form-control" value="@ViewData["pwinterval"]">
+                </td>
+                <td>
+                    정의되어 있지 않음.
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default" onclick="processPolicy('PWInterval')">변경</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

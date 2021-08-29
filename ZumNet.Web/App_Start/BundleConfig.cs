@@ -64,6 +64,7 @@ namespace ZumNet.Web
                                                             .Include("~/Vendor/libs/bootbox/bootbox.js")
                                                             .Include("~/Areas/WoA/Scripts/main.js")
                                                             .Include("~/Areas/WoA/Scripts/tree.js")
+                                                            .Include("~/Areas/WoA/Scripts/woaCommon.js")
                                                             );
 
             // ------------------------------------------------------------------------------------

@@ -53,7 +53,7 @@
                 dataType: 'JSON',
 				data: '{domainID: 1, groupID: "", groupType: "D", pageIndex: 0, pageCount: 0, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchType: "' + searchType + '", searchText: "' + searchText + '", admin: "Y"}',
 				success: function (result) {
-					$("#lblMemberCount").text("인원 : 0명");
+					$("#lblMemberCount").text("0명의 사용자가 존재합니다.");
 
                     if (result.code != "OK") {
 						alert(result.message);
@@ -64,7 +64,7 @@
 						tbl_user_list.destroy();
 					}
 
-					$("#lblMemberCount").text("인원 : " + result.recordsTotal + "명");
+					$("#lblMemberCount").text("" + result.recordsTotal + "명의 사용자가 존재합니다.");
 
                     tbl_user_list = $('#tbl_user_list').DataTable({
                         data: $(result.data),
@@ -77,10 +77,10 @@
                             { data: "InDate" },
                         ],
                         lengthChange: false,
-                        searching: false,
+                        searching: true,
                         info: false,
                         displayLength: 20,
-                        order: [[0, "asc"]],
+                        order: [],
                         ordering: true,
                         language: dataTable_lang_kor,
                         createdRow: function (row, data, index) {
@@ -103,7 +103,7 @@
                 dataType: 'JSON',
 				data: '{domainID: 1, pageIndex: 1, pageCount: 10000, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchColumn: "", searchText: "' + searchText + '", searchStartDate: "", searchEndDate: ""}',
 				success: function (result) {
-					$("#lblMemberCount").text("인원 : 0명");
+					$("#lblMemberCount").text("0명의 사용자가 존재합니다.");
 
                     if (result.code != "OK") {
 						alert(result.message);
@@ -114,7 +114,7 @@
 						tbl_user_retired_list.destroy();
 					}
 
-					$("#lblMemberCount").text("인원 : " + result.recordsTotal + "명");
+					$("#lblMemberCount").text("" + result.recordsTotal + "명의 사용자가 존재합니다.");
 
                     tbl_user_retired_list = $('#tbl_user_retired_list').DataTable({
                         data: $(result.data),
@@ -128,10 +128,10 @@
                             { data: "OutDate" }
                         ],
                         lengthChange: false,
-                        searching: false,
+                        searching: true,
                         info: false,
                         displayLength: 20,
-                        order: [[0, "asc"]],
+                        order: [],
                         ordering: true,
                         language: dataTable_lang_kor,
                         createdRow: function (row, data, index) {
@@ -143,32 +143,6 @@
                 }
 			});
 		}
-
-        // Korean
-        var dataTable_lang_kor = {
-            "decimal" : "",
-            "emptyTable" : "데이터가 없습니다.",
-            "info" : "_START_ - _END_ (총 _TOTAL_ 명)",
-            "infoEmpty" : "0명",
-            "infoFiltered" : "(전체 _MAX_ 명 중 검색결과)",
-            "infoPostFix" : "",
-            "thousands" : ",",
-            "lengthMenu" : "_MENU_ 개씩 보기",
-            "loadingRecords" : "로딩중...",
-            "processing" : "처리중...",
-            "search" : "검색 : ",
-            "zeroRecords" : "검색된 데이터가 없습니다.",
-            "paginate" : {
-                "first" : "첫 페이지",
-                "last" : "마지막 페이지",
-                "next" : "다음",
-                "previous" : "이전"
-            },
-            "aria" : {
-                "sortAscending" : " :  오름차순 정렬",
-                "sortDescending" : " :  내림차순 정렬"
-            }
-        };
     </script>
 }
 
@@ -186,61 +160,11 @@
     </li>
 </ul>
 
-<!-- Filters -->
-<div class="ui-bordered px-4 pt-4 mb-4">
-    <div class="form-row">
-        <div class="col-md mb-4">
-            <label id="lblMemberCount" class="form-label">인원 : 0명</label>
-        </div>
-        <div class="col-md col-xl-2 mb-4">
-            <input type="search" id="txtSearch" class="form-control form-control-sm" placeholder="" aria-controls="product-list">
-            <button type="button" id="btnSearch" class="btn btn-secondary btn-block">Show</button>
-        </div>
-    </div>
-    <div class="form-row">
-        <div class="col-md">
-            <label class="form-label pb-1">ㄱ</label>
-            <label class="form-label pb-1">ㄴ</label>
-            <label class="form-label pb-1">ㄷ</label>
-            <label class="form-label pb-1">ㄹ</label>
-            <label class="form-label pb-1">ㅁ</label>
-            <label class="form-label pb-1">ㅂ</label>
-            <label class="form-label pb-1">ㅅ</label>
-            <label class="form-label pb-1">ㅇ</label>
-            <label class="form-label pb-1">ㅈ</label>
-            <label class="form-label pb-1">ㅊ</label>
-            <label class="form-label pb-1">ㅋ</label>
-            <label class="form-label pb-1">ㅌ</label>
-            <label class="form-label pb-1">ㅍ</label>
-            <label class="form-label pb-1">ㅎ</label>
-            <label class="form-label pb-1">A</label>
-            <label class="form-label pb-1">B</label>
-            <label class="form-label pb-1">C</label>
-            <label class="form-label pb-1">D</label>
-            <label class="form-label pb-1">E</label>
-            <label class="form-label pb-1">F</label>
-            <label class="form-label pb-1">G</label>
-            <label class="form-label pb-1">H</label>
-            <label class="form-label pb-1">I</label>
-            <label class="form-label pb-1">J</label>
-            <label class="form-label pb-1">K</label>
-            <label class="form-label pb-1">L</label>
-            <label class="form-label pb-1">M</label>
-            <label class="form-label pb-1">N</label>
-            <label class="form-label pb-1">O</label>
-            <label class="form-label pb-1">P</label>
-            <label class="form-label pb-1">Q</label>
-            <label class="form-label pb-1">R</label>
-            <label class="form-label pb-1">S</label>
-            <label class="form-label pb-1">T</label>
-            <label class="form-label pb-1">U</label>
-            <label class="form-label pb-1">V</label>
-            <label class="form-label pb-1">W</label>
-            <label class="form-label pb-1">X</label>
-            <label class="form-label pb-1">Y</label>
-            <label class="form-label pb-1">Z</label>
-            <label class="form-label pb-1" onclick="searchUserInfo('account', '');">해제</label>
-        </div>
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="form-inline">
+            <label id="lblMemberCount" class="form-label">0명의 사용자가 존재합니다.</label>
+        </form>
     </div>
 </div>
 

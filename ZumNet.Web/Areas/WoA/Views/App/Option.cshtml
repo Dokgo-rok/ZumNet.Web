@@ -1,0 +1,100 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using ZumNet.Framework.Util;
+@{
+    ViewBag.Title = "양식별 부가 설정";
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    <script type="text/javascript">
+		$(document).ready(function () {
+		});
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	양식별 부가 설정
+</h4>
+
+<div class="table-responsive">
+	<table id="tbl_code" class="table table-bordered mb-0">
+		<thead>
+			<tr>
+				<th style="width:5%">분류</th>
+				<th style="width:10%">양식명</th>
+				<th style="width:10%">테이블명</th>
+				<th style="width:5%">버전</th>
+				<th style="width:10%">사용구분</th>
+				<th style="width:5%">양식형태</th>
+				<th style="width:5%">약식명</th>
+				<th style="width:5%">열람권한</th>
+				<th style="width:5%">보존년한</th>
+				<th style="width:5%">문서등급</th>
+				<th style="width:30%">문서분류</th>
+				<th style="width:5%">비고</th>
+			</tr>
+		</thead>
+		<tbody>
+			@if ((ViewData["formclass"] as DataTable)?.Rows?.Count > 0)
+			{
+				foreach (DataRow drClass in (ViewData["formclass"] as DataTable).Rows)
+				{
+					if ((ViewData["formlist"] as DataTable)?.Rows?.Count > 0)
+					{
+						DataTable dtSubForm = (ViewData["formlist"] as DataTable).AsEnumerable().Where(x => StringHelper.SafeString(x["ClassID"]) == StringHelper.SafeString(drClass["ClassID"])).OrderBy(x => x["DocName"]).CopyToDataTable();
+
+						if (dtSubForm?.Rows?.Count > 0)
+						{
+							foreach (DataRow drList in dtSubForm.Rows)
+							{
+			<tr data-formid="@drList["FormID"].ToString()">
+				<td>
+					<input type="text" class="form-control" value="@drClass["ClassName"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DocName"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["MainTable"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["Version"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DisplayUsage"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DisplayPageSet"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DisplayAddInfo1"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DisplayAddInfo2"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DisplayAddInfo3"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DisplayAddInfo4"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<input type="text" class="form-control" value="@drList["DisplayAddInfo5"].ToString()" readonly="readonly">
+				</td>
+				<td>
+					<button type="button" class="btn btn-default" onclick="editItem(this)">변경</button>
+				</td>
+			</tr>
+							}
+						}
+					}
+				}
+			}
+		</tbody>
+	</table>
+</div>
+

@@ -36,7 +36,7 @@
                 dataType: 'JSON',
 				data: '{actionKind:"2", domainID: 1, codeType: ""}',
 				success: function (result) {
-					$("#lblCount").text("직급: 0개");
+					$("#lblCount").text("0개의 직위/직급이 존재합니다.");
 
                     if (result.code != "OK") {
 						alert(result.message);
@@ -47,7 +47,7 @@
 						tbl_list.destroy();
 					}
 
-                    $("#lblCount").text("직급 : " + result.recordsTotal + "개");
+                    $("#lblCount").text(result.recordsTotal + "개의 직위/직급이 존재합니다.");
 
                     tbl_list = $('#tbl_list').DataTable({
                         data: $(result.data),
@@ -57,52 +57,26 @@
 							{ data: "CodeName" },
 							{ data: "InUse" },
 							{ data: "CUseCount" },
-                            { data: "TUseCount" }
+							{ data: "TUseCount" },
+                            { data: null }
                         ],
                         lengthChange: false,
                         searching: false,
                         info: false,
                         displayLength: 50,
-                        order: [[0, "asc"]],
+                        order: [],
                         ordering: true,
                         language: dataTable_lang_kor,
 						createdRow: function (row, data, index) {
 							$("td", row).eq(0).attr("data-code", data["Type"] + "_" + data["Code"]);
 
-                            $("td", row).eq(2).html('').append(
-                                "<a onclick='setPopupGrade(\"" + data["Type"] + "\", \"" + data["Code"] + "\", \"" + data["CodeName"] + "\", \"" + data["InUse"] + "\")' href=\"#\">" + data["CodeName"] + "</a>"
-							);
+                            $("td", row).eq(6).html('').append(
+                                "<button type='button' class='btn btn-default' onclick='setPopupGrade(\"" + data["Type"] + "\", \"" + data["Code"] + "\", \"" + data["CodeName"] + "\", \"" + data["InUse"] + "\")'>편집</button>&nbsp;&nbsp;");
                         }
                     });
                 }
 			});
 		}
-
-        // Korean
-        var dataTable_lang_kor = {
-            "decimal" : "",
-            "emptyTable" : "데이터가 없습니다.",
-            "info" : "_START_ - _END_ (총 _TOTAL_ 명)",
-            "infoEmpty" : "0명",
-            "infoFiltered" : "(전체 _MAX_ 명 중 검색결과)",
-            "infoPostFix" : "",
-            "thousands" : ",",
-            "lengthMenu" : "_MENU_ 개씩 보기",
-            "loadingRecords" : "로딩중...",
-            "processing" : "처리중...",
-            "search" : "검색 : ",
-            "zeroRecords" : "검색된 데이터가 없습니다.",
-            "paginate" : {
-                "first" : "첫 페이지",
-                "last" : "마지막 페이지",
-                "next" : "다음",
-                "previous" : "이전"
-            },
-            "aria" : {
-                "sortAscending" : " :  오름차순 정렬",
-                "sortDescending" : " :  내림차순 정렬"
-            }
-		};
 
 		var selectedGradeCodeType = "";
 
@@ -196,7 +170,7 @@
         <form class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    직위/직급 생성
+                    직위/직급 정보
                     <br>
                     <small class="text-muted">직위/직급 등록 정보</small>
                 </h5>
@@ -242,12 +216,11 @@
     </div>
 </div>
 
-<!-- Filters -->
-<div class="ui-bordered px-4 pt-4 mb-4">
-    <div class="form-row">
-        <div class="col-md mb-4">
-            <label id="lblCount" class="form-label">직급 : 0개</label>
-        </div>
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="form-inline">
+            <label id="lblCount" class="form-label">0개의 직위/직급이 존재합니다.</label>
+        </form>
     </div>
 </div>
 
@@ -262,6 +235,7 @@
                     <th>사용여부</th>
                     <th>현 사용인원</th>
                     <th>총 사용인원</th>
+                    <th>비고</th>
                 </tr>
             </thead>
         </table>

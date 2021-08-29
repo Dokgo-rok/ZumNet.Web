@@ -68,18 +68,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         [Authorize]
         public ActionResult Dept()
         {
-            ServiceResult result = new ServiceResult();
-
-            using (CommonBiz commonBiz = new CommonBiz())
-            {
-                result = commonBiz.GetContainer("1", 13);
-            }
-
-            if (result.ResultCode == 0)
-            {
-                return View(result.ResultDataTable);
-            }
-
             return View();
         }
 
@@ -104,12 +92,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             int groupID = 0;
             string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
             string admin = "Y";
-            int pageIndex = 1;
-            int pageCount = 10000;
-            string sortColumn = "";
-            string sortType = "";
-            string searchColumn = "";
-            string searchText = "";
 
             ServiceResult result = new ServiceResult();
 
@@ -141,17 +123,59 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                         listTree.Add(treeInfo);                        
                     }
                 }
-
-                // 사용자 정보 조회
-                result = portalBiz.GetGroupSearchMemberList(domainID, pageIndex, pageCount, sortColumn, sortType, searchColumn, searchText);
-
-                if (result.ResultCode == 0)
-                {
-                    ViewData["memberlist"] = JsonConvert.SerializeObject(result.ResultDataTable);
-                }
             }
 
             ViewData["deptlist"] = JsonConvert.SerializeObject(listTree);
+
+            return View();
+        }
+
+        // GET: WoA/Organ/Group
+        [Authorize]
+        public ActionResult Group()
+        {
+            List<WebTreeList> listTree = new List<WebTreeList>();
+
+            WebTreeList treeInfo = new WebTreeList();
+            treeInfo.id = "0";
+            treeInfo.parent = "#";
+            treeInfo.state = new Dictionary<string, bool>();
+            treeInfo.state.Add("opened", true);
+            treeInfo.text = "전체 그룹";
+
+            listTree.Add(treeInfo);
+
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            ServiceResult result = new ServiceResult();
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                result = commonBiz.GetContainer(domainID.ToString(), 13);
+
+                if (result.ResultCode == 0 && result.ResultDataTable?.Rows?.Count > 0)
+                {
+                    foreach (DataRow dr in result.ResultDataTable.Rows)
+                    {
+                        // 부서 그룹은 별도 메뉴가 있으므로 제외
+                        if (String.Compare(StringHelper.SafeString(dr["Command"].ToString()), "org.gr.dept", true) == 0)
+                        {
+                            continue;
+                        }
+
+                        treeInfo = new WebTreeList();
+                        treeInfo.id = StringHelper.SafeString(dr["Command"].ToString());
+                        treeInfo.parent = "0";
+                        treeInfo.state = new Dictionary<string, bool>();
+                        treeInfo.state.Add("opened", false);
+                        treeInfo.text = StringHelper.SafeString(dr["DisplayName"].ToString());
+
+                        listTree.Add(treeInfo);
+                    }
+                }
+            }
+
+            ViewData["grouplist"] = JsonConvert.SerializeObject(listTree);
 
             return View();
         }
@@ -271,7 +295,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return CreateJsonData();
         }
 
-        [HttpPost]
+		#region [ /Woa/Organ/Dept ]
+
+		[HttpPost]
         [Authorize]
         public string SearchRetiredUserInfoJson()
         {
@@ -326,7 +352,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
         [HttpPost]
         [Authorize]
-        public string SearchGroupInfoJson()
+        public string SearchGroupInfo()
         {
             if (Request.IsAjaxRequest())
             {
@@ -342,22 +368,12 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                string searchText = StringHelper.SafeString(jPost["searchText"].ToString());
-
-                if (!String.IsNullOrWhiteSpace(searchText))
-                {
-                    searchText = $" AND a.DisplayName LIKE '%{searchText}%'";
-                }
+                int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+                string groupType = StringHelper.SafeString(jPost["groupType"].ToString());
 
                 using (OfficePortalBiz portalBiz = new OfficePortalBiz())
                 {
-                    result = portalBiz.SearchDomainGroups(StringHelper.SafeString(jPost["domainID"].ToString())
-                            , StringHelper.SafeString(jPost["memberOf"].ToString())
-                            , StringHelper.SafeString(jPost["groupType"].ToString())
-                            , StringHelper.SafeString(jPost["sortColumn"].ToString())
-                            , StringHelper.SafeString(jPost["sortType"].ToString())
-                            , searchText
-                            , StringHelper.SafeString(jPost["admin"].ToString()));
+                    result = portalBiz.SearchDomainGroups(domainID.ToString(), "", groupType, "", "", "", "Y");
                 }
 
                 if (result.ResultCode == 0)
@@ -384,7 +400,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
         [HttpPost]
         [Authorize]
-        public string SearchDeletedGroupInfoJson()
+        public string SearchDeletedGroupInfo()
         {
             if (Request.IsAjaxRequest())
             {
@@ -398,20 +414,14 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     return CreateJsonData();
                 }
 
+                int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+                string groupType = StringHelper.SafeString(jPost["groupType"].ToString());
+
                 ServiceResult result = new ServiceResult();
                 
                 using (CommonBiz commonBiz = new CommonBiz())
                 {
-                    result = commonBiz.GetDeletedGroups(StringHelper.SafeString(jPost["domainID"].ToString())
-                            , StringHelper.SafeString(jPost["groupType"].ToString())
-                            , StringHelper.SafeInt(jPost["pageIndex"].ToString())
-                            , StringHelper.SafeInt(jPost["pageCount"].ToString())
-                            , StringHelper.SafeString(jPost["sortColumn"].ToString())
-                            , StringHelper.SafeString(jPost["sortType"].ToString())
-                            , StringHelper.SafeString(jPost["searchColumn"].ToString())
-                            , StringHelper.SafeString(jPost["searchText"].ToString())
-                            , StringHelper.SafeString(jPost["searchStartDate"].ToString())
-                            , StringHelper.SafeString(jPost["searchEndDate"].ToString()));
+                    result = commonBiz.GetDeletedGroups(domainID.ToString(), groupType, 1, 10000, "", "", "", "", "", "");
                 }
 
                 if (result.ResultCode == 0)
@@ -438,7 +448,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
         [HttpPost]
         [Authorize]
-        public string SearchGroupMemberInfoJson()
+        public string SelectDeptGroupTotalInfo()
         {
             if (Request.IsAjaxRequest())
             {
@@ -452,22 +462,20 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     return CreateJsonData();
                 }
 
+                int groupID = StringHelper.SafeInt(jPost["GR_ID"].ToString());
+                string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
+
                 ServiceResult result = new ServiceResult();
 
-                using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+                using (CommonBiz commonBiz = new CommonBiz())
                 {
-                    result = portalBiz.GetGroupMemberList(StringHelper.SafeString(jPost["domainID"].ToString())
-                            , StringHelper.SafeString(jPost["groupID"].ToString())
-                            , DateTime.Now.ToString("yyyy-MM-dd")
-                            , StringHelper.SafeString(jPost["sort"].ToString())
-                            , StringHelper.SafeString(jPost["order"].ToString())
-                            , StringHelper.SafeString(jPost["admin"].ToString()));
+                    result = commonBiz.GetGroupInfo(groupID, viewDate);
                 }
 
                 if (result.ResultCode == 0)
                 {
                     ResultItemCount = result.ResultItemCount;
-                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataSet);
 
                     return CreateJsonData();
                 }
@@ -488,7 +496,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
         [HttpPost]
         [Authorize]
-        public string CheckObjectDoubleAliasJson()
+        public string CheckObjectDoubleAlias()
         {
             if (Request.IsAjaxRequest())
             {
@@ -533,7 +541,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
         [HttpPost]
         [Authorize]
-        public string CreateGroup()
+        public string HandleGroup()
         {
             if (Request.IsAjaxRequest())
             {
@@ -547,18 +555,29 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     return CreateJsonData();
                 }
 
+                string mode = StringHelper.SafeString(jPost["mode"].ToString());
+                int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+                string groupType = StringHelper.SafeString(jPost["groupType"].ToString());
+                string groupAlias = StringHelper.SafeString(jPost["groupAlias"].ToString());
+                string parentAlias = StringHelper.SafeString(jPost["parentAlias"].ToString());
+                string groupName = StringHelper.SafeString(jPost["groupName"].ToString());
+                string groupShortName = StringHelper.SafeString(jPost["groupShortName"].ToString());
+                int sortKey = StringHelper.SafeInt(jPost["sortKey"].ToString());
+                string pdmgrCode = StringHelper.SafeString(jPost["pdmgrCode"].ToString());
+
                 ServiceResult result = new ServiceResult();
 
                 using (CommonBiz commonBiz = new CommonBiz())
                 {
-                    result = commonBiz.CreateGroup(StringHelper.SafeInt(jPost["domainID"].ToString())
-                            , StringHelper.SafeString(jPost["groupType"].ToString())
-                            , StringHelper.SafeString(jPost["groupAlias"].ToString())
-                            , StringHelper.SafeString(jPost["parentAlias"].ToString())
-                            , StringHelper.SafeString(jPost["groupName"].ToString())
-                            , StringHelper.SafeString(jPost["groupShortName"].ToString())
-                            , StringHelper.SafeInt(jPost["sortKey"].ToString())
-                            , StringHelper.SafeString(jPost["pdmgrCode"].ToString()));
+                    if (String.Compare(mode, "I", true) == 0)
+                    {
+                        result = commonBiz.CreateGroup(domainID, groupType, groupAlias, parentAlias, groupName, groupShortName, sortKey, pdmgrCode);
+                    }
+                    else if (String.Compare(mode, "U", true) == 0)
+                    {
+                        // 이것저것 한꺼번에 저장 필요
+                        //result = commonBiz.CreateGroup(domainID, groupType, groupAlias, parentAlias, groupName, groupShortName, sortKey, pdmgrCode);
+                    }
                 }
 
                 if (result.ResultCode == 0)
@@ -581,6 +600,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             return CreateJsonData();
         }
+
+        #endregion
+
+
 
         [HttpPost]
         [Authorize]
@@ -683,5 +706,58 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             return CreateJsonData();
         }
+
+        #region [ /Woa/Organ/Map ]
+
+        [HttpPost]
+        [Authorize]
+        public string SearchGroupMemberInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+                int groupID = StringHelper.SafeInt(jPost["groupID"].ToString());
+                string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+                ServiceResult result = new ServiceResult();
+
+                using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+                {
+                    result = portalBiz.GetGroupMemberList(domainID.ToString(), groupID.ToString(), viewDate, "", "", "Y");
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        #endregion
     }
 }
