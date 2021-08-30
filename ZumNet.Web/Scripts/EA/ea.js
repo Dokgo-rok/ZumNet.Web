@@ -13,7 +13,12 @@ $(function () {
     $('#__LeftMenu li[data-box] .sidenav-link').click(function (e) {
         e.preventDefault();
 
-        var encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"",xfalias:"' + _zw.V.xfalias + '",fdid:"",opnode:"' + _zw.V.opnode + '",ttl:"' + ttl + '",acl:"' + _zw.V.current.acl + '"}');
+        _zw.V.opnode = $(this).parent().attr('data-location');
+        _zw.V.ttl = $(this).find('span:first-child').text();
+
+        //alert(_zw.V.ttl + " : " + _zw.V.opnode); return;
+
+        var encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"",xfalias:"' + _zw.V.xfalias + '",fdid:"",opnode:"' + _zw.V.opnode + '",ttl:"' + _zw.V.ttl + '",acl:"' + _zw.V.current.acl + '"}');
 
         if (_zw.V.current.page.toLowerCase() == '/ea/main/list') {
 
