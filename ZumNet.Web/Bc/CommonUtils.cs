@@ -1004,7 +1004,8 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
                 sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"], ""));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"], ""));
-                sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
+                //sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
+                sb.AppendFormat(",\"qi\":\"{0}\"", "");
                 sb.Append(",\"lv\": {");
                 sb.AppendFormat("\"tgt\":\"{0}\"", "");
                 sb.AppendFormat(",\"page\":\"{0}\"", "");
