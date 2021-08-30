@@ -357,7 +357,6 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
-    <Content Include="Areas\WoA\Scripts\woaCommon.js" />
     <Content Include="Content\ea.css" />
     <Content Include="Content\auth.css" />
     <Content Include="Scripts\Docs\kms.js" />
