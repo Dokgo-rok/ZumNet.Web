@@ -3,33 +3,178 @@
 @using Newtonsoft.Json;
 @using ZumNet.Framework.Util;
 @{
-    ViewBag.Title = "양식 담당 관리";
+	ViewBag.Title = "양식 담당 관리";
 }
 
 @section Styles {
+	@Styles.Render("~/bundle/vendor/css/bootstrap-select/bootstrap-select")
+	@Styles.Render("~/bundle/vendor/css/select2/select2")
 }
 
 @section Scripts {
-    <script type="text/javascript">
+	@Scripts.Render("~/bundle/vendor/js/bootstrap-select/bootstrap-select")
+	@Scripts.Render("~/bundle/vendor/js/select2/select2")
+
+	<script type="text/javascript">
+		var deptList = @Html.Raw(ViewData["deptlist"]);
+		var memberList = @Html.Raw(ViewData["memberlist"]);
+
 		$(document).ready(function () {
+			var optionDeptHtml = "";
+			var optionMemberHtml = "";
+
+			if (deptList != "" && deptList.length > 0) {
+				for (var i = 0; i < deptList.length; i++) {
+					optionDeptHtml += "<option value=\"" + deptList[i].GR_ID + "\">" + deptList[i].DisplayName + "</option>";
+				}
+
+				$("#selDept").each(function () {
+					$(this)
+						.wrap("<div class=\"position-relative\"></div>")
+						.select2({
+							placeholder: "부서를 선택하세요.",
+							dropdownParent: $(this).parent()
+						})
+						.html(optionDeptHtml);
+				});
+			}
+
+			if (memberList != "" && memberList.length > 0) {
+				for (var j = 0; j < memberList.length; j++) {
+					optionMemberHtml += "<option value=\"" + memberList[j].UserID + "\">(" + memberList[j].GroupName + ") " + memberList[j].Grade1 + " " + memberList[j].DisplayName + "</option>";
+				}
+
+				$("#selMember").each(function () {
+					$(this)
+						.wrap("<div class=\"position-relative\"></div>")
+						.select2({
+							placeholder: "담당자를 선택하세요.",
+							dropdownParent: $(this).parent()
+						})
+						.html(optionMemberHtml);
+				});
+			}
 		});
-    </script>
+
+		function editCharge(obj, formID, chargeDept, chargeMember) {
+			// 초기화
+			$("#btnModalSave").attr("data-formid", "");
+			$("#selDept,#selMember").val(null).trigger("change");
+
+			if (chargeDept != "") {
+				var arrayDept = [];
+
+				for (var i = 0; i < chargeDept.split(',').length; i++) {
+					arrayDept.push(chargeDept.split(',')[i]);
+				}
+
+				$("#selDept").val(arrayDept).trigger('change'); 
+			}
+
+			if (chargeMember != "") {
+				var arrayMember = [];
+
+				for (var i = 0; i < chargeMember.split(',').length; i++) {
+					arrayMember.push(chargeMember.split(',')[i]);
+				}
+
+				$("#selMember").val(arrayMember).trigger('change'); 
+			}
+
+			$("#btnModalSave").attr("data-formid", formID);
+			$("#modalDefault").modal("show");
+		}
+
+		// 코드 아이템 편집
+		function saveChargeInfo(obj) {
+			var formID = $("#btnModalSave").attr("data-formid");
+
+			if (formID == "") {
+				return;
+			}
+
+			@*var $tr = $(obj).parent("td").parent("tr");
+
+			if ($tr.find("td:eq(1)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(1)").find("input").focus();
+				return;
+			}
+
+			var key3 = $tr.find("td:eq(0)").find("input").val();
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"U", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});*@
+		}
+	</script>
 }
 
 <h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
 	양식 담당 관리
 </h4>
 
+<div class="modal fade" id="modalDefault">
+	<div class="modal-dialog">
+		<form class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">
+					담당부서/담당자 변경
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">담당부서</label>
+						<select id="selDept" class="form-control" multiple style="width: 100%"></select>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">담당자</label>
+						<select id="selMember" class=" form-control" multiple style="width: 100%"></select>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" id="btnModalClose" data-dismiss="modal">닫기</button>
+				<button type="button" class="btn btn-primary" id="btnModalSave" onclick="saveChargeInfo();" data-formid="">변경</button>
+			</div>
+		</form>
+	</div>
+</div>
+
 <div class="table-responsive">
 	<table id="tbl_code" class="table table-bordered mb-0">
 		<thead>
 			<tr>
-				<th style="width:5%">분류</th>
+				<th style="width:8%">분류</th>
 				<th style="width:10%">양식명</th>
 				<th style="width:10%">테이블명</th>
-				<th style="width:5%">버전</th>
-				<th style="width:35%">담당부서</th>
-				<th style="width:35%">담당자</th>
+				<th style="width:7%">버전</th>
+				<th style="width:25%">담당부서</th>
+				<th style="width:33%">담당자</th>
+				<th style="width:7%">비고</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -47,22 +192,25 @@
 							{
 			<tr data-formid="@drList["FormID"].ToString()">
 				<td>
-					<input type="text" class="form-control" value="@drClass["ClassName"].ToString()" readonly="readonly">
+					@drClass["ClassName"].ToString()
 				</td>
 				<td>
-					<input type="text" class="form-control" value="@drList["DocName"].ToString()" readonly="readonly">
+					@drList["DocName"].ToString()
 				</td>
 				<td>
-					<input type="text" class="form-control" value="@drList["MainTable"].ToString()" readonly="readonly">
+					@drList["XslName"].ToString()
 				</td>
 				<td>
-					<input type="text" class="form-control" value="@drList["Version"].ToString()" readonly="readonly">
+					@drList["Version"].ToString()
 				</td>
 				<td>
-					<input type="text" class="form-control" value="" readonly="readonly">
+					@drList["ChargeDeptDisplayName"].ToString()
 				</td>
 				<td>
-					<input type="text" class="form-control" value="" readonly="readonly">
+					@drList["ChargeMemberDisplayName"].ToString()
+				</td>
+				<td>
+					<button type="button" class="btn btn-default" onclick="editCharge(this, '@drList["FormID"].ToString()', '@drList["ChargeDept"].ToString()', '@drList["ChargeMember"].ToString()')">변경</button>
 				</td>
 			</tr>
 							}
