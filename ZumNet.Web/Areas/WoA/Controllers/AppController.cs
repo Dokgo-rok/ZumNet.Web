@@ -27,10 +27,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
-            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
             {
                 // 양식 분류 조회
-                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+                ServiceResult resultClass = eApprovalBiz.SelectEAFormClass(domainID);
 
                 if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -38,7 +38,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
 
                 // 양식 문서 리스트 조회
-                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+                ServiceResult resultList = eApprovalBiz.SelectEAFormList(domainID);
 
                 if (resultList.ResultCode == 0)
                 {
@@ -50,82 +50,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return View();
-
-
-            //int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
-
-            //List<WebTreeList> listTree = new List<WebTreeList>();
-
-            //WebTreeList treeInfo = new WebTreeList();
-            //treeInfo.id = "0";
-            //treeInfo.parent = "#";
-            //treeInfo.state = new Dictionary<string, bool>();
-            //treeInfo.state.Add("opened", true);
-            //treeInfo.text = "전체";
-
-            //listTree.Add(treeInfo);
-
-            //using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
-            //{
-            //    // 양식 분류 조회
-            //    ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
-
-            //    if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
-            //    {
-            //        foreach (DataRow dr in resultClass.ResultDataTable.Rows)
-            //        {
-            //            treeInfo = new WebTreeList();
-            //            treeInfo.id = StringHelper.SafeString(dr["ClassID"].ToString());
-            //            treeInfo.parent = "0";
-            //            treeInfo.state = new Dictionary<string, bool>();
-            //            treeInfo.state.Add("opened", false);
-            //            treeInfo.text = StringHelper.SafeString(dr["ClassName"].ToString());
-
-            //            listTree.Add(treeInfo);
-            //        }
-
-            //        // 미분류 양식 추가
-            //        treeInfo = new WebTreeList();
-            //        treeInfo.id = "10000";
-            //        treeInfo.parent = "0";
-            //        treeInfo.state = new Dictionary<string, bool>();
-            //        treeInfo.state.Add("opened", false);
-            //        treeInfo.text = "미분류 양식들";
-
-            //        listTree.Add(treeInfo);
-            //    }
-
-            //    // 양식 문서 리스트 조회
-            //    ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
-
-            //    if (resultList.ResultCode == 0)
-            //    {
-            //        if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
-            //        {
-            //            foreach (DataRow dr in resultList.ResultDataTable.Rows)
-            //            {
-            //                if (StringHelper.SafeString(dr["ClassID"].ToString()) == "1012")
-            //                {
-            //                    treeInfo = new WebTreeList();
-            //                    treeInfo.id = StringHelper.SafeString(dr["FormID"].ToString());
-            //                    treeInfo.parent = StringHelper.SafeString(dr["ClassID"].ToString());
-            //                    treeInfo.state = new Dictionary<string, bool>();
-            //                    treeInfo.state.Add("opened", false);
-            //                    //treeInfo.text = StringHelper.SafeString(dr["DocName"].ToString());
-            //                    treeInfo.text = $"{StringHelper.SafeString(dr["DocName"].ToString())} ({StringHelper.SafeString(dr["MainTable"].ToString())} , V{StringHelper.SafeString(dr["Version"].ToString())})";
-
-            //                    listTree.Add(treeInfo);
-            //                }
-
-
-            //            }
-            //        }
-            //    }
-            //}
-
-            //ViewData["eaclassformlist"] = JsonConvert.SerializeObject(listTree);
-
-            //return View();
         }
 
         /// <summary>
@@ -284,9 +208,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
                 {
-                    result = eaProcessBiz.SelectEADocumentTotalData(dnID, messageID);
+                    result = eApprovalBiz.SelectEADocumentTotalData(dnID, messageID);
                 }
 
                 if (result.ResultCode == 0)
@@ -345,9 +269,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
                 {
-                    result = eaProcessBiz.SelectEAFormClass(domainID);
+                    result = eApprovalBiz.SelectEAFormClass(domainID);
                 }
 
                 if (result.ResultCode == 0)
@@ -400,9 +324,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
                 {
-                    result = eaProcessBiz.HandleEAFormClass(command, classid, domainid, formname, formseqno);
+                    result = eApprovalBiz.HandleEAFormClass(command, classid, domainid, formname, formseqno);
                 }
 
                 if (result.ResultCode >= 0)
@@ -432,10 +356,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
-            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
             {
                 // 양식 분류 조회
-                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+                ServiceResult resultClass = eApprovalBiz.SelectEAFormClass(domainID);
 
                 if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -443,7 +367,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
 
                 // 양식 문서 리스트 조회
-                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+                ServiceResult resultList = eApprovalBiz.SelectEAFormList(domainID);
 
                 if (resultList.ResultCode == 0)
                 {
@@ -465,25 +389,204 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
-            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
             {
                 // 양식 분류 조회
-                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+                ServiceResult result = eApprovalBiz.SelectEAFormSelect(domainID, 0, "Y");
 
-                if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
+                if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 0)
                 {
-                    ViewData["formclass"] = resultClass.ResultDataTable;
+                    ViewData["formclass"] = result.ResultDataSet.Tables[0];
+
+                    DataTable dtList = result.ResultDataSet.Tables[1];
+                    DataTable dtChargeDeptList = result.ResultDataSet.Tables[2];
+                    DataTable dtChargeMemberList = result.ResultDataSet.Tables[3];
+
+                    if (dtList?.Rows?.Count > 0)
+                    {
+                        dtList.Columns.Add("ChargeDeptDisplayName", typeof(string));
+                        dtList.Columns.Add("ChargeMemberDisplayName", typeof(string));
+                        dtList.Columns.Add("ChargeDept", typeof(string));
+                        dtList.Columns.Add("ChargeMember", typeof(string));
+
+                        string chargeDeptDisplayList = "";
+                        string chargeMemberDisplayList = "";
+                        string chargeDeptList = "";
+                        string chargeMemberList = "";
+
+                        foreach (DataRow dr in dtList.Rows)
+                        {
+                            if (dtChargeDeptList?.Rows?.Count > 0)
+                            {
+                                if (dtChargeDeptList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).Count() > 0)
+                                {
+                                    chargeDeptDisplayList = String.Join(", ", dtChargeDeptList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).CopyToDataTable().AsEnumerable().Select(x => StringHelper.SafeString(x["DisplayName"])));
+                                    chargeDeptList = String.Join(",", dtChargeDeptList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).CopyToDataTable().AsEnumerable().Select(x => StringHelper.SafeString(x["ChargeID"])));
+                                }
+                            }
+
+                            if (dtChargeMemberList?.Rows?.Count > 0)
+                            {
+                                if (dtChargeMemberList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).Count() > 0)
+                                {
+                                    chargeMemberDisplayList = String.Join(", ", dtChargeMemberList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).CopyToDataTable().AsEnumerable().Select(x => $"({StringHelper.SafeString(x["GroupName"])}) {StringHelper.SafeString(x["Grade1"])} {StringHelper.SafeString(x["DisplayName"])}"));
+                                    chargeMemberList = String.Join(",", dtChargeMemberList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).CopyToDataTable().AsEnumerable().Select(x => StringHelper.SafeString(x["ChargeID"])));
+                                }
+                            }
+
+                            dr["ChargeDeptDisplayName"] = chargeDeptDisplayList;
+                            dr["ChargeMemberDisplayName"] = chargeMemberDisplayList;
+                            dr["ChargeDept"] = chargeDeptList;
+                            dr["ChargeMember"] = chargeMemberList;
+                        }
+                    }
+
+                    ViewData["formlist"] = dtList;
+                }
+            }
+
+            using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+            {
+                ServiceResult resultDept = portalBiz.SearchDomainGroups(domainID.ToString(), "", "D", "", "", "", "Y");
+
+                if (resultDept.ResultCode == 0 && resultDept.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["deptlist"] = JsonConvert.SerializeObject(resultDept.ResultDataTable);
+                }
+            }
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                ServiceResult resultMember = commonBiz.SearchDomainUsers(domainID.ToString(), "", "D", 0, 0, "DisplayName", "ASC", "", "Y");
+
+                if (resultMember.ResultCode == 0 && resultMember.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["memberlist"] = JsonConvert.SerializeObject(resultMember.ResultDataTable);
+                }
+            }
+
+            return View();
+        }
+
+        /// <summary>
+        /// 담당자 업데이트
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string UpdateChargeInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
                 }
 
-                // 양식 문서 리스트 조회
-                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+                string formID = StringHelper.SafeString(jPost["formID"].ToString());
+                string chargeJson = StringHelper.SafeString(jPost["chargeJson"].ToString());
 
-                if (resultList.ResultCode == 0)
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
                 {
-                    if (resultList.ResultCode == 0 && resultList.ResultDataTable?.Rows?.Count > 0)
+                    result = eApprovalBiz.UpdateEAFormChargeJson(formID, chargeJson);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        public ActionResult Charge1()
+        {
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            {
+                // 양식 분류 조회
+                ServiceResult result = eApprovalBiz.SelectEAFormSelect(domainID, 0, "Y");
+
+                if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 0)
+                {
+                    ViewData["formclass"] = result.ResultDataSet.Tables[0];
+
+                    DataTable dtList = result.ResultDataSet.Tables[1];
+                    DataTable dtChargeDeptList = result.ResultDataSet.Tables[2];
+                    DataTable dtChargeMemberList = result.ResultDataSet.Tables[3];
+
+                    if (dtList?.Rows?.Count > 0)
                     {
-                        ViewData["formlist"] = resultList.ResultDataTable;
+                        dtList.Columns.Add("ChargeDept", typeof(string));
+                        dtList.Columns.Add("ChargeMember", typeof(string));
+
+                        string chargeDeptList = "";
+                        string chargeMemberList = "";
+
+                        foreach (DataRow dr in dtList.Rows)
+                        {
+                            if (dtChargeDeptList?.Rows?.Count > 0)
+                            {
+                                if (dtChargeDeptList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).Count() > 0)
+                                {
+                                    chargeDeptList = String.Join(",", dtChargeDeptList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).CopyToDataTable().AsEnumerable().Select(x => StringHelper.SafeString(x["ChargeID"])));
+                                }
+
+                            }
+
+                            if (dtChargeMemberList?.Rows?.Count > 0)
+                            {
+                                if (dtChargeMemberList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).Count() > 0)
+                                {
+                                    chargeMemberList = String.Join(",", dtChargeMemberList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).CopyToDataTable().AsEnumerable().Select(x => StringHelper.SafeString(x["ChargeID"])));
+                                }
+                            }
+
+                            dr["ChargeDept"] = chargeDeptList;
+                            dr["ChargeMember"] = chargeMemberList;
+                        }
                     }
+
+                    ViewData["formlist"] = dtList;
+                }
+            }
+
+            using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+            {
+                ServiceResult resultDept = portalBiz.SearchDomainGroups(domainID.ToString(), "", "D", "", "", "", "Y");
+
+                if (resultDept.ResultCode == 0 && resultDept.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["deptlist"] = JsonConvert.SerializeObject(resultDept.ResultDataTable);
+                }
+            }
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                ServiceResult resultMember = commonBiz.SearchDomainUsers(domainID.ToString(), "", "D", 0, 0, "DisplayName", "ASC", "", "Y");
+
+                if (resultMember.ResultCode == 0 && resultMember.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["memberlist"] = JsonConvert.SerializeObject(resultMember.ResultDataTable);
                 }
             }
 
@@ -498,10 +601,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
-            using (EAProcessBiz eaProcessBiz = new EAProcessBiz())
+            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
             {
                 // 양식 분류 조회
-                ServiceResult resultClass = eaProcessBiz.SelectEAFormClass(domainID);
+                ServiceResult resultClass = eApprovalBiz.SelectEAFormClass(domainID);
 
                 if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -509,7 +612,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
 
                 // 양식 문서 리스트 조회
-                ServiceResult resultList = eaProcessBiz.SelectEAFormList(domainID);
+                ServiceResult resultList = eApprovalBiz.SelectEAFormList(domainID);
 
                 if (resultList.ResultCode == 0)
                 {

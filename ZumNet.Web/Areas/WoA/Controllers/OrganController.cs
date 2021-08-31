@@ -18,6 +18,8 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 {
     public class OrganController : ControllerWebBase
     {
+        #region [ /Woa/Organ/Index ]
+
         // GET: WoA/Organ
         [Authorize]
         public ActionResult Index()
@@ -25,164 +27,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return View();
         }
 
-        // GET: WoA/Organ/Member
-        [Authorize]
-        public ActionResult Member(int id = 0)
-        {
-            if (id == 0)
-            {
-                return View();
-            }
-
-            ServiceResult result = new ServiceResult();
-
-            using (CommonBiz commonBiz = new CommonBiz())
-            {
-                result = commonBiz.GetUserTotalInfo(id, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            }
-
-            if (result.ResultCode == 0)
-            {
-                if (result?.ResultDataSet?.Tables?.Count > 0)
-                {
-                    DataTable dtUser = result.ResultDataSet.Tables[1];
-
-                    dtUser.Columns.Add("b_IsGw", typeof(bool));
-                    dtUser.Columns.Add("b_IsPDM", typeof(bool));
-                    dtUser.Columns.Add("b_IsERP", typeof(bool));
-                    dtUser.Columns.Add("b_IsMSG", typeof(bool));
-
-                    dtUser.Rows[0]["b_IsGw"] = (String.Compare(dtUser.Rows[0]["IsGw"].ToString(), "Y", true) == 0);
-                    dtUser.Rows[0]["b_IsPDM"] = (String.Compare(dtUser.Rows[0]["IsPDM"].ToString(), "Y", true) == 0);
-                    dtUser.Rows[0]["b_IsERP"] = (String.Compare(dtUser.Rows[0]["IsERP"].ToString(), "Y", true) == 0);
-                    dtUser.Rows[0]["b_IsMSG"] = (String.Compare(dtUser.Rows[0]["IsMSG"].ToString(), "Y", true) == 0);
-                }
-
-                return View(result.ResultDataSet);
-            }
-
-            return View();
-        }
-
-        // GET: WoA/Organ/Dept
-        [Authorize]
-        public ActionResult Dept()
-        {
-            return View();
-        }
-
-        // GET: WoA/Organ/Grade
-        [Authorize]
-        public ActionResult Grade()
-        {
-            return View();
-        }
-
-        // GET: WoA/Organ/Map
-        [Authorize]
-        public ActionResult Map()
-        {
-            List<WebTreeList> listTree = new List<WebTreeList>();
-
-            WebTreeList treeInfo = null;
-
-            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
-            int memberOf = 0;
-            string groupType = "D";
-            int groupID = 0;
-            string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
-            string admin = "Y";
-
-            ServiceResult result = new ServiceResult();
-
-            using (OfficePortalBiz portalBiz = new OfficePortalBiz())
-            {
-                // 부서 정보 조회
-                result = portalBiz.GetAdminOrgMapInfo(domainID, memberOf, groupType, groupID, viewDate, admin);
-
-                if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 1)
-                {
-                    foreach (DataRow dr in result.ResultDataSet.Tables[1].Rows)
-                    {
-                        treeInfo = new WebTreeList();
-                        treeInfo.id = StringHelper.SafeString(dr["GR_ID"].ToString());
-
-                        if (StringHelper.SafeString(dr["MemberOf"].ToString()) == "0")
-                        {
-                            treeInfo.parent = "#";
-                        }
-                        else
-                        {
-                            treeInfo.parent = StringHelper.SafeString(dr["MemberOf"].ToString());
-                        }
-                        
-                        treeInfo.state = new Dictionary<string, bool>();
-                        treeInfo.state.Add("opened", false);
-                        treeInfo.text = StringHelper.SafeString(dr["DisplayName"].ToString());
-
-                        listTree.Add(treeInfo);                        
-                    }
-                }
-            }
-
-            ViewData["deptlist"] = JsonConvert.SerializeObject(listTree);
-
-            return View();
-        }
-
-        // GET: WoA/Organ/Group
-        [Authorize]
-        public ActionResult Group()
-        {
-            List<WebTreeList> listTree = new List<WebTreeList>();
-
-            WebTreeList treeInfo = new WebTreeList();
-            treeInfo.id = "0";
-            treeInfo.parent = "#";
-            treeInfo.state = new Dictionary<string, bool>();
-            treeInfo.state.Add("opened", true);
-            treeInfo.text = "전체 그룹";
-
-            listTree.Add(treeInfo);
-
-            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
-
-            ServiceResult result = new ServiceResult();
-
-            using (CommonBiz commonBiz = new CommonBiz())
-            {
-                result = commonBiz.GetContainer(domainID.ToString(), 13);
-
-                if (result.ResultCode == 0 && result.ResultDataTable?.Rows?.Count > 0)
-                {
-                    foreach (DataRow dr in result.ResultDataTable.Rows)
-                    {
-                        // 부서 그룹은 별도 메뉴가 있으므로 제외
-                        if (String.Compare(StringHelper.SafeString(dr["Command"].ToString()), "org.gr.dept", true) == 0)
-                        {
-                            continue;
-                        }
-
-                        treeInfo = new WebTreeList();
-                        treeInfo.id = StringHelper.SafeString(dr["Command"].ToString());
-                        treeInfo.parent = "0";
-                        treeInfo.state = new Dictionary<string, bool>();
-                        treeInfo.state.Add("opened", false);
-                        treeInfo.text = StringHelper.SafeString(dr["DisplayName"].ToString());
-
-                        listTree.Add(treeInfo);
-                    }
-                }
-            }
-
-            ViewData["grouplist"] = JsonConvert.SerializeObject(listTree);
-
-            return View();
-        }
-
         [HttpPost]
         [Authorize]
-        public string SearchUserInfoJson()
+        public string SearchUserInfo()
         {
             if (Request.IsAjaxRequest())
             {
@@ -295,11 +142,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return CreateJsonData();
         }
 
-		#region [ /Woa/Organ/Dept ]
-
-		[HttpPost]
+        [HttpPost]
         [Authorize]
-        public string SearchRetiredUserInfoJson()
+        public string SearchRetiredUserInfo()
         {
             if (Request.IsAjaxRequest())
             {
@@ -348,6 +193,165 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return CreateJsonData();
+        }
+
+        #endregion
+
+        // GET: WoA/Organ/Member
+        [Authorize]
+        public ActionResult Member(int id = 0)
+        {
+            if (id == 0)
+            {
+                return View();
+            }
+
+            ServiceResult result = new ServiceResult();
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                result = commonBiz.GetUserTotalInfo(id, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            }
+
+            if (result.ResultCode == 0)
+            {
+                if (result?.ResultDataSet?.Tables?.Count > 0)
+                {
+                    DataTable dtUser = result.ResultDataSet.Tables[1];
+
+                    dtUser.Columns.Add("b_IsGw", typeof(bool));
+                    dtUser.Columns.Add("b_IsPDM", typeof(bool));
+                    dtUser.Columns.Add("b_IsERP", typeof(bool));
+                    dtUser.Columns.Add("b_IsMSG", typeof(bool));
+
+                    dtUser.Rows[0]["b_IsGw"] = (String.Compare(dtUser.Rows[0]["IsGw"].ToString(), "Y", true) == 0);
+                    dtUser.Rows[0]["b_IsPDM"] = (String.Compare(dtUser.Rows[0]["IsPDM"].ToString(), "Y", true) == 0);
+                    dtUser.Rows[0]["b_IsERP"] = (String.Compare(dtUser.Rows[0]["IsERP"].ToString(), "Y", true) == 0);
+                    dtUser.Rows[0]["b_IsMSG"] = (String.Compare(dtUser.Rows[0]["IsMSG"].ToString(), "Y", true) == 0);
+                }
+
+                return View(result.ResultDataSet);
+            }
+
+            return View();
+        }
+
+        // GET: WoA/Organ/Grade
+        [Authorize]
+        public ActionResult Grade()
+        {
+            return View();
+        }
+
+        // GET: WoA/Organ/Map
+        [Authorize]
+        public ActionResult Map()
+        {
+            List<WebTreeList> listTree = new List<WebTreeList>();
+
+            WebTreeList treeInfo = null;
+
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+            int memberOf = 0;
+            string groupType = "D";
+            int groupID = 0;
+            string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string admin = "Y";
+
+            ServiceResult result = new ServiceResult();
+
+            using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+            {
+                // 부서 정보 조회
+                result = portalBiz.GetAdminOrgMapInfo(domainID, memberOf, groupType, groupID, viewDate, admin);
+
+                if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 1)
+                {
+                    foreach (DataRow dr in result.ResultDataSet.Tables[1].Rows)
+                    {
+                        treeInfo = new WebTreeList();
+                        treeInfo.id = StringHelper.SafeString(dr["GR_ID"].ToString());
+
+                        if (StringHelper.SafeString(dr["MemberOf"].ToString()) == "0")
+                        {
+                            treeInfo.parent = "#";
+                        }
+                        else
+                        {
+                            treeInfo.parent = StringHelper.SafeString(dr["MemberOf"].ToString());
+                        }
+                        
+                        treeInfo.state = new Dictionary<string, bool>();
+                        treeInfo.state.Add("opened", false);
+                        treeInfo.text = StringHelper.SafeString(dr["DisplayName"].ToString());
+
+                        listTree.Add(treeInfo);                        
+                    }
+                }
+            }
+
+            ViewData["deptlist"] = JsonConvert.SerializeObject(listTree);
+
+            return View();
+        }
+
+        // GET: WoA/Organ/Group
+        [Authorize]
+        public ActionResult Group()
+        {
+            List<WebTreeList> listTree = new List<WebTreeList>();
+
+            WebTreeList treeInfo = new WebTreeList();
+            treeInfo.id = "0";
+            treeInfo.parent = "#";
+            treeInfo.state = new Dictionary<string, bool>();
+            treeInfo.state.Add("opened", true);
+            treeInfo.text = "전체 그룹";
+
+            listTree.Add(treeInfo);
+
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+
+            ServiceResult result = new ServiceResult();
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                result = commonBiz.GetContainer(domainID.ToString(), 13);
+
+                if (result.ResultCode == 0 && result.ResultDataTable?.Rows?.Count > 0)
+                {
+                    foreach (DataRow dr in result.ResultDataTable.Rows)
+                    {
+                        // 부서 그룹은 별도 메뉴가 있으므로 제외
+                        if (String.Compare(StringHelper.SafeString(dr["Command"].ToString()), "org.gr.dept", true) == 0)
+                        {
+                            continue;
+                        }
+
+                        treeInfo = new WebTreeList();
+                        treeInfo.id = StringHelper.SafeString(dr["Command"].ToString());
+                        treeInfo.parent = "0";
+                        treeInfo.state = new Dictionary<string, bool>();
+                        treeInfo.state.Add("opened", false);
+                        treeInfo.text = StringHelper.SafeString(dr["DisplayName"].ToString());
+
+                        listTree.Add(treeInfo);
+                    }
+                }
+            }
+
+            ViewData["grouplist"] = JsonConvert.SerializeObject(listTree);
+
+            return View();
+        }
+
+        #region [ /Woa/Organ/Dept ]
+
+        // GET: WoA/Organ/Dept
+        [Authorize]
+        public ActionResult Dept()
+        {
+            return View();
         }
 
         [HttpPost]

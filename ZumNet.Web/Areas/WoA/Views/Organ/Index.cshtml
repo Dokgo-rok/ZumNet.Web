@@ -48,7 +48,7 @@
 			}
 
 			$.ajax({
-                url: '@Url.Action("SearchUserInfoJson", "Organ")',
+                url: '@Url.Action("SearchUserInfo", "Organ")',
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{domainID: 1, groupID: "", groupType: "D", pageIndex: 0, pageCount: 0, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchType: "' + searchType + '", searchText: "' + searchText + '", admin: "Y"}',
@@ -98,7 +98,7 @@
 			$("#tbl_user_retired_list_wrapper,#tbl_user_retired_list").show();
 
 			$.ajax({
-                url: '@Url.Action("SearchRetiredUserInfoJson", "Organ")',
+                url: '@Url.Action("SearchRetiredUserInfo", "Organ")',
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{domainID: 1, pageIndex: 1, pageCount: 10000, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchColumn: "", searchText: "' + searchText + '", searchStartDate: "", searchEndDate: ""}',
