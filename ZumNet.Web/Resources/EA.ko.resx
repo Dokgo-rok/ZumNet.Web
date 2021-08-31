@@ -144,7 +144,7 @@
   <data name="BoxReference" xml:space="preserve">
     <value>참조함</value>
   </data>
-  <data name="BoxRejected" xml:space="preserve">
+  <data name="BoxReturn" xml:space="preserve">
     <value>반려함</value>
   </data>
   <data name="BoxSaved" xml:space="preserve">
@@ -174,7 +174,7 @@
   <data name="BoxWaiting" xml:space="preserve">
     <value>승인대기함</value>
   </data>
-  <data name="BoxWithdrawn" xml:space="preserve">
+  <data name="BoxWithdraw" xml:space="preserve">
     <value>회수함</value>
   </data>
   <data name="Monitoring" xml:space="preserve">

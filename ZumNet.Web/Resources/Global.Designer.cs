@@ -277,6 +277,33 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Approved과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Approve {
+            get {
+                return ResourceManager.GetString("Date_Approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Completed과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Complete {
+            get {
+                return ResourceManager.GetString("Date_Complete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Confirmation과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Confirm {
+            get {
+                return ResourceManager.GetString("Date_Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Created과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Date_Created {
@@ -291,6 +318,159 @@ namespace Resources {
         public static string Date_Deleted {
             get {
                 return ResourceManager.GetString("Date_Deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Drafted과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Draft {
+            get {
+                return ResourceManager.GetString("Date_Draft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Edit date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Edit {
+            get {
+                return ResourceManager.GetString("Date_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   End date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_End {
+            get {
+                return ResourceManager.GetString("Date_End", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Expiration date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Expired {
+            get {
+                return ResourceManager.GetString("Date_Expired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Modified과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Modify {
+            get {
+                return ResourceManager.GetString("Date_Modify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Pop-up date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Popup {
+            get {
+                return ResourceManager.GetString("Date_Popup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Posted date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Posted {
+            get {
+                return ResourceManager.GetString("Date_Posted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Received과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Receipt {
+            get {
+                return ResourceManager.GetString("Date_Receipt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Received과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Receive {
+            get {
+                return ResourceManager.GetString("Date_Receive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Registered과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Regist {
+            get {
+                return ResourceManager.GetString("Date_Regist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Request과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Request {
+            get {
+                return ResourceManager.GetString("Date_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Return date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Return {
+            get {
+                return ResourceManager.GetString("Date_Return", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Send date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Send {
+            get {
+                return ResourceManager.GetString("Date_Send", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sent date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Sent {
+            get {
+                return ResourceManager.GetString("Date_Sent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Start date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Start {
+            get {
+                return ResourceManager.GetString("Date_Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Read date과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_View {
+            get {
+                return ResourceManager.GetString("Date_View", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Collection과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Date_Withdraw {
+            get {
+                return ResourceManager.GetString("Date_Withdraw", resourceCulture);
             }
         }
         

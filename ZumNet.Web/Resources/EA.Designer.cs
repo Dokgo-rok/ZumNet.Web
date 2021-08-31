@@ -142,11 +142,11 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Rejected과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Returned과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string BoxRejected {
+        public static string BoxReturn {
             get {
-                return ResourceManager.GetString("BoxRejected", resourceCulture);
+                return ResourceManager.GetString("BoxReturn", resourceCulture);
             }
         }
         
@@ -232,11 +232,11 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Withdrawn과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Collection과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string BoxWithdrawn {
+        public static string BoxWithdraw {
             get {
-                return ResourceManager.GetString("BoxWithdrawn", resourceCulture);
+                return ResourceManager.GetString("BoxWithdraw", resourceCulture);
             }
         }
         

@@ -189,11 +189,71 @@
   <data name="Cresyn" xml:space="preserve">
     <value>크레신</value>
   </data>
+  <data name="Date_Approve" xml:space="preserve">
+    <value>결재일</value>
+  </data>
+  <data name="Date_Complete" xml:space="preserve">
+    <value>완료일</value>
+  </data>
+  <data name="Date_Confirm" xml:space="preserve">
+    <value>확인일</value>
+  </data>
   <data name="Date_Created" xml:space="preserve">
     <value>작성일</value>
   </data>
   <data name="Date_Deleted" xml:space="preserve">
     <value>삭제일</value>
+  </data>
+  <data name="Date_Draft" xml:space="preserve">
+    <value>기안일</value>
+  </data>
+  <data name="Date_Edit" xml:space="preserve">
+    <value>편집일</value>
+  </data>
+  <data name="Date_End" xml:space="preserve">
+    <value>종료일</value>
+  </data>
+  <data name="Date_Expired" xml:space="preserve">
+    <value>만료일</value>
+  </data>
+  <data name="Date_Modify" xml:space="preserve">
+    <value>수정일</value>
+  </data>
+  <data name="Date_Popup" xml:space="preserve">
+    <value>팝업일</value>
+  </data>
+  <data name="Date_Posted" xml:space="preserve">
+    <value>게시일</value>
+  </data>
+  <data name="Date_Receipt" xml:space="preserve">
+    <value>접수일</value>
+  </data>
+  <data name="Date_Receive" xml:space="preserve">
+    <value>받은날짜</value>
+  </data>
+  <data name="Date_Regist" xml:space="preserve">
+    <value>등록일</value>
+  </data>
+  <data name="Date_Request" xml:space="preserve">
+    <value>요청일</value>
+  </data>
+  <data name="Date_Return" xml:space="preserve">
+    <value>반려일</value>
+  </data>
+  <data name="Date_Send" xml:space="preserve">
+    <value>발신일</value>
+  </data>
+  <data name="Date_Sent" xml:space="preserve">
+    <value>보낸날짜</value>
+  </data>
+  <data name="Date_Start" xml:space="preserve">
+    <value>시작일</value>
+  </data>
+  <data name="Date_View" xml:space="preserve">
+    <value>조회일</value>
+  </data>
+  <data name="Date_Withdraw" xml:space="preserve">
+    <value>회수일</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>삭제</value>

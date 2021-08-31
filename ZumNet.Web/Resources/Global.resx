@@ -189,11 +189,71 @@
   <data name="Cresyn" xml:space="preserve">
     <value>Cresyn</value>
   </data>
+  <data name="Date_Approve" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Date_Complete" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Date_Confirm" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
   <data name="Date_Created" xml:space="preserve">
     <value>Created</value>
   </data>
   <data name="Date_Deleted" xml:space="preserve">
     <value>Deleted</value>
+  </data>
+  <data name="Date_Draft" xml:space="preserve">
+    <value>Drafted</value>
+  </data>
+  <data name="Date_Edit" xml:space="preserve">
+    <value>Edit date</value>
+  </data>
+  <data name="Date_End" xml:space="preserve">
+    <value>End date</value>
+  </data>
+  <data name="Date_Expired" xml:space="preserve">
+    <value>Expiration date</value>
+  </data>
+  <data name="Date_Modify" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="Date_Popup" xml:space="preserve">
+    <value>Pop-up date</value>
+  </data>
+  <data name="Date_Posted" xml:space="preserve">
+    <value>Posted date</value>
+  </data>
+  <data name="Date_Receipt" xml:space="preserve">
+    <value>Received</value>
+  </data>
+  <data name="Date_Receive" xml:space="preserve">
+    <value>Received</value>
+  </data>
+  <data name="Date_Regist" xml:space="preserve">
+    <value>Registered</value>
+  </data>
+  <data name="Date_Request" xml:space="preserve">
+    <value>Request</value>
+  </data>
+  <data name="Date_Return" xml:space="preserve">
+    <value>Return date</value>
+  </data>
+  <data name="Date_Send" xml:space="preserve">
+    <value>Send date</value>
+  </data>
+  <data name="Date_Sent" xml:space="preserve">
+    <value>Sent date</value>
+  </data>
+  <data name="Date_Start" xml:space="preserve">
+    <value>Start date</value>
+  </data>
+  <data name="Date_View" xml:space="preserve">
+    <value>Read date</value>
+  </data>
+  <data name="Date_Withdraw" xml:space="preserve">
+    <value>Collection</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>

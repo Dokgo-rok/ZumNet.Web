@@ -1004,20 +1004,20 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
                 sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"]));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
-                //sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
-                sb.AppendFormat(",\"qi\":\"{0}\"", "");
+                sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
+                //sb.AppendFormat(",\"qi\":\"{0}\"", "");
                 sb.Append(",\"lv\": {");
-                sb.AppendFormat("\"tgt\":\"{0}\"", "");
-                sb.AppendFormat(",\"page\":\"{0}\"", "");
-                sb.AppendFormat(",\"count\":\"{0}\"", "");
+                sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));
+                sb.AppendFormat(",\"page\":\"{0}\"", StringHelper.SafeString(jReq["page"]));
+                sb.AppendFormat(",\"count\":\"{0}\"", StringHelper.SafeString(jReq["count"]));
                 sb.AppendFormat(",\"total\":\"{0}\"", "");
-                sb.AppendFormat(",\"sort\":\"{0}\"", "");
-                sb.AppendFormat(",\"sortdir\":\"{0}\"", "");
-                sb.AppendFormat(",\"search\":\"{0}\"", "");
-                sb.AppendFormat(",\"searchtext\":\"{0}\"", "");
-                sb.AppendFormat(",\"start\":\"{0}\"", "");
-                sb.AppendFormat(",\"end\":\"{0}\"", "");
-                sb.AppendFormat(",\"basesort\":\"{0}\"", "");
+                sb.AppendFormat(",\"sort\":\"{0}\"", StringHelper.SafeString(jReq["sort"]));
+                sb.AppendFormat(",\"sortdir\":\"{0}\"", StringHelper.SafeString(jReq["sortdir"]));
+                sb.AppendFormat(",\"search\":\"{0}\"", StringHelper.SafeString(jReq["search"]));
+                sb.AppendFormat(",\"searchtext\":\"{0}\"", StringHelper.SafeString(jReq["searchtext"]));
+                sb.AppendFormat(",\"start\":\"{0}\"", StringHelper.SafeString(jReq["start"]));
+                sb.AppendFormat(",\"end\":\"{0}\"", StringHelper.SafeString(jReq["end"]));
+                sb.AppendFormat(",\"basesort\":\"{0}\"", StringHelper.SafeString(jReq["basesort"]));
                 sb.AppendFormat(",\"boundary\":\"{0}\"", CommonUtils.BOUNDARY());
                 sb.Append("}"); //lv (리스트뷰 요청 정보)
                 sb.AppendFormat(",\"tree\":\"{0}\"", "");
@@ -1081,18 +1081,18 @@ namespace ZumNet.Web.Bc
                         sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
                         sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
                         sb.Append(",\"lv\": {");
-                        sb.AppendFormat("\"tgt\":\"{0}\"", jReq["tgt"].ToString());
-                        sb.AppendFormat(",\"page\":\"{0}\"", jReq["page"].ToString());
-                        sb.AppendFormat(",\"count\":\"{0}\"", jReq["count"].ToString());
+                        sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));
+                        sb.AppendFormat(",\"page\":\"{0}\"", StringHelper.SafeString(jReq["page"]));
+                        sb.AppendFormat(",\"count\":\"{0}\"", StringHelper.SafeString(jReq["count"]));
                         sb.AppendFormat(",\"total\":\"{0}\"", "");
-                        sb.AppendFormat(",\"sort\":\"{0}\"", jReq["sort"].ToString());
-                        sb.AppendFormat(",\"sortdir\":\"{0}\"", jReq["sortdir"].ToString());
-                        sb.AppendFormat(",\"search\":\"{0}\"", jReq["search"].ToString());
-                        sb.AppendFormat(",\"searchtext\":\"{0}\"", jReq["searchtext"].ToString());
-                        sb.AppendFormat(",\"start\":\"{0}\"", jReq["start"].ToString());
-                        sb.AppendFormat(",\"end\":\"{0}\"", jReq["end"].ToString());
-                        sb.AppendFormat(",\"basesort\":\"{0}\"", jReq["basesort"].ToString());
-                        sb.AppendFormat(",\"boundary\":\"{0}\"", jReq["boundary"].ToString());
+                        sb.AppendFormat(",\"sort\":\"{0}\"", StringHelper.SafeString(jReq["sort"]));
+                        sb.AppendFormat(",\"sortdir\":\"{0}\"", StringHelper.SafeString(jReq["sortdir"]));
+                        sb.AppendFormat(",\"search\":\"{0}\"", StringHelper.SafeString(jReq["search"]));
+                        sb.AppendFormat(",\"searchtext\":\"{0}\"", StringHelper.SafeString(jReq["searchtext"]));
+                        sb.AppendFormat(",\"start\":\"{0}\"", StringHelper.SafeString(jReq["start"]));
+                        sb.AppendFormat(",\"end\":\"{0}\"", StringHelper.SafeString(jReq["end"]));
+                        sb.AppendFormat(",\"basesort\":\"{0}\"", StringHelper.SafeString(jReq["basesort"]));
+                        sb.AppendFormat(",\"boundary\":\"{0}\"", StringHelper.SafeString(jReq["boundary"]));
                         sb.Append("}"); //lv (리스트뷰 요청 정보)
                         sb.Append("}");
 
@@ -1184,6 +1184,94 @@ namespace ZumNet.Web.Bc
             sb.Append("}");
 
             return JObject.Parse(sb.ToString());
+        }
+
+        /// <summary>
+        /// 결재 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="chargerCheck"></param>
+        /// <param name="curBox"></param>
+        /// <returns></returns>
+        public static string EAInit(this Controller ctrl, bool chargerCheck, string curBox)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            if (chargerCheck)
+            {
+                //담당 체크
+                using (ZumNet.BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+                {
+                    svcRt = wkList.GetMenuConfig(Convert.ToInt32(HttpContext.Current.Session["DNID"]), Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(HttpContext.Current.Session["DeptID"]));
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.FormCharger = svcRt.ResultDataDetail["FormCharger"];
+                    ctrl.ViewBag.RcvManager = svcRt.ResultDataDetail["RcvManager"];
+                    ctrl.ViewBag.SharedFolder = svcRt.ResultDataRowCollection;
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            try
+            {
+                string sDel = "/";                
+                string[,] vBox = {
+                    //type, node, location, actrole, query, basesort, 문서함명, basesoft명, count여부, bold여부
+                    { "u", "node.do", "do", "", "do" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReqDate", Resources.EA.BoxToDo, Resources.Global.Date_Request, "Y", "Y" },
+                    { "u", "node.ep", "ep", "", "ep" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "PIStart", Resources.EA.BoxExpected, Resources.Global.Date_Draft, "Y", "Y" },
+                    { "u", "node.wt", "wt", "", "wt" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CreateDate", Resources.EA.BoxWaiting, Resources.Global.Date_Sent, "", "" },
+                    { "u", "node.av", "av", "", "av" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToApprove, Resources.Global.Date_Receive, "Y", "Y" },
+                    { "u", "node.go", "go", "", "go" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxInProcess, Resources.Global.Date_Approve, "Y", "Y" },
+                    { "u", "node.cf", "cf", "_cf", "cf" + sDel + "_cf" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToConfirm, Resources.Global.Date_Receive, "Y", "" },
+                    { "u", "node.dl", "dl", "_dl", "dl" + sDel + "_dl" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxDistribued, Resources.Global.Date_Receive, "Y", "" },
+                    { "u", "node.cm", "cm", "", "cm" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxCompleted, Resources.Global.Date_Approve, "", "" },
+                    { "u", "node.rj", "rj", "", "rj" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxReturn, Resources.Global.Date_Return, "Y", "" },
+                    { "u", "node.ps", "ps", "", "ps" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxViewLater, Resources.Global.Date_Receive, "", "" },
+                    { "u", "node.re", "re", "", "re" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxReference, Resources.Global.Date_Receive, "Y", "" },
+                    { "u", "node.wd", "wd", "", "wd" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "PIEnd", Resources.EA.BoxWithdraw, Resources.Global.Date_Withdraw, "", "" },
+                    { "u", "node.te", "te", "", "te" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CreateDate", Resources.EA.BoxSaved, Resources.Global.Date_Created, "", "" },
+                
+                    { "d", "node.as", "as", "__r", "as" + sDel + "__r" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "__r", "ReceivedDate", Resources.EA.BoxAssigned, Resources.Global.Date_Receive, "Y", "Y" },
+                    { "d", "node.__r", "__r", "__r", "__r" + sDel + "__r" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "__r", "ReceivedDate", Resources.EA.BoxReceived, Resources.Global.Date_Receipt, "Y", "Y" },
+                    { "d", "node._s", "_s", "_s", "_s" + sDel + "_s" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "_s", "CompletedDate", Resources.EA.BoxSent, Resources.Global.Date_Send, "", "" },
+                    { "d", "node._a", "_a", "_a", "_a" + sDel + "_a" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "_a", "PIEnd", Resources.EA.BoxCompleted, Resources.Global.Date_Complete, "", "" },
+                    { "d", "node._re", "_re", "_re", "_re" + sDel + "_re" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "_re", "ReceivedDate", Resources.EA.BoxReference, Resources.Global.Date_Receipt, "Y", "" },
+                    { "d", "node._dl", "dl", "_dl", "dl" + sDel + "_dl" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "_dl", "ReceivedDate", Resources.EA.BoxDistribued, Resources.Global.Date_Receipt, "Y", "" }
+                };
+
+                if (curBox == "" || curBox.IndexOf(sDel) < 0) curBox = "av" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(); //기본 결재함
+                string[] vQuery = curBox.Split(new string[] { sDel }, StringSplitOptions.None);
+                string[] vCurrentBox = new string[10];
+
+                for (int i = 0; i < vBox.GetLength(0); i++)
+                {
+                    if (vQuery[0] == vBox[i, 2] && vQuery[1] == vBox[i, 3]) //location, actrole
+                    {
+                        for(int j = 0; j < vCurrentBox.Length; j++)
+                        {
+                            vCurrentBox[j] = vBox.GetValue(i, j).ToString(); 
+                        }
+                        break;
+                    }
+                }
+
+                ctrl.ViewBag.Box = vBox;
+                ctrl.ViewBag.CurBox = vCurrentBox;
+                ctrl.ViewBag.PartID = vQuery[2];
+            }
+            catch(Exception ex)
+            {
+                strReturn = ex.Message;
+            }
+
+            return strReturn;
         }
     }
     #endregion

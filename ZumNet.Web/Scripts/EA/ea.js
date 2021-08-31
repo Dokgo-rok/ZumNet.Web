@@ -14,16 +14,23 @@ $(function () {
         e.preventDefault();
 
         _zw.V.opnode = $(this).parent().attr('data-location');
-        _zw.V.ttl = $(this).find('span:first-child').text();
+        _zw.V.ttl = $(this).find('span:first').text();
 
-        //alert(_zw.V.ttl + " : " + _zw.V.opnode); return;
-
-        var encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"",xfalias:"' + _zw.V.xfalias + '",fdid:"",opnode:"' + _zw.V.opnode + '",ttl:"' + _zw.V.ttl + '",acl:"' + _zw.V.current.acl + '"}');
+        //window.location.href = '/EA/Main/List?qi=' + encodeURIComponent(_zw.fn.getLvQuery(false));
 
         if (_zw.V.current.page.toLowerCase() == '/ea/main/list') {
 
+            $('#__LeftMenu li[data-box] .sidenav-link').each(function () {
+                $(this).parent().removeClass('active');
+            });
+
+            $(this).parent().addClass('active');
+
+            _zw.fn.initLv('');
+            _zw.fn.loadList();
+
         } else {
-            window.location.href = '/EA/Main/List?qi=' + encQi;
+            window.location.href = '/EA/Main/List?qi=' + encodeURIComponent(_zw.fn.getLvQuery(false));
         }
     });
     
@@ -53,13 +60,13 @@ $(function () {
             beforeSend: function () { //로딩 X
             }
         });
-        var t = setTimeout("_zw.fn.viewCount('" + xf + "', '" + loc + "', '" + ar + "', '" + admin + "')", 60000);
+        //var t = setTimeout("_zw.fn.viewCount('" + xf + "', '" + loc + "', '" + ar + "', '" + admin + "')", 60000);
     }
 
     _zw.fn.viewCount('ea', 'base2', '', 'N');
 
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery();
+        var postData = _zw.fn.getLvQuery(true);
         var url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 
         $.ajax({
@@ -85,8 +92,7 @@ $(function () {
         alert(1)
     }
 
-    _zw.fn.getLvQuery = function () {
-        //alert(encodeURIComponent(_zw.V.ttl))
+    _zw.fn.getLvQuery = function (lv) {
         var j = {};
         j["ct"] = _zw.V.ct;
         j["ctalias"] = _zw.V.ctalias;
@@ -96,17 +102,20 @@ $(function () {
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
         j["ttl"] = _zw.V.ttl;
-        j["tgt"] = _zw.V.lv.tgt;
-        j["page"] = _zw.V.lv.page;
-        j["count"] = _zw.V.lv.count;
-        j["sort"] = _zw.V.lv.sort;
-        j["sortdir"] = _zw.V.lv.sortdir;
-        j["search"] = _zw.V.lv.search;
-        j["searchtext"] = _zw.V.lv.searchtext;
-        j["start"] = _zw.V.lv.start;
-        j["end"] = _zw.V.lv.end;
-        j["basesort"] = _zw.V.lv.basesort;
-        j["boundary"] = _zw.V.lv.boundary;
+
+        if (lv) {
+            j["tgt"] = _zw.V.lv.tgt;
+            j["page"] = _zw.V.lv.page;
+            j["count"] = _zw.V.lv.count;
+            j["sort"] = _zw.V.lv.sort;
+            j["sortdir"] = _zw.V.lv.sortdir;
+            j["search"] = _zw.V.lv.search;
+            j["searchtext"] = _zw.V.lv.searchtext;
+            j["start"] = _zw.V.lv.start;
+            j["end"] = _zw.V.lv.end;
+            j["basesort"] = _zw.V.lv.basesort;
+            j["boundary"] = _zw.V.lv.boundary;
+        }
 
         //alert(j["permission"])
 
@@ -120,8 +129,8 @@ $(function () {
         _zw.V.lv.tgt = tgt;
         _zw.V.lv.page = '1';
         _zw.V.lv.count = sCnt == '' ? '20' : sCnt;
-        _zw.V.lv.sort = 'SeqID';
-        _zw.V.lv.sortdir = 'DESC';
+        _zw.V.lv.sort = '';
+        _zw.V.lv.sortdir = '';
         _zw.V.lv.search = '';
         _zw.V.lv.searchtext = '';
         _zw.V.lv.start = '';

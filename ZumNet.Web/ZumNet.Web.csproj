@@ -1074,6 +1074,10 @@
     <Content Include="Areas\WoA\Views\Dashboard\Webpart.cshtml" />
     <Content Include="Areas\WoA\Views\App\Charge.cshtml" />
     <Content Include="Areas\WoA\Views\App\Option.cshtml" />
+    <Content Include="Areas\EA\Views\Main\List.cshtml" />
+    <Content Include="Areas\EA\Views\Main\_ListCount.cshtml" />
+    <Content Include="Areas\EA\Views\Main\_ListPagination.cshtml" />
+    <Content Include="Areas\EA\Views\Main\_ListView.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

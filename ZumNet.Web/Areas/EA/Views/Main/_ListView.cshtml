@@ -1,0 +1,114 @@
+﻿@using System.Data;
+
+@functions{
+
+}
+
+
+@if (ViewBag.BoardList != null && ViewBag.BoardList.Rows.Count > 0)
+{
+    foreach (DataRow row in ViewBag.BoardList.Rows)
+    {
+        string sRead = "";
+        string strId = "";
+
+        if (ViewBag.CurBox[2] == "te")
+        {
+            strId = "_" + row["MessageID"].ToString();
+        }
+        else if (ViewBag.CurBox[2] == "wd" || ViewBag.CurBox[2] == "cr")
+        {
+            strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString();
+        }
+        else if (ViewBag.CurBox[2] == "dl" || ViewBag.CurBox[2] == "cf")
+        {
+            sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
+            strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["CabinetID"].ToString();
+        }
+        else if (ViewBag.CurBox[2] == "wt")
+        {
+            sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
+            strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["SvcID"].ToString();
+        }
+        else if (ViewBag.CurBox[2] == "do")
+        {
+            sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
+            strId = "_" + row["WnID"].ToString();
+        }
+        else
+        {
+            sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
+            strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["WorkItemID"].ToString();
+        }
+
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)">
+            <div class="wd-8 wd-lg-5 wd-xl-4 message-checkbox">
+                <label class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input">
+                    <span class="custom-control-label"></span>
+                </label>
+            </div>
+
+            <div class="d-none d-md-block wd-lg-6 wd-xl-5 text-sm-center pr-2">
+                <span class="flex-fill">@row["HasAttachFile"]</span>
+            </div>
+
+            <div class="wd-92 flex-fill text-truncate d-flex align-items-center">
+                @if (ViewBag.CurBox[2] == "te")
+                {
+                    <a class="text-truncate" href="javascript:void(0)">@row["Subject"].ToString()</a>
+                }
+                else if (ViewBag.CurBox[2] == "do")
+                {
+                    <a class="text-truncate" href="javascript:void(0)">@row["WnDisplay"].ToString()</a>
+                }
+                else
+                {
+                    <a class="text-truncate" href="javascript:void(0)">@row["PIName"].ToString()</a>
+                }
+
+
+            </div>
+
+            <div class="w-100 d-sm-none py-0"></div>
+
+            <div class="wd-99 wd-lg-34 wd-xl-32 d-flex">
+                <div class="wd-8 d-sm-none"></div>
+                @if (row["HasAttachFile"].ToString() != "0")
+                {
+                    <div class="wd-5 wd-lg-12 wd-xl-10 text-sm-right">
+                        <a href="javascript:void(0)" class="text-blue pr-2"><i class="fe-paperclip"></i></a>
+                    </div>
+                    <div class="wd-15 wd-lg-35 wd-xl-35 t-sm text-sm-center pr-2">
+                        <span class="">@row["Creator"]</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-none d-sm-block wd-lg-12 wd-xl-10"></div>
+                    <div class="wd-20 wd-lg-35 wd-xl-35 t-sm text-sm-center pr-2">
+                        <span class="">@row["Creator"]</span>
+                    </div>
+                }
+
+                <div class="wd-20 wd-lg-35 wd-xl-30 t-sm text-sm-center pr-2">
+                    <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                </div>
+
+                <div class="text-right text-pink flex-fill pr-1">
+                    @if (ViewBag.CurBox[2] != "te")
+                    { 
+                        <span class="">@row["ViewCount"]</span>
+                    }
+                        
+                </div>
+            </div>
+        </li>
+    }
+}
+else
+{
+    <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x">
+        <div class="w-100 text-center pt-3">@Resources.Global.NoItemShow</div>
+    </li>
+}

@@ -144,8 +144,8 @@
   <data name="BoxReference" xml:space="preserve">
     <value>Reference</value>
   </data>
-  <data name="BoxRejected" xml:space="preserve">
-    <value>Rejected</value>
+  <data name="BoxReturn" xml:space="preserve">
+    <value>Returned</value>
   </data>
   <data name="BoxSaved" xml:space="preserve">
     <value>Saved</value>
@@ -174,8 +174,8 @@
   <data name="BoxWaiting" xml:space="preserve">
     <value>Waiting</value>
   </data>
-  <data name="BoxWithdrawn" xml:space="preserve">
-    <value>Withdrawn</value>
+  <data name="BoxWithdraw" xml:space="preserve">
+    <value>Collection</value>
   </data>
   <data name="Monitoring" xml:space="preserve">
     <value>Monitoring</value>

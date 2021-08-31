@@ -189,11 +189,71 @@
   <data name="Cresyn" xml:space="preserve">
     <value>Cresyn</value>
   </data>
+  <data name="Date_Approve" xml:space="preserve">
+    <value>批准日期</value>
+  </data>
+  <data name="Date_Complete" xml:space="preserve">
+    <value>完成日期</value>
+  </data>
+  <data name="Date_Confirm" xml:space="preserve">
+    <value>确认日期</value>
+  </data>
   <data name="Date_Created" xml:space="preserve">
     <value>创建日</value>
   </data>
   <data name="Date_Deleted" xml:space="preserve">
     <value>删除日</value>
+  </data>
+  <data name="Date_Draft" xml:space="preserve">
+    <value>起草日期</value>
+  </data>
+  <data name="Date_Edit" xml:space="preserve">
+    <value>编辑日期</value>
+  </data>
+  <data name="Date_End" xml:space="preserve">
+    <value>结束日期</value>
+  </data>
+  <data name="Date_Expired" xml:space="preserve">
+    <value>到期日</value>
+  </data>
+  <data name="Date_Modify" xml:space="preserve">
+    <value>修改日期</value>
+  </data>
+  <data name="Date_Popup" xml:space="preserve">
+    <value>弹出日期</value>
+  </data>
+  <data name="Date_Posted" xml:space="preserve">
+    <value>发表日期</value>
+  </data>
+  <data name="Date_Receipt" xml:space="preserve">
+    <value>收到日期</value>
+  </data>
+  <data name="Date_Receive" xml:space="preserve">
+    <value>接收日期</value>
+  </data>
+  <data name="Date_Regist" xml:space="preserve">
+    <value>注册日期</value>
+  </data>
+  <data name="Date_Request" xml:space="preserve">
+    <value>查询日期</value>
+  </data>
+  <data name="Date_Return" xml:space="preserve">
+    <value>归期</value>
+  </data>
+  <data name="Date_Send" xml:space="preserve">
+    <value>发送日期</value>
+  </data>
+  <data name="Date_Sent" xml:space="preserve">
+    <value>发送日期</value>
+  </data>
+  <data name="Date_Start" xml:space="preserve">
+    <value>开始日期</value>
+  </data>
+  <data name="Date_View" xml:space="preserve">
+    <value>查询日期</value>
+  </data>
+  <data name="Date_Withdraw" xml:space="preserve">
+    <value>采集日期</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>删除</value>

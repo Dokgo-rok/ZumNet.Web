@@ -118,25 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Box" xml:space="preserve">
-    <value>Folders</value>
+    <value>文件夹</value>
   </data>
   <data name="BoxApproval" xml:space="preserve">
-    <value>Approval</value>
+    <value>批准</value>
   </data>
   <data name="BoxAssigned" xml:space="preserve">
-    <value>To Assigned</value>
+    <value>分配给</value>
   </data>
   <data name="BoxCompleted" xml:space="preserve">
-    <value>Completed</value>
+    <value>完全的</value>
   </data>
   <data name="BoxDistribued" xml:space="preserve">
-    <value>Distributed</value>
+    <value>分配</value>
   </data>
   <data name="BoxExpected" xml:space="preserve">
-    <value>Expected</value>
+    <value>预期的</value>
   </data>
   <data name="BoxInProcess" xml:space="preserve">
-    <value>In Process</value>
+    <value>进行中</value>
   </data>
   <data name="BoxReceived" xml:space="preserve">
     <value>Received</value>
@@ -174,8 +174,8 @@
   <data name="BoxWaiting" xml:space="preserve">
     <value>Waiting</value>
   </data>
-  <data name="BoxWithdrawn" xml:space="preserve">
-    <value>Withdrawn</value>
+  <data name="BoxWithdraw" xml:space="preserve">
+    <value>Collection</value>
   </data>
   <data name="Monitoring" xml:space="preserve">
     <value>Monitoring</value>
