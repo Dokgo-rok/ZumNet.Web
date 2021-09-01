@@ -70,7 +70,12 @@
                             @Html.ValidationMessageFor(m => m.LoginId, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
-                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = Html.DisplayNameFor(m => m.Password) })
+                            <div class="input-group">
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = Html.DisplayNameFor(m => m.Password) })
+                                <div class="input-group-append" data-password="false">
+                                    <span class="input-group-text fas fa-eye password-eye bg-light"></span>
+                                </div>
+                            </div>
                             @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                         </div>
                         @*<div class="form-group">
@@ -109,30 +114,4 @@
 
 @section Scripts {
     @Scripts.Render("~/bundle/jqueryval")
-
-    <script type="text/javascript">
-        $(function () {
-            var userId = _zw.ut.getCookie("accountField"); //console.log('cookie -> ' + userId)
-            if (userId && userId != 'null' && userId != '') {
-                $("#LoginId").val(userId);
-                $("#RememberMe").prop('checked', true);
-                $("#Password").focus();
-            } else {
-                $("#LoginId").focus();
-            }
-
-            $("#loginForm").submit(function () {
-                //console.log(event);
-
-                if ($("#RememberMe").prop('checked')) {
-                    _zw.ut.setCookie("accountField", $("#LoginId").val(), 30); //30일
-                } else {
-                    _zw.ut.deleteCookie("accountField");
-                }
-
-                //event.cancelBubble = true;
-                //event.preventDefault();
-            });
-        });
-    </script>
 }

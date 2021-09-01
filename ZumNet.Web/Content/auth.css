@@ -61,4 +61,26 @@ ul, li {
     padding-left: 0; /* IE */
 }
 
+.input-group .input-group-append .input-group-text {
+    border-top-right-radius: .25rem !important;
+    border-bottom-right-radius: .25rem !important;
+}
+
+.password-eye {
+    background-color: #efefef;
+    border: 1px solid #dddddd;
+    border-left:0;
+}
+.password-eye:before {
+    font-family: feather !important;
+    content: "\e86a";
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    line-height: 1.2;
+    font-size: 16px;
+}
+.show-password .password-eye:before {
+    content: "\e86e";
+}
 

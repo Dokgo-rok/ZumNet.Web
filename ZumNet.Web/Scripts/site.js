@@ -171,6 +171,42 @@ $(function () {
     });
 });
 
+$(function () {
+    // logon page
+    var userId = _zw.ut.getCookie("accountField"); //console.log('cookie -> ' + userId)
+    if (userId && userId != 'null' && userId != '') {
+        $("#LoginId").val(userId);
+        $("#RememberMe").prop('checked', true);
+        $("#Password").focus();
+    } else {
+        $("#LoginId").focus();
+    }
+
+    $("#loginForm").submit(function () {
+        //console.log(event);
+
+        if ($("#RememberMe").prop('checked')) {
+            _zw.ut.setCookie("accountField", $("#LoginId").val(), 30); //30일
+        } else {
+            _zw.ut.deleteCookie("accountField");
+        }
+
+        //event.cancelBubble = true;
+        //event.preventDefault();
+    });
+
+    $("[data-password]").on('click', function () {
+        if ($(this).attr('data-password') == "false") {
+            $(this).siblings("input").attr("type", "text");
+            $(this).attr('data-password', 'true');
+            $(this).addClass("show-password");
+        } else {
+            $(this).siblings("input").attr("type", "password");
+            $(this).attr('data-password', 'false');
+            $(this).removeClass("show-password");
+        }
+    });
+});
 
 (function () {
     var root = this;

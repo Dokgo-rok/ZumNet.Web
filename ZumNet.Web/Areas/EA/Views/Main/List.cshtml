@@ -29,36 +29,9 @@
 <div class="messages-wrapper">
 
     <!-- sidebox -->
-    <div class="messages-sidebox messages-scroll bg-body border-right">
-        <div class="z-mobile-navbar"></div>
-
-        <div class="py-3 px-4">
-            <div class="media align-items-center">
-                <div class="media-body">
-                    <a id="__NewMessage" href="javascript:void(0)" class="btn btn-teal rounded-pill btn-block"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeForm</a>
-                </div>
-                <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
-            </div>
-            <div class="row mt-3">
-                <div class="col-6 text-center px-0">
-                    <a class="" href="/Board/Recent"><i class="fas fa-project-diagram"></i> @Resources.EA.PersonLine</a>
-                </div>
-                <div class="col-6 text-center px-1">
-                    <a class="" href="/Board/Save"><i class="fas fa-chalkboard"></i> @Resources.EA.Monitoring</a>
-                </div>
-
-            </div>
-        </div>
-
-        <hr class="border-light mx-4 mt-0 mb-2">
-
-        <!-- sidebox tree -->
-        <div id="__LeftMenu" class="sidenav-vertical z-lm">
-            @Html.Partial("_LeftMenu")
-        </div>
-        <!-- / sidebox tree -->
-    </div>
+    @Html.Partial("_LeftMenu")
     <!-- / sidebox -->
+
     <!-- content -->
     <div class="d-flex flex-column w-100">
         <!-- Header -->
@@ -86,7 +59,7 @@
                     <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
                     @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W"))
                     {
-                        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeNew" data-zv-menu="write"><i class="fe-edit-2"></i></button>
+                        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeForm" data-zv-menu="write"><i class="fe-edit-2"></i></button>
                     }
                 </div>
                 <div class="px-1 flex-grow-1"></div>
