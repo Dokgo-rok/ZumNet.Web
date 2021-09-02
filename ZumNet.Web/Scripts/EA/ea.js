@@ -80,9 +80,11 @@ $(function () {
                     $('.z-ttl span').html(_zw.V.ttl);
 
                     var v = res.substr(2).split(_zw.V.lv.boundary);
-                    $('#__ListView').html(v[0]);
-                    $('#__ListCount').html(v[1]);
-                    $('#__ListPage').html(v[2]);
+                    $('#__ListHead').html(v[0]);
+                    $('#__ListView').html(v[1]);
+                    $('#__ListCount').html(v[2]);
+                    $('#__ListMenuSearch').html(v[3]);
+                    $('#__ListPage').html(v[4]);
 
                 } else bootbox.alert(res);
             }

@@ -1,0 +1,25 @@
+﻿<div class="z-lv-menu btn-group-sm">
+    <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
+    <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeForm" data-zv-menu="write"><i class="fe-edit-2"></i></button>
+</div>
+<div class="px-1 flex-grow-1"></div>
+<div class="d-flex z-lv-cond">
+    <div class="datepicker input-group input-daterange z-lv-date mr-1">
+        <input type="text" class="form-control start-date px-1">
+        <div class="input-group-prepend">
+            <span class="input-group-text">~</span>
+        </div>
+        <input type="text" class="form-control end-date px-1">
+    </div>
+    <div class="input-group z-lv-search">
+        <select class="custom-select">
+            <option>@Resources.Global.Select...</option>
+            <option>@Resources.Global.Title</option>
+            <option>@Resources.Global.Writer</option>
+        </select>
+        <input type="text" class="form-control" placeholder="@Resources.Global.Search">
+        <span class="input-group-append">
+            <button class="btn btn-secondary" type="button"><i class="fe-search"></i></button>
+        </span>
+    </div>
+</div>

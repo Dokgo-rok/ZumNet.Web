@@ -52,13 +52,13 @@
         </div>
     </div>
 
-    <hr class="border-light mx-4 mt-0 mb-2">
+    <hr class="border-light mx-4 mt-0 mb-1">
 
     <!-- sidebox tree -->
     <div id="__LeftMenu" class="sidenav-vertical z-lm">
         <ul class="sidenav-inner">
 
-            <li class="sidenav-item" data-box="@ViewBag.Box[0, 1]" data-location="@ViewBag.Box[0, 4]">
+            <li class="sidenav-item@(ViewBag.Box[0, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[0, 4] ? " active" : "")" data-box="@ViewBag.Box[0, 1]" data-location="@ViewBag.Box[0, 4]">
                 <a href="javascript:void(0)" class="sidenav-link font-weight-bold"><i class="fe-check-square sidenav-icon"></i><span>@ViewBag.Box[0, 6]</span><span class="z-lm-cnt"></span></a>
             </li>
             <li class="sidenav-item open">

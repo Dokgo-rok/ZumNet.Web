@@ -174,6 +174,23 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     sPos = "200";
                     int iCategoryId = Convert.ToInt32(jPost["ct"]);
 
+                    //메뉴 권한체크 (objecttype='' 이면 폴더권한 체크 X)
+                    if (Session["Admin"].ToString() == "Y")
+                    {
+                        ViewBag.R.current["operator"] = "Y";
+                    }
+                    else
+                    {
+                        sPos = "210";
+                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        {
+                            svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
+
+                            ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                            ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                        }
+                    }
+
                     //담당 체크 및 문서함 정보
                     rt = Bc.CtrlHandler.EAInit(this, false, jPost["opnode"].ToString());
                     if (rt != "")
@@ -229,9 +246,13 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         ViewBag.BoardList = svcRt.ResultDataTable;
                         ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
 
-                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListView", ViewBag)
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListHead", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "_ListView", ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "_ListCount", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "_ListMenuSearch", ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "_ListPagination", ViewBag);
                     }

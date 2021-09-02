@@ -1079,6 +1079,8 @@
     <Content Include="Areas\EA\Views\Main\_ListCount.cshtml" />
     <Content Include="Areas\EA\Views\Main\_ListPagination.cshtml" />
     <Content Include="Areas\EA\Views\Main\_ListView.cshtml" />
+    <Content Include="Areas\EA\Views\Main\_ListHead.cshtml" />
+    <Content Include="Areas\EA\Views\Main\_ListMenuSearch.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
