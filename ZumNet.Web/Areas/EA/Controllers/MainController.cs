@@ -122,7 +122,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 {
                     if (sLocation == "wt")
                     {
-                        ViewBag.R.lv["search"] = Environment.MachineName;
+                        ViewBag.R.lv["search"] = "EKPDEV"; // Environment.MachineName;
                         ViewBag.R.lv["searchtext"] = Session["CompanyCode"].ToString();
                     }
                     if (sLocation == "cr") iState = 0;
@@ -130,7 +130,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     else if (sLocation == "uc") iState = 7;
 
                     svcRt = wkList.ViewListPerMenu(sLocation, "N", "", 0, Convert.ToInt32(ViewBag.PartID), iState, Convert.ToInt32(ViewBag.R.lv.page.Value)
-                                            , Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC", "", "", "", "");
+                                            , Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC"
+                                            , ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString(), "", "");
                 }
                 else
                 {
@@ -214,8 +215,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             sPos = "410";
                             if (sLocation == "wt")
                             {
-                                ViewBag.R.lv["search"] = Environment.MachineName;
-                                ViewBag.R.lv["searchtext"] = Session["CompanyCode"].ToString();
+                                jPost["lv"]["search"] = "EKPDEV"; // Environment.MachineName;
+                                jPost["lv"]["searchtext"] = Session["CompanyCode"].ToString();
                             }
                             if (sLocation == "cr") iState = 0;
                             else if (sLocation == "ug") iState = 1;
@@ -276,6 +277,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
         public string Count()
         {
             string sPos = "";
+            string sSvcMode = "";
             string rt = "";
 
             if (Request.IsAjaxRequest())
@@ -290,7 +292,11 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     sPos = "200";
                     using (ZumNet.BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
                     {
-                        svcRt = wkList.GetWorkItemCount(Session["FlowSvcMode"].ToString(), Convert.ToInt32(Session["DNID"]), vPostData[0], "", vPostData[1], vPostData[2]
+                        sPos = "210";
+                        sSvcMode = Session["FlowSvcMode"] != null && Session["FlowSvcMode"].ToString().Substring(0, 1) == "Y" ? "Y" : "";
+
+                        sPos = "220";
+                        svcRt = wkList.GetWorkItemCount(sSvcMode, Convert.ToInt32(Session["DNID"]), vPostData[0], "", vPostData[1], vPostData[2]
                                                     , vPostData[3], "", vPostData[4], "", vPostData[5], Environment.MachineName, Session["CompanyCode"].ToString(), "");
                     }
 

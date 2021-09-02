@@ -432,6 +432,9 @@
   <data name="Previous" xml:space="preserve">
     <value>이전</value>
   </data>
+  <data name="PrevWork" xml:space="preserve">
+    <value>이전작업</value>
+  </data>
   <data name="Print" xml:space="preserve">
     <value>인쇄</value>
   </data>
@@ -455,6 +458,12 @@
   </data>
   <data name="Reply" xml:space="preserve">
     <value>회신</value>
+  </data>
+  <data name="ReqDept" xml:space="preserve">
+    <value>요청부서</value>
+  </data>
+  <data name="Requester" xml:space="preserve">
+    <value>요청자</value>
   </data>
   <data name="Reset" xml:space="preserve">
     <value>초기화</value>

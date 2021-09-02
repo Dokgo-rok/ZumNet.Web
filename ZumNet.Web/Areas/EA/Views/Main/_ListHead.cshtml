@@ -1,37 +1,123 @@
 ﻿<li class="list-group-item list-group-item-action d-flex align-items-center container-p-x bg-light">
     <div class="wd-lg-4 wd-xl-3 message-checkbox">
-        <label class="custom-control custom-checkbox">
+        <label class="custom-control custom-checkbox" data-toggle="tooltip" data-placement="right" title="@Resources.Global.Select">
             <input type="checkbox" class="custom-control-input">
             <span class="custom-control-label"></span>
         </label>
     </div>
 
-    <div class="d-none d-md-block wd-lg-7 wd-xl-6 text-truncate pr-2">
-        <span class="flex-fill">@Resources.Global.Division</span>
-    </div>
-
-    <div class="d-none d-md-block wd-lg-12 wd-xl-10 text-truncate pr-2">
-        <span class="flex-fill">@Resources.Global.DocName</span>
-    </div>
-
+    @if (ViewBag.CurBox[2] != "wt" && ViewBag.CurBox[2] != "do")
+    {
+        <div class="d-none d-md-block wd-lg-7 wd-xl-6 text-truncate pr-2">
+            <span class="flex-fill">@Resources.Global.Division</span>
+        </div>
+    }
+    @if (ViewBag.CurBox[2] != "do")
+    {
+        <div class="d-none d-md-block wd-lg-12 wd-xl-10 text-truncate pr-2">
+            <span class="flex-fill">@Resources.Global.DocName</span>
+        </div>
+    }
     <div class="flex-fill text-truncate text-center">
         <a href="javascript:void(0)">@Resources.Global.Title</a>
     </div>
 
-    <div class="wd-lg-40 wd-xl-36 d-flex">
-        <div class="wd-12 wd-lg-6 wd-xl-5 text-sm-right">
-            <i class="fe-paperclip"></i>
-        </div>
-        <div class="wd-15 wd-lg-32 wd-xl-30 t-sm text-sm-center pr-2">
-            <span class="">@Resources.Global.Writer</span>
-        </div>
-        <div class="wd-15 wd-lg-37 wd-xl-35 t-sm text-sm-center pr-2">
-            <span class="">@Resources.Global.WriteDept</span>
-        </div>
+    @if (ViewBag.CurBox[2] == "go")
+    {
+        <div class="wd-lg-43 wd-xl-40 d-flex">
+            <div class="wd-6 wd-lg-6 wd-xl-5 text-sm-right">
+                <i class="fe-rotate-ccw"></i>
+            </div>
+            <div class="wd-6 wd-lg-6 wd-xl-5 text-sm-right">
+                <i class="fe-paperclip"></i>
+            </div>
+            <div class="wd-15 wd-lg-31 wd-xl-29 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.Writer</span>
+            </div>
+            <div class="wd-15 wd-lg-36 wd-xl-34 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.WriteDept</span>
+            </div>
 
-        <div class="text-right flex-fill pr-2">
-            <span class="">@ViewBag.CurBox[7]</span>
+            <div class="text-right flex-fill pr-2">
+                <span class="">@ViewBag.CurBox[7]</span>
+            </div>
         </div>
-    </div>
+    }
+    else if (ViewBag.CurBox[2] == "wt")
+    {
+        <div class="wd-lg-54 wd-xl-52 d-flex">
+            <div class="wd-6 wd-lg-5 wd-xl-5 text-sm-right">
+                <i class="fe-rotate-ccw"></i>
+            </div>
+            <div class="wd-6 wd-lg-5 wd-xl-5 text-sm-right">
+                <i class="fe-paperclip"></i>
+            </div>
+            <div class="wd-12 wd-lg-12 wd-xl-12 t-sm text-sm-center pr-2">
+                <span class="">종류</span>
+            </div>
+            <div class="wd-15 wd-lg-21 wd-xl-21 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.Date_Request</span>
+            </div>
+            <div class="wd-15 wd-lg-15 wd-xl-15 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.Writer</span>
+            </div>
+            <div class="wd-15 wd-lg-21 wd-xl-21 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.WriteDept</span>
+            </div>
+
+            <div class="text-right flex-fill pr-2">
+                <span class="">@ViewBag.CurBox[7]</span>
+            </div>
+        </div>
+    }
+    else if (ViewBag.CurBox[2] == "do")
+    {
+        <div class="wd-lg-60 wd-xl-58 d-flex">
+            <div class="wd-15 wd-lg-20 wd-xl-20 t-sm text-sm-center pr-2">
+                <span class="">@ViewBag.CurBox[7]</span>
+            </div>
+            <div class="wd-15 wd-lg-20 wd-xl-20 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.Requester</span>
+            </div>
+            <div class="wd-15 wd-lg-20 wd-xl-20 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.ReqDept</span>
+            </div>
+            <div class="wd-25 wd-lg-20 wd-xl-20 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.PrevWork</span>
+            </div>
+            <div class="text-right flex-fill pr-2">
+                <span class="">@Resources.Global.Date_View</span>
+            </div>
+        </div>
+    }
+    else if (ViewBag.CurBox[2] == "wd" || ViewBag.CurBox[2] == "te")
+    {
+        <div class="wd-lg-15 wd-xl-15 d-flex">
+            <div class="wd-12 wd-lg-10 wd-xl-8 text-sm-right">
+                <i class="fe-paperclip"></i>
+            </div>
+            <div class="text-right flex-fill pr-2">
+                <span class="">@ViewBag.CurBox[7]</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="wd-lg-40 wd-xl-36 d-flex">
+            <div class="wd-12 wd-lg-6 wd-xl-5 text-sm-right">
+                <i class="fe-paperclip"></i>
+            </div>
+            <div class="wd-15 wd-lg-32 wd-xl-30 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.Writer</span>
+            </div>
+            <div class="wd-15 wd-lg-37 wd-xl-35 t-sm text-sm-center pr-2">
+                <span class="">@Resources.Global.WriteDept</span>
+            </div>
+
+            <div class="text-right flex-fill pr-2">
+                <span class="">@ViewBag.CurBox[7]</span>
+            </div>
+        </div>
+    }
 </li>
 

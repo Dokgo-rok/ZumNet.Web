@@ -59,7 +59,9 @@
         <ul class="sidenav-inner">
 
             <li class="sidenav-item@(ViewBag.Box[0, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[0, 4] ? " active" : "")" data-box="@ViewBag.Box[0, 1]" data-location="@ViewBag.Box[0, 4]">
-                <a href="javascript:void(0)" class="sidenav-link font-weight-bold"><i class="fe-check-square sidenav-icon"></i><span>@ViewBag.Box[0, 6]</span><span class="z-lm-cnt"></span></a>
+                <a href="javascript:void(0)" class="sidenav-link font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.Box[0, 6]">
+                    <i class="fe-check-square sidenav-icon"></i><span>@ViewBag.Box[0, 6]</span><span class="z-lm-cnt"></span>
+                </a>
             </li>
             <li class="sidenav-item open">
                 <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fe-user-check sidenav-icon"></i><span>@Session["URName"] @Resources.EA.Box</span></a>
@@ -72,7 +74,7 @@
                             if (ViewBag.Box[i, 1] != "node.wt" || (ViewBag.Box[i, 1] == "node.wt" && Session["FlowSvcMode"] != null && Session["FlowSvcMode"].ToString().Substring(0, 1) == "Y"))
                             {
                                 <li class="sidenav-item@(ViewBag.Box[i, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[i, 4] ? " active" : "")" data-box="@ViewBag.Box[i, 1]" data-location="@ViewBag.Box[i, 4]">
-                                    <a href="javascript:void(0)" class="sidenav-link">
+                                    <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.Box[i, 6]">
                                         <span>@ViewBag.Box[i, 6]</span>
                                         @if (ViewBag.Box[i, 8] == "Y")
                                         {
@@ -98,7 +100,7 @@
                                                 || ViewBag.Box[i, 1] != "node.as" || ViewBag.Box[i, 1] != "node.__r")
                             {
                                 <li class="sidenav-item@(ViewBag.Box[i, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[i, 4] ? " active" : "")" data-box="@ViewBag.Box[i, 1]" data-location="@ViewBag.Box[i, 4]">
-                                    <a href="javascript:void(0)" class="sidenav-link">
+                                    <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.Box[i, 6]">
                                         <span>@ViewBag.Box[i, 6]</span>
                                         @if (ViewBag.Box[i, 8] == "Y")
                                         {
@@ -124,16 +126,16 @@
 
                                 <ul class="sidenav-menu my-0">
                                     <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_s") > 0 ? " active" : "")" data-box="node._s" data-location="@("_s" + sDel + "_s" + sDel + row["TargetGRID"].ToString() + "_s")">
-                                        <a href="javascript:void(0)" class="sidenav-link"><span>@Resources.EA.BoxSent</span></a>
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxSent"><span>@Resources.EA.BoxSent</span></a>
                                     </li>
                                     <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_a") > 0 ? " active" : "")" data-box="node._a" data-location="@("_a" + sDel + "_a" + sDel + row["TargetGRID"].ToString() + "_a")">
-                                        <a href="javascript:void(0)" class="sidenav-link"><span>@Resources.EA.BoxCompleted</span></a>
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxCompleted"><span>@Resources.EA.BoxCompleted</span></a>
                                     </li>
                                     <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_re") > 0 ? " active" : "")" data-box="node._re" data-location="@("_re" + sDel + "_re" + sDel + row["TargetGRID"].ToString() + "_re")">
-                                        <a href="javascript:void(0)" class="sidenav-link"><span>@Resources.EA.BoxReference</span></a>
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxReference"><span>@Resources.EA.BoxReference</span></a>
                                     </li>
                                     <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_dl") > 0 ? " active" : "")" data-box="node._dl" data-location="@("dl" + sDel + "_dl" + sDel + row["TargetGRID"].ToString() + "_dl")">
-                                        <a href="javascript:void(0)" class="sidenav-link"><span>@Resources.EA.BoxDistribued</span></a>
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxDistribued"><span>@Resources.EA.BoxDistribued</span></a>
                                     </li>
                                 </ul>
                             </li>

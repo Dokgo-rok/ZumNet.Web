@@ -1006,6 +1006,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Previous Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string PrevWork {
+            get {
+                return ResourceManager.GetString("PrevWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Print과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Print {
@@ -1074,6 +1083,24 @@ namespace Resources {
         public static string Reply {
             get {
                 return ResourceManager.GetString("Reply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Request Dept.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ReqDept {
+            get {
+                return ResourceManager.GetString("ReqDept", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Requester과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Requester {
+            get {
+                return ResourceManager.GetString("Requester", resourceCulture);
             }
         }
         
@@ -1258,7 +1285,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Dept.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Writing Dept.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string WriteDept {
             get {

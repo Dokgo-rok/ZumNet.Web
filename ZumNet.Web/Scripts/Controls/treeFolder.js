@@ -72,7 +72,7 @@ $(function () {
                 default: { icon: "fas fa-folder" },
                 folder: { icon: "fas fa-folder text-warning" },
                 //fdopen: { icon: "fas fa-folder-open text-warning" },
-                group: { icon: "fas fa-user-friends" },
+                group: { icon: "fas fa-user-friends text-facebook" },
                 user: { icon: "fas fa-user" },
                 cat: { icon: "fas fa-desktop text-indigo" },
                 res: { icon: "fas fa-chalkboard text-danger" },

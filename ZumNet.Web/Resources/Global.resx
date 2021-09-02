@@ -432,6 +432,9 @@
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="PrevWork" xml:space="preserve">
+    <value>Previous Work</value>
+  </data>
   <data name="Print" xml:space="preserve">
     <value>Print</value>
   </data>
@@ -455,6 +458,12 @@
   </data>
   <data name="Reply" xml:space="preserve">
     <value>Reply</value>
+  </data>
+  <data name="ReqDept" xml:space="preserve">
+    <value>Request Dept.</value>
+  </data>
+  <data name="Requester" xml:space="preserve">
+    <value>Requester</value>
   </data>
   <data name="Reset" xml:space="preserve">
     <value>Reset</value>
@@ -517,7 +526,7 @@
     <value>Work Time</value>
   </data>
   <data name="WriteDept" xml:space="preserve">
-    <value>Dept.</value>
+    <value>Writing Dept.</value>
   </data>
   <data name="Writer" xml:space="preserve">
     <value>Writer</value>

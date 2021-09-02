@@ -432,6 +432,9 @@
   <data name="Previous" xml:space="preserve">
     <value>以前</value>
   </data>
+  <data name="PrevWork" xml:space="preserve">
+    <value>之前的工作</value>
+  </data>
   <data name="Print" xml:space="preserve">
     <value>打印</value>
   </data>
@@ -455,6 +458,12 @@
   </data>
   <data name="Reply" xml:space="preserve">
     <value>回复</value>
+  </data>
+  <data name="ReqDept" xml:space="preserve">
+    <value>请求部门</value>
+  </data>
+  <data name="Requester" xml:space="preserve">
+    <value>请求者</value>
   </data>
   <data name="Reset" xml:space="preserve">
     <value>初始化</value>
