@@ -1,0 +1,248 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using ZumNet.Framework.Util;
+@{
+    ViewBag.Title = "양식별 알림 설정";
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    <script type="text/javascript">
+		$(document).ready(function () {
+			// 설정값 세팅
+			$("select[data-default != '']").each(function () {
+				$(this).val($(this).attr("data-default"));
+			});
+		});
+
+		function editNoticeForm(obj, formID) {
+			if (!window.confirm("해당 양식 알림설정을 변경 하시겠습니까?")) {
+				return;
+			}
+
+			var $tr = $(obj).closest("tr");
+
+			var period = $tr.find("select:eq(1)").val();
+            var field = $tr.find("select:eq(2)").val();
+            var deferment = $tr.find("select:eq(3)").val();
+            var mailuse = $tr.find("select:eq(0)").val();
+
+			$.ajax({
+                url: '@Url.Action("UpdateNoticeFormInfo", "App")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{formID:"' + formID + '", period: ' + period + ', field: "' + field + '", deferment: ' + deferment + ', mailuse: "' + mailuse + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+                }
+			});
+		}
+
+		function batchNoticeBaseSet() {
+			if (!window.confirm("알림기본설정을 모든 양식에 일괄 적용하시겠습니까?")) {
+				return;
+			}
+
+			if (!window.confirm("일괄 적용 후 양식별 설정값은 삭제됩니다.\n\r계속 하시겠습니까?")) {
+				return;
+			}
+
+			$.ajax({
+                url: '@Url.Action("DeleteNoticeFormInfo", "App")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{formID:""}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		function saveNoticeBaseSet() {
+			if (!window.confirm("알림 기본 설정을 변경 하시겠습니까?")) {
+				return;
+			}
+			
+			var $tr = $("#tbl_basic tbody tr:eq(0)");
+			var key1 = "ea";
+			var key2 = "notice"
+			var key3 = "delay"
+			var item1 = $tr.find("td:eq(0)").text();
+			var item2 = $tr.find("td:eq(1)").find("select").val() + ";" + $tr.find("td:eq(2)").find("select").val() + ";" + $tr.find("td:eq(3)").find("select").val() + ";" + $tr.find("td:eq(4)").find("select").val();
+			var item3 = $tr.find("td:eq(5)").find("textarea").val();
+			var item4 = "";
+			var item5 = "";
+
+			$.ajax({
+                url: '@Url.Action("UpdateNoticeBaseSet", "App")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: ' + JSON.stringify(item3) + ', item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	양식별 알림 설정
+</h4>
+
+<h5 class="d-flex justify-content-between align-items-center w-100 font-weight-bold">
+	알림 기본 설정
+</h5>
+<div class="table-responsive py-3">
+	<table id="tbl_basic" class="table table-bordered mb-0">
+		<thead>
+			<tr>
+				<th style="width:10%">알림구분</th>
+				<th style="width:10%">사용유무</th>
+				<th style="width:10%">알림주기</th>
+				<th style="width:10%">적용필드</th>
+				<th style="width:10%">거치기간</th>
+				<th style="width:50%">메일발송문구</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>@StringHelper.SafeString(ViewData["Item1"])</td>
+				<td>
+					<select class="form-control" style="width: 100%" data-default="@StringHelper.SafeString(ViewData["ItemMailUse"])">
+						<option value="Y">사용</option>
+						<option value="N">미사용</option>
+					</select>
+				</td>
+				<td>
+					<select class="form-control" style="width: 100%" data-default="@StringHelper.SafeString(ViewData["ItemPeriod"])">
+						<option value="120">2시간</option>
+						<option value="240">4시간</option>
+						<option value="360">6시간</option>
+						<option value="1440">24시간</option>
+					</select>
+				</td>
+				<td>
+					<select class="form-control" style="width: 100%" data-default="@StringHelper.SafeString(ViewData["ItemField"])">
+						<option value="R">수신일자</option>
+						<option value="V">조회일자</option>
+					</select>
+				</td>
+				<td>
+					<select class="form-control" style="width: 100%" data-default="@StringHelper.SafeString(ViewData["ItemDeferment"])">
+						<option value="0">즉시</option>
+						<option value="24">24시간</option>
+						<option value="48">48시간</option>
+					</select>
+				</td>
+				<td>
+					<textarea class="form-control" placeholder="Textarea" rows="5">@StringHelper.SafeString(ViewData["Item3"])</textarea>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<button type="button" class="btn btn-default waves-effect waves-light" onclick="saveNoticeBaseSet()">저장</button>
+<button type="button" class="btn btn-default waves-effect waves-light mx-sm-3" onclick="batchNoticeBaseSet()">일괄 적용</button>
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	&nbsp;
+</h4>
+
+<h5 class="d-flex justify-content-between align-items-center w-100 font-weight-bold">
+	알림 양식별 설정
+</h5>
+<div class="table-responsive">
+	<table id="tbl_form" class="table table-bordered mb-0">
+		<thead>
+			<tr>
+				<th style="width:5%">분류</th>
+				<th style="width:20%">양식명</th>
+				<th style="width:20%">테이블명</th>
+				<th style="width:5%">버전</th>
+				<th style="width:10%">사용유무</th>
+				<th style="width:10%">알림주기</th>
+				<th style="width:10%">적용필드</th>
+				<th style="width:10%">거치기간</th>
+				<th style="width:10%">비고</th>
+			</tr>
+		</thead>
+		<tbody>
+			@if ((ViewData["formclass"] as DataTable)?.Rows?.Count > 0)
+			{
+				foreach (DataRow drClass in (ViewData["formclass"] as DataTable).Rows)
+				{
+					if ((ViewData["formlist"] as DataTable)?.Rows?.Count > 0)
+					{
+						DataTable dtSubForm = (ViewData["formlist"] as DataTable).AsEnumerable().Where(x => StringHelper.SafeString(x["ClassID"]) == StringHelper.SafeString(drClass["ClassID"])).OrderBy(x => x["DocName"]).CopyToDataTable();
+
+						if (dtSubForm?.Rows?.Count > 0)
+						{
+							foreach (DataRow drList in dtSubForm.Rows)
+							{
+			<tr data-formid="@drList["FormID"].ToString()">
+				<td>@drClass["ClassName"].ToString()</td>
+				<td>@drList["DocName"].ToString()</td>
+				<td>@drList["MainTable"].ToString()</td>
+				<td>@drList["Version"].ToString()</td>
+				<td>
+					<select class="form-control" style="width: 100%" data-default="@StringHelper.SafeString(drList["MailUse"])">
+						<option value="Y">사용</option>
+						<option value="N">미사용</option>
+					</select>
+				</td>
+				<td>
+					<select class="form-control" style="width: 100%" data-default="@StringHelper.SafeString(drList["Period"])">
+						<option value="120">2시간</option>
+						<option value="240">4시간</option>
+						<option value="360">6시간</option>
+						<option value="1440">24시간</option>
+					</select>
+				</td>
+				<td>
+					<select class="form-control" style="width: 100%" data-default="@StringHelper.SafeString(drList["Field"])">
+						<option value="R">수신일자</option>
+						<option value="V">조회일자</option>
+					</select>
+				</td>
+				<td>
+					<select class="form-control" style="width: 100%" data-default="@StringHelper.SafeString(drList["Deferment"])">
+						<option value="0">즉시</option>
+						<option value="24">24시간</option>
+						<option value="48">48시간</option>
+					</select>
+				</td>
+				<td><button type="button" class="btn btn-default" onclick="editNoticeForm(this, '@drList["FormID"].ToString()')">변경</button></td>
+			</tr>
+							}
+						}
+					}
+				}
+			}
+		</tbody>
+	</table>
+</div>
+

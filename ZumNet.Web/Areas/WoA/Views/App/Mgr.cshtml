@@ -2,19 +2,20 @@
 @using System.Text;
 @using Newtonsoft.Json;
 @{
-    ViewBag.Title = "결재 양식 관리";
+	ViewBag.Title = "결재 양식 관리";
 }
 
 @section Styles {
-    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+	@Styles.Render("~/bundle/vendor/css/pages/account")
 }
 
 @section Scripts {
-    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+	@Scripts.Render("~/bundle/js/pages_account-settings")
 
-    <script type="text/javascript">
+	<script type="text/javascript">
 		var formClassJson = @Html.Raw(ViewData["formclass"]);
 		var formListJson = @Html.Raw(ViewData["formlist"]);
+		var formProcessJson = @Html.Raw(ViewData["formprocess"]);
 
 		$(document).ready(function () {
 			if (formClassJson != "") {
@@ -24,7 +25,22 @@
 					optionHtml += "<option value=\"" + formClassJson[i].ClassID + "\">" + formClassJson[i].ClassName + "</option>";
 				}
 
+				$("#selEABasicFormClass").append(optionHtml);
+
+				// 미분류 앙식 추가
+				optionHtml += "<option value=\"0\">미분류 양식들</option>";
+
 				$("#selEAFormClass").append(optionHtml);
+			}
+
+			if (formProcessJson != "") {
+				var optionHtml = "";
+
+				for (var i = 0; i < formProcessJson.length; i++) {
+					optionHtml += "<option value=\"" + formProcessJson[i].ProcessID + "\">" + formProcessJson[i].Name + "</option>";
+				}
+
+				$("#selEABasicFormProcess").append(optionHtml);
 			}
 
             $("#btnSearch").on("click", function () {
@@ -50,39 +66,283 @@
 			if (formClass == "") {
 				$("#selEAFormList").append("<option value=\"\">분류를 선택하세요.</option>");
 			} else {
-                if (formListJson != "") {
-				    var optionHtml = "";
+				if (formListJson != "") {
+					var optionHtml = "";
+					var optionUseHtml = "";
+					var optionNoUseHtml = "";
 
+					// <optgroup label="Alaskan/Hawaiian Time Zone">
 					for (var i = 0; i < formListJson.length; i++) {
 						if (formListJson[i].ClassID == formClass) {
-                            optionHtml += "<option value=\"" + formListJson[i].FormID + "\">" + formListJson[i].DocName + " (" + formListJson[i].MainTable + " , V" + formListJson[i].Version + ")" + "</option>";
+							var optionText = formListJson[i].DocName + " (" + formListJson[i].MainTable + " , V" + formListJson[i].Version + ")";
+
+							if (formListJson[i].Usage == "N") {
+								optionNoUseHtml += "<option value=\"" + formListJson[i].FormID + "\">" + optionText + "</option>";
+							} else {
+								optionUseHtml += "<option value=\"" + formListJson[i].FormID + "\">" + optionText + "</option>";
+							}
 						}
-				    }
+					}
+
+					if (optionUseHtml != "") {
+						optionHtml += "<optgroup label=\"사용중\">" + optionUseHtml + "</optgroup>";
+					}
+
+					if (optionNoUseHtml != "") {
+						optionHtml += "<optgroup label=\"사용하지 않음\">" + optionNoUseHtml + "</optgroup>";
+					}
 
 				    $("#selEAFormList").append(optionHtml);
 			    }
 			}
 		}
-    </script>
+
+		var mode = "I";
+
+		function saveEABasicForm() {
+			if ($("#txtEABasicFormName").val() == "") {
+				alert("양식명을 입력하세요.");
+				return false;  
+			}
+
+			if ($("#selEABasicFormClass").val() == "" && $("#selEABasicFormUsage").val("") != "0") {
+				if (!window.confirm("양식 분류가 선택되지 않으면, 사용 종류는 테스트 작성중으로 저장됩니다. 진행하시겠습니까?")) {
+					return false;
+				}
+
+				// 테스트 작성중으로 변경
+				$("#selEABasicFormUsage").val("0");
+			}
+
+			var formID = (mode == "I") ? "" : "";
+			var classID = $("#selEABasicFormClass").val();
+			var processID = $("#selEABasicFormProcess").val();
+			var docName = $("#txtEABasicFormName").val();
+			var description = $("#txtEABasicFormDescription").val();
+			var mainTable = "";
+			var mainTableDef = "";
+			var subTableCount = 0;
+			var subTableDef = "";
+			var xslName = "";
+			var cssName = "";
+			var jsName = "";
+			var version = 1;
+			var usage = $("#selEABasicFormUsage").val();
+			var webEditor = "";
+			var htmlFile = "";
+			var limited = "N";
+			var processNameString = "";
+			var validation = "";
+			var selecTable = "";
+
+			$.ajax({
+                url: '@Url.Action("BFHandleEAFormBasicManagement", "App")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode: "' + mode + '", formID: "' + formID + '", classID: ' + classID + ', processID: ' + processID + ', docName: "' + docName + '", description: "' + description + '", mainTable: "' + mainTable + '", mainTableDef: "' + mainTableDef + '", subTableCount: "' + subTableCount + ", subTableDef: " + subTableDef + '", xslName: "' + xslName + '", cssName: "' + cssName + '", jsName: "' + jsName + '", version: ' + version + ', usage: "' + usage + '", webEditor: "' + webEditor + '", htmlFile: "' + htmlFile + '", limited: "' + limited + '", processNameString: "' + processNameString + '", validation: "' + validation + '", selecTable: "' + selecTable + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					//window.location.reload();
+                }
+			});
+		}
+	</script>
 }
 
 <h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
-    결재 양식 관리
+	결재 양식 관리
 </h4>
 
 <div class="card mb-4">
-    <div class="card-body">
-        <form class="form-inline">
-            <label class="form-label">결재 분류 : </label>
-            <select class="custom-select mx-sm-3" id="selEAFormClass" onchange="setEAFormList()">
-                <option selected value="">선택</option>
-            </select>
-            <label class="form-label mx-sm-3">결재 양식 : </label>
-            <select class="custom-select mx-sm-3" id="selEAFormList">
-                <option value="">분류를 선택하세요.</option>
-            </select>
-            <button type="button" id="btnSearch" class="btn btn-default">조회</button>
-        </form>
-    </div>
+	<div class="card-body">
+		<form class="form-inline">
+			<label class="form-label">결재 분류 : </label>
+			<select class="custom-select mx-sm-3" id="selEAFormClass" onchange="setEAFormList()">
+				<option selected value="">선택</option>
+			</select>
+			<label class="form-label mx-sm-3">결재 양식 : </label>
+			<select class="custom-select mx-sm-3" id="selEAFormList">
+				<option value="">분류를 선택하세요.</option>
+			</select>
+			<button type="button" id="btnSearch" class="btn btn-default">조회</button>
+		</form>
+	</div>
 </div>
 
+<div class="card overflow-hidden">
+	<div class="row no-gutters row-bordered row-border-light">
+		<div class="col-md-3 pt-0">
+			<div class="list-group list-group-flush account-settings-links">
+				<a class="list-group-item list-group-item-action active" data-toggle="list" href="#form-basic">양식 기본 정보</a>
+				<a class="list-group-item list-group-item-action" data-toggle="list" href="#form-main">메인 테이블 정의</a>
+				<a class="list-group-item list-group-item-action" data-toggle="list" href="#form-sub">하위 테이블 정의</a>
+			</div>
+		</div>
+		<div class="col-md-9">
+			<div class="tab-content">
+				<div class="tab-pane fade show active" id="form-basic">
+					<div class="card-body">
+						<div class="form-group">
+							<label class="form-label">양식명</label>
+							<input type="text" id="txtEABasicFormName" class="form-control" value="">
+						</div>
+						<div class="form-group">
+							<label class="form-label">양식 분류</label>
+							<select class="custom-select" id="selEABasicFormClass">
+								<option value="">양식 분류를 선택하세요.</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label class="form-label">프로세스</label>
+							<select class="custom-select" id="selEABasicFormProcess">
+								<option value="">프로세스를 선택하세요.</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label class="form-label">양식 설명</label>
+							<textarea class="form-control" id="txtEABasicFormDescription" placeholder="양식 설명" rows="5"></textarea>
+						</div>
+					</div>
+					<hr class="border-light m-0">
+					<div class="card-body" style="padding: 1.5rem 1.5rem 0 1.5rem;">
+						<div class="form-group">
+							<label class="form-label">사용 종류</label>
+							<select class="custom-select" id="selEABasicFormUsage">
+								<option value="0">테스트 작성중</option>
+								<option value="1">테스트 사용중</option>
+								<option value="7">사용중</option>
+								<option value="9">사용안함</option>
+							</select>
+						</div>
+					</div>
+					<div class="card-footer" style="border-top: 0px solid rgba(24,28,33,0.06);">
+						<button type="button" class="btn btn-primary mr-2">사용 종류 저장</button>
+					</div>
+					<hr class="border-light m-0">
+					<div class="card-body pb-2">
+						<h6 class="mb-4">기타 설정</h6>
+						<div class="form-group">
+							<label class="switcher">
+								<input type="checkbox" class="switcher-input" checked>
+								<span class="switcher-indicator">
+									<span class="switcher-yes"></span>
+									<span class="switcher-no"></span>
+								</span>
+								<span class="switcher-label">선택 가능(외부 시스템에서 호출 않함) </span>
+							</label>
+						</div>
+						<div class="form-group">
+							<label class="switcher">
+								<input type="checkbox" class="switcher-input">
+								<span class="switcher-indicator">
+									<span class="switcher-yes"></span>
+									<span class="switcher-no"></span>
+								</span>
+								<span class="switcher-label">CSS 파일 사용</span>
+							</label>
+						</div>
+						<div class="form-group">
+							<label class="switcher">
+								<input type="checkbox" class="switcher-input" checked>
+								<span class="switcher-indicator">
+									<span class="switcher-yes"></span>
+									<span class="switcher-no"></span>
+								</span>
+								<span class="switcher-label">JS 파일 사용</span>
+							</label>
+						</div>
+					</div>
+					<div class="card-footer">
+						<button type="button" class="btn btn-primary mr-2" onclick="saveEABasicForm()">기본 정보 저장</button>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="form-main">
+					<div class="card-body pb-2">
+
+						<div class="form-group">
+							<label class="form-label">Current password</label>
+							<input type="password" class="form-control">
+						</div>
+
+						<div class="form-group">
+							<label class="form-label">New password</label>
+							<input type="password" class="form-control">
+						</div>
+
+						<div class="form-group">
+							<label class="form-label">Repeat new password</label>
+							<input type="password" class="form-control">
+						</div>
+
+					</div>
+				</div>
+				<div class="tab-pane fade" id="form-sub">
+					<div class="card-body pb-2">
+
+						<div class="form-group">
+							<label class="form-label">Bio</label>
+							<textarea class="form-control" rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nunc arcu, dignissim sit amet sollicitudin iaculis, vehicula id urna. Sed luctus urna nunc. Donec fermentum, magna sit amet rutrum pretium, turpis dolor molestie diam, ut lacinia diam risus eleifend sapien. Curabitur ac nibh nulla. Maecenas nec augue placerat, viverra tellus non, pulvinar risus.</textarea>
+						</div>
+						<div class="form-group">
+							<label class="form-label">Birthday</label>
+							<input type="text" class="form-control" value="May 3, 1995">
+						</div>
+						<div class="form-group">
+							<label class="form-label">Country</label>
+							<select class="custom-select">
+								<option>USA</option>
+								<option selected>Canada</option>
+								<option>UK</option>
+								<option>Germany</option>
+								<option>France</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label class="form-label">Languages</label>
+							<select multiple class="account-settings-multiselect form-control w-100">
+								<option selected>English</option>
+								<option>German</option>
+								<option>French</option>
+							</select>
+						</div>
+
+					</div>
+					<hr class="border-light m-0">
+					<div class="card-body pb-2">
+
+						<h6 class="mb-4">Contacts</h6>
+						<div class="form-group">
+							<label class="form-label">Phone</label>
+							<input type="text" class="form-control" value="+0 (123) 456 7891">
+						</div>
+						<div class="form-group">
+							<label class="form-label">Website</label>
+							<input type="text" class="form-control" value="">
+						</div>
+
+					</div>
+					<hr class="border-light m-0">
+					<div class="card-body pb-2">
+
+						<h6 class="mb-4">Interests</h6>
+						<div class="form-group">
+							<label class="form-label">Favorite music</label>
+							<input type="text" class="form-control account-settings-tagsinput" value="Rock,Alternative,Electro,Drum & Bass,Dance">
+						</div>
+						<div class="form-group">
+							<label class="form-label">Favorite movies</label>
+							<input type="text" class="form-control account-settings-tagsinput" value="The Green Mile,Pulp Fiction,Back to the Future,WALL&sdot;E,Django Unchained,The Truman Show,Home Alone,Seven Pounds">
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

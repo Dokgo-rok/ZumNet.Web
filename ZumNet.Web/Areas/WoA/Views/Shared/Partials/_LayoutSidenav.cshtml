@@ -97,16 +97,16 @@
                         <a href="@Url.Action("Index", "Proc")" class="sidenav-link"><div>프로세스 관리</div></a>
                     </li>
                     <li class="sidenav-item@(currentPage.ToLower() == "proc/import" ? " active" : "")">
-                        <a href="@Url.Action("Class", "Proc")" class="sidenav-link"><div>프로세스(XML) 가져오기</div></a>
+                        <a href="@Url.Action("Import", "Proc")" class="sidenav-link"><div>프로세스(XML) 가져오기</div></a>
                     </li>
                     <li class="sidenav-item@(currentPage.ToLower() == "proc/mgr" ? " active" : "")">
                         <a href="@Url.Action("Mgr", "Proc")" class="sidenav-link"><div>서비스 / 선결 모드 설정</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "proc/mgr" ? " active" : "")">
-                        <a href="@Url.Action("Mgr", "Proc")" class="sidenav-link"><div>서비스 처리 현황</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "proc/process" ? " active" : "")">
+                        <a href="@Url.Action("Process", "Proc")" class="sidenav-link"><div>서비스 처리 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "proc/mgr" ? " active" : "")">
-                        <a href="@Url.Action("Mgr", "Proc")" class="sidenav-link"><div>처리 기록(WorkItem)</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "proc/record" ? " active" : "")">
+                        <a href="@Url.Action("Record", "Proc")" class="sidenav-link"><div>처리 기록(WorkItem)</div></a>
                     </li>
                 </ul>
             </li>
@@ -116,23 +116,23 @@
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>결재 부가 설정</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage.ToLower() == "ea/charge" ? " active" : "")">
-                        <a href="@Url.Action("Charge", "EA")" class="sidenav-link"><div>문서 수신 정책</div></a>
-                    </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "ea/class" ? " active" : "")">
-                        <a href="@Url.Action("Class", "EA")" class="sidenav-link"><div>문서 수신담당자</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/index" ? " active" : "")">
+                        <a href="@Url.Action("Index", "EA")" class="sidenav-link"><div>문서 수신 정책</div></a>
                     </li>
                     <li class="sidenav-item@(currentPage.ToLower() == "ea/mgr" ? " active" : "")">
-                        <a href="@Url.Action("Mgr", "EA")" class="sidenav-link"><div>문서함 공유 설정</div></a>
+                        <a href="@Url.Action("Mgr", "EA")" class="sidenav-link"><div>문서 수신담당자</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "ea/mgr" ? " active" : "")">
-                        <a href="@Url.Action("Mgr", "EA")" class="sidenav-link"><div>코드 및 상태값  설정</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/share" ? " active" : "")">
+                        <a href="@Url.Action("Share", "EA")" class="sidenav-link"><div>문서함 공유 설정</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "ea/mgr" ? " active" : "")">
-                        <a href="@Url.Action("Mgr", "EA")" class="sidenav-link"><div>선택 가능한 외부양식  설정</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/code" ? " active" : "")">
+                        <a href="@Url.Action("Code", "EA")" class="sidenav-link"><div>코드 및 상태값  설정</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "ea/mgr" ? " active" : "")">
-                        <a href="@Url.Action("Mgr", "EA")" class="sidenav-link"><div>양식별 표기 정보</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/external" ? " active" : "")">
+                        <a href="@Url.Action("External", "EA")" class="sidenav-link"><div>선택 가능한 외부양식  설정</div></a>
+                    </li>
+                    <li class="sidenav-item@(currentPage.ToLower() == "ea/remark" ? " active" : "")">
+                        <a href="@Url.Action("Remark", "EA")" class="sidenav-link"><div>양식별 표기 정보</div></a>
                     </li>
                 </ul>
             </li>
@@ -142,17 +142,17 @@
                 <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>연동 처리 현황</div></a>
 
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item@(currentPage.ToLower() == "interface/charge" ? " active" : "")">
-                        <a href="@Url.Action("Charge", "Interface")" class="sidenav-link"><div>문서 이관 현황</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "interface/index" ? " active" : "")">
+                        <a href="@Url.Action("Index", "Interface")" class="sidenav-link"><div>문서 이관 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "interface/class" ? " active" : "")">
-                        <a href="@Url.Action("Class", "Interface")" class="sidenav-link"><div>ERP 연동 현황</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "interface/erp" ? " active" : "")">
+                        <a href="@Url.Action("Erp", "Interface")" class="sidenav-link"><div>ERP 연동 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "interface/mgr" ? " active" : "")">
-                        <a href="@Url.Action("Mgr", "Interface")" class="sidenav-link"><div>메일 발송 현황</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "interface/mail" ? " active" : "")">
+                        <a href="@Url.Action("Mail", "Interface")" class="sidenav-link"><div>메일 발송 현황</div></a>
                     </li>
-                    <li class="sidenav-item@(currentPage.ToLower() == "interface/mgr" ? " active" : "")">
-                        <a href="@Url.Action("Mgr", "Interface")" class="sidenav-link"><div>기타 현황</div></a>
+                    <li class="sidenav-item@(currentPage.ToLower() == "interface/etc" ? " active" : "")">
+                        <a href="@Url.Action("Etc", "Interface")" class="sidenav-link"><div>기타 현황</div></a>
                     </li>
                 </ul>
             </li>
