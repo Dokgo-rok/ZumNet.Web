@@ -249,10 +249,11 @@
 
 		function initializeForm(cmd) {
 			$("#txtEABasicFormName").attr("data-formID", "");
-						
+
 			$("#form-basic,#form-main,#form-sub,#form-etc").find("input").val("");
+			$("#form-basic,#form-main,#form-sub,#form-etc").find("textarea").val("");
 			$("#form-basic,#form-main,#form-sub,#form-etc").find("select").prop("selectedIndex", 0);
-			$("#form-basic").find("checkbox").prop("checked", false);
+			$("#form-basic,#form-main,#form-sub,#form-etc").prop("checked", false);
 
 			$("#divUsage").hide();
 			$("#tblMain tbody").empty();
@@ -267,14 +268,14 @@
 				// 메인 테이블 정의 div(생성시)
 				$("#divMainTable").show();
 
-				$("a[data-toggle='list']:gt(0)").hide();
+				$("li[class='nav-item']:gt(0)").hide();
 
 				// 양식 기본 정보 탭이 선택되어 있지 않은 상태라면
 				if (!$("a[href='#form-basic']").hasClass("active")) {
 					$("a[href='#form-basic']").trigger("click");
 				}
 			} else {
-				$("a[data-toggle='list']:gt(0)").show();
+				$("li[class='nav-item']:gt(0)").show();
 
 				// 메인 테이블 정의 div(생성시)
 				$("#divMainTable").hide();
@@ -827,264 +828,266 @@
 	</div>
 </div>
 
-<div class="card overflow-hidden">
-	<div class="row no-gutters row-bordered row-border-light">
-		<div class="col-md-2 pt-0">
-			<div class="list-group list-group-flush account-settings-links">
-				<a class="list-group-item list-group-item-action active" data-toggle="list" href="#form-basic">양식 기본 정보</a>
-				<a class="list-group-item list-group-item-action" data-toggle="list" href="#form-main" style="display:none;">메인 테이블 정의</a>
-				<a class="list-group-item list-group-item-action" data-toggle="list" href="#form-sub" style="display:none;">하위 테이블 정의</a>
-				<a class="list-group-item list-group-item-action" data-toggle="list" href="#form-etc" style="display:none;">양식 기타 정보 정의</a>
+<div class="nav-tabs-top nav-responsive-sm">
+	<ul class="nav nav-tabs">
+		<li class="nav-item">
+			<a class="nav-link active" data-toggle="tab" href="#form-basic">양식 기본 정보</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#form-main">메인 테이블 정의</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#form-sub">하위 테이블 정의</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#form-etc">양식 기타 정보 정의</a>
+		</li>
+	</ul>
+	<div class="tab-content">
+		<div class="tab-pane fade show active" id="form-basic">
+			<div class="card-body">
+				<div class="form-group">
+					<label class="form-label">양식명</label>
+					<input type="text" id="txtEABasicFormName" class="form-control" data-formID="">
+				</div>
+				<div class="form-group">
+					<label class="form-label">양식 분류</label>
+					<select class="custom-select" id="selEABasicFormClass">
+						<option value="0">양식 분류를 선택하세요.</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스</label>
+					<select class="custom-select" id="selEABasicFormProcess">
+						<option value="0">프로세스를 선택하세요.</option>
+					</select>
+				</div>
+				<div id="divMainTable" class="form-group">
+					<label class="form-label">메인테이블명</label>
+					<input type="text" id="txtEACreateMainTableName" class="form-control">
+				</div>
+				<div class="form-group">
+					<label class="form-label">양식 설명</label>
+					<textarea class="form-control" id="txtEABasicFormDescription" placeholder="양식 설명" rows="5"></textarea>
+				</div>
+			</div>
+			<hr class="border-light m-0">
+			<div class="card-body" style="padding: 1.5rem 1.5rem 0 1.5rem;">
+				<div class="form-group">
+					<label class="form-label">사용 종류</label>
+					<select class="custom-select" id="selEABasicFormUsage">
+						<option value="0">테스트 작성중</option>
+						<option value="1">테스트 사용중</option>
+						<option value="7">사용중</option>
+						<option value="9">사용안함</option>
+					</select>
+				</div>
+			</div>
+			<div id="divUsage" class="card-footer" style="border-top: 0px solid rgba(24,28,33,0.06);display:none">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveEAUsage()">사용 종류 저장</button>
+			</div>
+			<hr class="border-light m-0">
+			<div class="card-body pb-2">
+				<h6 class="mb-4">기타 설정</h6>
+				<div class="form-group">
+					<label class="switcher">
+						<input type="checkbox" class="switcher-input" id="chkSelectable">
+						<span class="switcher-indicator">
+							<span class="switcher-yes"></span>
+							<span class="switcher-no"></span>
+						</span>
+						<span class="switcher-label">선택 가능(외부 시스템에서 호출 않함) </span>
+					</label>
+				</div>
+				<div class="form-group">
+					<label class="switcher">
+						<input type="checkbox" class="switcher-input" id="chkCssFileUseYn">
+						<span class="switcher-indicator">
+							<span class="switcher-yes"></span>
+							<span class="switcher-no"></span>
+						</span>
+						<span class="switcher-label">CSS 파일 사용</span>
+					</label>
+				</div>
+				<div class="form-group">
+					<label class="switcher">
+						<input type="checkbox" class="switcher-input" id="chkJSFileUseYn">
+						<span class="switcher-indicator">
+							<span class="switcher-yes"></span>
+							<span class="switcher-no"></span>
+						</span>
+						<span class="switcher-label">JS 파일 사용</span>
+					</label>
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveEABasicForm()">기본 정보 저장</button>
 			</div>
 		</div>
-		<div class="col-md-10">
-			<div class="tab-content">
-				<div class="tab-pane fade show active" id="form-basic">
-					<div class="card-body">
-						<div class="form-group">
-							<label class="form-label">양식명</label>
-							<input type="text" id="txtEABasicFormName" class="form-control" data-formID="">
-						</div>
-						<div class="form-group">
-							<label class="form-label">양식 분류</label>
-							<select class="custom-select" id="selEABasicFormClass">
-								<option value="0">양식 분류를 선택하세요.</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label class="form-label">프로세스</label>
-							<select class="custom-select" id="selEABasicFormProcess">
-								<option value="0">프로세스를 선택하세요.</option>
-							</select>
-						</div>
-						<div id="divMainTable" class="form-group">
-							<label class="form-label">메인테이블명</label>
-							<input type="text" id="txtEACreateMainTableName" class="form-control">
-						</div>
-						<div class="form-group">
-							<label class="form-label">양식 설명</label>
-							<textarea class="form-control" id="txtEABasicFormDescription" placeholder="양식 설명" rows="5"></textarea>
-						</div>
-					</div>
-					<hr class="border-light m-0">
-					<div class="card-body" style="padding: 1.5rem 1.5rem 0 1.5rem;">
-						<div class="form-group">
-							<label class="form-label">사용 종류</label>
-							<select class="custom-select" id="selEABasicFormUsage">
-								<option value="0">테스트 작성중</option>
-								<option value="1">테스트 사용중</option>
-								<option value="7">사용중</option>
-								<option value="9">사용안함</option>
-							</select>
-						</div>
-					</div>
-					<div id="divUsage" class="card-footer" style="border-top: 0px solid rgba(24,28,33,0.06);display:none">
-						<button type="button" class="btn btn-primary mr-2" onclick="saveEAUsage()">사용 종류 저장</button>
-					</div>
-					<hr class="border-light m-0">
-					<div class="card-body pb-2">
-						<h6 class="mb-4">기타 설정</h6>
-						<div class="form-group">
-							<label class="switcher">
-								<input type="checkbox" class="switcher-input" id="chkSelectable">
-								<span class="switcher-indicator">
-									<span class="switcher-yes"></span>
-									<span class="switcher-no"></span>
-								</span>
-								<span class="switcher-label">선택 가능(외부 시스템에서 호출 않함) </span>
-							</label>
-						</div>
-						<div class="form-group">
-							<label class="switcher">
-								<input type="checkbox" class="switcher-input" id="chkCssFileUseYn">
-								<span class="switcher-indicator">
-									<span class="switcher-yes"></span>
-									<span class="switcher-no"></span>
-								</span>
-								<span class="switcher-label">CSS 파일 사용</span>
-							</label>
-						</div>
-						<div class="form-group">
-							<label class="switcher">
-								<input type="checkbox" class="switcher-input" id="chkJSFileUseYn">
-								<span class="switcher-indicator">
-									<span class="switcher-yes"></span>
-									<span class="switcher-no"></span>
-								</span>
-								<span class="switcher-label">JS 파일 사용</span>
-							</label>
-						</div>
-					</div>
-					<div class="card-footer">
-						<button type="button" class="btn btn-primary mr-2" onclick="saveEABasicForm()">기본 정보 저장</button>
-					</div>
+		<div class="tab-pane fade" id="form-main">
+			<div class="card-body pb-2">
+				<div class="form-group">
+					<label class="form-label">메인테이블명</label>
+					<input type="text" id="txtEAMainTableName" class="form-control" readonly="readonly">
 				</div>
-				<div class="tab-pane fade" id="form-main">
-					<div class="card-body pb-2">
-						<div class="form-group">
-							<label class="form-label">메인테이블명</label>
-							<input type="text" id="txtEAMainTableName" class="form-control" readonly="readonly">
-						</div>
-						<div class="form-group">
-							<label class="form-label">메인테이블 필드</label>
-							<table id="tblMain" class="table table-bordered mb-0">
-								<thead>
-									<tr>
-										<th style="width:20%">필드명</th>
-										<th style="width:20%">화면 출력값</th>
-										<th style="width:15%">필드 타입</th>
-										<th style="width:10%">필드 길이</th>
-										<th style="width:10%">필드 기본값</th>
-										<th style="width:10%">필드 Null 여부</th>
-										<th style="width:15%">비고</th>
-									</tr>
-								</thead>
-								<tbody></tbody>
-							</table>
-							<table id="tblTemplate" class="table table-bordered mb-0" style="display:none">
-								<thead>
-									<tr>
-										<th style="width:20%">필드명</th>
-										<th style="width:20%">화면 출력값</th>
-										<th style="width:15%">필드 타입</th>
-										<th style="width:10%">필드 길이</th>
-										<th style="width:10%">필드 기본값</th>
-										<th style="width:10%">필드 Null 여부</th>
-										<th style="width:15%">비고</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>
-											<input type="text" class="form-control" />
-										</td>
-										<td>
-											<input type="text" class="form-control" />
-										</td>
-										<td>
-											<select class="custom-select">
-												<option value="bigint">bigint</option>
-												<option value="binary">binary</option>
-												<option value="bit">bit</option>
-												<option value="char">char</option>
-												<option value="datetime">datetime</option>
-												<option value="decimal">decimal</option>
-												<option value="float">float</option>
-												<option value="int">int</option>
-												<option value="money">money</option>
-												<option value="nchar">nchar</option>
-												<option value="ntext">ntext</option>
-												<option value="nvarchar" selected>nvarchar</option>
-												<option value="smalldatetime">smalldatetime</option>
-												<option value="smallint">smallint</option>
-												<option value="text">text</option>
-												<option value="tinyint">tinyint</option>
-												<option value="varchar">varchar</option>
-											</select>
-										</td>
-										<td>
-											<input type="text" class="form-control" />
-										</td>
-										<td>
-											<input type="text" class="form-control" />
-										</td>
-										<td>
-											<select class="custom-select">
-												<option value='null'>NULL</option>
-												<option value='not null'>NOT NULL</option>
-											</select>
-										</td>
-										<td>
-											<button type="button" class="btn btn-default" onclick="addTableField(this, 'M')">필드추가</button>
-											<button type="button" class="btn btn-default" onclick="removeTableField(this, 'M')">필드삭제</button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-					<div class="card-footer">
-						<button type="button" class="btn btn-primary mr-2" onclick="saveEAMainTable()">메인 테이블 정보 저장</button>
-					</div>
+				<div class="form-group">
+					<label class="form-label">메인테이블 필드</label>
+					<table id="tblMain" class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th style="width:20%">필드명</th>
+								<th style="width:20%">화면 출력값</th>
+								<th style="width:15%">필드 타입</th>
+								<th style="width:10%">필드 길이</th>
+								<th style="width:10%">필드 기본값</th>
+								<th style="width:10%">필드 Null 여부</th>
+								<th style="width:15%">비고</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+					<table id="tblTemplate" class="table table-bordered mb-0" style="display:none">
+						<thead>
+							<tr>
+								<th style="width:20%">필드명</th>
+								<th style="width:20%">화면 출력값</th>
+								<th style="width:15%">필드 타입</th>
+								<th style="width:10%">필드 길이</th>
+								<th style="width:10%">필드 기본값</th>
+								<th style="width:10%">필드 Null 여부</th>
+								<th style="width:15%">비고</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<input type="text" class="form-control" />
+								</td>
+								<td>
+									<input type="text" class="form-control" />
+								</td>
+								<td>
+									<select class="custom-select">
+										<option value="bigint">bigint</option>
+										<option value="binary">binary</option>
+										<option value="bit">bit</option>
+										<option value="char">char</option>
+										<option value="datetime">datetime</option>
+										<option value="decimal">decimal</option>
+										<option value="float">float</option>
+										<option value="int">int</option>
+										<option value="money">money</option>
+										<option value="nchar">nchar</option>
+										<option value="ntext">ntext</option>
+										<option value="nvarchar" selected>nvarchar</option>
+										<option value="smalldatetime">smalldatetime</option>
+										<option value="smallint">smallint</option>
+										<option value="text">text</option>
+										<option value="tinyint">tinyint</option>
+										<option value="varchar">varchar</option>
+									</select>
+								</td>
+								<td>
+									<input type="text" class="form-control" />
+								</td>
+								<td>
+									<input type="text" class="form-control" />
+								</td>
+								<td>
+									<select class="custom-select">
+										<option value='null'>NULL</option>
+										<option value='not null'>NOT NULL</option>
+									</select>
+								</td>
+								<td>
+									<button type="button" class="btn btn-default" onclick="addTableField(this, 'M')">필드추가</button>
+									<button type="button" class="btn btn-default" onclick="removeTableField(this, 'M')">필드삭제</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
-				<div class="tab-pane fade" id="form-sub">
-					<div class="card-header">
-						<button type="button" class="btn btn-primary mr-2" onclick="addEASubTable()">하위 테이블 추가</button>
-					</div>
-					<div class="card-body pb-2">
-						<div class="form-group">
-							<label class="form-label">하위테이블 수</label>
-							<input type="text" id="txtEASubTableCount" class="form-control" readonly="readonly">
-						</div>
-						<div id="divSubTable" class="form-row">
-						</div>
-					</div>
-					<div class="card-footer">
-						<button type="button" class="btn btn-primary mr-2" onclick="saveEASubTable()">하위 테이블 정보 저장</button>
-					</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveEAMainTable()">메인 테이블 정보 저장</button>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="form-sub">
+			<div class="card-header">
+				<button type="button" class="btn btn-primary mr-2" onclick="addEASubTable()">하위 테이블 추가</button>
+			</div>
+			<div class="card-body pb-2">
+				<div class="form-group">
+					<label class="form-label">하위테이블 수</label>
+					<input type="text" id="txtEASubTableCount" class="form-control" readonly="readonly">
 				</div>
-				<div class="tab-pane fade show" id="form-etc">
-					<div class="card-body">
-						<div class="form-group">
-							<label class="form-label">에디터 사용 여부</label>
-							<select class="custom-select" id="selEAEtcEditor">
-								<option value="">사용안함</option>
-								<option value="tagfree">TagFree 에디터 사용</option>
-								<option value="namo">Namo 에디터 사용</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label class="form-label">HTML 템플릿 수(*양식영문명 + "_" + 순번 + ".html"로 생성)</label>
-							<select class="custom-select" id="selEAEtcHtmlTemplate">
-								<option value="">없음</option>
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-								<option value="6">6</option>
-								<option value="7">7</option>
-								<option value="8">8</option>
-								<option value="9">9</option>
-								<option value="10">10</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label class="form-label">프로세스명 조합 필드 및 필수 체크 항목 정의</label>
-							<table id="tblValidation" class="table table-bordered mb-0">
-								<thead>
-									<tr>
-										<th style="width:50%">화면 출력값(필드명)</th>
-										<th style="width:25%">프로세스 필드 조합</th>
-										<th style="width:25%">필수 항목 체크</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-							</table>
-						</div>
-						<div class="form-group">
-							<label class="form-label">프로세스명</label>
-							<table id="tblValidation1" class="table table-bordered mb-0">
-								<tbody>
-									<tr>
-										<td style="width:75%">
-											<input type="text" id="txtEAProcessName" class="form-control" readonly="readonly">
-										</td>
-										<td style="width:25%">
-											<input type="text" id="txtEAProcessSplitName" class="form-control" style="width:30%;display:inline;">
-											<button type="button" class="btn btn-default" onclick="appendSplitText()">구분자 추가</button>
-											<button type="button" class="btn btn-default mr-2" onclick="clearProcessName()">초기화</button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-					<div class="card-footer">
-						<button type="button" class="btn btn-primary" onclick="saveEAEtcInfo()">기타 정보 저장</button>
-					</div>
+				<div id="divSubTable" class="form-row">
 				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveEASubTable()">하위 테이블 정보 저장</button>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="form-etc">
+			<div class="card-body">
+				<div class="form-group">
+					<label class="form-label">에디터 사용 여부</label>
+					<select class="custom-select" id="selEAEtcEditor">
+						<option value="">사용안함</option>
+						<option value="tagfree">TagFree 에디터 사용</option>
+						<option value="namo">Namo 에디터 사용</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">HTML 템플릿 수(*양식영문명 + "_" + 순번 + ".html"로 생성)</label>
+					<select class="custom-select" id="selEAEtcHtmlTemplate">
+						<option value="">없음</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스명 조합 필드 및 필수 체크 항목 정의</label>
+					<table id="tblValidation" class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th style="width:50%">화면 출력값(필드명)</th>
+								<th style="width:25%">프로세스 필드 조합</th>
+								<th style="width:25%">필수 항목 체크</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스명</label>
+					<table id="tblValidation1" class="table table-bordered mb-0">
+						<tbody>
+							<tr>
+								<td style="width:75%">
+									<input type="text" id="txtEAProcessName" class="form-control" readonly="readonly">
+								</td>
+								<td style="width:25%">
+									<input type="text" id="txtEAProcessSplitName" class="form-control" style="width:30%;display:inline;">
+									<button type="button" class="btn btn-default" onclick="appendSplitText()">구분자 추가</button>
+									<button type="button" class="btn btn-default mr-2" onclick="clearProcessName()">초기화</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary" onclick="saveEAEtcInfo()">기타 정보 저장</button>
 			</div>
 		</div>
 	</div>

@@ -1,7 +1,395 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@model DataTable
 @{
-    ViewBag.Title = "Index";
+	ViewBag.Title = "프로세스 관리";
 }
 
-<h2>Index</h2>
+@section Styles {
+	@Styles.Render("~/bundle/vendor/css/bootstrap-select/bootstrap-select")
+	@Styles.Render("~/bundle/vendor/css/dragula/dragula")
+	@Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+}
 
+@section Scripts {
+	@Scripts.Render("~/bundle/vendor/js/bootstrap-select/bootstrap-select")
+	@Scripts.Render("~/bundle/vendor/js/dragula/dragula")
+	@Scripts.Render("~/bundle/vendor/js/moment/moment")
+	@Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			dragula(
+				Array.prototype.slice.call(document.querySelectorAll('.kanban-box'))
+			);
+
+			$("#divValidRange").datepicker({
+				language: "ko",
+                format: "yyyy-mm-dd"
+			});
+
+			$("#selProcess").selectpicker();
+		});
+
+		function initializeForm(isInitSelect) {
+			$("#process-info,#process-processing,#process-imexport").find("input").val("");
+			$("#process-info,#process-processing,#process-imexport").find("textarea").val("");
+			$("#process-info,#process-processing,#process-imexport").find("select").prop("selectedIndex", 0);
+
+			$("li[class='nav-item']:gt(0)").show();
+
+			if (isInitSelect) {
+				$("#selProcess").val("0");
+				$("#selProcess").trigger("change");
+
+				$("li[class='nav-item']:gt(0)").hide();
+			}
+		}
+
+		@*function getProcessList() {
+			$.ajax({
+                url: '@Url.Action("SelectProcessList", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					$("#selProcess").empty();
+
+					var optionHtml = "<option value=\"0\">프로세스를 선택하세요.</option>";
+
+					if (result.data != "" && result.data.length > 0) {
+						for (var i = 0; i < result.data.length; i++) {
+							optionHtml += "<option value=\"" + result.data[i].ProcessID + "\">" + result.data[i].Name + "</option>";
+						}
+
+						$("#selProcess").append(optionHtml);
+						$("#selProcess").selectpicker();
+					}
+                }
+			});
+		}*@
+
+		function setProcessInfo() {
+			// 초기화
+			initializeForm(false);
+
+			if ($("#selProcess").val() == "0") {
+				return;
+			}
+
+			$.ajax({
+                url: '@Url.Action("SelectProcessDefinition", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{processID:' + $("#selProcess").val() + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					$("#divValidRange input[name='start']").val(result.data[0].ValidFromDate);
+					$("#divValidRange input[name='end']").val(result.data[0].ValidToDate);
+					$("#txtProcessName").val(result.data[0].Name);
+					$("#txtProcessDescription").val(result.data[0].Description);
+					$("#txtPriority").val(result.data[0].Priority);
+					$("#selInUse").val(result.data[0].InUse);
+					$("#txtProcessCreator").val(result.data[0].Creator);
+                }
+			});
+		}
+
+		// 프로세스 정보 저장
+		function saveBasicProcess() {
+			if ($("#divValidRange input[name='start']").val() == "") {
+				alert("유효 시작일을 선택하세요.");
+				$("#divValidRange input[name='start']").focus();
+
+				return false;
+			}
+
+			if ($("#divValidRange input[name='end']").val() == "") {
+				alert("유효 종료일을 선택하세요.");
+				$("#divValidRange input[name='end']").focus();
+
+				return false;
+			}
+
+			if ($("#txtProcessName").val() == "") {
+				alert("프로세스명을 입력하세요.");
+				$("#txtProcessName").focus();
+
+				return false;
+			}
+
+			if ($("#txtPriority").val() == "") {
+				alert("우선 순위를 입력하세요.");
+				$("#txtPriority").focus();
+
+				return false;
+			} else {
+				if (isNaN($("#txtPriority").val())) {
+					alert("우선 순위에는 숫자만 입력하세요.");
+					$("#txtPriority").focus();
+
+					return false;
+				}
+			}
+
+			if ($("#txtProcessCreator").val() == "") {
+				alert("작성자를 입력하세요.");
+				$("#txtProcessCreator").focus();
+
+				return false;
+			}
+
+			$.ajax({
+                url: '@Url.Action("HandleProcessDefinition", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{processID:' + $("#selProcess").val() + ', validFromDate:"' + $("#divValidRange input[name='start']").val() + '", validToDate:"' + $("#divValidRange input[name='end']").val() + '", processName:"' + $("#txtProcessName").val() + '", priority:' + $("#txtPriority").val() + ', description:"' + $("#txtProcessDescription").val() + '", inUse:"' + $("#selInUse").val() + '", creator:"' + $("#txtProcessCreator").val() + '", reserved1:""}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+	</script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	프로세스 관리
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalsDefaultDept" onclick="initializeForm(true)">초기화</button>
+</h4>
+
+<div class="card mb-4">
+	<div class="card-body">
+		<form class="form-inline">
+			<select class="selectpicker" data-style="btn-default" data-live-search="true" id="selProcess" onchange="setProcessInfo()">
+				<option value="0">프로세스를 선택하세요.</option>
+				@{
+					int rowCount = Model?.Rows?.Count ?? 0;
+
+					if (rowCount > 0)
+					{
+						foreach (DataRow dr in Model.Rows)
+						{
+							<option value="@dr["ProcessID"].ToString()">@dr["Name"].ToString()</option>
+						}
+					}
+				}
+			</select>
+		</form>
+	</div>
+</div>
+
+<div class="nav-tabs-top nav-responsive-sm">
+	<ul class="nav nav-tabs">
+		<li class="nav-item">
+			<a class="nav-link active" data-toggle="tab" href="#process-info">프로세스 정보</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#process-processing">프로세스 처리 현황</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#process-imexport">프로세스 복사 및 내보내기</a>
+		</li>
+	</ul>
+	<div class="tab-content">
+		<div class="tab-pane fade show active" id="process-info">
+			<div class="card-body">
+				<div class="form-group">
+					<label class="form-label">유효기간</label>
+					<div class="input-daterange input-group" id="divValidRange">
+						<input type="text" class="form-control" name="start">
+						<div class="input-group-prepend">
+							<span class="input-group-text"> ~ </span>
+						</div>
+						<input type="text" class="form-control" name="end">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스명</label>
+					<input type="text" id="txtProcessName" class="form-control">
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스 설명</label>
+					<textarea class="form-control" id="txtProcessDescription" placeholder="프로세스 설명" rows="5"></textarea>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">우선순위</label>
+						<input type="text" id="txtPriority" class="form-control">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">사용여부</label>
+						<select class="custom-select" id="selInUse">
+							<option value="Y">사용</option>
+							<option value="N">사용안함</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="form-label">작성자</label>
+					<input type="text" id="txtProcessCreator" class="form-control">
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveBasicProcess()">프로세스 저장</button>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="process-processing">
+
+			<div class="card-body">
+
+				<div class="card mb-3">
+					<h6 class="card-header text-center">New</h6>
+					<div class="kanban-box px-2 pt-2">
+						<div class="ui-bordered p-2 mb-2">
+							<div class="kanban-board-actions btn-group float-right ml-2">
+								<button type="button" class="btn btn-default btn-xs rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
+								<div class="dropdown-menu dropdown-menu-right">
+									<a class="dropdown-item" href="javascript:void(0)">Edit</a>
+									<a class="dropdown-item" href="javascript:void(0)">Remove</a>
+								</div>
+							</div>
+							New blog layout
+						</div>
+						<div class="ui-bordered p-2 mb-2">
+							<div class="kanban-board-actions btn-group float-right ml-2">
+								<button type="button" class="btn btn-default btn-xs rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
+								<div class="dropdown-menu dropdown-menu-right">
+									<a class="dropdown-item" href="javascript:void(0)">Edit</a>
+									<a class="dropdown-item" href="javascript:void(0)">Remove</a>
+								</div>
+							</div>
+							Create UI design model
+							<span class="badge badge-success ml-1">Clients</span>
+						</div>
+						<div class="ui-bordered p-2 mb-2">
+							<div class="kanban-board-actions btn-group float-right ml-2">
+								<button type="button" class="btn btn-default btn-xs rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
+								<div class="dropdown-menu dropdown-menu-right">
+									<a class="dropdown-item" href="javascript:void(0)">Edit</a>
+									<a class="dropdown-item" href="javascript:void(0)">Remove</a>
+								</div>
+							</div>
+							Another icon set
+						</div>
+						<div class="ui-bordered p-2 mb-2">
+							<div class="kanban-board-actions btn-group float-right ml-2">
+								<button type="button" class="btn btn-default btn-xs rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
+								<div class="dropdown-menu dropdown-menu-right">
+									<a class="dropdown-item" href="javascript:void(0)">Edit</a>
+									<a class="dropdown-item" href="javascript:void(0)">Remove</a>
+								</div>
+							</div>
+							iOS application design mockups
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<hr class="m-0">
+
+			<div class="card-body">
+				<h6 class="small font-weight-semibold mb-4">Options <span class="text-muted font-weight-normal">(depending on category)</span></h6>
+
+				<div class="form-group">
+					<label class="form-label">Brand</label>
+					<select class="custom-select">
+						<option>Apple</option>
+						<option>Blueberry</option>
+						<option selected>Samsung</option>
+						<option>LG</option>
+						<option>Asus</option>
+						<option>Sony</option>
+						<option>Honor</option>
+						<option>Huawei</option>
+						<option>Xiaomi</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Storages</label>
+					<select multiple class="product-edit-multiselect form-control w-100">
+						<option>8GB</option>
+						<option>16GB</option>
+						<option selected>32GB</option>
+						<option selected>64GB</option>
+						<option>128GB</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Colors</label>
+					<select multiple class="product-edit-multiselect form-control w-100">
+						<option selected>Black</option>
+						<option>White</option>
+						<option>Silver</option>
+						<option>Gray</option>
+						<option selected>Green</option>
+						<option selected>Gold</option>
+						<option>Pink</option>
+						<option>Red</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Warranties</label>
+					<select multiple class="product-edit-multiselect form-control w-100">
+						<option selected>Standard - 1 year</option>
+						<option selected>Extended - 2 years | $99</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Ships from</label>
+					<select multiple class="product-edit-multiselect form-control w-100">
+						<option selected>USA</option>
+						<option selected>China</option>
+						<option>France</option>
+						<option selected>Germany</option>
+						<option>UK</option>
+					</select>
+				</div>
+
+			</div>
+			<hr class="m-0">
+
+			<div class="card-body">
+				<h6 class="small font-weight-semibold mb-4">Meta</h6>
+
+				<div class="form-group">
+					<label class="form-label">Title</label>
+					<input type="text" class="form-control" value="Samsung Galaxy S7 Edge">
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Description</label>
+					<textarea class="form-control" rows="3">Buy Samsung Galaxy S7 Edge!</textarea>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Keywords</label>
+					<input type="text" class="form-control" value="Mobile, Smartphone, Samsung, Galaxy, S3, Edge">
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
