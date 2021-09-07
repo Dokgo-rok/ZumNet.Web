@@ -1,9 +1,12 @@
 ﻿@using System.Data;
-
+@using ZumNet.Framework.Entities.Flow;
+@{ 
+    
+}
 @functions{
 
+    
 }
-
 
 @if (ViewBag.BoardList != null && ViewBag.BoardList.Rows.Count > 0)
 {
@@ -11,98 +14,229 @@
     {
         string sRead = "";
         string strId = "";
+        string sTitle = "";
 
         if (ViewBag.CurBox[2] == "te")
         {
             strId = "_" + row["MessageID"].ToString();
+            sTitle = row["Subject"].ToString();
         }
         else if (ViewBag.CurBox[2] == "wd" || ViewBag.CurBox[2] == "cr")
         {
             strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString();
+            sTitle = row["PIName"].ToString();
         }
         else if (ViewBag.CurBox[2] == "dl" || ViewBag.CurBox[2] == "cf")
         {
             sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
             strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["CabinetID"].ToString();
+            sTitle = row["PIName"].ToString();
         }
         else if (ViewBag.CurBox[2] == "wt")
         {
-            sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
             strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["SvcID"].ToString();
+            sTitle = row["PIName"].ToString();
         }
         else if (ViewBag.CurBox[2] == "do")
         {
             sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
             strId = "_" + row["WnID"].ToString();
+            sTitle = row["WnDisplay"].ToString();
         }
         else
         {
             sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
             strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["WorkItemID"].ToString();
+            sTitle = row["PIName"].ToString();
+        }
+
+        if (sTitle == "")
+        {
+            sTitle = "[" + Resources.Global.Untitled + "]";
         }
 
         <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)">
-            <div class="wd-8 wd-lg-5 wd-xl-4 message-checkbox">
-                <label class="custom-control custom-checkbox">
+            <div class="wd-8 wd-lg-4 wd-xl-3 message-checkbox">
+                <label class="custom-control custom-checkbox" data-toggle="tooltip" data-placement="right" title="@Resources.Global.Select">
                     <input type="checkbox" class="custom-control-input">
                     <span class="custom-control-label"></span>
                 </label>
             </div>
-
-            <div class="d-none d-md-block wd-lg-6 wd-xl-5 text-sm-center pr-2">
-                <span class="flex-fill">@row["HasAttachFile"]</span>
-            </div>
-
+            @if (ViewBag.CurBox[2] != "wt" && ViewBag.CurBox[2] != "do")
+            {
+                <div class="d-none d-md-block wd-lg-7 wd-xl-6 text-truncate pr-2">
+                    <span class="flex-fill">@row["MsgType"]</span>
+                </div>
+            }
+            @if (ViewBag.CurBox[2] != "do")
+            { 
+                <div class="d-none d-md-block wd-lg-12 wd-xl-10 text-truncate pr-2">
+                    <span class="flex-fill">@row["DocName"]</span>
+                </div>
+            }
             <div class="wd-92 flex-fill text-truncate d-flex align-items-center">
-                @if (ViewBag.CurBox[2] == "te")
+                @if (ViewBag.CurBox[2] != "do" && row["Priority"].ToString() == "H")
                 {
-                    <a class="text-truncate" href="javascript:void(0)">@row["Subject"].ToString()</a>
+                    <i class="fas fa-exclamation text-pink text-small mr-1"></i>
                 }
-                else if (ViewBag.CurBox[2] == "do")
+                @if (ViewBag.CurBox[2] != "do" && row["Secret"].ToString() == "Y")
                 {
-                    <a class="text-truncate" href="javascript:void(0)">@row["WnDisplay"].ToString()</a>
+                    <i class="fas fa-unlock-alt text-secondary text-small mr-1"></i>
                 }
-                else
-                {
-                    <a class="text-truncate" href="javascript:void(0)">@row["PIName"].ToString()</a>
-                }
-
-
+                <a class="text-truncate" href="javascript:void(0)">@sTitle</a>
             </div>
 
             <div class="w-100 d-sm-none py-0"></div>
 
-            <div class="wd-99 wd-lg-34 wd-xl-32 d-flex">
-                <div class="wd-8 d-sm-none"></div>
-                @if (row["HasAttachFile"].ToString() != "0")
-                {
-                    <div class="wd-5 wd-lg-12 wd-xl-10 text-sm-right">
-                        <a href="javascript:void(0)" class="text-blue pr-2"><i class="fe-paperclip"></i></a>
-                    </div>
-                    <div class="wd-15 wd-lg-35 wd-xl-35 t-sm text-sm-center pr-2">
-                        <span class="">@row["Creator"]</span>
-                    </div>
-                }
-                else
-                {
-                    <div class="d-none d-sm-block wd-lg-12 wd-xl-10"></div>
-                    <div class="wd-20 wd-lg-35 wd-xl-35 t-sm text-sm-center pr-2">
-                        <span class="">@row["Creator"]</span>
-                    </div>
-                }
-
-                <div class="wd-20 wd-lg-35 wd-xl-30 t-sm text-sm-center pr-2">
-                    <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
-                </div>
-
-                <div class="text-right text-pink flex-fill pr-1">
-                    @if (ViewBag.CurBox[2] != "te")
-                    { 
-                        <span class="">@row["ViewCount"]</span>
+            @if (ViewBag.CurBox[2] == "go")
+            {
+                <div class="wd-99 wd-lg-43 wd-xl-40 d-flex">
+                    <div class="wd-8 d-sm-none"></div>
+                    @if (row["CreatorID"].ToString() == ViewBag.PartID)
+                    {
+                        <div class="wd-5 wd-lg-6 wd-xl-5 text-sm-right">
+                            <a href="javascript:void(0)" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="회수"><i class="fe-rotate-ccw"></i></a>
+                        </div>
                     }
-                        
+                    else
+                    {
+                        <div class="d-none d-sm-block wd-lg-6 wd-xl-5"></div>
+                    }
+                    @if (row["HasAttachFile"].ToString() != "0")
+                    {   
+                        <div class="wd-5 wd-lg-6 wd-xl-5 text-sm-right">
+                            <a href="javascript:void(0)" class="text-blue"><i class="fe-paperclip"></i></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-none d-sm-block wd-lg-6 wd-xl-5"></div>
+                    }
+                    <div class="d-sm-none wd-25 text-truncate t-sm text-sm-center pr-2">
+                        <span class="text-secondary">@row["DocName"]</span>
+                    </div>
+                    <div class="wd-16 wd-lg-31 wd-xl-29 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["Creator"]</span>
+                    </div>
+                    <div class="wd-26 wd-lg-36 wd-xl-34 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["CreatorDept"]</span>
+                    </div>
+                    <div class="text-right flex-fill text-truncate pr-1">
+                        <span class="d-none d-sm-block">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                        <span class="d-sm-none text-facebook">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                    </div>
                 </div>
-            </div>
+            }
+            else if (ViewBag.CurBox[2] == "wt")
+            { 
+                <div class="wd-99 wd-lg-54 wd-xl-52 d-flex">
+                    <div class="wd-8 d-sm-none"></div>
+                    <div class="wd-5 wd-lg-5 wd-xl-5 text-sm-right">
+                        <a href="javascript:void(0)" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="회수"><i class="fe-rotate-ccw"></i></a>
+                    </div>                    
+                    @if (row["HasAttachFile"].ToString() != "0")
+                    {   
+                        <div class="wd-5 wd-lg-5 wd-xl-5 text-sm-right">
+                            <a href="javascript:void(0)" class="text-blue"><i class="fe-paperclip"></i></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-none d-sm-block wd-lg-5 wd-xl-5"></div>
+                    }
+                    <div class="wd-12 wd-lg-12 wd-xl-12 text-truncate t-sm text-sm-center pr-2">
+                        <span class="text-secondary">@Resources.EA.ResourceManager.GetString("SS_" + ProcessStateChart.ParsingSignStatus(7))</span>
+                    </div>
+                    <div class="wd-15 wd-lg-21 wd-xl-21 text-truncate t-sm text-sm-center pr-2">
+                        <span class="text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ReqDate"].ToString(), true)</span>
+                    </div>
+                    <div class="wd-15 wd-lg-15 wd-xl-15 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["Creator"]</span>
+                    </div>
+                    <div class="wd-15 wd-lg-21 wd-xl-21 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["CreatorDept"]</span>
+                    </div>
+                    <div class="text-right flex-fill text-truncate pr-1">
+                        <span class="d-none d-sm-block">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                        <span class="d-sm-none text-facebook">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                    </div>
+                </div>
+            }
+            else if (ViewBag.CurBox[2] == "do")
+            {
+                <div class="wd-99 wd-lg-60 wd-xl-58 d-flex">
+                    <div class="wd-8 d-sm-none"></div>
+                    <div class="wd-15 wd-lg-20 wd-xl-20 text-truncate t-sm text-sm-center pr-2">
+                        <span class="text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                    </div>
+                    <div class="wd-15 wd-lg-20 wd-xl-20 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["Requester"]</span>
+                    </div>
+                    <div class="d-none d-sm-block wd-15 wd-lg-20 wd-xl-20 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["RequesterDept"]</span>
+                    </div>
+                    <div class="wd-25 wd-lg-20 wd-xl-20 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["PreAppDN"]</span>
+                    </div>
+                    <div class="text-right flex-fill text-truncate pr-1">
+                        <span class="d-none d-sm-block">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ViewDate"].ToString())</span>
+                        <span class="d-sm-none text-facebook">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ViewDate"].ToString())</span>
+                    </div>
+                </div>
+            }
+            else if (ViewBag.CurBox[2] == "wd" || ViewBag.CurBox[2] == "te")
+            {
+                <div class="wd-99 wd-lg-15 wd-xl-15 d-flex">
+                    <div class="wd-8 d-sm-none"></div>
+                    @if (row["HasAttachFile"].ToString() != "0")
+                    {   
+                        <div class="wd-5 wd-lg-10 wd-xl-8 text-sm-right">
+                            <a href="javascript:void(0)" class="text-blue"><i class="fe-paperclip"></i></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-none d-sm-block wd-lg-10 wd-xl-8"></div>
+                    }
+                    <div class="d-sm-none wd-30 text-truncate t-sm text-sm-center pr-2">
+                        <span class="text-secondary">@row["DocName"]</span>
+                    </div>
+                    <div class="text-right flex-fill text-truncate pr-1">
+                        <span class="d-none d-sm-block">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                        <span class="d-sm-none text-facebook">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                    </div>
+                </div>
+            }            
+            else
+            {
+                <div class="wd-99 wd-lg-40 wd-xl-36 d-flex">
+                    <div class="wd-8 d-sm-none"></div>
+                    @if (row["HasAttachFile"].ToString() != "0")
+                    {
+                        <div class="wd-5 wd-lg-6 wd-xl-5 text-sm-right">
+                            <a href="javascript:void(0)" class="text-blue"><i class="fe-paperclip"></i></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-none d-sm-block wd-lg-6 wd-xl-5"></div>
+                    }
+                    <div class="d-sm-none wd-25 text-truncate t-sm text-sm-center pr-2">
+                        <span class="text-secondary">@row["DocName"]</span>
+                    </div>
+                    <div class="wd-16 wd-lg-32 wd-xl-30 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["Creator"]</span>
+                    </div>
+                    <div class="wd-26 wd-lg-37 wd-xl-35 text-truncate t-sm text-sm-center pr-2">
+                        <span class="">@row["CreatorDept"]</span>
+                    </div>
+                    <div class="text-right flex-fill text-truncate pr-1">
+                        <span class="d-none d-sm-block">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                        <span class="d-sm-none text-facebook">@ZumNet.Web.Bc.CommonUtils.LvDate(row[ViewBag.CurBox[5]].ToString())</span>
+                    </div>
+                </div>
+            }
+            
         </li>
     }
 }

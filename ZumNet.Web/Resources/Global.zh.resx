@@ -156,6 +156,15 @@
   <data name="Auth_UseStop" xml:space="preserve">
     <value>已暂停使用。 请联系管理员</value>
   </data>
+  <data name="BatchProcess" xml:space="preserve">
+    <value>批量处理</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>类别</value>
+  </data>
+  <data name="Classification" xml:space="preserve">
+    <value>分类</value>
+  </data>
   <data name="Compose" xml:space="preserve">
     <value>撰写</value>
   </data>
@@ -261,8 +270,17 @@
   <data name="Department" xml:space="preserve">
     <value>部</value>
   </data>
+  <data name="Division" xml:space="preserve">
+    <value>分配</value>
+  </data>
+  <data name="DocName" xml:space="preserve">
+    <value>文件名</value>
+  </data>
   <data name="DocNumber" xml:space="preserve">
     <value>文件编号</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编辑</value>
   </data>
   <data name="FileExt" xml:space="preserve">
     <value>文件扩展名</value>
@@ -276,17 +294,26 @@
   <data name="First2" xml:space="preserve">
     <value>第一的</value>
   </data>
+  <data name="Forward" xml:space="preserve">
+    <value>转发</value>
+  </data>
   <data name="GotoWork" xml:space="preserve">
     <value>去工作</value>
   </data>
   <data name="Groupware" xml:space="preserve">
     <value>Groupware</value>
   </data>
+  <data name="Help" xml:space="preserve">
+    <value>帮助</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>家</value>
   </data>
   <data name="ID" xml:space="preserve">
     <value>ID</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>信息</value>
   </data>
   <data name="Jikchaek" xml:space="preserve">
     <value>位置</value>
@@ -321,11 +348,26 @@
   <data name="Logout" xml:space="preserve">
     <value>登出</value>
   </data>
+  <data name="MaskRead" xml:space="preserve">
+    <value>掩码读取</value>
+  </data>
+  <data name="MaskUnRead" xml:space="preserve">
+    <value>掩码为未读</value>
+  </data>
+  <data name="Modify" xml:space="preserve">
+    <value>调整</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>搬去</value>
+  </data>
   <data name="MyInfo" xml:space="preserve">
     <value>我的信息</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>名称</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>新的</value>
   </data>
   <data name="Next" xml:space="preserve">
     <value>下一个</value>
@@ -338,6 +380,9 @@
   </data>
   <data name="OffWorkCancel" xml:space="preserve">
     <value>取消工作</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>打开</value>
   </data>
   <data name="Order" xml:space="preserve">
     <value>命令</value>
@@ -381,8 +426,17 @@
   <data name="Portal" xml:space="preserve">
     <value>门户网站</value>
   </data>
+  <data name="Preview" xml:space="preserve">
+    <value>预览</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>以前</value>
+  </data>
+  <data name="PrevWork" xml:space="preserve">
+    <value>之前的工作</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>打印</value>
   </data>
   <data name="RecentDocs" xml:space="preserve">
     <value>最近文件</value>
@@ -402,14 +456,32 @@
   <data name="RememberMe" xml:space="preserve">
     <value>保存 ID</value>
   </data>
+  <data name="Reply" xml:space="preserve">
+    <value>回复</value>
+  </data>
+  <data name="ReqDept" xml:space="preserve">
+    <value>请求部门</value>
+  </data>
+  <data name="Requester" xml:space="preserve">
+    <value>请求者</value>
+  </data>
   <data name="Reset" xml:space="preserve">
     <value>初始化</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>节省</value>
+  </data>
+  <data name="SaveAs" xml:space="preserve">
+    <value>另存为</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>搜索</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>选择</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>发送</value>
   </data>
   <data name="SeqNo" xml:space="preserve">
     <value>序号</value>
@@ -432,11 +504,17 @@
   <data name="Title" xml:space="preserve">
     <value>标题</value>
   </data>
+  <data name="TodoTransfer" xml:space="preserve">
+    <value>待办事项转移</value>
+  </data>
   <data name="Total" xml:space="preserve">
     <value>总</value>
   </data>
   <data name="Type" xml:space="preserve">
     <value>类型</value>
+  </data>
+  <data name="Untitled" xml:space="preserve">
+    <value>无标题</value>
   </data>
   <data name="ViewCount" xml:space="preserve">
     <value>意见</value>

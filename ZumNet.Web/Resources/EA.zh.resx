@@ -183,4 +183,73 @@
   <data name="PersonLine" xml:space="preserve">
     <value>Approval Line</value>
   </data>
+  <data name="SK_Authorize" xml:space="preserve">
+    <value>전결</value>
+  </data>
+  <data name="SK_ByPass" xml:space="preserve">
+    <value>후열</value>
+  </data>
+  <data name="SK_Direct" xml:space="preserve">
+    <value>친전</value>
+  </data>
+  <data name="SK_Normal" xml:space="preserve">
+    <value>일반</value>
+  </data>
+  <data name="SK_Post" xml:space="preserve">
+    <value>후결</value>
+  </data>
+  <data name="SK_Pre" xml:space="preserve">
+    <value>선결</value>
+  </data>
+  <data name="SK_Substitue" xml:space="preserve">
+    <value>대결</value>
+  </data>
+  <data name="SS_Approval" xml:space="preserve">
+    <value>승인</value>
+  </data>
+  <data name="SS_Back" xml:space="preserve">
+    <value>반려</value>
+  </data>
+  <data name="SS_Cancel" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <data name="SS_Confirmed" xml:space="preserve">
+    <value>확인</value>
+  </data>
+  <data name="SS_Disagree" xml:space="preserve">
+    <value>조건부승인</value>
+  </data>
+  <data name="SS_None" xml:space="preserve">
+    <value>없음</value>
+  </data>
+  <data name="SS_Reject" xml:space="preserve">
+    <value>반려</value>
+  </data>
+  <data name="SS_Reserve" xml:space="preserve">
+    <value>보류</value>
+  </data>
+  <data name="SS_Transfer" xml:space="preserve">
+    <value>전달</value>
+  </data>
+  <data name="SS_Withdraw" xml:space="preserve">
+    <value>회수</value>
+  </data>
+  <data name="WS_Completed" xml:space="preserve">
+    <value>완료</value>
+  </data>
+  <data name="WS_Error" xml:space="preserve">
+    <value>오류</value>
+  </data>
+  <data name="WS_InActive" xml:space="preserve">
+    <value>활성</value>
+  </data>
+  <data name="WS_InProgress" xml:space="preserve">
+    <value>부서처리중</value>
+  </data>
+  <data name="WS_Pending" xml:space="preserve">
+    <value>대기</value>
+  </data>
+  <data name="WS_Progressing" xml:space="preserve">
+    <value>처리중</value>
+  </data>
 </root>

@@ -257,5 +257,212 @@ namespace Resources {
                 return ResourceManager.GetString("PersonLine", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Authorize과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SK_Authorize {
+            get {
+                return ResourceManager.GetString("SK_Authorize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   View과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SK_ByPass {
+            get {
+                return ResourceManager.GetString("SK_ByPass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Direct과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SK_Direct {
+            get {
+                return ResourceManager.GetString("SK_Direct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Normal과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SK_Normal {
+            get {
+                return ResourceManager.GetString("SK_Normal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Later과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SK_Post {
+            get {
+                return ResourceManager.GetString("SK_Post", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Beforehand과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SK_Pre {
+            get {
+                return ResourceManager.GetString("SK_Pre", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Substitue과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SK_Substitue {
+            get {
+                return ResourceManager.GetString("SK_Substitue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Approval과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Approval {
+            get {
+                return ResourceManager.GetString("SS_Approval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Back과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Back {
+            get {
+                return ResourceManager.GetString("SS_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cancel과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Cancel {
+            get {
+                return ResourceManager.GetString("SS_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Confirm과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Confirmed {
+            get {
+                return ResourceManager.GetString("SS_Confirmed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Disagree과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Disagree {
+            get {
+                return ResourceManager.GetString("SS_Disagree", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   None과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_None {
+            get {
+                return ResourceManager.GetString("SS_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Return과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Reject {
+            get {
+                return ResourceManager.GetString("SS_Reject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Reserve과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Reserve {
+            get {
+                return ResourceManager.GetString("SS_Reserve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Transfer과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Transfer {
+            get {
+                return ResourceManager.GetString("SS_Transfer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recall과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SS_Withdraw {
+            get {
+                return ResourceManager.GetString("SS_Withdraw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Completed과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WS_Completed {
+            get {
+                return ResourceManager.GetString("WS_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Error과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WS_Error {
+            get {
+                return ResourceManager.GetString("WS_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   In active과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WS_InActive {
+            get {
+                return ResourceManager.GetString("WS_InActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   In progress과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WS_InProgress {
+            get {
+                return ResourceManager.GetString("WS_InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Pending과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WS_Pending {
+            get {
+                return ResourceManager.GetString("WS_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Progressing과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WS_Progressing {
+            get {
+                return ResourceManager.GetString("WS_Progressing", resourceCulture);
+            }
+        }
     }
 }

@@ -178,6 +178,33 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Batch processing과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string BatchProcess {
+            get {
+                return ResourceManager.GetString("BatchProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Category과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Category {
+            get {
+                return ResourceManager.GetString("Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Classification과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Classification {
+            get {
+                return ResourceManager.GetString("Classification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Compose과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Compose {
@@ -493,11 +520,38 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Division과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Division {
+            get {
+                return ResourceManager.GetString("Division", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Document과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string DocName {
+            get {
+                return ResourceManager.GetString("DocName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Doc Number과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string DocNumber {
             get {
                 return ResourceManager.GetString("DocNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Edit과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
             }
         }
         
@@ -538,6 +592,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Forward과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Forward {
+            get {
+                return ResourceManager.GetString("Forward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Go to Work과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string GotoWork {
@@ -556,6 +619,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Help과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Help {
+            get {
+                return ResourceManager.GetString("Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Home과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Home {
@@ -570,6 +642,15 @@ namespace Resources {
         public static string ID {
             get {
                 return ResourceManager.GetString("ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Infomation과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Info {
+            get {
+                return ResourceManager.GetString("Info", resourceCulture);
             }
         }
         
@@ -673,6 +754,42 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Mask as read과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MaskRead {
+            get {
+                return ResourceManager.GetString("MaskRead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Mask as unread과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MaskUnRead {
+            get {
+                return ResourceManager.GetString("MaskUnRead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Modify과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Modify {
+            get {
+                return ResourceManager.GetString("Modify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Move to과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MoveTo {
+            get {
+                return ResourceManager.GetString("MoveTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   My Info과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string MyInfo {
@@ -687,6 +804,15 @@ namespace Resources {
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   New과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string New {
+            get {
+                return ResourceManager.GetString("New", resourceCulture);
             }
         }
         
@@ -723,6 +849,15 @@ namespace Resources {
         public static string OffWorkCancel {
             get {
                 return ResourceManager.GetString("OffWorkCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Open과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Open {
+            get {
+                return ResourceManager.GetString("Open", resourceCulture);
             }
         }
         
@@ -853,11 +988,38 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Preview과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Preview {
+            get {
+                return ResourceManager.GetString("Preview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Previous과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Previous {
             get {
                 return ResourceManager.GetString("Previous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Previous Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string PrevWork {
+            get {
+                return ResourceManager.GetString("PrevWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Print과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Print {
+            get {
+                return ResourceManager.GetString("Print", resourceCulture);
             }
         }
         
@@ -916,11 +1078,56 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Reply과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Reply {
+            get {
+                return ResourceManager.GetString("Reply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Request Dept.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ReqDept {
+            get {
+                return ResourceManager.GetString("ReqDept", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Requester과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Requester {
+            get {
+                return ResourceManager.GetString("Requester", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Reset과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Reset {
             get {
                 return ResourceManager.GetString("Reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Save과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Save As과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SaveAs {
+            get {
+                return ResourceManager.GetString("SaveAs", resourceCulture);
             }
         }
         
@@ -939,6 +1146,15 @@ namespace Resources {
         public static string Select {
             get {
                 return ResourceManager.GetString("Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Send과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Send {
+            get {
+                return ResourceManager.GetString("Send", resourceCulture);
             }
         }
         
@@ -1006,6 +1222,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   To-do Transfer과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TodoTransfer {
+            get {
+                return ResourceManager.GetString("TodoTransfer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Total과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Total {
@@ -1020,6 +1245,15 @@ namespace Resources {
         public static string Type {
             get {
                 return ResourceManager.GetString("Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Untitled과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Untitled {
+            get {
+                return ResourceManager.GetString("Untitled", resourceCulture);
             }
         }
         
@@ -1051,7 +1285,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Dept.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Writing Dept.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string WriteDept {
             get {

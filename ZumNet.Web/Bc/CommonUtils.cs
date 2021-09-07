@@ -1226,7 +1226,7 @@ namespace ZumNet.Web.Bc
                     //type, node, location, actrole, query, basesort, 문서함명, basesoft명, count여부, bold여부
                     { "u", "node.do", "do", "", "do" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReqDate", Resources.EA.BoxToDo, Resources.Global.Date_Request, "Y", "Y" },
                     { "u", "node.ep", "ep", "", "ep" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "PIStart", Resources.EA.BoxExpected, Resources.Global.Date_Draft, "Y", "Y" },
-                    { "u", "node.wt", "wt", "", "wt" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CreateDate", Resources.EA.BoxWaiting, Resources.Global.Date_Sent, "", "" },
+                    { "u", "node.wt", "wt", "", "wt" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CreateDate", Resources.EA.BoxWaiting, Resources.Global.Date_Sent, "Y", "Y" },
                     { "u", "node.av", "av", "", "av" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToApprove, Resources.Global.Date_Receive, "Y", "Y" },
                     { "u", "node.go", "go", "", "go" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxInProcess, Resources.Global.Date_Approve, "Y", "Y" },
                     { "u", "node.cf", "cf", "_cf", "cf" + sDel + "_cf" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToConfirm, Resources.Global.Date_Receive, "Y", "" },
@@ -1238,7 +1238,7 @@ namespace ZumNet.Web.Bc
                     { "u", "node.wd", "wd", "", "wd" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "PIEnd", Resources.EA.BoxWithdraw, Resources.Global.Date_Withdraw, "", "" },
                     { "u", "node.te", "te", "", "te" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CreateDate", Resources.EA.BoxSaved, Resources.Global.Date_Created, "", "" },
                 
-                    { "d", "node.as", "as", "__r", "as" + sDel + "__r" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "__r", "ReceivedDate", Resources.EA.BoxAssigned, Resources.Global.Date_Receive, "Y", "Y" },
+                    { "d", "node.as", "as", "__r", "as" + sDel + "__r" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "__r", "ReceivedDate", Resources.EA.BoxAssigned, Resources.Global.Date_Receipt, "Y", "Y" },
                     { "d", "node.__r", "__r", "__r", "__r" + sDel + "__r" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "__r", "ReceivedDate", Resources.EA.BoxReceived, Resources.Global.Date_Receipt, "Y", "Y" },
                     { "d", "node._s", "_s", "_s", "_s" + sDel + "_s" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "_s", "CompletedDate", Resources.EA.BoxSent, Resources.Global.Date_Send, "", "" },
                     { "d", "node._a", "_a", "_a", "_a" + sDel + "_a" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "_a", "PIEnd", Resources.EA.BoxCompleted, Resources.Global.Date_Complete, "", "" },
@@ -1246,7 +1246,12 @@ namespace ZumNet.Web.Bc
                     { "d", "node._dl", "dl", "_dl", "dl" + sDel + "_dl" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "_dl", "ReceivedDate", Resources.EA.BoxDistribued, Resources.Global.Date_Receipt, "Y", "" }
                 };
 
-                if (curBox == "" || curBox.IndexOf(sDel) < 0) curBox = "av" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(); //기본 결재함
+                if (curBox == "" || curBox.IndexOf(sDel) < 0)
+                {
+                    curBox = vBox[3, 4]; //"av" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(); //기본 결재함
+                    ctrl.ViewBag.R["opnode"] = curBox;
+                    ctrl.ViewBag.R["ttl"] = vBox[3, 6];
+                }
                 string[] vQuery = curBox.Split(new string[] { sDel }, StringSplitOptions.None);
                 string[] vCurrentBox = new string[10];
 

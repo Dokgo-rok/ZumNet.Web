@@ -156,6 +156,15 @@
   <data name="Auth_UseStop" xml:space="preserve">
     <value>사용이 일시 정지 되었습니다. 관리자에게 문의 바랍니다.</value>
   </data>
+  <data name="BatchProcess" xml:space="preserve">
+    <value>일괄처리</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>범주</value>
+  </data>
+  <data name="Classification" xml:space="preserve">
+    <value>분류</value>
+  </data>
   <data name="Compose" xml:space="preserve">
     <value>작성</value>
   </data>
@@ -261,8 +270,17 @@
   <data name="Department" xml:space="preserve">
     <value>부서</value>
   </data>
+  <data name="Division" xml:space="preserve">
+    <value>구분</value>
+  </data>
+  <data name="DocName" xml:space="preserve">
+    <value>문서명</value>
+  </data>
   <data name="DocNumber" xml:space="preserve">
     <value>문서번호</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>편집</value>
   </data>
   <data name="FileExt" xml:space="preserve">
     <value>파일확장자</value>
@@ -276,17 +294,26 @@
   <data name="First2" xml:space="preserve">
     <value>처음</value>
   </data>
+  <data name="Forward" xml:space="preserve">
+    <value>전달</value>
+  </data>
   <data name="GotoWork" xml:space="preserve">
     <value>출근하기</value>
   </data>
   <data name="Groupware" xml:space="preserve">
     <value>그룹웨어</value>
   </data>
+  <data name="Help" xml:space="preserve">
+    <value>도움말</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>홈</value>
   </data>
   <data name="ID" xml:space="preserve">
     <value>아이디</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>정보</value>
   </data>
   <data name="Jikchaek" xml:space="preserve">
     <value>직책</value>
@@ -321,11 +348,26 @@
   <data name="Logout" xml:space="preserve">
     <value>로그아웃</value>
   </data>
+  <data name="MaskRead" xml:space="preserve">
+    <value>읽음 표시</value>
+  </data>
+  <data name="MaskUnRead" xml:space="preserve">
+    <value>안 읽음 표시</value>
+  </data>
+  <data name="Modify" xml:space="preserve">
+    <value>수정</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>이동</value>
+  </data>
   <data name="MyInfo" xml:space="preserve">
     <value>내 정보</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>이름</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>새문서</value>
   </data>
   <data name="Next" xml:space="preserve">
     <value>다음</value>
@@ -338,6 +380,9 @@
   </data>
   <data name="OffWorkCancel" xml:space="preserve">
     <value>퇴근취소</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>열기</value>
   </data>
   <data name="Order" xml:space="preserve">
     <value>순서</value>
@@ -381,8 +426,17 @@
   <data name="Portal" xml:space="preserve">
     <value>포탈</value>
   </data>
+  <data name="Preview" xml:space="preserve">
+    <value>미리보기</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>이전</value>
+  </data>
+  <data name="PrevWork" xml:space="preserve">
+    <value>이전작업</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>인쇄</value>
   </data>
   <data name="RecentDocs" xml:space="preserve">
     <value>최근 문서</value>
@@ -402,14 +456,32 @@
   <data name="RememberMe" xml:space="preserve">
     <value>아이디 저장</value>
   </data>
+  <data name="Reply" xml:space="preserve">
+    <value>회신</value>
+  </data>
+  <data name="ReqDept" xml:space="preserve">
+    <value>요청부서</value>
+  </data>
+  <data name="Requester" xml:space="preserve">
+    <value>요청자</value>
+  </data>
   <data name="Reset" xml:space="preserve">
     <value>초기화</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>저장</value>
+  </data>
+  <data name="SaveAs" xml:space="preserve">
+    <value>다른 이름으로</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>검색</value>
   </data>
   <data name="Select" xml:space="preserve">
     <value>선택</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>발송</value>
   </data>
   <data name="SeqNo" xml:space="preserve">
     <value>순번</value>
@@ -432,11 +504,17 @@
   <data name="Title" xml:space="preserve">
     <value>제목</value>
   </data>
+  <data name="TodoTransfer" xml:space="preserve">
+    <value>할일이관</value>
+  </data>
   <data name="Total" xml:space="preserve">
     <value>총</value>
   </data>
   <data name="Type" xml:space="preserve">
     <value>유형</value>
+  </data>
+  <data name="Untitled" xml:space="preserve">
+    <value>제목없음</value>
   </data>
   <data name="ViewCount" xml:space="preserve">
     <value>조회수</value>

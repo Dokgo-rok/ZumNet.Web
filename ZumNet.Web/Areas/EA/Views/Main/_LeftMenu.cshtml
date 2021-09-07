@@ -1,122 +1,154 @@
 ﻿@using System.Data;
 
 @{
-string sDel = "/";
-//string[,] userBox = {
-//    //node, location, actrole, query, basesort, 문서함명, basesoft명, count여부, bold여부
-//    { "node.do", "do", "", "do" + sDel + "" + sDel + Session["URID"].ToString(), "ReqDate", Resources.EA.BoxToDo, Resources.Global.Date_Request, "Y", "Y" },
-//    { "node.ep", "ep", "", "ep" + sDel + "" + sDel + Session["URID"].ToString(), "PIStart", Resources.EA.BoxExpected, Resources.Global.Date_Draft, "Y", "Y" },
-//    { "node.wt", "wt", "", "wt" + sDel + "" + sDel + Session["URID"].ToString(), "CreateDate", Resources.EA.BoxWaiting, Resources.Global.Date_Sent, "", "" },
-//    { "node.av", "av", "", "av" + sDel + "" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToApprove, Resources.Global.Date_Receive, "Y", "Y" },
-//    { "node.go", "go", "", "go" + sDel + "" + sDel + Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxInProcess, Resources.Global.Date_Approve, "Y", "Y" },
-//    { "node.cf", "cf", "_cf", "cf" + sDel + "_cf" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToConfirm, Resources.Global.Date_Receive, "Y", "" },
-//    { "node.dl", "dl", "_dl", "dl" + sDel + "_dl" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxDistribued, Resources.Global.Date_Receive, "Y", "" },
-//    { "node.cm", "cm", "", "cm" + sDel + "" + sDel + Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxCompleted, Resources.Global.Date_Approve, "", "" },
-//    { "node.rj", "rj", "", "rj" + sDel + "" + sDel + Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxReturn, Resources.Global.Date_Return, "Y", "" },
-//    { "node.ps", "ps", "", "ps" + sDel + "" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxViewLater, Resources.Global.Date_Receive, "", "" },
-//    { "node.re", "re", "", "re" + sDel + "" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxReference, Resources.Global.Date_Receive, "Y", "" },
-//    { "node.wd", "wd", "", "wd" + sDel + "" + sDel + Session["URID"].ToString(), "PIEnd", Resources.EA.BoxWithdraw, Resources.Global.Date_Withdraw, "", "" },
-//    { "node.te", "te", "", "te" + sDel + "" + sDel + Session["URID"].ToString(), "CreateDate", Resources.EA.BoxSaved, Resources.Global.Date_Created, "", "" }
-//};
+    string sDel = "/";
+    //string[,] userBox = {
+    //    //node, location, actrole, query, basesort, 문서함명, basesoft명, count여부, bold여부
+    //    { "node.do", "do", "", "do" + sDel + "" + sDel + Session["URID"].ToString(), "ReqDate", Resources.EA.BoxToDo, Resources.Global.Date_Request, "Y", "Y" },
+    //    { "node.ep", "ep", "", "ep" + sDel + "" + sDel + Session["URID"].ToString(), "PIStart", Resources.EA.BoxExpected, Resources.Global.Date_Draft, "Y", "Y" },
+    //    { "node.wt", "wt", "", "wt" + sDel + "" + sDel + Session["URID"].ToString(), "CreateDate", Resources.EA.BoxWaiting, Resources.Global.Date_Sent, "", "" },
+    //    { "node.av", "av", "", "av" + sDel + "" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToApprove, Resources.Global.Date_Receive, "Y", "Y" },
+    //    { "node.go", "go", "", "go" + sDel + "" + sDel + Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxInProcess, Resources.Global.Date_Approve, "Y", "Y" },
+    //    { "node.cf", "cf", "_cf", "cf" + sDel + "_cf" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToConfirm, Resources.Global.Date_Receive, "Y", "" },
+    //    { "node.dl", "dl", "_dl", "dl" + sDel + "_dl" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxDistribued, Resources.Global.Date_Receive, "Y", "" },
+    //    { "node.cm", "cm", "", "cm" + sDel + "" + sDel + Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxCompleted, Resources.Global.Date_Approve, "", "" },
+    //    { "node.rj", "rj", "", "rj" + sDel + "" + sDel + Session["URID"].ToString(), "CompletedDate", Resources.EA.BoxReturn, Resources.Global.Date_Return, "Y", "" },
+    //    { "node.ps", "ps", "", "ps" + sDel + "" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxViewLater, Resources.Global.Date_Receive, "", "" },
+    //    { "node.re", "re", "", "re" + sDel + "" + sDel + Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxReference, Resources.Global.Date_Receive, "Y", "" },
+    //    { "node.wd", "wd", "", "wd" + sDel + "" + sDel + Session["URID"].ToString(), "PIEnd", Resources.EA.BoxWithdraw, Resources.Global.Date_Withdraw, "", "" },
+    //    { "node.te", "te", "", "te" + sDel + "" + sDel + Session["URID"].ToString(), "CreateDate", Resources.EA.BoxSaved, Resources.Global.Date_Created, "", "" }
+    //};
 
-//string[,] deptBox = {
-//    { "node.as", "as", "__r", "as" + sDel + "__r" + sDel + Session["DeptID"].ToString(), "ReceivedDate", Resources.EA.BoxAssigned, Resources.Global.Date_Receive, "Y", "Y" },
-//    { "node.__r", "__r", "__r", "__r" + sDel + "__r" + sDel + Session["DeptID"].ToString(), "ReceivedDate", Resources.EA.BoxReceived, Resources.Global.Date_Receipt, "Y", "Y" },
-//    { "node._s", "_s", "_s", "_s" + sDel + "_s" + sDel + Session["DeptID"].ToString(), "CompletedDate", Resources.EA.BoxSent, Resources.Global.Date_Send, "", "" },
-//    { "node._a", "_a", "_a", "_a" + sDel + "_a" + sDel + Session["DeptID"].ToString(), "PIEnd", Resources.EA.BoxCompleted, Resources.Global.Date_Complete, "", "" },
-//    { "node._re", "_re", "_re", "_re" + sDel + "_re" + sDel + Session["DeptID"].ToString(), "ReceivedDate", Resources.EA.BoxReference, Resources.Global.Date_Receipt, "Y", "" },
-//    { "node._dl", "dl", "_dl", "dl" + sDel + "_dl" + sDel + Session["DeptID"].ToString(), "ReceivedDate", Resources.EA.BoxDistribued, Resources.Global.Date_Receipt, "Y", "" }
-//};
+    //string[,] deptBox = {
+    //    { "node.as", "as", "__r", "as" + sDel + "__r" + sDel + Session["DeptID"].ToString(), "ReceivedDate", Resources.EA.BoxAssigned, Resources.Global.Date_Receive, "Y", "Y" },
+    //    { "node.__r", "__r", "__r", "__r" + sDel + "__r" + sDel + Session["DeptID"].ToString(), "ReceivedDate", Resources.EA.BoxReceived, Resources.Global.Date_Receipt, "Y", "Y" },
+    //    { "node._s", "_s", "_s", "_s" + sDel + "_s" + sDel + Session["DeptID"].ToString(), "CompletedDate", Resources.EA.BoxSent, Resources.Global.Date_Send, "", "" },
+    //    { "node._a", "_a", "_a", "_a" + sDel + "_a" + sDel + Session["DeptID"].ToString(), "PIEnd", Resources.EA.BoxCompleted, Resources.Global.Date_Complete, "", "" },
+    //    { "node._re", "_re", "_re", "_re" + sDel + "_re" + sDel + Session["DeptID"].ToString(), "ReceivedDate", Resources.EA.BoxReference, Resources.Global.Date_Receipt, "Y", "" },
+    //    { "node._dl", "dl", "_dl", "dl" + sDel + "_dl" + sDel + Session["DeptID"].ToString(), "ReceivedDate", Resources.EA.BoxDistribued, Resources.Global.Date_Receipt, "Y", "" }
+    //};
 
-//ViewBag.R.opnode = "_a/_a/1355_a"; //"ep" + sDel + "" + sDel + Session["URID"].ToString();
+    //ViewBag.R.opnode = "_a/_a/1355_a"; //"ep" + sDel + "" + sDel + Session["URID"].ToString();
 
 }
-<ul class="sidenav-inner">
+<div class="messages-sidebox messages-scroll bg-body border-right">
+    <div class="z-mobile-navbar"></div>
 
-    <li class="sidenav-item" data-box="@ViewBag.Box[0, 1]" data-location="@ViewBag.Box[0, 4]">
-        <a href="javascript:void(0)" class="sidenav-link font-weight-bold"><i class="fe-check-square sidenav-icon"></i><span>@ViewBag.Box[0, 6]</span><span class="z-lm-cnt"></span></a>
-    </li>
-    <li class="sidenav-item open">
-        <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fe-user-check sidenav-icon"></i><span>@Session["URName"] @Resources.EA.Box</span></a>
+    <div class="py-3 px-4">
+        <div class="media align-items-center">
+            <div class="media-body">
+                <a id="__NewMessage" href="javascript:void(0)" class="btn btn-secondary rounded-pill btn-block"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeForm</a>
+            </div>
+            <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
+        </div>
+        <div class="row mt-3">
+            <div class="col-6 text-center px-0">
+                <a class="" href="/Board/Recent"><i class="fas fa-project-diagram"></i> @Resources.EA.PersonLine</a>
+            </div>
+            <div class="col-6 text-center px-1">
+                <a class="" href="/Board/Save"><i class="fas fa-chalkboard"></i> @Resources.EA.Monitoring</a>
+            </div>
 
-        <ul class="sidenav-menu my-0">
-            @for (int i = 1; i < ViewBag.Box.GetLength(0); i++)
-            {
-                if (ViewBag.Box[i, 0] == "u")
-                {
-                    if (ViewBag.Box[i, 1] != "node.wt" || (ViewBag.Box[i, 1] == "node.wt" && Session["FlowSvcMode"] != null && Session["FlowSvcMode"].ToString().Substring(0, 1) == "Y"))
+        </div>
+    </div>
+
+    <hr class="border-light mx-4 mt-0 mb-1">
+
+    <!-- sidebox tree -->
+    <div id="__LeftMenu" class="sidenav-vertical z-lm">
+        <ul class="sidenav-inner">
+
+            <li class="sidenav-item@(ViewBag.Box[0, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[0, 4] ? " active" : "")" data-box="@ViewBag.Box[0, 1]" data-location="@ViewBag.Box[0, 4]">
+                <a href="javascript:void(0)" class="sidenav-link font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.Box[0, 6]">
+                    <i class="fe-check-square sidenav-icon"></i><span>@ViewBag.Box[0, 6]</span><span class="z-lm-cnt"></span>
+                </a>
+            </li>
+            <li class="sidenav-item open">
+                <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fe-user-check sidenav-icon"></i><span>@Session["URName"] @Resources.EA.Box</span></a>
+
+                <ul class="sidenav-menu my-0">
+                    @for (int i = 1; i < ViewBag.Box.GetLength(0); i++)
                     {
-                        <li class="sidenav-item@(ViewBag.Box[i, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[i, 4] ? " active" : "")" data-box="@ViewBag.Box[i, 1]" data-location="@ViewBag.Box[i, 4]">
-                            <a href="javascript:void(0)" class="sidenav-link">
-                                <span>@ViewBag.Box[i, 6]</span>
-                                @if (ViewBag.Box[i, 8] == "Y")
-                                {
-                                    <span class="z-lm-cnt"></span>
-                                }
-                            </a>
-                        </li>
+                        if (ViewBag.Box[i, 0] == "u")
+                        {
+                            if (ViewBag.Box[i, 1] != "node.wt" || (ViewBag.Box[i, 1] == "node.wt" && Session["FlowSvcMode"] != null && Session["FlowSvcMode"].ToString().Substring(0, 1) == "Y"))
+                            {
+                                <li class="sidenav-item@(ViewBag.Box[i, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[i, 4] ? " active" : "")" data-box="@ViewBag.Box[i, 1]" data-location="@ViewBag.Box[i, 4]">
+                                    <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.Box[i, 6]">
+                                        <span>@ViewBag.Box[i, 6]</span>
+                                        @if (ViewBag.Box[i, 8] == "Y")
+                                        {
+                                            <span class="z-lm-cnt"></span>
+                                        }
+                                    </a>
+                                </li>
+                            }
+                        }
                     }
-                }
-            }
-        </ul>
-    </li>
-    <li class="sidenav-item open">
-        <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fe-users sidenav-icon"></i><span>@Session["DeptName"] @Resources.EA.Box</span></a>
+                </ul>
+            </li>
+            <li class="sidenav-item open">
+                <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fe-users sidenav-icon"></i><span>@Session["DeptName"] @Resources.EA.Box</span></a>
 
-        <ul class="sidenav-menu my-0">
-            @for (int i = 0; i < ViewBag.Box.GetLength(0); i++)
-            {
-                if (ViewBag.Box[i, 0] == "d")
-                {
-                    if ((ViewBag.Box[i, 1] == "node.as" && ViewBag.FormCharger)
-                                        || (ViewBag.Box[i, 1] == "node.__r" && (ViewBag.RcvManager || ViewBag.R.current["operator"].ToString() == "Y"))
-                                        || ViewBag.Box[i, 1] != "node.as" || ViewBag.Box[i, 1] != "node.__r")
+                <ul class="sidenav-menu my-0">
+                    @for (int i = 0; i < ViewBag.Box.GetLength(0); i++)
                     {
-                        <li class="sidenav-item@(ViewBag.Box[i, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[i, 4] ? " active" : "")" data-box="@ViewBag.Box[i, 1]" data-location="@ViewBag.Box[i, 4]">
-                            <a href="javascript:void(0)" class="sidenav-link">
-                                <span>@ViewBag.Box[i, 6]</span>
-                                @if (ViewBag.Box[i, 8] == "Y")
-                                {
-                                    <span class="z-lm-cnt"></span>
-                                }
-                            </a>
-                        </li>
+                        if (ViewBag.Box[i, 0] == "d")
+                        {
+                            if ((ViewBag.Box[i, 1] == "node.as" && ViewBag.FormCharger)
+                                                || (ViewBag.Box[i, 1] == "node.__r" && (ViewBag.RcvManager || ViewBag.R.current["operator"].ToString() == "Y"))
+                                                || ViewBag.Box[i, 1] != "node.as" || ViewBag.Box[i, 1] != "node.__r")
+                            {
+                                <li class="sidenav-item@(ViewBag.Box[i, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[i, 4] ? " active" : "")" data-box="@ViewBag.Box[i, 1]" data-location="@ViewBag.Box[i, 4]">
+                                    <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.Box[i, 6]">
+                                        <span>@ViewBag.Box[i, 6]</span>
+                                        @if (ViewBag.Box[i, 8] == "Y")
+                                        {
+                                            <span class="z-lm-cnt"></span>
+                                        }
+                                    </a>
+                                </li>
+                            }
+                        }
                     }
-                }
+                </ul>
+            </li>
+            @if (ViewBag.SharedFolder != null && ViewBag.SharedFolder.Count > 0)
+            {
+                <li class="sidenav-item open">
+                    <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fab fa-chromecast sidenav-icon text-pink"></i><span>@Resources.EA.BoxShared</span></a>
+
+                    <ul class="sidenav-menu my-0">
+                        @foreach (DataRow row in ViewBag.SharedFolder)
+                        {
+                            <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString()) > 0 ? " open" : "")">
+                                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="far fa-folder sidenav-icon text-secondary"></i><span>@row["TargetGR"]</span></a>
+
+                                <ul class="sidenav-menu my-0">
+                                    <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_s") > 0 ? " active" : "")" data-box="node._s" data-location="@("_s" + sDel + "_s" + sDel + row["TargetGRID"].ToString() + "_s")">
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxSent"><span>@Resources.EA.BoxSent</span></a>
+                                    </li>
+                                    <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_a") > 0 ? " active" : "")" data-box="node._a" data-location="@("_a" + sDel + "_a" + sDel + row["TargetGRID"].ToString() + "_a")">
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxCompleted"><span>@Resources.EA.BoxCompleted</span></a>
+                                    </li>
+                                    <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_re") > 0 ? " active" : "")" data-box="node._re" data-location="@("_re" + sDel + "_re" + sDel + row["TargetGRID"].ToString() + "_re")">
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxReference"><span>@Resources.EA.BoxReference</span></a>
+                                    </li>
+                                    <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_dl") > 0 ? " active" : "")" data-box="node._dl" data-location="@("dl" + sDel + "_dl" + sDel + row["TargetGRID"].ToString() + "_dl")">
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxDistribued"><span>@Resources.EA.BoxDistribued</span></a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </li>
             }
+
         </ul>
-    </li>
-    @if (ViewBag.SharedFolder != null && ViewBag.SharedFolder.Count > 0)
-    {
-        <li class="sidenav-item open">
-            <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fab fa-chromecast sidenav-icon text-pink"></i><span>@Resources.EA.BoxShared</span></a>
+    </div>
+    <!-- / sidebox tree -->
+</div>
 
-            <ul class="sidenav-menu my-0">
-                @foreach (DataRow row in ViewBag.SharedFolder)
-                {
-                    <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString()) > 0 ? " open" : "")">
-                        <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="far fa-folder sidenav-icon text-secondary"></i><span>@row["TargetGR"]</span></a>
 
-                        <ul class="sidenav-menu my-0">
-                            <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_s") > 0 ? " active" : "")" data-box="node._s" data-location="@("_s" + sDel + "_s" + sDel + row["TargetGRID"].ToString() + "_s")">
-                                <a href="javascript:void(0)" class="sidenav-link"><span>@Resources.EA.BoxSent</span></a>
-                            </li>
-                            <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_a") > 0 ? " active" : "")" data-box="node._a" data-location="@("_a" + sDel + "_a" + sDel + row["TargetGRID"].ToString() + "_a")">
-                                <a href="javascript:void(0)" class="sidenav-link"><span>@Resources.EA.BoxCompleted</span></a>
-                            </li>
-                            <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_re") > 0 ? " active" : "")" data-box="node._re" data-location="@("_re" + sDel + "_re" + sDel + row["TargetGRID"].ToString() + "_re")">
-                                <a href="javascript:void(0)" class="sidenav-link"><span>@Resources.EA.BoxReference</span></a>
-                            </li>
-                            <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["TargetGRID"].ToString() + "_dl") > 0 ? " active" : "")" data-box="node._dl" data-location="@("dl" + sDel + "_dl" + sDel + row["TargetGRID"].ToString() + "_dl")">
-                                <a href="javascript:void(0)" class="sidenav-link"><span>@Resources.EA.BoxDistribued</span></a>
-                            </li>
-                        </ul>
-                    </li>
-                }
-            </ul>
-        </li>
-    }
-
-</ul>
 
 

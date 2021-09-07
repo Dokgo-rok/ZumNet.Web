@@ -102,7 +102,7 @@
                     <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
                     @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W"))
                     {
-                        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeNew" data-zv-menu="write"><i class="fe-edit-2"></i></button>
+                        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeDoc" data-zv-menu="write"><i class="fe-edit-2"></i></button>
                     }
                 </div>
                 <div class="px-1 flex-grow-1"></div>
@@ -132,7 +132,7 @@
 
         <div class="flex-grow-0 z-lv-hdr">
             <ul class="list-group d-none d-sm-block">
-                <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x" style="background-color: rgba(255, 217, 25, 0.2)">
+                <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x" style="background-color: rgba(52, 79, 233, 0.1)">
                     <div class="d-none d-md-block wd-lg-6 wd-xl-4 text-center">
                         <span class="flex-fill">@Resources.Global.SeqNo</span>
                     </div>
