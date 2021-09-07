@@ -14,6 +14,7 @@ using ZumNet.Framework.Core;
 using ZumNet.Framework.Entities.Web;
 using ZumNet.Framework.Util;
 using ZumNet.Framework.Web.Base;
+using ZumNet.Web.App_Code;
 using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
 
@@ -65,7 +66,14 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             {
                 string mode = StringHelper.SafeString(Request.Form["mode"]);
                 string admin = StringHelper.SafeString(Request.Form["admin"]);
-                string formId = StringHelper.SafeString(Request.Form["formId"]);
+                string formID = StringHelper.SafeString(Request.Form["formId"]);
+
+                if (!String.IsNullOrWhiteSpace(formID))
+                {
+                    mode = "pf";
+                }
+
+
                 int defId = StringHelper.SafeInt(Request.Form["defId"]);
                 int viewer = StringHelper.SafeInt(Request.Form["viewer"]);
                 int state = StringHelper.SafeInt(Request.Form["state"]);
@@ -99,7 +107,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                         sortCol = "DocName";
                         break;
                     case "2":
-                        sortCol = "PIState";
+                        sortCol = "DocStatus";
                         break;
                     case "3":
                         sortCol = "PIName";
@@ -155,7 +163,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 using (WorkList workList = new WorkList())
                 {
-                    result = workList.ViewListPerMenu(mode, admin, formId, defId, viewer, state, page, count, sortCol, sortType, searchCol, searchText, searchStart, searchEnd);
+                    result = workList.ViewListPerMenu(mode, admin, formID, defId, viewer, state, page, count, sortCol, sortType, searchCol, searchText, searchStart, searchEnd);
                 }
 
                 if (result.ResultCode == 0)
@@ -225,6 +233,193 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 {
                     ResultCode = "FAIL";
                     ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 결재선 정보 조회
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string SelectEAApprovalLineInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    return "ERROR##필수값 누락";
+                }
+
+                int oID = StringHelper.SafeInt(jPost["oid"]);
+                string itemKey = StringHelper.SafeString(jPost["itemKey"]);
+                string itemSubKey = StringHelper.SafeString(jPost["itemSubKey"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (WorkList workListBiz = new WorkList())
+                {
+                    result = workListBiz.SelectBFWorkItemOID(oID);
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    DataTable dtActRole = new DataTable();
+                    DataTable dtBizRole = new DataTable();
+
+                    ServiceResult resultCode = new ServiceResult();
+
+                    using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                    {
+                        resultCode = eApprovalBiz.SelectBFCodeRole(itemKey, itemSubKey);
+
+                        if (resultCode.ResultCode == 0 && resultCode?.ResultDataTable?.Rows?.Count > 0)
+                        {
+                            if (resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "bizrole", true) == 0).Count() > 0)
+                            {
+                                dtBizRole = resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "bizrole", true) == 0).CopyToDataTable();
+                            }
+
+                            if (resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "actrole", true) == 0).Count() > 0)
+                            {
+                                dtActRole = resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "actrole", true) == 0).CopyToDataTable();
+                            }
+                        }
+                    }
+
+                    // 결재 정보를 넘겨 HTML을 받아온다.
+                    ApprovalLine appLine = new ApprovalLine(result.ResultDataTable);
+
+                    return $"OK##{appLine.GetApprovalLineHtml(dtBizRole, dtActRole)}";
+                }
+                else
+                {
+                    return "ERROR##HTML 구성 오류";
+                }
+            }
+            else
+            {
+                return "ERROR##AJAX에서 호출되지 않음";
+            }
+        }
+
+        /// <summary>
+        /// WI 정보 조회
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string SelectEAWorkItemInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    return "ERROR##필수값 누락";
+                }
+
+                int oID = StringHelper.SafeInt(jPost["oid"]);
+                string itemKey = StringHelper.SafeString(jPost["itemKey"]);
+                string itemSubKey = StringHelper.SafeString(jPost["itemSubKey"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (WorkList workListBiz = new WorkList())
+                {
+                    result = workListBiz.SelectBFWorkItemOID(oID);
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    DataTable dtActRole = new DataTable();
+                    DataTable dtBizRole = new DataTable();
+
+                    ServiceResult resultCode = new ServiceResult();
+
+                    using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                    {
+                        resultCode = eApprovalBiz.SelectBFCodeRole(itemKey, itemSubKey);
+
+                        if (resultCode.ResultCode == 0 && resultCode?.ResultDataTable?.Rows?.Count > 0)
+                        {
+                            if (resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "bizrole", true) == 0).Count() > 0)
+                            {
+                                dtBizRole = resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "bizrole", true) == 0).CopyToDataTable();
+                            }
+
+                            if (resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "actrole", true) == 0).Count() > 0)
+                            {
+                                dtActRole = resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "actrole", true) == 0).CopyToDataTable();
+                            }
+                        }
+                    }
+
+                    // 결재 정보를 넘겨 HTML을 받아온다.
+                    ApprovalLine appLine = new ApprovalLine(result.ResultDataTable);
+
+                    return $"OK##{appLine.GetWorkItemHtml(dtBizRole, dtActRole)}";
+                }
+                else
+                {
+                    return "ERROR##HTML 구성 오류";
+                }
+            }
+            else
+            {
+                return "ERROR##AJAX에서 호출되지 않음";
+            }
+        }
+
+        /// <summary>
+        /// 결재 문서 삭제
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string DeleteBFEAData()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string command = StringHelper.SafeString(jPost["command"]);
+                int messageID = StringHelper.SafeInt(jPost["messageID"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.DeleteBFEAData(command, messageID);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
                 }
             }
             else
@@ -387,7 +582,75 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
             }
 
+            // 이미 정의되어 있는 메인 필드 처리
+            Dictionary<string, string> dicDefMainField = new Dictionary<string, string>(12);
+            dicDefMainField.Add("DocName", "문서명");
+            dicDefMainField.Add("DocNumber", "문서번호");
+            dicDefMainField.Add("DocLevel", "문서등급");
+            dicDefMainField.Add("KeepYear", "보존년한");
+            dicDefMainField.Add("Subject", "제목");
+            dicDefMainField.Add("Creator", "작성자");
+            dicDefMainField.Add("PublishDate1", "등록일(-)");
+            dicDefMainField.Add("PublishDate2", "등록일(/)");
+            dicDefMainField.Add("PublishDate3", "등록일(.)");
+            dicDefMainField.Add("CreatorDept", "작성부서");
+            dicDefMainField.Add("ExternalKey1", "외부키1");
+            dicDefMainField.Add("ExternalKey2", "외부키2");
+
+            ViewData["definemainfield"] = JsonConvert.SerializeObject(dicDefMainField);
+
             return View();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string SelectBFEAFormData()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+                string formID = StringHelper.SafeString(jPost["formID"].ToString());
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.SelectBFEAFormData(domainID, formID);
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
         }
 
         /// <summary>
@@ -410,7 +673,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     return CreateJsonData();
                 }
 
-                string command = StringHelper.SafeString(jPost["mode"]);
+                string command = StringHelper.SafeString(jPost["command"]);
                 command = (String.Compare(command, "I", true) == 0) ? "create" : "modify";
                 int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
                 string formID = StringHelper.SafeString(jPost["formID"]);
@@ -419,32 +682,222 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 int processID = StringHelper.SafeInt(jPost["processID"]);
                 string docName = StringHelper.SafeString(jPost["docName"]);
                 string description = StringHelper.SafeString(jPost["description"]);
-                string mainTable = StringHelper.SafeString(jPost["mainTable"]);
-                string mainTableDef = StringHelper.SafeString(jPost["mainTableDef"]);
-                int subTableCount = StringHelper.SafeInt(jPost["subTableCount"]);
-                string subTableDef = StringHelper.SafeString(jPost["subTableDef"]);
+                string selectable = StringHelper.SafeString(jPost["selectable"]);
                 string xslName = StringHelper.SafeString(jPost["xslName"]);
                 string cssName = StringHelper.SafeString(jPost["cssName"]);
                 string jsName = StringHelper.SafeString(jPost["jsName"]);
-                int version = StringHelper.SafeInt(jPost["version"]);
                 string usage = StringHelper.SafeString(jPost["usage"]);
-                string webEditor = StringHelper.SafeString(jPost["webEditor"]);
-                string htmlFile = StringHelper.SafeString(jPost["htmlFile"]);
-                string limited = StringHelper.SafeString(jPost["limited"]);
-                string processNameString = StringHelper.SafeString(jPost["processNameString"]);
-                string validation = StringHelper.SafeString(jPost["validation"]);
-                string reserved1 = "";
-                string reserved2 = "";
-                string createMaintableText = "";
-                string createSubtableText = "";
-                string selecTable = StringHelper.SafeString(jPost["selecTable"]);
-                
+                string mainTable = StringHelper.SafeString(jPost["mainTable"]);
+                mainTable = (mainTable.IndexOf("FORM_") < 0) ? "FORM_" + mainTable : mainTable;
+
                 ServiceResult result = new ServiceResult();
 
-                // public ServiceResult HandleEAFormBasicManagement(string command, int domainID, string formID, int classID, int processID, string docName, string description, string xslName, string cssName, string jsName, string usage)
                 using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
                 {
-                    result = eApprovalBiz.HandleEAFormBasicManagement(command, domainID, formID, classID, processID, docName, description, xslName, cssName, jsName, usage);
+                    result = eApprovalBiz.HandleEAFormBasicManagement(command, domainID, formID, classID, processID, docName, description, selectable, xslName, cssName, jsName, usage, mainTable);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 양식 사용 종류 변경 처리
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string BFHandleEAFormUsageManagement()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string command = StringHelper.SafeString(jPost["command"]);
+                string formID = StringHelper.SafeString(jPost["formID"]);
+                string usage = StringHelper.SafeString(jPost["usage"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.HandleEAFormTableManagement(command, formID, "", 0, usage);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 양식 메인 테이블 정보 처리
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string BFHandleEAFormMainTableManagement()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string command = StringHelper.SafeString(jPost["command"]);
+                string formID = StringHelper.SafeString(jPost["formID"]);
+                string tableDef = StringHelper.SafeString(jPost["tableDef"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.HandleEAFormTableManagement(command, formID, tableDef, 0, "");
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 양식 하위 테이블 정보 처리
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string BFHandleEAFormSubTableManagement()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string command = StringHelper.SafeString(jPost["command"]);
+                string formID = StringHelper.SafeString(jPost["formID"]);
+                string tableDef = StringHelper.SafeString(jPost["tableDef"]);
+                int tableCount = StringHelper.SafeInt(jPost["tableCount"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.HandleEAFormTableManagement(command, formID, tableDef, tableCount, "");
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 양식 기타 정보 처리
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string BFHandleEAFormETCManagement()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string formID = StringHelper.SafeString(jPost["formID"]);
+                string webEditor = StringHelper.SafeString(jPost["webEditor"]);
+                string htmlFile = StringHelper.SafeString(jPost["htmlFile"]);
+                string processNameString = StringHelper.SafeString(jPost["processNameString"]);
+                string validation = StringHelper.SafeString(jPost["validation"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.HandleEAFormEtcManagement(formID, webEditor, htmlFile, processNameString, validation);
                 }
 
                 if (result.ResultCode >= 0)
