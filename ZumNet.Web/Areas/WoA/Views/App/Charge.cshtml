@@ -41,7 +41,7 @@
 
 			if (memberList != "" && memberList.length > 0) {
 				for (var j = 0; j < memberList.length; j++) {
-					optionMemberHtml += "<option value=\"" + memberList[j].UserID + "\">(" + memberList[j].GroupName + ") " + memberList[j].Grade1 + " " + memberList[j].DisplayName + "</option>";
+					optionMemberHtml += "<option value=\"" + memberList[j].UserID + "\" data-deptid=\"" + memberList[j].GR_ID + "\">(" + memberList[j].GroupName + ") " + memberList[j].Grade1 + " " + memberList[j].DisplayName + "</option>";
 				}
 
 				$("#selMember").each(function () {
@@ -86,34 +86,76 @@
 		}
 
 		// 코드 아이템 편집
-		function saveChargeInfo(obj) {
+		function saveChargeInfo() {
 			var formID = $("#btnModalSave").attr("data-formid");
 
 			if (formID == "") {
 				return;
 			}
 
-			@*var $tr = $(obj).parent("td").parent("tr");
-
-			if ($tr.find("td:eq(1)").find("input").val() == "") {
-				alert("항목을 입력하세요.");
-
-				$tr.find("td:eq(1)").find("input").focus();
+			if (!window.confirm("변경사항을 저장하시겠습니까?")) {
 				return;
 			}
 
-			var key3 = $tr.find("td:eq(0)").find("input").val();
-			var item1 = $tr.find("td:eq(1)").find("input").val();
-			var item2 = $tr.find("td:eq(2)").find("input").val();
-			var item3 = $tr.find("td:eq(3)").find("input").val();
-			var item4 = $tr.find("td:eq(4)").find("input").val();
-			var item5 = $tr.find("td:eq(5)").find("input").val();
+			@*@chargejson =   
+	  N'[
+		{
+			"ChargeID" : 1354,
+			"ObjectType" : "GR",
+			"Seq" : 1,
+			"ChargeDeptID" : 0,
+			"Reserved1" : ""
+		},
+		{
+			"ChargeID" : 101361,
+			"ObjectType" : "UR",
+			"Seq" : 1,
+			"ChargeDeptID" : 1478,
+			"Reserved1" : ""
+		}
+	]'*@  
+			
+			var chargeInfoArray = [];
+			var changeChargeDeptInfo = "";
+			var changeChargeMemberInfo = "";
+
+			// 현재 설정된 부서 정보
+			if ($("#selDept").val() != "") {
+				for (var i = 0; i < $("#selDept").val().length; i++) {
+					var chargeInfoDept = {};
+					chargeInfoDept.ChargeID = $("#selDept").val()[i];
+					chargeInfoDept.ObjectType = "GR";
+					chargeInfoDept.Seq = i + 1;
+					chargeInfoDept.ChargeDeptID = 0;
+					chargeInfoDept.Reserved1 = "";
+					
+					chargeInfoArray.push(chargeInfoDept);
+
+					changeChargeDeptInfo += ((i == 0) ? "" : ", ") + $("#selDept option[value='" + chargeInfoDept.ChargeID + "']").text();
+				}
+			}
+
+			// 현재 설정된 부서원 정보
+			if ($("#selMember").val() != "") {
+				for (var i = 0; i < $("#selMember").val().length; i++) {
+					var chargeInfoMember = {};
+					chargeInfoMember.ChargeID = $("#selMember").val()[i];
+					chargeInfoMember.ObjectType = "UR";
+					chargeInfoMember.Seq = i + 1;
+					chargeInfoMember.ChargeDeptID = $("#selMember option[value='" + chargeInfoMember.ChargeID + "']").attr("data-deptid");
+					chargeInfoMember.Reserved1 = "";
+					
+					chargeInfoArray.push(chargeInfoMember);
+
+					changeChargeMemberInfo += ((i == 0) ? "" : ", ") + $("#selMember option[value='" + chargeInfoMember.ChargeID + "']").text();
+				}
+			}
 
 			$.ajax({
-                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+                url: '@Url.Action("UpdateChargeInfo", "App")',
 				type: 'POST',
-                dataType: 'JSON',
-				data: '{mode:"U", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				dataType: 'JSON',
+				data: '{formID:"' + formID + '", chargeJson: ' + JSON.stringify(chargeInfoArray) + '}',
 				success: function (result) {
 					if (result.code != "OK") {
 						alert(result.message);
@@ -121,10 +163,13 @@
 					}
 
 					alert("정상적으로 처리되었습니다.");
+					$("#modalDefault").modal("hide");
 
-					window.location.reload();
+					// 변경된 정보 설정
+					$("tr[data-formid='" + formID + "'] td:eq(4)").html(changeChargeDeptInfo);
+					$("tr[data-formid='" + formID + "'] td:eq(5)").html(changeChargeMemberInfo);
                 }
-			});*@
+			});
 		}
 	</script>
 }
@@ -191,27 +236,13 @@
 							foreach (DataRow drList in dtSubForm.Rows)
 							{
 			<tr data-formid="@drList["FormID"].ToString()">
-				<td>
-					@drClass["ClassName"].ToString()
-				</td>
-				<td>
-					@drList["DocName"].ToString()
-				</td>
-				<td>
-					@drList["XslName"].ToString()
-				</td>
-				<td>
-					@drList["Version"].ToString()
-				</td>
-				<td>
-					@drList["ChargeDeptDisplayName"].ToString()
-				</td>
-				<td>
-					@drList["ChargeMemberDisplayName"].ToString()
-				</td>
-				<td>
-					<button type="button" class="btn btn-default" onclick="editCharge(this, '@drList["FormID"].ToString()', '@drList["ChargeDept"].ToString()', '@drList["ChargeMember"].ToString()')">변경</button>
-				</td>
+				<td>@drClass["ClassName"].ToString()</td>
+				<td>@drList["DocName"].ToString()</td>
+				<td>@drList["XslName"].ToString()</td>
+				<td>@drList["Version"].ToString()</td>
+				<td>@drList["ChargeDeptDisplayName"].ToString()</td>
+				<td>@drList["ChargeMemberDisplayName"].ToString()</td>
+				<td><button type="button" class="btn btn-default" onclick="editCharge(this, '@drList["FormID"].ToString()', '@drList["ChargeDept"].ToString()', '@drList["ChargeMember"].ToString()')">변경</button></td>
 			</tr>
 							}
 						}

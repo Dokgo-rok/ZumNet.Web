@@ -2,19 +2,22 @@
 @using System.Text;
 @using Newtonsoft.Json;
 @{
-    ViewBag.Title = "결재 양식 관리";
+	ViewBag.Title = "결재 양식 관리";
 }
 
 @section Styles {
-    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+	@Styles.Render("~/bundle/vendor/css/pages/account")
 }
 
 @section Scripts {
-    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+	@Scripts.Render("~/bundle/js/pages_account-settings")
 
-    <script type="text/javascript">
+	<script type="text/javascript">
 		var formClassJson = @Html.Raw(ViewData["formclass"]);
 		var formListJson = @Html.Raw(ViewData["formlist"]);
+		var formProcessJson = @Html.Raw(ViewData["formprocess"]);
+		var defineMainField = @Html.Raw(ViewData["definemainfield"]);
+		var reservedFieldNames = "";
 
 		$(document).ready(function () {
 			if (formClassJson != "") {
@@ -24,8 +27,33 @@
 					optionHtml += "<option value=\"" + formClassJson[i].ClassID + "\">" + formClassJson[i].ClassName + "</option>";
 				}
 
+				$("#selEABasicFormClass").append(optionHtml);
+
+				// 미분류 앙식 추가
+				optionHtml += "<option value=\"0\">미분류 양식들</option>";
+
 				$("#selEAFormClass").append(optionHtml);
 			}
+
+			if (formProcessJson != "") {
+				var optionHtml = "";
+
+				for (var i = 0; i < formProcessJson.length; i++) {
+					optionHtml += "<option value=\"" + formProcessJson[i].ProcessID + "\">" + formProcessJson[i].Name + "</option>";
+				}
+
+				$("#selEABasicFormProcess").append(optionHtml);
+			}
+
+			if (defineMainField != "") {
+				$.each(defineMainField, function (key, value) {
+					reservedFieldNames += key + ",";
+				});
+
+				reservedFieldNames = reservedFieldNames.substring(0, reservedFieldNames.length - 1);
+			}
+
+			initializeForm("I");
 
             $("#btnSearch").on("click", function () {
 				if ($("#selEAFormClass").val() == "") {
@@ -38,7 +66,143 @@
 					return;
 				}
 
+				$.ajax({
+					url: '@Url.Action("SelectBFEAFormData", "App")',
+					type: 'POST',
+					dataType: 'JSON',
+					data: '{formID: "' + $("#selEAFormList").val() + '"}',
+					success: function (result) {
+						if (result.code != "OK") {
+							alert(result.message);
+							return;
+						}
 
+						if (result.data != null && result.data.length == 1) {
+							initializeForm("U");
+
+							$("#txtEABasicFormName").attr("data-formID", result.data[0].FormID);
+							$("#divUsage").show();
+							
+							$("#txtEABasicFormName").val(result.data[0].DocName);
+							$("#selEABasicFormClass").val(result.data[0].ClassID);
+							$("#selEABasicFormProcess").val(result.data[0].ProcessID);
+							$("#txtEABasicFormDescription").val(result.data[0].Description);
+							$("#selEABasicFormUsage").val(result.data[0].Usage);
+							$("#chkSelectable").prop("checked", (result.data[0].Selectable == "Y") ? true : false);
+							$("#chkCssFileUseYn").prop("checked", (result.data[0].CssName != "") ? true : false);
+							$("#chkJSFileUseYn").prop("checked", (result.data[0].JsName != "") ? true : false);
+
+							$("#txtEAMainTableName").val(result.data[0].MainTable);
+
+							$("#txtEASubTableCount").val(result.data[0].SubTableCount);
+							
+							if (result.data[0].MainTableDef != "") {
+								$(result.data[0].MainTableDef).find("field").each(function () {
+									$("#tblMain tbody").append("<tr data-name=\"" + $(this).find("name").text() + "\">" + $("#tblTemplate tbody tr").html() + "</tr>");
+
+									var $target = $("tr[data-name='" + $(this).find("name").text() + "']");
+									$target.find("td:eq(0)").find("input").val($(this).find("name").text());
+									$target.find("td:eq(1)").find("input").val($(this).find("label").text());
+									$target.find("td:eq(2)").find("select").val($(this).find("type").text());
+									$target.find("td:eq(3)").find("input").val($(this).find("length").text());
+									$target.find("td:eq(4)").find("input").val($(this).find("default").text());
+									$target.find("td:eq(5)").find("select").val($(this).find("isnull").text());
+									$target.find("td:eq(6)").find("button:eq(0)").remove();
+
+									// 프로세스 HTML 추가
+									var processHtml = "<tr>";
+									processHtml += "<td data-field=\"" + $(this).find("name").text() + "\">" + $(this).find("label").text() + "(" + $(this).find("name").text() + ")" + "</td>";
+									processHtml += "<td>";
+									processHtml += "<button type=\"button\" class=\"btn btn-default\" onclick=\"appendCombineField(this)\">조합 필드 추가</button>";
+									processHtml += "<button type=\"button\" class=\"btn btn-default ml-2\" onclick=\"removeCombineField(this)\" disabled=\"true\">조합 필드 삭제</button>";
+									processHtml += "</td>";
+									processHtml += "<td><select class=\"custom-select\"><option value='0' selected>체크하지 않음</option><option value='text'>Text</option><option value='textarea'>TextArea</option><option value='radio'>Radio</option><option value='checkbox'>CheckBox</option><option value='select'>Select</option></select></td>";
+									processHtml += "</tr>";
+
+									$("#tblValidation tbody").append(processHtml);
+								});
+
+								// 필드 추가 tr 추가
+								$("#tblMain tbody").append($("#tblTemplate tbody").html());
+							} else {
+								// 필드 추가 tr 추가
+								$("#tblMain tbody").append($("#tblTemplate tbody").html());
+							}
+
+							var subTableHtml = "";
+
+							if (result.data[0].SubTableDef != "") {
+								for (var i = 0; i < result.data[0].SubTableCount; i++) {
+									var tableID = (i + 1).toString();
+									var $targetXml = $(result.data[0].SubTableDef).find("subtable" + tableID);
+
+									subTableHtml += "<div class=\"form-group col-md-11\">";
+									subTableHtml += "	<label class=\"form-label\">하위테이블 " + tableID + "</label>";
+									subTableHtml += "<table id=\"tblSub" + tableID + "\" class=\"table table-bordered mb-3\">";
+									subTableHtml += "<thead>";
+									subTableHtml += $("#tblTemplate thead").html()
+									subTableHtml += "</thead>";
+									subTableHtml += "<tbody>";
+									subTableHtml += "</tbody>";
+									subTableHtml += "</table>";
+									subTableHtml += "</div>";
+									subTableHtml += "<div class=\"form-group col-md-1\">";
+									subTableHtml += "	<label class=\"form-label\">반복회수</label>";
+									subTableHtml += "	<input type=\"text\" id=\"txtSub" + tableID + "Count\" class=\"form-control\" style=\"width:100px;\" value=\"" + $targetXml.attr("cnt") + "\" />";
+									subTableHtml += "	<button type=\"button\" class=\"btn btn-default mt-2\" style=\"width:100px;\" onclick=\"deleteEASubTable(this, " + tableID + ")\">테이블 삭제</button>";
+									subTableHtml += "</div>";
+
+									$("#divSubTable").append(subTableHtml);
+
+									subTableHtml = "";
+
+									$targetXml.find("field").each(function () {
+										$("#divSubTable").find("#tblSub" + tableID + " tbody").append("<tr data-name=\"sub" + tableID + "_" + $(this).find("name").text() + "\">" + $("#tblTemplate tbody tr").html() + "</tr>");
+
+										var $target = $("tr[data-name='sub" + tableID + "_" + $(this).find("name").text() + "']");
+										$target.find("td:eq(0)").find("input").val($(this).find("name").text());
+										$target.find("td:eq(1)").find("input").val($(this).find("label").text());
+										$target.find("td:eq(2)").find("select").val($(this).find("type").text());
+										$target.find("td:eq(3)").find("input").val($(this).find("length").text());
+										$target.find("td:eq(4)").find("input").val($(this).find("default").text());
+										$target.find("td:eq(5)").find("select").val($(this).find("isnull").text());
+										$target.find("td:eq(6)").find("button:eq(0)").remove();
+										$target.find("td:eq(6)").find("button").attr("onclick", "removeTableField(this, 'S')");
+
+										// 프로세스 HTML 추가
+										var processHtml = "<tr>";
+										processHtml += "<td data-field=\"S" + tableID.toString() + $(this).find("name").text() + "\">" + $(this).find("label").text() + "(" + $(this).find("name").text() + ")" + "</td>";
+										processHtml += "<td>";
+										processHtml += "<button type=\"button\" class=\"btn btn-default\" onclick=\"appendCombineField(this)\">조합 필드 추가</button>";
+										processHtml += "<button type=\"button\" class=\"btn btn-default ml-2\" onclick=\"removeCombineField(this)\" disabled=\"true\">조합 필드 삭제</button>";
+										processHtml += "</td>";
+										processHtml += "<td><select class=\"custom-select\"><option value='0' selected>체크하지 않음</option><option value='text'>Text</option><option value='textarea'>TextArea</option><option value='radio'>Radio</option><option value='checkbox'>CheckBox</option><option value='select'>Select</option></select></td>";
+										processHtml += "</tr>";
+
+										$("#tblValidation tbody").append(processHtml);
+									});
+
+									// 필드 추가 tr 추가
+									$("#divSubTable").find("#tblSub" + tableID + " tbody").append($("#tblTemplate tbody").html());
+									$("#divSubTable").find("#tblSub" + tableID + " tbody tr:last").find("button:eq(0)").attr("onclick", "addTableField(this, 'S')");
+									$("#divSubTable").find("#tblSub" + tableID + " tbody tr:last").find("button:eq(1)").attr("onclick", "removeTableField(this, 'S')");
+								}
+							}
+
+							// 프로세스 설정
+							if (result.data[0].ProcessNameString != "") {
+								$("#txtEAProcessName").val(result.data[0].ProcessNameString);
+
+								$("#tblValidation tbody tr").each(function () {
+									if ($("#txtEAProcessName").val().indexOf($(this).find("td:eq(0)").attr("data-field")) >= 0) {
+										$(this).find("td:eq(1)").find("button:eq(0)").prop("disabled", true);
+										$(this).find("td:eq(1)").find("button:eq(1)").prop("disabled", false);
+									}
+								});
+							}
+						}
+					}
+				});
 			});
 		});
 
@@ -50,39 +214,881 @@
 			if (formClass == "") {
 				$("#selEAFormList").append("<option value=\"\">분류를 선택하세요.</option>");
 			} else {
-                if (formListJson != "") {
-				    var optionHtml = "";
+				if (formListJson != "") {
+					var optionHtml = "";
+					var optionUseHtml = "";
+					var optionNoUseHtml = "";
 
+					// <optgroup label="Alaskan/Hawaiian Time Zone">
 					for (var i = 0; i < formListJson.length; i++) {
 						if (formListJson[i].ClassID == formClass) {
-                            optionHtml += "<option value=\"" + formListJson[i].FormID + "\">" + formListJson[i].DocName + " (" + formListJson[i].MainTable + " , V" + formListJson[i].Version + ")" + "</option>";
+							var optionText = formListJson[i].DocName + " (" + formListJson[i].MainTable + " , V" + formListJson[i].Version + ")";
+
+							if (formListJson[i].Usage == "N") {
+								optionNoUseHtml += "<option value=\"" + formListJson[i].FormID + "\">" + optionText + "</option>";
+							} else {
+								optionUseHtml += "<option value=\"" + formListJson[i].FormID + "\">" + optionText + "</option>";
+							}
 						}
-				    }
+					}
+
+					if (optionUseHtml != "") {
+						optionHtml += "<optgroup label=\"사용중\">" + optionUseHtml + "</optgroup>";
+					}
+
+					if (optionNoUseHtml != "") {
+						optionHtml += "<optgroup label=\"사용하지 않음\">" + optionNoUseHtml + "</optgroup>";
+					}
 
 				    $("#selEAFormList").append(optionHtml);
 			    }
 			}
 		}
-    </script>
+
+		var command = "I";
+
+		function initializeForm(cmd) {
+			$("#txtEABasicFormName").attr("data-formID", "");
+
+			$("#form-basic,#form-main,#form-sub,#form-etc").find("input").val("");
+			$("#form-basic,#form-main,#form-sub,#form-etc").find("textarea").val("");
+			$("#form-basic,#form-main,#form-sub,#form-etc").find("select").prop("selectedIndex", 0);
+			$("#form-basic,#form-main,#form-sub,#form-etc").prop("checked", false);
+
+			$("#divUsage").hide();
+			$("#tblMain tbody").empty();
+			$("#divSubTable").empty();
+			$("#txtEASubTableCount").val("0");
+			$("#tblValidation tbody").empty();
+
+			if (cmd == "I") {
+				$("#selEAFormClass").prop("selectedIndex", 0);
+				$("#selEAFormClass").trigger("change");
+
+				// 메인 테이블 정의 div(생성시)
+				$("#divMainTable").show();
+
+				$("li[class='nav-item']:gt(0)").hide();
+
+				// 양식 기본 정보 탭이 선택되어 있지 않은 상태라면
+				if (!$("a[href='#form-basic']").hasClass("active")) {
+					$("a[href='#form-basic']").trigger("click");
+				}
+			} else {
+				$("li[class='nav-item']:gt(0)").show();
+
+				// 메인 테이블 정의 div(생성시)
+				$("#divMainTable").hide();
+			}
+
+			// 프로세스명 조합 필드 및 필수 체크 항목 정의 생성
+			var processHtml = "";
+
+			if (defineMainField != "") {
+				$.each(defineMainField, function (key, value) {
+					processHtml += "<tr>";
+					processHtml += "<td data-field=\"" + key + "\">" + value + "(" + key + ")" + "</td>";
+					processHtml += "<td>";
+					processHtml += "<button type=\"button\" class=\"btn btn-default\" onclick=\"appendCombineField(this)\">조합 필드 추가</button>";
+					processHtml += "<button type=\"button\" class=\"btn btn-default ml-2\" onclick=\"removeCombineField(this)\" disabled=\"true\">조합 필드 삭제</button>";
+					processHtml += "</td>";
+					processHtml += "<td><select class=\"custom-select\"><option value='0' selected>체크하지 않음</option><option value='text'>Text</option><option value='textarea'>TextArea</option><option value='radio'>Radio</option><option value='checkbox'>CheckBox</option><option value='select'>Select</option></select></td>";
+					processHtml += "</tr>";
+				});
+
+				$("#tblValidation tbody").append(processHtml);
+			}
+
+			command = cmd;
+		}
+
+		// 테이블 필드 추가
+		function addTableField(obj, type) {
+			$(obj).closest("tbody").append($("#tblTemplate tbody").html());
+
+			// 현재 행에 있는 필드 추가 버튼을 제거
+			$(obj).closest("tr").find("td:eq(6)").find("button:eq(0)").remove();
+		}
+
+		// 테이블 필드 제거
+		function removeTableField(obj, type) {
+			if (!window.confirm("이 행을 삭제하시겠습니까? 입력했던 정보들이 같이 삭제됩니다.")) {
+				return false;
+			}
+
+			var $tbody = $(obj).closest("tbody");
+
+			$(obj).closest("tr").remove();
+
+			var btnCount = 0;
+
+			$tbody.find("tr").each(function () {
+				btnCount = $(this).find("td:eq(6)").find("button").length;
+
+				if (btnCount == 2) {
+					return false;
+				}
+			});
+
+			// 필드 추가 버튼이 없으면 생성
+			if (btnCount < 2) {
+				$tbody.find("tr:last").find("td:eq(6)").prepend("<button type=\"button\" class=\"btn btn-default\" onclick=\"addTableField(this, '" + type + "')\">필드추가</button>");
+			}
+		}
+
+		// 하위 테이블 추가
+		function addEASubTable() {
+			var subTableHtml = "";
+			var subTableLength = $("table[id^='tblSub']").length;
+			var tableID = (subTableLength + 1).toString();
+			
+			subTableHtml += "<div class=\"form-group col-md-11\">";
+			subTableHtml += "	<label class=\"form-label\">하위테이블 " + tableID + "</label>";
+			subTableHtml += "<table id=\"tblSub" + tableID + "\" class=\"table table-bordered mb-3\">";
+			subTableHtml += "<thead>";
+			subTableHtml += $("#tblTemplate thead").html()
+			subTableHtml += "</thead>";
+			subTableHtml += "<tbody>";
+			subTableHtml += "</tbody>";
+			subTableHtml += "</table>";
+			subTableHtml += "</div>";
+			subTableHtml += "<div class=\"form-group col-md-1\">";
+			subTableHtml += "	<label class=\"form-label\">반복회수</label>";
+			subTableHtml += "	<input type=\"text\" id=\"txtSub" + tableID + "Count\" class=\"form-control\" style=\"width:100px;\" value=\"1\" />";
+			subTableHtml += "	<button type=\"button\" class=\"btn btn-default mt-2\" style=\"width:100px;\" onclick=\"deleteEASubTable(this, " + tableID + ")\">테이블 삭제</button>";
+			subTableHtml += "</div>";
+
+			$("#divSubTable").append(subTableHtml);
+			
+			// 필드 추가 tr 추가
+			$("#divSubTable").find("#tblSub" + tableID + " tbody").append($("#tblTemplate tbody").html());
+			$("#divSubTable").find("#tblSub" + tableID + " tbody tr:last").find("button:eq(0)").attr("onclick", "addTableField(this, 'S')");
+			$("#divSubTable").find("#tblSub" + tableID + " tbody tr:last").find("button:eq(1)").attr("onclick", "removeTableField(this, 'S')");
+
+			$("#txtEASubTableCount").val(tableID);
+		}
+
+		// 하위 테이블 삭제
+		function deleteEASubTable(obj, tableNo) {
+			if (!window.confirm("이 하위 테이블 " + tableNo + "을(를) 삭제하시겠습니까? 테이블에 있는 모든 데이터가 삭제됩니다.")) {
+				return false;
+			}
+
+			var $rootDiv = $(obj).closest("div.form-group");
+
+			// 현재 div와 그 이전 div를 삭제
+			$rootDiv.prev("div.form-group").remove();
+			$rootDiv.remove();
+
+			var subTableLength = $("table[id^='tblSub']").length;
+			var tableID = 1;
+
+			// 하위 테이블의 일련번호를 재조정
+			$("#divSubTable").find("div.form-group").each(function (index) {
+				if (index % 2 == 0) {
+					$(this).find("label").text("하위테이블 " + tableID.toString());
+					$(this).find("table").attr("id", "tblSub" + tableID.toString());
+
+					tableID++;
+				}
+			});
+
+			$("#txtEASubTableCount").val(subTableLength);
+		}
+
+		// 구분자 추가
+		function appendSplitText() {
+			if ($.trim($("#txtEAProcessName").val()) == "") {
+				$("#txtEAProcessName").val($("#txtEAProcessSplitName").val());
+			} else {
+				$("#txtEAProcessName").val($("#txtEAProcessName").val() + String.fromCharCode(8) + $("#txtEAProcessSplitName").val());
+			}
+		}
+
+		// 프로세스명 초기화
+		function clearProcessName() {
+			$("#txtEAProcessName").val("");
+		}
+
+		// 조합 필드 추가
+		function appendCombineField(obj) {
+			var $selectedTr = $(obj).closest("tr");
+			var selectedField = $selectedTr.find("td:eq(0)").attr("data-field");
+
+			if ($.trim($("#txtEAProcessName").val()) == "") {
+				$("#txtEAProcessName").val(selectedField);
+			} else {
+				$("#txtEAProcessName").val($("#txtEAProcessName").val() + String.fromCharCode(8) + selectedField);
+			}
+
+			$selectedTr.find("td:eq(1)").find("button:eq(0)").prop("disabled", true);
+			$selectedTr.find("td:eq(1)").find("button:eq(1)").prop("disabled", false);
+		}
+
+		// 조합 필드 제거
+		function removeCombineField(obj) {
+			var $selectedTr = $(obj).closest("tr");
+			var selectedField = $selectedTr.find("td:eq(0)").attr("data-field");
+			var processFieldValue = $("#txtEAProcessName").val();
+			processFieldValue = processFieldValue.replace(selectedField, "");
+
+			$("#txtEAProcessName").val(processFieldValue);
+
+			$selectedTr.find("td:eq(1)").find("button:eq(0)").prop("disabled", false);
+			$selectedTr.find("td:eq(1)").find("button:eq(1)").prop("disabled", true);
+		}
+
+		// 양식 기본 정의 저장
+		function saveEABasicForm() {
+			if (command == "U") {
+				if ($("#selEABasicFormUsage").val() == "7") {
+					alert("사용 종류가 사용중일 때에는 편집이 불가능합니다.");
+					return false;  
+				}
+			}
+
+			if ($("#txtEABasicFormName").val() == "") {
+				alert("양식명을 입력하세요.");
+				$("#txtEABasicFormName").focus();
+				return false;  
+			}
+
+			if ($("#selEABasicFormClass").val() == "" && $("#selEABasicFormUsage").val("") != "0") {
+				if (!window.confirm("양식 분류가 선택되지 않으면, 사용 종류는 테스트 작성중으로 저장됩니다. 진행하시겠습니까?")) {
+					return false;
+				}
+
+				// 테스트 작성중으로 변경
+				$("#selEABasicFormUsage").val("0");
+			}
+
+			if (command == "I") {
+				if ($("#txtEACreateMainTableName").val() == "") {
+					alert("메인 테이블명을 입력하세요.");
+					$("#txtEACreateMainTableName").focus();
+					return false;  
+				}
+			}
+
+			var formID = (command == "I") ? "" : $("#txtEABasicFormName").attr("data-formID");
+			var classID = $("#selEABasicFormClass").val();
+			var processID = $("#selEABasicFormProcess").val();
+			var docName = $("#txtEABasicFormName").val();
+			var description = $("#txtEABasicFormDescription").val();
+			var selectable = $("#chkSelectable").prop("checked") ? "Y" : "N";
+			var xslName = "";
+			// 파일 생성 로직이 들어가야 해서... 지금은 빈값으로 처리
+			//var cssName = $("#chkCssFileUseYn").prop("checked") ? "Y" : "N";
+			//var jsName = $("#chkJSFileUseYn").prop("checked") ? "Y" : "N";
+			var cssName = "";
+			var jsName = "";
+			var usage = $("#selEABasicFormUsage").val();
+			var mainTable = (command == "I") ? $("#txtEACreateMainTableName").val() : "";
+
+			$.ajax({
+                url: '@Url.Action("BFHandleEAFormBasicManagement", "App")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{command: "' + command + '", formID: "' + formID + '", classID: ' + classID + ', processID: ' + processID + ', docName: "' + docName + '", description: "' + description + '", selectable: "' + selectable + '", xslName: "' + xslName + '", cssName: "' + cssName + '", jsName: "' + jsName + '", usage: "' + usage + '", mainTable: "' + mainTable + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		// 사용 종류 저장
+		function saveEAUsage() {
+			$.ajax({
+                url: '@Url.Action("BFHandleEAFormUsageManagement", "App")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{command: "US", formID: "' + $("#txtEABasicFormName").attr("data-formID") + '", usage: ' + $("#selEABasicFormUsage").val() + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+                }
+			});
+		}
+
+		// 메인 테이블 정의 저장
+		function saveEAMainTable() {
+			var isValid = true;
+
+			$("#tblMain tbody tr").each(function (idx) {
+				// 필드명, 화면 출력값 둘다 있을 경우에만 유효한 걸로 인정
+				if ($(this).find("td:eq(0)").find("input").val() != "" || $(this).find("td:eq(1)").find("input").val() != "") {
+					if ($(this).find("td:eq(0)").find("input").val() == "") {
+						alert("필드명을 입력하세요.");
+						$(this).find("td:eq(0)").find("input").focus();
+
+						isValid = false;
+						return false;
+					}
+
+					if ($(this).find("td:eq(1)").find("input").val() == "") {
+						alert("화면 출력값을 입력하세요.");
+						$(this).find("td:eq(1)").find("input").focus();
+
+						isValid = false;
+						return false;
+					}
+
+					for (var i = 0 ; i < reservedFieldNames.split( "," ).length ; i++) {
+						if ($(this).find("td:eq(0)").find("input").val().toUpperCase() == reservedFieldNames.split( "," )[i].toUpperCase()) {
+							alert("필드명 " + $(this).find("td:eq(0)").find("input").val() + "은(는) 이미 정의되어 있는 필드명입니다." );
+							$(this).find("td:eq(0)").find("input").focus();
+
+							isValid = false;
+							return false;
+						}  
+					}
+
+					var fieldName = $(this).find("td:eq(0)").find("input").val();
+
+					$("#tblMain tbody tr:gt(" + idx + ")").each(function () {
+						if (fieldName.toUpperCase() == $(this).find("td:eq(0)").find("input").val()) {
+							alert("필드명 " + $(this).find("td:eq(0)").find("input").val() + "이(가) 중복되었습니다.");
+							$(this).find("td:eq(0)").find("input").focus();
+
+							isValid = false;
+							return false;
+						}
+					});
+
+					if (!isValid) {
+						return false;
+					}
+
+					if ($(this).find("td:eq(1)").find("input").val() == "") {
+						alert("화면 출력값을 입력하세요.");
+						$(this).find("td:eq(1)").find("input").focus();
+
+						isValid = false;
+						return false;
+					}
+
+					var fieldType = $(this).find("td:eq(2)").find("select").val();
+
+					if ($(this).find("td:eq(3)").find("input").val() == "" && (fieldType == "binary" || fieldType == "decimal" || fieldType == "char" || fieldType == "nchar" || fieldType == "nvarchar" || fieldType == "varchar")) {
+						alert("필드 길이를 입력하세요.");
+						$(this).find("td:eq(3)").find("input").focus();
+
+						isValid = false;
+						return false;
+					}
+				}
+			});
+
+			if (!isValid) {
+				return false;
+			}
+
+			var xml = "";
+			xml += "<maintable>";
+
+			// xml 생성
+			$("#tblMain tbody tr").each(function (idx) {
+				if ($(this).find("td:eq(0)").find("input").val() != "" && $(this).find("td:eq(1)").find("input").val() != "") {
+					xml += "<field>";
+					xml += "<name>" + $(this).find("td:eq(0)").find("input").val() + "</name>";
+					xml += "<label>" + $(this).find("td:eq(1)").find("input").val() + "</label>";
+					xml += "<type>" + $(this).find("td:eq(2)").find("select").val() + "</type>";
+					xml += "<length>" + $(this).find("td:eq(3)").find("input").val() + "</length>";
+					xml += "<default>" + $(this).find("td:eq(4)").find("input").val() + "</default>";
+					xml += "<isnull>" + $(this).find("td:eq(5)").find("select").val() + "</isnull>";
+					xml += "</field>";
+				}
+			});
+
+			xml += "</maintable>";
+
+			$.ajax({
+                url: '@Url.Action("BFHandleEAFormMainTableManagement", "App")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{command: "MT", formID: "' + $("#txtEABasicFormName").attr("data-formID") + '", tableDef: "' + xml + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					$("#btnSearch").trigger("click");
+                }
+			});
+		}
+
+		// 하위 테이블 정의 저장
+		function saveEASubTable() {
+			var isValid = true;
+			
+			$("#divSubTable div.form-group").each(function (index) {
+				if (index % 2 == 0) {
+					var $subTable = $(this).find("table");
+
+					$subTable.find("tbody").find("tr").each(function (index2) {
+						// 필드명, 화면 출력값 둘다 있을 경우에만 유효한 걸로 인정
+						if ($(this).find("td:eq(0)").find("input").val() != "" || $(this).find("td:eq(1)").find("input").val() != "") {
+							if ($(this).find("td:eq(0)").find("input").val() == "") {
+								alert("필드명을 입력하세요.");
+								$(this).find("td:eq(0)").find("input").focus();
+
+								isValid = false;
+								return false;
+							}
+
+							if ($(this).find("td:eq(1)").find("input").val() == "") {
+								alert("화면 출력값을 입력하세요.");
+								$(this).find("td:eq(1)").find("input").focus();
+
+								isValid = false;
+								return false;
+							}
+
+							for (var i = 0 ; i < reservedFieldNames.split( "," ).length ; i++) {
+								if ($(this).find("td:eq(0)").find("input").val().toUpperCase() == reservedFieldNames.split( "," )[i].toUpperCase()) {
+									alert("필드명 " + $(this).find("td:eq(0)").find("input").val() + "은(는) 이미 정의되어 있는 필드명입니다." );
+									$(this).find("td:eq(0)").find("input").focus();
+
+									isValid = false;
+									return false;
+								}  
+							}
+
+							var fieldName = $(this).find("td:eq(0)").find("input").val();
+
+							$subTable.find("tbody tr:gt(" + index2 + ")").each(function () {
+								if (fieldName.toUpperCase() == $(this).find("td:eq(0)").find("input").val()) {
+									alert("필드명 " + $(this).find("td:eq(0)").find("input").val() + "이(가) 중복되었습니다.");
+									$(this).find("td:eq(0)").find("input").focus();
+
+									isValid = false;
+									return false;
+								}
+							});
+
+							if (!isValid) {
+								return false;
+							}
+
+							if ($(this).find("td:eq(1)").find("input").val() == "") {
+								alert("화면 출력값을 입력하세요.");
+								$(this).find("td:eq(1)").find("input").focus();
+
+								isValid = false;
+								return false;
+							}
+
+							var fieldType = $(this).find("td:eq(2)").find("select").val();
+
+							if ($(this).find("td:eq(3)").find("input").val() == "" && (fieldType == "binary" || fieldType == "decimal" || fieldType == "char" || fieldType == "nchar" || fieldType == "nvarchar" || fieldType == "varchar")) {
+								alert("필드 길이를 입력하세요.");
+								$(this).find("td:eq(3)").find("input").focus();
+
+								isValid = false;
+								return false;
+							}
+						}
+					});
+
+					if (!isValid) {
+						return false;
+					}
+				} else {
+					if ($(this).find("input").val() == "") {
+						alert("반복회수를 입력하세요.");
+						$(this).find("input").focus();
+
+						isValid = false;
+						return false;
+					} 
+
+					if (isNaN($(this).find("input").val())) {
+						alert("반복회수에는 숫자만 입력 가능합니다.");
+						$(this).find("input").focus();
+
+						isValid = false;
+						return false;
+					} 
+				}
+			});
+
+			if (!isValid) {
+				return false;
+			}
+
+			var tableIndex = 1;
+			var xml = "";
+			xml += "<subtables>";
+
+			// xml 생성
+			$("#divSubTable div.form-group").each(function (index) {
+				if (index % 2 == 0) {
+					var $subTable = $(this).find("table");
+
+					xml += "<subtable" + tableIndex.toString() + " cnt='" + $(this).next("div.form-group").find("input").val() + "'>";
+					
+					$subTable.find("tbody").find("tr").each(function (index2) {
+						if ($(this).find("td:eq(0)").find("input").val() != "" && $(this).find("td:eq(1)").find("input").val() != "") {
+							xml += "<field>";
+							xml += "<name>" + $(this).find("td:eq(0)").find("input").val() + "</name>";
+							xml += "<label>" + $(this).find("td:eq(1)").find("input").val() + "</label>";
+							xml += "<type>" + $(this).find("td:eq(2)").find("select").val() + "</type>";
+							xml += "<length>" + $(this).find("td:eq(3)").find("input").val() + "</length>";
+							xml += "<default>" + $(this).find("td:eq(4)").find("input").val() + "</default>";
+							xml += "<isnull>" + $(this).find("td:eq(5)").find("select").val() + "</isnull>";
+							xml += "</field>";
+						}
+					});
+
+					xml += "</subtable" + tableIndex.toString() + ">";
+
+					tableIndex++;
+				}
+			});
+
+			xml += "</subtables>";
+
+			$.ajax({
+                url: '@Url.Action("BFHandleEAFormSubTableManagement", "App")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{command: "ST", formID: "' + $("#txtEABasicFormName").attr("data-formID") + '", tableDef: "' + xml + '", tableCount: "' + $("#txtEASubTableCount").val() + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					$("#btnSearch").trigger("click");
+                }
+			});
+		}
+
+		// 기타 정보 저장
+		function saveEAEtcInfo() {
+			var webEditor = $("#selEAEtcEditor").val();
+			var htmlFile = $("#selEAEtcHtmlTemplate").val();
+			var processNameString = $("#txtEAProcessName").val();
+			var validation = "";
+
+			$.ajax({
+                url: '@Url.Action("BFHandleEAFormETCManagement", "App")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{formID: "' + $("#txtEABasicFormName").attr("data-formID") + '", webEditor: "' + webEditor + '", htmlFile: "' + htmlFile + '", processNameString: "' + processNameString + '", validation: "' + validation + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					$("#btnSearch").trigger("click");
+                }
+			});
+		}
+	</script>
 }
 
 <h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
-    결재 양식 관리
+	결재 양식 관리
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalsDefaultDept" onclick="initializeForm('I')">초기화</button>
 </h4>
 
 <div class="card mb-4">
-    <div class="card-body">
-        <form class="form-inline">
-            <label class="form-label">결재 분류 : </label>
-            <select class="custom-select mx-sm-3" id="selEAFormClass" onchange="setEAFormList()">
-                <option selected value="">선택</option>
-            </select>
-            <label class="form-label mx-sm-3">결재 양식 : </label>
-            <select class="custom-select mx-sm-3" id="selEAFormList">
-                <option value="">분류를 선택하세요.</option>
-            </select>
-            <button type="button" id="btnSearch" class="btn btn-default">조회</button>
-        </form>
-    </div>
+	<div class="card-body">
+		<form class="form-inline">
+			<label class="form-label">결재 분류 : </label>
+			<select class="custom-select mx-sm-3" id="selEAFormClass" onchange="setEAFormList()">
+				<option selected value="">선택</option>
+			</select>
+			<label class="form-label mx-sm-3">결재 양식 : </label>
+			<select class="custom-select mx-sm-3" id="selEAFormList">
+				<option value="">분류를 선택하세요.</option>
+			</select>
+			<button type="button" id="btnSearch" class="btn btn-default">조회</button>
+		</form>
+	</div>
 </div>
 
+<div class="nav-tabs-top nav-responsive-sm">
+	<ul class="nav nav-tabs">
+		<li class="nav-item">
+			<a class="nav-link active" data-toggle="tab" href="#form-basic">양식 기본 정보</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#form-main">메인 테이블 정의</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#form-sub">하위 테이블 정의</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#form-etc">양식 기타 정보 정의</a>
+		</li>
+	</ul>
+	<div class="tab-content">
+		<div class="tab-pane fade show active" id="form-basic">
+			<div class="card-body">
+				<div class="form-group">
+					<label class="form-label">양식명</label>
+					<input type="text" id="txtEABasicFormName" class="form-control" data-formID="">
+				</div>
+				<div class="form-group">
+					<label class="form-label">양식 분류</label>
+					<select class="custom-select" id="selEABasicFormClass">
+						<option value="0">양식 분류를 선택하세요.</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스</label>
+					<select class="custom-select" id="selEABasicFormProcess">
+						<option value="0">프로세스를 선택하세요.</option>
+					</select>
+				</div>
+				<div id="divMainTable" class="form-group">
+					<label class="form-label">메인테이블명</label>
+					<input type="text" id="txtEACreateMainTableName" class="form-control">
+				</div>
+				<div class="form-group">
+					<label class="form-label">양식 설명</label>
+					<textarea class="form-control" id="txtEABasicFormDescription" placeholder="양식 설명" rows="5"></textarea>
+				</div>
+			</div>
+			<hr class="border-light m-0">
+			<div class="card-body" style="padding: 1.5rem 1.5rem 0 1.5rem;">
+				<div class="form-group">
+					<label class="form-label">사용 종류</label>
+					<select class="custom-select" id="selEABasicFormUsage">
+						<option value="0">테스트 작성중</option>
+						<option value="1">테스트 사용중</option>
+						<option value="7">사용중</option>
+						<option value="9">사용안함</option>
+					</select>
+				</div>
+			</div>
+			<div id="divUsage" class="card-footer" style="border-top: 0px solid rgba(24,28,33,0.06);display:none">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveEAUsage()">사용 종류 저장</button>
+			</div>
+			<hr class="border-light m-0">
+			<div class="card-body pb-2">
+				<h6 class="mb-4">기타 설정</h6>
+				<div class="form-group">
+					<label class="switcher">
+						<input type="checkbox" class="switcher-input" id="chkSelectable">
+						<span class="switcher-indicator">
+							<span class="switcher-yes"></span>
+							<span class="switcher-no"></span>
+						</span>
+						<span class="switcher-label">선택 가능(외부 시스템에서 호출 않함) </span>
+					</label>
+				</div>
+				<div class="form-group">
+					<label class="switcher">
+						<input type="checkbox" class="switcher-input" id="chkCssFileUseYn">
+						<span class="switcher-indicator">
+							<span class="switcher-yes"></span>
+							<span class="switcher-no"></span>
+						</span>
+						<span class="switcher-label">CSS 파일 사용</span>
+					</label>
+				</div>
+				<div class="form-group">
+					<label class="switcher">
+						<input type="checkbox" class="switcher-input" id="chkJSFileUseYn">
+						<span class="switcher-indicator">
+							<span class="switcher-yes"></span>
+							<span class="switcher-no"></span>
+						</span>
+						<span class="switcher-label">JS 파일 사용</span>
+					</label>
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveEABasicForm()">기본 정보 저장</button>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="form-main">
+			<div class="card-body pb-2">
+				<div class="form-group">
+					<label class="form-label">메인테이블명</label>
+					<input type="text" id="txtEAMainTableName" class="form-control" readonly="readonly">
+				</div>
+				<div class="form-group">
+					<label class="form-label">메인테이블 필드</label>
+					<table id="tblMain" class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th style="width:20%">필드명</th>
+								<th style="width:20%">화면 출력값</th>
+								<th style="width:15%">필드 타입</th>
+								<th style="width:10%">필드 길이</th>
+								<th style="width:10%">필드 기본값</th>
+								<th style="width:10%">필드 Null 여부</th>
+								<th style="width:15%">비고</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+					<table id="tblTemplate" class="table table-bordered mb-0" style="display:none">
+						<thead>
+							<tr>
+								<th style="width:20%">필드명</th>
+								<th style="width:20%">화면 출력값</th>
+								<th style="width:15%">필드 타입</th>
+								<th style="width:10%">필드 길이</th>
+								<th style="width:10%">필드 기본값</th>
+								<th style="width:10%">필드 Null 여부</th>
+								<th style="width:15%">비고</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<input type="text" class="form-control" />
+								</td>
+								<td>
+									<input type="text" class="form-control" />
+								</td>
+								<td>
+									<select class="custom-select">
+										<option value="bigint">bigint</option>
+										<option value="binary">binary</option>
+										<option value="bit">bit</option>
+										<option value="char">char</option>
+										<option value="datetime">datetime</option>
+										<option value="decimal">decimal</option>
+										<option value="float">float</option>
+										<option value="int">int</option>
+										<option value="money">money</option>
+										<option value="nchar">nchar</option>
+										<option value="ntext">ntext</option>
+										<option value="nvarchar" selected>nvarchar</option>
+										<option value="smalldatetime">smalldatetime</option>
+										<option value="smallint">smallint</option>
+										<option value="text">text</option>
+										<option value="tinyint">tinyint</option>
+										<option value="varchar">varchar</option>
+									</select>
+								</td>
+								<td>
+									<input type="text" class="form-control" />
+								</td>
+								<td>
+									<input type="text" class="form-control" />
+								</td>
+								<td>
+									<select class="custom-select">
+										<option value='null'>NULL</option>
+										<option value='not null'>NOT NULL</option>
+									</select>
+								</td>
+								<td>
+									<button type="button" class="btn btn-default" onclick="addTableField(this, 'M')">필드추가</button>
+									<button type="button" class="btn btn-default" onclick="removeTableField(this, 'M')">필드삭제</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveEAMainTable()">메인 테이블 정보 저장</button>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="form-sub">
+			<div class="card-header">
+				<button type="button" class="btn btn-primary mr-2" onclick="addEASubTable()">하위 테이블 추가</button>
+			</div>
+			<div class="card-body pb-2">
+				<div class="form-group">
+					<label class="form-label">하위테이블 수</label>
+					<input type="text" id="txtEASubTableCount" class="form-control" readonly="readonly">
+				</div>
+				<div id="divSubTable" class="form-row">
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary mr-2" onclick="saveEASubTable()">하위 테이블 정보 저장</button>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="form-etc">
+			<div class="card-body">
+				<div class="form-group">
+					<label class="form-label">에디터 사용 여부</label>
+					<select class="custom-select" id="selEAEtcEditor">
+						<option value="">사용안함</option>
+						<option value="tagfree">TagFree 에디터 사용</option>
+						<option value="namo">Namo 에디터 사용</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">HTML 템플릿 수(*양식영문명 + "_" + 순번 + ".html"로 생성)</label>
+					<select class="custom-select" id="selEAEtcHtmlTemplate">
+						<option value="">없음</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스명 조합 필드 및 필수 체크 항목 정의</label>
+					<table id="tblValidation" class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th style="width:50%">화면 출력값(필드명)</th>
+								<th style="width:25%">프로세스 필드 조합</th>
+								<th style="width:25%">필수 항목 체크</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스명</label>
+					<table id="tblValidation1" class="table table-bordered mb-0">
+						<tbody>
+							<tr>
+								<td style="width:75%">
+									<input type="text" id="txtEAProcessName" class="form-control" readonly="readonly">
+								</td>
+								<td style="width:25%">
+									<input type="text" id="txtEAProcessSplitName" class="form-control" style="width:30%;display:inline;">
+									<button type="button" class="btn btn-default" onclick="appendSplitText()">구분자 추가</button>
+									<button type="button" class="btn btn-default mr-2" onclick="clearProcessName()">초기화</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary" onclick="saveEAEtcInfo()">기타 정보 저장</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -23,22 +23,11 @@
         var formClassJson = @Html.Raw(ViewData["formclass"]);
 		var formListJson = @Html.Raw(ViewData["formlist"]);
 
-
 		$(document).ready(function () {
-            $('#datepicker-range').datepicker({
-				closeText: "닫기",
-				currentText: "오늘",
-				prevText: '이전 달',
-				nextText: '다음 달',
-				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-				monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-				dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-				dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-				dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-				weekHeader: "주",
-				yearSuffix: "년",
-                dateFormat: "yyyy-mm-dd"
-			});
+            $("#datepicker-range").datepicker({
+				language: "ko",
+                format: "yyyy-mm-dd"
+            });
 
 			if (formClassJson != "") {
 				var optionHtml = "";
@@ -46,6 +35,9 @@
 				for (var i = 0; i < formClassJson.length; i++) {
 					optionHtml += "<option value=\"" + formClassJson[i].ClassID + "\">" + formClassJson[i].ClassName + "</option>";
 				}
+
+                // 미분류 앙식 추가
+				optionHtml += "<option value=\"0\">미분류 양식들</option>";
 
 				$("#selEAFormClass").append(optionHtml);
 			}
@@ -76,7 +68,7 @@
 					"data": function (p) {
 						p.mode = "";
 						p.admin = "Y";
-						p.formId = "";
+						p.formId = $("#selEAFormList").val();
 						p.defId = 0;
 						p.viewer = 0;
 						p.state = 100;
@@ -92,20 +84,47 @@
                         prevSortType = result.sortType;
 
                         return result.data;
-                    }
+					}
 				},
                 "columns": [
-                    { data: "OID" },
-                    { data: "DocName" },
-                    { data: "PIState" },
+                    { data: "MessageID" },
+					{
+						"data": "DocName",
+                        "orderable": false
+					},
+					{
+						data: "DocStatus",
+                        "orderable": false
+					},
                     { data: "PIName" },
-					{ data: "CreatorDept" },
-					{ data: "Creator" },
-					{ data: "CreateDate" },
-					{ data: "PIEnd" },
-					{ data: "DeleteDate" },
-					{ data: "DocStatus" },
-                    { data: null }
+					{
+						data: "CreatorDept",
+                        "orderable": false
+					},
+					{
+						data: "Creator",
+                        "orderable": false
+					},
+					{
+						data: "CreateDate",
+                        "orderable": false
+					},
+					{
+						data: "PIEnd",
+                        "orderable": false
+					},
+					{
+						data: "DeleteDate",
+                        "orderable": false
+					},
+					{
+						data: "PIState",
+                        "orderable": false
+					},
+					{
+						data: null,
+                        "orderable": false
+					}
                 ],
                 "language": dataTable_lang_kor,
 				"searching": false,
@@ -113,8 +132,53 @@
 				"order": [],
 				"info": false,
 				"lengthChange": false,
-                "createdRow": function (row, data, index) {
-                    $('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<select class='custom-select' onchange='viewWorkItemAction(this, \"" + data["MessageID"] + "\")'><option selected value=''>선택</option><option value='B'>기본 정보</option><option value='L'>결재선 정보</option><option value='I'>WorkItem 정보</option><option value='O'>문서열기</option><option value='D'>삭제</option></select>");
+				"createdRow": function (row, data, index) {
+					var createDate = data["CreateDate"];
+					var piEnd = data["PIEnd"];
+					var deleteDate = data["DeleteDate"];
+
+                    if ((data["CreateDate"] != null && data["CreateDate"] != "") && data["CreateDate"].length >= 19) {
+                        createDate = data["CreateDate"].substring(2, 10) + " " + data["CreateDate"].substring(11, 16);
+					}
+
+                    if ((data["PIEnd"] != null && data["PIEnd"] != "") && data["PIEnd"].length >= 19) {
+                        piEnd = data["PIEnd"].substring(2, 10) + " " + data["PIEnd"].substring(11, 16);
+					}
+
+                    if ((data["DeleteDate"] != null && data["DeleteDate"] != "") && data["DeleteDate"].length >= 19) {
+                        deleteDate = data["DeleteDate"].substring(2, 10) + " " + data["DeleteDate"].substring(11, 16);
+					}
+
+					$('td', row).eq(6).html('').append(createDate);
+					$('td', row).eq(7).html('').append(piEnd);
+					$('td', row).eq(8).html('').append(deleteDate);
+
+					var piState = data["PIState"];
+					var piStateHtml = "<button type=\"button\" class=\"btn btn-default\">대기</button>";
+
+					if (piState == "1") {
+                        // 진행중
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-primary\">진행중</button>";
+					} else if (piState == "2") {
+                        // 처리중
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-primary\">처리중</button>";
+					} else if (piState == "5") {
+                        // 멈춤
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-secondary\">멈춤</button>";
+					} else if (piState == "7") {
+                        // 완료
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-success\">완료</button>";
+					} else if (piState == "8") {
+                        // 강제종료(회수)
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-warning\">강제종료(회수)</button>";
+					} else if (piState == "99") {
+                        // 처리중 에러
+						piStateHtml = "<button type=\"button\" class=\"btn btn-danger\">처리중 에러</button>";
+					}
+
+                    $('td', row).eq(9).html('').append(piStateHtml);
+
+					$('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<select class='custom-select' onchange='viewWorkItemAction(this, \"" + data["MessageID"] + "\", \"" + data["OID"] + "\")' data-menu=\"select\"><option selected value=''>선택</option><option value='B'>기본 정보</option><option value='L'>결재선 정보</option><option value='I'>WorkItem 정보</option><option value='O'>문서열기</option><option value='D'>삭제</option></select>");
 				}
             });
 		}
@@ -127,21 +191,38 @@
 			if (formClass == "") {
 				$("#selEAFormList").append("<option value=\"\">분류를 선택하세요.</option>");
 			} else {
-                if (formListJson != "") {
-				    var optionHtml = "";
+				if (formListJson != "") {
+					var optionHtml = "";
+					var optionUseHtml = "";
+					var optionNoUseHtml = "";
 
+					// <optgroup label="Alaskan/Hawaiian Time Zone">
 					for (var i = 0; i < formListJson.length; i++) {
 						if (formListJson[i].ClassID == formClass) {
-                            optionHtml += "<option value=\"" + formListJson[i].FormID + "\">" + formListJson[i].DocName + " (" + formListJson[i].MainTable + " , V" + formListJson[i].Version + ")" + "</option>";
+							var optionText = formListJson[i].DocName + " (" + formListJson[i].MainTable + " , V" + formListJson[i].Version + ")";
+
+							if (formListJson[i].Usage == "N") {
+								optionNoUseHtml += "<option value=\"" + formListJson[i].FormID + "\">" + optionText + "</option>";
+							} else {
+								optionUseHtml += "<option value=\"" + formListJson[i].FormID + "\">" + optionText + "</option>";
+							}
 						}
-				    }
+					}
+
+					if (optionUseHtml != "") {
+						optionHtml += "<optgroup label=\"사용중\">" + optionUseHtml + "</optgroup>";
+					}
+
+					if (optionNoUseHtml != "") {
+						optionHtml += "<optgroup label=\"사용하지 않음\">" + optionNoUseHtml + "</optgroup>";
+					}
 
 				    $("#selEAFormList").append(optionHtml);
 			    }
 			}
 		}
 
-		function viewWorkItemAction(obj, messageID) {
+		function viewWorkItemAction(obj, messageID, oID) {
             // B : 기본 정보
             // L : 결재선 정보
             // I : WorkItem 정보
@@ -152,6 +233,8 @@
 			if (selectedValue == "") {
 				return;
 			}
+
+			$("select[data-menu='select']").not($(obj)).prop("selectedIndex", 0);
 
 			switch (selectedValue) {
 				case "B":
@@ -187,21 +270,116 @@
 
 								var started = basisResult.Started;
 
-								if (started != "" && (started.length == 19 || started.length == 23)) {
+								if (started != "" && started.length >= 19) {
                                     $("#modalDocBasic").find("#txtStarted").val(started.substring(2, 10) + " " + started.substring(11, 16));
 								}
 
                                 var completedDate = basisResult.CompletedDate;
 
-								if (completedDate != "" && (completedDate.length == 19 || completedDate.length == 23)) {
+								if (completedDate != "" && completedDate.length >= 19) {
                                     $("#modalDocBasic").find("#txtCompletedDate").val(completedDate.substring(2, 10) + " " + completedDate.substring(11, 16));
 								}
 
 								$("#modalDocBasic").find("#txtExternalKey1").val(basisResult.ExternalKey1);
 								$("#modalDocBasic").find("#txtExternalKey2").val(basisResult.ExternalKey2);
 
-                                $("#modalDocBasic").modal("show");
+								$("#modalDocBasic").modal("show");
 							}
+                        }
+			        });
+					break;
+				case "L":
+					// 결재선 정보
+					$.ajax({
+                        url: '@Url.Action("SelectEAApprovalLineInfo", "App")',
+				        type: 'POST',
+				        dataType: 'html',
+				        data: '{oid:' + oID + ', itemKey:"ea", itemSubKey: ""}',
+						success: function (result) {
+							var resultCode = result.split('##')[0];
+                            
+					        if (resultCode != "OK") {
+						        alert(result.split('##')[1]);
+						        return;
+							}
+
+							if (result.split('##')[1] == "") {
+								alert("결재선 정보를 구성하는 데 실패하였습니다.");
+								return;
+							}
+
+                            // 기존 추가했던 tr 제거
+							$("#trApprovalLine,#trWorkItem").remove();
+
+							var appLineHtml = "<tr id=\"trApprovalLine\">";
+							appLineHtml += "<td colspan=\"11\">";
+							appLineHtml += $("<div>" + result.split('##')[1] + "</div>").html();
+                            appLineHtml += "</td>";
+							appLineHtml += "</tr>";
+
+							$(obj).closest("tr").after(appLineHtml);
+                        }
+			        });
+					break;
+                case "I":
+					// WorkItem 정보
+					$.ajax({
+                        url: '@Url.Action("SelectEAWorkItemInfo", "App")',
+				        type: 'POST',
+				        dataType: 'html',
+				        data: '{oid:' + oID + ', itemKey:"ea", itemSubKey: ""}',
+						success: function (result) {
+							var resultCode = result.split('##')[0];
+                            
+					        if (resultCode != "OK") {
+						        alert(result.split('##')[1]);
+						        return;
+							}
+
+							if (result.split('##')[1] == "") {
+								alert("결재선 정보를 구성하는 데 실패하였습니다.");
+								return;
+							}
+
+                            // 기존 추가했던 tr 제거
+							$("#trApprovalLine,#trWorkItem").remove();
+
+							var appLineHtml = "<tr id=\"trWorkItem\">";
+							appLineHtml += "<td colspan=\"11\">";
+							appLineHtml += $("<div>" + result.split('##')[1] + "</div>").html();
+                            appLineHtml += "</td>";
+							appLineHtml += "</tr>";
+
+							$(obj).closest("tr").after(appLineHtml);
+                        }
+			        });
+					break;
+                case "O":
+					// 문서열기
+					
+					break;
+				case "D":
+					// 문서 삭제
+					if (!window.confirm("선택한 문서를 삭제하시겠습니까?")) {
+                        $(obj).prop("selectedIndex", 0);
+						return false;
+					}
+
+                    $.ajax({
+                        url: '@Url.Action("DeleteBFEAData", "App")',
+				        type: 'POST',
+				        dataType: 'JSON',
+				        data: '{command:"delete", messageID: ' + messageID + '}',
+						success: function (result) {
+							if (result.code != "OK") {
+						        alert(result.message);
+						        return;
+							}
+
+                            alert("정상적으로 삭제되었습니다.");
+
+                            // 현재 행 삭제
+                            $(obj).closest("tr").hide();
                         }
 			        });
 					break;

@@ -291,6 +291,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Code\ApprovalLine.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\JsEngineSwitcherConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -1080,6 +1081,19 @@
     <Content Include="Areas\EA\Views\Main\_ListView.cshtml" />
     <Content Include="Areas\EA\Views\Main\_ListHead.cshtml" />
     <Content Include="Areas\EA\Views\Main\_ListMenuSearch.cshtml" />
+    <Content Include="Areas\WoA\Views\App\Notice.cshtml" />
+    <Content Include="Areas\WoA\Views\EA\Code.cshtml" />
+    <Content Include="Areas\WoA\Views\EA\External.cshtml" />
+    <Content Include="Areas\WoA\Views\EA\Mgr.cshtml" />
+    <Content Include="Areas\WoA\Views\EA\Remark.cshtml" />
+    <Content Include="Areas\WoA\Views\EA\Share.cshtml" />
+    <Content Include="Areas\WoA\Views\Interface\Erp.cshtml" />
+    <Content Include="Areas\WoA\Views\Interface\Etc.cshtml" />
+    <Content Include="Areas\WoA\Views\Interface\Mail.cshtml" />
+    <Content Include="Areas\WoA\Views\Proc\Import.cshtml" />
+    <Content Include="Areas\WoA\Views\Proc\Mgr.cshtml" />
+    <Content Include="Areas\WoA\Views\Proc\Process.cshtml" />
+    <Content Include="Areas\WoA\Views\Proc\Record.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
