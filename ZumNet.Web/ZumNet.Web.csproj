@@ -1001,7 +1001,6 @@
     <Folder Include="Views\Common\" />
     <Folder Include="Views\Env\" />
     <Folder Include="Views\External\" />
-    <Folder Include="Views\Report\" />
     <Folder Include="Views\Search\" />
   </ItemGroup>
   <ItemGroup>
@@ -1145,6 +1144,7 @@
     <Content Include="Views\Portal\Webpart\_RECENT_NOTICE.cshtml" />
     <Content Include="Views\Portal\Webpart\_RECENT_BOARD.cshtml" />
     <Content Include="Views\Portal\Webpart\_ERP_KPI_s.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

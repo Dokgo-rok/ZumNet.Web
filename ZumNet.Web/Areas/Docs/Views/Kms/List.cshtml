@@ -68,7 +68,7 @@
     <div class="d-flex flex-column w-100">
         <!-- Header -->
         <div class="flex-grow-0">
-            <div class="d-flex justify-content-between container-p-x pt-3 pb-2 m-0">
+            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
                 <div class="d-flex align-items-center font-weight-bold">
                     <div class="h5 mb-0">
                         <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
@@ -86,7 +86,7 @@
 
             <hr class="border-light m-0 d-none">
 
-            <div class="d-flex align-items-center container-p-x pb-2">
+            <div class="d-flex align-items-center container-p-x" style="padding-bottom: .6rem !important">
                 <div class="z-lv-menu btn-group-sm">
                     <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
                     @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W"))

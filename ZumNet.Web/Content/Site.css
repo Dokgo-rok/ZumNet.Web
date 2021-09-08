@@ -204,6 +204,20 @@
     white-space: nowrap;
 }
 
+.z-lv-cond .form-control {
+    height: 30px;
+    padding: .25rem .875rem;
+}
+.z-lv-cond .custom-select, .z-lv-cnt .custom-select {
+    height: 30px;
+    padding-top: .3rem;
+    padding-left: .7rem;
+}
+.z-lv-cond .input-group-text, .z-lv-cond .btn {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 .z-lv-hdr {
     border-top:1px solid #ededed;
 }
@@ -232,10 +246,10 @@
         width: 65%;
     }
     .z-lv-cond .z-lv-date {
-        width: 40%;
+        width: 49%;
     }
     .z-lv-cond .z-lv-search {
-        width: 60%;
+        width: 51%;
     }
 }
 @media (max-width: 768px) {

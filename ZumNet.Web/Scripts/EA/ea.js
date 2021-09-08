@@ -68,6 +68,8 @@ $(function () {
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
         var url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
+        //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
+        //else url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 
         $.ajax({
             type: "POST",
@@ -99,10 +101,12 @@ $(function () {
         j["ct"] = _zw.V.ct;
         j["ctalias"] = _zw.V.ctalias;
         j["ot"] = _zw.V.ot;
+        j["alias"] = _zw.V.alias;
         j["xfalias"] = _zw.V.xfalias;
         j["fdid"] = _zw.V.fdid;
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
+        j["ft"] = _zw.V.ft;
         j["ttl"] = _zw.V.ttl;
 
         if (lv) {
@@ -120,12 +124,11 @@ $(function () {
         }
 
         //alert(j["permission"])
-
         return JSON.stringify(j);
     }
 
     _zw.fn.initLv = function (tgt) {
-        var sCnt = _zw.ut.getCookie('bbsLvCount');
+        var sCnt = _zw.ut.getCookie('eaLvCount');
         sCnt = $('.z-lv-page select').val();
 
         _zw.V.lv.tgt = tgt;

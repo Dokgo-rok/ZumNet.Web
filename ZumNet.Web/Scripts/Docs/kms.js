@@ -19,6 +19,8 @@ $(function () {
 
         var postData = _zw.fn.getLvQuery();
         var url = '/Docs/Kms/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
+        //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
+        //else url = '/Docs/Kms/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 
         $.ajax({
             type: "POST",
@@ -45,16 +47,18 @@ $(function () {
     }
 
     _zw.fn.getLvQuery = function () {
-        //alert(encodeURIComponent(_zw.V.ttl))
         var j = {};
         j["ct"] = _zw.V.ct;
         j["ctalias"] = _zw.V.ctalias;
         j["ot"] = _zw.V.ot;
+        j["alias"] = _zw.V.alias;
         j["xfalias"] = _zw.V.xfalias;
         j["fdid"] = _zw.V.fdid;
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
+        j["ft"] = _zw.V.ft;
         j["ttl"] = _zw.V.ttl;
+
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;
         j["count"] = _zw.V.lv.count;
@@ -68,12 +72,11 @@ $(function () {
         j["boundary"] = _zw.V.lv.boundary;
 
         //alert(j["permission"])
-
         return JSON.stringify(j);
     }
 
     _zw.fn.initLv = function (tgt) {
-        var sCnt = _zw.ut.getCookie('bbsLvCount');
+        var sCnt = _zw.ut.getCookie('docLvCount');
         sCnt = $('.z-lv-page select').val();
 
         _zw.V.lv.tgt = tgt;

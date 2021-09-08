@@ -1000,10 +1000,12 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"]));
                 sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
                 sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"]));
+                sb.AppendFormat(",\"alias\":\"{0}\"", StringHelper.SafeString(jReq["alias"])); //Report용
                 sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"]));
                 sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
                 sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"]));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
+                sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
                 sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
                 //sb.AppendFormat(",\"qi\":\"{0}\"", "");
                 sb.Append(",\"lv\": {");
@@ -1075,10 +1077,12 @@ namespace ZumNet.Web.Bc
                         sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"]));
                         sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
                         sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"]));
+                        sb.AppendFormat(",\"alias\":\"{0}\"", StringHelper.SafeString(jReq["alias"])); //Report용
                         sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"]));
                         sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
                         sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"]));
                         sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
+                        sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
                         sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
                         sb.Append(",\"lv\": {");
                         sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));

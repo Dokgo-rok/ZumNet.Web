@@ -98,7 +98,7 @@ $(function () {
         })
         .on('changed.jstree', function (e, d) {
             if (d.selected.length == 1) {
-                var n = d.instance.get_node(d.selected[0]); //alert(n.text)
+                var n = d.instance.get_node(d.selected[0]); //alert(n.a_attr.url + " : " + n.li_attr.objecttype)
                 //alert(n.li_attr.objecttype + ' : ' + n.li_attr.alias + ' : ' + n.li_attr.xfalias + ' : ' + n.li_attr.acl.substr(n.li_attr.acl.length-1, 1))
                 var vId = n.id.split('.');
 
@@ -107,11 +107,11 @@ $(function () {
                 //var vPath = $("#__FolderTree").jstree("get_path", d.selected[0]);
                 var vPath = d.instance.get_path(d.selected[0]);
                 //$('.z-ttl span').html(vPath.join(' / '));
-                var ttl = vPath.join(' / ');
-                
+                var encQi = '', ttl = vPath.join(' / ');
+
                 if (n.li_attr.acl.substr(n.li_attr.acl.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
                     //alert(_zw.base64.decode('e2N0OiIxMDMiLGN0YWxpYXM6ImJib2FyZCIsb3Q6IkciLHhmOiJiYnMiLGZkaWQ6IjE0NDk5IixvcG5vZGU6IjAuMC4xNDQ5OSIsdHRsOiIyMDIw64WE64+EIixwZXJtaXNzaW9uOiJTRkRFUlZTREVNV1JWIn0='))
-                    var encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                    encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                     //encQi = encQi.replace(/ /gi, '+');
                     switch (n.li_attr.xfalias) {
                         case "notice":
@@ -120,6 +120,7 @@ $(function () {
                             //window.location.href = '/Board/List?qi=' + encQi;
                             if (_zw.V.current.page.toLowerCase() == '/board/list') {
                                 _zw.V.ot = n.li_attr.objecttype;
+                                _zw.V.alias = n.li_attr.alias;
                                 _zw.V.xfalias = n.li_attr.xfalias;
                                 _zw.V.fdid = vId[vId.length - 1];
                                 _zw.V.current.acl = n.li_attr.acl;
@@ -145,6 +146,7 @@ $(function () {
                         case "knowledge":
                             if (_zw.V.current.page.toLowerCase() == '/docs/kms/list') {
                                 _zw.V.ot = n.li_attr.objecttype;
+                                _zw.V.alias = n.li_attr.alias;
                                 _zw.V.xfalias = n.li_attr.xfalias;
                                 _zw.V.fdid = vId[vId.length - 1];
                                 _zw.V.current.acl = n.li_attr.acl;
@@ -163,6 +165,7 @@ $(function () {
                             //아래 처리를 위해서는 _zw.V json 값 셋팅이 필요
                             if (_zw.V.current.page.toLowerCase() == '/docs/edm/list') {
                                 _zw.V.ot = n.li_attr.objecttype;
+                                _zw.V.alias = n.li_attr.alias;
                                 _zw.V.xfalias = n.li_attr.xfalias;
                                 _zw.V.fdid = vId[vId.length - 1];
                                 _zw.V.current.acl = n.li_attr.acl;
@@ -177,8 +180,6 @@ $(function () {
                             }
                             break;
                     }
-                    
-
 
                     //window.location.href = '?qi=' + window.atob(_zw.V.qi)
                     //$.ajax({
@@ -195,6 +196,63 @@ $(function () {
                     //        } else alert(res);
                     //    }                        
                     //});
+                } else if (n.li_attr.objecttype == 'B') { //자원예약
+                    bootbox.alert('준비중!');
+                } else if (n.li_attr.objecttype == 'S') { //일정
+                    bootbox.alert('준비중!');
+                } else if (n.li_attr.objecttype == 'C') { //동호회
+                    bootbox.alert('준비중!');
+                } else if (n.li_attr.objecttype == 'F') { //폴더분류
+                    if (n.a_attr.url.length > 0) {
+                        if (n.a_attr.url == 'SEARCH_EADOC' || n.a_attr.url == 'SEARCH_DEVPRODUCT') {
+                            if (_zw.V.current.page.toLowerCase() == '/report') {
+                                _zw.V.ot = n.li_attr.objecttype;
+                                _zw.V.alias = n.li_attr.alias;
+                                _zw.V.xfalias = n.li_attr.xfalias;
+                                _zw.V.fdid = vId[vId.length - 1];
+                                _zw.V.current.acl = n.li_attr.acl;
+                                _zw.V.opnode = n.id;
+                                _zw.V.ft = n.a_attr.url;
+                                _zw.V.ttl = ttl;
+
+                                _zw.fn.initLv(_zw.V.fdid);
+                                _zw.fn.loadList();
+                            } else {
+                                encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                                window.location.href = '/Report?qi=' + encQi;
+                            }
+
+                        } else {
+                            encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                            window.location.href = n.a_attr.url + '?qi=' + encQi;
+                        }
+                    }
+                } else if (n.li_attr.objecttype == 'L') { //링크
+                    if (n.a_attr.url.indexOf('http://') >= 0 || n.a_attr.url.indexOf('https://') >= 0) {
+                        window.location.href = n.a_attr.url;
+                    } else {
+                        //alert(n.li_attr.alias + " : " + n.a_attr.url)
+                        if (n.li_attr.alias == "ea.form.select") {
+                            bootbox.alert('준비중!');
+                        } else if (n.li_attr.alias == "ea.form.report") {
+                            if (_zw.V.current.page.toLowerCase() == '/report') {
+                                _zw.V.ot = n.li_attr.objecttype;
+                                _zw.V.alias = n.li_attr.alias;
+                                _zw.V.xfalias = n.li_attr.xfalias;
+                                _zw.V.fdid = vId[vId.length - 1];
+                                _zw.V.current.acl = n.li_attr.acl;
+                                _zw.V.opnode = n.id;
+                                _zw.V.ft = n.a_attr.url;
+                                _zw.V.ttl = ttl;
+
+                                _zw.fn.initLv(_zw.V.fdid);
+                                _zw.fn.loadList();
+                            } else {
+                                encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                                window.location.href = '/Report?qi=' + encQi;
+                            }
+                        }
+                    }
                 }
             }
         })
