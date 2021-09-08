@@ -932,7 +932,7 @@ namespace ZumNet.Web.Bc
                 using (ZumNet.BSL.ServiceBiz.CommonBiz com = new ZumNet.BSL.ServiceBiz.CommonBiz())
                 {
                     //svcRt = com.GetMenuInformation(1, 0, 101374, "N", "0", "KO");
-                    svcRt = com.GetMenuTop(1, Convert.ToInt32(HttpContext.Current.Session["URID"]), HttpContext.Current.Session["Admin"].ToString(), strLocale);
+                    svcRt = com.GetMenuTop(1, Convert.ToInt32(HttpContext.Current.Session["URID"]), HttpContext.Current.Session["Admin"].ToString(), HttpContext.Current.Session["UseWorkTime"].ToString(), strLocale);
                 }
 
                 if (svcRt != null && svcRt.ResultCode == 0)
@@ -941,6 +941,7 @@ namespace ZumNet.Web.Bc
                     ctrl.ViewBag.LinkSite = svcRt.ResultDataSet;
                     ctrl.ViewBag.ShortLink = svcRt.ResultDataDetail["ShortLink"];
                     ctrl.ViewBag.DeptList = svcRt.ResultDataDetail["DeptList"];
+                    ctrl.ViewBag.WorkStatus = svcRt.ResultDataDetail["WorkStatus"];
 
                     strReturn = RequestInit(ctrl);
                 }

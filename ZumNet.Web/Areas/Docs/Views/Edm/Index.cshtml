@@ -26,25 +26,9 @@
 <div class="messages-wrapper">
 
     <!-- sidebox -->
-    <div class="messages-sidebox messages-scroll bg-body border-right">
-        <div class="z-mobile-navbar"></div>
-
-        <div class="py-3 px-4">
-            <div class="media align-items-center">
-                <div class="media-body">
-                    <a id="__NewMessage" href="javascript:void(0)" class="btn btn-facebook rounded-pill btn-block"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeDoc</a>
-                </div>
-                <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
-            </div>
-        </div>
-
-        <hr class="border-light mx-4 mt-0 mb-3">
-
-        <!-- sidebox tree -->
-        <div id="__FolderTree" class="px-3"></div>
-        <!-- / sidebox tree -->
-    </div>
+    @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
     <!-- / sidebox -->
+
     <!-- content -->
     <div class="d-flex flex-column w-100">
         <!-- Header -->

@@ -999,7 +999,6 @@
     <Folder Include="Areas\TnC\Views\Shared\" />
     <Folder Include="Areas\WoA\Content\" />
     <Folder Include="Views\Addr\" />
-    <Folder Include="Views\Common\" />
     <Folder Include="Views\Env\" />
     <Folder Include="Views\External\" />
     <Folder Include="Views\Search\" />
@@ -1055,11 +1054,7 @@
     <Content Include="MultiLangs\layout_common.lang" />
     <Content Include="MultiLangs\woa_event_logon.lang" />
     <Content Include="Areas\Docs\Views\Edm\List.cshtml" />
-    <Content Include="Areas\Docs\Views\Edm\_ListPagination.cshtml" />
     <Content Include="Areas\Docs\Views\Edm\_ListView.cshtml" />
-    <Content Include="Areas\Docs\Views\Edm\_ListCount.cshtml" />
-    <Content Include="Areas\Docs\Views\Kms\_ListCount.cshtml" />
-    <Content Include="Areas\Docs\Views\Kms\_ListPagination.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\_ListView.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\List.cshtml" />
     <Content Include="Areas\EA\Views\Main\_LeftMenu.cshtml" />
@@ -1150,8 +1145,6 @@
     <Content Include="Views\ZPage\Docu.cshtml" />
     <Content Include="Views\Portal\AddCheck.cshtml" />
     <Content Include="Views\Board\List.cshtml" />
-    <Content Include="Views\Board\_ListPagination.cshtml" />
-    <Content Include="Views\Board\_ListCount.cshtml" />
     <Content Include="Views\Portal\Webpart\_EA_INBOX.cshtml" />
     <Content Include="Views\Portal\Webpart\_MAIL_INBOX.cshtml" />
     <Content Include="Views\Portal\Webpart\_ERP_KPI.cshtml" />
@@ -1159,6 +1152,9 @@
     <Content Include="Views\Portal\Webpart\_RECENT_BOARD.cshtml" />
     <Content Include="Views\Portal\Webpart\_ERP_KPI_s.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Common\_ListCount.cshtml" />
+    <Content Include="Views\Common\_ListPagination.cshtml" />
+    <Content Include="Views\Common\_LeftMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

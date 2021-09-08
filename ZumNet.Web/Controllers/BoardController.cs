@@ -221,9 +221,9 @@ namespace ZumNet.Web.Controllers
 
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListView", ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
-                                + RazorViewToString.RenderRazorViewToString(this, "_ListCount", ViewBag)
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListCount.cshtml", ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
-                                + RazorViewToString.RenderRazorViewToString(this, "_ListPagination", ViewBag);
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListPagination.cshtml", ViewBag);
                     }
                     else
                     {

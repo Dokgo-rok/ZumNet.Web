@@ -152,7 +152,7 @@
 
     <!-- Inner -->
     <ul class="sidenav-inner">
-        @if (!isHorizontal)
+        @if (!isHorizontal && (currentCategory == "" || currentCategory == "0"))
         {
             <li class="sidenav-header fs-12">
                 <div class="">
