@@ -941,9 +941,9 @@ namespace ZumNet.Web.Bc
                     ctrl.ViewBag.LinkSite = svcRt.ResultDataSet;
                     ctrl.ViewBag.ShortLink = svcRt.ResultDataDetail["ShortLink"];
                     ctrl.ViewBag.DeptList = svcRt.ResultDataDetail["DeptList"];
-                    ctrl.ViewBag.WorkStatus = svcRt.ResultDataDetail["WorkStatus"];
+                    //ctrl.ViewBag.WorkStatus = svcRt.ResultDataDetail["WorkStatus"];
 
-                    strReturn = RequestInit(ctrl);
+                    strReturn = RequestInit(ctrl, svcRt.ResultDataDetail["WorkStatus"].ToString());
                 }
                 else
                 {
@@ -964,7 +964,7 @@ namespace ZumNet.Web.Bc
         /// </summary>
         /// <param name="ctrl"></param>
         /// <returns></returns>
-        public static string RequestInit(this Controller ctrl)
+        public static string RequestInit(this Controller ctrl, string workStatus)
         {
             string strReturn = "";
             StringBuilder sb = new StringBuilder();
@@ -995,6 +995,28 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"]));
                 sb.AppendFormat(",\"chief\":\"{0}\"", "");
                 sb.AppendFormat(",\"operator\":\"{0}\"", "");
+
+                if (workStatus != "" && workStatus.IndexOf(';') != -1)
+                {
+                    string[] v = workStatus.Split(';');
+                    if (v[0] == "" || v[0] == "A" || v[0] == "S" || v[0] == "U" || v[0] == "N" || v[0] == "Z")
+                    {
+                        sb.AppendFormat(",\"ws\":\"{0}\"", "N"); //퇴근 후 재로그인시 근무중으로 표시
+                    }
+                    else
+                    {
+                        sb.AppendFormat(",\"ws\":\"{0}\"", v[0]);
+                    }
+                    sb.AppendFormat(",\"intime\":\"{0}\"", v[1]);
+                    sb.AppendFormat(",\"outtime\":\"{0}\"", v[2]);
+                }
+                else
+                {
+                    sb.AppendFormat(",\"ws\":\"{0}\"", ""); //근무현황
+                    sb.AppendFormat(",\"intime\":\"{0}\"", ""); //출근시각
+                    sb.AppendFormat(",\"outtime\":\"{0}\"", ""); //퇴근시각
+                }
+
                 sb.Append("}"); //current
                 sb.AppendFormat(",\"mode\":\"{0}\"", StringHelper.SafeString(jReq["M"]));
                 sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));

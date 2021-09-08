@@ -312,8 +312,26 @@
   <data name="ID" xml:space="preserve">
     <value>ID</value>
   </data>
+  <data name="InBiz" xml:space="preserve">
+    <value>出差</value>
+  </data>
   <data name="Info" xml:space="preserve">
     <value>信息</value>
+  </data>
+  <data name="InOffWork" xml:space="preserve">
+    <value>下班</value>
+  </data>
+  <data name="InOut" xml:space="preserve">
+    <value>外出工作</value>
+  </data>
+  <data name="InRest" xml:space="preserve">
+    <value>在休息</value>
+  </data>
+  <data name="InTraining" xml:space="preserve">
+    <value>在培训中</value>
+  </data>
+  <data name="InWork" xml:space="preserve">
+    <value>运行中</value>
   </data>
   <data name="Jikchaek" xml:space="preserve">
     <value>位置</value>
@@ -522,8 +540,17 @@
   <data name="WorkCond" xml:space="preserve">
     <value>工作条件</value>
   </data>
+  <data name="WorkMonthTotal" xml:space="preserve">
+    <value>每月总工作量</value>
+  </data>
+  <data name="WorkToday" xml:space="preserve">
+    <value>今天工作</value>
+  </data>
   <data name="WorktTime" xml:space="preserve">
     <value>工作时间</value>
+  </data>
+  <data name="WorkWeekAvg" xml:space="preserve">
+    <value>每周平均工作量</value>
   </data>
   <data name="WriteDept" xml:space="preserve">
     <value>写作部</value>

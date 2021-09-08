@@ -646,11 +646,65 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Business trip과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string InBiz {
+            get {
+                return ResourceManager.GetString("InBiz", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Infomation과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Info {
             get {
                 return ResourceManager.GetString("Info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Off Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string InOffWork {
+            get {
+                return ResourceManager.GetString("InOffWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Outside work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string InOut {
+            get {
+                return ResourceManager.GetString("InOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   In rest과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string InRest {
+            get {
+                return ResourceManager.GetString("InRest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   In training과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string InTraining {
+            get {
+                return ResourceManager.GetString("InTraining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   In working과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string InWork {
+            get {
+                return ResourceManager.GetString("InWork", resourceCulture);
             }
         }
         
@@ -1267,11 +1321,29 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Working Condition과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Work Status과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string WorkCond {
             get {
                 return ResourceManager.GetString("WorkCond", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Total per month과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WorkMonthTotal {
+            get {
+                return ResourceManager.GetString("WorkMonthTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Work today과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WorkToday {
+            get {
+                return ResourceManager.GetString("WorkToday", resourceCulture);
             }
         }
         
@@ -1281,6 +1353,15 @@ namespace Resources {
         public static string WorktTime {
             get {
                 return ResourceManager.GetString("WorktTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Avg. per week과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WorkWeekAvg {
+            get {
+                return ResourceManager.GetString("WorkWeekAvg", resourceCulture);
             }
         }
         

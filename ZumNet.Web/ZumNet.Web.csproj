@@ -325,6 +325,7 @@
     <Compile Include="Areas\WoA\WoAAreaRegistration.cs" />
     <Compile Include="Bc\AuthManager.cs" />
     <Compile Include="Bc\CommonUtils.cs" />
+    <Compile Include="Bc\LunisolarDate.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AddrController.cs" />
     <Compile Include="Controllers\BoardController.cs" />

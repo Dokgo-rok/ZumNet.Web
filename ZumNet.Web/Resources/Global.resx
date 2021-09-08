@@ -312,8 +312,26 @@
   <data name="ID" xml:space="preserve">
     <value>ID</value>
   </data>
+  <data name="InBiz" xml:space="preserve">
+    <value>Business trip</value>
+  </data>
   <data name="Info" xml:space="preserve">
     <value>Infomation</value>
+  </data>
+  <data name="InOffWork" xml:space="preserve">
+    <value>Off Work</value>
+  </data>
+  <data name="InOut" xml:space="preserve">
+    <value>Outside work</value>
+  </data>
+  <data name="InRest" xml:space="preserve">
+    <value>In rest</value>
+  </data>
+  <data name="InTraining" xml:space="preserve">
+    <value>In training</value>
+  </data>
+  <data name="InWork" xml:space="preserve">
+    <value>In working</value>
   </data>
   <data name="Jikchaek" xml:space="preserve">
     <value>Title</value>
@@ -520,10 +538,19 @@
     <value>Views</value>
   </data>
   <data name="WorkCond" xml:space="preserve">
-    <value>Working Condition</value>
+    <value>Work Status</value>
+  </data>
+  <data name="WorkMonthTotal" xml:space="preserve">
+    <value>Total per month</value>
+  </data>
+  <data name="WorkToday" xml:space="preserve">
+    <value>Work today</value>
   </data>
   <data name="WorktTime" xml:space="preserve">
     <value>Work Time</value>
+  </data>
+  <data name="WorkWeekAvg" xml:space="preserve">
+    <value>Avg. per week</value>
   </data>
   <data name="WriteDept" xml:space="preserve">
     <value>Writing Dept.</value>

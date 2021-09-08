@@ -1,4 +1,5 @@
 ﻿@using System.Data;
+@using System.Text;
 
 @{
     bool isHorizontal = ViewData["LayoutSidenavHorizontal"] != null && ViewData["LayoutSidenavHorizontal"].ToString() == "True";
@@ -26,6 +27,11 @@
             }
         }
     }
+
+    string workStatusText = "";
+
+    
+
 }
 
 @functions {
@@ -132,6 +138,58 @@
         }
         return v;
     }
+
+    /// <summary>
+    /// 오늘 날짜(양력, 음력) 구성
+    /// </summary>
+    /// <returns></returns>
+    private string ShowSolarLunarDate()
+    {
+        DateTime nowDate = Convert.ToDateTime(ViewBag.R.current.date);
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("{0}.{1}{2}.{3}{4}", nowDate.Year.ToString(), (nowDate.Month < 10 ? " " : ""), nowDate.Month.ToString()
+                            , (nowDate.Day < 10 ? " " : ""), nowDate.Day.ToString());
+
+        string sYoil = "";
+        switch (nowDate.DayOfWeek)
+        {
+            case DayOfWeek.Sunday: sYoil = "일"; break;
+            case DayOfWeek.Monday: sYoil = "월"; break;
+            case DayOfWeek.Tuesday: sYoil = "화"; break;
+            case DayOfWeek.Wednesday: sYoil = "수"; break;
+            case DayOfWeek.Thursday: sYoil = "목"; break;
+            case DayOfWeek.Friday: sYoil = "금"; break;
+            case DayOfWeek.Saturday: sYoil = "토"; break;
+        }
+
+        sb.AppendFormat(" {0} ", sYoil);
+
+        ZumNet.Web.Bc.LunisolarDate lunDate = ZumNet.Web.Bc.LunisolarDate.ConvertFromSolarDate(nowDate);
+        sb.AppendFormat("({0} {1}.{2})", "음력", lunDate.Month.ToString(), lunDate.Day.ToString());
+        lunDate = null;
+
+        return sb.ToString();
+    }
+
+    private string GetWorkStatusText()
+    {
+        string rt = "";
+        string ss = ViewBag.R.current.ws;
+        if (ss != "")
+        {
+            if (ss == "N") rt = Resources.Global.InWork;
+            else if (ss == "B") rt = Resources.Global.InRest;
+            else if (ss == "O") rt = Resources.Global.InOut;
+            else if (ss == "T") rt = Resources.Global.InBiz;
+            else if (ss == "E") rt = Resources.Global.InTraining;
+            //else if (ss == "Z") rt = Resources.Global.InOffWork;
+
+            rt = String.Format("<div class=\"mt-2\"><a href=\"javascript:void(0)\" class=\"sidenav-link\"><i class=\"fa fa-clock\"></i> {0} <i class=\"fa fa-angle-double-right\"></i> {1}</a></div>", Resources.Global.WorkCond, rt);
+        }
+
+        return rt;
+    }
 }
 
 <!-- Layout sidenav -->
@@ -152,17 +210,12 @@
 
     <!-- Inner -->
     <ul class="sidenav-inner">
-        @if (!isHorizontal && (currentCategory == "" || currentCategory == "0"))
+        @if (!isHorizontal)
         {
-            <li class="sidenav-header fs-12">
+            <li class="sidenav-header fs-12 py-2">
                 <div class="">
-                    <div class="d-flex justify-content-between mb-1">
-                        <div class="text-white">21.8.17 근무</div>
-                        <div><span class="text-primary">5시간 21분</span></div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <div class="text-white">주 평균 근무</div>
-                        <div><span class="text-primary">7시간 54분</span></div>
+                    <div class="text-center">
+                        <div class="text-warning">@ShowSolarLunarDate()</div>@Html.Raw(GetWorkStatusText())
                     </div>
                 </div>
             </li>
