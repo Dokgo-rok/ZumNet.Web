@@ -1090,6 +1090,8 @@
     <Content Include="Areas\WoA\Views\Proc\Mgr.cshtml" />
     <Content Include="Areas\WoA\Views\Proc\Process.cshtml" />
     <Content Include="Areas\WoA\Views\Proc\Record.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\PersonStatus.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_LeftMenu.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

@@ -159,11 +159,17 @@
   <data name="BatchProcess" xml:space="preserve">
     <value>일괄처리</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>취소</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>범주</value>
   </data>
   <data name="Classification" xml:space="preserve">
     <value>분류</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>닫기</value>
   </data>
   <data name="Compose" xml:space="preserve">
     <value>작성</value>
@@ -281,6 +287,9 @@
   </data>
   <data name="Edit" xml:space="preserve">
     <value>편집</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>나가기</value>
   </data>
   <data name="FileExt" xml:space="preserve">
     <value>파일확장자</value>

@@ -28,9 +28,8 @@
         }
     }
 
-    string workStatusText = "";
+    //HttpContext.Current.Session["UseWorkTime"] = "N";
 
-    
 
 }
 
@@ -175,19 +174,21 @@
     private string GetWorkStatusText()
     {
         string rt = "";
-        string ss = ViewBag.R.current.ws;
-        if (ss != "")
+        if (Session["UseWorkTime"].ToString() == "Y")
         {
-            if (ss == "N") rt = Resources.Global.InWork;
-            else if (ss == "B") rt = Resources.Global.InRest;
-            else if (ss == "O") rt = Resources.Global.InOut;
-            else if (ss == "T") rt = Resources.Global.InBiz;
-            else if (ss == "E") rt = Resources.Global.InTraining;
-            //else if (ss == "Z") rt = Resources.Global.InOffWork;
+            string ss = ViewBag.R.current.ws;
+            if (ss != "" && ss != "N/A")
+            {
+                if (ss == "N") rt = Resources.Global.InWork;
+                else if (ss == "B") rt = Resources.Global.InRest;
+                else if (ss == "O") rt = Resources.Global.InOut;
+                else if (ss == "T") rt = Resources.Global.InBiz;
+                else if (ss == "E") rt = Resources.Global.InTraining;
+                //else if (ss == "Z") rt = Resources.Global.InOffWork;
 
-            rt = String.Format("<div class=\"mt-2\"><a href=\"javascript:void(0)\" class=\"sidenav-link\"><i class=\"fa fa-clock\"></i> {0} <i class=\"fa fa-angle-double-right\"></i> {1}</a></div>", Resources.Global.WorkCond, rt);
+                rt = String.Format("<div class=\"mt-2\"><a href=\"javascript:void(0)\" class=\"sidenav-link\" data-navmenu=\"workstatus\"><i class=\"fa fa-clock\"></i> {0} <i class=\"fa fa-angle-double-right\"></i> {1}</a></div>", Resources.Global.WorkCond, rt);
+            }
         }
-
         return rt;
     }
 }

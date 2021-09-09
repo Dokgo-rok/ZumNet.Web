@@ -1012,7 +1012,7 @@ namespace ZumNet.Web.Bc
                 }
                 else
                 {
-                    sb.AppendFormat(",\"ws\":\"{0}\"", ""); //근무현황
+                    sb.AppendFormat(",\"ws\":\"{0}\"", workStatus); //근무현황, N/A일 경우 => 해당없음
                     sb.AppendFormat(",\"intime\":\"{0}\"", ""); //출근시각
                     sb.AppendFormat(",\"outtime\":\"{0}\"", ""); //퇴근시각
                 }

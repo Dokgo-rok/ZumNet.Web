@@ -159,11 +159,17 @@
   <data name="BatchProcess" xml:space="preserve">
     <value>批量处理</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>类别</value>
   </data>
   <data name="Classification" xml:space="preserve">
     <value>分类</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
   </data>
   <data name="Compose" xml:space="preserve">
     <value>撰写</value>
@@ -281,6 +287,9 @@
   </data>
   <data name="Edit" xml:space="preserve">
     <value>编辑</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>出口</value>
   </data>
   <data name="FileExt" xml:space="preserve">
     <value>文件扩展名</value>

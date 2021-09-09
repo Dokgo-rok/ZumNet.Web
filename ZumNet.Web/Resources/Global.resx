@@ -159,11 +159,17 @@
   <data name="BatchProcess" xml:space="preserve">
     <value>Batch processing</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Category</value>
   </data>
   <data name="Classification" xml:space="preserve">
     <value>Classification</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
   </data>
   <data name="Compose" xml:space="preserve">
     <value>Compose</value>
@@ -281,6 +287,9 @@
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
   </data>
   <data name="FileExt" xml:space="preserve">
     <value>File extension</value>

@@ -1,6 +1,7 @@
 ﻿@using System;
 @using System.Data;
 @using System.Text;
+@using Newtonsoft.Json;
 
 @{ ViewBag.Title = Resources.Global.Cresyn + " " + Resources.Global.Groupware; }
 @{
@@ -170,6 +171,7 @@
         <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>
         <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.charts.js"></script>
 
+        <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
         <script type="text/javascript">@Html.Raw(sbChart.ToString())</script>
     }
 

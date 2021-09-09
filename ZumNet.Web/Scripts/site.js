@@ -130,7 +130,7 @@ $(function () {
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip();
 
-    $('.sidenav-item[data-navmenu], .navbar-nav .dropdown-item[data-navmenu], #layout-navbar-rightbar .dropdown-item[data-navmenu]').on('click', function () {
+    $('.sidenav-item[data-navmenu], .sidenav-header .sidenav-link[data-navmenu], .navbar-nav .nav-link[data-navmenu], .navbar-nav .dropdown-item[data-navmenu], #layout-navbar-rightbar .dropdown-item[data-navmenu], #layout-navbar-rightbar a[data-navmenu]').on('click', function () {
         switch ($(this).attr('data-navmenu')) {
             case "mail":
                 _zw.ut.openWnd("https://email.cresyn.com/owa ", "owaWim");
@@ -163,12 +163,40 @@ $(function () {
                         else bootbox.alert(res);
                     }
                 });
+                break;
+            case "workstatus": //근무상태
+                $('#popWorkStatus').on('show.bs.modal', function (e) {
+                    $(this).find('.btn').click(function () {
+                        
+                        if ($(this).attr('data-zm-menu') == 'save') {
+                            bootbox.alert($(this).attr('data-zm-menu'));
+                        } else if ($(this).attr('data-zm-menu') == 'form') {
+                            bootbox.alert($(this).attr('data-zm-menu'));
+                        } else if ($(this).attr('data-zm-menu') == 'offwork') {
+                            bootbox.alert($(this).attr('data-zm-menu'));
+                        }
 
+                    });
+                }).modal();
+                break;
+            case "phonenum": //전화번호 찾기
+                bootbox.alert('준비중!');
+                break;
+            case "myinfo": //개인정보
+                bootbox.alert('준비중!');
+                break;
+            case "alarm": //알람
+                bootbox.alert('준비중!');
+                break;
             default:
-                
                 break;
         }
     });
+
+    //근무 시간 조회
+    if (_zw.V.current && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
+        _zw.fn.getTotalWorkTime();
+    }
 });
 
 $(function () {
@@ -230,7 +258,45 @@ $(function () {
     _zw.fn = {
         "org": function () {
             alert("org")
-        }
+        },
+        "getTotalWorkTime": function () {
+            $.ajax({
+                type: "POST",
+                url: "/ExS/WorkTime/TotalTime",
+                data: '{ur:"' + _zw.V.current.urid + '",wd:"' + _zw.V.current.date + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') {
+                        var v = res.substr(2).split('^'), txt = '';
+
+                        $('#__CalcWorkTime span').each(function (idx, e) {
+                            //console.log(idx + ' : ' + $(this).text());
+                            if (idx == 0) {
+                                temp = v[idx + 1].split(';'); txt = temp[0] + "시간 " + temp[1] + "분";
+                            } else if (idx == 1) {
+                                if (v[5].indexOf('.') >= 0) {
+                                    temp = v[5].split('.'); txt = (temp[0] == '' ? "0" : temp[0]) + "시간 " + (parseFloat("0." + temp[1]) * 60).toFixed(0) + "분";
+                                } else txt = (v[5] == '' ? "0" : v[5]) + "시간 0분";
+                                
+                            } else if (idx == 2) {
+                                temp = v[2].split(';'); txt = temp[0] + "시간 " + temp[1] + "분";
+                            }
+
+                            $(this).html(txt)
+                        });
+
+                        //_WTM.V["nowHour"] = _WTM.util.floor(parseFloat(parseInt(tp[0]) * 60 + parseInt(tp[1])) / 60, 1);
+                        //_WTM.V["totalHour"] = _WTM.util.floor(parseFloat(parseInt(temp[0]) * 60 + parseInt(temp[1])) / 60, 1);
+                        //_WTM.V["realHour"] = _WTM.util.floor(parseFloat(v[3]), 1);
+                        //_WTM.V["exHour"] = _WTM.util.floor(parseFloat((v[4] == '' ? "0" : v[4])), 1); //alert(_WTM.V["exHour"])
+                        //_WTM.fn.progBar();
+
+                    } else console.log(res);
+                },
+                beforeSend: function () { //로딩 X
+                }
+            });
+            var t = setTimeout(_zw.fn.getTotalWorkTime, 600000); //10분
+        },
     };
 
     //유틸
