@@ -18,13 +18,13 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         [Authorize]
         public ActionResult Index(string Qi)
         {
-            string rt = Bc.CtrlHandler.PageInit(this, false);
+            //string rt = Bc.CtrlHandler.PageInit(this, false);
 
             return Redirect("/ExS/WorkTime/PersonStatus?qi=" + Qi);
         }
 
         /// <summary>
-        /// 근무현황
+        /// 개인 근무현황
         /// </summary>
         /// <returns></returns>
         [SessionExpireFilter]
@@ -32,6 +32,42 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         public ActionResult PersonStatus()
         {
             string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = "잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+
+            //권한 및 월 기준시간 가져오기
+            rt = Bc.CtrlHandler.WorkTimeInit(this, iCategoryId);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
+            {
+                svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(Session["URID"]), ViewBag.R.current.date.ToString(), "", "", "", "", "");
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ViewBag.BoardList = svcRt.ResultDataSet;
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
 
             return View();
         }

@@ -66,38 +66,21 @@
         </div>
     }
 
-        @*<div class="px-1 font-weight-bold">
-            <div class="d-flex justify-content-between mb-1">
-                <div class="">21.8.17 근무</div>
-                <div><span class="text-primary">5시간 21분</span></div>
-            </div>
-            <div class="d-flex justify-content-between">
-                <div class="">주 평균 근무</div>
-                <div><span class="text-primary">7시간 54분</span></div>
-            </div>
-        </div>*@
-
-        
-
-        @*<hr class="border-light m-0 mt-3">*@
-    
-    @if (Session["UseWorkTime"].ToString() == "Y")
-    {
-        <div id="__CalcWorkTime" class="mt-0 mb-2 mx-3 p-2 border rounded" style="_background-color: rgba(24,28,33,0.01) !important">
-            <div class="d-flex justify-content-between mb-1">
-                <div class="text-facebook">@Resources.Global.WorkToday</div>
-                <div><span class="text-primary" data-for="today"></span></div>
-            </div>
-            <div class="d-flex justify-content-between mb-1">
-                <div class="text-facebook">@Resources.Global.WorkWeekAvg</div>
-                <div><span class="text-primary" data-for="week"></span></div>
-            </div>
-            <div class="d-flex justify-content-between">
-                <div class="text-facebook">@Resources.Global.WorkMonthTotal</div>
-                <div><span class="text-primary" data-for="month"></span></div>
-            </div>
+    @*<div class="px-1 font-weight-bold">
+        <div class="d-flex justify-content-between mb-1">
+            <div class="">21.8.17 근무</div>
+            <div><span class="text-primary">5시간 21분</span></div>
         </div>
-    }
+        <div class="d-flex justify-content-between">
+            <div class="">주 평균 근무</div>
+            <div><span class="text-primary">7시간 54분</span></div>
+        </div>
+    </div>*@
+
+    @*<hr class="border-light m-0 mt-3">*@
+    
+    @Html.Partial("~/Views/Common/_WorkTime.cshtml")
+
     @*<hr class="border-secondary mx-3 mt-1 mb-2">*@
 
     <!-- sidebox tree -->

@@ -267,11 +267,14 @@ $(function () {
                 success: function (res) {
                     if (res.substr(0, 2) == 'OK') {
                         var v = res.substr(2).split('^'), txt = '';
+                        var nH = 0, tH = 0, rH = 0, eH = 0;
 
                         $('#__CalcWorkTime span').each(function (idx, e) {
                             //console.log(idx + ' : ' + $(this).text());
                             if (idx == 0) {
                                 temp = v[idx + 1].split(';'); txt = temp[0] + "시간 " + temp[1] + "분";
+                                nH = _zw.ut.floor(parseFloat(parseInt(temp[0]) * 60 + parseInt(temp[1])) / 60, 1);
+
                             } else if (idx == 1) {
                                 if (v[5].indexOf('.') >= 0) {
                                     temp = v[5].split('.'); txt = (temp[0] == '' ? "0" : temp[0]) + "시간 " + (parseFloat("0." + temp[1]) * 60).toFixed(0) + "분";
@@ -279,16 +282,19 @@ $(function () {
                                 
                             } else if (idx == 2) {
                                 temp = v[2].split(';'); txt = temp[0] + "시간 " + temp[1] + "분";
+                                tH = _zw.ut.floor(parseFloat(parseInt(temp[0]) * 60 + parseInt(temp[1])) / 60, 1);
+
+                            } else if (idx == 3) {
+                                rH = _zw.ut.floor(parseFloat(v[3]), 1);
+
+                            } else if (idx == 4) {
+                                eH = _zw.ut.floor(parseFloat((v[4] == '' ? "0" : v[4])), 1);
                             }
 
                             $(this).html(txt)
                         });
-
-                        //_WTM.V["nowHour"] = _WTM.util.floor(parseFloat(parseInt(tp[0]) * 60 + parseInt(tp[1])) / 60, 1);
-                        //_WTM.V["totalHour"] = _WTM.util.floor(parseFloat(parseInt(temp[0]) * 60 + parseInt(temp[1])) / 60, 1);
-                        //_WTM.V["realHour"] = _WTM.util.floor(parseFloat(v[3]), 1);
-                        //_WTM.V["exHour"] = _WTM.util.floor(parseFloat((v[4] == '' ? "0" : v[4])), 1); //alert(_WTM.V["exHour"])
-                        //_WTM.fn.progBar();
+                        
+                        _zw.fn.progBar(rH, eH);
 
                     } else console.log(res);
                 },
@@ -297,6 +303,27 @@ $(function () {
             });
             var t = setTimeout(_zw.fn.getTotalWorkTime, 600000); //10분
         },
+        "progBar": function (real, ex) {
+            var min = _zw.V.current["minhour"], max = _zw.V.current["maxhour"], extra = _zw.V.current["extrahour"];
+
+            var barLen = _zw.ut.rate(real, min, 1) + "%";
+            var barText = _zw.ut.rate(real, min, 1) + "% (" + real + "h)";
+
+            $('.progress-bar[data-for="minhour"]').html(barText).css('width', barLen);
+
+            barLen = _zw.ut.rate(ex, extra, 1);
+            barText = _zw.ut.rate(ex, extra, 1) + "% (" + ex + "h)";
+
+            var barColor = '';
+            if (barLen < 51) barColor = 'progress-bar-success';
+            else if (barLen < 71) barColor = 'progress-bar-warning';
+            else barColor = 'progress-bar-danger';
+
+            $('.progress-bar[data-for="extrahour"]').html(barText).addClass(barColor);
+
+            if (barLen > 100) barLen = 100;
+            $('.progress-bar[data-for="extrahour"]').css('width', barLen + '%');
+        }
     };
 
     //유틸

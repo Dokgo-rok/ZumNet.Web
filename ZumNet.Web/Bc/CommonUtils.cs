@@ -984,13 +984,17 @@ namespace ZumNet.Web.Bc
                     jReq = JObject.Parse("{}");
                 }
 
+                DateTime nowDate = DateTime.Now;
+                string workDate = nowDate.Hour < 6 ? nowDate.AddDays(-1).ToString("yyyy-MM-dd") : nowDate.ToString("yyyy-MM-dd");
+
                 sb.Append("{");
                 sb.Append("\"current\": {");
                 sb.AppendFormat("\"urid\":\"{0}\"", HttpContext.Current.Session["URID"].ToString());
                 sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
                 sb.AppendFormat(",\"deptid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
                 sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
-                sb.AppendFormat(",\"date\":\"{0}\"", DateTime.Now.ToString("yyyy-MM-dd"));
+                sb.AppendFormat(",\"date\":\"{0}\"", nowDate.ToString("yyyy-MM-dd"));
+                sb.AppendFormat(",\"workdate\":\"{0}\"", workDate); //근무관리
                 sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
                 sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"]));
                 sb.AppendFormat(",\"chief\":\"{0}\"", "");
@@ -1082,6 +1086,9 @@ namespace ZumNet.Web.Bc
                 {
                     try
                     {
+                        DateTime nowDate = DateTime.Now;
+                        string workDate = nowDate.Hour < 6 ? nowDate.AddDays(-1).ToString("yyyy-MM-dd") : nowDate.ToString("yyyy-MM-dd");
+
                         StringBuilder sb = new StringBuilder();
                         sb.Append("{");
                         sb.Append("\"current\": {");
@@ -1089,7 +1096,8 @@ namespace ZumNet.Web.Bc
                         sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
                         sb.AppendFormat(",\"deptid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
                         sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
-                        sb.AppendFormat(",\"date\":\"{0}\"", DateTime.Now.ToString("yyyy-MM-dd"));
+                        sb.AppendFormat(",\"date\":\"{0}\"", nowDate.ToString("yyyy-MM-dd"));
+                        sb.AppendFormat(",\"workdate\":\"{0}\"", workDate); //근무관리
                         sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
                         sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"]));
                         sb.AppendFormat(",\"chief\":\"{0}\"", "");
@@ -1301,6 +1309,82 @@ namespace ZumNet.Web.Bc
             catch(Exception ex)
             {
                 strReturn = ex.Message;
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
+        /// 근무관리 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="ctId"></param>
+        /// <returns></returns>
+        public static string WorkTimeInit(this Controller ctrl, int ctId)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            //메뉴 권한체크 (objecttype='' 이면 폴더권한 체크 X)
+            if (HttpContext.Current.Session["Admin"].ToString() == "Y")
+            {
+                ctrl.ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(1, ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]), 0, "", "0");
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            if (strReturn == "")
+            {
+                using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
+                {
+                    svcRt = wt.CheckChiefAcl(Convert.ToInt32(HttpContext.Current.Session["URID"]));
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.R.current["chief"] = svcRt.ResultDataString;
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            if (strReturn == "")
+            {
+                using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
+                {
+                    svcRt = wt.GetMonthStdWorkTime(ctrl.ViewBag.R.current["date"].ToString());
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.R.current.Add("holiday", svcRt.ResultDataDetail["Holiday"].ToString());
+                    ctrl.ViewBag.R.current.Add("minhour", svcRt.ResultDataDetail["MinHour"].ToString());
+                    ctrl.ViewBag.R.current.Add("maxhour", svcRt.ResultDataDetail["MaxHour"].ToString());
+                    ctrl.ViewBag.R.current.Add("extrahour", svcRt.ResultDataDetail["ExtraHour"].ToString());
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
             }
 
             return strReturn;

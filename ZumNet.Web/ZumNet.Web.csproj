@@ -359,10 +359,12 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="Content\worktime.css" />
     <Content Include="Content\ea.css" />
     <Content Include="Content\auth.css" />
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\ea.js" />
+    <Content Include="Scripts\ExS\worktime.js" />
     <Content Include="Views\Portal\Webpart\Html\PortalMailList.xsl" />
     <Content Include="Content\site.css" />
     <Content Include="External\FusionChartsXT\js\fusioncharts.charts.js" />
@@ -1092,6 +1094,7 @@
     <Content Include="Areas\WoA\Views\Proc\Record.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\PersonStatus.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_LeftMenu.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_WorkTimeBar.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -1158,6 +1161,7 @@
     <Content Include="Views\Common\_ListCount.cshtml" />
     <Content Include="Views\Common\_ListPagination.cshtml" />
     <Content Include="Views\Common\_LeftMenu.cshtml" />
+    <Content Include="Views\Common\_WorkTime.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
