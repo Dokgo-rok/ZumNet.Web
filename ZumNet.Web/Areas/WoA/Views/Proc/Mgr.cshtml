@@ -1,7 +1,184 @@
-﻿
-@{
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "서비스/선결 모드 설정";
 }
 
-<h2>Index</h2>
+@section Styles {
+}
 
+@section Scripts {
+    <script type="text/javascript">
+		var preAppMode = "@ViewData["preAppMode"]";
+		var svcMode = "@ViewData["svcMode"]";
+        var interval = "@ViewData["interval"]";
+		var mgrMemberJson = @Html.Raw(ViewData["mgrMemberJson"]);
+		var selectedUserID = "";
+
+		$(document).ready(function () {
+            $("#selSvcMode").val(svcMode);
+			$("#selPreAppMode").val(preAppMode);
+			$("#txtUsrSvcInterval").val(interval);
+
+			if ((preAppMode == "S" || svcMode == "S") && mgrMemberJson != "") {
+				var mgrHtml = "";
+
+                for (var i = 0; i < mgrMemberJson.length; i++) {
+					if (mgrMemberJson[i].FlowPreAppMode == "Y" || mgrMemberJson[i].FlowSvcMode == "Y") {
+						mgrHtml += "<tr style=\"color:blue\">";
+					} else {
+                        mgrHtml += "<tr>";
+					}
+
+                    mgrHtml += "<td>" + mgrMemberJson[i].GroupName + "</td>";
+					mgrHtml += "<td>" + mgrMemberJson[i].Grade1 + "</td>";
+					mgrHtml += "<td>" + mgrMemberJson[i].DisplayName + "</td>";
+					mgrHtml += "<td>" + ((mgrMemberJson[i].FlowPreAppMode == "Y") ? "사용" : "사용안함") + "</td>";
+					mgrHtml += "<td>" + ((mgrMemberJson[i].FlowSvcMode == "Y") ? "사용" : "사용안함") + "</td>";
+					mgrHtml += "<td>" + mgrMemberJson[i].FlowSvcInterval + "</td>";
+                    mgrHtml += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"showPopup(this, '" + mgrMemberJson[i].UserID + "', '" + mgrMemberJson[i].FlowPreAppMode + "', '" + mgrMemberJson[i].FlowSvcMode + "', '" + mgrMemberJson[i].FlowSvcInterval + "')\">변경</button></td>";
+                    mgrHtml += "</tr>";
+				}
+
+				$("#tbl_list tbody").append(mgrHtml);
+			}
+		});
+
+		function showPopup(obj, userID, preAppMode, svcMode, svcInterval) {
+			selectedUserID = "";
+            $("#modalPopup").find("select").prop("selectedIndex", "0");
+			$("#modalPopup").find("input").val("");
+
+            selectedUserID = userID;
+			$("#selModalPreAppMode").val(preAppMode);
+			$("#selModalSvcMode").val(svcMode);
+			$("#txtModalInterval").val(svcInterval);
+
+			$("#modalPopup").modal("show");
+		}
+
+		function changeMode() {
+            if ($("#txtModalInterval").val() == "") {
+				alert("간격을 입력하세요.");
+				$("#txtModalInterval").focus();
+
+				return;
+			} else {
+				if (isNaN($("#txtModalInterval").val())) {
+					alert("간격에는 숫자만 입력하세요.");
+					$("#txtModalInterval").focus();
+
+					return;
+				}
+			}
+
+			$.ajax({
+				url: '@Url.Action("ChangeServiceMode", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{userID:"' + selectedUserID + '", preAppMode:"' + $("#selModalPreAppMode").val() + '", svcMode:"' + $("#selModalSvcMode").val() + '", interval:' + $("#txtModalInterval").val() + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					document.location.reload();
+				}
+			});	
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    서비스/선결 모드 설정
+</h4>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="form-inline">
+            <label class="form-label">서비스 사용 모드 : </label>
+            <select class="custom-select mx-sm-3" id="selSvcMode" disabled> 
+                <option value="N">사용안함</option>
+                <option value="A">전사사용</option>
+                <option value="S">부분사용</option>
+            </select>
+            <label class="form-label mx-sm-3">기본 간격 : </label>
+            <input type="text" id="txtUsrSvcInterval" class="form-control">
+        </form>
+        <form class="form-inline" style="padding-top:15px;">
+            <label class="form-label">선결 사용 모드 : </label>
+            <select class="custom-select mx-sm-3" id="selPreAppMode" disabled> 
+                <option value="N">사용안함</option>
+                <option value="A">전사사용</option>
+                <option value="S">부분사용</option>
+            </select>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPopup">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    서비스/선결 사용 모드 편집
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">선결 모드</label>
+                        <select class="custom-select" id="selModalPreAppMode">
+                            <option value="Y">사용</option>
+                            <option value="N">사용안함</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">서비스 모드</label>
+                        <select class="custom-select" id="selModalSvcMode">
+                            <option value="Y">사용</option>
+                            <option value="N">사용안함</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label class="form-label">간격</label>
+                        <input type="text" id="txtModalInterval" class="form-control" maxlength="3">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" onclick="changeMode();">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <table id="tbl_list" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>부서</th>
+                            <th>직위</th>
+                            <th>이름</th>
+                            <th>선결사용여부</th>
+                            <th>서비스 모드<br />사용여부</th>
+                            <th>서비스 모드<br />처리간격</th>
+                            <th>비고</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

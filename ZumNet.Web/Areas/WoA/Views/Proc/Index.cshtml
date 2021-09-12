@@ -10,6 +10,7 @@
 	@Styles.Render("~/bundle/vendor/css/bootstrap-select/bootstrap-select")
 	@Styles.Render("~/bundle/vendor/css/dragula/dragula")
 	@Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+	@Styles.Render("~/bundle/vendor/css/datatables/datatables")
 }
 
 @section Scripts {
@@ -17,33 +18,341 @@
 	@Scripts.Render("~/bundle/vendor/js/dragula/dragula")
 	@Scripts.Render("~/bundle/vendor/js/moment/moment")
 	@Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+	@Scripts.Render("~/bundle/vendor/js/datatables/datatables")
 
 	<script type="text/javascript">
-		$(document).ready(function () {
-			dragula(
-				Array.prototype.slice.call(document.querySelectorAll('.kanban-box'))
-			);
+		var prevSortColumn = "";
+		var prevSortType = "";
+		var tbl_list;
+		var domainID = "@Session["DNID"].ToString()";
 
-			$("#divValidRange").datepicker({
+		$(document).ready(function () {
+			$("#divValidRange,#divSearchRange,#divCopyValidRange").datepicker({
 				language: "ko",
                 format: "yyyy-mm-dd"
 			});
 
 			$("#selProcess").selectpicker();
+
+			$("li[class='nav-item']:eq(1)").bind("click", function () {
+				searchList();
+			});
 		});
 
 		function initializeForm(isInitSelect) {
-			$("#process-info,#process-processing,#process-imexport").find("input").val("");
-			$("#process-info,#process-processing,#process-imexport").find("textarea").val("");
-			$("#process-info,#process-processing,#process-imexport").find("select").prop("selectedIndex", 0);
+			$("#process-info,#process-processing,#process-define").find("input").val("");
+			$("#process-info,#process-processing,#process-define").find("textarea").val("");
+			$("#process-info,#process-processing,#process-define").find("select").prop("selectedIndex", 0);
 
 			$("li[class='nav-item']:gt(0)").show();
+			$("#btnShowCopyModal,#btnExportProcess").show();
 
 			if (isInitSelect) {
 				$("#selProcess").val("0");
 				$("#selProcess").trigger("change");
 
 				$("li[class='nav-item']:gt(0)").hide();
+				$("#btnShowCopyModal,#btnExportProcess").hide();
+
+				$("li[class='nav-item']:eq(0)").find("a").trigger("click");
+			}
+		}
+
+		function searchList() {
+            if (tbl_list) {
+                tbl_list.destroy();
+			}
+
+            tbl_list = $('#tbl_list').DataTable({
+                "serverSide": true,
+                "ajax": {
+                    "url": '@Url.Action("SearchEADocumentList", "App")',
+					"type": "POST",
+					"data": function (p) {
+						p.mode = "pp";
+						p.admin = "Y";
+						p.formId = "";
+						p.defId = $("#selProcess").val();
+						p.viewer = 0;
+						p.state = 100;
+						p.searchCol = $("#selSearchType").val();
+						p.searchText = $("#txtSearchText").val();
+						p.searchStartDate = $("#datepicker-range input[name='start']").val();
+						p.searchEndDate = $("#datepicker-range input[name='end']").val();
+                        p.prevSortColumn = prevSortColumn;
+						p.prevSortType = prevSortType;
+					},
+				    "dataSrc": function (result) {
+						prevSortColumn = result.sortColumn;
+                        prevSortType = result.sortType;
+
+                        return result.data;
+					}
+				},
+                "columns": [
+                    { data: "MessageID" },
+					{
+						"data": "DocName",
+                        "orderable": false
+					},
+					{
+						data: "DocStatus",
+                        "orderable": false
+					},
+                    { data: "PIName" },
+					{
+						data: "CreatorDept",
+                        "orderable": false
+					},
+					{
+						data: "Creator",
+                        "orderable": false
+					},
+					{
+						data: "CreateDate",
+                        "orderable": false
+					},
+					{
+						data: "PIEnd",
+                        "orderable": false
+					},
+					{
+						data: "DeleteDate",
+                        "orderable": false
+					},
+					{
+						data: "PIState",
+                        "orderable": false
+					},
+					{
+						data: null,
+                        "orderable": false
+					}
+                ],
+                "language": dataTable_lang_kor,
+				"searching": false,
+				"displayLength": 30,
+				"order": [],
+				"info": false,
+				"lengthChange": false,
+				"createdRow": function (row, data, index) {
+					var createDate = data["CreateDate"];
+					var piEnd = data["PIEnd"];
+					var deleteDate = data["DeleteDate"];
+
+                    if ((data["CreateDate"] != null && data["CreateDate"] != "") && data["CreateDate"].length >= 19) {
+                        createDate = data["CreateDate"].substring(2, 10) + " " + data["CreateDate"].substring(11, 16);
+					}
+
+                    if ((data["PIEnd"] != null && data["PIEnd"] != "") && data["PIEnd"].length >= 19) {
+                        piEnd = data["PIEnd"].substring(2, 10) + " " + data["PIEnd"].substring(11, 16);
+					}
+
+                    if ((data["DeleteDate"] != null && data["DeleteDate"] != "") && data["DeleteDate"].length >= 19) {
+                        deleteDate = data["DeleteDate"].substring(2, 10) + " " + data["DeleteDate"].substring(11, 16);
+					}
+
+					$('td', row).eq(6).html('').append(createDate);
+					$('td', row).eq(7).html('').append(piEnd);
+					$('td', row).eq(8).html('').append(deleteDate);
+
+					var piState = data["PIState"];
+					var piStateHtml = "<button type=\"button\" class=\"btn btn-default\">대기</button>";
+
+					if (piState == "1") {
+                        // 진행중
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-primary\">진행중</button>";
+					} else if (piState == "2") {
+                        // 처리중
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-primary\">처리중</button>";
+					} else if (piState == "5") {
+                        // 멈춤
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-secondary\">멈춤</button>";
+					} else if (piState == "7") {
+                        // 완료
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-success\">완료</button>";
+					} else if (piState == "8") {
+                        // 강제종료(회수)
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-warning\">강제종료(회수)</button>";
+					} else if (piState == "99") {
+                        // 처리중 에러
+						piStateHtml = "<button type=\"button\" class=\"btn btn-danger\">처리중 에러</button>";
+					}
+
+                    $('td', row).eq(9).html('').append(piStateHtml);
+
+					$('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<select class='custom-select' onchange='viewWorkItemAction(this, \"" + data["MessageID"] + "\", \"" + data["OID"] + "\")' data-menu=\"select\"><option selected value=''>선택</option><option value='B'>기본 정보</option><option value='L'>결재선 정보</option><option value='I'>WorkItem 정보</option><option value='O'>문서열기</option><option value='D'>삭제</option></select>");
+
+					if (deleteDate != null && deleteDate != "") {
+						$(row).find("td").css("text-decoration", "line-through");
+					}
+				}
+            });
+		}
+
+		function viewWorkItemAction(obj, messageID, oID) {
+            // B : 기본 정보
+            // L : 결재선 정보
+            // I : WorkItem 정보
+            // O : 문서열기
+            // D : 삭제
+			var selectedValue = $(obj).val();
+
+			if (selectedValue == "") {
+				return;
+			}
+
+			$("select[data-menu='select']").not($(obj)).prop("selectedIndex", 0);
+
+			switch (selectedValue) {
+				case "B":
+                    // 기본 정보
+                    $.ajax({
+                        url: '@Url.Action("SelectEADocumentTotalData", "App")',
+				        type: 'POST',
+				        dataType: 'JSON',
+				        data: '{domainID:' + domainID + ', messageID: ' + messageID + '}',
+				        success: function (result) {
+					        if (result.code != "OK") {
+						        alert(result.message);
+						        return;
+							}
+
+							if (result.recordsTotal == 1) {
+								var basisResult = result.data[0];
+
+								$("#modalDocBasic").find("input").val("");
+
+								$("#modalDocBasic").find("#txtOID").val(basisResult.OID);
+								$("#modalDocBasic").find("#txtMessageID").val(messageID);
+								$("#modalDocBasic").find("#txtProcessID").val(basisResult.ProcessID);
+								$("#modalDocBasic").find("#txtPIState").val(basisResult.PIState);
+								$("#modalDocBasic").find("#txtDocNumber").val(basisResult.DocNumber);
+								$("#modalDocBasic").find("#txtDocStatus").val(basisResult.DocStatus);
+								$("#modalDocBasic").find("#txtDocLevel").val(basisResult.DocLevel);
+                                $("#modalDocBasic").find("#txtKeepYear").val(basisResult.KeepYear);
+								$("#modalDocBasic").find("#txtPIName").val(basisResult.PIName);
+                                $("#modalDocBasic").find("#txtSubject").val(basisResult.Subject);
+								$("#modalDocBasic").find("#txtCreator").val(basisResult.CreatorGrade + " " + basisResult.Creator + " (" + basisResult.CreatorID + "/" + basisResult.CreatorCN + ")");
+								$("#modalDocBasic").find("#txtCreatorDept").val(basisResult.CreatorDept + " (" + basisResult.CreatorDeptID + ")");
+
+								var started = basisResult.Started;
+
+								if (started != "" && started.length >= 19) {
+                                    $("#modalDocBasic").find("#txtStarted").val(started.substring(2, 10) + " " + started.substring(11, 16));
+								}
+
+                                var completedDate = basisResult.CompletedDate;
+
+								if (completedDate != "" && completedDate.length >= 19) {
+                                    $("#modalDocBasic").find("#txtCompletedDate").val(completedDate.substring(2, 10) + " " + completedDate.substring(11, 16));
+								}
+
+								$("#modalDocBasic").find("#txtExternalKey1").val(basisResult.ExternalKey1);
+								$("#modalDocBasic").find("#txtExternalKey2").val(basisResult.ExternalKey2);
+
+								$("#modalDocBasic").modal("show");
+							}
+                        }
+			        });
+					break;
+				case "L":
+					// 결재선 정보
+					$.ajax({
+                        url: '@Url.Action("SelectEAApprovalLineInfo", "App")',
+				        type: 'POST',
+				        dataType: 'html',
+				        data: '{oid:' + oID + ', itemKey:"ea", itemSubKey: ""}',
+						success: function (result) {
+							var resultCode = result.split('##')[0];
+
+					        if (resultCode != "OK") {
+						        alert(result.split('##')[1]);
+						        return;
+							}
+
+							if (result.split('##')[1] == "") {
+								alert("결재선 정보를 구성하는 데 실패하였습니다.");
+								return;
+							}
+
+                            // 기존 추가했던 tr 제거
+							$("#trApprovalLine,#trWorkItem").remove();
+
+							var appLineHtml = "<tr id=\"trApprovalLine\">";
+							appLineHtml += "<td colspan=\"11\">";
+							appLineHtml += $("<div>" + result.split('##')[1] + "</div>").html();
+                            appLineHtml += "</td>";
+							appLineHtml += "</tr>";
+
+							$(obj).closest("tr").after(appLineHtml);
+                        }
+			        });
+					break;
+                case "I":
+					// WorkItem 정보
+					$.ajax({
+                        url: '@Url.Action("SelectEAWorkItemInfo", "App")',
+				        type: 'POST',
+				        dataType: 'html',
+				        data: '{oid:' + oID + ', itemKey:"ea", itemSubKey: ""}',
+						success: function (result) {
+							var resultCode = result.split('##')[0];
+
+					        if (resultCode != "OK") {
+						        alert(result.split('##')[1]);
+						        return;
+							}
+
+							if (result.split('##')[1] == "") {
+								alert("결재선 정보를 구성하는 데 실패하였습니다.");
+								return;
+							}
+
+                            // 기존 추가했던 tr 제거
+							$("#trApprovalLine,#trWorkItem").remove();
+
+							var appLineHtml = "<tr id=\"trWorkItem\">";
+							appLineHtml += "<td colspan=\"11\">";
+							appLineHtml += $("<div>" + result.split('##')[1] + "</div>").html();
+                            appLineHtml += "</td>";
+							appLineHtml += "</tr>";
+
+							$(obj).closest("tr").after(appLineHtml);
+                        }
+			        });
+					break;
+                case "O":
+					// 문서열기
+
+					break;
+				case "D":
+					// 문서 삭제
+					if (!window.confirm("선택한 문서를 삭제하시겠습니까?")) {
+                        $(obj).prop("selectedIndex", 0);
+						return false;
+					}
+
+                    $.ajax({
+                        url: '@Url.Action("DeleteBFEAData", "App")',
+				        type: 'POST',
+				        dataType: 'JSON',
+				        data: '{command:"delete", messageID: ' + messageID + '}',
+						success: function (result) {
+							if (result.code != "OK") {
+						        alert(result.message);
+						        return;
+							}
+
+                            alert("정상적으로 삭제되었습니다.");
+
+                            // 현재 행 삭제
+                            $(obj).closest("tr").hide();
+                        }
+			        });
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -121,13 +430,6 @@
 				return false;
 			}
 
-			if ($("#txtProcessName").val() == "") {
-				alert("프로세스명을 입력하세요.");
-				$("#txtProcessName").focus();
-
-				return false;
-			}
-
 			if ($("#txtPriority").val() == "") {
 				alert("우선 순위를 입력하세요.");
 				$("#txtPriority").focus();
@@ -141,6 +443,15 @@
 					return false;
 				}
 			}
+
+			if ($("#txtProcessName").val() == "") {
+				alert("프로세스명을 입력하세요.");
+				$("#txtProcessName").focus();
+
+				return false;
+			}
+
+
 
 			if ($("#txtProcessCreator").val() == "") {
 				alert("작성자를 입력하세요.");
@@ -165,6 +476,92 @@
 					window.location.reload();
                 }
 			});
+		}
+
+		function showCopyModal() {
+			$("#divCopyValidRange input[name='start']").val($("#divValidRange input[name='start']").val());
+			$("#divCopyValidRange input[name='end']").val($("#divValidRange input[name='end']").val());
+			$("#txtCopyPriority").val($("#txtPriority").val());
+			$("#txtCopyProcessName").val("사본-" + $("#txtProcessName").val());
+			$("#txtCopyProcessDescription").val($("#txtProcessDescription").val());
+			$("#selCopyInUse").val($("#selInUse").val());
+			$("#txtCopyProcessCreator").val($("#txtProcessCreator").val());
+
+			$("#modalCopyProcess").modal("show");
+		}
+
+		// 다른 이름으로 프로세스 복사
+		function copyAsOtherProcess() {
+			if ($("#divCopyValidRange input[name='start']").val() == "") {
+				alert("유효 시작일을 선택하세요.");
+				$("#divCopyValidRange input[name='start']").focus();
+
+				return;
+			}
+
+			if ($("#divCopyValidRange input[name='end']").val() == "") {
+				alert("유효 종료일을 선택하세요.");
+				$("#divCopyValidRange input[name='end']").focus();
+
+				return;
+			}
+
+			if ($("#txtCopyPriority").val() == "") {
+				alert("우선 순위를 입력하세요.");
+				$("#txtCopyPriority").focus();
+
+				return;
+			} else {
+				if (isNaN($("#txtCopyPriority").val())) {
+					alert("우선 순위에는 숫자만 입력하세요.");
+					$("#txtCopyPriority").focus();
+
+					return;
+				}
+			}
+
+			if ($("#txtCopyProcessName").val() == "") {
+				alert("프로세스명을 입력하세요.");
+				//$("#txtCopyProcessName").focus();
+
+				return false;
+			}
+
+			if ($("#txtCopyProcessCreator").val() == "") {
+				alert("작성자를 입력하세요.");
+				$("#txtCopyProcessCreator").focus();
+
+				return;
+			}
+
+			$.ajax({
+				url: '@Url.Action("CopyProcessDefinition", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{processID:' + $("#selProcess").val() + ', validFromDate:"' + $("#divCopyValidRange input[name='start']").val() + '", validToDate:"' + $("#divCopyValidRange input[name='end']").val() + '", processName:"' + $("#txtCopyProcessName").val() + '", priority:' + $("#txtCopyPriority").val() + ', description:"' + $("#txtCopyProcessDescription").val() + '", inUse:"' + $("#selCopyInUse").val() + '", creator:"' + $("#txtCopyProcessCreator").val() + '", reserved1:""}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+				}
+			});	
+		}
+
+		// 프로세스 내보내기(XML 파일)
+		function exportProcessInfoForXml() {
+			if (!window.confirm("프로세스 정의가 XML파일로 생성됩니다. 내려받겠습니까?")) {
+				return;
+			}
+
+			var processID = $("#selProcess").val()
+			var processName = $("#selProcess option[value='" + $("#selProcess").val() + "']").text();
+
+			window.location.href = "/Woa/proc/Export?processid=" + processID + "&processName=" + processName;
 		}
 	</script>
 }
@@ -195,6 +592,162 @@
 	</div>
 </div>
 
+<div class="modal fade" id="modalDocBasic">
+	<div class="modal-dialog">
+		<form class="modal-content" style="width:800px;">
+			<div class="modal-header">
+				<h5 class="modal-title">
+					기본 정보
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">OID</label>
+						<input type="text" id="txtOID" class="form-control" readonly="readonly">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">MessageID</label>
+						<input type="text" id="txtMessageID" class="form-control" readonly="readonly">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">프로세스 정의</label>
+						<input type="text" id="txtProcessID" class="form-control" readonly="readonly">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">프로세스 상태</label>
+						<input type="text" id="txtPIState" class="form-control" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">문서번호</label>
+						<input type="text" id="txtDocNumber" class="form-control" readonly="readonly">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">진행단계</label>
+						<input type="text" id="txtDocStatus" class="form-control" readonly="readonly">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">문서등급</label>
+						<input type="text" id="txtDocLevel" class="form-control" readonly="readonly">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">보존년한</label>
+						<input type="text" id="txtKeepYear" class="form-control" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">프로세스명</label>
+						<input type="text" id="txtPIName" class="form-control" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">제목</label>
+						<input type="text" id="txtSubject" class="form-control" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">작성자</label>
+						<input type="text" id="txtCreator" class="form-control" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">작성자 부서</label>
+						<input type="text" id="txtCreatorDept" class="form-control" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">등록일</label>
+						<input type="text" id="txtStarted" class="form-control" readonly="readonly">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">완료일</label>
+						<input type="text" id="txtCompletedDate" class="form-control" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">외부키1</label>
+						<input type="text" id="txtExternalKey1" class="form-control" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">외부키2</label>
+						<input type="text" id="txtExternalKey2" class="form-control" readonly="readonly">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" id="btnPopupClose" data-dismiss="modal">확인</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="modalCopyProcess">
+	<div class="modal-dialog">
+		<form class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">
+					다른 이름으로 복사
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">유효기간</label>
+						<div class="input-daterange input-group" id="divCopyValidRange">
+							<input type="text" class="form-control" name="start">
+							<div class="input-group-prepend">
+								<span class="input-group-text"> ~ </span>
+							</div>
+							<input type="text" class="form-control" name="end">
+						</div>
+					</div>
+					<div class="form-group col">
+						<label class="form-label">우선순위</label>
+						<input type="text" id="txtCopyPriority" class="form-control">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스명</label>
+					<input type="text" id="txtCopyProcessName" class="form-control">
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스 설명</label>
+					<textarea class="form-control" id="txtCopyProcessDescription" placeholder="프로세스 설명" rows="5"></textarea>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">사용여부</label>
+						<select class="custom-select" id="selCopyInUse">
+							<option value="Y">사용</option>
+							<option value="N">사용안함</option>
+						</select>
+					</div>
+					<div class="form-group col">
+						<label class="form-label">작성자</label>
+						<input type="text" id="txtCopyProcessCreator" class="form-control">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal" onclick="copyAsOtherProcess()">다른 이름으로 복사</button>
+				<button type="button" class="btn btn-default mx-sm-3" data-dismiss="modal">닫기</button>
+			</div>
+		</form>
+	</div>
+</div>
+
 <div class="nav-tabs-top nav-responsive-sm">
 	<ul class="nav nav-tabs">
 		<li class="nav-item">
@@ -204,20 +757,26 @@
 			<a class="nav-link" data-toggle="tab" href="#process-processing">프로세스 처리 현황</a>
 		</li>
 		<li class="nav-item" style="display:none">
-			<a class="nav-link" data-toggle="tab" href="#process-imexport">프로세스 복사 및 내보내기</a>
+			<a class="nav-link" data-toggle="tab" href="#process-define">프로세스 정의</a>
 		</li>
 	</ul>
 	<div class="tab-content">
 		<div class="tab-pane fade show active" id="process-info">
 			<div class="card-body">
-				<div class="form-group">
-					<label class="form-label">유효기간</label>
-					<div class="input-daterange input-group" id="divValidRange">
-						<input type="text" class="form-control" name="start">
-						<div class="input-group-prepend">
-							<span class="input-group-text"> ~ </span>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">유효기간</label>
+						<div class="input-daterange input-group" id="divValidRange">
+							<input type="text" class="form-control" name="start">
+							<div class="input-group-prepend">
+								<span class="input-group-text"> ~ </span>
+							</div>
+							<input type="text" class="form-control" name="end">
 						</div>
-						<input type="text" class="form-control" name="end">
+					</div>
+					<div class="form-group col">
+						<label class="form-label">우선순위</label>
+						<input type="text" id="txtPriority" class="form-control">
 					</div>
 				</div>
 				<div class="form-group">
@@ -230,166 +789,74 @@
 				</div>
 				<div class="form-row">
 					<div class="form-group col">
-						<label class="form-label">우선순위</label>
-						<input type="text" id="txtPriority" class="form-control">
-					</div>
-					<div class="form-group col">
 						<label class="form-label">사용여부</label>
 						<select class="custom-select" id="selInUse">
 							<option value="Y">사용</option>
 							<option value="N">사용안함</option>
 						</select>
 					</div>
-				</div>
-				<div class="form-group">
-					<label class="form-label">작성자</label>
-					<input type="text" id="txtProcessCreator" class="form-control">
+					<div class="form-group col">
+						<label class="form-label">작성자</label>
+						<input type="text" id="txtProcessCreator" class="form-control">
+					</div>
 				</div>
 			</div>
 			<div class="card-footer">
 				<button type="button" class="btn btn-primary mr-2" onclick="saveBasicProcess()">프로세스 저장</button>
+				<button type="button" class="btn btn-default mx-sm-3" id="btnShowCopyModal" onclick="showCopyModal();" style="display:none">다른 이름으로 복사</button>
+				<button type="button" class="btn btn-default" style="margin-left:-10px;display:none" id="btnExportProcess" onclick="exportProcessInfoForXml();">프로세스 정보(XML) 내보내기</button>
 			</div>
 		</div>
 
 		<div class="tab-pane fade" id="process-processing">
-
 			<div class="card-body">
-
-				<div class="card mb-3">
-					<h6 class="card-header text-center">New</h6>
-					<div class="kanban-box px-2 pt-2">
-						<div class="ui-bordered p-2 mb-2">
-							<div class="kanban-board-actions btn-group float-right ml-2">
-								<button type="button" class="btn btn-default btn-xs rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
-								<div class="dropdown-menu dropdown-menu-right">
-									<a class="dropdown-item" href="javascript:void(0)">Edit</a>
-									<a class="dropdown-item" href="javascript:void(0)">Remove</a>
-								</div>
-							</div>
-							New blog layout
+				<form class="form-inline">
+					<label class="form-label">날짜 : </label>
+					<div class="input-daterange input-group mx-sm-3" id="divSearchRange">
+						<input type="text" class="form-control" name="start">
+						<div class="input-group-prepend">
+							<span class="input-group-text"> ~ </span>
 						</div>
-						<div class="ui-bordered p-2 mb-2">
-							<div class="kanban-board-actions btn-group float-right ml-2">
-								<button type="button" class="btn btn-default btn-xs rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
-								<div class="dropdown-menu dropdown-menu-right">
-									<a class="dropdown-item" href="javascript:void(0)">Edit</a>
-									<a class="dropdown-item" href="javascript:void(0)">Remove</a>
-								</div>
-							</div>
-							Create UI design model
-							<span class="badge badge-success ml-1">Clients</span>
-						</div>
-						<div class="ui-bordered p-2 mb-2">
-							<div class="kanban-board-actions btn-group float-right ml-2">
-								<button type="button" class="btn btn-default btn-xs rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
-								<div class="dropdown-menu dropdown-menu-right">
-									<a class="dropdown-item" href="javascript:void(0)">Edit</a>
-									<a class="dropdown-item" href="javascript:void(0)">Remove</a>
-								</div>
-							</div>
-							Another icon set
-						</div>
-						<div class="ui-bordered p-2 mb-2">
-							<div class="kanban-board-actions btn-group float-right ml-2">
-								<button type="button" class="btn btn-default btn-xs rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
-								<div class="dropdown-menu dropdown-menu-right">
-									<a class="dropdown-item" href="javascript:void(0)">Edit</a>
-									<a class="dropdown-item" href="javascript:void(0)">Remove</a>
-								</div>
-							</div>
-							iOS application design mockups
+						<input type="text" class="form-control" name="end">
+					</div>
+					<label class="form-label mx-sm-3">검색 조건 : </label>
+					<select class="custom-select mx-sm-3" id="selSearchType">
+						<option selected value="">선택</option>
+						<option value="DocName">문서명</option>
+						<option value="DocStatus">단계</option>
+						<option value="PIName">제목</option>
+						<option value="CreatorDept">작성부서</option>
+						<option value="Creator">작성자</option>
+					</select>
+					<input type="text" id="txtSearchText" class="form-control mx-sm-3">
+					<button type="button" id="btnSearch" class="btn btn-default" onclick="searchList()">검색</button>
+				</form>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-datatable table-responsive">
+							<table id="tbl_list" class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>번호</th>
+										<th>문서명</th>
+										<th>단계</th>
+										<th>제목</th>
+										<th>작성부서</th>
+										<th>작성자</th>
+										<th>작성일</th>
+										<th>완료일</th>
+										<th>삭제일</th>
+										<th>결재상태</th>
+										<th>비고</th>
+									</tr>
+								</thead>
+							</table>
 						</div>
 					</div>
 				</div>
-
 			</div>
-			<hr class="m-0">
-
-			<div class="card-body">
-				<h6 class="small font-weight-semibold mb-4">Options <span class="text-muted font-weight-normal">(depending on category)</span></h6>
-
-				<div class="form-group">
-					<label class="form-label">Brand</label>
-					<select class="custom-select">
-						<option>Apple</option>
-						<option>Blueberry</option>
-						<option selected>Samsung</option>
-						<option>LG</option>
-						<option>Asus</option>
-						<option>Sony</option>
-						<option>Honor</option>
-						<option>Huawei</option>
-						<option>Xiaomi</option>
-					</select>
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Storages</label>
-					<select multiple class="product-edit-multiselect form-control w-100">
-						<option>8GB</option>
-						<option>16GB</option>
-						<option selected>32GB</option>
-						<option selected>64GB</option>
-						<option>128GB</option>
-					</select>
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Colors</label>
-					<select multiple class="product-edit-multiselect form-control w-100">
-						<option selected>Black</option>
-						<option>White</option>
-						<option>Silver</option>
-						<option>Gray</option>
-						<option selected>Green</option>
-						<option selected>Gold</option>
-						<option>Pink</option>
-						<option>Red</option>
-					</select>
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Warranties</label>
-					<select multiple class="product-edit-multiselect form-control w-100">
-						<option selected>Standard - 1 year</option>
-						<option selected>Extended - 2 years | $99</option>
-					</select>
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Ships from</label>
-					<select multiple class="product-edit-multiselect form-control w-100">
-						<option selected>USA</option>
-						<option selected>China</option>
-						<option>France</option>
-						<option selected>Germany</option>
-						<option>UK</option>
-					</select>
-				</div>
-
-			</div>
-			<hr class="m-0">
-
-			<div class="card-body">
-				<h6 class="small font-weight-semibold mb-4">Meta</h6>
-
-				<div class="form-group">
-					<label class="form-label">Title</label>
-					<input type="text" class="form-control" value="Samsung Galaxy S7 Edge">
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Description</label>
-					<textarea class="form-control" rows="3">Buy Samsung Galaxy S7 Edge!</textarea>
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Keywords</label>
-					<input type="text" class="form-control" value="Mobile, Smartphone, Samsung, Galaxy, S3, Edge">
-				</div>
-
-			</div>
-
 		</div>
 	</div>
 </div>

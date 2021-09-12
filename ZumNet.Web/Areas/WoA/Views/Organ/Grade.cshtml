@@ -31,7 +31,7 @@
 
 		function searchList() {
             $.ajax({
-                url: '@Url.Action("SearchGradeInfoJson", "Organ")',
+                url: '@Url.Action("SearchGradeInfo", "Organ")',
 				type: 'POST',
                 dataType: 'JSON',
 				data: '{actionKind:"2", domainID: 1, codeType: ""}',
@@ -65,7 +65,7 @@
                         info: false,
                         displayLength: 50,
                         order: [],
-                        ordering: true,
+                        ordering: false,
                         language: dataTable_lang_kor,
 						createdRow: function (row, data, index) {
 							$("td", row).eq(0).attr("data-code", data["Type"] + "_" + data["Code"]);
@@ -135,7 +135,6 @@
 			var codeName = $("#txtCodeName").val();
 			var inUse = $("#selUseYN").val();
 
-            // public ServiceResult HandleGradeCode(string actionKind, int domainID, string type, string code, string newType, string newCode, string codeName, string inUse, string removeInfo)
             $.ajax({
                 url: '@Url.Action("HandleGradeCode", "Organ")',
 				type: 'POST',

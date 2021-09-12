@@ -73,7 +73,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     mode = "pf";
                 }
 
-
                 int defId = StringHelper.SafeInt(Request.Form["defId"]);
                 int viewer = StringHelper.SafeInt(Request.Form["viewer"]);
                 int state = StringHelper.SafeInt(Request.Form["state"]);

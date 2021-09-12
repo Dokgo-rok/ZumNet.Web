@@ -1,7 +1,246 @@
-﻿
-@{
-    ViewBag.Title = "Index";
+﻿@{
+	ViewBag.Title = "문서 수신 정책";
 }
 
-<h2>Index</h2>
+@section Styles {
+	@Styles.Render("~/bundle/vendor/css/datatables/datatables")
+	@Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+	@Styles.Render("~/bundle/vendor/css/bootstrap-select/bootstrap-select")
+	@Styles.Render("~/bundle/vendor/css/select2/select2")
+}
 
+@section Scripts {
+	@Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+	@Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+	@Scripts.Render("~/bundle/vendor/js/bootstrap-select/bootstrap-select")
+	@Scripts.Render("~/bundle/vendor/js/select2/select2")
+
+	<script type="text/javascript">
+		var memberList = @Html.Raw(ViewData["memberlist"]);
+		var rcvManagerList = @Html.Raw(ViewData["rcvmanagerlist"]);
+		
+		$(document).ready(function () {
+			var deptTreeJson = @Html.Raw(ViewData["deptlist"]);
+
+			$("#selMember").each(function () {
+				$(this)
+					//.wrap("<div class=\"position-relative\"></div>")
+					.select2({
+						placeholder: "담당자를 선택하세요.",
+						dropdownParent: $(this).parent()
+					});
+			});
+
+			$("#divDeptTree").jstree({
+				'core': {
+					'data': deptTreeJson
+				}
+			}).bind('select_node.jstree', function (event, data) {
+				var grID = data.instance.get_node(data.selected).id;
+				var optionMemberHtml = "";
+
+				if (memberList != "") {
+					for (var j = 0; j < memberList.length; j++) {
+						if (memberList[j].GR_ID == grID) {
+							optionMemberHtml += "<option value=\"" + memberList[j].UserID + "\">" + memberList[j].Grade1 + " " + memberList[j].DisplayName + "</option>";
+						}
+					}
+
+					$("#selMember").empty();
+					$("#selMember").append(optionMemberHtml);
+				}
+
+				// 선택된 부서에 속한 사람이 없는 경우라면 버튼들을 비활성화한다.
+				if (optionMemberHtml == "") {
+					$("button").prop("disabled", true);
+				} else {
+					$("button").prop("disabled", false);
+
+					if (rcvManagerList != "") {
+						var arrayMember = [];
+
+						for (var i = 0; i < rcvManagerList.length; i++) {
+							arrayMember.push(rcvManagerList[i].TargetID);
+						}
+
+						$("#selMember").val(arrayMember).trigger('change');
+					}
+				}
+
+				var reserved1 = $("#" + grID).attr("reserved1");
+
+				if (reserved1 == "N") {
+					$("#chkPolicy").prop("checked", false);
+				} else {
+                    $("#chkPolicy").prop("checked", true);
+				}
+
+				$("#chkPolicy").attr("data-group_id", grID);
+			}).bind('loaded.jstree', function (e, data) {
+				$("li.jstree-node").each(function () {
+					var id = $(this).attr("id");
+
+					for (var i = 0; i < deptTreeJson.length; i++) {
+                        if (id == deptTreeJson[i].id) {
+							var reserved1 = (deptTreeJson[i].etc != undefined) ? deptTreeJson[i].etc.reserved1 : "";
+
+							$(this).attr("reserved1", reserved1);
+
+							if (reserved1 == "N") {
+                                $(this).children("a.jstree-anchor").css({ "color": "red" });
+							}
+
+							break;
+					    }
+					}
+			    });
+			});
+		});
+
+		function changeGroupPolicy() {
+			var dataID = $("#chkPolicy").attr("data-group_id");
+			var reserved1 = $("#chkPolicy").prop("checked") ? "Y" : "N";
+
+            if (dataID == "0" || dataID == "") {
+				alert("조직을 선택해 주세요.");
+				return;
+			}
+
+			if (!window.confirm("문서 수신 부서 정보를 변경하시겠습니까?")) {
+				return false;
+			}
+
+			$.ajax({
+                url: '@Url.Action("ChangeGroupPolicy", "EA")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{groupID:' + dataID + ', reserved1: "' + reserved1 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("문서 수신 부서 정보를 변경하였습니다!");
+
+					var $li = $("li[id='" + dataID + "']");
+					$li.attr("reserved1", reserved1);
+
+					if (reserved1 == "N") {
+						$li.children("a.jstree-anchor").css({ "color": "red" });
+						$("#chkPolicy").prop("checked", false);
+					} else {
+						$li.children("a.jstree-anchor").removeAttr("style");
+						$("#chkPolicy").prop("checked", true);
+					}
+                }
+			});
+		}
+
+		function changeMemberPolicy() {
+			if (!window.confirm("문서 수신 담당자 정보를 변경하시겠습니까?")) {
+				return false;
+			}
+
+			var newMember = "";
+
+			var objID = $("#chkPolicy").attr("data-group_id");
+			var targetIDs = "";
+
+			if ($("#selMember").val() != "") {
+				for (var i = 0; i < $("#selMember").val().length; i++) {
+					targetIDs += $("#selMember").val()[i] + ",";
+				}
+			}
+
+			$.ajax({
+                url: '@Url.Action("ChangeMemberPolicy", "EA")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{objID:' + objID + ', targetIDs: "' + targetIDs + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("문서 수신 담당자 정보를 변경하였습니다!");
+
+					if (rcvManagerList != "") {
+						var newRcvManagerList = [];
+
+						// 현재 선택된 부서 정보를 제외한 나머지를 추가한다.
+						for (var i = 0; i < rcvManagerList.length; i++) {
+							if (rcvManagerList[i].ObjectID != objID) {
+								newRcvManagerList.push(rcvManagerList[i]);
+							}
+						}
+
+						// 현재 선택된 멤버 정보를 추가한다.
+						for (var i = 0; i < $("#selMember").val().length; i++) {
+							var newMember = {};
+							newMember.ObjectID = objID;
+							newMember.TargetID = $("#selMember").val()[i];
+							newMember.DisplayName = $("#selMember option[value='" + $("#selMember").val()[i] + "']").text().split(' ')[1];
+							newMember.ChargeDeptID = $("#selMember option[value='" + $("#selMember").val()[i] + "']").text().split(' ')[0];
+					
+							newRcvManagerList.push(newMember);
+						}
+
+						// 재할당
+						rcvManagerList = newRcvManagerList;
+					}
+                }
+			});
+		}
+	</script>
+}
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	문서 수신 정책
+</h4>
+
+<div class="card mb-4">
+	<div class="card-body">
+		<form class="form-inline">
+			<label class="form-label">★ 조직도 상에서 빨간 색으로 표기된 부서는 문서 수신이 불가능한 상태인 부서입니다.</label>
+		</form>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-5">
+		<div id="divDeptTree" class="bg-transparent border jstree jstree-1 jstree-default" style="min-height:200px;padding:20px;" role="tree" aria-multiselectable="false" tabindex="0" aria-activedescendant="j1_5" aria-busy="false"></div>
+	</div>
+	<div class="col-md-7">
+		<div class="card mb-4">
+			<h6 class="card-header">
+				문서 수신 부서 설정
+			</h6>
+			<div class="card-body">
+				<form>
+					<div class="form-group">
+						<label class="custom-control custom-checkbox">
+							<input type="checkbox" id="chkPolicy" class="custom-control-input" data-group_id="">
+							<span class="custom-control-label">문서 수신 가능</span>
+						</label>
+					</div>
+					<button type="button" class="btn btn-default" onclick="changeGroupPolicy()">변경</button>
+				</form>
+			</div>
+		</div>
+
+		<div class="card mb-4">
+			<h6 class="card-header">
+				문서 수신 담당자 설정
+			</h6>
+			<div class="card-body">
+				<form>
+					<div class="form-group">
+						<select id="selMember" class="form-control" multiple></select>
+					</div>
+					<button type="button" class="btn btn-default" onclick="changeMemberPolicy()">변경</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

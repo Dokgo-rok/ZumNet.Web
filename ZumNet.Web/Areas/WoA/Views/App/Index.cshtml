@@ -179,6 +179,10 @@
                     $('td', row).eq(9).html('').append(piStateHtml);
 
 					$('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<select class='custom-select' onchange='viewWorkItemAction(this, \"" + data["MessageID"] + "\", \"" + data["OID"] + "\")' data-menu=\"select\"><option selected value=''>선택</option><option value='B'>기본 정보</option><option value='L'>결재선 정보</option><option value='I'>WorkItem 정보</option><option value='O'>문서열기</option><option value='D'>삭제</option></select>");
+
+                    if (deleteDate != null && deleteDate != "") {
+						$(row).find("td").css("text-decoration", "line-through");
+					}
 				}
             });
 		}

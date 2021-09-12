@@ -1,7 +1,144 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@model DataTable
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "서비스 처리 현황";
 }
 
-<h2>Index</h2>
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+}
 
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+
+    <script type="text/javascript">
+		var tbl_list;
+		
+		$(document).ready(function () {
+			searchList();
+		});
+
+		function searchList() {
+			$.ajax({
+                url: '@Url.Action("SearchServiceModeProcessList", "Proc")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"s1"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+                    if (tbl_list) {
+						tbl_list.destroy();
+					}
+
+					tbl_list = $('#tbl_list').DataTable({
+						data: $(result.data),
+						columns: [
+							{ data: "SvcID" },
+							{ data: "WebSrv" },
+							{ data: "DocName" },
+							{ data: "PIName" },
+							{ data: "DisplaySignStatus" },
+							{ data: "ReqDate" },
+							{ data: "Requester" },
+							{ data: "PublishDate" },
+							{ data: "Creator" },
+							{ data: "DocStatus" },
+							{ data: null }
+						],
+						lengthChange: false,
+						searching: false,
+						info: false,
+						displayLength: 50,
+						order: [],
+						ordering: false,
+						language: dataTable_lang_kor,
+						createdRow: function (row, data, index) {
+							var reqDate = "";
+							var publishDate = "";
+
+			                if ((data["ReqDate"] != null && data["ReqDate"] != "") && data["ReqDate"].length >= 19) {
+			                    reqDate = data["ReqDate"].substring(2, 10) + " " + data["ReqDate"].substring(11, 16);
+							}
+
+							if ((data["PublishDate"] != null && data["PublishDate"] != "") && data["PublishDate"].length >= 19) {
+			                    publishDate = data["PublishDate"].substring(2, 10) + " " + data["PublishDate"].substring(11, 16);
+							}
+
+							$('td', row).eq(5).html('').append(reqDate);
+							$('td', row).eq(7).html('').append(publishDate);
+
+							$('td', row).eq(8).html('').append(data["Creator"] + "[" + data["CreatorDept"] + "]");
+							$('td', row).eq(6).html('').append(data["Requester"] + "[" + data["RequesterDept"] + "]");
+
+			 				$('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<button type=\"button\" class=\"btn btn-default\" onclick=\"changeServiceState(this, " + data["SvcID"] + ")\">상태 변경</button>");
+						}
+					});
+                }
+			});
+		}
+
+		function changeServiceState(obj, svcID) {
+			if (!window.confirm("상태 변경을 하시겠습니까?")) {
+				return;
+			}
+
+			$.ajax({
+				url: '@Url.Action("ChangeServiceState", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{entityKind:"s", targetID:"' + svcID + '", stateValue:0}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					searchList();
+				}
+			});	
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    서비스 모드 처리 현황
+</h4>
+
+<div class="card mb-4">
+	<div class="card-body">
+		<form class="form-inline">
+			<label class="form-label">검색 : </label>
+			<button type="button" id="btnSearch" class="btn btn-default" onclick="searchList()">검색</button>
+		</form>
+	</div>
+</div>
+
+<div class="card">
+    <div class="card-datatable table-responsive">
+        <table id="tbl_list" class="table table-striped table-bordered">
+            <thead>
+				<tr>
+					<th>ID</th>
+					<th>웹서버</th>
+					<th>양식명</th>
+					<th>프로세스명</th>
+					<th>종류</th>
+					<th>요청시간</th>
+					<th>요청자</th>
+					<th>작성일자</th>
+					<th>작성자</th>
+					<th>진행단계</th>
+					<th>비고</th>
+				</tr>
+            </thead>
+        </table>
+    </div>
+</div>

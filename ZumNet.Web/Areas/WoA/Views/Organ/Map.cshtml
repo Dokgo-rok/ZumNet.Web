@@ -8,7 +8,6 @@
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/datatables/datatables")
     @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
-    @Styles.Render("~/bundle/vendor/css/jstree/themes/default-dark/style")
 }
 
 @section Scripts {
@@ -26,7 +25,7 @@
 			}).bind('select_node.jstree', function (event, data) {
 				var grID = data.instance.get_node(data.selected).id;
 
-				if (grID != "") {
+				if (grID != "0") {
 					$.ajax({
 						url: '@Url.Action("SearchGroupMemberInfo", "Organ")',
 						type: 'POST',

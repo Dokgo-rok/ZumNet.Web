@@ -408,6 +408,12 @@
 		// 프로세스명 초기화
 		function clearProcessName() {
 			$("#txtEAProcessName").val("");
+
+			// 모든 행의 프로세스 필드 조합 버튼의 버튼 추가를 활성화시킴
+			$("#tblValidation tbody tr").each(function () {
+				$(this).find("td:eq(1)").find("button:eq(0)").prop("disabled", false);
+				$(this).find("td:eq(1)").find("button:eq(1)").prop("disabled", true);
+			});
 		}
 
 		// 조합 필드 추가
@@ -1070,7 +1076,7 @@
 				</div>
 				<div class="form-group">
 					<label class="form-label">프로세스명</label>
-					<table id="tblValidation1" class="table table-bordered mb-0">
+					<table class="table table-bordered mb-0">
 						<tbody>
 							<tr>
 								<td style="width:75%">

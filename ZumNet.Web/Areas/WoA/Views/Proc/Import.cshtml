@@ -1,7 +1,71 @@
-﻿
-@{
-    ViewBag.Title = "Index";
+﻿@{
+	ViewBag.Title = "프로세스 가져오기";
 }
 
-<h2>Index</h2>
+@section Styles {
+}
 
+@section Scripts {
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+		});
+
+		function fileUpload() {
+			if ($("input:file").get(0).files[0] != undefined) {
+				// 파일 업로드
+				var formData = new FormData();
+				formData.append("files", $("input:file").get(0).files[0]);
+
+				$.ajax({
+					url: "/Woa/Proc/UploadFile",
+					data: formData,
+					processData: false,
+					contentType: false,
+					type: "POST",
+					//headers: {
+					//	'RequestVerificationToken': $('input:hidden[name="__RequestVerificationToken"]').val()
+					//},
+					//beforeSend: function (xhr) {
+					//	xhr.setRequestHeader("X-XSRF-Token", $('input:hidden[name="__RequestVerificationToken"]').val());
+					//},
+					success: function (result) {
+						if (result.split(":")[0] != "OK") {
+							alert(result.split(":")[1]);
+
+							$("input:file").val("");
+							return;
+						}
+
+						alert("정상적으로 처리되었습니다.");
+					},
+					error: function (result) {
+						alert("Error! : " + result.message);
+						return false;
+					}
+				});
+			} else {
+				alert("업로드할 파일을 선택하세요.");
+			}
+		}
+	</script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	프로세스(XML) 가져오기
+</h4>
+
+@Html.AntiForgeryToken()
+
+<div class="card mb-4">
+	<div class="card-body">
+		@using (Html.BeginForm("Import", "Proc", FormMethod.Post, new { enctype = "multipart/form-data" }))
+		{
+			<div class="form-group">
+				<label class="form-label w-100">XML 파일 업로드</label>
+				<input type="file">
+			</div>
+			<button type="button" class="btn btn-default" onclick="fileUpload()">업로드</button>
+		}
+	</div>
+</div>

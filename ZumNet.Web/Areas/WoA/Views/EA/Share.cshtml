@@ -1,7 +1,267 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@model DataTable
 @{
-    ViewBag.Title = "Index";
+	ViewBag.Title = "문서함 공유 설정";
 }
 
-<h2>Index</h2>
+@section Styles {
+	@Styles.Render("~/bundle/vendor/css/datatables/datatables")
+	@Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+	@Styles.Render("~/bundle/vendor/css/dragula/dragula")
 
+	<style>
+		.dragula-item {
+			margin-bottom: 6px;
+		}
+	</style>
+}
+
+@section Scripts {
+	@Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+	@Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+	@Scripts.Render("~/bundle/vendor/js/dragula/dragula")
+
+	<script type="text/javascript">
+		var deptTreeJson = @Html.Raw(ViewData["deptlist"]);
+		var memberList = @Html.Raw(ViewData["memberlist"]);
+		var folderViewjson = @Html.Raw(ViewData["folderviewjson"]);
+
+		$(document).ready(function () {
+			dragula([$("#divShareList")[0]], {
+				revertOnSpill: true
+			}).on('drop', el => {
+				$("#divShareList").children("div").find("label[data-seq]").each(function (index) {
+					var seq = index + 1;
+					$(this).text($(this).text().replace($(this).attr("data-seq") + ".", seq + "."));
+					$(this).attr("data-seq", seq);
+				});
+			})
+
+			dragula([$("#divShareList")[0]], {
+				moves: function (el, container, handle) {
+					return handle.classList.contains('handle');
+				}
+			});
+
+			$("#divShareList").append("<label class=\"form-label\">선택된 부서가 없습니다.</label>");
+			$("#btnAddShare,#btnInitShare,#btnSaveShare").prop("disabled", true);
+
+			$("#divDeptTree").jstree({
+				'core': {
+					'data': deptTreeJson
+				}
+			}).bind('select_node.jstree', function (event, data) {
+				var grID = data.instance.get_node(data.selected).id;
+				var hasMember = false;
+
+				$("#btnSaveShare").attr("data-group_id", grID);
+				$("#selGroup").prop("selectedIndex", 0);
+
+				if (memberList != "") {
+					for (var j = 0; j < memberList.length; j++) {
+						if (memberList[j].GR_ID == grID) {
+							hasMember = true;
+							break;
+						}
+					}
+				}
+
+				$("#divShareList").empty();
+
+				// 선택된 부서에 속한 사람이 없는 경우
+				if (hasMember == "") {
+					$("#btnAddShare,#btnInitShare,#btnSaveShare").prop("disabled", true);
+
+					$("#divShareList").append("<label class=\"form-label\">소속된 구성원이 없습니다.</label>");
+				} else {
+					$("#btnAddShare,#btnInitShare,#btnSaveShare").prop("disabled", false);
+
+					if (folderViewjson != "") {
+						$("#divShareList").empty();
+
+						var divHtml = "";
+
+						for (var j = 0; j < folderViewjson.length; j++) {
+							if (folderViewjson[j].GR_ID == grID) {
+								divHtml += "<div class=\"dragula-item card card-condenced\">";
+								divHtml += "	<div class=\"card-body\">";
+								divHtml += "		<form class=\"form-inline\">";
+								divHtml += "			<label class=\"form-label\" data-seq=\"" + folderViewjson[j].Seq + "\" data-targetid=\"" + folderViewjson[j].TargetGRID + "\" data-targetname=\"" + folderViewjson[j].TargetGR + "\">" + folderViewjson[j].Seq + ". " + folderViewjson[j].TargetGR + " 문서함" + (folderViewjson[j].Deleted == "N" ? "" : " (삭제된 부서)") + "</label>";
+								divHtml += "			<button type=\"button\" class=\"btn btn-default\" style=\"margin-left:10px;\" onclick=\"deleteShareDoc(this)\">삭제</button>";
+								divHtml += "		</form>";
+								divHtml += "	</div>";
+								divHtml += "</div>";
+							}
+						}
+
+						if (divHtml != "") {
+							$("#divShareList").append(divHtml);
+						} else {
+							$("#divShareList").append("<label class=\"form-label\">공유된 문서함이 없습니다.</label>");
+						}
+					}
+				}
+			});
+		});
+
+		function insertShareDoc() {
+			// 선택 부서가 없을 때
+			if ($("#selGroup").val() == "0") {
+				return;
+			}
+
+			var isExists = false;
+
+			// 이미 추가되어 있는 부서일 때
+			$("#divShareList").children("div").each(function (index) {
+				if ($(this).find("label").attr("data-targetid") == $("#selGroup").val()) {
+					isExists = true;
+				}
+			});
+
+			if (isExists) {
+				alert("이미 추가되어 있는 부서입니다.");
+				$("#selGroup").prop("selectedIndex", 0);
+				return;
+			}
+
+			var targetID = $("#selGroup").val();
+			var targetName = $("#selGroup option[value='" + targetID + "']").text();
+			var seq = $("#divShareList").children("div").length;
+
+			var divHtml = "<div class=\"dragula-item card card-condenced\">";
+			divHtml += "	<div class=\"card-body\">";
+			divHtml += "		<form class=\"form-inline\">";
+			divHtml += "			<label class=\"form-label\" data-seq=\"" + (parseInt(seq) + 1) + "\" data-targetid=\"" + targetID + "\" data-targetname=\"" + targetName + "\">" + (parseInt(seq) + 1) + ". " + targetName + " 문서함</label>";
+			divHtml += "			<button type=\"button\" class=\"btn btn-default\" style=\"margin-left:10px;\" onclick=\"deleteShareDoc(this, " + targetID + ")\">삭제</button>";
+			divHtml += "		</form>";
+			divHtml += "	</div>";
+			divHtml += "</div>";
+
+			if (seq == 0) {
+				$("#divShareList").empty();
+				$("#divShareList").append(divHtml);
+			} else {
+				$("#divShareList").append(divHtml);
+			}
+
+			$("#selGroup").prop("selectedIndex", 0);
+		}
+
+		function deleteShareDoc(obj) {
+			// 현재 행 제거
+			$(obj).closest("div.dragula-item").remove();
+
+			var divLength = $("#divShareList").children("div").length;
+
+			if (divLength == 0) {
+				$("#divShareList").append("<label class=\"form-label\">공유된 문서함이 없습니다.</label>");
+			} else {
+				$("#divShareList").children("div").find("label[data-seq]").each(function (index) {
+					var seq = index + 1;
+					$(this).text($(this).text().replace($(this).attr("data-seq") + ".", seq + "."));
+					$(this).attr("data-seq", seq);
+				});
+			}
+		}
+
+		function saveShareDoc() {
+			if (!window.confirm("설정된 상태로 저장하시겠습니까?")) {
+				return false;
+			}
+
+			var groupID = $("#btnSaveShare").attr("data-group_id");
+			var targetIDs = "";
+
+			$("#divShareList").children("div").find("label[data-seq]").each(function (index) {
+				targetIDs += $(this).attr("data-targetid") + ",";
+			});
+
+			$.ajax({
+                url: '@Url.Action("saveEAFolderView", "EA")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{groupID:' + groupID + ', targetIDs: "' + targetIDs + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("문서 수신 부서 정보를 변경하였습니다!");
+
+					// JSON 변경
+					if (folderViewjson != "") {
+						var newFolderViewjson = [];
+
+						// 현재 선택된 부서 정보를 제외한 나머지를 추가한다.
+						for (var i = 0; i < folderViewjson.length; i++) {
+							if (folderViewjson[i].GR_ID != groupID) {
+								newFolderViewjson.push(folderViewjson[i]);
+							}
+						}
+
+						// 현재 선택된 멤버 정보를 추가한다.
+						$("#divShareList").children("div").find("label[data-seq]").each(function (index) {
+							var newFolderView = {};
+							newFolderView.Deleted = "N";
+							newFolderView.FolderType = "";
+							newFolderView.GR_ID = groupID;
+							newFolderView.Seq = $(this).attr("data-seq");
+							newFolderView.SubSeq = 0;
+							newFolderView.TargetGR = $(this).attr("data-targetname");
+							newFolderView.TargetGRID = $(this).attr("data-targetid");
+							
+
+							newFolderViewjson.push(newFolderView);
+						});
+
+						// 재할당
+						folderViewjson = newFolderViewjson;
+					}
+                }
+			});
+		}
+	</script>
+}
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+	문서함 공유 설정
+</h4>
+
+<div class="row">
+	<div class="col-md-5">
+		<div id="divDeptTree" class="bg-transparent border jstree jstree-1 jstree-default" style="min-height:200px;padding:20px;" role="tree" aria-multiselectable="false" tabindex="0" aria-activedescendant="j1_5" aria-busy="false"></div>
+	</div>
+	<div class="col-md-7">
+		<div class="card mb-4">
+			<h6 class="card-header">
+				공유된 부서 문서함
+			</h6>
+			<div class="card-body">
+				<div class="form-inline" style="padding-bottom: 10px;">
+					<select class="custom-select" data-style="btn-default" id="selGroup">
+						<option value="0">부서를 선택하세요.</option>
+						@{
+							int rowCount = Model?.Rows?.Count ?? 0;
+
+							if (rowCount > 0)
+							{
+								foreach (DataRow dr in Model.Rows)
+								{
+									<option value="@dr["GR_ID"].ToString()">@dr["DisplayName"].ToString()</option>
+								}
+							}
+						}
+					</select>
+					<button type="button" id="btnAddShare" class="btn btn-default ml-sm-3" onclick="insertShareDoc()">추가</button>
+				</div>
+				<hr class="border-light m-0">
+				<div id="divShareList" class="col" style="padding-left: 0;padding-top: 20px;padding-bottom: 20px;"></div>
+				<hr class="border-light m-0">
+				<button type="button" id="btnSaveShare" class="btn btn-primary" style="margin-top: 10px;" onclick="saveShareDoc()" data-group_id="">변경 사항 저장</button>
+			</div>
+		</div>
+	</div>
+</div>

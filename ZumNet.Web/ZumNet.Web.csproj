@@ -1095,6 +1095,7 @@
     <Content Include="Areas\ExS\Views\WorkTime\PersonStatus.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_LeftMenu.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_WorkTimeBar.cshtml" />
+    <Content Include="Areas\WoA\Views\Proc\Export.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

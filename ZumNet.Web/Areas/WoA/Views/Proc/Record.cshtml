@@ -1,7 +1,154 @@
-﻿
-@{
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "프로세스 처리 기록";
 }
 
-<h2>Index</h2>
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+}
 
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/moment/moment")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+
+    <script type="text/javascript">
+        var prevSortColumn = "";
+		var prevSortType = "";
+		var tbl_list;
+
+		$(document).ready(function () {
+            $("#divDatePicker").datepicker({
+				language: "ko",
+                format: "yyyy-mm-dd"
+            });
+
+			searchList();
+
+			$("#btnSearch").on("click", function () {
+				searchList();
+			});
+		});
+
+    	function searchList() {
+			$.ajax({
+                url: '@Url.Action("SearchServiceModeProcessList", "Proc")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"ad", searchText:"' + $("#setApprovalType").val() + '", searchStart:"' + $("#divDatePicker input[name='start']").val() + '", searchEnd:"' + $("#divDatePicker input[name='end']").val() + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+                    if (tbl_list) {
+						tbl_list.destroy();
+					}
+
+					tbl_list = $('#tbl_list').DataTable({
+						data: $(result.data),
+						columns: [
+							{ data: "AuditID" },
+							{ data: "WebSrv" },
+							{ data: "DocName" },
+							{ data: "PIName" },
+							{ data: "DisplaySignStatus" },
+							{ data: "StartDate" },
+							{ data: "Duration" },
+							{ data: "PartName" },
+							{ data: "RemoteHost" },
+							{ data: "Creator" },
+							{ data: "ExceptionInfo" }
+						],
+						lengthChange: false,
+						searching: false,
+						info: false,
+						displayLength: 50,
+						order: [],
+						ordering: false,
+						language: dataTable_lang_kor,
+						createdRow: function (row, data, index) {
+							var startDate = "";
+
+			                if ((data["StartDate"] != null && data["StartDate"] != "") && data["StartDate"].length >= 19) {
+			                    startDate = data["StartDate"].substring(2, 10) + " " + data["StartDate"].substring(11, 16);
+							}
+
+							$('td', row).eq(5).html('').append(startDate);
+							$('td', row).eq(9).html('').append(data["Creator"]);
+						}
+					});
+                }
+			});
+		}
+    </script>
+}
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    프로세스 처리 기록
+</h4>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="form-inline">
+            <label class="form-label">결재 종류 : </label>
+            <select class="custom-select mx-sm-3" id="setApprovalType">
+                <option selected value="ALL">전체</option>
+                <option value="0">없음</option>
+                <option value="2">확인</option>
+                <option value="3">보류</option>
+                <option value="4">취소</option>
+                <option value="5">전달</option>
+                <option value="6">비승인</option>
+                <option value="7">결재</option>
+                <option value="8">반려</option>
+                <option value="9">회수</option>
+                <option value="10">지정반려</option>
+                <option value="100">기안</option>
+            </select>
+
+            @{
+                DateTime nowDate = DateTime.Now;
+
+                string startDt = new DateTime(nowDate.Year, 1, 1).ToShortDateString();
+                string endDt = new DateTime(nowDate.Year, 12, 31).ToShortDateString();
+            }
+
+            <label class="form-label">날짜 : </label>
+            <div class="input-daterange input-group mx-sm-3" id="divDatePicker">
+                <input type="text" class="form-control" name="start" value="@startDt">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"> ~ </span>
+                </div>
+                <input type="text" class="form-control" name="end" value="@endDt">
+            </div>
+            <button type="button" id="btnSearch" class="btn btn-default">검색</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <table id="tbl_list" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width:4%">ID</th>
+                            <th style="width:8%">웹서버</th>
+                            <th style="width:8%">양식명</th>
+                            <th style="width:15%">프로세스명</th>
+                            <th style="width:7%">종류</th>
+                            <th style="width:10%">처리시각</th>
+                            <th style="width:5%">소요</th>
+                            <th style="width:12%">처리자</th>
+                            <th style="width:8%">접속IP</th>
+                            <th style="width:12%">작성자</th>
+                            <th style="width:11%">처리내용</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

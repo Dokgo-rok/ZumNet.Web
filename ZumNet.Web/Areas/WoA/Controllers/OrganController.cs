@@ -197,6 +197,8 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
         #endregion
 
+        #region [ /Woa/Organ/Member ]
+
         // GET: WoA/Organ/Member
         [Authorize]
         public ActionResult Member(int id = 0)
@@ -236,6 +238,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return View();
         }
 
+        #endregion
+
+        #region [ /Woa/Organ/Grade ]
+
         // GET: WoA/Organ/Grade
         [Authorize]
         public ActionResult Grade()
@@ -243,13 +249,125 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return View();
         }
 
+        [HttpPost]
+        [Authorize]
+        public string SearchGradeInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.GetGradeCode(StringHelper.SafeString(jPost["actionKind"].ToString())
+                            , StringHelper.SafeInt(jPost["domainID"].ToString())
+                            , StringHelper.SafeString(jPost["codeType"].ToString()));
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public string HandleGradeCode()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string actionKind = StringHelper.SafeString(jPost["actionKind"].ToString());
+                int domainID = StringHelper.SafeInt(jPost["domainID"].ToString());
+                string type = StringHelper.SafeString(jPost["type"].ToString());
+                string code = StringHelper.SafeString(jPost["code"].ToString());
+                string newType = StringHelper.SafeString(jPost["newType"].ToString());
+                string newCode = StringHelper.SafeString(jPost["newCode"].ToString());
+                string codeName = StringHelper.SafeString(jPost["codeName"].ToString());
+                string inUse = StringHelper.SafeString(jPost["inUse"].ToString());
+                string removeInfo = "";
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.HandleGradeCode(actionKind, domainID, type, code, newType, newCode, codeName, inUse, removeInfo);
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultMessage = result.ResultDataString;
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        #endregion
+
+        #region [ /Woa/Organ/Map ]
+
         // GET: WoA/Organ/Map
         [Authorize]
         public ActionResult Map()
         {
             List<WebTreeList> listTree = new List<WebTreeList>();
 
-            WebTreeList treeInfo = null;
+            WebTreeList treeInfo = new WebTreeList();
+            treeInfo.id = "0";
+            treeInfo.parent = "#";
+            treeInfo.state = new Dictionary<string, bool>();
+            treeInfo.state.Add("opened", true);
+            treeInfo.text = "조직도";
+
+            listTree.Add(treeInfo);
 
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
             int memberOf = 0;
@@ -271,16 +389,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     {
                         treeInfo = new WebTreeList();
                         treeInfo.id = StringHelper.SafeString(dr["GR_ID"].ToString());
-
-                        if (StringHelper.SafeString(dr["MemberOf"].ToString()) == "0")
-                        {
-                            treeInfo.parent = "#";
-                        }
-                        else
-                        {
-                            treeInfo.parent = StringHelper.SafeString(dr["MemberOf"].ToString());
-                        }
-                        
+                        treeInfo.parent = StringHelper.SafeString(dr["MemberOf"].ToString());
                         treeInfo.state = new Dictionary<string, bool>();
                         treeInfo.state.Add("opened", false);
                         treeInfo.text = StringHelper.SafeString(dr["DisplayName"].ToString());
@@ -294,6 +403,59 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             return View();
         }
+
+        [HttpPost]
+        [Authorize]
+        public string SearchGroupMemberInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+                int groupID = StringHelper.SafeInt(jPost["groupID"].ToString());
+                string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+                ServiceResult result = new ServiceResult();
+
+                using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+                {
+                    result = portalBiz.GetGroupMemberList(domainID.ToString(), groupID.ToString(), viewDate, "", "", "Y");
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        #endregion
+
+        #region [ /Woa/Organ/Group ]
 
         // GET: WoA/Organ/Group
         [Authorize]
@@ -344,6 +506,8 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             return View();
         }
+
+        #endregion
 
         #region [ /Woa/Organ/Dept ]
 
@@ -587,163 +751,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 if (result.ResultCode == 0)
                 {
                     ResultMessage = result.ResultDataString;
-
-                    return CreateJsonData();
-                }
-                else
-                {
-                    ResultCode = "FAIL";
-                    ResultMessage = "SP 조회 오류";
-                }
-            }
-            else
-            {
-                ResultCode = "FAIL";
-                ResultMessage = "IsAjaxRequest가 아님";
-            }
-
-            return CreateJsonData();
-        }
-
-        #endregion
-
-
-
-        [HttpPost]
-        [Authorize]
-        public string SearchGradeInfoJson()
-        {
-            if (Request.IsAjaxRequest())
-            {
-                JObject jPost = CommonUtils.PostDataToJson();
-
-                if (jPost == null || jPost.Count == 0)
-                {
-                    ResultCode = "FAIL";
-                    ResultMessage = "필수값 누락";
-
-                    return CreateJsonData();
-                }
-
-                ServiceResult result = new ServiceResult();
-
-                using (CommonBiz commonBiz = new CommonBiz())
-                {
-                    result = commonBiz.GetGradeCode(StringHelper.SafeString(jPost["actionKind"].ToString())
-                            , StringHelper.SafeInt(jPost["domainID"].ToString())
-                            , StringHelper.SafeString(jPost["codeType"].ToString()));
-                }
-
-                if (result.ResultCode == 0)
-                {
-                    ResultItemCount = result.ResultItemCount;
-                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
-
-                    return CreateJsonData();
-                }
-                else
-                {
-                    ResultCode = "FAIL";
-                    ResultMessage = "SP 조회 오류";
-                }
-            }
-            else
-            {
-                ResultCode = "FAIL";
-                ResultMessage = "IsAjaxRequest가 아님";
-            }
-
-            return CreateJsonData();
-        }
-
-        // public ServiceResult HandleGradeCode(string actionKind, int domainID, string type, string code, string newType, string newCode, string codeName, string inUse, string removeInfo)
-        [HttpPost]
-        [Authorize]
-        public string HandleGradeCode()
-        {
-            if (Request.IsAjaxRequest())
-            {
-                JObject jPost = CommonUtils.PostDataToJson();
-
-                if (jPost == null || jPost.Count == 0)
-                {
-                    ResultCode = "FAIL";
-                    ResultMessage = "필수값 누락";
-
-                    return CreateJsonData();
-                }
-
-                string actionKind = StringHelper.SafeString(jPost["actionKind"].ToString());
-                int domainID = StringHelper.SafeInt(jPost["domainID"].ToString());
-                string type = StringHelper.SafeString(jPost["type"].ToString());
-                string code = StringHelper.SafeString(jPost["code"].ToString());
-                string newType = StringHelper.SafeString(jPost["newType"].ToString());
-                string newCode = StringHelper.SafeString(jPost["newCode"].ToString());
-                string codeName = StringHelper.SafeString(jPost["codeName"].ToString());
-                string inUse = StringHelper.SafeString(jPost["inUse"].ToString());
-                string removeInfo = "";
-
-                ServiceResult result = new ServiceResult();
-
-                using (CommonBiz commonBiz = new CommonBiz())
-                {
-                    result = commonBiz.HandleGradeCode(actionKind, domainID, type, code, newType, newCode, codeName, inUse, removeInfo);
-                }
-
-                if (result.ResultCode == 0)
-                {
-                    ResultMessage = result.ResultDataString;
-
-                    return CreateJsonData();
-                }
-                else
-                {
-                    ResultCode = "FAIL";
-                    ResultMessage = "SP 조회 오류";
-                }
-            }
-            else
-            {
-                ResultCode = "FAIL";
-                ResultMessage = "IsAjaxRequest가 아님";
-            }
-
-            return CreateJsonData();
-        }
-
-        #region [ /Woa/Organ/Map ]
-
-        [HttpPost]
-        [Authorize]
-        public string SearchGroupMemberInfo()
-        {
-            if (Request.IsAjaxRequest())
-            {
-                JObject jPost = CommonUtils.PostDataToJson();
-
-                if (jPost == null || jPost.Count == 0)
-                {
-                    ResultCode = "FAIL";
-                    ResultMessage = "필수값 누락";
-
-                    return CreateJsonData();
-                }
-
-                int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
-                int groupID = StringHelper.SafeInt(jPost["groupID"].ToString());
-                string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
-
-                ServiceResult result = new ServiceResult();
-
-                using (OfficePortalBiz portalBiz = new OfficePortalBiz())
-                {
-                    result = portalBiz.GetGroupMemberList(domainID.ToString(), groupID.ToString(), viewDate, "", "", "Y");
-                }
-
-                if (result.ResultCode == 0)
-                {
-                    ResultItemCount = result.ResultItemCount;
-                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
                 }
