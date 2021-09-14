@@ -1,0 +1,153 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    ConfigColumn(ViewBag.R.mode.ToString());
+
+}
+
+@functions {
+
+    string[,] _columnConfig = null;
+
+    private void ConfigColumn(string mode)
+    {
+        //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
+
+        //RowNum', UserID, PlanDate, PlanInTime, PLanOutTime, PlanType
+        //Status, IsMod, RegDate, ModDate, StateDate, Reason, ApvID, ApvDN, ApvGrade, ApvDeptID, ApvMsgID
+
+        string[,] arr = { { "CreateDate", "신청일자", "15%", "", "", "" }, { "WorkDate", "근무일자", "15%", "center", "", "" }
+                        , { "ReqSubject", "제목", "25%", "", "", "" }, { "__FLOW__", "진행상태", "15%", "", "", "" }
+                        , { "State", "상태", "15%", "center", "", "" }, { "CompletedDate", "완료일자", "15%", "center", "", "" }
+                    };
+        this._columnConfig = arr;
+    }
+
+    private string RenderColumnHeader()
+    {
+        if (_columnConfig != null)
+        {
+            string strValue = "";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead><tr>");
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 5].ToString() == "Y")
+                {
+                    strValue = String.Format("<a href=\"javascript:\" onclick=\"sort(event);\">{0}</a>", _columnConfig[i, 1].ToString());
+                }
+                else
+                {
+                    strValue = _columnConfig[i, 1].ToString();
+                }
+                sb.AppendFormat("<th id=\"f_{0}\">{1}</th>", _columnConfig[i, 0].ToString(), strValue);
+            }
+            sb.Append("</tr></thead>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-condensed\">");
+        sb.Append(RenderColumnHeader());
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strStatus = "";
+            string strClass = "";
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                sb.AppendFormat("<tr{0}>", strClass);
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+
+                    if (strID == "CreateDate" || strID == "CompletedDate")
+                    {
+                        strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row[strID].ToString(), "MM-dd HH:mm", "");
+                    }
+                    else if (strID == "WorkDate")
+                    {
+                        strValue = Convert.ToDateTime(row[strID]).ToString("MM-dd");
+                    }
+                    else if (strID == "ReqSubject")
+                    {
+                        strValue = row[strID].ToString();
+                        strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_WTM.fn.reqEvent(null, ['{0}', '{1}', '{2}']);\" title=\"{3}\">{4}</a>"
+                                , row["UserID"].ToString(), row["WorkDate"].ToString(), row["ReqID"].ToString(), Server.HtmlEncode(strValue), strValue);
+                    }
+                    else if (strID == "State")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strValue == "7") strValue = "처리완료";
+                        else if (strValue == "1") strValue = "처리대기";
+                        else strValue = "처리전";
+                    }
+                    else if (strID == "__FLOW__")
+                    {
+                        strValue = ReqState(row["FApvState"].ToString(), row["SApvState"].ToString());
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString();
+                    }
+
+                    sb.AppendFormat("<td>{0}</td>", strValue);
+                }
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"{0}\">{1}</th>", _columnConfig.GetLength(0), "해당 목록이 없습니다!");
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+
+        return sb.ToString();
+    }
+
+    #region [유틸]
+    private string ReqState(string s1, string s2)
+    {
+        if (s1 == "0" || s1 == "1") return "팀장 승인대기";
+        else if (s1 == "8") return "팀장 미승인";
+        else
+        {
+            //팀장 승인, 부분승인
+            if (s2 == "0" || s2 == "1") return "인사 승인대기";
+            else if (s2 == "8") return "인사 미승인";
+            else if (s2 == "7") return "인사 승인";
+            else if (s2 == "6") return "인사 부분승인";
+        }
+        return "승인대기";
+    }
+    #endregion
+}
+
+@Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))

@@ -1,0 +1,301 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    ConfigColumn(ViewBag.R.mode.ToString());
+
+}
+
+@functions {
+
+    string[,] _columnConfig = null;
+
+    private void ConfigColumn(string mode)
+    {
+        //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
+
+        //WorkDate, HolidayType, SecomInTime, SecomOutTime, SecomDinnerTime, InTime, OutTime, Intype, OutType
+        //BizTrip, Leave, OutWork, OutLcm, HolidayWork, TotalWork, RealWork, NightWork, State, LastModified
+
+        string[,] arr = { { "", "<input type='checkbox' id='chkHeader' onClick='checkAll(this)' hidefocus />", "4%", "center", "", "" }
+                        , { "PlanDate", "일자", "12%", "center", "", "" }, { "WDay", "요일", "5%", "center", "", "" }, { "__HOLIYDAY__", "공휴일", "7%", "center", "", "" }
+                        , { "PlanInTime", "출근계획", "12%", "center", "", "" }, { "PlanOutTime", "퇴근계획", "12%", "center", "", "" }//, { "PlanType", "구분", "10%", "center", "", "" }
+                        , { "Reason", "사유", "20%", "center", "", "" }, { "Status", "상태", "12%", "center", "", "" }, { "__ETC__", "비고", "16%", "center", "", "" }
+                    };
+        this._columnConfig = arr;
+    }
+
+    private string RenderColumnHeader()
+    {
+        if (_columnConfig != null)
+        {
+            string strValue = "";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            //sb.Append("<col style=\"width:12px\" />");
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead><tr>");
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 5].ToString() == "Y")
+                {
+                    strValue = String.Format("<a href=\"javascript:\" onclick=\"sort(event);\">{0}</a>", _columnConfig[i, 1].ToString());
+                }
+                else
+                {
+                    strValue = _columnConfig[i, 1].ToString();
+                }
+                sb.AppendFormat("<th id=\"f_{0}\">{1}</th>", _columnConfig[i, 0].ToString(), strValue);
+            }
+            sb.Append("</tr></thead>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string ViewList(string mode, DataSet data, DataRowCollection hDay)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-condensed\">");
+        sb.Append(RenderColumnHeader());
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strStatus = "";
+            string strClass = "";
+            string strHoliday = "";
+            int iHour = 0;
+            int iMin = 0;
+            bool bHoliday = false;
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                DateTime dPlan = Convert.ToDateTime(row["PlanDate"]);
+                strHoliday = StrHoliday(hDay, dPlan);
+
+                if (strHoliday != "" || dPlan.DayOfWeek == DayOfWeek.Sunday) { strClass = " class=\"table-danger\""; bHoliday = true; }
+                else if (dPlan.DayOfWeek == DayOfWeek.Saturday) { strClass = " class=\"table-info\""; bHoliday = true; }
+                else { strClass = ""; bHoliday = false; }
+
+                strStatus = row["Status"].ToString();
+
+                sb.AppendFormat("<tr{0}>", strClass);
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+
+                    if (strID == "RowNum")
+                    {
+                        sb.AppendFormat("<th>{0}</th>", row[strID].ToString());
+                    }
+                    else
+                    {
+                        if (strID == "")
+                        {
+                            sb.AppendFormat("<th><input name=\"ckbRow\" type=\"checkbox\" data-zf-field=\"RegID\" value=\"{0}\"{1} /></th>", row["RegID"].ToString(), (strStatus == "7" || strStatus == "1" ? " disabled" : ""));
+                        }
+                        else if (strID == "PlanDate")
+                        {
+                            strValue = zfInput(row[strID].ToString(), strID, "", "", "center", true);
+                        }
+                        else if (strID == "PlanInTime")
+                        {
+                            strValue = row[strID].ToString();
+
+                            if (strStatus == "7" || strStatus == "1")
+                            {
+                                sb.AppendFormat("<td>{0}</td>", strValue);
+                            }
+                            else
+                            {
+                                if (strValue.IndexOf(':') > 0)
+                                {
+                                    string[] temp = strValue.Split(':');
+                                    iHour = Convert.ToInt16(temp[0]);
+                                    iMin = Convert.ToInt16(temp[1]);
+                                }
+                                else { iHour = 9; iMin = 0; }
+
+                                sb.Append("<td>");
+                                sb.AppendFormat("<select class=\"custom-select z-select\" data-zf-field=\"{0}\">", strID);
+                                sb.Append(ZumNet.Web.Bc.CommonUtils.OptionTime(iHour, iMin, 8, 10));
+
+                                if (iHour == 11 && iMin == 0) sb.Append("<option value=\"11:00\" selected>11:00</option>");
+                                else sb.Append("<option value=\"11:00\">11:00</option>");
+
+                                if (iHour == 12 && iMin == 30) sb.Append("<option value=\"12:30\">12:30</option>");
+                                else sb.Append("<option value=\"12:30\">12:30</option>");
+
+                                if (iHour == 14 && iMin == 0) sb.Append("<option value=\"14:00\">14:00</option>");
+                                else sb.Append("<option value=\"14:00\">14:00</option>");
+
+                                sb.Append("</select>");
+                                sb.Append("</td>");
+                            }
+                        }
+                        else if (strID == "PlanOutTime")
+                        {
+                            //strValue = "<select class=\"wt-select\" data-zf-field=\"" + strID + "\">" + ToDo.ToDoUtil.OptionTime(0, 0, 16, 1) + "</select>";
+
+                            strValue = row[strID].ToString();
+                            if (strStatus == "7" || strStatus == "1")
+                            {
+                                sb.AppendFormat("<td>{0}</td>", strValue);
+                            }
+                            else
+                            {
+                                if (strValue.IndexOf(':') > 0)
+                                {
+                                    string[] temp = strValue.Split(':');
+                                    iHour = Convert.ToInt16(temp[0]);
+                                    iMin = Convert.ToInt16(temp[1]);
+                                }
+                                else { iHour = 18; iMin = 0; }
+
+                                sb.Append("<td>");
+                                sb.AppendFormat("<select class=\"custom-select z-select\" data-zf-field=\"{0}\">", strID);
+                                sb.Append(ZumNet.Web.Bc.CommonUtils.OptionTime(iHour, iMin, 16, 1));
+                                sb.Append("</select>");
+                                sb.Append("</td>");
+                            }
+                        }
+                        else if (strID == "__HOLIYDAY__")
+                        {
+                            strValue = strHoliday;
+                        }
+                        else if (strID == "PlanType")
+                        {
+                            strValue = StrPlanType(bHoliday, row[strID].ToString(), strID);
+                        }
+                        else if (strID == "Reason")
+                        {
+                            if (strStatus == "7" || strStatus == "1") strValue = row[strID].ToString();
+                            else strValue = zfInput(row[strID].ToString(), strID, "", "", "", false);
+                        }
+                        else if (strID == "Status")
+                        {
+                            strValue = row[strID].ToString();
+                            if (strValue == "0") strValue = "저장됨";
+                            else if (strValue == "1") strValue = "승인대기";
+                            else if (strValue == "7") strValue = "승인";
+                            else if (strValue == "8") strValue = "재검토";
+                            else strValue = "";
+                        }
+                        else if (strID == "__ETC__")
+                        {
+                            strValue = "";
+                        }
+                        else
+                        {
+                            strValue = row[strID].ToString();
+                        }
+
+                        if (strID != "" && strID != "PlanInTime" && strID != "PlanOutTime")
+                        {
+                            strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
+                            sb.AppendFormat("<td>{0}</td>", strValue);
+                        }
+                    }
+                }
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"{0}\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+
+        return sb.ToString();
+    }
+
+    #region [유틸]
+    private string StrHoliday(DataRowCollection holiday, DateTime d)
+    {
+        if (holiday != null && holiday.Count > 0)
+        {
+            foreach (DataRow dr in holiday)
+            {
+                if (dr["Item2"].ToString() == "Y" && dr["ItemSubHandler"].ToString() == d.ToString("yyyyMMdd"))
+                {
+                    return dr["Item1"].ToString();
+                }
+            }
+        }
+        return "";
+    }
+
+    private string StrPlanType(bool holiday, string pt, string fld)
+    {
+        StringBuilder sb = new StringBuilder();
+
+
+        if (holiday)
+        {
+            sb.Append(zfInput("휴일", fld, "", "", "center", true));
+        }
+        else
+        {
+            sb.AppendFormat("<select class=\"custom-select z-select\" data-zf-field=\"{0}\">", fld);
+            sb.AppendFormat("<option value=\"{0}\">{0}</option>", "일반");
+            sb.AppendFormat("<option value=\"{0}\">{0}</option>", "프로젝트");
+            sb.AppendFormat("<option value=\"{0}\">{0}</option>", "재택");
+            sb.Append("</select>");
+        }
+
+
+        return sb.ToString();
+    }
+
+    public static string zfInput(string v)
+    {
+        return zfInput(v, "");
+    }
+
+    public static string zfInput(string v, string df)
+    {
+        return zfInput(v, df, "", "");
+    }
+
+    public static string zfInput(string v, string df, string id, string nm)
+    {
+        return zfInput(v, df, id, nm, "", false);
+    }
+
+    public static string zfInput(string v, string df, string id, string nm, string align, bool read)
+    {
+        df = (df != "") ? " data-zf-field=\"" + df + "\"" : "";
+        id = (id != "") ? " id=\"" + id + "\"" : "";
+        nm = (nm != "") ? " name=\"" + nm + "\"" : "";
+
+        string sClass = "";
+        if (align == "center") sClass = " text-center";
+        else if (align == "right") sClass = " text-right";
+
+        sClass += (read) ? " z-read" : "";
+
+        return String.Format("<input type=\"text\" value=\"{0}\"{1}{2}{3} class=\"z-input{4}\"{5} />", v, df, id, nm, sClass, (read) ? " readonly" : "");
+    }
+    #endregion
+}
+
+@Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList, ViewBag.Holiday))

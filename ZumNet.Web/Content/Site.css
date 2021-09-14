@@ -319,3 +319,115 @@
 }
 
 /* portal <--------------- */
+
+/* grid listview -----> */
+.z-list {
+}
+.z-list-scroll {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+    overflow: auto;
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.z-list-head {
+    margin-bottom: 2px;
+    padding-left: 4px
+}
+
+.z-list-menu {
+    margin-bottom: 0px;
+    padding-left: 0px
+}
+
+.z-list-head .btn-group {
+    margin-top: 6px;
+    margin-bottom: 10px
+}
+
+.z-list-body .table {
+    border-top: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+}
+
+    .z-list-body .table > thead > tr > th {
+        vertical-align: middle;
+    }
+
+    .z-list-body .table th, .z-list-body .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+        .z-list-body .table td.text-dim {
+            color: #999;
+            font-style: italic
+        }
+.z-list th, .z-list td {
+    padding: .5rem;
+}
+.z-list a.z-lnk-navy {
+    color: #337ab7;
+    text-decoration: none;
+}
+    .z-list a.z-lnk-navy:focus, a.z-lnk-navy:hover {
+        color: #23527c;
+        text-decoration: underline;
+    }
+
+
+.z-select {
+    height: 28px;
+    padding: 2px 0 4px 6px;
+    line-height: 1.5;
+}
+
+.z-input {
+    height: 26px;
+    width: 100%;
+    padding: 3px 6px;
+    line-height: 1.5;
+}
+
+.z-input-in {
+    height: 22px;
+    padding: 1px 4px;
+    line-height: 1.5;
+}
+
+.z-read {
+    border: 0;
+    background-color: Transparent
+}
+
+.z-list .sortable i {
+    font-size: 10px;
+    top: 0
+}
+
+.z-badge {
+    background-color: #d9534f;
+    padding: 3px 5px 2px 5px;
+    margin-top: -2px;
+}
+
+.z-list-head .radio-inline {
+    margin-bottom: 4px
+}
+
+    .z-list-head .radio-inline input[type=radio] {
+        position: relative;
+    }
+/* grid listview <----- */

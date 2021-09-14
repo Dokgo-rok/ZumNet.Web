@@ -14,9 +14,9 @@
 }
 
 @functions {
-    private string GetQueryString(string ttl)
+    private string GetQueryString(string page, string ttl)
     {
-        return Server.UrlEncode("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\"}");
+        return "?qi=" + Server.UrlEncode("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
     }
 }
 
@@ -46,7 +46,7 @@
                     @for (int i = 0; i < 3; i++)
                     {
                         <li class="sidenav-item@(currentPage.ToLower().IndexOf(vBox[i, 0].ToLower()) > 0 ? " active" : "")">
-                            <a href="@(vBox[i, 0])?qi=@GetQueryString(vBox[i, 1])" class="sidenav-link@(vBox[i, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
+                            <a href="@GetQueryString(vBox[i, 0], vBox[i, 1])" class="sidenav-link@(vBox[i, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
                                 <span>@Html.Raw(vBox[i, 1])</span>
                                 @if (vBox[i, 3] == "Y")
                                 {
@@ -65,7 +65,7 @@
                     @for (int i = 3; i < 6; i++)
                     {
                         <li class="sidenav-item@(currentPage.ToLower().IndexOf(vBox[i, 0].ToLower()) > 0 ? " active" : "")">
-                            <a href="@(vBox[i, 0])?qi=@GetQueryString(vBox[i, 1])" class="sidenav-link@(vBox[i, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
+                            <a href="@GetQueryString(vBox[i, 0], vBox[i, 1])" class="sidenav-link@(vBox[i, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
                                 <span>@Html.Raw(vBox[i, 1])</span>
                                 @if (vBox[i, 3] == "Y")
                                 {
@@ -84,7 +84,7 @@
                     @for (int i = 6; i < 9; i++)
                     {
                         <li class="sidenav-item@(currentPage.ToLower().IndexOf(vBox[i, 0].ToLower()) > 0 ? " active" : "")">
-                            <a href="@(vBox[i, 0])?qi=@GetQueryString(vBox[i, 1])" class="sidenav-link@(vBox[i, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
+                            <a href="@GetQueryString(vBox[i, 0], vBox[i, 1])" class="sidenav-link@(vBox[i, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
                                 <span>@Html.Raw(vBox[i, 1])</span>
                                 @if (vBox[i, 3] == "Y")
                                 {
@@ -98,7 +98,7 @@
 
             
             <li class="sidenav-item@(currentPage.ToLower().IndexOf(vBox[9, 0].ToLower()) > 0 ? " active" : "")">
-                <a href="@(vBox[9, 0])?qi=@GetQueryString(vBox[9, 1])" class="sidenav-link@(vBox[9, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[9, 1])">
+                <a href="@GetQueryString(vBox[9, 0], vBox[9, 1])" class="sidenav-link@(vBox[9, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[9, 1])">
                     <i class="fe-calendar sidenav-icon"></i><span>@Html.Raw(vBox[9, 1])</span>
                     @if (vBox[9, 3] == "Y")
                     {

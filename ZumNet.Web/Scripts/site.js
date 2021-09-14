@@ -283,16 +283,13 @@ $(function () {
                             } else if (idx == 2) {
                                 temp = v[2].split(';'); txt = temp[0] + "시간 " + temp[1] + "분";
                                 tH = _zw.ut.floor(parseFloat(parseInt(temp[0]) * 60 + parseInt(temp[1])) / 60, 1);
-
-                            } else if (idx == 3) {
-                                rH = _zw.ut.floor(parseFloat(v[3]), 1);
-
-                            } else if (idx == 4) {
-                                eH = _zw.ut.floor(parseFloat((v[4] == '' ? "0" : v[4])), 1);
                             }
 
                             $(this).html(txt)
                         });
+
+                        rH = _zw.ut.floor(parseFloat(v[3]), 1);
+                        eH = _zw.ut.floor(parseFloat((v[4] == '' ? "0" : v[4])), 1);
                         
                         _zw.fn.progBar(rH, eH);
 

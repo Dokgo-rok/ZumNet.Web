@@ -20,7 +20,200 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         {
             //string rt = Bc.CtrlHandler.PageInit(this, false);
 
-            return Redirect("/ExS/WorkTime/PersonStatus?qi=" + Qi);
+            if (Qi == null || Qi.Length == 0) Qi = Server.UrlEncode("{ct:\"303\",ctalias:\"worktime\",ttl:\"근무현황\",opnode:\"\"}");
+
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            if (ViewBag.R.ct == null || ViewBag.R.ct == "0" || ViewBag.R.ft == "")
+            {
+                ViewBag.R["ct"] = "303";
+                ViewBag.R["ctalias"] = "worktime";
+                ViewBag.R["ft"] = "PersonStatus";
+                ViewBag.R["ttl"] = "근무현황";
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+
+            //권한 및 월 기준시간 가져오기
+            rt = Bc.CtrlHandler.WorkTimeInit(this, iCategoryId);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = "권한이 없습니다!!";
+            if ((ViewBag.R.ft.ToString().ToLower() == "memberplan" || ViewBag.R.ft.ToString().ToLower() == "memberstatus") && ViewBag.R["current"]["chief"].ToString() != "Y")
+            {
+                return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
+            {
+                if (ViewBag.R.ft.ToString().ToLower() == "workplan")
+                {
+                    svcRt = wt.GetWorkTimePlan("P", Convert.ToInt32(Session["URID"]), ViewBag.R.current.date.ToString());
+                }
+                else if (ViewBag.R.ft.ToString().ToLower() == "memberplan")
+                {
+                    svcRt = wt.GetWorkTimePlan("D", Convert.ToInt32(Session["URID"]), ViewBag.R.current.date.ToString());
+                }
+                else if (ViewBag.R.ft.ToString().ToLower() == "personstatus")
+                {
+                    svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(Session["URID"]), ViewBag.R.current.date.ToString(), "", "", "", "");
+                }
+                else if (ViewBag.R.ft.ToString().ToLower() == "memberstatus")
+                {
+                    svcRt = wt.GetWorkTimeDaily("D", Convert.ToInt32(Session["URID"]), ViewBag.R.current.date.ToString(), "", "", "", "");
+                }
+                else if (ViewBag.R.ft.ToString().ToLower() == "personrequest")
+                {
+                    svcRt = wt.GetWorkTimeRequest("P", Convert.ToInt32(Session["URID"]), "go", DateTime.Now.Year.ToString());
+                }
+                else if (ViewBag.R.ft.ToString().ToLower() == "memberrequest")
+                {
+                    svcRt = wt.GetWorkTimeRequest("D", 0, "do", DateTime.Now.Year.ToString());
+                }
+                else if (ViewBag.R.ft.ToString().ToLower() == "requestmgr")
+                {
+                    svcRt = wt.GetWorkTimeRequest("A", 0, "do", DateTime.Now.Year.ToString());
+                }
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                if (ViewBag.R.ft.ToString().ToLower() == "workplan")
+                {
+                    ViewBag.Holiday = svcRt.ResultDataRowCollection;
+                }
+                else if (ViewBag.R.ft.ToString().ToLower() == "memberplan" || ViewBag.R.ft.ToString().ToLower() == "memberstatus")
+                {
+                    ViewBag.Member = svcRt.ResultDataDetail["Member"];
+                    ViewBag.Holiday = svcRt.ResultDataRowCollection;
+                }
+                else if (ViewBag.R.ft.ToString().ToLower() == "memberrequest")
+                {
+                    ViewBag.Member = svcRt.ResultDataDetail["Member"];
+                }
+                ViewBag.BoardList = svcRt.ResultDataSet;
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Index()
+        {
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
+            if (rt == "")
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    sPos = "200";
+                    int iCategoryId = Convert.ToInt32(jPost["ct"]);
+
+                    //권한 및 월 기준시간 가져오기
+                    sPos = "300";
+                    rt = Bc.CtrlHandler.WorkTimeInit(this, iCategoryId);
+                    if (rt != "")
+                    {
+                        return "[" + sPos + "] " + rt;
+                    }
+
+                    if ((jPost["ft"].ToString().ToLower() == "memberplan" || jPost["ft"].ToString().ToLower() == "memberstatus") && jPost["current"]["chief"].ToString() != "Y")
+                    {
+                        return Resources.Global.Auth_NoPermission;
+                    }
+
+                    sPos = "400";
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        if (ViewBag.R.ft.ToString().ToLower() == "workplan")
+                        {
+                            svcRt = wt.GetWorkTimePlan("P", Convert.ToInt32(jPost["lv"]["tgt"]), jPost["lv"]["start"].ToString());
+                        }
+                        else if (ViewBag.R.ft.ToString().ToLower() == "memberplan")
+                        {
+                            svcRt = wt.GetWorkTimePlan("D", Convert.ToInt32(Session["URID"]), jPost["lv"]["start"].ToString());
+                        }
+                        else if (ViewBag.R.ft.ToString().ToLower() == "personstatus")
+                        {
+                            svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(jPost["lv"]["tgt"]), jPost["lv"]["start"].ToString(), "", "", "", "");
+                        }
+                        else if (ViewBag.R.ft.ToString().ToLower() == "memberstatus")
+                        {
+                            svcRt = wt.GetWorkTimeDaily("D", Convert.ToInt32(jPost["lv"]["tgt"]), jPost["lv"]["start"].ToString(), "", "", "", "");
+                        }
+                        else if (ViewBag.R.ft.ToString().ToLower() == "personrequest")
+                        {
+                            svcRt = wt.GetWorkTimeRequest("P", Convert.ToInt32(jPost["lv"]["tgt"]), jPost["opnode"].ToString(), jPost["lv"]["start"].ToString());
+                        }
+                        else if (ViewBag.R.ft.ToString().ToLower() == "personrequest")
+                        {
+                            svcRt = wt.GetWorkTimeRequest("P", Convert.ToInt32(jPost["lv"]["tgt"]), jPost["opnode"].ToString(), jPost["lv"]["start"].ToString());
+                        }
+                        else if (ViewBag.R.ft.ToString().ToLower() == "memberrequest")
+                        {
+                            svcRt = wt.GetWorkTimeRequest("D", 0, jPost["opnode"].ToString(), jPost["lv"]["start"].ToString());
+                        }
+                        else if (ViewBag.R.ft.ToString().ToLower() == "requestmgr")
+                        {
+                            svcRt = wt.GetWorkTimeRequest("A", 0, jPost["opnode"].ToString(), jPost["lv"]["start"].ToString());
+                        }
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "410";
+                        if (jPost["ft"].ToString().ToLower() == "workplan")
+                        {
+                            ViewBag.Holiday = svcRt.ResultDataRowCollection;
+                        }
+                        else if (jPost["ft"].ToString().ToLower() == "memberplan" || jPost["ft"].ToString().ToLower() == "memberstatus")
+                        {
+                            ViewBag.Member = svcRt.ResultDataDetail["Member"];
+                            ViewBag.Holiday = svcRt.ResultDataRowCollection;
+                        }
+                        else if (jPost["ft"].ToString().ToLower() == "memberrequest")
+                        {
+                            ViewBag.Member = svcRt.ResultDataDetail["Member"];
+                        }
+                        ViewBag.BoardList = svcRt.ResultDataSet;
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_" + ViewBag.R.ft.ToString(), ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+
+            return rt;
         }
 
         /// <summary>
@@ -29,7 +222,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
-        public ActionResult PersonStatus()
+        public ActionResult PersonStatus(string Qi)
         {
             string rt = Bc.CtrlHandler.PageInit(this, false);
             if (rt != "")
@@ -56,7 +249,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
 
             using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
             {
-                svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(Session["URID"]), ViewBag.R.current.date.ToString(), "", "", "", "", "");
+                svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(Session["URID"]), ViewBag.R.current.date.ToString(), "", "", "", "");
             }
 
             if (svcRt != null && svcRt.ResultCode == 0)
@@ -70,6 +263,62 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             }
 
             return View();
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string PersonStatus()
+        {
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
+            if (rt == "")
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    sPos = "200";
+                    int iCategoryId = Convert.ToInt32(jPost["ct"]);
+
+                    //권한 및 월 기준시간 가져오기
+                    sPos = "300";
+                    rt = Bc.CtrlHandler.WorkTimeInit(this, iCategoryId);
+                    if (rt != "")
+                    {
+                        return "[" + sPos + "] " + rt;
+                    }
+
+                    sPos = "400";
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(jPost["lv"]["tgt"]), jPost["lv"]["start"].ToString(), "", "", "", "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "410";
+                        ViewBag.BoardList = svcRt.ResultDataSet;
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListView", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            
+            return rt;
         }
 
         /// <summary>

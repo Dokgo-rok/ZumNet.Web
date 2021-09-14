@@ -1092,10 +1092,14 @@
     <Content Include="Areas\WoA\Views\Proc\Mgr.cshtml" />
     <Content Include="Areas\WoA\Views\Proc\Process.cshtml" />
     <Content Include="Areas\WoA\Views\Proc\Record.cshtml" />
-    <Content Include="Areas\ExS\Views\WorkTime\PersonStatus.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_LeftMenu.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_WorkTimeBar.cshtml" />
     <Content Include="Areas\WoA\Views\Proc\Export.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_PersonStatus.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_WorkPlan.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_MemberPlan.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_PersonRequest.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_MemberStatus.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

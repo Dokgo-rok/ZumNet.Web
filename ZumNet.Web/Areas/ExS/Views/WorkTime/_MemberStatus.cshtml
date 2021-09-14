@@ -1,0 +1,434 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    string sViewDate = ViewBag.R.lv.start.ToString() != "" ? ViewBag.R.lv.start.ToString() : DateTime.Now.ToString("yyyy-MM-dd");
+
+
+    GetWeekWorkInfo(sViewDate, ViewBag.Holiday);
+}
+
+@functions {
+    
+    private Hashtable _weekHourInfo = null;
+
+    private void GetWeekWorkInfo(string viewDate, DataRowCollection hDay)
+    {
+        _weekHourInfo = new Hashtable();
+        for (int i = 0; i < 6; i++) _weekHourInfo.Add(i, "");
+
+        DateTime vd = Convert.ToDateTime(viewDate);
+
+        double iMinHour = 0;
+        double iExtraHour = 0;
+        double iMaxHour = 0;
+        int iEnableWork = 0;
+        int iEnableWorkToday = 0;
+        int iMonthDay = DateTime.DaysInMonth(vd.Year, vd.Month);
+        int iWeek = 0;
+
+        //20-05-14 아래 2줄 추가
+        if (vd.Month == DateTime.Now.Month) _weekHourInfo.Add("monthday", DateTime.Now.Day - 1);
+        else _weekHourInfo.Add("monthday", iMonthDay);
+
+        for (int i = 1; i <= iMonthDay; i++)
+        {
+            DateTime dt = new DateTime(vd.Year, vd.Month, i);
+
+            if (dt.DayOfWeek == DayOfWeek.Saturday)
+            {
+                //_weekHourInfo.Add(iWeek, dt);
+                _weekHourInfo[iWeek] = dt.ToString("yyyy-MM-dd");
+                iWeek++;
+            }
+
+            bool bHoliday = CheckHoliday(dt, hDay);
+            if (!bHoliday)
+            {
+                iEnableWork++;
+                if (vd.Year == DateTime.Now.Year && vd.Month == DateTime.Now.Month && i < DateTime.Now.Day) iEnableWorkToday++;
+            }
+
+            //20-05-04 추가
+            if (i == iMonthDay && dt.DayOfWeek != DayOfWeek.Saturday)
+            {
+                DateTime t = dt.AddDays(DayOfWeek.Saturday - dt.DayOfWeek);
+                _weekHourInfo[iWeek] = t.ToString("yyyy-MM-dd");
+            }
+        }
+
+        #region [최소/최대근무시간 2021-05-20 이전 값]
+        //iMinHour = iEnableWork * 8;
+        //iExtraHour = Convert.ToDouble(iMonthDay) / 7 * 12;
+        //iMaxHour = iMinHour + iExtraHour;
+
+        //_weekHourInfo.Add("workday", (iEnableWorkToday == 0) ? iEnableWork.ToString() : iEnableWorkToday.ToString());
+        //_weekHourInfo.Add("min", ToDo.ToDoUtil.CvtCurrency(iMinHour.ToString(), 0));
+        //_weekHourInfo.Add("max", ToDo.ToDoUtil.CvtCurrency(iMaxHour.ToString(), 2));
+        //_weekHourInfo.Add("extra", ToDo.ToDoUtil.CvtCurrency(iExtraHour.ToString(), 2));
+        #endregion
+
+        #region [2021-05-20 최소/최대 근무시간 계산식이 틀려지는 관계로 위를 막고 아래와 같이 수정]
+        ArrayList vList = null;
+        string sMon = vd.Month < 10 ? "0" + vd.Month.ToString() : vd.Month.ToString();
+        using (ZumNet.DAL.ServiceDac.CodeDac cdMgr = new ZumNet.DAL.ServiceDac.CodeDac())
+        {
+            vList = cdMgr.SelectCodeDescription("system", "worktime", vd.Year.ToString() + sMon.ToString());
+        }
+
+        if (vList != null && vList.Count > 0)
+        {
+            foreach (object[] o in vList)
+            {
+                iMinHour = Convert.ToDouble(o[3]);
+                iMaxHour = Convert.ToDouble(o[4]);
+                iExtraHour = Convert.ToDouble(o[5]);
+            }
+        }
+        else
+        {
+            iMinHour = 0;
+            iMaxHour = 0;
+            iExtraHour = 0;
+        }
+
+        _weekHourInfo.Add("workday", (iEnableWorkToday == 0) ? iEnableWork.ToString() : iEnableWorkToday.ToString());
+        _weekHourInfo.Add("min", ZumNet.Web.Bc.CommonUtils.CvtCurrency(iMinHour.ToString(), 2));
+        _weekHourInfo.Add("max", ZumNet.Web.Bc.CommonUtils.CvtCurrency(iMaxHour.ToString(), 2));
+        _weekHourInfo.Add("extra", ZumNet.Web.Bc.CommonUtils.CvtCurrency(iExtraHour.ToString(), 2));
+        #endregion
+    }
+    
+    private string RenderColumnHeader(string viewDate)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<colgroup>");
+        sb.AppendFormat("<col style=\"width:{0}\" />", "4%"); //순번
+        sb.AppendFormat("<col style=\"width:{0}\" />", "12%"); //부서
+        sb.AppendFormat("<col style=\"width:{0}\" />", "5%"); //직급
+        sb.AppendFormat("<col style=\"width:{0}\" />", "8%"); //성명
+        //sb.AppendFormat("<col style=\"width:{0}\" />", "5%"); //근무유형
+
+        sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //주평균
+        sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //월
+        sb.AppendFormat("<col style=\"width:{0}\" />", "7%"); //잔업
+
+        sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //1주차
+        sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //2주차
+        sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //3주차
+        sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //4주차
+        sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //5주차
+        sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //6주차 - 9/22 추가
+        
+        sb.AppendFormat("<col style=\"width:{0}\" />", "16%"); //비고
+        sb.Append("</colgroup>");
+
+        sb.Append("<thead><tr>");
+        sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "순번");
+        sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "부서");
+        sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "직급");
+        sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "성명");
+        //sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "근무<br />유형");
+        sb.AppendFormat("<th colspan=\"9\">{0}{1} <span class=\"text-info\">( 최소 : {2}, 최대 : {3}, 잔업가능 : {4} )</span></th>"
+                , Convert.ToDateTime(viewDate).Month.ToString(), "월", _weekHourInfo["min"].ToString(), _weekHourInfo["max"].ToString(), _weekHourInfo["extra"].ToString());
+        sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "비고");
+
+        sb.Append("</tr><tr>");
+
+        sb.AppendFormat("<th class=\"table-success\">{0}</th>", "주 평균");
+        sb.AppendFormat("<th class=\"table-info\">{0}</th>", "월 누적");
+        sb.AppendFormat("<th class=\"table-warning\">{0}</th>", "잔업 누적");
+        sb.AppendFormat("<th>{0}</th>", "1주차");
+        sb.AppendFormat("<th>{0}</th>", "2주차");
+        sb.AppendFormat("<th>{0}</th>", "3주차");
+        sb.AppendFormat("<th>{0}</th>", "4주차");
+        sb.AppendFormat("<th>{0}</th>", "5주차");
+        sb.AppendFormat("<th>{0}</th>", "6주차");
+
+        sb.Append("</tr></thead>");
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, string viewDate, DataSet data, DataRowCollection colMember)
+    {
+        DataRow[] q = null;
+        int iMember = 0;
+        bool bHasData = false;
+
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-bordered\">");
+        sb.Append(RenderColumnHeader(viewDate));
+
+        sb.Append("<tbody>");
+
+        if (colMember.Count > 0)
+        {
+            foreach (DataRow dr in colMember)
+            {
+                iMember++;
+
+                sb.Append("<tr>");
+
+                sb.AppendFormat("<td>{0}</td>", iMember.ToString());
+                sb.AppendFormat("<td>{0}</td>", dr["GroupName"].ToString());
+                sb.AppendFormat("<td>{0}</td>", (dr["Grade1"].ToString() != "") ? dr["Grade1"].ToString().Substring(0, 2) : "");
+                sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.viewEvent('{0}', '{1}', '{2}');\" title=\"{1} 근무현황\">{2}</a></th>", dr["UserID"].ToString(), viewDate, dr["DisplayName"].ToString());
+                //sb.AppendFormat("<td>{0}</td>", "정규");
+
+                if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+                {
+                    q = data.Tables[0].Select("UserID = " + dr["UserID"].ToString(), "WorkDate ASC");
+                    if (q != null && q.Length > 0)
+                    {
+                        string[] vWeekHour = { "0", "0", "0", "0", "0", "0" };
+                        string sEtc = "";
+                        string sPrev = "";
+                        string sCurr = "";
+
+                        int iWeek = 0;
+                        long lSum = 0;
+                        long lReal = 0;
+                        long lExtra = 0;
+                        long lDiff = 0;
+                        //long lMin = (new TimeSpan(Convert.ToInt32(_weekHourInfo["min"]), 0, 0)).Ticks;
+                        bool bOut = false;
+
+                        long lRegular = 0; //20-05-14 추가
+                        long lExtra2 = 0; //20-05-14 추가
+                        long lWeekAvg = 0; //20-05-14 추가
+
+                        foreach (DataRow row in q)
+                        {
+                            DateTime wd = Convert.ToDateTime(row["WorkDate"]);
+                            lSum += Convert.ToInt64(row["RealWork"]) + Convert.ToInt64(row["ExtraWork"]);
+                            lReal += Convert.ToInt64(row["RealWork"]);
+                            lExtra += Convert.ToInt64(row["ExtraWork"]);
+
+                            lRegular += Convert.ToInt64(row["RegularWork"]);
+                            lExtra2 += Convert.ToInt64(row["ExtraWork2"]);
+
+                            //if (dr["UserID"].ToString() == "101337") ResponseText(iWeek.ToString() + " : " + row["WorkDate"].ToString() + " : " + lSum + "<br />");
+
+                            vWeekHour[iWeek] = lSum.ToString();
+                            //bOut = (DateTime.Compare(Convert.ToDateTime(_weekHourInfo[iWeek]), wd) >= 0) ? false : true;
+                            bOut = (_weekHourInfo[iWeek].ToString() != "" && DateTime.Compare(Convert.ToDateTime(_weekHourInfo[iWeek]), wd) > 0) ? false : true;
+                            if (bOut)
+                            {
+                                iWeek++;
+                                lSum = 0;
+                            }
+
+                            //if (row["BizTrip"].ToString() == "B") sEtc += ", " + "출장(" + wd.Day.ToString() + ")";
+                            //if (row["Leave"].ToString() != "") sEtc += ", " + ToDo.ToDoUtil.StrLeave(row["Leave"].ToString()) + "(" + wd.Day.ToString() + ")";
+                            //if (row["OutWork"].ToString() == "O") sEtc += ", " + "외근(" + wd.Day.ToString() + ")";
+                            //if (row["OutLcm"].ToString() == "E") sEtc += ", " + "교육(" + wd.Day.ToString() + ")";
+                            //if (row["HolidayWork"].ToString() == "H") sEtc += ", " + "휴일근무(" + wd.Day.ToString() + ")";
+
+                            if (row["BizTrip"].ToString() != "") sEtc += ", " + StrWork("B", row["BizTrip"].ToString(), wd.Day.ToString());
+                            if (row["Leave"].ToString() != "") sEtc += ", " + StrWork("L", row["Leave"].ToString(), wd.Day.ToString());
+                            if (row["OutWork"].ToString() != "") sEtc += ", " + StrWork("O", row["OutWork"].ToString(), wd.Day.ToString());
+                            if (row["OutLcm"].ToString() != "") sEtc += ", " + StrWork("E", row["OutLcm"].ToString(), wd.Day.ToString());
+                            if (row["HolidayWork"].ToString() != "") sEtc += ", " + StrWork("H", row["HolidayWork"].ToString(), wd.Day.ToString());
+                            if (row["WorkType"].ToString() == "파견" || row["WorkType"].ToString() == "재택")
+                            {
+                                sCurr = row["WorkType"].ToString();
+                                if (sPrev != sCurr) sEtc += ", " + StrWork(row["WorkType"].ToString(), "", "");
+
+                                sPrev = sCurr;
+                            }
+                            if (Convert.ToInt32(row["WorkLimited"]) > 0) sEtc += ", " + StrWork("근무제한", ";" + row["WorkLimited"].ToString(), wd.Day.ToString());
+
+                            if (iWeek == 6) break;
+                        }
+
+                        //lDiff = lReal - lMin;
+
+                        //if (lDiff > 0)
+                        //{
+                        //    lReal -= lDiff;
+                        //    lExtra += lDiff;
+                        //}
+
+                        //ResponseText(dr["UserID"].ToString() + " : " + iWeek.ToString() + " : " + DateTime.Compare(Convert.ToDateTime("2020-03-20"), Convert.ToDateTime("2020-03-21")).ToString() + Environment.NewLine);
+
+                        //20-05-14 근무시간 변경으로 아래 막음
+                        //sb.AppendFormat("<td class=\"success\">{0}</td>", ToDo.ToDoUtil.StrHour(((lReal + lExtra) / Convert.ToInt32(_weekHourInfo["workday"]) * 5).ToString()));
+                        //sb.AppendFormat("<td class=\"info\">{0}</td>", ToDo.ToDoUtil.StrHour((lReal + lExtra).ToString()));
+                        //sb.AppendFormat("<td class=\"warning\">{0}</td>", ToDo.ToDoUtil.StrHour(lExtra.ToString()));
+
+                        if (lExtra2 < 0) lWeekAvg = (lRegular + lExtra2) / Convert.ToInt32(_weekHourInfo["workday"]) * 5 + lExtra / Convert.ToInt32(_weekHourInfo["monthday"]) * 7;
+                        else lWeekAvg = lRegular / Convert.ToInt32(_weekHourInfo["workday"]) * 5 + (lExtra + lExtra2) / Convert.ToInt32(_weekHourInfo["monthday"]) * 7;
+
+                        sb.AppendFormat("<td class=\"table-success\">{0}</td>", StrHour(lWeekAvg.ToString()));
+                        sb.AppendFormat("<td class=\"table-info\">{0}</td>", StrHour((lReal + lExtra).ToString()));
+                        if (lExtra2 < 0) sb.AppendFormat("<td class=\"table-warning\">{0}</td>", StrHour(lExtra.ToString()));
+                        //else sb.AppendFormat("<td class=\"warning\">{0}</td>", StrHour((lExtra + lExtra2).ToString()));
+                        else sb.AppendFormat("<td class=\"warning\">{0}</td>", StrHour((lExtra + lExtra2).ToString())); //20-07-06
+
+                        sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[0]));
+                        sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[1]));
+                        sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[2]));
+                        sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[3]));
+                        sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[4]));
+                        sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[5]));
+
+                        //sb.AppendFormat("<td>{0}</td>", (new TimeSpan(Convert.ToInt64(vWeekHour[0]))).TotalHours.ToString("#.#"));
+                        //sb.AppendFormat("<td>{0}</td>", (new TimeSpan(Convert.ToInt64(vWeekHour[1]))).TotalHours.ToString("#.#"));
+                        //sb.AppendFormat("<td>{0}</td>", (new TimeSpan(Convert.ToInt64(vWeekHour[2]))).TotalHours.ToString("#.#"));
+                        //sb.AppendFormat("<td>{0}</td>", (new TimeSpan(Convert.ToInt64(vWeekHour[3]))).TotalHours.ToString("#.#"));
+                        //sb.AppendFormat("<td>{0}</td>", (new TimeSpan(Convert.ToInt64(vWeekHour[4]))).TotalHours.ToString("#.#"));
+                        //sb.AppendFormat("<td class=\"success\">{0}</td>", (new TimeSpan((lReal + lExtra) / Convert.ToInt32(_weekHourInfo["workday"]) * 5)).TotalHours.ToString("#.#"));
+                        //sb.AppendFormat("<td class=\"info\">{0}</td>", (new TimeSpan(lReal + lExtra)).TotalHours.ToString("#.#"));
+                        //sb.AppendFormat("<td class=\"warning\">{0}</td>", (new TimeSpan(lExtra)).TotalHours.ToString("#.#"));
+                        sb.AppendFormat("<td class=\"text-left\">{0}</td>", (sEtc.Length > 0) ? sEtc.Substring(2) : "&nbsp;");
+
+                        bHasData = true;
+                    }
+                    else
+                    {
+                        bHasData = false;
+                    }
+                }
+                else
+                {
+                    bHasData = false;
+                }
+
+                if (!bHasData)
+                {
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&nbsp;</td>");
+                }
+
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"13\">{1}</th>", "부서원이 없습니다!");
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+
+        return sb.ToString();
+    }
+
+    #region [유틸]
+    /// <summary>
+    /// DB에 설정된 휴일과 비교해 휴일 여부 반환
+    /// </summary>
+    /// <param name="d"></param>
+    /// <param name="h"></param>
+    /// <returns></returns>
+    private bool CheckHoliday(DateTime d, DataRowCollection h)
+    {
+        bool bHoliday = false;
+
+        if (d.DayOfWeek != DayOfWeek.Sunday && d.DayOfWeek != DayOfWeek.Saturday)
+        {
+            if (h != null && h.Count > 0)
+            {
+                foreach (DataRow dr in h)
+                {
+                    if (dr["Item2"].ToString() == "Y" && dr["ItemSubHandler"].ToString() == d.ToString("yyyyMMdd"))
+                    {
+                        //Response.Write("휴일=>" + dr["ItemSubHandler"].ToString() + "<br />");
+                        bHoliday = true; break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            bHoliday = true;
+        }
+        return bHoliday;
+    }
+
+    private string StrHour(string t)
+    {
+        try
+        {
+            long h = Convert.ToInt64(t);
+            return (h != 0) ? (new TimeSpan(h)).TotalHours.ToString("0.#") : "0";
+        }
+        catch
+        {
+            return "0";
+        }
+    }
+
+    private string StrWork(string type, string code, string day)
+    {
+        string sRt = "";
+
+        if (type == "L") sRt = StrLeave(code);
+        else if (type == "B") sRt = "출장";
+        else if (type == "E") sRt = "교육";
+        else if (type == "O") sRt = "외근";
+        else if (type == "H") sRt = "휴일근무";
+        else sRt = type;
+
+        if (day != "") sRt += "(" + day + ")";
+
+        if (code.IndexOf(';') != -1)
+        {
+            sRt = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
+        }
+        return sRt;
+    }
+
+    private string StrLeave(string code)
+    {
+        string[] vCode = code.Split(';');
+        string sPrefix = vCode[0].Substring(0, 1);
+
+        string sRt = "";
+        switch (sPrefix)
+        {
+            case "A":
+                sRt = "공가";
+                break;
+            case "B":
+                sRt = "연차";
+                break;
+            case "C":
+                if (vCode[0].Substring(1, 1) == "A") sRt = "오전반차" + vCode[0].Substring(2, 1);
+                else if (vCode[0].Substring(1, 1) == "P") sRt = "오후반차" + vCode[0].Substring(2, 1);
+                else sRt = "반차";
+                break;
+            case "D":
+                if (vCode[0].Substring(1) == "A1") sRt = "오전1/4차";
+                else if (vCode[0].Substring(1) == "P1") sRt = "오후1/4차";
+                else sRt = "1/4차";
+                break;
+            case "E":
+                sRt = "보건휴가";
+                break;
+            case "F":
+                sRt = "결근";
+                break;
+            case "G":
+                sRt = "기타";
+                break;
+        }
+        return sRt;
+    }
+    #endregion
+}
+
+@Html.Raw(ViewList(ViewBag.R.mode.ToString(), sViewDate, ViewBag.BoardList, ViewBag.Member))

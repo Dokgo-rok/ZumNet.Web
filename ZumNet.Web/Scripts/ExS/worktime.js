@@ -1,4 +1,4 @@
-﻿//전자결재 메인, 리스트뷰
+﻿//근무관리 메인, 리스트뷰
 
 $(function () {
 
@@ -10,59 +10,38 @@ $(function () {
         });
     });
 
-    $('#__LeftMenu li[data-box] .sidenav-link').click(function (e) {
-        e.preventDefault();
-
-        _zw.V.opnode = $(this).parent().attr('data-location');
-        _zw.V.ttl = $(this).find('span:first').text();
-
-        //window.location.href = '/EA/Main/List?qi=' + encodeURIComponent(_zw.fn.getLvQuery(false));
-
-        if (_zw.V.current.page.toLowerCase() == '/ea/main/list') {
-
-            $('#__LeftMenu li[data-box] .sidenav-link').each(function () {
-                $(this).parent().removeClass('active');
-            });
-
-            $(this).parent().addClass('active');
-
-            _zw.fn.initLv('');
-            _zw.fn.loadList();
-
-        } else {
-            window.location.href = '/EA/Main/List?qi=' + encodeURIComponent(_zw.fn.getLvQuery(false));
-        }
+    $('[data-zv-menu="search"]').click(function () {
+        _zw.fn.goSearch();
     });
+
     
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
-        var url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
-        //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
-        //else url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
+        var url = '?qi=' + encodeURIComponent(postData);
 
         $.ajax({
             type: "POST",
             url: url,
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
-                    history.pushState(null, null, url);
 
-                    window.document.title = _zw.V.ttl;
-                    $('.z-ttl span').html(_zw.V.ttl);
-
-                    var v = res.substr(2).split(_zw.V.lv.boundary);
-                    $('#__ListHead').html(v[0]);
-                    $('#__ListView').html(v[1]);
-                    $('#__ListCount').html(v[2]);
-                    $('#__ListMenuSearch').html(v[3]);
-                    $('#__ListPage').html(v[4]);
+                    $('#__ListView').html(res.substr(2));
 
                 } else bootbox.alert(res);
             }
         });
     }
     _zw.fn.goSearch = function () {
-        alert(1)
+        _zw.fn.initLv(_zw.V.current.urid);
+        if (_zw.V.ft == 'PersonRequest' || _zw.V.ft == 'MemberRequest' || _zw.V.ft == 'RequestMgr') {
+            _zw.V.lv.start = $('#_SearchYear').val();
+            _zw.V.opnode = $('input[name="rdoSearch"]:checked').val();
+
+        } else {
+            _zw.V.lv.start = $('#_SearchYear').val() + "-" + ($('#_SearchMonth').val().length == 1 ? "0" : "") + $('#_SearchMonth').val() + "-01"; //alert(vd)
+        }
+        
+        _zw.fn.loadList();
     }
 
     _zw.fn.getLvQuery = function (lv) {
@@ -97,12 +76,11 @@ $(function () {
     }
 
     _zw.fn.initLv = function (tgt) {
-        var sCnt = _zw.ut.getCookie('eaLvCount');
-        sCnt = $('.z-lv-page select').val();
+        //var sCnt = _zw.ut.getCookie('eaLvCount');
 
         _zw.V.lv.tgt = tgt;
         _zw.V.lv.page = '1';
-        _zw.V.lv.count = sCnt == '' ? '20' : sCnt;
+        _zw.V.lv.count = 0;
         _zw.V.lv.sort = '';
         _zw.V.lv.sortdir = '';
         _zw.V.lv.search = '';

@@ -1,0 +1,428 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    ConfigColumn(ViewBag.R.mode.ToString());
+
+}
+
+@functions {
+
+    string[,] _columnConfig = null;
+
+    private void ConfigColumn(string mode)
+    {
+        //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
+
+        //WorkDate, HolidayType, SecomInTime, SecomOutTime, SecomDinnerTime, InTime, OutTime, Intype, OutType
+        //BizTrip, Leave, OutWork, OutLcm, HolidayWork, TotalWork, RealWork, NightWork, State, LastModified
+
+        if (mode == "modal_mod")
+        {
+            //20-05-14 수정
+            string[,] arr = { { "RowNum", "<input type='checkbox' id='chkHeader' onClick='checkAll(this)' hidefocus />", "4%", "center", "", "" }, { "WorkDate", "근무일", "8%", "center", "", "" }
+                        , { "HolidayType", "유형", "5%", "center", "", "" }, { "WorkType", "구분", "5%", "center", "", "" }, { "RealWork", "근무<br />인정시간", "8%", "center", "", "" }
+                        , { "RegularWork", "소정<br />근로시간", "7%", "center", "", "" }, { "ExtraWork2", "평일", "7%", "center", "", "" }, { "ExtraWork", "휴일", "7%", "center", "", "" }
+                        , { "ExceptWork", "근무<br />미인정시간", "7%", "center", "", "" }, { "TotalWork", "근무시간", "8%", "center", "", "" }, { "__OUT__", "근태", "10%", "center", "", "" }
+                        , { "InTime", "시작시각", "6%", "center", "", "" }, { "OutTime", "종료시각", "6%", "center", "", "" }
+                        , { "SecomInTime", "시작시각", "6%", "center", "", "" }, { "SecomOutTime", "종료시각", "6%", "center", "", "" }
+                    };
+
+            _columnConfig = arr;
+        }
+        else
+        {
+            //20-05-14 수정
+            string[,] arr = { { "RowNum", "No", "4%", "center", "", "" }, { "WorkDate", "근무일", "11%", "center", "", "" }, { "HolidayType", "유형", "6%", "center", "", "" }
+                        , { "WorkType", "구분", "6%", "center", "", "" }, { "InTime", "시작시각", "8%", "center", "", "" }, { "OutTime", "종료시각", "8%", "center", "", "" }
+                        , { "TotalWork", "근무시간", "10%", "center", "", "" }, { "RealWork", "근무<br />인정시간", "8%", "center", "", "" }, { "RegularWork", "소정<br />근로시간", "8%", "center", "", "" }
+                        , { "ExtraWork2", "평일", "8%", "center", "", "" }, { "ExtraWork", "휴일", "8%", "center", "", "" }, { "__OUT__", "근태", "15%", "center", "", "" }
+                    };
+            _columnConfig = arr;
+        }
+    }
+
+    private string RenderColumnHeader(string mode, Hashtable sum)
+    {
+        if (_columnConfig != null)
+        {
+            string strValue = "";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            //sb.Append("<col style=\"width:12px\" />");
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead><tr class=\"primary\">");
+            if (mode == "modal_mod")
+            {
+                for (int i = 0; i <= 5; i++)
+                {
+                    sb.AppendFormat("<th rowspan=\"{0}\">{1}</th>", (i <= 3 ? "3" : "2"), _columnConfig[i, 1].ToString());
+                }
+                sb.AppendFormat("<th colspan=\"2\">{0}</th>", "시간외근로");
+
+                for (int i = 8; i <= 10; i++)
+                {
+                    sb.AppendFormat("<th rowspan=\"{0}\">{1}</th>", (i == 8 ? "2" : "3"), _columnConfig[i, 1].ToString());
+                }
+                sb.AppendFormat("<th colspan=\"2\">{0}</th>", "EKP 기록");
+                sb.AppendFormat("<th colspan=\"2\">{0}</th>", "세콤 기록");
+
+                sb.Append("</tr><tr class=\"\">");
+
+                for (int i = 6; i < _columnConfig.GetLength(0); i++)
+                {
+                    if (i <= 7)
+                    {
+                        sb.AppendFormat("<th>{0}</th>", _columnConfig[i, 1].ToString());
+                    }
+                    else if (i > 10)
+                    {
+                        sb.AppendFormat("<th rowspan=\"2\">{0}</th>", _columnConfig[i, 1].ToString());
+                    }
+
+                    sb.Append("</tr><tr class=\"table-success\">");
+                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["work"].ToString() == "" ? "0" : sum["work"].ToString());
+                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["regular"].ToString() == "" ? "0" : sum["regular"].ToString());
+                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["extra2"].ToString() == "" ? "0" : sum["extra2"].ToString());
+                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["extra"].ToString() == "" ? "0" : sum["extra"].ToString());
+                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["except"].ToString() == "" ? "0" : sum["except"].ToString());
+                    //sb.AppendFormat("<th>{0}h</th>", sum["total"].ToString() == "" ? "0" : sum["total"].ToString());
+
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    sb.AppendFormat("<th rowspan=\"{0}\">{1}</th>", (i <= 6 ? "3" : "2"), _columnConfig[i, 1].ToString());
+                }
+                sb.AppendFormat("<th colspan=\"2\">{0}</th>", "시간외근로");
+                sb.AppendFormat("<th rowspan=\"3\">{0}</th>", _columnConfig[_columnConfig.GetLength(0) - 1, 1].ToString());
+                sb.Append("</tr><tr class=\"\">");
+
+                for (int i = 9; i <= 10; i++)
+                {
+                    sb.AppendFormat("<th>{0}</th>", _columnConfig[i, 1].ToString());
+                }
+
+                sb.Append("</tr><tr class=\"table-success\">");
+                //sb.AppendFormat("<th>{0}h</th>", sum["total"].ToString());
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["work"].ToString());
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["regular"].ToString());
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["extra2"].ToString());
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["extra"].ToString());
+            }
+            sb.Append("</tr></thead>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        //20-05-14 헤더 시간 표시 작업
+        Hashtable htSumHour = new Hashtable();
+        long lTotalHour = 0; //전체시간
+        long lWorkHour = 0; //근무인정시간
+        long lExceptHour = 0; //근무미인정시간
+        long lRegularHour = 0; //조정근로시간
+        long lExtraHour = 0; //휴일근로시간
+        long lExtraHour2 = 0; //평일잔업시간
+
+        if (data != null && data.Tables.Count > 1 && data.Tables[1].Rows.Count > 0)
+        {
+            foreach (DataRow row in data.Tables[1].Rows)
+            {
+                lTotalHour += Convert.ToInt64(row["TotalWork"]);
+                lWorkHour += Convert.ToInt64(row["RealWork"]);
+                lExceptHour += Convert.ToInt64(row["ExceptWork"]);
+                lRegularHour += Convert.ToInt64(row["RegularWork"]);
+                lExtraHour += Convert.ToInt64(row["ExtraWork"]);
+                lExtraHour2 += Convert.ToInt64(row["ExtraWork2"]);
+            }
+        }
+
+        htSumHour.Add("total", StrHour(lTotalHour.ToString()));
+        htSumHour.Add("work", StrHour(lWorkHour.ToString()));
+        htSumHour.Add("except", StrHour(lExceptHour.ToString()));
+        htSumHour.Add("regular", StrHour(lRegularHour.ToString()));
+        htSumHour.Add("extra", StrHour(lExtraHour.ToString()));
+        htSumHour.Add("extra2", StrHour(lExtraHour2.ToString()));
+
+        DataRow dr = null;
+
+        StringBuilder sb = new StringBuilder();
+        if (mode == "modal_mod") sb.Append("<table class=\"table table-hover table-bordered\">");
+        else sb.Append("<table class=\"table table-hover table-bordered\">");
+        sb.Append(RenderColumnHeader(mode, htSumHour));
+
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 1 && data.Tables[1].Rows.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strClass = "";
+
+            dr = data.Tables[0].Rows[0];
+
+            long lMinHour = (new TimeSpan(Convert.ToInt32(dr["MinHour"]), 0, 0)).Ticks; //최소근무시간
+
+            long iDiff = 0;
+            DateTime dtExtra = new DateTime(2900, 1, 1);   //최소근무시간을 넘긴 일자
+
+            foreach (DataRow row in data.Tables[1].Rows)
+            {
+                #region [이상근무]
+                //출퇴근기록 누락, 집중근무시간 내 출퇴근, 20-05-25 외근 경우 추가 고려 OS09:00^15:00;261004
+                bool bExcept = false;
+                if (row["HolidayType"].ToString() == "N" && row["WorkType"].ToString() != "파견" && row["WorkType"].ToString() != "재택" && row["BizTrip"].ToString() == "" && row["OutLcm"].ToString() == "")
+                {
+                    string[] v = null;
+                    if (row["OutWork"].ToString() != "" && row["OutWork"].ToString().Substring(1, 1) != "D")
+                    {
+                        v = row["OutWork"].ToString().Substring(2).Split('^');
+                        v[1] = v[1].Split(';')[0].Replace(":", "");
+                        v[0] = v[0].Replace(":", "");
+                    }
+
+                    if (row["Leave"].ToString() == "" && row["OutWork"].ToString() == "")
+                    {
+                        if (row["InTime"].ToString() == "" || row["OutTime"].ToString() == "") bExcept = true;
+                        else if (DateTime.Compare(Convert.ToDateTime(row["InTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 10:00:59")) > 0) bExcept = true;
+                        else if (DateTime.Compare(Convert.ToDateTime(row["OutTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 16:00:00")) < 0) bExcept = true;
+                    }
+                    else if (row["Leave"].ToString() != "" && row["OutWork"].ToString() == "")
+                    {
+                        if (row["Leave"].ToString().Substring(1, 1) != "D")
+                        {
+                            if (row["InTime"].ToString() == "" || row["OutTime"].ToString() == "")
+                            {
+                                if (row["Leave"].ToString().Substring(1, 1) != "A" && row["Leave"].ToString().Substring(1, 1) != "P") bExcept = true;
+                            }
+                            else if (DateTime.Compare(Convert.ToDateTime(row["InTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 10:00:59")) > 0)
+                            {
+                                if (row["Leave"].ToString().Substring(1, 1) != "A") bExcept = true;
+                            }
+                            else if (DateTime.Compare(Convert.ToDateTime(row["OutTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 16:00:00")) < 0)
+                            {
+                                if (row["Leave"].ToString().Substring(1, 1) != "P") bExcept = true;
+                            }
+                        }
+                    }
+                    else if (row["Leave"].ToString() == "" && row["OutWork"].ToString() != "")
+                    {
+                        if (row["OutWork"].ToString().Substring(1, 1) != "D")
+                        {
+                            if (row["InTime"].ToString() == "" || row["OutTime"].ToString() == "")
+                            {
+                                if (Convert.ToInt32(v[0]) > 1000 || Convert.ToInt32(v[1]) < 1600) bExcept = true;
+                            }
+                            else if (DateTime.Compare(Convert.ToDateTime(row["InTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 10:00:59")) > 0)
+                            {
+                                if (Convert.ToInt32(v[0]) > 1000) bExcept = true;
+                            }
+                            else if (DateTime.Compare(Convert.ToDateTime(row["OutTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 16:00:00")) < 0)
+                            {
+                                if (Convert.ToInt32(v[1]) < 1600) bExcept = true;
+                            }
+                        }
+                    }
+                    else if (row["Leave"].ToString() != "" && row["OutWork"].ToString() != "")
+                    {
+                        if (row["Leave"].ToString().Substring(1, 1) != "D" && row["OutWork"].ToString().Substring(1, 1) != "D")
+                        {
+                            if (row["InTime"].ToString() == "" || row["OutTime"].ToString() == "")
+                            {
+                                if (row["Leave"].ToString().Substring(1, 1) != "A" && row["Leave"].ToString().Substring(1, 1) != "P" && (Convert.ToInt32(v[0]) > 1000 || Convert.ToInt32(v[1]) < 1600)) bExcept = true;
+                            }
+                            else if (DateTime.Compare(Convert.ToDateTime(row["InTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 10:00:59")) > 0)
+                            {
+                                if (row["Leave"].ToString().Substring(1, 1) != "A" && Convert.ToInt32(v[0]) > 1000) bExcept = true;
+                            }
+                            else if (DateTime.Compare(Convert.ToDateTime(row["OutTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 16:00:00")) < 0)
+                            {
+                                if (row["Leave"].ToString().Substring(1, 1) != "P" && Convert.ToInt32(v[1]) < 1600) bExcept = true;
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                strClass = (row["HolidayType"].ToString() == "N") ? "" : "table-active";
+                if (bExcept)
+                {
+                    strClass = (strClass == "") ? "danger" : " danger";
+                }
+                sb.AppendFormat("<tr class=\"{0}\">", strClass);
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+
+                    if (strID == "RowNum")
+                    {
+                        //if (this._mode == "modal_mod" && bExcept) sb.AppendFormat("<th><input name=\"ckbRow\" type=\"checkbox\" value=\"{0};{1}\" /></th>", row["UserID"].ToString(), row["WorkDate"].ToString());
+                        //else sb.AppendFormat("<th>{0}</th>", row[strID].ToString());
+                        sb.AppendFormat("<th>{0}</th>", row[strID].ToString());
+                    }
+                    else
+                    {
+                        if (strID == "HolidayType")
+                        {
+                            strValue = (row[strID].ToString() == "N") ? "근무" : "휴일";
+                            //strValue = (lWorkHour - lMinHour).ToString();
+                        }
+                        else if (strID == "InTime" || strID == "OutTime" || strID == "SecomInTime" || strID == "SecomOutTime" || strID == "SecomDinnerTime")
+                        {
+                            strValue = ZumNet.Web.Bc.CommonUtils.StrHHmm(row[strID].ToString());
+                        }
+                        else if (strID == "TotalWork" || strID == "NightWork")
+                        {
+                            strValue = ZumNet.Web.Bc.CommonUtils.StrTimeSpan(row[strID].ToString());
+                        }
+                        else if (strID == "RealWork" || strID == "ExtraWork" || strID == "RegularWork" || strID == "ExtraWork2" || strID == "ExceptWork")
+                        {
+
+                            //20-05-14, 05-22
+                            if (row["HolidayType"].ToString() != "N" && strID == "RealWork") strValue = ZumNet.Web.Bc.CommonUtils.StrTimeSpan(row["ExtraWork"].ToString());
+                            else strValue = ZumNet.Web.Bc.CommonUtils.StrTimeSpan(row[strID].ToString());
+
+                        }
+                        else if (strID == "__NONE__")
+                        {
+                            strValue = ZumNet.Web.Bc.CommonUtils.StrTimeSpan((Convert.ToInt64(row["TotalWork"]) - Convert.ToInt64(row["RealWork"])).ToString());
+                            //strValue = ToDo.ToDoUtil.StrTimeSpan(Convert.ToInt64(row["ExceptWork"]).ToString());
+                        }
+                        else if (strID == "__OUT__")
+                        {
+                            strValue = "";
+
+                            if (row["BizTrip"].ToString() != "") strValue += ", " + StrWork("B", row["BizTrip"].ToString(), "");
+                            if (row["Leave"].ToString() != "") strValue += ", " + StrWork("L", row["Leave"].ToString(), "");
+                            if (row["OutWork"].ToString() != "") strValue += ", " + StrWork("O", row["OutWork"].ToString(), "");
+                            if (row["OutLcm"].ToString() != "") strValue += ", " + StrWork("E", row["OutLcm"].ToString(), "");
+                            if (row["HolidayWork"].ToString() != "") strValue += ", " + StrWork("H", row["HolidayWork"].ToString(), "");
+                            //if (row["WorkType"].ToString() == "파견" || row["WorkType"].ToString() == "재택") sEtc += ", " + StrWork(row["WorkType"].ToString(), "", "");
+                            if (Convert.ToInt32(row["WorkLimited"]) > 0) strValue += ", " + StrWork("근무제한", ";" + row["WorkLimited"].ToString(), "");
+
+                            if (strValue.Length > 0) strValue = strValue.Substring(2);
+
+                        }
+                        else if (strID == "WorkDate" || strID == "RegularWork")
+                        {
+                            if (strID == "RegularWork") strValue = ZumNet.Web.Bc.CommonUtils.StrTimeSpan(row[strID].ToString());
+                            else strValue = row["WorkDate"].ToString();
+                            strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.viewEvent('{0}', '{1}');\" title=\"{1}\">{2}</a>", row["UserID"].ToString(), row["WorkDate"].ToString(), strValue);
+                        }
+                        else
+                        {
+                            strValue = row[strID].ToString();
+                        }
+
+                        strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
+                        if (strID == "RealWork") sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.viewEvent('{0}', '{1}');\" title=\"{1}\">{2}</a></td>", row["UserID"].ToString(), row["WorkDate"].ToString(), strValue);
+                        else sb.AppendFormat("<td>{0}</td>", strValue);
+                    }
+                }
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"{0}\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+
+        return sb.ToString();
+    }
+
+    #region [유틸]
+    private string StrHour(string t)
+    {
+        try
+        {
+            long h = Convert.ToInt64(t);
+            return (h != 0) ? (new TimeSpan(h)).TotalHours.ToString("0.#") : "0";
+        }
+        catch
+        {
+            return "0";
+        }
+    }
+
+    private string StrWork(string type, string code, string day)
+    {
+        string sRt = "";
+
+        if (type == "L") sRt = StrLeave(code);
+        else if (type == "B") sRt = "출장";
+        else if (type == "E") sRt = "교육";
+        else if (type == "O") sRt = "외근";
+        else if (type == "H") sRt = "휴일근무";
+        else sRt = type;
+
+        if (day != "") sRt += "(" + day + ")";
+
+        if (code.IndexOf(';') != -1)
+        {
+            sRt = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
+        }
+        return sRt;
+    }
+
+    private string StrLeave(string code)
+    {
+        string[] vCode = code.Split(';');
+        string sPrefix = vCode[0].Substring(0, 1);
+
+        string sRt = "";
+        switch (sPrefix)
+        {
+            case "A":
+                sRt = "공가";
+                break;
+            case "B":
+                sRt = "연차";
+                break;
+            case "C":
+                if (vCode[0].Substring(1, 1) == "A") sRt = "오전반차" + vCode[0].Substring(2, 1);
+                else if (vCode[0].Substring(1, 1) == "P") sRt = "오후반차" + vCode[0].Substring(2, 1);
+                else sRt = "반차";
+                break;
+            case "D":
+                if (vCode[0].Substring(1) == "A1") sRt = "오전1/4차";
+                else if (vCode[0].Substring(1) == "P1") sRt = "오후1/4차";
+                else sRt = "1/4차";
+                break;
+            case "E":
+                sRt = "보건휴가";
+                break;
+            case "F":
+                sRt = "결근";
+                break;
+            case "G":
+                sRt = "기타";
+                break;
+        }
+        return sRt;
+    }
+    #endregion
+}
+
+@Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))
