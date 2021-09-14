@@ -14,6 +14,10 @@ $(function () {
         _zw.fn.goSearch();
     });
 
+    $('#_SearchText').keyup(function (e) {
+        if (e.which == 13) _zw.fn.goSearch();
+    });
+
     
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
@@ -33,11 +37,23 @@ $(function () {
     }
     _zw.fn.goSearch = function () {
         _zw.fn.initLv(_zw.V.current.urid);
+
         if (_zw.V.ft == 'PersonRequest' || _zw.V.ft == 'MemberRequest' || _zw.V.ft == 'RequestMgr') {
+            _zw.V.lv.start = $('#_SearchYear').val(); _zw.V.opnode = $('input[name="rdoSearch"]:checked').val();
+
+        } else if (_zw.V.ft == 'WorkTimeMgr') {
             _zw.V.lv.start = $('#_SearchYear').val();
-            _zw.V.opnode = $('input[name="rdoSearch"]:checked').val();
 
         } else {
+            if ($('#_SearchText').length > 0) {
+                var e = $('#_SearchText');
+                var s = "['\\%^&\"*]";
+                var reg = new RegExp(s, 'g');
+                if (e.val().search(reg) >= 0) { alert(s + " 문자는 사용될 수 없습니다!"); e.val(''); return; }
+
+                _zw.V.lv.search = 'O'; //성명+부서
+                _zw.V.lv.searchtext = e.val();
+            }
             _zw.V.lv.start = $('#_SearchYear').val() + "-" + ($('#_SearchMonth').val().length == 1 ? "0" : "") + $('#_SearchMonth').val() + "-01"; //alert(vd)
         }
         

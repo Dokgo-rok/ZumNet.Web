@@ -1100,6 +1100,11 @@
     <Content Include="Areas\ExS\Views\WorkTime\_MemberPlan.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_PersonRequest.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_MemberStatus.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_MemberRequest.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_StatusMgr.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_RequestMgr.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_LedgerMgr.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_WorkTimeMgr.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

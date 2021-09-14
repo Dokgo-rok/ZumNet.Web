@@ -4,7 +4,7 @@
 @using Newtonsoft.Json;
 
 @{
-    ConfigColumn(ViewBag.R.mode.ToString());
+    ConfigColumn();
 
 }
 
@@ -12,16 +12,16 @@
 
     string[,] _columnConfig = null;
 
-    private void ConfigColumn(string mode)
+    private void ConfigColumn()
     {
         //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
 
         //RowNum', UserID, PlanDate, PlanInTime, PLanOutTime, PlanType
         //Status, IsMod, RegDate, ModDate, StateDate, Reason, ApvID, ApvDN, ApvGrade, ApvDeptID, ApvMsgID
 
-        string[,] arr = { { "CreateDate", "신청일자", "15%", "", "", "" }, { "WorkDate", "근무일자", "15%", "center", "", "" }
-                        , { "ReqSubject", "제목", "25%", "", "", "" }, { "__FLOW__", "진행상태", "15%", "", "", "" }
-                        , { "State", "상태", "15%", "center", "", "" }, { "CompletedDate", "완료일자", "15%", "center", "", "" }
+        string[,] arr = { { "CreateDate", "신청일자", "12%", "", "", "" }, { "WorkDate", "근무일자", "8%", "center", "", "" }
+                        , { "ReqSubject", "제목", "23%", "", "", "" }, { "UserDept", "신청부서", "17%", "center", "", "" }, { "UserDN", "신청자", "10%", "center", "", "" }
+                        , { "__FLOW__", "진행상태", "11%", "", "", "" }, { "State", "상태", "8%", "center", "", "" }, { "CompletedDate", "완료일자", "11%", "center", "", "" }
                     };
         this._columnConfig = arr;
     }
@@ -94,7 +94,7 @@
                     else if (strID == "ReqSubject")
                     {
                         strValue = row[strID].ToString();
-                        strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_WTM.fn.reqEvent(null, ['{0}', '{1}', '{2}']);\" title=\"{3}\">{4}</a>"
+                        strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.reqEvent(null, ['{0}', '{1}', '{2}']);\" title=\"{3}\">{4}</a>"
                                 , row["UserID"].ToString(), row["WorkDate"].ToString(), row["ReqID"].ToString(), Server.HtmlEncode(strValue), strValue);
                     }
                     else if (strID == "State")

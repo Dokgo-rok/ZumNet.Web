@@ -1,0 +1,68 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    string sViewDate = ViewBag.R.lv.start.ToString() != "" ? ViewBag.R.lv.start.ToString() : DateTime.Now.Year.ToString();
+}
+
+@functions {
+
+    private string ViewList(string viewDate, DataSet data)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-sm\">");
+        sb.Append("<thead><tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\" style=\"width: 15%\">월</th>");
+        sb.Append("<th class=\"text-center\" style=\"width: 22%\">최소 근무 시간</th>");
+        sb.Append("<th class=\"text-center\" style=\"width: 22%\">최대 근무 시간</th>");
+        sb.Append("<th class=\"text-center\" style=\"width: 22%\">잔업 가능 시간</th>");
+        sb.Append("<th class=\"text-center\"></th>");
+        sb.Append("</tr></thead>");
+
+        sb.Append("<tbody>");
+
+        string sMon = "";
+        string sMinHour = "";
+        string sMaxHour = "";
+        string sExtraHour = "";
+
+        for (int i = 1; i <= 12; i++)
+        {
+            sMon = i < 10 ? "0" + i.ToString() : i.ToString();
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                if (row["ItemSubHandler"].ToString() == viewDate + sMon)
+                {
+                    sMinHour = row["Item1"].ToString();
+                    sMaxHour = row["Item2"].ToString();
+                    sExtraHour = row["Item3"].ToString();
+                    
+                    break;
+                }
+                else
+                {
+                    sMinHour = "";
+                    sMaxHour = "";
+                    sExtraHour = "";
+                }
+            }
+
+            sb.AppendFormat("<tr>");
+            sb.AppendFormat("<td data-value=\"{0}\" data-zf-field=\"k3\">{1}</td>", viewDate + sMon, i.ToString() + "월");
+            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item1\" data-zf-inputmask=\"{1}\" /></td>", sMinHour, "number;3;2");
+            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item2\" data-zf-inputmask=\"{1}\" /></td>", sMaxHour, "number;3;2");
+            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item3\" data-zf-inputmask=\"{1}\" /></td>", sExtraHour, "number;3;2");
+            sb.Append("<td class=\"tbl-btn-cell\"><button type=\"button\" class=\"btn btn-success\" title=\"저장\" onclick=\"_zw.fn.setCode();\"><i class=\"fas fa-check\"></i></button></td>");
+            sb.AppendFormat("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        return sb.ToString();
+    }
+}
+
+@Html.Raw(ViewList(sViewDate, ViewBag.BoardList))

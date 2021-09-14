@@ -59,7 +59,7 @@
         string strHeader = RenderColumnHeader(colMember);
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("<table class=\"table table-bordered table-condensed\" style=\"width:{0}px; max-width:{0}px\">", _tableWidth.ToString());
+        sb.AppendFormat("<table class=\"table table-bordered table-sm\" style=\"width:{0}px; max-width:{0}px\">", _tableWidth.ToString());
         sb.Append(strHeader);
 
         sb.Append("<tbody>");

@@ -6,10 +6,12 @@
 
     string sPatialView = "_" + ViewBag.R.ft.ToString();
     string sListScroll = "";
-    if (ViewBag.R.ft.ToString().ToLower() == "memberplan")
-    {
-        sListScroll = " z-list-scroll";
-    }
+
+    //if (ViewBag.R.ft.ToString().ToLower() == "memberplan" || ViewBag.R.ft.ToString().ToLower() == "requestmgr")
+    //{
+    //    sListScroll = " z-list-scroll";
+    //}
+    sListScroll = " z-list-scroll";
 }
 
 @section Styles {
@@ -65,10 +67,20 @@
                                     @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionYear(DateTime.Now.Year, 2020))
                                 </select>
                                 <div class="input-group-text">
-                                    <label class="custom-control custom-radio m-0 mr-2" for="rdo01">
-                                        <input type="radio" class="custom-control-input" name="rdoSearch" id="rdo01" value="go" checked>
-                                        <span class="custom-control-label">처리대기</span>
-                                    </label>
+                                    @if (ViewBag.R.ft.ToString() == "PersonRequest")
+                                    {
+                                        <label class="custom-control custom-radio m-0 mr-2" for="rdo01">
+                                            <input type="radio" class="custom-control-input" name="rdoSearch" id="rdo01" value="go" checked>
+                                            <span class="custom-control-label">처리대기</span>
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label class="custom-control custom-radio m-0 mr-2" for="rdo01">
+                                            <input type="radio" class="custom-control-input" name="rdoSearch" id="rdo01" value="do" checked>
+                                            <span class="custom-control-label">처리대기</span>
+                                        </label>
+                                    }
                                     <label class="custom-control custom-radio m-0 mr-2" for="rdo02">
                                         <input type="radio" class="custom-control-input" name="rdoSearch" id="rdo02" value="av">
                                         <span class="custom-control-label">승인</span>
@@ -77,11 +89,55 @@
                                         <input type="radio" class="custom-control-input" name="rdoSearch" id="rdo03" value="rj">
                                         <span class="custom-control-label">미승인</span>
                                     </label>
-                                    <label class="custom-control custom-radio m-0" for="rdo04">
-                                        <input type="radio" class="custom-control-input" name="rdoSearch" id="rdo04" value="cm">
-                                        <span class="custom-control-label">전체</span>
-                                    </label>
+                                    @if (ViewBag.R.ft.ToString() == "RequestMgr")
+                                    {
+                                        <label class="custom-control custom-radio m-0" for="rdo04">
+                                            <input type="radio" class="custom-control-input" name="rdoSearch" id="rdo04" value="all">
+                                            <span class="custom-control-label">전체</span>
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label class="custom-control custom-radio m-0" for="rdo04">
+                                            <input type="radio" class="custom-control-input" name="rdoSearch" id="rdo04" value="cm">
+                                            <span class="custom-control-label">전체</span>
+                                        </label>
+                                    }
+
                                 </div>
+                                <span class="input-group-append">
+                                    <button class="btn btn-secondary" type="button" data-zv-menu="search"><i class="fe-search"></i></button>
+                                </span>
+                            </div>
+                        }
+                        else if (ViewBag.R.ft.ToString() == "StatusMgr")
+                        {
+                            <div class="input-group z-lv-cond d-flex justify-content-end" style="width: 400px">
+                                <select class="custom-select" id="_SearchYear" style="margin-left: 4px; width: 100px">
+                                    @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionYear(DateTime.Now.Year, 2020))
+                                </select>
+                                <select class="custom-select" id="_SearchMonth" style="width: 85px">
+                                    @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionMonth(DateTime.Now.Month))
+                                </select>
+                                <input type="text" class="form-control" id="_SearchText" placeholder="성명 + 부서">
+                                <span class="input-group-append">
+                                    <button class="btn btn-secondary" type="button" data-zv-menu="search"><i class="fe-search"></i></button>
+                                </span>
+                            </div>
+                        }
+                        else if (ViewBag.R.ft.ToString() == "LedgerMgr")
+                        {
+                            <div class="input-group z-lv-cond d-flex justify-content-end">
+                                <select class="custom-select" id="_SearchYear" style="margin-left: 4px; width: 100px">
+                                    @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionYear(DateTime.Now.Year, 2020))
+                                </select>
+                                <select class="custom-select" id="_SearchMonth" style="width: 85px">
+                                    @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionMonth(DateTime.Now.Month))
+                                </select>
+                                <div class="input-group-text">
+                                    <div class="alert alert-info m-0 px-2 py-0 text-blue" role="alert">전월 21일 ~ 당월 20일</div>
+                                </div>
+                                <input type="text" class="form-control" id="_SearchText" placeholder="성명 + 부서">
                                 <span class="input-group-append">
                                     <button class="btn btn-secondary" type="button" data-zv-menu="search"><i class="fe-search"></i></button>
                                 </span>
@@ -93,9 +149,12 @@
                                 <select class="custom-select" id="_SearchYear" style="margin-left: 4px; width: 100px">
                                     @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionYear(DateTime.Now.Year, 2020))
                                 </select>
-                                <select class="custom-select" id="_SearchMonth" style="width: 85px">
-                                    @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionMonth(DateTime.Now.Month))
-                                </select>
+                                @if (ViewBag.R.ft.ToString() != "WorkTimeMgr")
+                                {
+                                    <select class="custom-select" id="_SearchMonth" style="width: 85px">
+                                        @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionMonth(DateTime.Now.Month))
+                                    </select>
+                                }
                                 <span class="input-group-append">
                                     <button class="btn btn-secondary" type="button" data-zv-menu="search"><i class="fe-search"></i></button>
                                 </span>

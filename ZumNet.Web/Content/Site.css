@@ -376,7 +376,7 @@
             font-style: italic
         }
 .z-list th, .z-list td {
-    padding: .5rem;
+    /*padding: .5rem;*/
 }
 .z-list a.z-lnk-navy {
     color: #337ab7;
