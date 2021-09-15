@@ -13,25 +13,13 @@
     @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
 
     <script type="text/javascript">
-		var prevSortColumn = "";
-		var prevSortType = "";
 		var tbl_list;
 
 		$(document).ready(function () {
-			$('#datepicker-range').datepicker({
-				closeText: "닫기",
-				currentText: "오늘",
-				prevText: '이전 달',
-				nextText: '다음 달',
-				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-				monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-				dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-				dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-				dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-				weekHeader: "주",
-				yearSuffix: "년",
-                dateFormat: "yyyy-mm-dd"
-			});
+			$("#datepicker-range").datepicker({
+				language: "KO",
+                format: "yyyy-mm-dd"
+            });
 
 			searchList();
 
@@ -52,19 +40,29 @@
 			}
 
             tbl_list = $('#tbl_list').DataTable({
-                "serverSide": true,
+				"serverSide": true,
                 "ajax": {
                     "url": '@Url.Action("SearchDocumentViewLogList", "Event")',
 					"type": "POST",
 					"data": function (p) {
-						p.prevSortColumn = prevSortColumn;
-						p.prevSortType = prevSortType;
 						p.eventViewName = "ph_VIEW_BASE_AUDIT_LIST";
 						p.searchColumn = $("#selSearchType").val();
 						p.searchText = $("#txtSearch").val();
 						p.searchStartDate = $("#datepicker-range input[name='start']").val();
 						p.searchEndDate = $("#datepicker-range input[name='end']").val();
-					}
+					},
+                    "dataSrc": function (result) {
+						if (result.code != "OK") {
+						    alert(result.message);
+
+						    return [];
+					    }
+
+                        $("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+						$("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "건의 문서 조회 로그가 존재합니다.</label></div>");
+
+						return result.data;
+                    }
 				},
                 "columns": [
                     { data: "UserName" },
@@ -81,8 +79,17 @@
 				"searching": false,
 				"lengthChange": false,
 				"info": false,
-				"displayLength": 20,
-                "order": []
+				"displayLength": 15,
+                "order": [],
+                "createdRow": function (row, data, index) {
+					var eventTime = data["EventTime"];
+
+                    if ((data["EventTime"] != null && data["EventTime"] != "") && data["EventTime"].length >= 19) {
+                        eventTime = data["EventTime"].substring(2, 10) + " " + data["EventTime"].substring(11, 16);
+					}
+
+					$('td', row).eq(2).html('').append(eventTime);
+				}
             });
 		}
     </script>
@@ -99,7 +106,7 @@
             <div class="input-daterange input-group mx-sm-3" id="datepicker-range">
                 <input type="text" class="form-control" name="start">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">to</span>
+                    <span class="input-group-text"> ~ </span>
                 </div>
                 <input type="text" class="form-control" name="end">
             </div>

@@ -37,9 +37,7 @@
                 dataType: 'JSON',
 				data: '{dnID : ' + domainID + '}',
 				success: function (result) {
-					$("#lblCount").text("0개의 결재 양식 분류가 존재합니다.");
-
-                    if (result.code != "OK") {
+					if (result.code != "OK") {
 						alert(result.message);
 						return;
 					}
@@ -47,8 +45,6 @@
                     if (tbl_list) {
 						tbl_list.destroy();
 					}
-
-                    $("#lblCount").text(result.recordsTotal + "개의 결재 양식 분류가 존재합니다.");
 
                     tbl_list = $('#tbl_list').DataTable({
                         data: $(result.data),
@@ -62,43 +58,20 @@
                         lengthChange: false,
                         searching: true,
                         info: false,
-                        displayLength: 50,
+                        displayLength: 15,
                         order: [],
                         ordering: true,
                         language: dataTable_lang_kor,
 						createdRow: function (row, data, index) {
 							$('td', row).eq(4).addClass('text-center text-nowrap').html('').append("<button type='button' class='btn btn-default' onclick='editItem(this)'>편집</button>&nbsp;&nbsp;<button type='button' class='btn btn-default' onclick='removeItem(this)'>삭제</button>");
                         }
-                    });
+					});
+
+                    $("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+					$("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "건의 결재 양식 분류가 존재합니다.</label></div>");
                 }
 			});
 		}
-
-        // Korean
-        var dataTable_lang_kor = {
-            "decimal" : "",
-            "emptyTable" : "데이터가 없습니다.",
-            "info" : "_START_ - _END_ (총 _TOTAL_ 명)",
-            "infoEmpty" : "0명",
-            "infoFiltered" : "(전체 _MAX_ 명 중 검색결과)",
-            "infoPostFix" : "",
-            "thousands" : ",",
-            "lengthMenu" : "_MENU_ 개씩 보기",
-            "loadingRecords" : "로딩중...",
-            "processing" : "처리중...",
-            "search" : "검색 : ",
-            "zeroRecords" : "검색된 데이터가 없습니다.",
-            "paginate" : {
-                "first" : "첫 페이지",
-                "last" : "마지막 페이지",
-                "next" : "다음",
-                "previous" : "이전"
-            },
-            "aria" : {
-                "sortAscending" : " :  오름차순 정렬",
-                "sortDescending" : " :  내림차순 정렬"
-            }
-		};
 
 		var mode = "I";
 
@@ -231,14 +204,6 @@
                 <button type="button" class="btn btn-default" id="btnPopupClose" data-dismiss="modal">닫기</button>
                 <button type="button" class="btn btn-primary" id="btnPopupSave" onclick="saveItem();" data-savemode="I">저장</button>
             </div>
-        </form>
-    </div>
-</div>
-
-<div class="card mb-4">
-    <div class="card-body">
-        <form class="form-inline">
-            <label id="lblCount" class="form-label">0개의 결재 양식 분류가 존재합니다.</label>
         </form>
     </div>
 </div>

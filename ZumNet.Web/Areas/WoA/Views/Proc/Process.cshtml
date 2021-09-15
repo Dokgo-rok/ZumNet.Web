@@ -21,65 +21,110 @@
 		});
 
 		function searchList() {
-			$.ajax({
-                url: '@Url.Action("SearchServiceModeProcessList", "Proc")',
-				type: 'POST',
-                dataType: 'JSON',
-				data: '{mode:"s1"}',
-				success: function (result) {
-					if (result.code != "OK") {
-						alert(result.message);
-						return;
+			if (tbl_list) {
+                tbl_list.destroy();
+			}
+
+            tbl_list = $('#tbl_list').DataTable({
+                "serverSide": true,
+                "ajax": {
+                    "url": '@Url.Action("SearchServiceModeProcessList", "Proc")',
+					"type": "POST",
+					"data": function (p) {
+						p.mode = "s1";
+						p.admin = "";
+						p.formId = "";
+						p.defId = 0;
+						p.viewer = 0;
+						p.state = 0;
+						p.searchText = "";
+						p.searchStartDate = "";
+						p.searchEndDate = "";
+					},
+				    "dataSrc": function (result) {
+                        if (result.code != "OK") {
+						    alert(result.message);
+
+						    return [];
+					    }
+
+                        $("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+						$("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "건의 서비스 처리 기록이 존재합니다.</label></div>");
+
+						return result.data;
+					}
+				},
+                "columns": [
+					{
+						data: "SvcID",
+						"orderable": false
+					},
+					{
+						data: "WebSrv",
+						"orderable": false
+					},
+					{
+						data: "DocName"
+					},
+					{
+						data: "PIName"
+					},
+					{
+						data: "DisplaySignStatus",
+						"orderable": false
+					},
+					{
+						data: "ReqDate",
+						"orderable": false
+					},
+					{
+						data: "Requester",
+						"orderable": false
+					},
+					{
+						data: "PublishDate",
+						"orderable": false
+					},
+					{
+						data: "Creator",
+						"orderable": false
+					},
+					{
+						data: "DocStatus",
+						"orderable": false
+					},
+					{
+						data: null,
+						"orderable": false
+					}
+                ],
+                "lengthChange": false,
+				"searching": false,
+				"info": false,
+				"displayLength": 15,
+				"order": [],
+				"ordering": false,
+				"language": dataTable_lang_kor,
+				"createdRow": function (row, data, index) {
+					var reqDate = "";
+					var publishDate = "";
+
+			        if ((data["ReqDate"] != null && data["ReqDate"] != "") && data["ReqDate"].length >= 19) {
+			            reqDate = data["ReqDate"].substring(2, 10) + " " + data["ReqDate"].substring(11, 16);
 					}
 
-                    if (tbl_list) {
-						tbl_list.destroy();
+					if ((data["PublishDate"] != null && data["PublishDate"] != "") && data["PublishDate"].length >= 19) {
+			            publishDate = data["PublishDate"].substring(2, 10) + " " + data["PublishDate"].substring(11, 16);
 					}
 
-					tbl_list = $('#tbl_list').DataTable({
-						data: $(result.data),
-						columns: [
-							{ data: "SvcID" },
-							{ data: "WebSrv" },
-							{ data: "DocName" },
-							{ data: "PIName" },
-							{ data: "DisplaySignStatus" },
-							{ data: "ReqDate" },
-							{ data: "Requester" },
-							{ data: "PublishDate" },
-							{ data: "Creator" },
-							{ data: "DocStatus" },
-							{ data: null }
-						],
-						lengthChange: false,
-						searching: false,
-						info: false,
-						displayLength: 50,
-						order: [],
-						ordering: false,
-						language: dataTable_lang_kor,
-						createdRow: function (row, data, index) {
-							var reqDate = "";
-							var publishDate = "";
+					$('td', row).eq(5).html('').append(reqDate);
+					$('td', row).eq(7).html('').append(publishDate);
 
-			                if ((data["ReqDate"] != null && data["ReqDate"] != "") && data["ReqDate"].length >= 19) {
-			                    reqDate = data["ReqDate"].substring(2, 10) + " " + data["ReqDate"].substring(11, 16);
-							}
+					$('td', row).eq(8).html('').append(data["Creator"] + "[" + data["CreatorDept"] + "]");
+					$('td', row).eq(6).html('').append(data["Requester"] + "[" + data["RequesterDept"] + "]");
 
-							if ((data["PublishDate"] != null && data["PublishDate"] != "") && data["PublishDate"].length >= 19) {
-			                    publishDate = data["PublishDate"].substring(2, 10) + " " + data["PublishDate"].substring(11, 16);
-							}
-
-							$('td', row).eq(5).html('').append(reqDate);
-							$('td', row).eq(7).html('').append(publishDate);
-
-							$('td', row).eq(8).html('').append(data["Creator"] + "[" + data["CreatorDept"] + "]");
-							$('td', row).eq(6).html('').append(data["Requester"] + "[" + data["RequesterDept"] + "]");
-
-			 				$('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<button type=\"button\" class=\"btn btn-default\" onclick=\"changeServiceState(this, " + data["SvcID"] + ")\">상태 변경</button>");
-						}
-					});
-                }
+			 		$('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<button type=\"button\" class=\"btn btn-default\" onclick=\"changeServiceState(this, " + data["SvcID"] + ")\">상태 변경</button>");
+				}
 			});
 		}
 
@@ -116,7 +161,7 @@
 	<div class="card-body">
 		<form class="form-inline">
 			<label class="form-label">검색 : </label>
-			<button type="button" id="btnSearch" class="btn btn-default" onclick="searchList()">검색</button>
+			<button type="button" id="btnSearch" class="btn btn-default ml-sm-3" onclick="searchList()">검색</button>
 		</form>
 	</div>
 </div>

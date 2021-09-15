@@ -30,13 +30,17 @@
                 searchUserInfo("account", $("#txtSearch").val());
 			});
 
-			$("label.form-label.pb-1").on("click", function () {
-				if ($(this).text() == "해제") {
-					searchUserInfo("account", "");
-				} else {
-                    searchUserInfo("name", $(this).text());
+			$("li.nav-item a").bind("click", function () {
+				if ($(this).hasClass("active")) {
+					return;
 				}
-			})
+
+				if ($(this).attr("href").indexOf("member-in") >= 0) {
+					searchUserInfo('account', '');
+				} else {
+					searchRetiredUserInfo('');
+				}
+			});
 		});
 
 		function searchUserInfo(searchType, searchText) {
@@ -53,7 +57,8 @@
                 dataType: 'JSON',
 				data: '{domainID: 1, groupID: "", groupType: "D", pageIndex: 0, pageCount: 0, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchType: "' + searchType + '", searchText: "' + searchText + '", admin: "Y"}',
 				success: function (result) {
-					$("#lblMemberCount").text("0명의 사용자가 존재합니다.");
+					$("#tbl_user_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+					$("#tbl_user_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>0명의 사용자가 존재합니다.</label></div>");
 
                     if (result.code != "OK") {
 						alert(result.message);
@@ -79,7 +84,7 @@
                         lengthChange: false,
                         searching: true,
                         info: false,
-                        displayLength: 20,
+                        displayLength: 15,
                         order: [],
                         ordering: true,
                         language: dataTable_lang_kor,
@@ -88,7 +93,10 @@
                                 '<a href="/WoA/Organ/Member/' + data["UserID"] + '">' + data["DisplayName"] + '</a>'
                             );
                         }
-                    });
+					});
+
+                    $("#tbl_user_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+                    $("#tbl_user_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "명의 사용자가 존재합니다.</label></div>");
                 }
 			});
 		}
@@ -103,9 +111,10 @@
                 dataType: 'JSON',
 				data: '{domainID: 1, pageIndex: 1, pageCount: 10000, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchColumn: "", searchText: "' + searchText + '", searchStartDate: "", searchEndDate: ""}',
 				success: function (result) {
-					$("#lblMemberCount").text("0명의 사용자가 존재합니다.");
+                    $("#tbl_user_retired_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+					$("#tbl_user_retired_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>0명의 사용자가 존재합니다.</label></div>");
 
-                    if (result.code != "OK") {
+					if (result.code != "OK") {
 						alert(result.message);
 						return;
 					}
@@ -114,9 +123,7 @@
 						tbl_user_retired_list.destroy();
 					}
 
-					$("#lblMemberCount").text("" + result.recordsTotal + "명의 사용자가 존재합니다.");
-
-                    tbl_user_retired_list = $('#tbl_user_retired_list').DataTable({
+					tbl_user_retired_list = $('#tbl_user_retired_list').DataTable({
                         data: $(result.data),
                         columns: [
 	                        { data: "DisplayName" },
@@ -130,16 +137,17 @@
                         lengthChange: false,
                         searching: true,
                         info: false,
-                        displayLength: 20,
+                        displayLength: 15,
                         order: [],
                         ordering: true,
                         language: dataTable_lang_kor,
                         createdRow: function (row, data, index) {
-                            //$('td', row).eq(1).html('').append(
-                            //    '<a href="javascript:void(0)">' + data["GroupName"] + '</a>'
-                            //);
+                            
                         }
-                    });
+					});
+
+                    $("#tbl_user_retired_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+                    $("#tbl_user_retired_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "명의 사용자가 존재합니다.</label></div>");
                 }
 			});
 		}
@@ -151,52 +159,48 @@
     <button type="button" class="btn btn-primary rounded-pill d-block"><span class="ion ion-md-add"></span>&nbsp; 신규</button>
 </h4>
 
-<ul class="search-nav nav nav-tabs tabs-alt container-m-nx container-p-x mb-4">
-    <li class="nav-item">
-        <a class="nav-link active" data-toggle="tab" onclick="searchUserInfo('account', '');"><i class="ion ion-md-copy"></i>&nbsp; 전체</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" onclick="searchRetiredUserInfo('')"><i class="ion ion-ios-people"></i>&nbsp; 퇴사</a>
-    </li>
-</ul>
-
-<div class="card mb-4">
-    <div class="card-body">
-        <form class="form-inline">
-            <label id="lblMemberCount" class="form-label">0명의 사용자가 존재합니다.</label>
-        </form>
+<div class="nav-tabs-top nav-responsive-sm">
+    <ul class="nav nav-tabs">
+        <li class="nav-item" id="li_member_in">
+            <a class="nav-link active" data-toggle="tab" href="#member-in">전체 직원 보기</a>
+        </li>
+        <li class="nav-item" id="li_member_out">
+            <a class="nav-link" data-toggle="tab" href="#member-out">퇴사 직원 보기</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="member-in">
+            <div class="card-datatable table-responsive">
+                <table id="tbl_user_list" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>소속(겸직여부)</th>
+                            <th>직위</th>
+                            <th>ID(이메일)</th>
+                            <th>휴대폰</th>
+                            <th>입사일</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="member-out">
+            <div class="card-datatable table-responsive">
+                <table id="tbl_user_retired_list" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>소속(겸직여부)</th>
+                            <th>직위</th>
+                            <th>ID(이메일)</th>
+                            <th>휴대폰</th>
+                            <th>입사일</th>
+                            <th>퇴사일</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
-
-<div class="card">
-    <div class="card-datatable table-responsive">
-        <table id="tbl_user_list" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>이름</th>
-                    <th>소속(겸직여부)</th>
-                    <th>직위</th>
-                    <th>ID(이메일)</th>
-                    <th>휴대폰</th>
-                    <th>입사일</th>
-                </tr>
-            </thead>
-        </table>
-
-        <table id="tbl_user_retired_list" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>이름</th>
-                    <th>소속(겸직여부)</th>
-                    <th>직위</th>
-                    <th>ID(이메일)</th>
-                    <th>휴대폰</th>
-                    <th>입사일</th>
-                    <th>퇴사일</th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-</div>
-
-

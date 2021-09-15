@@ -324,5 +324,116 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         }
 
         #endregion
+
+        #region [ /Woa/EA/Code ]
+
+        // GET: WoA/EA
+        public ActionResult Code()
+        {
+            ServiceResult result = new ServiceResult();
+
+            DataSet ds = new DataSet();
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                // BizRole 조회
+                result = commonBiz.SelectCodeDescription("ea", "bizrole", "");
+                result.ResultDataTable.TableName = "dtBizRole";
+
+                ds.Tables.Add(result.ResultDataTable.Copy());
+
+                // ActRole 조회
+                result = commonBiz.SelectCodeDescription("ea", "actrole", "");
+                result.ResultDataTable.TableName = "dtActRole";
+
+                ds.Tables.Add(result.ResultDataTable.Copy());
+
+                // 결재 진행 상태값 조회
+                result = commonBiz.SelectCodeDescription("ea", "docstatus", "");
+                result.ResultDataTable.TableName = "dtDocStatusRole";
+
+                ds.Tables.Add(result.ResultDataTable.Copy());
+            }
+
+            return View(ds);
+        }
+
+        #endregion
+
+        #region [ /Woa/EA/External ]
+
+        // GET: WoA/EA
+        public ActionResult External()
+        {
+            ServiceResult result = new ServiceResult();
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                // BizRole 조회
+                result = commonBiz.SelectCodeDescription("ea", "externalform", "");
+            }
+
+            return View(result.ResultDataTable);
+        }
+
+        #endregion
+
+        #region [ /Woa/EA/Remark ]
+
+        // GET: WoA/EA
+        public ActionResult Remark()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public string SelectRemarkInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string key1 = "eaxf";
+                string key2 = StringHelper.SafeString(jPost["key2"].ToString());
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.SelectCodeDescription(key1, key2, "");
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        #endregion
     }
 }

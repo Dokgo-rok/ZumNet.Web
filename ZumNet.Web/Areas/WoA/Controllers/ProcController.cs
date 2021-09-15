@@ -521,30 +521,21 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             if (Request.IsAjaxRequest())
             {
-                JObject jPost = CommonUtils.PostDataToJson();
-
-                if (jPost == null || jPost.Count == 0)
-                {
-                    ResultCode = "FAIL";
-                    ResultMessage = "필수값 누락";
-
-                    return CreateJsonData();
-                }
-
-                string mode = StringHelper.SafeString(jPost["mode"]);
+                string mode = StringHelper.SafeString(Request.Form["mode"]);
                 string admin = "";
                 string formID = "";
                 int defId = 0;
                 int viewer = 0;
                 int state = 0;
-                int page = 0;
-                int count = 0;
-                string sortCol = StringHelper.SafeString(jPost["sortCol"]);
-                string sortType = "";
+                int pageIndex = StringHelper.SafeInt(Request.Form["draw"]);
+                int pageCount = StringHelper.SafeInt(Request.Form["length"]);
+                string sortColumnIndex = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumn = StringHelper.SafeString(Request.Form[$"columns[{sortColumnIndex}][data]"]);
+                string sortType = StringHelper.SafeString(Request.Form["order[0][dir]"]);
                 string searchCol = Session["CompanyCode"].ToString();
-                string searchText = StringHelper.SafeString(jPost["searchText"]);
-                string searchStart = StringHelper.SafeString(jPost["searchStart"]);
-                string searchEnd = StringHelper.SafeString(jPost["searchEnd"]);
+                string searchText = StringHelper.SafeString(Request.Form["searchText"]);
+                string searchStart = StringHelper.SafeString(Request.Form["searchStartDate"]);
+                string searchEnd = StringHelper.SafeString(Request.Form["searchEndDate"]);
 
                 searchText = (String.Compare(searchText, "ALL", true) == 0) ? "" : " AND a.Status = " + searchText;
 
@@ -552,12 +543,12 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 using (WorkList workList = new WorkList())
                 {
-                    result = workList.ViewListPerMenu(mode, admin, formID, defId, viewer, state, page, count, sortCol, sortType, searchCol, searchText, searchStart, searchEnd);
+                    result = workList.ViewListPerMenu(mode, admin, formID, defId, viewer, state, pageIndex, pageCount, sortColumn, sortType, searchCol, searchText, searchStart, searchEnd);
                 }
 
                 if (result.ResultCode == 0)
                 {
-                    ResultItemCount = result.ResultItemCount;
+                    ResultItemCount = StringHelper.SafeInt(result.ResultDataDetail["totalMessage"]);
                     ResultItemFilteredCount = ResultItemCount;
 
                     if (result.ResultItemCount > 0)
@@ -570,6 +561,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                         }
                     }
 
+                    ResultPageIndex = pageIndex;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();

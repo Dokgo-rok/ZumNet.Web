@@ -410,6 +410,14 @@
 					$("#txtPriority").val(result.data[0].Priority);
 					$("#selInUse").val(result.data[0].InUse);
 					$("#txtProcessCreator").val(result.data[0].Creator);
+
+					$("#divCopyValidRange input[name='start']").val(result.data[0].ValidFromDate);
+					$("#divCopyValidRange input[name='end']").val(result.data[0].ValidToDate);
+					$("#txtCopyProcessName").val(result.data[0].Name);
+					$("#txtCopyProcessDescription").val(result.data[0].Description);
+					$("#txtCopyPriority").val(result.data[0].Priority);
+					$("#selCopyInUse").val(result.data[0].InUse);
+					$("#txtCopyProcessCreator").val(result.data[0].Creator);
                 }
 			});
 		}
@@ -478,20 +486,8 @@
 			});
 		}
 
-		function showCopyModal() {
-			$("#divCopyValidRange input[name='start']").val($("#divValidRange input[name='start']").val());
-			$("#divCopyValidRange input[name='end']").val($("#divValidRange input[name='end']").val());
-			$("#txtCopyPriority").val($("#txtPriority").val());
-			$("#txtCopyProcessName").val("사본-" + $("#txtProcessName").val());
-			$("#txtCopyProcessDescription").val($("#txtProcessDescription").val());
-			$("#selCopyInUse").val($("#selInUse").val());
-			$("#txtCopyProcessCreator").val($("#txtProcessCreator").val());
-
-			$("#modalCopyProcess").modal("show");
-		}
-
 		// 다른 이름으로 프로세스 복사
-		function copyAsOtherProcess() {
+		function copyProcess() {
 			if ($("#divCopyValidRange input[name='start']").val() == "") {
 				alert("유효 시작일을 선택하세요.");
 				$("#divCopyValidRange input[name='start']").focus();
@@ -522,7 +518,7 @@
 
 			if ($("#txtCopyProcessName").val() == "") {
 				alert("프로세스명을 입력하세요.");
-				//$("#txtCopyProcessName").focus();
+				$("#txtCopyProcessName").focus();
 
 				return false;
 			}
@@ -692,62 +688,6 @@
 	</div>
 </div>
 
-<div class="modal fade" id="modalCopyProcess">
-	<div class="modal-dialog">
-		<form class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">
-					다른 이름으로 복사
-				</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-			</div>
-			<div class="modal-body">
-				<div class="form-row">
-					<div class="form-group col">
-						<label class="form-label">유효기간</label>
-						<div class="input-daterange input-group" id="divCopyValidRange">
-							<input type="text" class="form-control" name="start">
-							<div class="input-group-prepend">
-								<span class="input-group-text"> ~ </span>
-							</div>
-							<input type="text" class="form-control" name="end">
-						</div>
-					</div>
-					<div class="form-group col">
-						<label class="form-label">우선순위</label>
-						<input type="text" id="txtCopyPriority" class="form-control">
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="form-label">프로세스명</label>
-					<input type="text" id="txtCopyProcessName" class="form-control">
-				</div>
-				<div class="form-group">
-					<label class="form-label">프로세스 설명</label>
-					<textarea class="form-control" id="txtCopyProcessDescription" placeholder="프로세스 설명" rows="5"></textarea>
-				</div>
-				<div class="form-row">
-					<div class="form-group col">
-						<label class="form-label">사용여부</label>
-						<select class="custom-select" id="selCopyInUse">
-							<option value="Y">사용</option>
-							<option value="N">사용안함</option>
-						</select>
-					</div>
-					<div class="form-group col">
-						<label class="form-label">작성자</label>
-						<input type="text" id="txtCopyProcessCreator" class="form-control">
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal" onclick="copyAsOtherProcess()">다른 이름으로 복사</button>
-				<button type="button" class="btn btn-default mx-sm-3" data-dismiss="modal">닫기</button>
-			</div>
-		</form>
-	</div>
-</div>
-
 <div class="nav-tabs-top nav-responsive-sm">
 	<ul class="nav nav-tabs">
 		<li class="nav-item">
@@ -758,6 +698,9 @@
 		</li>
 		<li class="nav-item" style="display:none">
 			<a class="nav-link" data-toggle="tab" href="#process-define">프로세스 정의</a>
+		</li>
+		<li class="nav-item" style="display:none">
+			<a class="nav-link" data-toggle="tab" href="#process-copy">프로세스 복사</a>
 		</li>
 	</ul>
 	<div class="tab-content">
@@ -803,8 +746,7 @@
 			</div>
 			<div class="card-footer">
 				<button type="button" class="btn btn-primary mr-2" onclick="saveBasicProcess()">프로세스 저장</button>
-				<button type="button" class="btn btn-default mx-sm-3" id="btnShowCopyModal" onclick="showCopyModal();" style="display:none">다른 이름으로 복사</button>
-				<button type="button" class="btn btn-default" style="margin-left:-10px;display:none" id="btnExportProcess" onclick="exportProcessInfoForXml();">프로세스 정보(XML) 내보내기</button>
+				<button type="button" class="btn btn-default ml-sm-3" style="display:none" id="btnExportProcess" onclick="exportProcessInfoForXml();">프로세스 정보(XML) 내보내기</button>
 			</div>
 		</div>
 
@@ -856,6 +798,60 @@
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="process-define">
+			<div class="card-body">
+
+			</div>
+			<div class="row">
+
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="process-copy">
+			<div class="card-body">
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">유효기간</label>
+						<div class="input-daterange input-group" id="divCopyValidRange">
+							<input type="text" class="form-control" name="start">
+							<div class="input-group-prepend">
+								<span class="input-group-text"> ~ </span>
+							</div>
+							<input type="text" class="form-control" name="end">
+						</div>
+					</div>
+					<div class="form-group col">
+						<label class="form-label">우선순위</label>
+						<input type="text" id="txtCopyPriority" class="form-control">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스명</label>
+					<input type="text" id="txtCopyProcessName" class="form-control">
+				</div>
+				<div class="form-group">
+					<label class="form-label">프로세스 설명</label>
+					<textarea class="form-control" id="txtCopyProcessDescription" placeholder="프로세스 설명" rows="5"></textarea>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label class="form-label">사용여부</label>
+						<select class="custom-select" id="selCopyInUse">
+							<option value="Y">사용</option>
+							<option value="N">사용안함</option>
+						</select>
+					</div>
+					<div class="form-group col">
+						<label class="form-label">작성자</label>
+						<input type="text" id="txtCopyProcessCreator" class="form-control">
+					</div>
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn btn-primary mr-2" onclick="copyProcess()">다른 이름으로 프로세스 저장</button>
 			</div>
 		</div>
 	</div>

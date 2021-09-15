@@ -1,7 +1,219 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@model DataTable
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "선택 가능한 외부 양식 설정";
 }
 
-<h2>Index</h2>
+@section Styles {
+    
+}
+
+@section Scripts {
+    <script type="text/javascript">
+		$(document).ready(function () {
+
+		});
+
+        // 코드 아이템 추가
+		function insertCodeItem(obj, key1, key2) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			// 빈 값 체크
+			if ($tr.find("td:eq(0)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(0)").find("input").focus();
+				return;
+			}
+
+			if ($tr.find("td:eq(1)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(1)").find("input").focus();
+				return;
+			}
+
+			// 중복 체크
+			var newKey3 = $tr.find("td:eq(0)").find("input").val();
+
+			$("#tbl_code").find("tr[data-key3]").each(function () {
+				if (newKey3 == $(this).find("td:eq(0)").find("input").val()) {
+					alert("신규 항목이 이미 정의되어 있습니다. 다시 확인해 주세요.");
+					return;
+				}
+			});
+
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"I", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + newKey3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		// 코드 아이템 편집
+		function editCodeItem(obj, key1, key2) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			if ($tr.find("td:eq(1)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(1)").find("input").focus();
+				return;
+			}
+
+			var key3 = $tr.find("td:eq(0)").find("input").val();
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"U", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		// 코드 아이템 삭제
+		function removeCodeItem(obj, key1, key2) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			var key3 = $tr.find("td:eq(0)").find("input").val();
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"D", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    선택 가능한 외부 양식 설정
+</h4>
+
+<div class="table-responsive">
+    <table id="tbl_code" class="table table-bordered mb-0">
+        <thead>
+            <tr>
+                <th style="width:8%">순서</th>
+                <th style="width:8%">분류ID</th>
+                <th style="width:15%">양식명</th>
+                <th style="width:8%">시스템명</th>
+                <th style="width:33%">URL</th>
+                <th style="width:20%">예약필드1</th>
+                <th style="width:8%">비고</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int rowCount = Model?.Rows?.Count ?? 0;
+
+                if (rowCount > 0)
+                {
+                    foreach (DataRow item in Model.Rows)
+                    {
+                        <tr data-key3="@item["ItemSubHandler"].ToString()">
+                            <td>
+                                <input type="text" class="form-control" value="@item["ItemSubHandler"].ToString()" readonly="readonly">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="@item["Item1"].ToString()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="@item["Item2"].ToString()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="@item["Item3"].ToString()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="@item["Item4"].ToString()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="@item["Item5"].ToString()">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-default" onclick="editCodeItem(this, 'ea', 'externalform')">변경</button>
+                                <button type="button" class="btn btn-default" onclick="removeCodeItem(this, 'ea', 'externalform')">제거</button>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        @for (int i = 0; i < Model.Columns.Count - 2; i++)
+                        {
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                        }
+                        <td>
+                            <button type="button" class="btn btn-default" onclick="insertCodeItem(this, 'ea', 'externalform')">생성</button>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                        }
+                        <td>
+                            <button type="button" class="btn btn-default" onclick="insertCodeItem(this, 'ea', 'externalform')">생성</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
 

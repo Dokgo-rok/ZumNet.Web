@@ -76,81 +76,19 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 int defId = StringHelper.SafeInt(Request.Form["defId"]);
                 int viewer = StringHelper.SafeInt(Request.Form["viewer"]);
                 int state = StringHelper.SafeInt(Request.Form["state"]);
-                int page = StringHelper.SafeInt(Request.Form["draw"]);
-                int count = StringHelper.SafeInt(Request.Form["length"]);
-                string sortCol = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                int pageIndex = StringHelper.SafeInt(Request.Form["draw"]);
+                int pageCount = StringHelper.SafeInt(Request.Form["length"]);
+                string sortColumnIndex = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumn = StringHelper.SafeString(Request.Form[$"columns[{sortColumnIndex}][data]"]);
                 string sortType = StringHelper.SafeString(Request.Form["order[0][dir]"]);
                 string searchCol = StringHelper.SafeString(Request.Form["searchCol"]);
                 string searchText = StringHelper.SafeString(Request.Form["searchText"]);
-                string searchStart = StringHelper.SafeString(Request.Form["searchStart"]);
-                string searchEnd = StringHelper.SafeString(Request.Form["searchEnd"]);
-                string prevSortColumn = StringHelper.SafeString(Request.Form["prevSortColumn"]);             // 이전 소트 컬럼
-                string prevSortType = StringHelper.SafeString(Request.Form["prevSortColumn"]);               // 이전 소트 타입
+                string searchStart = StringHelper.SafeString(Request.Form["searchStartDate"]);
+                string searchEnd = StringHelper.SafeString(Request.Form["searchEndDate"]);
 
-                if (page == 0)
+                if (pageIndex == 0)
                 {
-                    page = 1;
-                }
-
-                if (count == 0)
-                {
-                    count = 20;
-                }
-
-                switch (sortCol)
-                {
-                    case "0":
-                        sortCol = "OID";
-                        break;
-                    case "1":
-                        sortCol = "DocName";
-                        break;
-                    case "2":
-                        sortCol = "DocStatus";
-                        break;
-                    case "3":
-                        sortCol = "PIName";
-                        break;
-                    case "4":
-                        sortCol = "CreatorDept";
-                        break;
-                    case "5":
-                        sortCol = "Creator";
-                        break;
-                    case "6":
-                        sortCol = "CreateDate";
-                        break;
-                    case "7":
-                        sortCol = "PIEnd";
-                        break;
-                    case "8":
-                        sortCol = "DeleteDate";
-                        break;
-                    case "9":
-                        sortCol = "DocStatus";
-                        break;
-                    default:
-                        break;
-                }
-
-                // 페이지 최초 진입시
-                if (String.IsNullOrWhiteSpace(prevSortColumn))
-                {
-                    sortCol = "CreateDate";
-                    sortType = "desc";
-                }
-                else
-                {
-                    // sortcolumn이 같지 않으면 페이지를 1로
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortCol, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
-                    {
-                        page = 1;
-                    }
-                    else
-                    {
-                        page++;
-                    }
+                    pageIndex = 1;
                 }
 
                 if (String.IsNullOrWhiteSpace(searchCol) && !String.IsNullOrWhiteSpace(searchText))
@@ -162,16 +100,14 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 using (WorkList workList = new WorkList())
                 {
-                    result = workList.ViewListPerMenu(mode, admin, formID, defId, viewer, state, page, count, sortCol, sortType, searchCol, searchText, searchStart, searchEnd);
+                    result = workList.ViewListPerMenu(mode, admin, formID, defId, viewer, state, pageIndex, pageCount, sortColumn, sortType, searchCol, searchText, searchStart, searchEnd);
                 }
 
                 if (result.ResultCode == 0)
                 {
-                    ResultItemCount = result.ResultItemCount;
+                    ResultItemCount = StringHelper.SafeInt(result.ResultDataDetail["totalMessage"]);
                     ResultItemFilteredCount = ResultItemCount;
-                    ResultPageIndex = page;
-                    ResultSortColumn = sortCol;
-                    ResultSortType = sortType;
+                    ResultPageIndex = pageIndex;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();

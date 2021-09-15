@@ -16,8 +16,6 @@
     @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
 
     <script type="text/javascript">
-        var prevSortColumn = "";
-		var prevSortType = "";
 		var tbl_list;
 		var domainID = "@Session["DNID"].ToString()";
         var formClassJson = @Html.Raw(ViewData["formclass"]);
@@ -61,7 +59,7 @@
 			}
 
             tbl_list = $('#tbl_list').DataTable({
-                "serverSide": true,
+				"serverSide": true,
                 "ajax": {
                     "url": '@Url.Action("SearchEADocumentList", "App")',
 					"type": "POST",
@@ -73,17 +71,21 @@
 						p.viewer = 0;
 						p.state = 100;
 						p.searchCol = $("#selSearchType").val();
-						p.searchText = $("#txtSearch").val();
+						p.searchText = $("#txtSearchText").val();
 						p.searchStartDate = $("#datepicker-range input[name='start']").val();
 						p.searchEndDate = $("#datepicker-range input[name='end']").val();
-                        p.prevSortColumn = prevSortColumn;
-						p.prevSortType = prevSortType;
 					},
 				    "dataSrc": function (result) {
-						prevSortColumn = result.sortColumn;
-                        prevSortType = result.sortType;
+                        if (result.code != "OK") {
+						    alert(result.message);
 
-                        return result.data;
+						    return [];
+					    }
+
+                        $("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+						$("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "건의 결재 정보가 존재합니다.</label></div>");
+
+						return result.data;
 					}
 				},
                 "columns": [
@@ -128,10 +130,10 @@
                 ],
                 "language": dataTable_lang_kor,
 				"searching": false,
-				"displayLength": 30,
-				"order": [],
-				"info": false,
 				"lengthChange": false,
+				"info": false,
+				"displayLength": 15,
+                "order": [],
 				"createdRow": function (row, data, index) {
 					var createDate = data["CreateDate"];
 					var piEnd = data["PIEnd"];

@@ -1,7 +1,238 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "양식별 표기 정보";
 }
 
-<h2>Index</h2>
+@section Styles {
+    
+}
 
+@section Scripts {
+    <script type="text/javascript">
+		$(document).ready(function () {
+
+		});
+
+		function selRemarkInfo() {
+			$("#tblList tbody").empty();
+
+			if ($("#selRemark").val() == "0") {
+				return;
+			}
+
+			$.ajax({
+                url: '@Url.Action("SelectRemarkInfo", "EA")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{key2:"' + $("#selRemark").val() + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					var html = "";
+
+					if (result.data != undefined) {
+						if (result.data.length > 0) {
+							for (var i = 0; i < result.data.length; i++) {
+								html += "<tr data-key3=\"" + result.data[i].ItemSubHandler + "\">";
+								html += "	<td><input type=\"text\" class=\"form-control\" value=\"" + result.data[i].ItemSubHandler + "\" readonly=\"readonly\"></td>";
+								html += "	<td><input type=\"text\" class=\"form-control\" value=\"" + result.data[i].Item1 + "\"></td>";
+								html += "	<td><input type=\"text\" class=\"form-control\" value=\"" + result.data[i].Item2 + "\"></td>";
+								html += "	<td><input type=\"text\" class=\"form-control\" value=\"" + result.data[i].Item3 + "\"></td>";
+								html += "	<td><input type=\"text\" class=\"form-control\" value=\"" + result.data[i].Item4 + "\"></td>";
+								html += "	<td><input type=\"text\" class=\"form-control\" value=\"" + result.data[i].Item5 + "\"></td>";
+								html += "	<td><button type=\"button\" class=\"btn btn-default\" onclick=\"editCodeItem(this, 'eaxf', '" + $("#selRemark").val() + "')\">변경</button><button type=\"button\" class=\"btn btn-default ml-sm-2\" onclick=\"removeCodeItem(this, 'eaxf', '" + $("#selRemark").val() + "')\">제거</button></td>";
+								html += "</tr>";
+							}
+						} 
+					}
+
+					html += "<tr>";
+					html += "	<td><input type=\"text\" class=\"form-control\"></td>";
+					html += "	<td><input type=\"text\" class=\"form-control\"></td>";
+					html += "	<td><input type=\"text\" class=\"form-control\"></td>";
+					html += "	<td><input type=\"text\" class=\"form-control\"></td>";
+					html += "	<td><input type=\"text\" class=\"form-control\"></td>";
+					html += "	<td><input type=\"text\" class=\"form-control\"></td>";
+					html += "	<td><button type=\"button\" class=\"btn btn-default\" onclick=\"insertCodeItem(this, 'eaxf', '" + $("#selRemark").val() + "')\">생성</button></td>";
+					html += "</tr>";
+
+					$("#tblList tbody").append(html);
+                }
+			});
+		}
+
+		// 코드 아이템 추가
+		function insertCodeItem(obj, key1, key2) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			// 빈 값 체크
+			if ($tr.find("td:eq(0)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(0)").find("input").focus();
+				return;
+			}
+
+			if ($tr.find("td:eq(1)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(1)").find("input").focus();
+				return;
+			}
+
+			// 중복 체크
+			var newKey3 = $tr.find("td:eq(0)").find("input").val();
+			var isValid = true;
+
+			$("#tblList").find("tr[data-key3]").each(function () {
+				if (newKey3 == $(this).find("td:eq(0)").find("input").val()) {
+					alert("신규 항목이 이미 정의되어 있습니다. 다시 확인해 주세요.");
+					isValid = false;
+					return false;
+				}
+			});
+
+			if (!isValid) {
+				return;
+			}
+
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"I", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + newKey3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		// 코드 아이템 편집
+		function editCodeItem(obj, key1, key2) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			if ($tr.find("td:eq(1)").find("input").val() == "") {
+				alert("항목을 입력하세요.");
+
+				$tr.find("td:eq(1)").find("input").focus();
+				return;
+			}
+
+			var key3 = $tr.find("td:eq(0)").find("input").val();
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"U", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+
+		// 코드 아이템 삭제
+		function removeCodeItem(obj, key1, key2) {
+			var $tr = $(obj).parent("td").parent("tr");
+
+			var key3 = $tr.find("td:eq(0)").find("input").val();
+			var item1 = $tr.find("td:eq(1)").find("input").val();
+			var item2 = $tr.find("td:eq(2)").find("input").val();
+			var item3 = $tr.find("td:eq(3)").find("input").val();
+			var item4 = $tr.find("td:eq(4)").find("input").val();
+			var item5 = $tr.find("td:eq(5)").find("input").val();
+
+			$.ajax({
+                url: '@Url.Action("HandleCodeItem", "Dashboard")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{mode:"D", key1: "' + key1 + '", key2: "' + key2 + '", key3: "' + key3 + '", item1: "' + item1 + '", item2: "' + item2 + '", item3: "' + item3 + '", item4: "' + item4 + '", item5: "' + item5 + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					window.location.reload();
+                }
+			});
+		}
+    </script>
+}
+
+<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
+    양식별 표기 정보
+</h4>
+
+<div class="card mb-4">
+	<div class="card-body">
+		<form class="form-inline">
+			<label class="form-label">양식별 표기 정보 : </label>
+			<select class="custom-select mx-sm-3" id="selRemark" onchange="selRemarkInfo()">
+				<option value="0">양식별 표기 정보를 선택하세요.</option>
+				<option value="DEVPRODUCTLIST">개발산출물관리리스트</option>
+				<option value="NEWPRODUCTSTOP">신제품개발중단요청보고서</option>
+				<option value="NEWDEVELOPREQUEST">신제품개발의뢰서</option>
+				<option value="EPMINUTES">EP품평회회의록</option>
+				<option value="PMPMINUTES">PMP품평회회의록</option>
+				<option value="PPMINUTES">PP품평회회의록</option>
+				<option value="MONTHLOSSCHART">월손실비용발생현황</option>
+				<option value="VACATION">휴가신청서</option>
+				<option value="NEWOWNDEVREQUEST">자사신제품개발의뢰서</option>
+				<option value="CHANGEPLACELIST">생산지변경수관물요청및발송LIST</option>
+				<option value="CTCMINUTES">품평회회의록</option>
+				<option value="SQANEWVERIFREPORT">SQA신제품검증보고서</option>
+			</select>
+		</form>
+	</div>
+</div>
+
+<div class="table-responsive">
+	<table id="tblList" class="table table-bordered mb-0">
+		<thead>
+			<tr>
+				<th style="width:10%">구분 및 순서</th>
+				<th style="width:30%">항목1</th>
+				<th style="width:20%">항목2</th>
+				<th style="width:10%">항목3</th>
+				<th style="width:10%">항목4</th>
+				<th style="width:10%">항목5</th>
+				<th style="width:10%">비고</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>

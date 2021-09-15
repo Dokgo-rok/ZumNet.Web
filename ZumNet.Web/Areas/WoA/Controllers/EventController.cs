@@ -16,26 +16,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 {
     public class EventController : ControllerWebBase
     {
+        #region [ /Woa/Event ]
+
         [Authorize]
         public ActionResult Index()
-        {
-            return View();
-        }
-
-        [Authorize]
-        public ActionResult Logon()
-        {
-            return WebView(View());
-        }
-
-        [Authorize]
-        public ActionResult WriteLog()
-        {
-            return View();
-        }
-
-        [Authorize]
-        public ActionResult ViewLog()
         {
             return View();
         }
@@ -49,10 +33,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 string eventViewName = StringHelper.SafeString(Request.Form["eventViewName"]);
                 int pageIndex = StringHelper.SafeInt(Request.Form["draw"]);
                 int pageCount = StringHelper.SafeInt(Request.Form["length"]);
-                string sortColumn = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumnIndex = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumn = StringHelper.SafeString(Request.Form[$"columns[{sortColumnIndex}][data]"]);
                 string sortType = StringHelper.SafeString(Request.Form["order[0][dir]"]);
-                string prevSortColumn = StringHelper.SafeString(Request.Form["prevSortColumn"]);             // 이전 소트 컬럼
-                string prevSortType = StringHelper.SafeString(Request.Form["prevSortColumn"]);               // 이전 소트 타입
                 string searchColumn = StringHelper.SafeString(Request.Form["searchColumn"]);
                 string searchText = StringHelper.SafeString(Request.Form["searchText"]);
                 string searchStartDate = StringHelper.SafeString(Request.Form["searchStartDate"]);
@@ -61,58 +44,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 if (pageIndex == 0)
                 {
                     pageIndex = 1;
-                }
-
-                if (pageCount == 0)
-                {
-                    pageCount = 20;
-                }
-
-                switch (sortColumn)
-                {
-                    case "0":
-                        sortColumn = "UserName";
-                        break;
-                    case "1":
-                        sortColumn = "DeptName";
-                        break;
-                    case "2":
-                        sortColumn = "EventTime";
-                        break;
-                    case "3":
-                        sortColumn = "UserID";
-                        break;
-                    case "4":
-                        sortColumn = "LogonID";
-                        break;
-                    case "5":
-                        sortColumn = "StartTime";
-                        break;
-                    case "6":
-                        sortColumn = "EndTime";
-                        break;
-                    default:
-                        break;
-                }
-
-                // 페이지 최초 진입시
-                if (String.IsNullOrWhiteSpace(prevSortColumn))
-                {
-                    sortColumn = "EventTime";
-                    sortType = "desc";
-                }
-                else
-                {
-                    // sortcolumn이 같지 않으면 페이지를 1로
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortColumn, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
-                    {
-                        pageIndex = 1;
-                    }
-                    else
-                    { 
-                        pageIndex++; 
-                    }
                 }
 
                 if (String.IsNullOrWhiteSpace(searchColumn) && !String.IsNullOrWhiteSpace(searchText))
@@ -140,8 +71,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     ResultItemCount = StringHelper.SafeInt(result.ResultDataDetail["totalMsg"]);
                     ResultItemFilteredCount = ResultItemCount;
                     ResultPageIndex = pageIndex;
-                    ResultSortColumn = sortColumn;
-                    ResultSortType = sortType;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
@@ -159,6 +88,16 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return CreateJsonData();
+        }
+
+        #endregion
+
+        #region [ /Woa/Event/Logon ]
+
+        [Authorize]
+        public ActionResult Logon()
+        {
+            return WebView(View());
         }
 
         [HttpPost]
@@ -170,10 +109,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 string eventViewName = StringHelper.SafeString(Request.Form["eventViewName"]);
                 int pageIndex = StringHelper.SafeInt(Request.Form["draw"]);
                 int pageCount = StringHelper.SafeInt(Request.Form["length"]);
-                string sortColumn = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumnIndex = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumn = StringHelper.SafeString(Request.Form[$"columns[{sortColumnIndex}][data]"]);
                 string sortType = StringHelper.SafeString(Request.Form["order[0][dir]"]);
-                string prevSortColumn = StringHelper.SafeString(Request.Form["prevSortColumn"]);             // 이전 소트 컬럼
-                string prevSortType = StringHelper.SafeString(Request.Form["prevSortColumn"]);               // 이전 소트 타입
                 string searchColumn = StringHelper.SafeString(Request.Form["searchColumn"]);
                 string searchText = StringHelper.SafeString(Request.Form["searchText"]);
                 string searchStartDate = StringHelper.SafeString(Request.Form["searchStartDate"]);
@@ -182,52 +120,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 if (pageIndex == 0)
                 {
                     pageIndex = 1;
-                }
-
-                if (pageCount == 0)
-                {
-                    pageCount = 20;
-                }
-
-                switch (sortColumn)
-                {
-                    case "0":
-                        sortColumn = "UserName";
-                        break;
-                    case "1":
-                        sortColumn = "DeptName";
-                        break;
-                    case "2":
-                        sortColumn = "EventTime";
-                        break;
-                    case "3":
-                        sortColumn = "LogonID";
-                        break;
-                    case "4":
-                        sortColumn = "IP";
-                        break;
-                    default:
-                        break;
-                }
-
-                // 페이지 최초 진입시
-                if (String.IsNullOrWhiteSpace(prevSortColumn))
-                {
-                    sortColumn = "EventTime";
-                    sortType = "desc";
-                }
-                else
-                {
-                    // sortcolumn이 같지 않으면 페이지를 1로
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortColumn, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
-                    {
-                        pageIndex = 1;
-                    }
-                    else
-                    {
-                        pageIndex++;
-                    }
                 }
 
                 if (String.IsNullOrWhiteSpace(searchColumn) && !String.IsNullOrWhiteSpace(searchText))
@@ -255,8 +147,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     ResultItemCount = StringHelper.SafeInt(result.ResultDataDetail["totalMsg"]);
                     ResultItemFilteredCount = ResultItemCount;
                     ResultPageIndex = pageIndex;
-                    ResultSortColumn = sortColumn;
-                    ResultSortType = sortType;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
@@ -274,6 +164,16 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return CreateJsonData();
+        }
+
+        #endregion
+
+        #region [ /Woa/Event/WriteLog ]
+
+        [Authorize]
+        public ActionResult WriteLog()
+        {
+            return View();
         }
 
         [HttpPost]
@@ -285,10 +185,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 string eventViewName = StringHelper.SafeString(Request.Form["eventViewName"]);
                 int pageIndex = StringHelper.SafeInt(Request.Form["draw"]);
                 int pageCount = StringHelper.SafeInt(Request.Form["length"]);
-                string sortColumn = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumnIndex = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumn = StringHelper.SafeString(Request.Form[$"columns[{sortColumnIndex}][data]"]);
                 string sortType = StringHelper.SafeString(Request.Form["order[0][dir]"]);
-                string prevSortColumn = StringHelper.SafeString(Request.Form["prevSortColumn"]);             // 이전 소트 컬럼
-                string prevSortType = StringHelper.SafeString(Request.Form["prevSortColumn"]);               // 이전 소트 타입
                 string searchColumn = StringHelper.SafeString(Request.Form["searchColumn"]);
                 string searchText = StringHelper.SafeString(Request.Form["searchText"]);
                 string searchStartDate = StringHelper.SafeString(Request.Form["searchStartDate"]);
@@ -298,68 +197,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 {
                     pageIndex = 1;
                 }
-
-                if (pageCount == 0)
-                {
-                    pageCount = 20;
-                }
-
-                switch (sortColumn)
-                {
-                    case "0":
-                        sortColumn = "UserName";
-                        break;
-                    case "1":
-                        sortColumn = "DeptName";
-                        break;
-                    case "2":
-                        sortColumn = "EventTime";
-                        break;
-                    case "3":
-                        sortColumn = "UserID";
-                        break;
-                    case "4":
-                        sortColumn = "ActType";
-                        break;
-                    case "5":
-                        sortColumn = "XfAlias";
-                        break;
-                    case "6":
-                        sortColumn = "MessageID";
-                        break;
-                    case "7":
-                        sortColumn = "Subject";
-                        break;
-                    case "8":
-                        sortColumn = "FD_ID";
-                        break;
-                    case "9":
-                        sortColumn = "FDName";
-                        break;
-                    default:
-                        break;
-                }
-
-                // 페이지 최초 진입시
-                if (String.IsNullOrWhiteSpace(prevSortColumn))
-                {
-                    sortColumn = "EventTime";
-                    sortType = "desc";
-                }
-                else
-                {
-                    // sortcolumn이 같지 않으면 페이지를 1로
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortColumn, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
-                    {
-                        pageIndex = 1;
-                    }
-                    else
-                    {
-                        pageIndex++;
-                    }
-                }
-
+                
                 if (String.IsNullOrWhiteSpace(searchColumn) && !String.IsNullOrWhiteSpace(searchText))
                 {
                     searchText = "";
@@ -385,8 +223,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     ResultItemCount = StringHelper.SafeInt(result.ResultDataDetail["totalMsg"]);
                     ResultItemFilteredCount = ResultItemCount;
                     ResultPageIndex = pageIndex;
-                    ResultSortColumn = sortColumn;
-                    ResultSortType = sortType;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
@@ -404,6 +240,16 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return CreateJsonData();
+        }
+
+        #endregion
+
+        #region [ /Woa/Event/ViewLog ]
+
+        [Authorize]
+        public ActionResult ViewLog()
+        {
+            return View();
         }
 
         [HttpPost]
@@ -415,10 +261,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 string eventViewName = StringHelper.SafeString(Request.Form["eventViewName"]);
                 int pageIndex = StringHelper.SafeInt(Request.Form["draw"]);
                 int pageCount = StringHelper.SafeInt(Request.Form["length"]);
-                string sortColumn = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumnIndex = StringHelper.SafeString(Request.Form["order[0][column]"]);
+                string sortColumn = StringHelper.SafeString(Request.Form[$"columns[{sortColumnIndex}][data]"]);
                 string sortType = StringHelper.SafeString(Request.Form["order[0][dir]"]);
-                string prevSortColumn = StringHelper.SafeString(Request.Form["prevSortColumn"]);             // 이전 소트 컬럼
-                string prevSortType = StringHelper.SafeString(Request.Form["prevSortColumn"]);               // 이전 소트 타입
                 string searchColumn = StringHelper.SafeString(Request.Form["searchColumn"]);
                 string searchText = StringHelper.SafeString(Request.Form["searchText"]);
                 string searchStartDate = StringHelper.SafeString(Request.Form["searchStartDate"]);
@@ -427,64 +272,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 if (pageIndex == 0)
                 {
                     pageIndex = 1;
-                }
-
-                if (pageCount == 0)
-                {
-                    pageCount = 20;
-                }
-
-                switch (sortColumn)
-                {
-                    case "0":
-                        sortColumn = "UserName";
-                        break;
-                    case "1":
-                        sortColumn = "DeptName";
-                        break;
-                    case "2":
-                        sortColumn = "EventTime";
-                        break;
-                    case "3":
-                        sortColumn = "UserID";
-                        break;
-                    case "4":
-                        sortColumn = "XfAlias";
-                        break;
-                    case "5":
-                        sortColumn = "MessageID";
-                        break;
-                    case "6":
-                        sortColumn = "Subject";
-                        break;
-                    case "7":
-                        sortColumn = "FD_ID";
-                        break;
-                    case "8":
-                        sortColumn = "FDName";
-                        break;
-                    default:
-                        break;
-                }
-
-                // 페이지 최초 진입시
-                if (String.IsNullOrWhiteSpace(prevSortColumn))
-                {
-                    sortColumn = "EventTime";
-                    sortType = "desc";
-                }
-                else
-                {
-                    // sortcolumn이 같지 않으면 페이지를 1로
-                    // sortType이 같지 않으면 페이지를 1로
-                    if (String.Compare(sortColumn, prevSortColumn, true) != 0 || String.Compare(sortType, prevSortType, true) != 0)
-                    {
-                        pageIndex = 1;
-                    }
-                    else
-                    {
-                        pageIndex++;
-                    }
                 }
 
                 if (String.IsNullOrWhiteSpace(searchColumn) && !String.IsNullOrWhiteSpace(searchText))
@@ -512,8 +299,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     ResultItemCount = StringHelper.SafeInt(result.ResultDataDetail["totalMsg"]);
                     ResultItemFilteredCount = ResultItemCount;
                     ResultPageIndex = pageIndex;
-                    ResultSortColumn = sortColumn;
-                    ResultSortType = sortType;
                     ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
 
                     return CreateJsonData();
@@ -532,5 +317,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             return CreateJsonData();
         }
+
+        #endregion
     }
 }

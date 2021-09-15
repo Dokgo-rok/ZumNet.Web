@@ -13,9 +13,7 @@
     @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
 
     <script type="text/javascript">
-        var prevSortColumn = "";
-		var prevSortType = "";
-		var tbl_list;
+        var tbl_list;
 
 		$(document).ready(function () {
             $("#divDatePicker").datepicker({
@@ -30,57 +28,144 @@
 			});
 		});
 
-    	function searchList() {
-			$.ajax({
-                url: '@Url.Action("SearchServiceModeProcessList", "Proc")',
-				type: 'POST',
-                dataType: 'JSON',
-				data: '{mode:"ad", searchText:"' + $("#setApprovalType").val() + '", searchStart:"' + $("#divDatePicker input[name='start']").val() + '", searchEnd:"' + $("#divDatePicker input[name='end']").val() + '"}',
-				success: function (result) {
-					if (result.code != "OK") {
-						alert(result.message);
-						return;
+		function searchList() {
+            if (tbl_list) {
+                tbl_list.destroy();
+			}
+
+            tbl_list = $('#tbl_list').DataTable({
+                "serverSide": true,
+                "ajax": {
+                    "url": '@Url.Action("SearchServiceModeProcessList", "Proc")',
+					"type": "POST",
+					"data": function (p) {
+						p.mode = "ad";
+						p.admin = "";
+						p.formId = "";
+						p.defId = 0;
+						p.viewer = 0;
+						p.state = 0;
+						p.searchText = $("#setApprovalType").val();
+						p.searchStartDate = $("#divDatePicker input[name='start']").val();
+						p.searchEndDate = $("#divDatePicker input[name='end']").val();
+					},
+				    "dataSrc": function (result) {
+                        if (result.code != "OK") {
+						    alert(result.message);
+
+						    return [];
+					    }
+
+                        $("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+						$("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "건의 프로세스 처리 기록이 존재합니다.</label></div>");
+
+						return result.data;
+					}
+				},
+                "columns": [
+					{
+						data: "AuditID",
+						"orderable": false
+					},
+					{
+						data: "WebSrv",
+                        "orderable": false
+					},
+					{
+						data: "DocName"
+					},
+					{
+						data: "PIName"
+					},
+					{
+						data: "DisplaySignStatus"
+					},
+					{
+						data: "StartDate",
+                        "orderable": false
+					},
+					{
+						data: "Duration",
+                        "orderable": false
+					},
+					{
+						data: "PartName",
+                        "orderable": false
+					},
+					{
+						data: "RemoteHost",
+                        "orderable": false
+					},
+					{
+						data: "Creator",
+                        "orderable": false
+					},
+					{
+						data: null,
+                        "orderable": false
+					}
+					//{ data: "ExceptionInfo" }
+                ],
+                "lengthChange": false,
+				"searching": false,
+				"info": false,
+				"displayLength": 15,
+				"order": [],
+				"ordering": false,
+				"language": dataTable_lang_kor,
+				"createdRow": function (row, data, index) {
+					var createDate = data["CreateDate"];
+					var piEnd = data["PIEnd"];
+					var deleteDate = data["DeleteDate"];
+
+                    if ((data["CreateDate"] != null && data["CreateDate"] != "") && data["CreateDate"].length >= 19) {
+                        createDate = data["CreateDate"].substring(2, 10) + " " + data["CreateDate"].substring(11, 16);
 					}
 
-                    if (tbl_list) {
-						tbl_list.destroy();
+                    if ((data["PIEnd"] != null && data["PIEnd"] != "") && data["PIEnd"].length >= 19) {
+                        piEnd = data["PIEnd"].substring(2, 10) + " " + data["PIEnd"].substring(11, 16);
 					}
 
-					tbl_list = $('#tbl_list').DataTable({
-						data: $(result.data),
-						columns: [
-							{ data: "AuditID" },
-							{ data: "WebSrv" },
-							{ data: "DocName" },
-							{ data: "PIName" },
-							{ data: "DisplaySignStatus" },
-							{ data: "StartDate" },
-							{ data: "Duration" },
-							{ data: "PartName" },
-							{ data: "RemoteHost" },
-							{ data: "Creator" },
-							{ data: "ExceptionInfo" }
-						],
-						lengthChange: false,
-						searching: false,
-						info: false,
-						displayLength: 50,
-						order: [],
-						ordering: false,
-						language: dataTable_lang_kor,
-						createdRow: function (row, data, index) {
-							var startDate = "";
+                    if ((data["DeleteDate"] != null && data["DeleteDate"] != "") && data["DeleteDate"].length >= 19) {
+                        deleteDate = data["DeleteDate"].substring(2, 10) + " " + data["DeleteDate"].substring(11, 16);
+					}
 
-			                if ((data["StartDate"] != null && data["StartDate"] != "") && data["StartDate"].length >= 19) {
-			                    startDate = data["StartDate"].substring(2, 10) + " " + data["StartDate"].substring(11, 16);
-							}
+					$('td', row).eq(6).html('').append(createDate);
+					$('td', row).eq(7).html('').append(piEnd);
+					$('td', row).eq(8).html('').append(deleteDate);
 
-							$('td', row).eq(5).html('').append(startDate);
-							$('td', row).eq(9).html('').append(data["Creator"]);
-						}
-					});
-                }
-			});
+					var piState = data["PIState"];
+					var piStateHtml = "<button type=\"button\" class=\"btn btn-default\">대기</button>";
+
+					if (piState == "1") {
+                        // 진행중
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-primary\">진행중</button>";
+					} else if (piState == "2") {
+                        // 처리중
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-primary\">처리중</button>";
+					} else if (piState == "5") {
+                        // 멈춤
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-secondary\">멈춤</button>";
+					} else if (piState == "7") {
+                        // 완료
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-success\">완료</button>";
+					} else if (piState == "8") {
+                        // 강제종료(회수)
+                        piStateHtml = "<button type=\"button\" class=\"btn btn-warning\">강제종료(회수)</button>";
+					} else if (piState == "99") {
+                        // 처리중 에러
+						piStateHtml = "<button type=\"button\" class=\"btn btn-danger\">처리중 에러</button>";
+					}
+
+                    $('td', row).eq(9).html('').append(piStateHtml);
+
+					$('td', row).eq(10).addClass('text-center text-nowrap').html('').append("<select class='custom-select' onchange='viewWorkItemAction(this, \"" + data["MessageID"] + "\", \"" + data["OID"] + "\")' data-menu=\"select\"><option selected value=''>선택</option><option value='B'>기본 정보</option><option value='L'>결재선 정보</option><option value='I'>WorkItem 정보</option><option value='O'>문서열기</option><option value='D'>삭제</option></select>");
+
+                    if (deleteDate != null && deleteDate != "") {
+						$(row).find("td").css("text-decoration", "line-through");
+					}
+				}
+            });
 		}
     </script>
 }

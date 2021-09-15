@@ -36,7 +36,8 @@
                 dataType: 'JSON',
 				data: '{actionKind:"2", domainID: 1, codeType: ""}',
 				success: function (result) {
-					$("#lblCount").text("0개의 직위/직급이 존재합니다.");
+					$("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+					$("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>0개의 직위/직급 코드가 존재합니다.</label></div>");
 
                     if (result.code != "OK") {
 						alert(result.message);
@@ -61,9 +62,9 @@
                             { data: null }
                         ],
                         lengthChange: false,
-                        searching: false,
+                        searching: true,
                         info: false,
-                        displayLength: 50,
+                        displayLength: 15,
                         order: [],
                         ordering: false,
                         language: dataTable_lang_kor,
@@ -73,7 +74,10 @@
                             $("td", row).eq(6).html('').append(
                                 "<button type='button' class='btn btn-default' onclick='setPopupGrade(\"" + data["Type"] + "\", \"" + data["Code"] + "\", \"" + data["CodeName"] + "\", \"" + data["InUse"] + "\")'>편집</button>");
                         }
-                    });
+					});
+
+                    $("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+                    $("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "개의 직위/직급 코드가 존재합니다.</label></div>");
                 }
 			});
 		}
@@ -211,14 +215,6 @@
                 <button type="button" class="btn btn-default" id="btnGradePopupClose" data-dismiss="modal">닫기</button>
                 <button type="button" class="btn btn-primary" id="btnGradeSave" onclick="saveGrade();" data-savemode="I">저장</button>
             </div>
-        </form>
-    </div>
-</div>
-
-<div class="card mb-4">
-    <div class="card-body">
-        <form class="form-inline">
-            <label id="lblCount" class="form-label">0개의 직위/직급이 존재합니다.</label>
         </form>
     </div>
 </div>

@@ -13,13 +13,11 @@
     @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
 
     <script type="text/javascript">
-		var prevSortColumn = "";
-		var prevSortType = "";
 		var tbl_list;
 
 		$(document).ready(function () {
 			$("#datepicker-range").datepicker({
-				language: "ko",
+				language: "KO",
                 format: "yyyy-mm-dd"
             });
 
@@ -42,13 +40,11 @@
 			}
 
             tbl_list = $('#tbl_list').DataTable({
-                "serverSide": true,
+				"serverSide": true,
                 "ajax": {
                     "url": '@Url.Action("SearchConnectLogList", "Event")',
 					"type": "POST",
 					"data": function (p) {
-						p.prevSortColumn = prevSortColumn;
-						p.prevSortType = prevSortType;
 						p.eventViewName = "ph_VIEW_BASE_WORKTIME_LIST";
 						p.searchColumn = $("#selSearchType").val();
 						p.searchText = $("#txtSearch").val();
@@ -56,10 +52,16 @@
 						p.searchEndDate = $("#datepicker-range input[name='end']").val();
 					},
 					"dataSrc": function (result) {
-						prevSortColumn = result.sortColumn;
-                        prevSortType = result.sortType;
+						if (result.code != "OK") {
+							alert(result.message);
 
-                        return result.data;
+						    return [];
+					    }
+
+                        $("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
+						$("#tbl_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>" + result.recordsTotal + "건의 접속 이력 정보가 존재합니다.</label></div>");
+
+						return result.data;
                     }
 				},
                 "columns": [
@@ -75,8 +77,8 @@
 				"searching": false,
 				"lengthChange": false,
 				"info": false,
-				"displayLength": 20,
-                "order": []
+				"displayLength": 15,
+				"order": []
             });
 		}
     </script>
@@ -93,7 +95,7 @@
             <div class="input-daterange input-group mx-sm-3" id="datepicker-range">
                 <input type="text" class="form-control" name="start">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">to</span>
+                    <span class="input-group-text"> ~ </span>
                 </div>
                 <input type="text" class="form-control" name="end">
             </div>
