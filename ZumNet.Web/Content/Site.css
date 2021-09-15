@@ -190,7 +190,7 @@
     color: #337ab7;
 }
 
-/* listview ---------------> */
+/* bbs, kms, edm, ea listview ---------------> */
 .pagination-sm .page-link, .pagination-sm > li > a:not(.page-link) {
     padding-top: .375rem;
     padding-bottom: .375rem;
@@ -281,7 +281,7 @@
         display: none !important;
     }
 }
-/* listview <--------------- */
+/* bbs, kms, edm, ea listview <--------------- */
 
 /* contact */
 .contacts-col-view .contact-content {

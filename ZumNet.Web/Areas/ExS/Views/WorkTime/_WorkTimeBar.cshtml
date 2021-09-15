@@ -4,10 +4,14 @@
 
 <div id="" class="flex-fill d-flex align-items-center">
     <div class="w-100 pl-3 pl-md-5 pr-0">
-        <div class="progress">
+        <div class="progress mt-1 text-small">
+            <div class="progress-bar bg-white text-secondary" style="width: @(lMinPer.ToString())%" data-for="realhour-text"></div>
+            <div class="progress-bar bg-white text-secondary" style="width: @((100 - lMinPer).ToString())%" data-for="extrahour-text"></div>
+        </div>
+        <div class="progress mt-1" style="height: 6px">
             <div class="progress-bar bg-light" style="width: @(lMinPer.ToString())%">
                 <div class="progress" style="border-top-right-radius: 0; border-bottom-right-radius: 0">
-                    <div class="progress-bar progress-bar-striped bg-info" data-for="minhour"></div>
+                    <div class="progress-bar progress-bar-striped bg-info" data-for="realhour"></div>
                 </div>
             </div>
             <div class="progress-bar bg-light" style="width: @((100 - lMinPer).ToString())%">

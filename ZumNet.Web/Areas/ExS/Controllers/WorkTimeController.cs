@@ -250,111 +250,6 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         }
 
         /// <summary>
-        /// 개인 근무현황
-        /// </summary>
-        /// <returns></returns>
-        [SessionExpireFilter]
-        [Authorize]
-        public ActionResult PersonStatus(string Qi)
-        {
-            string rt = Bc.CtrlHandler.PageInit(this, false);
-            if (rt != "")
-            {
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
-
-            rt = "잘못된 경로로 접근했습니다!!";
-            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0")
-            {
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
-
-            ZumNet.Framework.Core.ServiceResult svcRt = null;
-
-            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
-
-            //권한 및 월 기준시간 가져오기
-            rt = Bc.CtrlHandler.WorkTimeInit(this, iCategoryId);
-            if (rt != "")
-            {
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
-
-            using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
-            {
-                svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(Session["URID"]), ViewBag.R.current.date.ToString(), "", "", "", "");
-            }
-
-            if (svcRt != null && svcRt.ResultCode == 0)
-            {
-                ViewBag.BoardList = svcRt.ResultDataSet;
-            }
-            else
-            {
-                rt = svcRt.ResultMessage;
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
-
-            return View();
-        }
-
-        [SessionExpireFilter]
-        [HttpPost]
-        [Authorize]
-        public string PersonStatus()
-        {
-            string sPos = "";
-            string rt = Bc.CtrlHandler.AjaxInit(this);
-
-            if (rt == "")
-            {
-                try
-                {
-                    sPos = "100";
-                    JObject jPost = ViewBag.R;
-
-                    ZumNet.Framework.Core.ServiceResult svcRt = null;
-
-                    sPos = "200";
-                    int iCategoryId = Convert.ToInt32(jPost["ct"]);
-
-                    //권한 및 월 기준시간 가져오기
-                    sPos = "300";
-                    rt = Bc.CtrlHandler.WorkTimeInit(this, iCategoryId);
-                    if (rt != "")
-                    {
-                        return "[" + sPos + "] " + rt;
-                    }
-
-                    sPos = "400";
-                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
-                    {
-                        svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(jPost["lv"]["tgt"]), jPost["lv"]["start"].ToString(), "", "", "", "");
-                    }
-
-                    if (svcRt != null && svcRt.ResultCode == 0)
-                    {
-                        sPos = "410";
-                        ViewBag.BoardList = svcRt.ResultDataSet;
-
-                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListView", ViewBag);
-                    }
-                    else
-                    {
-                        //에러페이지
-                        rt = svcRt.ResultMessage;
-                    }
-                }
-                catch(Exception ex)
-                {
-                    rt = "[" + sPos + "] " + ex.Message;
-                }
-            }
-            
-            return rt;
-        }
-
-        /// <summary>
         /// 근무상태 이벤트 설정
         /// </summary>
         /// <returns></returns>
@@ -526,6 +421,46 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     rt = "[" + sPos + "] " + ex.Message;
                 }
             }
+            return rt;
+        }
+
+        /// <summary>
+        /// 조정신청 갯수 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string RequestCount()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+                if (jPost == null || jPost.Count == 0 || jPost["ur"].ToString() == "" || jPost["chief"].ToString() == "" || jPost["mo"].ToString() == "")
+                {
+                    return "필수값 누락!";
+                }
+
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                {
+                    svcRt = wtBiz.GetWorkTimeRequestCount(Convert.ToInt32(jPost["ur"]), jPost["chief"].ToString(), jPost["mo"].ToString());
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    rt = "OK" + svcRt.ResultDataString;
+                }
+                else
+                {
+                    //에러페이지
+                    rt = svcRt.ResultMessage;
+                }
+            }
+
             return rt;
         }
 
