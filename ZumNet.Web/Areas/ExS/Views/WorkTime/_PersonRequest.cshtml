@@ -121,7 +121,7 @@
         else
         {
             sb.Append("<tr>");
-            sb.AppendFormat("<th colspan=\"{0}\">{1}</th>", _columnConfig.GetLength(0), "해당 목록이 없습니다!");
+            sb.AppendFormat("<th colspan=\"{0}\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
             sb.Append("</tr>");
         }
         sb.Append("</tbody>");

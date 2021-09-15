@@ -301,12 +301,15 @@ $(function () {
             var t = setTimeout(_zw.fn.getTotalWorkTime, 600000); //10분
         },
         "progBar": function (real, ex) {
+            if (real == '' || isNaN(real)) return false;
+
             var min = _zw.V.current["minhour"], max = _zw.V.current["maxhour"], extra = _zw.V.current["extrahour"];
 
             var barLen = _zw.ut.rate(real, min, 1) + "%";
             var barText = _zw.ut.rate(real, min, 1) + "% (" + real + "h)";
 
-            $('.progress-bar[data-for="minhour"]').html(barText).css('width', barLen);
+            $('.progress-bar[data-for="realhour"]').css('width', barLen);
+            $('.progress-bar[data-for="realhour-text"]').html(barText);
 
             barLen = _zw.ut.rate(ex, extra, 1);
             barText = _zw.ut.rate(ex, extra, 1) + "% (" + ex + "h)";
@@ -316,7 +319,8 @@ $(function () {
             else if (barLen < 71) barColor = 'progress-bar-warning';
             else barColor = 'progress-bar-danger';
 
-            $('.progress-bar[data-for="extrahour"]').html(barText).addClass(barColor);
+            $('.progress-bar[data-for="extrahour-text"]').html(barText)
+            $('.progress-bar[data-for="extrahour"]').addClass(barColor);
 
             if (barLen > 100) barLen = 100;
             $('.progress-bar[data-for="extrahour"]').css('width', barLen + '%');

@@ -18,6 +18,26 @@ $(function () {
         if (e.which == 13) _zw.fn.goSearch();
     });
 
+    _zw.fn.reqCnt = function () {
+        $.ajax({
+            type: "POST",
+            url: '/ExS/WorkTime/RequestCount',
+            data: '{ur:"' + _zw.V.current.urid + '",chief:"' + _zw.V.current.chief + '",mo:"' + _zw.V.current.operator + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    var cnt = res.substr(2).split(';');                    
+                    $('.sidenav-item .z-lm-cnt').each(function () {
+                        if ($(this).attr('data-for') == 'my') $(this).html('(' + cnt[0] + ')');
+                        else if ($(this).attr('data-for') == 'member') $(this).html('(' + cnt[1] + ')');
+                        else if ($(this).attr('data-for') == 'all') $(this).html('(' + cnt[2] + ')');
+                    });
+
+                } else bootbox.alert(res);
+            }
+        });
+    }
+
+    _zw.fn.reqCnt();
     
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
@@ -105,4 +125,6 @@ $(function () {
         _zw.V.lv.end = '';
         _zw.V.lv.basesort = '';
     }
+
+    
 });
