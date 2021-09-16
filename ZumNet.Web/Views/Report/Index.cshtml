@@ -64,9 +64,7 @@
                         <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
                     </div>
                 </div>
-                <div class="d-flex align-items-center z-list-menu">
-
-                </div>
+                <div class="d-none d-sm-flex align-items-center z-list-menu">@Html.Partial("_ListMenu")</div>
             </div>
         </div>
         <!-- / Header -->
@@ -74,9 +72,8 @@
         <div class="flex-grow-1 position-relative" style="border-top: 2px solid #eee">
             <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
             <div class="px-3@(sListScroll)">
-                <div class="z-list" id="__List">
-                    @Html.Partial(sPatialView)
-                </div>
+                <div class="z-list" id="__List">@Html.Partial(sPatialView)</div>
+                <div id="__ListPage">@Html.Partial("_ListPagination")</div>
             </div>
         </div>
     </div>

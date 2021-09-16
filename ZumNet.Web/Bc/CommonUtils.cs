@@ -1402,7 +1402,7 @@ namespace ZumNet.Web.Bc
         {
             string strReturn = "";
             ZumNet.Framework.Core.ServiceResult svcRt = null;
-            
+
             using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
             {
                 //권한체크

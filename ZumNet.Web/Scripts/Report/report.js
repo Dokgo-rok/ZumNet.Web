@@ -33,8 +33,8 @@ $(function () {
 
                     var v = res.substr(2).split(_zw.V.lv.boundary);
                     $('#__List').html(v[0]);
-                    //$('#__ListCount').html(v[1]);
-                    //$('#__ListPage').html(v[2]);
+                    $('.z-list-menu').html(v[1]);
+                    $('#__ListPage').html(v[2]);
 
                     _zw.fn.bindCtrl();
 
@@ -94,7 +94,7 @@ $(function () {
 
     _zw.fn.initLv = function (tgt) {
         var sCnt = _zw.ut.getCookie('docLvCount');
-        sCnt = $('.z-lv-page select').val();
+        if ($('.z-list-page select').length > 0) sCnt = $('.z-list-page select').val();
 
         _zw.V.lv.tgt = tgt;
         _zw.V.lv.page = '1';

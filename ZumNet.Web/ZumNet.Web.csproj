@@ -1176,6 +1176,10 @@
     <Content Include="Views\Report\_REGISTER_ECNPLAN.cshtml" />
     <Content Include="Views\Report\_ListMenu.cshtml" />
     <Content Include="Views\Report\_ListCommon.cshtml" />
+    <Content Include="Views\Report\_REGISTER_TOOLING.cshtml" />
+    <Content Include="Views\Report\_ListPagination.cshtml" />
+    <Content Include="Views\Report\_FORM_BIZTRIPPLAN.cshtml" />
+    <Content Include="Views\Report\_FORM_NEWDEVELOPREQUEST.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

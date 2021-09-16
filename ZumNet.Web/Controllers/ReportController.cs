@@ -37,6 +37,9 @@ namespace ZumNet.Web.Controllers
             int iFolderId = StringHelper.SafeInt(ViewBag.R.fdid.Value);
             string formTable = ViewBag.R.ft.ToString();
 
+            ViewBag.R.lv["page"] = "1";
+            ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("docLvCount").ToString();
+
             //초기 설정
             rt = Bc.CtrlHandler.ReportInit(this, iCategoryId, iFolderId, Request["qi"].ToString());
             if (rt != "")
@@ -235,7 +238,9 @@ namespace ZumNet.Web.Controllers
 
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, sPatialView, ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
-                                + RazorViewToString.RenderRazorViewToString(this, "_ListMenu", ViewBag);
+                                + RazorViewToString.RenderRazorViewToString(this, "_ListMenu", ViewBag)
+                                +jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "_ListPagination", ViewBag);
                     }
                     else
                     {

@@ -1,5 +1,16 @@
-﻿@{
-    
+﻿@if (ViewBag.R.ft == "REGISTER_TOOLING")
+{
+    <a class="text-blue mr-3" href="javascript:void();"><i class="fas fa-tools"></i> 금형작성</a>
+    <a class="text-success" href="javascript:void();"><i class="fe-download"></i> 엑셀</a>
+}
+else if (ViewBag.R.ft == "FORM_BIZTRIPPLAN")
+{
+    <div class="mr-3">
+        <span class="mr-1"><i class="fas fa-circle text-success"></i> 출장예정</span>
+        <span class="mr-1"><i class="fas fa-circle text-danger"></i> 출장중</span>
+        <span><i class="fas fa-circle"></i> 출장완료</span>
+    </div>
+    <a class="text-success" href="javascript:void();"><i class="fe-download"></i> 엑셀</a>
 }
 
 

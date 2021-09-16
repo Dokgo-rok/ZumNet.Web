@@ -1,0 +1,274 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+
+@{
+    //4M변경관리현황, FORM_BIZTRIPPLAN
+
+    ConfigColumn();
+
+    //Response.Write("=======" + ViewBag.R.lv.cd1.ToString());
+}
+
+@functions {
+
+    string[,] _columnConfig = null;
+    string _tblWidth = "";
+
+    private void ConfigColumn()
+    {
+        //크레신 : 해외출장계획서 -> 2016-05-20 수정
+        //string[,] arr = { { "SEQ", "NO", "3%", "center", "" }, { "TRIPPERSONCORP", "법인", "4%", "center", "Y" }, { "TRIPPERSONORG", "부서", "9%", "center", "Y" }
+        //                , { "TRIPPERSONGRADE", "직급", "6%", "center", "Y" }, { "TRIPPERSON", "성명", "6%", "center", "Y" }, { "COMPANION", "동행자", "13%", "center", "Y" }
+        //                , { "LOCATION", "출장지", "11%", "", "Y" }, { "STATE", "상태", "3%", "center", "" }, { "TRIPFROM", "시작", "6%", "center", "" }
+        //                , { "TRIPTO", "종료", "6%", "center", "" }, { "CHANGEFROM", "시작", "6%", "center", "" }, { "CHANGETO", "종료", "6%", "center", "" }
+        //                , { "PURPOSE", "출장목적", "14%", "", "Y" }, { "PIStart", "등록일", "7%", "center", "" }};
+
+        string[,] arr = { { "SEQ", "NO", "3%", "", "" }, { "TRIPPERSONORG", "부서", "9%", "", "Y" }
+                            , { "TRIPPERSONGRADE", "직급", "7%", "", "Y" }, { "TRIPPERSON", "성명", "6%", "", "Y" }, { "COMPANIONYN", "동행자", "5%", "", "" }
+                            , { "LOCATION", "출장지", "12%", "L", "Y" }, { "STATE", "상태", "3%", "", "" }, { "TRIPFROM", "시작", "6%", "", "" } //51
+                            , { "TRIPTO", "종료", "6%", "", "" }, { "CHANGEFROM", "시작", "6%", "", "" }, { "CHANGETO", "종료", "6%", "", "" }
+                            , { "PURPOSE", "출장목적", "16%", "L", "Y" }, { "DocStatus", "결재상태", "8%", "", "" }, { "PIStart", "등록일", "7%", "", "" }};
+        this._columnConfig = arr;
+        this._tblWidth = "100%";
+    }
+
+    private string RenderColumnHeader(string mode)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+        }
+        sb.Append("</colgroup>");
+
+        sb.Append("<thead>");
+        sb.AppendFormat("<tr class=\"table-success\"><th rowspan=\"2\">{0}</th><th colspan=\"4\">{1}</th><th rowspan=\"2\">{2}</th><th rowspan=\"2\">{3}</th><th colspan=\"2\">{4}</th><th colspan=\"2\">{5}</th><th rowspan=\"2\">{6}</th><th rowspan=\"2\">{7}</th><th rowspan=\"2\" style=\"border-right:0\">{8}</th></tr><tr class=\"table-success\"><td>{9}</th><th>{10}</th><th>{11}</th><th>{12}</th><th>{13}</th><th>{14}</th><th>{15}</th><th>{16}</th></tr>"
+                            , _columnConfig[0, 1].ToString(), "출장자", _columnConfig[5, 1].ToString(), _columnConfig[6, 1].ToString(), "출장기간", "출장기간(변경)", _columnConfig[11, 1].ToString(), _columnConfig[12, 1].ToString(), _columnConfig[13, 1].ToString(), _columnConfig[1, 1].ToString(), _columnConfig[2, 1].ToString(), _columnConfig[3, 1].ToString(), _columnConfig[4, 1].ToString(), _columnConfig[7, 1].ToString(), _columnConfig[8, 1].ToString(), _columnConfig[9, 1].ToString(), _columnConfig[10, 1].ToString());
+
+        sb.Append("</thead>");
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            int iRow = 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            sb.Append(RenderColumnHeader(mode));
+            sb.Append("<tbody>");
+
+            DataTable dt = data.Tables[0];
+            DataRow[] rowCol = null;
+
+            foreach (DataRow row in dt.Rows)
+            {
+                if (row["Step"] == null) sb.AppendFormat("<tr id=\"_{0}\">", row["MessageID"].ToString());
+                else sb.AppendFormat("<tr id=\"_{0}\" step=\"{1}\">", row["MessageID"].ToString(), row["Step"].ToString());
+
+                rowCol = null;
+                if (data.Tables.Count > 1 && data.Tables[1].Rows.Count > 0) rowCol = data.Tables[1].Select("OID = " + row["OID"].ToString(), "SubStep, Seq");
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+
+                    if (strID.ToUpper() == "SEQ")
+                    {
+                        strValue = iRow.ToString();
+                    }
+                    else if (strID == "PublishDate" || strID == "PIStart")
+                    {
+                        strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
+                    }
+                    else if (strID == "LOCATION" || strID == "TRIPPERSON")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm();\">" + row[strID].ToString() + "</a>";
+                    }
+                    else if (strID == "STATE")
+                    {
+                        string strFrom = (row["CHANGEFROM"].ToString().Trim() == "") ? row["TRIPFROM"].ToString() : row["CHANGEFROM"].ToString();
+                        string strTo = (row["CHANGETO"].ToString().Trim() == "") ? row["TRIPTO"].ToString() : row["CHANGETO"].ToString();
+                        int iState = DateState(DateTime.Now.ToString("yyyy-MM-dd"), strFrom, strTo);
+
+                        if (iState == 0) strValue = "<i class=\"fas fa-circle text-success\"></i>";
+                        else if (iState == 7) strValue = "<i class=\"fas fa-circle\"></i>";
+                        else if (iState == 1) strValue = "<i class=\"fas fa-circle text-danger\"></i>";
+                        else if (iState == 99) strValue = "<i class=\"fas fa-circle text-white\"></i>";
+                    }
+                    else if (strID == "DocStatus")
+                    {
+                        if (ViewBag.DocStatus == null) strValue = row[strID].ToString();
+                        else strValue = StrDocStatus(row[strID].ToString());
+                    }
+                    else if (strID == "COMPANION")
+                    {
+                        strValue = "";
+                        if (rowCol != null && rowCol.Length > 0)
+                        {
+                            foreach (DataRow r in rowCol)
+                            {
+                                strValue += "<div style=\"font-size:12px;color:#333\">" + r["ParticipantInfo1"].ToString() + "." + r["ParticipantName"].ToString() + "</div>";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString();
+                    }
+                    strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
+
+                    if (strID == "CHANGEFROM" || strID == "CHANGETO")
+                    {
+                        //출장자, 작성자 또는 관리자만 출장기간 변경 가능
+                        if (row["CreatorID"].ToString() == Session["URID"].ToString() || row["TRIPPERSONID"].ToString() == Session["URID"].ToString() || row["TRIPPERSONEMPID"].ToString() == Session["empid"].ToString() || Session["Admin"].ToString() == "Y")
+                        {
+                            sb.AppendFormat("<td class=\"{0}\" style=\"cursor:hand\">{1}</td>", _columnConfig[i, 3].ToString(), strValue, row["RegID"].ToString(), row["Step"].ToString());
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "", strValue);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "", strValue);
+                    }
+                }
+                sb.Append("</tr>");
+                iRow++;
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            dt = null;
+            return sb.ToString();
+        }
+        return "";
+    }
+
+    private int DateState(string comp, string from, string to)
+    {
+        if (from == "" || to == "") return 99;//잘못된 값
+                                              //2013-04-09 아래 2줄 추가 : yyyyMMdd로 들어오는 경우를 위해
+        if (from.IndexOf('-') < 0 && from.Length == 8) from = from.Substring(0, 4) + "-" + from.Substring(4, 2) + "-" + from.Substring(6, 2);
+        if (to.IndexOf('-') < 0 && to.Length == 8) to = to.Substring(0, 4) + "-" + to.Substring(4, 2) + "-" + to.Substring(6, 2);
+
+        TimeSpan ts1 = DateTime.Parse(comp) - DateTime.Parse(from);
+        TimeSpan ts2 = DateTime.Parse(comp) - DateTime.Parse(to);
+        if (ts1.Days < 0) return 0;//예정
+        else if (ts2.Days > 0) return 7;//종료
+        else return 1;//진행중
+    }
+
+    private string StrDocStatus(string ss)
+    {
+        foreach (DataRow row in ViewBag.DocStatus)
+        {
+            if (row["ItemSubHandler"].ToString() == ss)
+            {
+                string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+                if (sCurrentLocale.ToLower().IndexOf("ko") >= 0) return row["Item1"].ToString();
+                else if (sCurrentLocale.ToLower().IndexOf("zh") >= 0) return row["Item3"].ToString();
+                else return row["Item2"].ToString();
+            }
+        }
+        return ss;
+    }
+
+    private string ListCount()
+    {
+        string sPage = "";
+        int totalCount = 0;
+        if (ViewBag.R.ft.ToString() == "___")
+        {
+            int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+            int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+            int totalPage = totalCount / pageCount;
+
+            if (totalCount % pageCount > 0) { totalPage++; }
+            if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+            sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+
+        }
+        else
+        {
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            sPage = String.Format("{0} {1} {2}", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count);
+        }
+
+        return sPage;
+    }
+
+    private string ListCond()
+    {
+        string swidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wwd-md-80 wd-lg-70 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", swidth);
+
+        sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.Append("<span class=\"input-group-text\">~</span>");
+        sb.Append("</div>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control end-date px-1\" value=\"{0}\">", ViewBag.R.lv.end);
+        sb.AppendFormat("<div class=\"input-group-append{0}\">", _columnConfig != null && _columnConfig.GetLength(0) > 0 ? "  d-flex d-sm-none" : "");
+        sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
+        {
+            sb.Append("<div class=\"z-list-search input-group d-none d-sm-flex\">");
+            sb.Append("<select class=\"custom-select ml-1\" id=\"_SearchSelect\">");
+            sb.AppendFormat("<option value=\"\">{0}..</option>", Resources.Global.Select);
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 4].ToString() == "Y")
+                {
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == ViewBag.R.lv.cd1.ToString() ? " selected" : "");
+                }
+
+            }
+            sb.Append("</select>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, ViewBag.R.lv.cd2.ToString());
+
+            sb.Append("<span class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</span>");
+            sb.Append("</div>");
+        }
+
+        sb.Append("</div>"); //z-list-cond
+        return sb.ToString();
+    }
+}
+
+<div class="z-list-head d-flex justify-content-between my-2">
+    <div class="z-list-page d-flex align-items-center" id="__ListCount">
+        <div class="z-list-total mt-1 mr-1">
+            <i class="fe-chevron-right"></i> @ListCount()
+        </div>
+    </div>
+    @Html.Raw(ListCond())
+</div>
+
+<div class="z-list-body" id="__ListView">
+    @Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))
+</div>
+
