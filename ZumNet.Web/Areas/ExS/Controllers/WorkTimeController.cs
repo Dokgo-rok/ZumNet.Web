@@ -20,7 +20,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         {
             //string rt = Bc.CtrlHandler.PageInit(this, false);
 
-            if (Qi == null || Qi.Length == 0) Qi = Server.UrlEncode("{ct:\"303\",ctalias:\"worktime\",ttl:\"근무현황\",opnode:\"\"}");
+            //if (Qi == null || Qi.Length == 0) Qi = Server.UrlEncode("{ct:\"303\",ctalias:\"worktime\",ttl:\"근무현황\",opnode:\"\"}");
 
             string rt = Bc.CtrlHandler.PageInit(this, false);
             if (rt != "")

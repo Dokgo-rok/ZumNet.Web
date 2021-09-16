@@ -8,6 +8,17 @@
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    string sPatialView = "_" + ViewBag.R.ft.ToString();
+
+    //Response.Write("===" + Server.MapPath("~/Views/Report/" + sPatialView + ".cshtml"));
+
+    if (!File.Exists(Server.MapPath("~/Views/Report/" + sPatialView + ".cshtml")))
+    {
+        sPatialView = "_ListCommon";
+    }
+
+    string sListScroll = " z-list-scroll";
 }
 
 @section Styles {
@@ -19,6 +30,8 @@
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+
+    @Scripts.Render("~/Scripts/Report/report.js")
 
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
@@ -37,7 +50,6 @@
     <!-- sidebox -->
     @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
     <!-- / sidebox -->
-
     <!-- content -->
     <div class="d-flex flex-column w-100">
         <!-- Header -->
@@ -48,57 +60,24 @@
                         <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
                     </div>
 
-                    <div class="h5 mb-0 z-ttl">
+                    <div class="h5 mb-0">
                         <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
                     </div>
                 </div>
-                <div class="d-flex align-items-center z-lv-page" id="__ListCount">
+                <div class="d-flex align-items-center z-list-menu">
 
-                </div>
-
-            </div>
-
-            <hr class="border-light m-0 d-none">
-
-            <div class="d-flex align-items-center container-p-x" style="padding-bottom: .6rem !important">
-                <div class="z-lv-menu btn-group-sm">
-                    <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
-                    @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W"))
-                    {
-                        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeDoc" data-zv-menu="write"><i class="fe-edit-2"></i></button>
-                    }
-                </div>
-                <div class="px-1 flex-grow-1"></div>
-                <div class="d-flex z-lv-cond">
-                    <div class="datepicker input-group input-daterange z-lv-date mr-1">
-                        <input type="text" class="form-control start-date px-1">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">~</span>
-                        </div>
-                        <input type="text" class="form-control end-date px-1">
-                    </div>
-                    <div class="input-group z-lv-search">
-                        <select class="custom-select">
-                            <option>@Resources.Global.Select...</option>
-                            <option>@Resources.Global.Title</option>
-                            <option>@Resources.Global.Writer</option>
-                        </select>
-                        <input type="text" class="form-control" placeholder="@Resources.Global.Search">
-                        <span class="input-group-append">
-                            <button class="btn btn-secondary" type="button"><i class="fe-search"></i></button>
-                        </span>
-                    </div>
                 </div>
             </div>
         </div>
         <!-- / Header -->
 
-        <div class="flex-grow-0 z-lv-hdr">
-
-        </div>
-
-        <div class="flex-grow-1 position-relative">
-
+        <div class="flex-grow-1 position-relative" style="border-top: 2px solid #eee">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="px-3@(sListScroll)">
+                <div class="z-list">
+                    @Html.Partial(sPatialView)
+                </div>
+            </div>
         </div>
     </div>
     <!-- / content -->

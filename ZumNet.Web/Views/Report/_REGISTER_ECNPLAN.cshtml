@@ -1,0 +1,211 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    //4M변경관리현황, REGISTER_ECNPLAN
+
+    ConfigColumn();
+
+    //Response.Write("=======");
+}
+
+@functions {
+
+    string[,] _columnConfig = null;
+    string _tblWidth = "";
+
+    private void ConfigColumn()
+    {
+        //컬럼 : id,표기,넓이,정렬,검색여부
+        string[,] arr = { { "SEQ", "NO", "40px", "", "" }, { "MODELNAME", "모델명", "130px", "L", "Y" }, { "PARTNO", "부품번호", "130px", "L", "Y" }
+                        , { "PARTNM", "부품명", "180px", "L", "Y" }, { "CRNO", "요청서 NO", "120px", "", "Y" }, { "CHANGETYPE", "변경종류", "100px", "L", "Y" } //700
+                        , { "CHANGEREASON", "변경사유", "150px", "L", "" }, { "C_CreatorDept", "요청부서", "120px", "", "Y" }, { "C_Creator", "요청자", "100px", "", "Y" }, { "C_PIStart", "요청일", "80px", "", "" }
+                        , { "C_DocStatus", "결재상태", "70px", "", "" } , { "NEXTWORKERDEPT", "통보작성부서", "100px", "", "" }  , { "NEXTWORKER", "작성자", "60px", "", "" } //680
+                        , { "SUMMARY", "주변경내용", "200px", "L", "" }, { "CHANGECLS", "변경구분", "80px", "L", "" }, { "CORPORATION", "적용<br />법인", "60px", "", "" }
+                        , { "CHECKUSE", "구부품<br />사용관계", "60px", "", "" }, { "CHECKLOT", "적용LOT", "60px", "", "" }, { "S_CreatorDept", "작성부서", "120px", "", "" }
+                        , { "S_PIStart", "작성일", "80px", "", "" }, { "S_DocStatus", "결재상태", "70px", "", "" } //730
+                        , { "VH", "VH", "50px", "", "" }, { "CH", "CH", "50px", "", "" }, { "CD", "CD", "50px", "", "" }, { "CT", "CT", "50px", "", "" }
+                        , { "CL", "CL", "50px", "", "" }, { "IC", "IC", "50px", "", "" }, { "IS", "IS", "50px", "", "" } //350
+                        };
+        this._columnConfig = arr;
+        this._tblWidth = "2460px";
+    }
+
+    private string RenderColumnHeader(string mode)
+    {
+        string strValue = "";
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+        }
+        sb.Append("</colgroup>");
+
+        sb.Append("<thead>");
+        sb.AppendFormat("<tr class=\"table-success\"><th rowspan=\"2\">{0}</th><th colspan=\"12\">{1}</th><th colspan=\"8\">{2}</th><th colspan=\"7\">{3}</th></tr>"
+                            , _columnConfig[0, 1].ToString(), "사양변경 요청현황", "사양변경 배포현황", "생산법인 조치현황");
+
+        sb.Append("<tr class=\"table-success\">");
+        for (int i = 1; i < _columnConfig.GetLength(0); i++)
+        {
+            if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y") strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort();\">{0}</a>", _columnConfig[i, 1].ToString());
+            else strValue = _columnConfig[i, 1].ToString();
+
+            sb.AppendFormat("<th id=\"f_{0}\">{1}</th>", _columnConfig[i, 0].ToString(), strValue);
+        }
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            int iRow = 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            sb.Append(RenderColumnHeader(mode));
+            sb.Append("<tbody>");
+
+            DataTable dt = data.Tables[0];
+            foreach (DataRow row in dt.Rows)
+            {
+                sb.AppendFormat("<tr id=\"_{0}.{1}\">", row["C_MsgID"].ToString(), row["CRNO"].ToString());
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+                    strValue = "";
+
+                    if (strID == "SEQ")
+                    {
+                        strValue = iRow.ToString();
+                    }
+                    else if (strID.IndexOf("PIStart") > 0)
+                    {
+                        strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
+                    }
+                    else if (strID == "CHANGECLS")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strValue != "" && strValue.IndexOf(';') > 0)
+                        {
+                            strValue = strValue.Substring(0, strValue.Length - 1).Replace(";", ", ");
+                        }
+                    }
+                    else if (strID == "MODELNAME" || strID == "C_DocStatus")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strID == "C_DocStatus") strValue = (strValue == "700") ? ZumNet.Web.Bc.CommonUtils.LvDate(row["C_END"].ToString()) : "진행";
+
+                        if (mode != "xls")
+                        {
+                            strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm(null, '{0}');\">{1}</a>", row["C_MsgID"].ToString(), strValue);
+                        }
+                    }
+                    else if (strID == "S_DocStatus")
+                    {
+                        if (row["S_MsgID"].ToString() != "")
+                        {
+                            strValue = (row[strID].ToString() == "700") ? ZumNet.Web.Bc.CommonUtils.LvDate(row["S_END"].ToString()) : "진행";
+                            if (mode != "xls")
+                            {
+                                strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm(null, '{0}');\">{1}</a>", row["S_MsgID"].ToString(), strValue);
+                            }
+                        }
+                        else
+                        {
+                            strValue = "";
+                        }
+                    }
+                    else if (strID == "VH" || strID == "CH" || strID == "CD" || strID == "CT" || strID == "CL" || strID == "IC" || strID == "IS")
+                    {
+                        strValue = row[strID + "_APVRSTATUS"].ToString();
+                        if (strValue == "7") strValue = "완료";
+                        else if (strValue == "1") strValue = "진행";
+                        else if (strValue == "0") strValue = "대기";
+                        else if (strValue == "5") strValue = "중지";
+                        else if (strValue == "8") strValue = "취소";
+                        else strValue = "";
+
+                        if (strValue != "" && mode != "xls")
+                        {
+                            strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openECNPlan('{0}');\">{1}</a>", row[strID + "_ECNID"].ToString(), strValue);
+                        }
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString();
+                    }
+                    strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
+
+                    sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "", strValue);
+                }
+                sb.Append("</tr>");
+                iRow++;
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            dt = null;
+            return sb.ToString();
+        }
+        return "";
+    }
+
+    private string SearchField(string col, string txt)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<select class=\"custom-select d-none d-sm-block\" id=\"_SearchSelect\">");
+        sb.AppendFormat("<option value=\"\">{0}..</option>", Resources.Global.Select);
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            if (_columnConfig[i, 4].ToString() == "Y")
+            {
+                sb.AppendFormat("<option value=\"{0}\"{1}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == col ? " selected" : "");
+            }
+
+        }
+        sb.Append("</select>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control d-none d-sm-block\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, txt);
+        sb.Append("<span class=\"input-group-append\">");
+        sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+        sb.Append("</span>");
+
+        return sb.ToString();
+    }
+}
+
+@if (!Request.IsAjaxRequest())
+{
+    <div class="z-list-head d-flex justify-content-between my-2">
+        <div class="z-list-page d-flex align-items-center d-none d-sm-block"id="__ListCount">
+            @Html.Partial("_ListCount")
+        </div>
+        <div class="z-list-cond input-group wd-99 wd-lg-70 wd-xl-50">
+            <div class="z-list-date datepicker input-group input-daterange wd-94 wd-lg-49 wd-xl-49">
+                <input type="text" class="form-control start-date px-1" value="@ViewBag.R.lv.start">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">~</span>
+                </div>
+                <input type="text" class="form-control end-date px-1" value="@ViewBag.R.lv.end">
+            </div>
+            <div class="z-list-search input-group wd-5 wd-lg-51 wd-xl-51">
+                @Html.Raw(SearchField(ViewBag.R.lv.search.ToString(), ViewBag.R.lv.searchtext.ToString()))
+            </div>
+        </div>
+    </div>
+}
+
+<div class="z-list-body" id="__ListView">
+        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))
+</div>
+

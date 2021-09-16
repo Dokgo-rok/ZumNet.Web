@@ -1033,7 +1033,7 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"]));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
                 sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
-                sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
+                sb.AppendFormat(",\"qi\":\"{0}\"", "");
                 //sb.AppendFormat(",\"qi\":\"{0}\"", "");
                 sb.Append(",\"lv\": {");
                 sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));
@@ -1114,7 +1114,7 @@ namespace ZumNet.Web.Bc
                         sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"]));
                         sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
                         sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
-                        sb.AppendFormat(",\"qi\":\"{0}\"", HttpContext.Current.Server.UrlEncode(req));
+                        sb.AppendFormat(",\"qi\":\"{0}\"", "");
                         sb.Append(",\"lv\": {");
                         sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));
                         sb.AppendFormat(",\"page\":\"{0}\"", StringHelper.SafeString(jReq["page"]));
@@ -1385,6 +1385,79 @@ namespace ZumNet.Web.Bc
                     //에러페이지
                     strReturn = svcRt.ResultMessage;
                 }
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
+        /// 대장, 집계 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="ctId"></param>
+        /// <param name="fdId"></param>
+        /// <param name="qi"></param>
+        /// <returns></returns>
+        public static string ReportInit(this Controller ctrl, int ctId, int fdId, string qi)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+            
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+            {
+                //권한체크
+                if (HttpContext.Current.Session["Admin"].ToString() == "Y")
+                {
+                    ctrl.ViewBag.R.current["operator"] = "Y";
+                }
+                else
+                {
+                    svcRt = cb.GetObjectPermission(1, ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]), fdId, "O", "0");
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ctrl.ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                        ctrl.ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                    }
+                    else
+                    {
+                        //에러페이지
+                        strReturn = svcRt.ResultMessage;
+                    }
+                }
+
+                if (strReturn == "")
+                {
+                    svcRt = cb.SelectCodeDescription("ea", "docstatus", ""); //문서진행상태
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ctrl.ViewBag.DocStatus = svcRt.ResultDataRowCollection;
+                    }
+                    else
+                    {
+                        //에러페이지
+                        strReturn = svcRt.ResultMessage;
+                    }
+                }
+            }
+
+            if (strReturn == "" && qi != "")
+            {
+                JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(qi));
+
+                ctrl.ViewBag.R.lv.Add("cd1", StringHelper.SafeString(jReq["cd1"]));
+                ctrl.ViewBag.R.lv.Add("cd2", StringHelper.SafeString(jReq["cd2"]));
+                ctrl.ViewBag.R.lv.Add("cd3", StringHelper.SafeString(jReq["cd3"]));
+                ctrl.ViewBag.R.lv.Add("cd4", StringHelper.SafeString(jReq["cd4"]));
+                ctrl.ViewBag.R.lv.Add("cd5", StringHelper.SafeString(jReq["cd5"]));
+                ctrl.ViewBag.R.lv.Add("cd6", StringHelper.SafeString(jReq["cd6"]));
+                ctrl.ViewBag.R.lv.Add("cd7", StringHelper.SafeString(jReq["cd7"]));
+                ctrl.ViewBag.R.lv.Add("cd8", StringHelper.SafeString(jReq["cd8"]));
+                ctrl.ViewBag.R.lv.Add("cd9", StringHelper.SafeString(jReq["cd9"]));
+                ctrl.ViewBag.R.lv.Add("cd10", StringHelper.SafeString(jReq["cd10"]));
+                ctrl.ViewBag.R.lv.Add("cd11", StringHelper.SafeString(jReq["cd11"]));
+                ctrl.ViewBag.R.lv.Add("cd12", StringHelper.SafeString(jReq["cd12"]));
             }
 
             return strReturn;

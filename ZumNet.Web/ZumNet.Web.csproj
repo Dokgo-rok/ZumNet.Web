@@ -365,6 +365,7 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\ExS\worktime.js" />
+    <Content Include="Scripts\Report\report.js" />
     <Content Include="Views\Portal\Webpart\Html\PortalMailList.xsl" />
     <Content Include="Content\site.css" />
     <Content Include="External\FusionChartsXT\js\fusioncharts.charts.js" />
@@ -1172,6 +1173,9 @@
     <Content Include="Views\Common\_ListPagination.cshtml" />
     <Content Include="Views\Common\_LeftMenu.cshtml" />
     <Content Include="Views\Common\_WorkTime.cshtml" />
+    <Content Include="Views\Report\_REGISTER_ECNPLAN.cshtml" />
+    <Content Include="Views\Report\_ListCount.cshtml" />
+    <Content Include="Views\Report\_ListCommon.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

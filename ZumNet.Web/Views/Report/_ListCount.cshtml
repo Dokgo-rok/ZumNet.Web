@@ -1,0 +1,27 @@
+﻿@{
+    string sPage = "";
+    int totalCount = 0;
+    if (ViewBag.R.ft.ToString() == "___")
+    {
+        int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+        totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+        int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+        int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+        int totalPage = totalCount / pageCount;
+
+        if (totalCount % pageCount > 0) { totalPage++; }
+        if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+        sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+
+    }
+    else
+    {
+        totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+        sPage = String.Format("{0} {1} {2}", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count);
+    }
+}
+<div class="z-list-total mt-2 mr-1">
+    <i class="fe-chevron-right"></i> @sPage
+</div>
+

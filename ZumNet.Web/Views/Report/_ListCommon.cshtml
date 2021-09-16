@@ -1,0 +1,134 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+@{
+    //뷰 파일이 없는 경우
+
+    ConfigColumn();
+
+}
+
+@functions {
+
+    string[,] _columnConfig = null;
+    string _tblWidth = "";
+
+    private void ConfigColumn()
+    {
+        this._tblWidth = "100%";
+    }
+
+    private string RenderColumnHeader(string mode)
+    {
+        string strValue = "";
+        StringBuilder sb = new StringBuilder();
+
+        if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
+        {
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead>");
+
+            sb.Append("<tr class=\"table-success\">");
+            for (int i = 1; i < _columnConfig.GetLength(0); i++)
+            {
+                if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y") strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort();\">{0}</a>", _columnConfig[i, 1].ToString());
+                else strValue = _columnConfig[i, 1].ToString();
+
+                sb.AppendFormat("<th id=\"f_{0}\">{1}</th>", _columnConfig[i, 0].ToString(), strValue);
+            }
+            sb.Append("</tr>");
+            sb.Append("</thead>");
+        }
+
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            int iRow = 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            sb.Append(RenderColumnHeader(mode));
+            sb.Append("<tbody>");
+
+            DataTable dt = data.Tables[0];
+            foreach (DataRow row in dt.Rows)
+            {
+
+                iRow++;
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            dt = null;
+            return sb.ToString();
+        }
+        return "";
+    }
+
+    private string SearchField(string col, string txt)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
+        {
+            sb.Append("<select class=\"custom-select d-none d-sm-block\" id=\"_SearchSelect\">");
+            sb.AppendFormat("<option value=\"\">{0}..</option>", Resources.Global.Select);
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 4].ToString() == "Y")
+                {
+                    sb.AppendFormat("<option value=\"{0}\"{1}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == col ? " selected" : "");
+                }
+
+            }
+            sb.Append("</select>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control d-none d-sm-block\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, txt);
+            sb.Append("<span class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</span>");
+        }
+
+        return sb.ToString();
+    }
+}
+
+@if (!Request.IsAjaxRequest())
+{
+    <div class="z-list-head d-flex justify-content-between my-2">
+        <div class="z-list-page d-flex align-items-center d-none d-sm-block"id="__ListCount">
+            @Html.Partial("_ListCount")
+        </div>
+        
+        <div class="z-list-cond input-group wd-99 wd-lg-70 wd-xl-50">
+            <div class="z-list-date datepicker input-group input-daterange wd-94 wd-lg-49 wd-xl-49">
+                <input type="text" class="form-control start-date px-1" value="@ViewBag.R.lv.start">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">~</span>
+                </div>
+                <input type="text" class="form-control end-date px-1" value="@ViewBag.R.lv.end">
+            </div>
+            <div class="z-list-search input-group wd-5 wd-lg-51 wd-xl-51">
+                @Html.Raw(SearchField(ViewBag.R.lv.search.ToString(), ViewBag.R.lv.searchtext.ToString()))
+            </div>
+        </div>
+        
+    </div>
+}
+
+<div class="z-list-body" id="__ListView">
+    @Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))
+</div>
+
