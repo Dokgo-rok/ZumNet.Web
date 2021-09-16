@@ -1174,7 +1174,7 @@
     <Content Include="Views\Common\_LeftMenu.cshtml" />
     <Content Include="Views\Common\_WorkTime.cshtml" />
     <Content Include="Views\Report\_REGISTER_ECNPLAN.cshtml" />
-    <Content Include="Views\Report\_ListCount.cshtml" />
+    <Content Include="Views\Report\_ListMenu.cshtml" />
     <Content Include="Views\Report\_ListCommon.cshtml" />
   </ItemGroup>
   <ItemGroup>

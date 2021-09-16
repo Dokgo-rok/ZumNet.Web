@@ -55,78 +55,118 @@
     {
         if (data != null && data.Tables.Count > 0)
         {
+            string strHeader = RenderColumnHeader(mode);
             string strID = "";
             string strValue = "";
             int iRow = 1;
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
-            sb.Append(RenderColumnHeader(mode));
+            sb.Append(strHeader);
             sb.Append("<tbody>");
 
-            DataTable dt = data.Tables[0];
-            foreach (DataRow row in dt.Rows)
+            if (strHeader == "")
             {
-
-                iRow++;
+                sb.AppendFormat("<tr><th>{0}</th></tr>", "뷰 정보가 없습니다.");
+            }
+            else
+            {
+                DataTable dt = data.Tables[0];
+                foreach (DataRow row in dt.Rows)
+                {
+                    iRow++;
+                }
+                dt = null;
             }
             sb.Append("</tbody>");
             sb.Append("</table>");
-            dt = null;
+
             return sb.ToString();
         }
         return "";
     }
 
-    private string SearchField(string col, string txt)
+    private string ListCount()
     {
+        string sPage = "";
+        int totalCount = 0;
+        if (ViewBag.R.ft.ToString() == "___")
+        {
+            int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+            int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+            int totalPage = totalCount / pageCount;
+
+            if (totalCount % pageCount > 0) { totalPage++; }
+            if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+            sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+
+        }
+        else
+        {
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            sPage = String.Format("{0} {1} {2}", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count);
+        }
+
+        return sPage;
+    }
+
+    private string ListCond()
+    {
+        string swidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wwd-md-80 wd-lg-70 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+
         StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", swidth);
+
+        sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.Append("<span class=\"input-group-text\">~</span>");
+        sb.Append("</div>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control end-date px-1\" value=\"{0}\">", ViewBag.R.lv.end);
+        sb.AppendFormat("<div class=\"input-group-append{0}\">", _columnConfig != null && _columnConfig.GetLength(0) > 0 ? "  d-flex d-sm-none" : "");
+        sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+        sb.Append("</div>");
+        sb.Append("</div>");
 
         if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
         {
-            sb.Append("<select class=\"custom-select d-none d-sm-block\" id=\"_SearchSelect\">");
+            sb.Append("<div class=\"z-list-search input-group d-none d-sm-flex\">");
+            sb.Append("<select class=\"custom-select ml-1\" id=\"_SearchSelect\">");
             sb.AppendFormat("<option value=\"\">{0}..</option>", Resources.Global.Select);
             for (int i = 0; i < _columnConfig.GetLength(0); i++)
             {
                 if (_columnConfig[i, 4].ToString() == "Y")
                 {
-                    sb.AppendFormat("<option value=\"{0}\"{1}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == col ? " selected" : "");
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == ViewBag.R.lv.search.ToString() ? " selected" : "");
                 }
 
             }
             sb.Append("</select>");
-            sb.AppendFormat("<input type=\"text\" class=\"form-control d-none d-sm-block\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, txt);
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, ViewBag.R.lv.searchtext.ToString());
+
             sb.Append("<span class=\"input-group-append\">");
             sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
             sb.Append("</span>");
+            sb.Append("</div>");
         }
 
+        sb.Append("</div>"); //z-list-cond
         return sb.ToString();
     }
 }
 
-@if (!Request.IsAjaxRequest())
-{
-    <div class="z-list-head d-flex justify-content-between my-2">
-        <div class="z-list-page d-flex align-items-center d-none d-sm-block"id="__ListCount">
-            @Html.Partial("_ListCount")
+<div class="z-list-head d-flex justify-content-between my-2">
+    <div class="z-list-page d-flex align-items-center d-none d-sm-block" id="__ListCount">
+        <div class="z-list-total mt-2 mr-1">
+            <i class="fe-chevron-right"></i> @ListCount()
         </div>
-        
-        <div class="z-list-cond input-group wd-99 wd-lg-70 wd-xl-50">
-            <div class="z-list-date datepicker input-group input-daterange wd-94 wd-lg-49 wd-xl-49">
-                <input type="text" class="form-control start-date px-1" value="@ViewBag.R.lv.start">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">~</span>
-                </div>
-                <input type="text" class="form-control end-date px-1" value="@ViewBag.R.lv.end">
-            </div>
-            <div class="z-list-search input-group wd-5 wd-lg-51 wd-xl-51">
-                @Html.Raw(SearchField(ViewBag.R.lv.search.ToString(), ViewBag.R.lv.searchtext.ToString()))
-            </div>
-        </div>
-        
     </div>
-}
+    @Html.Raw(ListCond())
+</div>
 
 <div class="z-list-body" id="__ListView">
     @Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))

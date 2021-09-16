@@ -235,7 +235,7 @@ namespace ZumNet.Web.Controllers
 
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, sPatialView, ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
-                                + RazorViewToString.RenderRazorViewToString(this, "_ListCount", ViewBag);
+                                + RazorViewToString.RenderRazorViewToString(this, "_ListMenu", ViewBag);
                     }
                     else
                     {

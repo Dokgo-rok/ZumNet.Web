@@ -2,19 +2,23 @@
 
 $(function () {
 
-    $('.datepicker').datepicker({
-        autoclose: true,
-        //format: "yyyy-mm-dd",
-        language: $('#current_culture').val()
-    });
+    _zw.fn.bindCtrl = function () {
+        $('.datepicker').datepicker({
+            autoclose: true,
+            //format: "yyyy-mm-dd",
+            language: $('#current_culture').val()
+        });
 
-    $('[data-zv-menu="search"]').click(function () {
-        _zw.fn.goSearch();
-    });
+        $('[data-zv-menu="search"]').click(function () {
+            _zw.fn.goSearch();
+        });
 
-    $('#_SearchText').keyup(function (e) {
-        if (e.which == 13) _zw.fn.goSearch();
-    });
+        $('#_SearchText').keyup(function (e) {
+            if (e.which == 13) _zw.fn.goSearch();
+        });
+    }
+
+    _zw.fn.bindCtrl();
 
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
@@ -28,9 +32,11 @@ $(function () {
                     history.pushState(null, null, url);
 
                     var v = res.substr(2).split(_zw.V.lv.boundary);
-                    $('#__ListView').html(v[0]);
-                    $('#__ListCount').html(v[1]);
+                    $('#__List').html(v[0]);
+                    //$('#__ListCount').html(v[1]);
                     //$('#__ListPage').html(v[2]);
+
+                    _zw.fn.bindCtrl();
 
                 } else bootbox.alert(res);
             }
