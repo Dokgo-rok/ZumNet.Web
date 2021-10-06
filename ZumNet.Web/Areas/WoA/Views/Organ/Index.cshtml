@@ -1,36 +1,39 @@
-﻿@{
+﻿@using System.Data;
+@using System.Text;
+@using System.Web.Configuration;
+@using Newtonsoft.Json;
+@using ZumNet.Framework.Util;
+@model DataSet
+@{
     ViewBag.Title = "사용자 관리";
 }
 
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/datatables/datatables")
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/bootstrap-select/bootstrap-select")
 }
 
 @section Scripts {
-    <!-- Dependencies -->
     @Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+    @Scripts.Render("~/bundle/vendor/js/moment/moment")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-select/bootstrap-select")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
 
     <script type="text/javascript">
 		var sortColumn = "DisplayName";
 		var sortType = "ASC";
 		var tbl_user_list;
 		var tbl_user_retired_list;
+		var gradeJson = @Html.Raw(ViewBag.grade);
+		var domainAlias = "@StringHelper.SafeString(WebConfigurationManager.AppSettings["CompanyCode"])";
 
 		$(document).ready(function () {
-			searchUserInfo("account", "");
+			searchUserInfo();
 
-			$("#txtSearch").on("keyup", function (e) {
-				if (e.keyCode == 13 && $.trim($(this).val()) != "") {
-					searchUserInfo("account", $(this).val());
-				}
-			});
-
-			$("#btnSearch").on("click", function () {
-				//tbl_user_list.columns(0).search($("#txtSearch").val()).columns(3).search($("#txtSearch").val()).draw();
-                searchUserInfo("account", $("#txtSearch").val());
-			});
-
-			$("li.nav-item a").bind("click", function () {
+            $("#divList").find("li.nav-item a").bind("click", function () {
 				if ($(this).hasClass("active")) {
 					return;
 				}
@@ -41,21 +44,45 @@
 					searchRetiredUserInfo('');
 				}
 			});
+
+            if (gradeJson != "") {
+				var optionHtml1 = "";
+				var optionHtml2 = "";
+
+				for (var i = 0; i < gradeJson.length; i++) {
+					if (gradeJson[i].Type == "A") {
+						optionHtml1 += "<option value=\"" + gradeJson[i].Code + "\">" + gradeJson[i].CodeName + "</option>";
+					} else {
+                        optionHtml2 += "<option value=\"" + gradeJson[i].Code + "\">" + gradeJson[i].CodeName + "</option>";
+					}
+				}
+
+				$("#selGrade").append(optionHtml1);
+				$("#selGrade2").append(optionHtml2);
+			}
+
+            vanillaTextMask.maskInput({
+                inputElement: $("#txtInDate")[0],
+                mask: [/\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, '-', /\d/, /\d/],
+                pipe: textMaskAddons.createAutoCorrectedDatePipe('yyyy-mm-dd')
+			});
+
+            vanillaTextMask.maskInput({
+                inputElement: $("#txtBirth")[0],
+                mask: [/\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, '-', /\d/, /\d/],
+                pipe: textMaskAddons.createAutoCorrectedDatePipe('yyyy-mm-dd')
+			});
 		});
 
-		function searchUserInfo(searchType, searchText) {
+		function searchUserInfo() {
             $("#tbl_user_list_wrapper,#tbl_user_list").show();
 			$("#tbl_user_retired_list_wrapper,#tbl_user_retired_list").hide();
-
-			if (searchText == "") {
-				$("#txtSearch").val("");
-			}
 
 			$.ajax({
                 url: '@Url.Action("SearchUserInfo", "Organ")',
 				type: 'POST',
                 dataType: 'JSON',
-				data: '{domainID: 1, groupID: "", groupType: "D", pageIndex: 0, pageCount: 0, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchType: "' + searchType + '", searchText: "' + searchText + '", admin: "Y"}',
+				data: '{domainID: 1, groupID: "", groupType: "D", pageIndex: 0, pageCount: 0, sortColumn: "' + sortColumn + '", sortType: "' + sortType + '", searchType: "account", searchText: "", admin: "Y"}',
 				success: function (result) {
 					$("#tbl_user_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").empty();
 					$("#tbl_user_list_wrapper").find("div.row:eq(0)").find("div:eq(0)").append("<div class=\"dataTables_length\"><label>0명의 사용자가 존재합니다.</label></div>");
@@ -79,7 +106,8 @@
 	                        { data: "Grade1" },
 	                        { data: "LogonID" },
 	                        { data: "Mobile" },
-                            { data: "InDate" },
+							{ data: "InDate" },
+                            { data: null },
                         ],
                         lengthChange: false,
                         searching: true,
@@ -89,9 +117,8 @@
                         ordering: true,
                         language: dataTable_lang_kor,
                         createdRow: function (row, data, index) {
-                            $('td', row).eq(0).html('').append(
-                                '<a href="/WoA/Organ/Member/' + data["UserID"] + '">' + data["DisplayName"] + '</a>'
-                            );
+                            $('td', row).eq(6).addClass('text-center text-nowrap').html('').append(
+								"<button type='button' class='btn btn-default' onclick='editMemberPopup(\"" + $.trim(data["UserID"]) + "\")'>편집</button>&nbsp;&nbsp;<button type='button' class='btn btn-default' onclick='deleteMember(\"" + $.trim(data["UserID"]) + "\")'>삭제</button>");
                         }
 					});
 
@@ -142,7 +169,7 @@
                         ordering: true,
                         language: dataTable_lang_kor,
                         createdRow: function (row, data, index) {
-                            
+
                         }
 					});
 
@@ -151,15 +178,1055 @@
                 }
 			});
 		}
+
+		var selectedUserID = "";
+
+		function initializeModal() {
+			selectedUserID = "";
+
+			$("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+
+            $("#divModalButton").show();
+			$("#divBasicButtion,#divDetail1Buttion,#divDetail2Buttion,#divGroupButtion,#divFolderButtion,#divMailButtion").hide();
+
+			$("#member-basic,#member-detail1,#member-detail2,#member-group,#member-folder,#member-mail").find("input").val("");
+            $("#member-basic,#member-detail1,#member-detail2,#member-group,#member-folder,#member-mail").find("textarea").val("");
+			$("#member-basic,#member-detail1,#member-detail2,#member-group,#member-folder,#member-mail").find("select").prop("selectedIndex", 0);
+			$("#member-basic,#member-detail1,#member-detail2,#member-group,#member-folder,#member-mail").prop("checked", false);
+			$("#tblDeptList,#tblConcurrentList,#tblOwnershipList").find("tbody").find("tr").remove();
+
+            // GW는 활성화
+			$("#chkGW").prop("checked", true);
+
+			$("h5.modal-title").text("사용자 생성");
+
+			$("#txtMailAccount,#txtOUName,#txtMailServer,#txtPersonDocCapacity").prop("disabled", true);
+            $("#txtLogonID").prop("disabled", false);
+		}
+
+		function showNewMemberPopup() {
+			initializeModal();
+
+            $("#modalsDefault").modal("show");
+		}
+
+		function editMemberPopup(userID) {
+			initializeModal();
+
+			$.ajax({
+                url: '@Url.Action("GetUserTotalInfo", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{userID:' + userID + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+			        $("h5.modal-title").text("사용자 수정");
+
+                    var basicInfo = result.data.ResultDataSet.ResultTable1[0];
+
+					selectedUserID = basicInfo.UserID;
+
+					$("#txtLogonID").prop("disabled", true);
+					$("#txtLogonID").val(basicInfo.LogonID);
+                    $("#txtDisplayName").val(basicInfo.DisplayName);
+					$("#txtLastName").val(basicInfo.LastName);
+                    $("#txtFirstName").val(basicInfo.FirstName);
+					$("#txtEmpID").val(basicInfo.EmpID);
+					$("#txtInDate").val(basicInfo.InDate);
+					$("#txtMailAccount").val(basicInfo.MailAccount);
+                    $("#txtMailSubAccount").val(basicInfo.SecondMail);
+					$("#txtOUName").val(basicInfo.OUName);
+					$("#txtMailServer").val(basicInfo.MailServer);
+					$("#selGrade").val(basicInfo.GradeCode1);
+                    $("#selGrade2").val(basicInfo.GradeCode2);
+					$("#chkGW").prop("checked", (basicInfo.IsGW == "Y") ? true : false);
+					$("#chkPDM").prop("checked", (basicInfo.IsPDM == "Y") ? true : false);
+					$("#chkERP").prop("checked", (basicInfo.IsERP == "Y") ? true : false);
+					$("#chkMSG").prop("checked", (basicInfo.ISMSG == "Y") ? true : false);
+
+                    $("#txtPersonNo1").val(basicInfo.PersonNo1);
+					$("#txtPersonNo2").val(basicInfo.PersonNo2);
+					$("#txtBirth").val(basicInfo.Birth);
+
+					if (basicInfo.BirthType != "1" && basicInfo.BirthType != "2") {
+						$("#selBithType").val("1");
+					} else {
+                        $("#selBithType").val(basicInfo.BirthType);
+					}
+					
+                    $("#txtMobile").val(basicInfo.Mobile);
+					$("#txtTelephone").val(basicInfo.Telephone);
+					$("#txtKeyword1").val(basicInfo.Keyword1);
+					$("#txtKeyword2").val(basicInfo.Keyword2);
+					$("#txtKeyword3").val(basicInfo.Keyword3);
+					$("#txtKeyword4").val(basicInfo.Keyword4);
+					$("#txtKeyword5").val(basicInfo.Keyword5);
+					$("#txtKeyword6").val(basicInfo.Keyword6);
+
+					if (basicInfo.MyDocCapacity != "생성안됨") {
+                        $("#txtPersonDocCapacity").val(basicInfo.MyDocCapacity);
+					}
+
+					$("#txtHomePhone").val(basicInfo.HomePhone);
+					$("#txtFax").val(basicInfo.Fax);
+					$("#txtHomePage").val(basicInfo.HomePage);
+					$("#txtThemePath").val(basicInfo.ThemePath);
+					$("#txtZipCode1").val(basicInfo.ZipCode1);
+					$("#txtAddress1").val(basicInfo.Address1);
+                    $("#txtDetailAddr1").val(basicInfo.DetailAddress1);
+                    $("#txtCompany").val(basicInfo.Company);
+                    $("#txtZipCode2").val(basicInfo.ZipCode2);
+					$("#txtAddress2").val(basicInfo.Address2);
+                    $("#txtDetailAddr2").val(basicInfo.DetailAddress2);
+
+					var deptInfo = result.data.ResultDataSet.ResultTable3;
+
+					var deptHtml = "";
+					var conCurrentHtml = "";
+
+					for (var i = 0; i < deptInfo.length; i++) {
+						deptHtml += "<tr>";
+						deptHtml += "<td data-roletype='" + deptInfo[i].ROLE + "' data-gralias='" + deptInfo[i].GRAlias + "'>" + deptInfo[i].DisplayName + "</td>";
+                        deptHtml += "<td>" + deptInfo[i].Description + "</td>";
+						deptHtml += "<td>" + deptInfo[i].RoleName + "</td>";
+
+                        conCurrentHtml += "<tr>";
+						conCurrentHtml += "<td>" + deptInfo[i].DisplayName + "</td>";
+                        conCurrentHtml += "<td>" + deptInfo[i].Position + "</td>";
+						conCurrentHtml += "<td>" + deptInfo[i].Title + "</td>";
+                        conCurrentHtml += "<td>" + deptInfo[i].BizPlace + "</td>";
+
+			            if (deptInfo[0].ROLE == "regular") {
+                            deptHtml += "<td>&nbsp;</td>";
+			            } else {
+                            deptHtml += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"setAsMainGroup('" + deptInfo[i].GRAlias + "')\">주 그룹으로 설정</button></td>";
+						}
+
+						deptHtml += "</tr>";
+                        conCurrentHtml += "</tr>";
+					}
+
+					$("#tblDeptList tbody").append(deptHtml);
+					$("#tblConcurrentList tbody").append(conCurrentHtml);
+
+					var ownerShipInfo = result.data.ResultDataSet.ResultTable4;
+
+					var folderHtml = "";
+
+					for (var j = 0; j < ownerShipInfo.length; j++) {
+						folderHtml += "<tr>";
+						folderHtml += "<td data-oid='" + ownerShipInfo[j].OID + "'>" + ownerShipInfo[j].DisplayName + "</td>";
+                        folderHtml += "<td>" + ownerShipInfo[j].CTName + "</td>";
+                        folderHtml += "<td>" + ownerShipInfo[j].AttTypeName + "</td>";
+                        folderHtml += "</tr>";
+					}
+
+					$("#tblOwnershipList tbody").append(folderHtml);
+
+                    $("#divBasicButtion,#divDetail1Buttion,#divDetail2Buttion,#divGroupButtion,#divFolderButtion,#divMailButtion").show();
+					$("#divModalButton").hide();
+
+                    $("#modalsDefault").modal("show");
+					$("body").addClass("modal-open");
+                }
+			});
+		}
+
+        // 부서 추가
+		function appendDeptInfo() {
+			if ($("#selDept").val() == "0") {
+				return;
+			}
+
+            // 중복 체크
+			if ($("#tblDeptList").find("td[data-gralias='" + $("#selDept").val() + "']").length > 0) {
+				alert("해당 부서는 이미 추가되어 있습니다.");
+
+				$("#selDept").val("0");
+				$("#selDept").trigger("change");
+
+				return;
+			}
+
+            var deptCount = $("#tblDeptList tbody tr").length;
+
+			var deptHtml = "<tr>";
+
+			if (deptCount >= 1) {
+                deptHtml += "<td data-roletype='concurrent' data-gralias='" + $("#selDept").val() + "'>" + $("#selDept option:selected").text() + "</td>";
+			    deptHtml += "<td>부서 그룹</td>";
+			    deptHtml += "<td>부서원</td>";
+                deptHtml += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"setAsMainGroup('" + $("#selDept").val() + "')\">주 그룹으로 설정</button></td>";
+			} else {
+                deptHtml += "<td data-roletype='regular' data-gralias='" + $("#selDept").val() + "'>" + $("#selDept option:selected").text() + "</td>";
+			    deptHtml += "<td>부서 그룹</td>";
+			    deptHtml += "<td>부서원</td>";
+                deptHtml += "<td>&nbsp;</td>";
+			}
+
+            deptHtml += "</tr>";
+
+			$("#tblDeptList tbody").append(deptHtml);
+
+            $("#selDept").val("0");
+            $("#selDept").trigger("change");
+		}
+
+        // 주그룹으로 설정
+		function setAsMainGroup(grAlias) {
+			$("#tblDeptList tbody tr").each(function () {
+				if ($(this).find("td:eq(0)").attr("data-gralias") == grAlias) {
+                    $(this).find("td:eq(0)").attr("data-roletype", "regular");
+				    $(this).find("td:eq(3)").empty();
+				} else {
+                    $(this).find("td:eq(0)").attr("data-roletype", "concurrent");
+				    $(this).find("td:eq(3)").empty();
+                    $(this).find("td:eq(3)").append("<button type=\"button\" class=\"btn btn-default\" onclick=\"setAsMainGroup('" + $(this).find("td:eq(0)").attr("data-gralias") + "')\">주 그룹으로 설정</button>");
+				}
+			});
+		}
+
+        // 폴더 추가
+		function appendOwnershipInfo() {
+			if ($("#selOwnership").val() == "0") {
+				return;
+			}
+
+            // 중복 체크
+			if ($("#tblOwnershipList").find("td[data-oid='" + $("#selOwnership").val() + "']").length > 0) {
+				alert("해당 폴더는 이미 추가되어 있습니다.");
+
+				$("#selOwnership").val("0");
+				$("#selOwnership").trigger("change");
+
+				return;
+			}
+
+			var folderHtml = "<tr>";
+			folderHtml += "<td data-oid='" + $("#selOwnership").val() + "'>" + $("#selOwnership option:selected").attr("data-displayname") + "</td>";
+            folderHtml += "<td>" + $("#selOwnership option:selected").attr("data-ctname") + "</td>";
+			folderHtml += "<td>참조</td>";
+			folderHtml += "</tr>";
+
+			$("#tblOwnershipList tbody").append(folderHtml);
+
+            $("#selOwnership").val("0");
+            $("#selOwnership").trigger("change");
+		}
+
+        // 사용자 생성
+		function createMember() {
+            if ($("#txtLogonID").val() == "") {
+                alert("ID를 입력하세요");
+
+				$("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+                $("#txtLogonID").focus();
+
+				return false;
+			}
+
+			if ($("#txtDisplayName").val() == "") {
+                alert("한글이름을 입력하세요");
+
+				$("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+				$("#txtDisplayName").focus();
+
+				return false;
+			}
+
+            if ($("#txtLastName").val() == "") {
+                alert("성을 입력하세요");
+
+				$("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+				$("#txtLastName").focus();
+
+				return false;
+			}
+
+            if ($("#txtFirstName").val() == "") {
+                alert("이름을 입력하세요");
+
+				$("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+				$("#txtFirstName").focus();
+
+				return false;
+			}
+
+            if ($("#selGrade").val() == "0") {
+                alert("직위를 선택하세요");
+
+				$("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+				$("#selGrade").focus();
+
+				return false;
+			}
+
+            if ($("#selGrade2").val() == "0") {
+                alert("직책을 선택하세요");
+
+				$("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+				$("#selGrade2").focus();
+
+				return false;
+			}
+
+            if (!$("#chkGW").prop("checked") && !$("#chkPDM").prop("checked") && !$("#chkERP").prop("checked") && !$("#chkMSG").prop("checked")) {
+				alert("사용 시스템명을 선택하지 않았습니다.!");
+
+                $("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+                return false;
+			}
+
+            if ($("#tblDeptList").find("td[data-roletype='regular']").length == 0) {
+                alert("소속 부서를 선택하세요");
+
+                $("#modalsDefault").find("a.nav-link").eq(3).trigger("click");
+				return false;
+			}
+
+            // 메일 계정 체크 생략
+
+            // PDM 체크 시
+			if ($("#chkPDM").prop("checked")) {
+				//var x = 500;
+				//var y = 600;
+
+				//var etcParam = "toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,resizable=0";
+				//var sy = window.screen.height / 2 - y / 2 - 40;
+
+				//var sx = window.screen.width / 2 - x / 2;
+				//if (sy < 0) sy = 0;
+
+				//var sz = ",top=" + sy + ",left=" + sx;
+
+				//window.open("/logon/SSOpdm.aspx?uid=" + pdmAdminId + "&upw=" + pdmAdminPwd + "&target=adminmain", "winChilladmin", etcParam + ",width=" + x + ",height=" + y + sz);
+				//self.focus();
+
+				//return false;
+			} else {
+                var memberInfo = {};
+			    memberInfo.LogonID = $("#txtLogonID").val();
+				memberInfo.MailAccount = $("#txtMailAccount").val();
+				memberInfo.DomainAlias = domainAlias;
+                memberInfo.DisplayName = $("#txtDisplayName").val();
+                memberInfo.EmployeeID = $("#txtEmpID").val();
+				memberInfo.IsLive = "Y";
+                memberInfo.MailServer = "EXCH01";                     // HARDCODING
+				memberInfo.OUName = "크레신";                          // HARDCODING
+				memberInfo.LongName = $("#txtLastName").val() + "," + $("#txtFirstName").val();
+			    memberInfo.FirstName = $("#txtFirstName").val();
+			    memberInfo.LastName = $("#txtLastName").val();
+				memberInfo.JoinDate = $("#txtInDate").val();
+				memberInfo.GroupAlias = $("#tblDeptList").find("td[data-roletype='regular']").attr("data-gralias");
+				memberInfo.GroupID = 0;
+				memberInfo.Role = "regular";
+				memberInfo.GradeCode1 = $("#selGrade").val();
+				memberInfo.GradeCode2 = $("#selGrade2").val();
+                memberInfo.GradeCode3 = "";
+				memberInfo.GradeCode4 = "";
+				memberInfo.GradeCode5 = "";
+                memberInfo.PersonNo1 = $("#txtPersonNo1").val();
+				memberInfo.PersonNo2 = $("#txtPersonNo2").val();
+				memberInfo.Birth = $("#txtBirth").val();
+                memberInfo.BirthType = $("#selBithType").val();
+				memberInfo.Mobile = $("#txtMobile").val();
+				memberInfo.Telephone = $("#txtTelephone").val();
+				memberInfo.Fax = $("#txtFax").val();
+				memberInfo.HomePhone = $("#txtHomePhone").val();
+				memberInfo.HomePage = $("#txtHomePage").val();
+                memberInfo.ZipCode1 = $("#txtZipCode1").val();
+				memberInfo.Address1 = $("#txtAddress1").val();
+				memberInfo.DetailAddress1 = $("#txtDetailAddr1").val();
+				memberInfo.Company = $("#txtCompany").val();
+                memberInfo.ZipCode2 = $("#txtZipCode2").val();
+				memberInfo.Address2 = $("#txtAddress2").val();
+				memberInfo.DetailAddress2 = $("#txtDetailAddr2").val();
+				memberInfo.ThemePath = $("#txtThemePath").val();
+				memberInfo.Keyword1 = $("#txtKeyword1").val();
+				memberInfo.Keyword2 = $("#txtKeyword2").val();
+				memberInfo.Keyword3 = $("#txtKeyword3").val();
+				memberInfo.Keyword4 = $("#txtKeyword4").val();
+				memberInfo.Keyword5 = $("#txtKeyword5").val();
+				memberInfo.Keyword6 = $("#txtKeyword6").val();
+                memberInfo.Keyword7 = "";
+				memberInfo.IsInsa = "0";                                // HARDCODING
+			    memberInfo.MailSubAccount = $("#txtMailSubAccount").val();
+                memberInfo.IsGW = $("#chkGW").prop("checked") ? "Y" : "N";
+			    memberInfo.IsPDM = $("#chkPDM").prop("checked") ? "Y" : "N";
+			    memberInfo.IsERP = $("#chkERP").prop("checked") ? "Y" : "N";
+			    memberInfo.IsMSG = $("#chkMSG").prop("checked") ? "Y" : "N";
+
+                $.ajax({
+                    url: '@Url.Action("CreateMember", "Organ")',
+				    type: 'POST',
+				    dataType: 'JSON',
+				    data: '{memberJson: ' + JSON.stringify(memberInfo) + '}',
+				    success: function (result) {
+					    if (result.code != "OK") {
+						    alert(result.message);
+						    return;
+					    }
+
+					    alert("정상적으로 처리되었습니다.");
+					    $("#modalDefault").modal("hide");
+
+                        searchUserInfo();
+                    }
+			    });
+			}
+		}
+
+        // 기본 정보 수정
+		function saveBasicInfo() {
+            if ($("#txtDisplayName").val() == "") {
+                alert("한글이름을 입력하세요");
+				$("#txtDisplayName").focus();
+
+				return false;
+			}
+
+            if ($("#txtLastName").val() == "") {
+                alert("성을 입력하세요");
+				$("#txtLastName").focus();
+
+				return false;
+			}
+
+            if ($("#txtFirstName").val() == "") {
+                alert("이름을 입력하세요");
+				$("#txtFirstName").focus();
+
+				return false;
+			}
+
+            if ($("#selGrade").val() == "0") {
+                alert("직위를 선택하세요");
+				$("#selGrade").focus();
+
+				return false;
+			}
+
+            if ($("#selGrade2").val() == "0") {
+                alert("직책을 선택하세요");
+				$("#selGrade2").focus();
+
+				return false;
+			}
+
+            if (!$("#chkGW").prop("checked") && !$("#chkPDM").prop("checked") && !$("#chkERP").prop("checked") && !$("#chkMSG").prop("checked")) {
+				alert("사용 시스템명을 선택하지 않았습니다.!");
+
+                $("#modalsDefault").find("a.nav-link").eq(0).trigger("click");
+                return false;
+			}
+
+			var memberInfo = {};
+			memberInfo.UserID = selectedUserID;
+		    memberInfo.DisplayName = $("#txtDisplayName").val();
+            memberInfo.LongName = $("#txtLastName").val() + "," + $("#txtFirstName").val();
+			memberInfo.FirstName = $("#txtFirstName").val();
+			memberInfo.LastName = $("#txtLastName").val();
+			memberInfo.EmployeeID = $("#txtEmpID").val();
+            memberInfo.JoinDate = $("#txtInDate").val();
+			memberInfo.MailSubAccount = $("#txtMailSubAccount").val();
+            memberInfo.GradeCode1 = $("#selGrade").val();
+			memberInfo.GradeCode2 = $("#selGrade2").val();
+            memberInfo.IsGW = $("#chkGW").prop("checked") ? "Y" : "N";
+			memberInfo.IsPDM = $("#chkPDM").prop("checked") ? "Y" : "N";
+			memberInfo.IsERP = $("#chkERP").prop("checked") ? "Y" : "N";
+			memberInfo.IsMSG = $("#chkMSG").prop("checked") ? "Y" : "N";
+			    
+            $.ajax({
+                url: '@Url.Action("UpdateBasicUserInfo", "Organ")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{memberJson: ' + JSON.stringify(memberInfo) + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+                }
+			});
+		}
+
+        // 상세 정보1 수정
+		function saveDetail1Info() {
+            if (isNaN($("#txtPersonNo1").val())) {
+                alert("주민등록번호에는 숫자만 입력가능합니다.");
+				$("#txtPersonNo1").focus();
+
+				return false;
+			}
+
+            if (isNaN($("#txtPersonNo2").val())) {
+                alert("주민등록번호에는 숫자만 입력가능합니다.");
+				$("#txtPersonNo2").focus();
+
+				return false;
+			}
+
+            var memberInfo = {};
+			memberInfo.UserID = selectedUserID;
+		    memberInfo.PersonNo1 = $("#txtPersonNo1").val();
+			memberInfo.PersonNo2 = $("#txtPersonNo2").val();
+			memberInfo.Birth = $("#txtBirth").val();
+            memberInfo.BirthType = $("#selBithType").val();
+			memberInfo.Mobile = $("#txtMobile").val();
+			memberInfo.Telephone = $("#txtTelephone").val();
+			memberInfo.Keyword1 = $("#txtKeyword1").val();
+			memberInfo.Keyword2 = $("#txtKeyword2").val();
+			memberInfo.Keyword3 = $("#txtKeyword3").val();
+			memberInfo.Keyword4 = $("#txtKeyword4").val();
+			memberInfo.Keyword5 = $("#txtKeyword5").val();
+			memberInfo.Keyword6 = $("#txtKeyword6").val();
+            memberInfo.Keyword7 = "";
+			    
+            $.ajax({
+                url: '@Url.Action("UpdateDetail1UserInfo", "Organ")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{memberJson: ' + JSON.stringify(memberInfo) + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+                }
+			});
+		}
+
+        // 상세 정보2 수정
+		function saveDetail2Info() {
+            var memberInfo = {};
+			memberInfo.UserID = selectedUserID;
+			memberInfo.Fax = $("#txtFax").val();
+			memberInfo.HomePhone = $("#txtHomePhone").val();
+			memberInfo.HomePage = $("#txtHomePage").val();
+            memberInfo.ThemePath = $("#txtThemePath").val();
+            memberInfo.ZipCode1 = $("#txtZipCode1").val();
+			memberInfo.Address1 = $("#txtAddress1").val();
+			memberInfo.DetailAddress1 = $("#txtDetailAddr1").val();
+			memberInfo.Company = $("#txtCompany").val();
+            memberInfo.ZipCode2 = $("#txtZipCode2").val();
+			memberInfo.Address2 = $("#txtAddress2").val();
+			memberInfo.DetailAddress2 = $("#txtDetailAddr2").val();
+			    
+            $.ajax({
+                url: '@Url.Action("UpdateDetail2UserInfo", "Organ")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{memberJson: ' + JSON.stringify(memberInfo) + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+                }
+			});
+		}
+
+        // 소속 그룹 정보 수정
+		function saveGroupInfo() {
+			alert("미구현");
+		}
+
+        // 소유 폴더 정보 수정
+		function saveFolderInfo() {
+			alert("미구현");
+		}
+
+        // 메일 정보 수정
+		function saveMailInfo() {
+			alert("미구현");
+		}
+
+        // 사용자 삭제
+		function deleteMember(userID) {
+			if (!window.confirm("선택한 사용자를 삭제하시겠습니까?")) {
+				return false;
+			}
+
+            // PDM, ERP 삭제 여부 확인
+         //   if (g_pdmisD == "Y") {
+         //       if (!window.confirm("PDM 서버에 사용자 정보가 있습니다. 삭제하시겠습니까?")) {
+         //              g_pdmisD = "X";
+	        //    }
+	        //}
+	        //if (g_erpisD == "Y") {
+         //       if (!window.confirm("ERP 서버에 사용자 정보가 있습니다. 삭제하시겠습니까?")) {
+         //           g_erpisD = "X";
+         //       } 
+         //   }
+
+         // Process/ObjectManager.aspx.cs의 겸직 처리 추가
+         //겸직 처리: 겸직인 사용자만 처리, 수정시만 처리 : 2016-04-21
+
+            $.ajax({
+                url: '@Url.Action("DeleteUserInfo", "Organ")',
+				type: 'POST',
+                dataType: 'JSON',
+				data: '{userID:' + userID + '}',
+				success: function (result) {
+                    if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+                    alert("정상적으로 처리되었습니다.");
+
+                    searchUserInfo();
+                }
+			});
+		}
     </script>
 }
 
 <h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
     <div>사용자 관리</div>
-    <button type="button" class="btn btn-primary rounded-pill d-block"><span class="ion ion-md-add"></span>&nbsp; 신규</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="showNewMemberPopup()">신규</button>
 </h4>
 
-<div class="nav-tabs-top nav-responsive-sm">
+<div class="modal fade" id="modalsDefault">
+    <div class="modal-dialog">
+        <form class="modal-content" style="width:800px;">
+            <div class="modal-header">
+                <h5 class="modal-title">사용자 생성</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="nav-tabs-top nav-responsive-sm">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#member-basic">일반</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#member-detail1">상세 정보1</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#member-detail2">상세 정보2</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#member-group">소속 그룹</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#member-folder">소유 폴더</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#member-mail">메일 정보</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="member-basic">
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">ID</label>
+                                        <input type="text" id="txtLogonID" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">한글이름</label>
+                                        <input type="text" id="txtDisplayName" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">성(L)</label>
+                                        <input type="text" id="txtLastName" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">이름(F)</label>
+                                        <input type="text" id="txtFirstName" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">사번</label>
+                                        <input type="text" id="txtEmpID" class="form-control" maxlength="6">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">입사일</label>
+                                        <input type="text" id="txtInDate" class="form-control" placeholder="____-__-__">
+                                    </div>
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-group">
+                                    <label class="form-label">전자메일계정</label>
+                                    <input type="text" id="txtMailAccount" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">보조메일계정</label>
+                                    <input type="text" id="txtMailSubAccount" class="form-control">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">OU Name</label>
+                                        <input type="text" id="txtOUName" class="form-control" value="크레신">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">메일서버</label>
+                                        <input type="text" id="txtMailServer" class="form-control" value="EXCH01">
+                                    </div>
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">직위</label>
+                                        <select class="custom-select" id="selGrade">
+                                            <option value="0">직위를 선택하세요.</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">직책</label>
+                                        <select class="custom-select" id="selGrade2">
+                                            <option value="0">직책을 선택하세요.</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-group">
+                                    <label class="form-label">시스템 설정</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="switcher">
+                                        <input type="checkbox" class="switcher-input" id="chkGW">
+                                        <span class="switcher-indicator">
+                                            <span class="switcher-yes"></span>
+                                            <span class="switcher-no"></span>
+                                        </span>
+                                        <span class="switcher-label">그룹웨어</span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="switcher">
+                                        <input type="checkbox" class="switcher-input" id="chkPDM">
+                                        <span class="switcher-indicator">
+                                            <span class="switcher-yes"></span>
+                                            <span class="switcher-no"></span>
+                                        </span>
+                                        <span class="switcher-label">PDM</span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="switcher">
+                                        <input type="checkbox" class="switcher-input" id="chkERP">
+                                        <span class="switcher-indicator">
+                                            <span class="switcher-yes"></span>
+                                            <span class="switcher-no"></span>
+                                        </span>
+                                        <span class="switcher-label">ERP</span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="switcher">
+                                        <input type="checkbox" class="switcher-input" id="chkMSG">
+                                        <span class="switcher-indicator">
+                                            <span class="switcher-yes"></span>
+                                            <span class="switcher-no"></span>
+                                        </span>
+                                        <span class="switcher-label">메신저</span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="switcher">
+                                        <input type="checkbox" class="switcher-input" id="chkInsert">
+                                        <span class="switcher-indicator">
+                                            <span class="switcher-yes"></span>
+                                            <span class="switcher-no"></span>
+                                        </span>
+                                        <span class="switcher-label">체크시 PDM/ERP에 사용자 생성은 하지 않습니다.</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="divBasicButtion" class="card-footer">
+                                <button type="button" class="btn btn-primary mr-2" onclick="saveBasicInfo()">변경 사항 저장</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="member-detail1">
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">주민등록번호</label>
+                                        <input type="text" id="txtPersonNo1" class="form-control" maxlength="6">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">&nbsp;</label>
+                                        <input type="text" id="txtPersonNo2" class="form-control" maxlength="7">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">생년월일</label>
+                                        <input type="text" id="txtBirth" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">양력/음력</label>
+                                        <select class="custom-select" id="selBithType">
+                                            <option value="1">양력</option>
+                                            <option value="2">음력</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">휴대전화</label>
+                                        <input type="text" id="txtMobile" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">사무실전화</label>
+                                        <input type="text" id="txtTelephone" class="form-control">
+                                    </div>
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-group">
+                                    <label class="form-label">주업무</label>
+                                    <input type="text" id="txtKeyword1" class="form-control">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">부업무1</label>
+                                        <input type="text" id="txtKeyword2" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">부업무2</label>
+                                        <input type="text" id="txtKeyword3" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">부업무3</label>
+                                        <input type="text" id="txtKeyword4" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">부업무4</label>
+                                        <input type="text" id="txtKeyword5" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">직접입력업무</label>
+                                    <input type="text" id="txtKeyword6" class="form-control">
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-group">
+                                    <label class="form-label">개인 문서함 용량(MB)</label>
+                                    <input type="text" id="txtPersonDocCapacity" class="form-control">
+                                </div>
+                            </div>
+                            <div id="divDetail1Buttion" class="card-footer">
+                                <button type="button" class="btn btn-primary mr-2" onclick="saveDetail1Info()">변경 사항 저장</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="member-detail2">
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">집전화</label>
+                                        <input type="text" id="txtHomePhone" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">FAX</label>
+                                        <input type="text" id="txtFax" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">홈페이지(블로그)</label>
+                                    <input type="text" id="txtHomePage" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">테마경로</label>
+                                    <input type="text" id="txtThemePath" class="form-control">
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">우편번호(자택)</label>
+                                        <input type="text" id="txtZipCode1" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">주소(자택)</label>
+                                        <input type="text" id="txtAddress1" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">상세주소(자택</label>
+                                    <textarea class="form-control" id="txtDetailAddr1" placeholder="상세주소" rows="3"></textarea>
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-group">
+                                    <label class="form-label">회사명</label>
+                                    <input type="text" id="txtCompany" class="form-control">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label class="form-label">우편번호(회사)</label>
+                                        <input type="text" id="txtZipCode2" class="form-control">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label class="form-label">주소(회사)</label>
+                                        <input type="text" id="txtAddress2" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">상세주소(회사)</label>
+                                    <textarea class="form-control" id="txtDetailAddr2" placeholder="상세주소" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div id="divDetail2Buttion" class="card-footer">
+                                <button type="button" class="btn btn-primary mr-2" onclick="saveDetail2Info()">변경 사항 저장</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="member-group">
+                            <div class="card-body">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">소속 그룹</label>
+                                </div>
+                                <div class="form-row">
+                                    <table id="tblDeptList" class="table table-striped table-bordered" style="min-height:150px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:50%;">이름</th>
+                                                <th style="width:15%;">유형</th>
+                                                <th style="width:15%;">역할</th>
+                                                <th style="width:20%;">비고</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">소속 그룹 추가</label>
+                                    <select class="selectpicker" data-style="btn-default" data-live-search="true" id="selDept" onchange="appendDeptInfo()">
+                                        <option value="0">부서를 선택하세요.</option>
+                                        @{
+                                            int rowCount = Model?.Tables?["dtDept"]?.Rows?.Count ?? 0;
+
+                                            if (rowCount > 0)
+                                            {
+                                                foreach (DataRow dr in Model.Tables["dtDept"].Rows)
+                                                {
+                                                    <option value="@dr["GRAlias"].ToString()">@dr["DisplayName"].ToString()</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">겸직 처리</label>
+                                </div>
+                                <div class="form-row">
+                                    <table id="tblConcurrentList" class="table table-striped table-bordered" style="min-height:100px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:50%;">이름</th>
+                                                <th style="width:15%;">직위</th>
+                                                <th style="width:15%;">직책</th>
+                                                <th style="width:20%;">사업장</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="divGroupButtion" class="card-footer">
+                                <button type="button" class="btn btn-primary mr-2" onclick="saveGroupInfo()">변경 사항 저장</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="member-folder">
+                            <div class="card-body">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">소유 폴더</label>
+                                </div>
+                                <div class="form-row">
+                                    <table id="tblOwnershipList" class="table table-striped table-bordered" style="min-height:250px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:50%;">이름</th>
+                                                <th style="width:25%;">카테고리</th>
+                                                <th style="width:25%;">소유형태</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">폴더 추가</label>
+                                    <select class="selectpicker" data-style="btn-default" data-live-search="true" id="selOwnership" onchange="appendOwnershipInfo()">
+                                        <option value="0">폴더를 선택하세요.</option>
+                                        @{
+                                            int shipCount = Model?.Tables?["dtFolder"]?.Rows?.Count ?? 0;
+
+                                            if (shipCount > 0)
+                                            {
+                                                foreach (DataRow dr in Model.Tables["dtFolder"].Rows)
+                                                {
+                                                    string folderName = dr["DisplayName"].ToString() + " - " + dr["FDTypeName"].ToString() + " - " + dr["CTName"].ToString();
+
+                                                    <option value="@dr["OID"].ToString()" data-displayname="@dr["DisplayName"].ToString()" data-ctname="@dr["CTName"].ToString()">@folderName</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="divFolderButtion" class="card-footer">
+                                <button type="button" class="btn btn-primary mr-2" onclick="saveFolderInfo()">변경 사항 저장</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="member-mail">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">전자메일주소</label>
+                                    <input type="text" id="txtMailAddr" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">메일별칭</label>
+                                    <input type="text" id="txtMailAlias" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">메일저장소</label>
+                                    <textarea class="form-control" id="txtMailStorage" placeholder="메일저장소" rows="3"></textarea>
+                                </div>
+                                <hr class="border-light">
+                                <div class="form-group">
+                                    <label class="form-label">StorageQuota - KB(메일박스 용량 초과 알림)</label>
+                                    <input type="text" id="txtMailSQ" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">OverQuotaLimit - KB(메일 보내기 금지)</label>
+                                    <input type="text" id="txtMailOverQL" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">HardQuotaLimit - KB(메일 송수신 금지)</label>
+                                    <input type="text" id="txtMailHardQL" class="form-control">
+                                </div>
+                            </div>
+                            <div id="divMailButtion" class="card-footer">
+                                <button type="button" class="btn btn-primary mr-2" onclick="saveMailInfo()">변경 사항 저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="divModalButton" class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" onclick="createMember();">사용자 생성</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="divList" class="nav-tabs-top nav-responsive-sm">
     <ul class="nav nav-tabs">
         <li class="nav-item" id="li_member_in">
             <a class="nav-link active" data-toggle="tab" href="#member-in">전체 직원 보기</a>
@@ -180,6 +1247,7 @@
                             <th>ID(이메일)</th>
                             <th>휴대폰</th>
                             <th>입사일</th>
+                            <th>비고</th>
                         </tr>
                     </thead>
                 </table>

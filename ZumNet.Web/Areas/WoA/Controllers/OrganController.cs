@@ -24,9 +24,45 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            return View();
+            string actionKind = "2";
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+            string codeType = "";
+            string groupType = "D";
+
+            ServiceResult resultGrade = new ServiceResult();
+            ServiceResult resultDept = new ServiceResult();
+            ServiceResult resultFolder = new ServiceResult();
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                resultGrade = commonBiz.GetGradeCode(actionKind, domainID, codeType);
+
+                if (resultGrade.ResultCode == 0 && resultGrade.ResultItemCount > 0)
+                {
+                    ViewBag.grade = JsonConvert.SerializeObject(resultGrade.ResultDataTable);
+                }
+
+                resultFolder = commonBiz.GetSearchFolder(domainID, 0, "", "N");
+                resultFolder.ResultDataTable.TableName = "dtFolder";
+            }
+
+            using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+            {
+                resultDept = portalBiz.SearchDomainGroups(domainID.ToString(), "", groupType, "", "", "", "Y");
+                resultDept.ResultDataTable.TableName = "dtDept";
+            }
+
+            DataSet dsResult = new DataSet();
+            dsResult.Tables.Add(resultDept.ResultDataTable.Copy());
+            dsResult.Tables.Add(resultFolder.ResultDataTable.Copy());
+
+            return View(dsResult);
         }
 
+        /// <summary>
+        /// 사용자 검색
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
         public string SearchUserInfo()
@@ -142,6 +178,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return CreateJsonData();
         }
 
+        /// <summary>
+        /// 퇴직자 검색
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
         public string SearchRetiredUserInfo()
@@ -195,47 +235,447 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return CreateJsonData();
         }
 
-        #endregion
-
-        #region [ /Woa/Organ/Member ]
-
-        // GET: WoA/Organ/Member
+        /// <summary>
+        /// 사용자 정보 조회
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
         [Authorize]
-        public ActionResult Member(int id = 0)
+        public string GetUserTotalInfo()
         {
-            if (id == 0)
+            if (Request.IsAjaxRequest())
             {
-                return View();
-            }
+                JObject jPost = CommonUtils.PostDataToJson();
 
-            ServiceResult result = new ServiceResult();
-
-            using (CommonBiz commonBiz = new CommonBiz())
-            {
-                result = commonBiz.GetUserTotalInfo(id, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            }
-
-            if (result.ResultCode == 0)
-            {
-                if (result?.ResultDataSet?.Tables?.Count > 0)
+                if (jPost == null || jPost.Count == 0)
                 {
-                    DataTable dtUser = result.ResultDataSet.Tables[1];
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
 
-                    dtUser.Columns.Add("b_IsGw", typeof(bool));
-                    dtUser.Columns.Add("b_IsPDM", typeof(bool));
-                    dtUser.Columns.Add("b_IsERP", typeof(bool));
-                    dtUser.Columns.Add("b_IsMSG", typeof(bool));
-
-                    dtUser.Rows[0]["b_IsGw"] = (String.Compare(dtUser.Rows[0]["IsGw"].ToString(), "Y", true) == 0);
-                    dtUser.Rows[0]["b_IsPDM"] = (String.Compare(dtUser.Rows[0]["IsPDM"].ToString(), "Y", true) == 0);
-                    dtUser.Rows[0]["b_IsERP"] = (String.Compare(dtUser.Rows[0]["IsERP"].ToString(), "Y", true) == 0);
-                    dtUser.Rows[0]["b_IsMSG"] = (String.Compare(dtUser.Rows[0]["IsMSG"].ToString(), "Y", true) == 0);
+                    return CreateJsonData();
                 }
 
-                return View(result.ResultDataSet);
+                int userID = StringHelper.SafeInt(jPost["userID"].ToString());
+                string viewDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.GetUserTotalInfo(userID, viewDate);
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    //if (result?.ResultDataSet?.Tables?.Count > 0)
+                    //{
+                    //    DataTable dtUser = result.ResultDataSet.Tables[1];
+
+                    //    dtUser.Columns.Add("b_IsGw", typeof(bool));
+                    //    dtUser.Columns.Add("b_IsPDM", typeof(bool));
+                    //    dtUser.Columns.Add("b_IsERP", typeof(bool));
+                    //    dtUser.Columns.Add("b_IsMSG", typeof(bool));
+
+                    //    dtUser.Rows[0]["b_IsGw"] = (String.Compare(dtUser.Rows[0]["IsGw"].ToString(), "Y", true) == 0);
+                    //    dtUser.Rows[0]["b_IsPDM"] = (String.Compare(dtUser.Rows[0]["IsPDM"].ToString(), "Y", true) == 0);
+                    //    dtUser.Rows[0]["b_IsERP"] = (String.Compare(dtUser.Rows[0]["IsERP"].ToString(), "Y", true) == 0);
+                    //    dtUser.Rows[0]["b_IsMSG"] = (String.Compare(dtUser.Rows[0]["IsMSG"].ToString(), "Y", true) == 0);
+                    //}
+
+
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "사용자 정보를 조회하는데 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
             }
 
-            return View();
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 신규 사용자 추가
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string CreateMember()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                if (String.IsNullOrWhiteSpace(Request.Form[0]))
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                JObject jObj = JObject.Parse(Request.Form[0]);
+
+                string memberJson = StringHelper.SafeString(jObj["memberJson"].ToString());
+
+                // 다시 파싱
+                JObject jObjMember = JObject.Parse(memberJson);
+
+                string logonID = StringHelper.SafeString(jObjMember["LogonID"]);
+                string mailAccount = logonID;
+                string domainAlias = StringHelper.SafeString(jObjMember["DomainAlias"]);
+                string displayName = StringHelper.SafeString(jObjMember["DisplayName"]);
+                string employeeID = StringHelper.SafeString(jObjMember["EmployeeID"]);
+                string isLive = StringHelper.SafeString(jObjMember["IsLive"]);
+                string mailServer = StringHelper.SafeString(jObjMember["MailServer"]);
+                string ouName = StringHelper.SafeString(jObjMember["OUName"]);
+                string longName = StringHelper.SafeString(jObjMember["LongName"]);
+                string firstName = StringHelper.SafeString(jObjMember["FirstName"]);
+                string lastName = StringHelper.SafeString(jObjMember["LastName"]);
+                string joinDate = StringHelper.SafeString(jObjMember["JoinDate"]);
+                string groupAlias = StringHelper.SafeString(jObjMember["GroupAlias"]);
+                string groupID = StringHelper.SafeString(jObjMember["GroupID"]);
+                string role = StringHelper.SafeString(jObjMember["Role"]);
+                string gradeCode1 = StringHelper.SafeString(jObjMember["GradeCode1"]);
+                string gradeCode2 = StringHelper.SafeString(jObjMember["GradeCode2"]);
+                string gradeCode3 = StringHelper.SafeString(jObjMember["GradeCode3"]);
+                string gradeCode4 = StringHelper.SafeString(jObjMember["GradeCode4"]);
+                string gradeCode5 = StringHelper.SafeString(jObjMember["GradeCode5"]);
+                string personNo1 = StringHelper.SafeString(jObjMember["PersonNo1"]);
+                string personNo2 = StringHelper.SafeString(jObjMember["PersonNo2"]);
+                string birth = StringHelper.SafeString(jObjMember["Birth"]);
+                string birthType = StringHelper.SafeString(jObjMember["BirthType"]);
+                string mobile = StringHelper.SafeString(jObjMember["Mobile"]);
+                string telephone = StringHelper.SafeString(jObjMember["Telephone"]);
+                string fax = StringHelper.SafeString(jObjMember["Fax"]);
+                string homePhone = StringHelper.SafeString(jObjMember["HomePhone"]);
+                string homePage = StringHelper.SafeString(jObjMember["HomePage"]);
+                string zipCode1 = StringHelper.SafeString(jObjMember["ZipCode1"]);
+                string address1 = StringHelper.SafeString(jObjMember["Address1"]);
+                string detailAddress1 = StringHelper.SafeString(jObjMember["DetailAddress1"]);
+                string company = StringHelper.SafeString(jObjMember["Company"]);
+                string zipCode2 = StringHelper.SafeString(jObjMember["ZipCode2"]);
+                string address2 = StringHelper.SafeString(jObjMember["Address2"]);
+                string detailAddress2 = StringHelper.SafeString(jObjMember["DetailAddress2"]);
+                string themePath = StringHelper.SafeString(jObjMember["ThemePath"]);
+                themePath = (String.IsNullOrWhiteSpace(themePath)) ? "11" : themePath;              // HARDCODING
+                string keyword1 = StringHelper.SafeString(jObjMember["Keyword1"]);
+                string keyword2 = StringHelper.SafeString(jObjMember["Keyword2"]);
+                string keyword3 = StringHelper.SafeString(jObjMember["Keyword3"]);
+                string keyword4 = StringHelper.SafeString(jObjMember["Keyword4"]);
+                string keyword5 = StringHelper.SafeString(jObjMember["Keyword5"]);
+                string keyword6 = StringHelper.SafeString(jObjMember["Keyword6"]);
+                string keyword7 = StringHelper.SafeString(jObjMember["Keyword7"]);
+                string isInsa = StringHelper.SafeString(jObjMember["IsInsa"]);
+                string secondMail = StringHelper.SafeString(jObjMember["SecondMail"]);
+                string isGW = StringHelper.SafeString(jObjMember["IsGW"]);
+                string isPDM = StringHelper.SafeString(jObjMember["IsPDM"]);
+                string isERP = StringHelper.SafeString(jObjMember["IsERP"]);
+                string isMSG = StringHelper.SafeString(jObjMember["IsMSG"]);
+
+                // PDM, ERP 체크 생략(Controller 단에서 처리 - 신규 생성이므로 체크 여부에 따라 중복 체크하면 됨)
+                bool isExistsGW = false;
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    isExistsGW = commonBiz.CheckUserAlias(logonID);
+                }
+
+                if (isExistsGW)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = $"ID ({logonID})은(는) 이미 존재하는 계정입니다.";
+
+                    return CreateJsonData();
+                }
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    result = commonBiz.CreateUser(logonID, mailAccount, domainAlias, displayName, employeeID
+                                                , isLive, mailServer, ouName, longName, firstName, lastName
+                                                , joinDate, groupAlias, groupID, role, gradeCode1, gradeCode2
+                                                , gradeCode3, gradeCode4, gradeCode5, personNo1, personNo2, birth
+                                                , birthType, mobile, telephone, fax, homePhone, homePage, zipCode1
+                                                , address1, detailAddress1, company, zipCode2, address2, detailAddress2
+                                                , themePath, keyword1, keyword2, keyword3, keyword4, keyword5, keyword6
+                                                , keyword7, isInsa, secondMail, isGW, isPDM, isERP, isMSG);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = $"사용자 생성에 실패하였습니다. :: {result.ResultMessage}";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 사용자 기본 정보 변경
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string UpdateBasicUserInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                if (String.IsNullOrWhiteSpace(Request.Form[0]))
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                JObject jObj = JObject.Parse(Request.Form[0]);
+
+                string memberJson = StringHelper.SafeString(jObj["memberJson"].ToString());
+
+                // 다시 파싱
+                JObject jObjMember = JObject.Parse(memberJson);
+
+                int userID = StringHelper.SafeInt(jObjMember["UserID"]);
+                string displayName = StringHelper.SafeString(jObjMember["DisplayName"]);
+                string longName = StringHelper.SafeString(jObjMember["LongName"]);
+                string firstName = StringHelper.SafeString(jObjMember["FirstName"]);
+                string lastName = StringHelper.SafeString(jObjMember["LastName"]);
+                string employeeID = StringHelper.SafeString(jObjMember["EmployeeID"]);
+                string joinDate = StringHelper.SafeString(jObjMember["JoinDate"]);
+                string secondMail = StringHelper.SafeString(jObjMember["SecondMail"]);
+                string gradeCode1 = StringHelper.SafeString(jObjMember["GradeCode1"]);
+                string gradeCode2 = StringHelper.SafeString(jObjMember["GradeCode2"]);
+                string gradeCode3 = "";
+                string gradeCode4 = "";
+                string gradeCode5 = "";
+                string isGW = StringHelper.SafeString(jObjMember["IsGW"]);
+                string isPDM = StringHelper.SafeString(jObjMember["IsPDM"]);
+                string isERP = StringHelper.SafeString(jObjMember["IsERP"]);
+                string isMSG = StringHelper.SafeString(jObjMember["IsMSG"]);
+                
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    commonBiz.UpdateURBasicInfo(userID, displayName, longName, firstName, lastName, employeeID, joinDate, secondMail, gradeCode1, gradeCode2, gradeCode3, gradeCode4, gradeCode5, isGW, isPDM, isERP, isMSG);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = $"사용자 정보 수정에 실패하였습니다. :: {result.ResultMessage}";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 사용자 상세 정보 변경
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string UpdateDetail1UserInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                if (String.IsNullOrWhiteSpace(Request.Form[0]))
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                JObject jObj = JObject.Parse(Request.Form[0]);
+
+                string memberJson = StringHelper.SafeString(jObj["memberJson"].ToString());
+
+                // 다시 파싱
+                JObject jObjMember = JObject.Parse(memberJson);
+
+                int userID = StringHelper.SafeInt(jObjMember["UserID"]);
+                string personNo1 = StringHelper.SafeString(jObjMember["PersonNo1"]);
+                string personNo2 = StringHelper.SafeString(jObjMember["PersonNo2"]);
+                string birth = StringHelper.SafeString(jObjMember["Birth"]);
+                string birthType = StringHelper.SafeString(jObjMember["BirthType"]);
+                string mobile = StringHelper.SafeString(jObjMember["Mobile"]);
+                string telephone = StringHelper.SafeString(jObjMember["Telephone"]);
+                string keyword1 = StringHelper.SafeString(jObjMember["Keyword1"]);
+                string keyword2 = StringHelper.SafeString(jObjMember["Keyword2"]);
+                string keyword3 = StringHelper.SafeString(jObjMember["Keyword3"]);
+                string keyword4 = StringHelper.SafeString(jObjMember["Keyword4"]);
+                string keyword5 = StringHelper.SafeString(jObjMember["Keyword5"]);
+                string keyword6 = StringHelper.SafeString(jObjMember["Keyword6"]);
+                string keyword7 = StringHelper.SafeString(jObjMember["Keyword7"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    commonBiz.UpdateURDetail1Info(userID, personNo1, personNo2, birth, birthType, mobile, telephone, keyword1, keyword2, keyword3, keyword4, keyword5, keyword6, keyword7);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = $"사용자 정보 수정에 실패하였습니다. :: {result.ResultMessage}";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        // <summary>
+        /// 사용자 상세 정보 변경
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string UpdateDetail2UserInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                if (String.IsNullOrWhiteSpace(Request.Form[0]))
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                JObject jObj = JObject.Parse(Request.Form[0]);
+
+                string memberJson = StringHelper.SafeString(jObj["memberJson"].ToString());
+
+                // 다시 파싱
+                JObject jObjMember = JObject.Parse(memberJson);
+
+                int userID = StringHelper.SafeInt(jObjMember["UserID"]);
+                string fax = StringHelper.SafeString(jObjMember["Fax"]);
+                string homePhone = StringHelper.SafeString(jObjMember["HomePhone"]);
+                string homePage = StringHelper.SafeString(jObjMember["HomePage"]);
+                string themePath = StringHelper.SafeString(jObjMember["ThemePath"]);
+                themePath = (String.IsNullOrWhiteSpace(themePath)) ? "11" : themePath;              // HARDCODING
+                string zipCode1 = StringHelper.SafeString(jObjMember["ZipCode1"]);
+                string address1 = StringHelper.SafeString(jObjMember["Address1"]);
+                string detailAddress1 = StringHelper.SafeString(jObjMember["DetailAddress1"]);
+                string company = StringHelper.SafeString(jObjMember["Company"]);
+                string zipCode2 = StringHelper.SafeString(jObjMember["ZipCode2"]);
+                string address2 = StringHelper.SafeString(jObjMember["Address2"]);
+                string detailAddress2 = StringHelper.SafeString(jObjMember["DetailAddress2"]);
+                
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    commonBiz.UpdateURDetail2Info(userID, fax, homePhone, homePage, StringHelper.SafeInt(themePath), zipCode1, address1, detailAddress1, company, zipCode2, address2, detailAddress2);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = $"사용자 정보 수정에 실패하였습니다. :: {result.ResultMessage}";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        // <summary>
+        /// 사용자 삭제
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string DeleteUserInfo()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                int userID = StringHelper.SafeInt(jPost["userID"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (CommonBiz commonBiz = new CommonBiz())
+                {
+                    commonBiz.DeleteURInfo(userID);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = $"사용자 삭제에 실패하였습니다. :: {result.ResultMessage}";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
         }
 
         #endregion

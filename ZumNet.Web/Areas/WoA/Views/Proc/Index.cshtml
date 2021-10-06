@@ -8,17 +8,37 @@
 
 @section Styles {
 	@Styles.Render("~/bundle/vendor/css/bootstrap-select/bootstrap-select")
-	@Styles.Render("~/bundle/vendor/css/dragula/dragula")
 	@Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
 	@Styles.Render("~/bundle/vendor/css/datatables/datatables")
+	@Styles.Render("~/bundle/vendor/css/nestable/nestable")
+
+	<style>
+		.dd-custom-drag-handle .dd-handle {
+			border: 0;
+			float: left;
+			margin: 1px;
+			font-size: .625rem;
+			line-height: 1.25rem;
+		}
+
+		.dd-custom-drag-handle .dd-handle > * {
+			vertical-align: middle;
+		}
+
+		.dd-custom-drag-handle.edit {
+			color: white;
+			background-color: red;
+		}
+
+	</style>
 }
 
 @section Scripts {
 	@Scripts.Render("~/bundle/vendor/js/bootstrap-select/bootstrap-select")
-	@Scripts.Render("~/bundle/vendor/js/dragula/dragula")
 	@Scripts.Render("~/bundle/vendor/js/moment/moment")
 	@Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
 	@Scripts.Render("~/bundle/vendor/js/datatables/datatables")
+	@Scripts.Render("~/bundle/vendor/js/nestable/nestable")
 
 	<script type="text/javascript">
 		var prevSortColumn = "";
@@ -403,23 +423,119 @@
 						return;
 					}
 
-					$("#divValidRange input[name='start']").val(result.data[0].ValidFromDate);
-					$("#divValidRange input[name='end']").val(result.data[0].ValidToDate);
-					$("#txtProcessName").val(result.data[0].Name);
-					$("#txtProcessDescription").val(result.data[0].Description);
-					$("#txtPriority").val(result.data[0].Priority);
-					$("#selInUse").val(result.data[0].InUse);
-					$("#txtProcessCreator").val(result.data[0].Creator);
+					// 프로세스 정의
+					if (result.data != undefined && result.data.dtDef != undefined && result.data.dtDef.length == 1) {
+						var processDef = result.data.dtDef[0];
 
-					$("#divCopyValidRange input[name='start']").val(result.data[0].ValidFromDate);
-					$("#divCopyValidRange input[name='end']").val(result.data[0].ValidToDate);
-					$("#txtCopyProcessName").val(result.data[0].Name);
-					$("#txtCopyProcessDescription").val(result.data[0].Description);
-					$("#txtCopyPriority").val(result.data[0].Priority);
-					$("#selCopyInUse").val(result.data[0].InUse);
-					$("#txtCopyProcessCreator").val(result.data[0].Creator);
+						$("#divValidRange input[name='start']").val(processDef.ValidFromDate);
+						$("#divValidRange input[name='end']").val(processDef.ValidToDate);
+						$("#txtProcessName").val(processDef.Name);
+						$("#txtProcessDescription").val(processDef.Description);
+						$("#txtPriority").val(processDef.Priority);
+						$("#selInUse").val(processDef.InUse);
+						$("#txtProcessCreator").val(processDef.Creator);
+
+						$("#divCopyValidRange input[name='start']").val(processDef.ValidFromDate);
+						$("#divCopyValidRange input[name='end']").val(processDef.ValidToDate);
+						$("#txtCopyProcessName").val(processDef.Name);
+						$("#txtCopyProcessDescription").val(processDef.Description);
+						$("#txtCopyPriority").val(processDef.Priority);
+						$("#selCopyInUse").val(processDef.InUse);
+						$("#txtCopyProcessCreator").val(processDef.Creator);
+					}
+
+					$("#tblProcessAppliedList tbody").empty();
+
+					// 프로세스 폼 리스트
+					if (result.data != undefined && result.data.dtForm != undefined && result.data.dtForm.length > 0) {
+						var formHtml = "";
+
+						for (var i = 0; i < result.data.dtForm.length; i++) {
+							var processForm = result.data.dtForm[i];
+
+							if (i % 2 == 0) {
+								formHtml += "<tr class=\"odd\">";
+							} else {
+								formHtml += "<tr class=\"even\">";
+							}
+
+							formHtml += "	<td>(" + processForm.ClassName + ") " + processForm.DocName + "</td>";
+							formHtml += "</tr>";
+						}
+
+						$("#tblProcessAppliedList tbody").append(formHtml);
+					} else {
+						$("#tblProcessAppliedList tbody").append("<tr class=\"odd\"><td>프로세스를 사용하는 양식이 없습니다.</td></tr>");
+					}
+
+					$("#divProcessStep").empty();
+
+					// 프로세스 단계
+					if (result.data != undefined && result.data.dtAct != undefined && result.data.dtAct.length > 0) {
+						var processHtml = "<ol class=\"dd-list\">";
+
+						for (var i = 0; i < result.data.dtAct.length; i++) {
+							var processAct = result.data.dtAct[i];
+
+							if (processAct.ParentActivityID == "") {
+								processHtml += "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + processAct.ActivityID + "\">";
+								processHtml += "	<div class=\"dd-handle\">";
+								processHtml += "		<span class=\"ion ion-md-radio-button-off text-muted\"></span>";
+								processHtml += "	</div>";
+								processHtml += "	<div class=\"dd-content bg-light\">";
+								processHtml += processAct.Step + ". " + processAct.DisplayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + processAct.Review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + processAct.Random + "&nbsp]";
+								processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + processAct.ActivityID + "')\">편집</button>";
+								processHtml += "</li>";
+							}
+						}
+
+						processHtml += "</ol>";
+
+						$("#divProcessStep").append(processHtml);
+
+						// 하위 추가
+						$("#divProcessStep ol li").each(function () {
+							var parentActivityID = $(this).attr("data-id");
+
+							var childActivities = result.data.dtAct.filter(function (item, index, array) {
+								return item.ParentActivityID == parentActivityID;
+							});
+
+							if (childActivities.length > 0) {
+								var childHtml = "<ol class=\"dd-list\">";
+
+								for (var j = 0; j < childActivities.length; j++) {
+									var childActivity = childActivities[j];
+
+									childHtml += "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + childActivity.ActivityID + "\">";
+									childHtml += "	<div class=\"dd-handle\">";
+									childHtml += "		<span class=\"ion ion-md-radio-button-off text-muted\"></span>";
+									childHtml += "	</div>";
+									childHtml += "	<div class=\"dd-content bg-light\">";
+									childHtml += childActivity.Step + ". " + childActivity.DisplayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + childActivity.Review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + childActivity.Random + "&nbsp]";
+									childHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + childActivity.ActivityID + "')\">편집</button>";
+									childHtml += "</li>";
+								}
+
+								childHtml += "</ol>";
+
+								$(this).append(childHtml);
+							}
+						});
+
+						$("#divProcessStep").nestable();
+					}
                 }
 			});
+
+			// 프로세스 처리 현황 탭일 경우 검색을 같이 해 준다.
+			if ($("ul.nav-tabs").find("a[href='#process-processing']").hasClass("active")) {
+				searchList();
+			}
+		}
+
+		function fnShowActivity(activityID) {
+			$("li[data-id='" + activityID + "']").addClass("edit");
 		}
 
 		// 프로세스 정보 저장
@@ -545,7 +661,7 @@
 
 					window.location.reload();
 				}
-			});	
+			});
 		}
 
 		// 프로세스 내보내기(XML 파일)
@@ -746,7 +862,7 @@
 			</div>
 			<div class="card-footer">
 				<button type="button" class="btn btn-primary mr-2" onclick="saveBasicProcess()">프로세스 저장</button>
-				<button type="button" class="btn btn-default ml-sm-3" style="display:none" id="btnExportProcess" onclick="exportProcessInfoForXml();">프로세스 정보(XML) 내보내기</button>
+				<button type="button" class="btn btn-default ml-sm-3" style="display: none " id="btnExportProcess" onclick="exportProcessInfoForXml();">프로세스 정보(XML) 내보내기</button>
 			</div>
 		</div>
 
@@ -773,28 +889,28 @@
 					<input type="text" id="txtSearchText" class="form-control mx-sm-3">
 					<button type="button" id="btnSearch" class="btn btn-default" onclick="searchList()">검색</button>
 				</form>
-			</div>
-			<div class="row">
-				<div class="col-md-12">
-					<div class="card">
-						<div class="card-datatable table-responsive">
-							<table id="tbl_list" class="table table-striped table-bordered">
-								<thead>
-									<tr>
-										<th>번호</th>
-										<th>문서명</th>
-										<th>단계</th>
-										<th>제목</th>
-										<th>작성부서</th>
-										<th>작성자</th>
-										<th>작성일</th>
-										<th>완료일</th>
-										<th>삭제일</th>
-										<th>결재상태</th>
-										<th>비고</th>
-									</tr>
-								</thead>
-							</table>
+				<div class="form-row" style="padding-top: 20px;">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-datatable table-responsive">
+								<table id="tbl_list" class="table table-striped table-bordered">
+									<thead>
+										<tr>
+											<th>번호</th>
+											<th>문서명</th>
+											<th>단계</th>
+											<th>제목</th>
+											<th>작성부서</th>
+											<th>작성자</th>
+											<th>작성일</th>
+											<th>완료일</th>
+											<th>삭제일</th>
+											<th>결재상태</th>
+											<th>비고</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -803,11 +919,99 @@
 
 		<div class="tab-pane fade" id="process-define">
 			<div class="card-body">
+				<div class="form-row">
+					<div class="col-md-2">
+						<div class="card mb-4">
+							<h6 class="card-header">
+								적용 양식
+							</h6>
+							<div class="card-body">
+								<div class="table-responsive">
+									<table id="tblProcessAppliedList" class="table table-striped table-bordered" style="margin-bottom:0;">
+										<tbody></tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="card mb-4">
+							<h6 class="card-header">
+								프로세스 단계
+							</h6>
+							<div class="card-body">
+								<div class="dd" id="divProcessStep">
+									@*<ol class="dd-list">
+										<li class="dd-item dd-custom-drag-handle" data-id="13">
+											<div class="dd-handle">
+												<span class="ion ion-md-radio-button-off text-muted"></span>
+											</div>
+											<div class="dd-content bg-light">Item 13
+												<button type="button" class="btn btn-default btn-sm ml-3" data-action="expand-all" onclick="alert('aaa')">Expand All</button>
+											</div>
+										</li>
+										<li class="dd-item dd-custom-drag-handle" data-id="14">
+											<div class="dd-handle">
+												<span class="ion ion-md-radio-button-off text-muted"></span>
+											</div>
+											<div class="dd-content bg-light">Item 14</div>
+										</li>
+										<li class="dd-item dd-custom-drag-handle" data-id="15">
+											<div class="dd-handle">
+												<span class="ion ion-md-radio-button-off text-muted"></span>
+											</div>
+											<div class="dd-content bg-light">Item 15</div>
+											<ol class="dd-list">
+												<li class="dd-item dd-custom-drag-handle" data-id="16">
+													<div class="dd-handle">
+														<span class="ion ion-md-radio-button-off text-muted"></span>
+													</div>
+													<div class="dd-content bg-light">Item 16
+														<button type="button" class="btn btn-default btn-sm ml-3" data-action="expand-all" onclick="alert('aaa')">Expand All</button>
+													</div>
+												</li>
+												<li class="dd-item dd-custom-drag-handle" data-id="17">
+													<div class="dd-handle">
+														<span class="ion ion-md-radio-button-off text-muted"></span>
+													</div>
+													<div class="dd-content bg-light">Item 17</div>
+												</li>
+												<li class="dd-item dd-custom-drag-handle" data-id="18">
+													<div class="dd-handle">
+														<span class="ion ion-md-radio-button-off text-muted"></span>
+													</div>
+													<div class="dd-content bg-light">Item 18</div>
+												</li>
+											</ol>
+										</li>
+									</ol>*@
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="card mb-4">
+							<h6 class="card-header">
+								프로세스 상세
+							</h6>
+							<div class="card-body">
+								<div class="form-inline" style="padding-bottom: 10px;">
+									<select class="custom-select" data-style="btn-default" id="selGroup">
+										<option value="0">부서를 선택하세요.</option>
 
+									</select>
+									<button type="button" id="btnAddShare" class="btn btn-default ml-sm-3" onclick="insertShareDoc()">추가</button>
+								</div>
+								<hr class="border-light m-0">
+								<div id="divShareList" class="col" style="padding-left: 0;padding-top: 20px;padding-bottom: 20px;"></div>
+								<hr class="border-light m-0">
+								<button type="button" id="btnSaveShare" class="btn btn-primary" style="margin-top: 10px;" onclick="saveShareDoc()" data-group_id="">변경 사항 저장</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div class="row">
 
-			</div>
 		</div>
 
 		<div class="tab-pane fade" id="process-copy">

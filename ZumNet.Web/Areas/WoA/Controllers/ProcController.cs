@@ -108,17 +108,29 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 int processID = StringHelper.SafeInt(jPost["processID"].ToString());
 
                 ServiceResult result = new ServiceResult();
+                ServiceResult resultForm = new ServiceResult();
 
                 using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
                 {
                     // 프로세스 조회
                     result = eApprovalBiz.SelectBFProcessDefinition(processID);
+                    result.ResultDataTable.TableName = "dtDef";
+
+                    // 프로세스를 사용하는 폼 정보 조회
+
+                    resultForm = eApprovalBiz.SelectBFProcessFormList(processID);
+                    resultForm.ResultDataTable.TableName = "dtForm";
                 }
+
+                DataSet dsProcess = new DataSet();
+                dsProcess.Tables.Add(result.ResultDataTable.Copy());
+                dsProcess.Tables.Add(resultForm.ResultDataTable.Copy());
+                dsProcess.Tables.Add(CreateProcessActivities(processID));
 
                 if (result.ResultCode == 0)
                 {
                     ResultItemCount = result.ResultItemCount;
-                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+                    ResultData = JsonConvert.SerializeObject(dsProcess);
 
                     return CreateJsonData();
                 }
@@ -135,6 +147,59 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 프로세스 정보 생성
+        /// </summary>
+        /// <param name="processID"></param>
+        /// <returns></returns>
+        private DataTable CreateProcessActivities(int processID)
+        {
+            DataTable dtProcess = new DataTable();
+
+            GetProcessActivities(processID, "", 0, ref dtProcess);
+
+            return dtProcess;
+        }
+
+        /// <summary>
+        /// 프로세스 정보 조회 및 구성
+        /// </summary>
+        /// <param name="processID"></param>
+        /// <param name="parentActivityID"></param>
+        /// <param name="depth"></param>
+        /// <param name="dtProcess"></param>
+        private void GetProcessActivities(int processID, string parentActivityID, int depth, ref DataTable dtProcess)
+        {
+            ServiceResult result = new ServiceResult();
+
+            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            {
+                result = eApprovalBiz.SelectProcessActivities(processID, parentActivityID, "");
+
+                int rowCount = result.ResultDataTable?.Rows?.Count ?? 0;
+
+                if (rowCount > 0)
+                {
+                    if (dtProcess.Rows.Count == 0)
+                    {
+                        dtProcess = result.ResultDataTable.Clone();
+                        dtProcess.TableName = "dtAct";
+                    }
+
+                    foreach (DataRow dr in result.ResultDataTable.Rows)
+                    {
+                        dtProcess.ImportRow(dr);
+
+                        // 하위가 있는 경우
+                        if (String.Compare(StringHelper.SafeString(dr["Inline"]), "Y", true) == 0)
+                        {
+                            GetProcessActivities(processID, StringHelper.SafeString(dr["activityID"]), depth + 1, ref dtProcess);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

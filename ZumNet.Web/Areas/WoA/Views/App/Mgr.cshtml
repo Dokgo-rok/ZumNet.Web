@@ -6,12 +6,10 @@
 }
 
 @section Styles {
-	@Styles.Render("~/bundle/vendor/css/pages/account")
+	
 }
 
 @section Scripts {
-	@Scripts.Render("~/bundle/js/pages_account-settings")
-
 	<script type="text/javascript">
 		var formClassJson = @Html.Raw(ViewData["formclass"]);
 		var formListJson = @Html.Raw(ViewData["formlist"]);

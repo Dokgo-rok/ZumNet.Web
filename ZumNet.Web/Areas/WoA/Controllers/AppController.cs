@@ -7,10 +7,12 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using ZumNet.BSL.FlowBiz;
 using ZumNet.BSL.ServiceBiz;
 using ZumNet.Framework.Core;
+using ZumNet.Framework.Entities.Flow;
 using ZumNet.Framework.Entities.Web;
 using ZumNet.Framework.Util;
 using ZumNet.Framework.Web.Base;
@@ -990,82 +992,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             return CreateJsonData();
         }
 
-        public ActionResult Charge1()
-        {
-            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
-
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
-            {
-                // 양식 분류 조회
-                ServiceResult result = eApprovalBiz.SelectEAFormSelect(domainID, 0, "Y");
-
-                if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 0)
-                {
-                    ViewData["formclass"] = result.ResultDataSet.Tables[0];
-
-                    DataTable dtList = result.ResultDataSet.Tables[1];
-                    DataTable dtChargeDeptList = result.ResultDataSet.Tables[2];
-                    DataTable dtChargeMemberList = result.ResultDataSet.Tables[3];
-
-                    if (dtList?.Rows?.Count > 0)
-                    {
-                        dtList.Columns.Add("ChargeDept", typeof(string));
-                        dtList.Columns.Add("ChargeMember", typeof(string));
-
-                        string chargeDeptList = "";
-                        string chargeMemberList = "";
-
-                        foreach (DataRow dr in dtList.Rows)
-                        {
-                            if (dtChargeDeptList?.Rows?.Count > 0)
-                            {
-                                if (dtChargeDeptList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).Count() > 0)
-                                {
-                                    chargeDeptList = String.Join(",", dtChargeDeptList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).CopyToDataTable().AsEnumerable().Select(x => StringHelper.SafeString(x["ChargeID"])));
-                                }
-
-                            }
-
-                            if (dtChargeMemberList?.Rows?.Count > 0)
-                            {
-                                if (dtChargeMemberList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).Count() > 0)
-                                {
-                                    chargeMemberList = String.Join(",", dtChargeMemberList.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["FormID"]), StringHelper.SafeString(dr["FormID"]), true) == 0).CopyToDataTable().AsEnumerable().Select(x => StringHelper.SafeString(x["ChargeID"])));
-                                }
-                            }
-
-                            dr["ChargeDept"] = chargeDeptList;
-                            dr["ChargeMember"] = chargeMemberList;
-                        }
-                    }
-
-                    ViewData["formlist"] = dtList;
-                }
-            }
-
-            using (OfficePortalBiz portalBiz = new OfficePortalBiz())
-            {
-                ServiceResult resultDept = portalBiz.SearchDomainGroups(domainID.ToString(), "", "D", "", "", "", "Y");
-
-                if (resultDept.ResultCode == 0 && resultDept.ResultDataTable?.Rows?.Count > 0)
-                {
-                    ViewData["deptlist"] = JsonConvert.SerializeObject(resultDept.ResultDataTable);
-                }
-            }
-
-            using (CommonBiz commonBiz = new CommonBiz())
-            {
-                ServiceResult resultMember = commonBiz.SearchDomainUsers(domainID.ToString(), "", "D", 0, 0, "DisplayName", "ASC", "", "Y");
-
-                if (resultMember.ResultCode == 0 && resultMember.ResultDataTable?.Rows?.Count > 0)
-                {
-                    ViewData["memberlist"] = JsonConvert.SerializeObject(resultMember.ResultDataTable);
-                }
-            }
-
-            return View();
-        }
-
         #endregion
 
         #region [ /Woa/App/Option ]
@@ -1461,6 +1387,54 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             }
 
             return CreateJsonData();
+        }
+
+        #endregion
+
+        #region [ /Woa/App/Form ]
+
+        public ActionResult Form(int mid = 0, int oid = 0)
+        {
+            if (mid == 0 || oid == 0)
+            {
+                return Redirect("/Woa/app");
+            }
+
+            int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
+            string companyCode = StringHelper.SafeString(Session["CompanyCode"].ToString());
+            //string frontName = StringHelper.SafeString(Session["FRONTNAME"].ToString());
+            string frontName = "Zumwork";
+            string eaFormFolder = StringHelper.SafeString(WebConfigurationManager.AppSettings["EAFormFolder"]);
+            string eaFormSchemaPath = StringHelper.SafeString(WebConfigurationManager.AppSettings["EAFormSchemaPath"]);
+
+            ServiceResult result = new ServiceResult();
+
+            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            {
+                result = eApprovalBiz.SelectXFFormInstanceDefinition(domainID, "ea", mid);
+
+                if (result.ResultCode == 0 && result.ResultDataDetail?.Count == 2)
+                {
+                    XFormInstance xformIns = (XFormInstance)result.ResultDataDetail["xformIns"];
+                    XFormDefinition xformDef = (XFormDefinition)result.ResultDataDetail["xformDef"];
+
+                    result = eApprovalBiz.ParsingXFormToHTML(companyCode, xformDef, xformIns, oid, "ea", domainID.ToString(), frontName, "BizForce", eaFormSchemaPath, eaFormFolder);
+                }
+            }
+
+            if (result.ResultCode == 0 && !String.IsNullOrWhiteSpace(result.ResultDataString))
+            {
+                Response.Clear();
+                Response.Charset = "utf-8";
+                Response.Buffer = true;
+
+                Response.ContentType = "application/unknown";
+                Response.ContentEncoding = System.Text.UTF8Encoding.UTF8;
+                Response.Write(result.ResultDataString);
+                Response.End();
+            }
+
+            return View();
         }
 
         #endregion
