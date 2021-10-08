@@ -11,6 +11,7 @@ using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Xml;
 using ZumNet.BSL.FlowBiz;
+using ZumNet.BSL.ServiceBiz;
 using ZumNet.Framework.Core;
 using ZumNet.Framework.Entities.Web;
 using ZumNet.Framework.Model;
@@ -38,6 +39,55 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             {
                 // 프로세스 조회
                 result = eApprovalBiz.SelectProcessListByCondition(domainID, 0, "Y");
+                ServiceResult resultCode = eApprovalBiz.SelectBFCodeRole("ea", "");
+
+                if (resultCode.ResultCode == 0 && resultCode?.ResultDataTable?.Rows?.Count > 0)
+                {
+                    if (resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "bizrole", true) == 0).Count() > 0)
+                    {
+                        DataTable dtBizRole = resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "bizrole", true) == 0).CopyToDataTable();
+
+                        int bizRolecount = dtBizRole?.Rows?.Count ?? 0;
+
+                        if (bizRolecount > 0)
+                        {
+                            ViewData["bizRole"] = JsonConvert.SerializeObject(dtBizRole);
+                        }
+                    }
+
+                    if (resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "actrole", true) == 0).Count() > 0)
+                    {
+                        DataTable dtActRole = resultCode.ResultDataTable.AsEnumerable().Where(x => String.Compare(StringHelper.SafeString(x["ItemSubKey"]), "actrole", true) == 0).CopyToDataTable();
+
+                        int actRolecount = dtActRole?.Rows?.Count ?? 0;
+
+                        if (actRolecount > 0)
+                        {
+                            ViewData["actRole"] = JsonConvert.SerializeObject(dtActRole);
+                        }
+                    }
+                }
+            }
+
+            using (OfficePortalBiz portalBiz = new OfficePortalBiz())
+            {
+                // 부서 정보 조회
+                ServiceResult resultDept = portalBiz.GetAdminOrgMapInfo(domainID, 0, "D", 0, DateTime.Now.ToString("yyyy-MM-dd"), "Y");
+
+                if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 1)
+                {
+                    ViewData["deptlist"] = JsonConvert.SerializeObject(result.ResultDataSet.Tables[1]);
+                }
+            }
+
+            using (CommonBiz commonBiz = new CommonBiz())
+            {
+                ServiceResult resultMember = commonBiz.SearchDomainUsers(domainID.ToString(), "", "D", 0, 0, "DisplayName", "ASC", "", "Y");
+
+                if (resultMember.ResultCode == 0 && resultMember.ResultDataTable?.Rows?.Count > 0)
+                {
+                    ViewData["memberlist"] = JsonConvert.SerializeObject(resultMember.ResultDataTable);
+                }
             }
 
             return View(result.ResultDataTable);
@@ -107,6 +157,8 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 int processID = StringHelper.SafeInt(jPost["processID"].ToString());
 
+                DataSet dsProcess = new DataSet();
+
                 ServiceResult result = new ServiceResult();
                 ServiceResult resultForm = new ServiceResult();
 
@@ -114,17 +166,25 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 {
                     // 프로세스 조회
                     result = eApprovalBiz.SelectBFProcessDefinition(processID);
-                    result.ResultDataTable.TableName = "dtDef";
+
+                    if (result.ResultCode == 0 && result.ResultItemCount > 0)
+                    {
+                        result.ResultDataTable.TableName = "dtDef";
+
+                        dsProcess.Tables.Add(result.ResultDataTable.Copy());
+                    }
 
                     // 프로세스를 사용하는 폼 정보 조회
-
                     resultForm = eApprovalBiz.SelectBFProcessFormList(processID);
-                    resultForm.ResultDataTable.TableName = "dtForm";
-                }
 
-                DataSet dsProcess = new DataSet();
-                dsProcess.Tables.Add(result.ResultDataTable.Copy());
-                dsProcess.Tables.Add(resultForm.ResultDataTable.Copy());
+                    if (resultForm.ResultCode == 0 && resultForm.ResultItemCount > 0)
+                    {
+                        resultForm.ResultDataTable.TableName = "dtForm";
+
+                        dsProcess.Tables.Add(resultForm.ResultDataTable.Copy());
+                    }
+                }
+                
                 dsProcess.Tables.Add(CreateProcessActivities(processID));
 
                 if (result.ResultCode == 0)
