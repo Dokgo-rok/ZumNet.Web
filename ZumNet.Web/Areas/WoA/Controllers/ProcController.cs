@@ -74,9 +74,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 // 부서 정보 조회
                 ServiceResult resultDept = portalBiz.GetAdminOrgMapInfo(domainID, 0, "D", 0, DateTime.Now.ToString("yyyy-MM-dd"), "Y");
 
-                if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 1)
+                if (resultDept.ResultCode == 0 && resultDept.ResultDataSet?.Tables?.Count > 1)
                 {
-                    ViewData["deptlist"] = JsonConvert.SerializeObject(result.ResultDataSet.Tables[1]);
+                    ViewData["deptList"] = JsonConvert.SerializeObject(resultDept.ResultDataSet.Tables[1]);
                 }
             }
 
@@ -86,7 +86,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 if (resultMember.ResultCode == 0 && resultMember.ResultDataTable?.Rows?.Count > 0)
                 {
-                    ViewData["memberlist"] = JsonConvert.SerializeObject(resultMember.ResultDataTable);
+                    ViewData["memberList"] = JsonConvert.SerializeObject(resultMember.ResultDataTable);
                 }
             }
 
@@ -362,6 +362,486 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
                 {
                     eApprovalBiz.CopyBFProcessDefinition(processID, domainID, validFromDate, validToDate, processName, priority, description, inUse, creator, reserved1);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 프로세스 속성 정보 조회
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string SelectProcessAttribute()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                int attributeID = 0;
+                int processID = StringHelper.SafeInt(jPost["processID"].ToString());
+                string activityID = StringHelper.SafeString(jPost["activityID"].ToString());
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.SelectBFProcessAttribute(attributeID, processID, activityID);
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 프로세스 참여 정보 조회
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string SelectProcessActivityParticipant()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string activityID = StringHelper.SafeString(jPost["activityID"].ToString());
+                string actType = StringHelper.SafeString(jPost["actType"].ToString());
+                string subType = StringHelper.SafeString(jPost["subType"].ToString());
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.SelectBFProcessActivityParticipantForAdmin(activityID, actType, subType);
+                }
+
+                if (result.ResultCode == 0)
+                {
+                    ResultItemCount = result.ResultItemCount;
+                    ResultData = JsonConvert.SerializeObject(result.ResultDataTable);
+
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "SP 조회 오류";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// Activity 생성
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string CreateProcessActivity()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                string parameters = CommonUtils.PostDataToString();
+
+                if (String.IsNullOrWhiteSpace(parameters))
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                JObject jObj = JObject.Parse(parameters);
+
+                string activityID = System.Guid.NewGuid().ToString().ToUpper().Replace("-", "");
+                int processID = StringHelper.SafeInt(jObj["processID"]);
+                string parentActivityID = "";
+                int step = StringHelper.SafeInt(jObj["step"]);
+                int subStep = StringHelper.SafeInt(jObj["subStep"]);
+                string random = StringHelper.SafeString(jObj["random"]);
+                string inLine = StringHelper.SafeString(jObj["inLine"]);
+                string bizRole = StringHelper.SafeString(jObj["bizRole"]);
+                string actRole = StringHelper.SafeString(jObj["actRole"]);
+                string displayName = StringHelper.SafeString(jObj["displayName"]);
+                string progress = StringHelper.SafeString(jObj["progress"]);
+                string partType = StringHelper.SafeString(jObj["partType"]);
+                string limited = StringHelper.SafeString(jObj["limited"]);
+                string review = StringHelper.SafeString(jObj["review"]);
+                string showLine = StringHelper.SafeString(jObj["showLine"]);
+                string scopeLine = StringHelper.SafeString(jObj["scopeLine"]);
+                string mandatory = StringHelper.SafeString(jObj["mandatory"]);
+                int evalChart = StringHelper.SafeInt(jObj["evalChart"]);
+                string actPreCond = StringHelper.SafeString(jObj["actPreCond"]);
+                string actPostCond = StringHelper.SafeString(jObj["actPostCond"]);
+                string workPreCond = StringHelper.SafeString(jObj["wiPreCond"]);
+                string workPostCond = StringHelper.SafeString(jObj["wiPostCond"]);
+                string description = StringHelper.SafeString(jObj["description"]);
+                string participantID = StringHelper.SafeString(jObj["participantID"]);
+                string participantName = StringHelper.SafeString(jObj["participantName"]);
+                string participantDeptCode = StringHelper.SafeString(jObj["participantDeptCode"]);
+                
+                string xmlPartInfo = "<participantinfo>";
+
+                if (!String.IsNullOrWhiteSpace(participantID) && !String.IsNullOrWhiteSpace(participantName) && !String.IsNullOrWhiteSpace(participantDeptCode))
+                {
+                    xmlPartInfo += "<participant seq='1' partid='" + participantID + "' deptcode='" + participantDeptCode + "'><partname><![CDATA[" + participantName + "]]></partname></participant>";
+                }
+
+                xmlPartInfo += "</participantinfo>";
+
+                string xmlAttrInfo = "<attributeinfo>";
+
+                if (jObj["attrInfoArray"].Count() > 0)
+                {
+                    foreach (JToken item in jObj["attrInfoArray"])
+                    {
+                        xmlAttrInfo += "<attributes pos=\"" + StringHelper.SafeString(item["Pos"]) + "\" condition=\"" + StringHelper.SafeString(item["Condition"]) + "\" attribute=\"" + StringHelper.SafeString(item["Attribute"]) + "\" status=\"" + StringHelper.SafeString(item["Status"]) + "\">"
+                                    + "<dscpt><![CDATA[" + StringHelper.SafeString(item["Dscpt"]) + "]]></dscpt>"
+                                    + "<item1><![CDATA[" + StringHelper.SafeString(item["Item1"]) + "]]></item1>"
+                                    + "<item2><![CDATA[" + StringHelper.SafeString(item["Item2"]) + "]]></item2>"
+                                    + "<item3><![CDATA[" + StringHelper.SafeString(item["Item3"]) + "]]></item3>"
+                                    + "<item4><![CDATA[" + StringHelper.SafeString(item["Item4"]) + "]]></item4>"
+                                    + "<item5><![CDATA[" + StringHelper.SafeString(item["Item5"]) + "]]></item5></attributes>";
+                    }
+                }
+
+                xmlAttrInfo += "</attributeinfo>";
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.CreateProcessActivity(activityID, processID, parentActivityID, step, subStep, random, inLine, bizRole, actRole, displayName, progress, partType, limited, review, showLine, scopeLine, mandatory, evalChart, actPreCond, actPostCond, workPreCond, workPostCond, description, xmlPartInfo, xmlAttrInfo);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    ResultMessage = activityID;
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// Activity 수정
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string UpdateProcessActivity()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                string parameters = CommonUtils.PostDataToString();
+
+                if (String.IsNullOrWhiteSpace(parameters))
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                JObject jObj = JObject.Parse(parameters);
+
+                int processID = StringHelper.SafeInt(jObj["processID"]);
+                string activityID = StringHelper.SafeString(jObj["activityID"]);
+                string parentActivityID = StringHelper.SafeString(jObj["parentActivityID"]);
+                int step = StringHelper.SafeInt(jObj["step"]);
+                int subStep = StringHelper.SafeInt(jObj["subStep"]);
+                string random = StringHelper.SafeString(jObj["random"]);
+                string inLine = StringHelper.SafeString(jObj["inLine"]);
+                string bizRole = StringHelper.SafeString(jObj["bizRole"]);
+                string actRole = StringHelper.SafeString(jObj["actRole"]);
+                string displayName = StringHelper.SafeString(jObj["displayName"]);
+                string progress = StringHelper.SafeString(jObj["progress"]);
+                string partType = StringHelper.SafeString(jObj["partType"]);
+                string limited = StringHelper.SafeString(jObj["limited"]);
+                string review = StringHelper.SafeString(jObj["review"]);
+                string showLine = StringHelper.SafeString(jObj["showLine"]);
+                string scopeLine = StringHelper.SafeString(jObj["scopeLine"]);
+                string mandatory = StringHelper.SafeString(jObj["mandatory"]);
+                int evalChart = StringHelper.SafeInt(jObj["evalChart"]);
+                string actPreCond = StringHelper.SafeString(jObj["actPreCond"]);
+                string actPostCond = StringHelper.SafeString(jObj["actPostCond"]);
+                string workPreCond = StringHelper.SafeString(jObj["wiPreCond"]);
+                string workPostCond = StringHelper.SafeString(jObj["wiPostCond"]);
+                string description = StringHelper.SafeString(jObj["description"]);
+                string participantID = StringHelper.SafeString(jObj["participantID"]);
+                string participantName = StringHelper.SafeString(jObj["participantName"]);
+                string participantDeptCode = StringHelper.SafeString(jObj["participantDeptCode"]);
+
+                string xmlPartInfo = "<participantinfo>";
+
+                if (!String.IsNullOrWhiteSpace(participantID) && !String.IsNullOrWhiteSpace(participantName) && !String.IsNullOrWhiteSpace(participantDeptCode))
+                {
+                    xmlPartInfo += "<participant seq='1' partid='" + participantID + "' deptcode='" + participantDeptCode + "'><partname><![CDATA[" + participantName + "]]></partname></participant>";
+                }
+
+                xmlPartInfo += "</participantinfo>";
+
+                string xmlAttrInfo = "<attributeinfo>";
+
+                if (jObj["attrInfoArray"].Count() > 0)
+                {
+                    foreach (JToken item in jObj["attrInfoArray"])
+                    {
+                        xmlAttrInfo += "<attributes pos=\"" + StringHelper.SafeString(item["Pos"]) + "\" condition=\"" + StringHelper.SafeString(item["Condition"]) + "\" attribute=\"" + StringHelper.SafeString(item["Attribute"]) + "\" status=\"" + StringHelper.SafeString(item["Status"]) + "\">"
+                                    + "<dscpt><![CDATA[" + StringHelper.SafeString(item["Dscpt"]) + "]]></dscpt>"
+                                    + "<item1><![CDATA[" + StringHelper.SafeString(item["Item1"]) + "]]></item1>"
+                                    + "<item2><![CDATA[" + StringHelper.SafeString(item["Item2"]) + "]]></item2>"
+                                    + "<item3><![CDATA[" + StringHelper.SafeString(item["Item3"]) + "]]></item3>"
+                                    + "<item4><![CDATA[" + StringHelper.SafeString(item["Item4"]) + "]]></item4>"
+                                    + "<item5><![CDATA[" + StringHelper.SafeString(item["Item5"]) + "]]></item5></attributes>";
+                    }
+                }
+
+                xmlAttrInfo += "</attributeinfo>";
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.UpdateProcessActivity(processID, activityID, parentActivityID, step, subStep, random, inLine, bizRole, actRole, displayName, progress, partType, limited, review, showLine, scopeLine, mandatory, evalChart, actPreCond, actPostCond, workPreCond, workPostCond, description, xmlPartInfo, xmlAttrInfo);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    ResultMessage = activityID;
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// Activity 삭제
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string DeleteProcessActivity()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string mode = StringHelper.SafeString(jPost["mode"]);
+                int processID = StringHelper.SafeInt(jPost["processID"]);
+                string activityID = StringHelper.SafeString(jPost["activityID"]);
+                string parentActivityID = StringHelper.SafeString(jPost["parentActivityID"]);
+                int step = StringHelper.SafeInt(jPost["step"]);
+                string xmlInfo = "<participantinfo></participantinfo>";
+                string updateText = "Step = Step - 1 ";
+                string whereText = "";
+
+                if (String.IsNullOrWhiteSpace(parentActivityID))
+                {
+                    whereText = " ProcessID = " + processID + " AND ParentActivityID = '' AND Step > " + step;
+                }
+                else
+                {
+                    whereText = " ProcessID = " + processID + " AND ParentActivityID = '" + parentActivityID + "' AND Step > " + step;
+                }
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.DeleteProcessActivity(mode, processID, activityID, xmlInfo, updateText, whereText);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 담당자/담당부서 업데이트
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string UpdateProcessActivityStep()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                if (String.IsNullOrWhiteSpace(Request.Form[0]))
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                JObject jObj = JObject.Parse(Request.Form[0]);
+
+                string stepInfoJson = StringHelper.SafeString(jObj["stepInfoJson"].ToString());
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    result = eApprovalBiz.ChangeProcessActivityStep(stepInfoJson);
+                }
+
+                if (result.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "코드 생성에 실패하였습니다.";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        /// <summary>
+        /// 프로세스 Activity 일반 정보 수정
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public string UpdateProcessActivityGeneral()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string activityID = StringHelper.SafeString(jPost["activityID"]);
+                string displayName = StringHelper.SafeString(jPost["displayName"]);
+                string bizRole = StringHelper.SafeString(jPost["bizRole"]);
+                string actRole = StringHelper.SafeString(jPost["actRole"]);
+                string review = StringHelper.SafeString(jPost["review"]);
+                string progress = StringHelper.SafeString(jPost["progress"]);
+                string random = StringHelper.SafeString(jPost["random"]);
+                string showLine = StringHelper.SafeString(jPost["showLine"]);
+                string mandatory = StringHelper.SafeString(jPost["mandatory"]);
+
+                ServiceResult result = new ServiceResult();
+
+                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                {
+                    eApprovalBiz.UpdateProcessActivityGeneral(activityID, displayName, bizRole, actRole, review, progress, random, showLine, mandatory);
                 }
 
                 if (result.ResultCode >= 0)

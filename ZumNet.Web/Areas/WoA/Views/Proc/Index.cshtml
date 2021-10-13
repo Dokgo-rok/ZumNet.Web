@@ -1,4 +1,5 @@
-﻿@using System.Data;
+﻿@using System.Collections;
+@using System.Data;
 @using System.Text;
 @using Newtonsoft.Json;
 @model DataTable
@@ -44,8 +45,10 @@
 		var prevSortType = "";
 		var tbl_list;
 		var domainID = "@Session["DNID"].ToString()";
-		var brJson = "@ViewData["bizRole"]";
-		var arJson = "@ViewData["actRole"]";
+		var brJson = '@Html.Raw(ViewData["bizRole"])';
+		var arJson = '@Html.Raw(ViewData["actRole"])';
+		var dlJson = '@Html.Raw(ViewData["deptList"])';
+		var mlJson = '@Html.Raw(ViewData["memberList"])';
 
 		$(document).ready(function () {
 			$("#divValidRange,#divSearchRange,#divCopyValidRange").datepicker({
@@ -60,7 +63,7 @@
 			});
 
 			if (brJson != "") {
-				var bizRoleJson = @Html.Raw(ViewData["bizRole"]);
+				var bizRoleJson = JSON.parse(brJson);
 
 				var optionHtml = "";
 
@@ -69,10 +72,12 @@
 				}
 
                 $("#selActivityBizRole").append(optionHtml);
+			} else {
+				$("#selActivityBizRole").append("<option value=\"0\">생성된 비지니스 규칙이 없습니다.</option>");
 			}
 
 			if (arJson != "") {
-				var actRoleJson = @Html.Raw(ViewData["actRole"]);
+				var actRoleJson = JSON.parse(arJson);
 
 				var optionHtml = "";
 
@@ -80,8 +85,40 @@
 					optionHtml += "<option value=\"" + actRoleJson[i].Item1 + "\">" + actRoleJson[i].Item2 + "</option>";
 				}
 
-                $("#selActivityActRole").append(optionHtml);
+				$("#selActivityActRole").append(optionHtml);
+			} else {
+				$("#selActivityActRole").append("<option value=\"0\">생성된 행동별 규칙이 없습니다.</option>");
 			}
+
+			if (dlJson != "") {
+				var deptJson = JSON.parse(dlJson);
+
+				var optionHtml = "";
+				optionHtml += "<option value=\"0\">부서를 선택하세요.</option>";
+
+				for (var i = 0; i < deptJson.length; i++) {
+					optionHtml += "<option value=\"" + deptJson[i].GR_ID + "\" data-alias=\"" + deptJson[i].GRAlias + "\">" + deptJson[i].DisplayName + "</option>";
+				}
+
+				$("#selActivityTargetGroup").append(optionHtml);
+				$("#selActivityTargetGroup").selectpicker("refresh");
+			}
+
+			if (mlJson != "") {
+				var memberJson = JSON.parse(mlJson);
+
+				var optionHtml = "";
+				optionHtml += "<option value=\"0\">사용자를 선택하세요.</option>";
+
+				for (var i = 0; i < memberJson.length; i++) {
+					optionHtml += "<option value=\"" + memberJson[i].UserID + "\" data-alias=\"" + memberJson[i].GroupCode + "\">" + memberJson[i].DisplayName + "</option>";
+				}
+
+				$("#selActivityTargetUser").append(optionHtml);
+				$("#selActivityTargetUser").selectpicker("refresh");
+			}
+
+			$("*.activity-edit-area").hide();
 		});
 
 		function initializeForm(isInitSelect) {
@@ -494,6 +531,7 @@
 					}
 
 					$("#divProcessStep").empty();
+					initializeActivityInfo();
 
 					// 프로세스 단계
 					if (result.data != undefined && result.data.dtAct != undefined && result.data.dtAct.length > 0) {
@@ -603,22 +641,14 @@
 
 			var mode = "0";
 			var processID = $("#selProcess").val();
-			var xmlInfo = "<participantinfo></participantinfo>";
-			var step = $activityObj.attr("data-step");
 			var parentActivityID = $activityObj.attr("data-parentActivityID");
-
-			if ($activityObj.attr("data-depth") != "1") {
-				xmlInfo = "";
-				//whereText = " ProcessID = " + processID + " AND ParentActivityID = '" + $activityObj.attr("data-parentActivityID") + "' AND Step > " + $activityObj.attr("data-step");
-
-				//whereText = " ProcessID = " + processID + " AND ParentActivityID = '' AND Step > " + $activityObj.attr("data-step");
-			}
-
-			@*$.ajax({
-                url: '@Url.Action("DeleteProcessActivityParticipant", "Proc")',
+			var step = $activityObj.attr("data-step");
+			
+			$.ajax({
+                url: '@Url.Action("DeleteProcessActivity", "Proc")',
 				type: 'POST',
 				dataType: 'JSON',
-				data: '{mode:' + mode + ', processID:' + processID + ', activityID:"' + activityID + '", xmlInfo:"' + xmlInfo + '", step:' + step + ', parentActivityID:"' + parentActivityID + '"}',
+				data: '{mode:"' + mode + '", processID:' + processID + ', activityID:"' + activityID + '", parentActivityID:"' + parentActivityID + '", step:' + step + '}',
 				success: function (result) {
 					if (result.code != "OK") {
 						alert(result.message);
@@ -632,7 +662,7 @@
 
 					adjustActivityStep();
                 }
-			});*@
+			});
 
 
 			// 요소 삭제
@@ -704,7 +734,7 @@
 			//	}
 			//});
 
-			
+
 		}
 
 		// 프로세스 정보 저장
@@ -881,15 +911,15 @@
 
 			if (partType != "0") {
 				strValue = partType + "_";
-        
+
 				if (subType != "0") {
 					strValue += subType + "_";
-           
+
 					if (subKey != "0" ) {
 						strValue += subKey;
 					} else {
-						strValue += "_"; 
-					}     
+						strValue += "_";
+					}
 				} else {
 					strValue += "___";
 				}
@@ -907,67 +937,67 @@
 			var bDisabledProgress = false;
 
 			switch (strValue) {
-				case "u____" : 
+				case "u____" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "";
 					strSubKeyDesc = "";
-					break; 
-				case "u_a__" : 
+					break;
+				case "u_a__" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "정의된 참여자";
 					strSubKeyDesc = "";
-					bDisabledUserAddBtn = false; 
-					break; 
-				case "u_b__" : 
+					bDisabledUserAddBtn = false;
+					break;
+				case "u_b__" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "사용자가 지정한 참여자";
 					strSubKeyDesc = "";
-					break;    
-				case "u_d__" : 
+					break;
+				case "u_d__" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "생성자";
 					strSubKeyDesc = "";
-					break;     
-				case "u_e__" : 
+					break;
+				case "u_e__" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "생성자의 부서장";
 					strSubKeyDesc = "";
 					break;
-				case "u_c_f" : 
+				case "u_c_f" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "특정 단계의 사용자";
 					strSubKeyDesc = "특정 단계에 속한 첫번째 사용자";
-					bDisabledActAddBtn = false; 
-					break;       
-				case "u_c_l" : 
+					bDisabledActAddBtn = false;
+					break;
+				case "u_c_l" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "특정 단계의 사용자";
 					strSubKeyDesc = "특정 단계에 속한 마지막 사용자";
-					bDisabledActAddBtn = false;  
-					break;  
-				case "u_c_a" : 
+					bDisabledActAddBtn = false;
+					break;
+				case "u_c_a" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "특정 단계의 사용자";
 					strSubKeyDesc = "특정 단계에 속한 모든 사용자";
-					bDisabledActAddBtn = false;  
-					break;    
-				case "u_f__" : 
+					bDisabledActAddBtn = false;
+					break;
+				case "u_f__" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "사용자가 변경가능한 정의된 사용자";
 					strSubKeyDesc = "";
-					bDisabledUserAddBtn = false;   
-					break;  
-				case "u_g_a" : 
+					bDisabledUserAddBtn = false;
+					break;
+				case "u_g_a" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "양식별 담당자(부가설정에서 미리 지정되어 있는 자)";
 					strSubKeyDesc = "지정된 모든 담당자 ";
-					break; 
-				case "u_g_f" : 
+					break;
+				case "u_g_f" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "양식별 담당자(부가설정에서 미리 지정되어 있는 자)";
 					strSubKeyDesc = "첫번째로 지정된 담당자";
 					break;
-				case "u_g_l" : 
+				case "u_g_l" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "양식별 담당자(부가설정에서 미리 지정되어 있는 자)";
 					strSubKeyDesc = "마지막으로 지정된 담당자";
@@ -976,87 +1006,87 @@
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "양식별 담당자(부가설정에서 미리 지정되어 있는 자)";
 					strSubKeyDesc = "작성부서에 따른 담당자 ";
-					break;  
-				case "u_h__" : 
+					break;
+				case "u_h__" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "참조회람 형태로 지정한 사용자";
 					strSubKeyDesc = "";
-					break;    
-				case "u_r__" : 
+					break;
+				case "u_r__" :
 					strPartTypeDesc = "사용자";
 					strPartSubtypeDesc = "다른 시스템에 정의된 사용자";
 					strSubKeyDesc = "";
-					break; 
-				case "g____" : 
+					break;
+				case "g____" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "";
 					strSubKeyDesc = "";
-					break; 
-				case "g_a_a" : 
+					break;
+				case "g_a_a" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "정의된 부서";
 					strSubKeyDesc = "수신함에서 부서원 누구나 권한을 가짐";
-					bDisabledDeptAddBtn = false;  
-					break;     
-				case "g_a_e" : 
+					bDisabledDeptAddBtn = false;
+					break;
+				case "g_a_e" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "정의된 부서";
 					strSubKeyDesc = "수신함에서 부서장만 권한을 가짐";
-					bDisabledDeptAddBtn = false; 
-					break;     
-				case "g_a_g" : 
+					bDisabledDeptAddBtn = false;
+					break;
+				case "g_a_g" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "정의된 부서";
 					strSubKeyDesc = "수신함에서 특정 직위만 권한을 가짐";
-					bDisabledDeptAddBtn = false; 
-					break;     
-				case "g_a_c" : 
+					bDisabledDeptAddBtn = false;
+					break;
+				case "g_a_c" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "정의된 부서";
 					strSubKeyDesc = "수신함에서 특정 역할만 권한을 가짐";
-					bDisabledDeptAddBtn = false; 
-					break;    
-				case "g_b__" : 
+					bDisabledDeptAddBtn = false;
+					break;
+				case "g_b__" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "사용자가 지정한 부서";
 					strSubKeyDesc = "";
-					break;   
-				case "g_d__" : 
+					break;
+				case "g_d__" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "생성자의 부서";
 					strSubKeyDesc = "";
-					break;   
-				case "g_c__" : 
+					break;
+				case "g_c__" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "특정 단계의 부서";
 					strSubKeyDesc = "";
-					bDisabledProgress = true; 
-					bDisabledActAddBtn = false;  
-					break;   
-				case "g_e__" : 
+					bDisabledProgress = true;
+					bDisabledActAddBtn = false;
+					break;
+				case "g_e__" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "특정 단계 참여자의 부서";
 					strSubKeyDesc = "";
-					bDisabledProgress = true; 
-					bDisabledActAddBtn = false;   
-					break;        
-				case "g_f__" : 
+					bDisabledProgress = true;
+					bDisabledActAddBtn = false;
+					break;
+				case "g_f__" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "사용자가 변경 가능한 정의된 부서";
 					strSubKeyDesc = "";
-					bDisabledDeptAddBtn = false; 
+					bDisabledDeptAddBtn = false;
 					break;
-				case "g_g_a" : 
+				case "g_g_a" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "양식별 담당부서(부가설정에서 미리 지정되어 있는 부서)";
 					strSubKeyDesc = "지정된 모든 담당부서 ";
-					break; 
-				case "g_g_f" : 
+					break;
+				case "g_g_f" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "양식별 담당부서(부가설정에서 미리 지정되어 있는 부서)";
 					strSubKeyDesc = "첫번째로 지정된 담당부서";
 					break;
-				case "g_g_l" : 
+				case "g_g_l" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "양식별 담당부서(부가설정에서 미리 지정되어 있는 부서)";
 					strSubKeyDesc = "마지막으로 지정된 담당부서";
@@ -1065,63 +1095,705 @@
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "양식별 담당부서(부가설정에서 미리 지정되어 있는 부서)";
 					strSubKeyDesc = "작성부서에 따른 담당부서 ";
-					break;        
-				case "g_h__" : 
+					break;
+				case "g_h__" :
 					strPartTypeDesc = "부서/그룹";
 					strPartSubtypeDesc = "배포/참조/회람 형태의 부서";
 					strSubKeyDesc = "";
 					break;
-				case "s____" : 
+				case "s____" :
 					strPartTypeDesc = "기타";
 					strPartSubtypeDesc = "";
 					strSubKeyDesc = "";
-					break; 
-				case "s_c__" : 
+					break;
+				case "s_c__" :
 					strPartTypeDesc = "기타";
 					strPartSubtypeDesc = "기간계 연동";
 					strSubKeyDesc = "";
-					break;      
-				case "s_a__" : 
+					break;
+				case "s_a__" :
 					strPartTypeDesc = "기타";
 					strPartSubtypeDesc = "문서 이관";
 					strSubKeyDesc = "";
-					break;       
-				case "s_h__" : 
+					break;
+				case "s_h__" :
 					strPartTypeDesc = "기타";
 					strPartSubtypeDesc = "배포/참조/회람 형태의 사용자 또는 부서";
 					strSubKeyDesc = "";
-					break;       
-				case "s____" : 
+					break;
+				case "s____" :
 					strPartTypeDesc = "기타";
 					strPartSubtypeDesc = "종료 처리";
 					strSubKeyDesc = "";
 					break;
-				default :    
+				default :
 					strPartTypeDesc = "";
 					strPartSubtypeDesc = "";
 					strSubKeyDesc = "";
-					break; 
+					break;
 			}
 
 			$("#txtActivityPartDescription").val("참여 형태 : " + strPartTypeDesc + "\r\n세부 참여 형태 : " + strPartSubtypeDesc + "\r\n특정 정의키 : " + strSubKeyDesc);
 
-			if (strValue != "s____") {
-				//btnAddUserOrgMap.disabled = bDisabledUserAddBtn;  
-				//btnAddDeptOrgMap.disabled = bDisabledDeptAddBtn;  
-				//btnAddActivity.disabled = bDisabledActAddBtn;
+			$("#divActivityTarget").hide();
+			$("#selActivityTargetUser,#selActivityTargetGroup,#selActivityTargetActivity").parent().hide();
+			$("#selActivityTargetUser,#selActivityTargetGroup,#selActivityTargetActivity").prop("selectedIndex", 0);
 
-				//if ( ! bIsFirst ) {
-				//	fnDeleteParticipantTable();
-				//}
-	    
+			if (strValue != "s____") {
+				if (!bDisabledUserAddBtn) {
+					$("#divActivityTarget").show();
+					$("#selActivityTargetUser").parent().show();
+					$("#selActivityTargetGroup,#selActivityTargetActivity").parent().hide();
+				}
+
+				if (!bDisabledDeptAddBtn) {
+					$("#divActivityTarget").show();
+					$("#selActivityTargetGroup").parent().show();
+					$("#selActivityTargetUser,#selActivityTargetActivity").hide();
+				}
+
+				if (!bDisabledActAddBtn) {
+					$("#divActivityTarget").show();
+					$("#selActivityTargetActivity").parent().show();
+					$("#selActivityTargetUser,#selActivityTargetGroup").parent().hide();
+				}
+
+				$("#tblPartList tbody").empty();
+
 				if (bDisabledProgress) {
-					$("#selActivityProcessMethod").prop("disabled", true);
-					$("#selActivityProcessMethod").prop("selectedIndex", 0);
+					$("#selActivityProgress").prop("disabled", true);
+					$("#selActivityProgress").prop("selectedIndex", 0);
 				} else {
-					$("#selActivityProcessMethod").prop("disabled", false);
+					$("#selActivityProgress").prop("disabled", false);
 				}
 			}
-		}  
+		}
+
+		function appendPartType(selectedType) {
+			var $objSelect;
+
+			if (selectedType == "U") {
+				$objSelect = $("#selActivityTargetUser");
+			} else if (selectedType == "G") {
+				$objSelect = $("#selActivityTargetGroup");
+			} else {
+				$objSelect = $("#selActivityTargetActivity");
+			}
+
+			if ($objSelect.val() == "0") {
+				return;
+			}
+
+            // 중복 체크
+			//if ($("#tblPartList").find("tr[data-partid='" + $objSelect.val() + "']").length > 0) {
+			//	alert("선택하신 대상은 이미 추가되어 있습니다.");
+
+			//	$objSelect.val("0");
+			//	$objSelect.trigger("change");
+
+			//	return;
+			//}
+
+			$("#tblPartList tbody").empty();
+
+			var displayText = "[" + $objSelect.val() + "] " + $objSelect.find("option:selected").text();
+
+			var partHtml = "<tr class=\"odd\" data-partid=\"" + $objSelect.val() + "\" data-partname=\"" + $objSelect.find("option:selected").text() + "\" data-partdeptcode=\"" + $objSelect.find("option:selected").attr("data-alias") + "\">";
+			partHtml += "<td>" + displayText + "<td>";
+			partHtml += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"removePartList(this)\">삭제</button></td>";
+			partHtml += "</tr>";
+
+			$("#tblPartList tbody").append(partHtml);
+
+            $objSelect.val("0");
+			$objSelect.trigger("change");
+		}
+
+		function removePartList(obj) {
+			$(obj).parent().parent().remove();
+		}
+
+		function changeActivityAttribute() {
+			$("#txtActivityCondition1,#txtActivityCondition2,#txtActivityCondition3,#txtActivityCondition4,#txtActivityCondition5").show();
+			$("#selActivityCondition1,#selActivityCondition2,#selActivityCondition3").hide();
+
+			$("#txtActivityCondition1,#txtActivityCondition2,#txtActivityCondition3,#txtActivityCondition4,#txtActivityCondition5").val("");
+			$("#selActivityCondition1,#selActivityCondition2,#selActivityCondition3").prop("selectedIndex", 0);
+
+			if ($("#selActivityAttribute").val() == "0") {
+				$("#selActivityConditionStatus").val("0");
+				$("#txtActivityAttributeText").val("");
+				return;
+			}
+			
+			var attribute = $("#selActivityAttribute").val();
+			var cond2 = $("#selActivityAttribute option:selected").is("[data-cond2]");
+			var cond3 = $("#selActivityAttribute option:selected").is("[data-cond3]");
+			var cond4 = $("#selActivityAttribute option:selected").attr("data-cond4");
+			var cond5 = $("#selActivityAttribute option:selected").attr("data-cond5");
+
+			$("#txtActivityAttributeText").val($("#selActivityAttribute option:selected").text());
+
+			$("#selActivityCondition1 option").hide();
+			$("#selActivityCondition1 option[data-cond='" + attribute + "']").show();
+			var cond1Index = $("#selActivityCondition1 option").index($("#selActivityCondition1 option[data-cond='" + attribute + "']:eq(0)"));
+			$("#selActivityCondition1").prop("selectedIndex", cond1Index);
+
+			$("#selActivityCondition1").show();
+			$("#txtActivityCondition1").hide();
+
+			if (!cond2) {
+				$("#selActivityCondition2 option").hide();
+				$("#selActivityCondition2 option[data-cond='" + attribute + "']").show();
+				var cond2Index = $("#selActivityCondition1 option").index($("#selActivityCondition2 option[data-cond='" + attribute + "']:eq(0)"));
+				$("#selActivityCondition2").prop("selectedIndex", cond2Index);
+
+				$("#selActivityCondition2").show();
+				$("#txtActivityCondition2").hide();
+			}
+
+			if (!cond3) {
+				$("#selActivityCondition3 option").hide();
+				$("#selActivityCondition3 option[data-cond='" + attribute + "']").show();
+				var cond3Index = $("#selActivityCondition1 option").index($("#selActivityCondition3 option[data-cond='" + attribute + "']:eq(0)"));
+				$("#selActivityCondition3").prop("selectedIndex", cond3Index);
+
+				$("#selActivityCondition3").show();
+				$("#txtActivityCondition3").hide();
+			}
+
+			if (cond4 != "") {
+				$("#txtActivityCondition4").val(cond4);
+			}
+
+			if (cond5 != "") {
+				$("#txtActivityCondition5").val(cond5);
+			}
+		}
+
+		function fnAddProcess(seq) {
+			var strPos = "";
+			var strCondition = "";
+			var strPrefixState = "";
+			var strDesc = "";
+			var cDiv = String.fromCharCode(1);
+
+			if ($("#selActivityAttribute").val() == "0") {
+				alert("속성을 선택하세요.");
+
+				return;
+			}
+			
+			switch ( seq ) {
+				case 1 :
+					strPos = "a";
+					strCondition = "pre";
+					strPrefixState = "[ACT PRE] ";
+					break;  
+				case 2 :
+					strPos = "a";
+					strCondition = "post";
+					strPrefixState = "[ACT POST] ";
+					break;  
+				case 3 :
+					strPos = "w";
+					strCondition = "pre";
+					strPrefixState = "[WI PRE] ";
+					break;  
+				case 4 :
+					strPos = "w";
+					strCondition = "post";
+					strPrefixState = "[WI POST] ";
+					break;     
+			}
+
+			var strID = strPos + cDiv + strCondition + cDiv + $("#selActivityAttribute").val() + cDiv + $("#selActivityConditionStatus").val() + cDiv + $("#txtActivityAttributeText").val() + cDiv + $("#selActivityCondition1").val() + cDiv;
+
+			strDesc = "속성 : " + $("#selActivityAttribute").val();
+			strDesc += "\n상태 : " + $("#selActivityConditionStatus").val();
+			strDesc += "\nItem1 : " + $("#selActivityCondition1 option:selected").text();
+
+			var cond2 = $("#selActivityAttribute option:selected").is("[data-cond2]");
+			var cond3 = $("#selActivityAttribute option:selected").is("[data-cond3]");
+			var cond4 = $("#selActivityAttribute option:selected").attr("data-cond4");
+			var cond5 = $("#selActivityAttribute option:selected").attr("data-cond5");
+
+			if (cond2) {
+				strID += $("#txtActivityCondition2").val() + cDiv;
+				strDesc += "\nItem2 : " + $("#txtActivityCondition2").val();
+			} else {
+				strID += $("#selActivityCondition2").val() + cDiv;
+				strDesc += "\nItem2 : " + $("#selActivityCondition2 option:selected").text();
+			}
+
+			if (cond2) {
+				strID += $("#txtActivityCondition3").val() + cDiv;
+				strDesc += "\nItem3 : " + $("#txtActivityCondition3").val();
+			} else {
+				strID += $("#selActivityCondition3").val() + cDiv;
+				strDesc += "\nItem3 : " + $("#selActivityCondition3 option:selected").text();
+			}
+
+			strID += $("#txtActivityCondition4").val() + cDiv + $("#txtActivityCondition5").val();
+			strDesc += "\nItem4 : " + $("#txtActivityCondition4").val();
+			strDesc += "\nItem5 : " + $("#txtActivityCondition5").val();
+
+			if ($("#tblProcessAttributeInfo tbody tr[data-id='" + strID + "']").length > 0) {
+				alert("프로세스 속성 정보에 이미 추가되어 있습니다.");
+				return;
+			}
+
+			var html = "<tr data-id='" + strID + "'>";
+			html += "<td title='" + strDesc + "'>" + strPrefixState + $("#txtActivityAttributeText").val() + "</td>";
+			html += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"removePartList(this)\">편집</button><button type=\"button\" class=\"btn btn-default ml-2\" onclick=\"removePartList(this)\">삭제</button></td>";
+			html += "</tr>";
+
+			$("#tblProcessAttributeInfo tbody").append(html);
+
+			$("#selActivityAttribute").val("0");
+			$("#selActivityAttribute").trigger("change");
+		}
+
+		// 신규 Activity 정보 추가
+		function addNewActivityInfo() {
+			if ($("#txtActivityName").val() == "") {
+				alert("Activity명을 입력하세요.");
+
+				$("#txtActivityName").focus();
+				return false;
+			}	
+
+			if ($("#selActivityPartType").val() == "0") {
+				alert("참여 형태를 선택하세요.");
+
+				$("#selActivityPartType").focus();
+				return false;
+			}	
+
+			var strPartType = $("#txtActivityPartType").val();
+
+			var isRandomCheck = false;
+    
+			switch (strPartType) {
+				case "u_b__" :
+				case "u_f__" :
+				case "u_g_f" :
+				case "u_g_l" :
+				case "u_g_a" :
+				case "u_g_c" :
+				case "g_b__" :
+				case "g_f__" :
+				case "g_g_f" :
+				case "g_g_l" :
+				case "g_g_a" :
+				case "g_g_c" :
+				case "r_b__" :
+					isRandomCheck = true;
+					break;
+				default :
+					isRandomCheck = false;
+					break;  
+			}
+
+			if ($("#selActivityRandom").val() == "Y") {
+				if (!isRandomCheck) {
+					alert("현재 Activity의 Random이 Y입니다.\r\n참여 형태를 정확하게 선택해 주세요.");
+					return false; 
+				}
+			}
+
+			var isPartCheck = false;
+    
+			switch (strPartType) {
+				case "u_a__" :
+				case "u_f__" :
+				case "u_c_f" :
+				case "u_c_l" :
+				case "u_c_a" :
+				case "g_a_a" :
+				case "g_c__" :
+				case "g_e__":
+				case "g_f__":
+					isPartCheck = true;
+					break;
+				default :
+					isPartCheck = false;
+					break;  
+			}
+
+			if (isPartCheck) {
+				if ($("#tblPartList tbody tr").length == 0) {
+					alert("참여 정보에 값이 없습니다.");
+					return false; 
+				}
+			}
+
+			var cDiv = String.fromCharCode(1);
+
+			var activityID = "";
+			var processID = $("#selProcess").val();
+			var parentActivityID = "";
+			var step = $("#divProcessStep > ol > li").length + 1;
+			var subStep = 0;
+			var random = $("#selActivityRandom").val();
+			var inLine = "N";
+			var bizRole = $("#selActivityBizRole").val();
+			var actRole = $("#selActivityActRole").val();
+			var displayName = $("#txtActivityName").val();
+			var progress = $("#selActivityProgress").val();
+			var partType = strPartType;
+			var limited = $("#selActivityLimited").val();
+			var review = $("#selActivityReview").val();
+			var showLine = $("#selActivityShowLine").val();
+			var scopeLine = $("#txtActivityScopeLine").val();
+			var mandatory = $("#selActivityMandatory").val();
+			var evalchart = $("#selActivityEvalChart").val();
+			var actPreCond = ($("#tblProcessAttributeInfo tbody tr[data-id*='a" + String.fromCharCode(1) + "pre']").length > 0) ? "Y" : "N";
+			var actPostCond = ($("#tblProcessAttributeInfo tbody tr[data-id*='a" + String.fromCharCode(1) + "post']").length > 0) ? "Y" : "N";
+			var wiPreCond = ($("#tblProcessAttributeInfo tbody tr[data-id*='w" + String.fromCharCode(1) + "pre']").length > 0) ? "Y" : "N";
+			var wiPostCond = ($("#tblProcessAttributeInfo tbody tr[data-id*='w" + String.fromCharCode(1) + "post']").length > 0) ? "Y" : "N";
+			var description = $("#txtActivityDesc").val();
+			var participantID = ($("#tblPartList tbody tr").length == 0) ? "" : $("#tblPartList tbody tr:eq(0)").attr("data-partid");
+			var participantName = ($("#tblPartList tbody tr").length == 0) ? "" : $("#tblPartList tbody tr:eq(0)").attr("data-partname");
+			var participantDeptCode = ($("#tblPartList tbody tr").length == 0) ? "" : $("#tblPartList tbody tr:eq(0)").attr("data-partdeptcode");
+
+			var cDiv = String.fromCharCode(1);
+			var attrInfoArray = [];
+
+			for (var i = 0; i < $("#tblProcessAttributeInfo tbody tr").length; i++) {
+				var $trObj = $("#tblProcessAttributeInfo tbody tr").eq(i);
+				var dataID = $trObj.attr("data-id");
+
+				var attrInfo = {};
+				attrInfo.Pos = dataID.split(cDiv)[0];
+				attrInfo.Condition = dataID.split(cDiv)[1];
+				attrInfo.Attribute = dataID.split(cDiv)[2];
+				attrInfo.Status = dataID.split(cDiv)[3];
+				attrInfo.Dscpt = dataID.split(cDiv)[4];
+				attrInfo.Item1 = dataID.split(cDiv)[5];
+				attrInfo.Item2 = dataID.split(cDiv)[6];
+				attrInfo.Item3 = dataID.split(cDiv)[7];
+				attrInfo.Item4 = dataID.split(cDiv)[8];
+				attrInfo.Item5 = dataID.split(cDiv)[9];
+
+				attrInfoArray.push(attrInfo);
+			}
+
+			$.ajax({
+				url: '@Url.Action("CreateProcessActivity", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{processID:' + processID + ', step:' + step + ', subStep:' + subStep + ', random:"' + random + '", inLine:"' + inLine + '", bizRole:"' + bizRole + '", actRole:"' + actRole + '", displayName:"' + displayName + '", progress:"' + progress + '", partType:"' + partType + '", limited:"' + limited + '", review:"' + review + '", showLine:"' + showLine + '", scopeLine:"' + scopeLine + '", mandatory:"' + mandatory + '", evalchart:' + evalchart + ', actPreCond:"' + actPreCond + '", actPostCond:"' + actPostCond + '", wiPreCond:"' + wiPreCond + '", wiPostCond:"' + wiPostCond + '", description:"' + description + '", participantID:"' + participantID + '", participantName:"' + participantName + '", participantDeptCode:"' + participantDeptCode + '", attrInfoArray:' + JSON.stringify(attrInfoArray) + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 Activity가 생성되었습니다.");
+
+					activityID = result.message;
+
+					$("#txtActivityID").val(activityID);
+
+					// 저장 후 프로세스 단계를 가장 마지막으로 생성
+					var processHtml = "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + activityID + "\" data-step=\"" + step + "\" data-displayname=\"" + displayName + "\" data-parentActivityID=\"" + parentActivityID + "\" data-random=\"" + random + "\" data-depth=\"1\" data-inline=\"" + inLine + "\" data-review=\"" + review + "\">";
+					processHtml += "	<div class=\"dd-handle\">";
+					processHtml += "		<span class=\"ion ion-md-radio-button-off text-muted\"></span>";
+					processHtml += "	</div>";
+					processHtml += "	<div class=\"dd-content bg-light\">";
+					processHtml += step + ". " + displayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + random + "&nbsp]";
+					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + activityID + "')\">편집</button>";
+					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + activityID + "')\">삭제</button>";
+					processHtml += "	</div>";
+					processHtml += "</li>";
+
+					$("#divProcessStep > ol").append(processHtml);
+
+					initializeActivityInfo();
+				}
+			});
+		}
+
+		function updateActivityInfo() {
+			if ($("#txtActivityName").val() == "") {
+				alert("Activity명을 입력하세요.");
+
+				$("#txtActivityName").focus();
+				return false;
+			}	
+
+			if ($("#selActivityPartType").val() == "0") {
+				alert("참여 형태를 선택하세요.");
+
+				$("#selActivityPartType").focus();
+				return false;
+			}	
+
+			var strPartType = $("#txtActivityPartType").val();
+
+			var isRandomCheck = false;
+    
+			switch (strPartType) {
+				case "u_b__" :
+				case "u_f__" :
+				case "u_g_f" :
+				case "u_g_l" :
+				case "u_g_a" :
+				case "u_g_c" :
+				case "g_b__" :
+				case "g_f__" :
+				case "g_g_f" :
+				case "g_g_l" :
+				case "g_g_a" :
+				case "g_g_c" :
+				case "r_b__" :
+					isRandomCheck = true;
+					break;
+				default :
+					isRandomCheck = false;
+					break;  
+			}
+
+			if ($("#selActivityRandom").val() == "Y") {
+				if (!isRandomCheck) {
+					alert("현재 Activity의 Random이 Y입니다.\r\n참여 형태를 정확하게 선택해 주세요.");
+					return false; 
+				}
+			}
+
+			var isPartCheck = false;
+    
+			switch (strPartType) {
+				case "u_a__" :
+				case "u_f__" :
+				case "u_c_f" :
+				case "u_c_l" :
+				case "u_c_a" :
+				case "g_a_a" :
+				case "g_c__" :
+				case "g_e__":
+				case "g_f__":
+					isPartCheck = true;
+					break;
+				default :
+					isPartCheck = false;
+					break;  
+			}
+
+			if (isPartCheck) {
+				if ($("#tblPartList tbody tr").length == 0) {
+					alert("참여 정보에 값이 없습니다.");
+					return false; 
+				}
+			}
+
+			var cDiv = String.fromCharCode(1);
+
+			var processID = $("#selProcess").val();
+			var activityID = $("#txtActivityID").val();
+			var parentActivityID = $("#txtParentActivityID").val();
+			var step = $("li[data-id='" + activityID + "']").attr("data-step");
+			var subStep = 0;
+			var random = $("#selActivityRandom").val();
+			var inLine = $("li[data-id='" + activityID + "']").find("ol").find("li").length > 0 ? "Y" : "N";
+			var bizRole = $("#selActivityBizRole").val();
+			var actRole = $("#selActivityActRole").val();
+			var displayName = $("#txtActivityName").val();
+			var progress = $("#selActivityProgress").val();
+			var partType = strPartType;
+			var limited = $("#selActivityLimited").val();
+			var review = $("#selActivityReview").val();
+			var showLine = $("#selActivityShowLine").val();
+			var scopeLine = $("#txtActivityScopeLine").val();
+			var mandatory = $("#selActivityMandatory").val();
+			var evalchart = $("#selActivityEvalChart").val();
+			var actPreCond = ($("#tblProcessAttributeInfo tbody tr[data-id*='a" + String.fromCharCode(1) + "pre']").length > 0) ? "Y" : "N";
+			var actPostCond = ($("#tblProcessAttributeInfo tbody tr[data-id*='a" + String.fromCharCode(1) + "post']").length > 0) ? "Y" : "N";
+			var wiPreCond = ($("#tblProcessAttributeInfo tbody tr[data-id*='w" + String.fromCharCode(1) + "pre']").length > 0) ? "Y" : "N";
+			var wiPostCond = ($("#tblProcessAttributeInfo tbody tr[data-id*='w" + String.fromCharCode(1) + "post']").length > 0) ? "Y" : "N";
+			var description = $("#txtActivityDesc").val();
+			var participantID = ($("#tblPartList tbody tr").length == 0) ? "" : $("#tblPartList tbody tr:eq(0)").attr("data-partid");
+			var participantName = ($("#tblPartList tbody tr").length == 0) ? "" : $("#tblPartList tbody tr:eq(0)").attr("data-partname");
+			var participantDeptCode = ($("#tblPartList tbody tr").length == 0) ? "" : $("#tblPartList tbody tr:eq(0)").attr("data-partdeptcode");
+
+			var cDiv = String.fromCharCode(1);
+			var attrInfoArray = [];
+
+			for (var i = 0; i < $("#tblProcessAttributeInfo tbody tr").length; i++) {
+				var $trObj = $("#tblProcessAttributeInfo tbody tr").eq(i);
+				var dataID = $trObj.attr("data-id");
+
+				var attrInfo = {};
+				attrInfo.Pos = dataID.split(cDiv)[0];
+				attrInfo.Condition = dataID.split(cDiv)[1];
+				attrInfo.Attribute = dataID.split(cDiv)[2];
+				attrInfo.Status = dataID.split(cDiv)[3];
+				attrInfo.Dscpt = dataID.split(cDiv)[4];
+				attrInfo.Item1 = dataID.split(cDiv)[5];
+				attrInfo.Item2 = dataID.split(cDiv)[6];
+				attrInfo.Item3 = dataID.split(cDiv)[7];
+				attrInfo.Item4 = dataID.split(cDiv)[8];
+				attrInfo.Item5 = dataID.split(cDiv)[9];
+
+				attrInfoArray.push(attrInfo);
+			}
+
+			$.ajax({
+				url: '@Url.Action("UpdateProcessActivity", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{processID:' + processID + ', activityID:"' + activityID + '", parentActivityID:"' + parentActivityID + '", step:' + step + ', subStep:' + subStep + ', random:"' + random + '", inLine:"' + inLine + '", bizRole:"' + bizRole + '", actRole:"' + actRole + '", displayName:"' + displayName + '", progress:"' + progress + '", partType:"' + partType + '", limited:"' + limited + '", review:"' + review + '", showLine:"' + showLine + '", scopeLine:"' + scopeLine + '", mandatory:"' + mandatory + '", evalchart:' + evalchart + ', actPreCond:"' + actPreCond + '", actPostCond:"' + actPostCond + '", wiPreCond:"' + wiPreCond + '", wiPostCond:"' + wiPostCond + '", description:"' + description + '", participantID:"' + participantID + '", participantName:"' + participantName + '", participantDeptCode:"' + participantDeptCode + '", attrInfoArray:' + JSON.stringify(attrInfoArray) + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 Activity가 생성되었습니다.");
+
+					activityID = result.message;
+
+					$("#txtActivityID").val(activityID);
+
+					// 저장 후 프로세스 단계를 가장 마지막으로 생성
+					var processHtml = "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + activityID + "\" data-step=\"" + step + "\" data-displayname=\"" + displayName + "\" data-parentActivityID=\"" + parentActivityID + "\" data-random=\"" + random + "\" data-depth=\"1\" data-inline=\"" + inLine + "\" data-review=\"" + review + "\">";
+					processHtml += "	<div class=\"dd-handle\">";
+					processHtml += "		<span class=\"ion ion-md-radio-button-off text-muted\"></span>";
+					processHtml += "	</div>";
+					processHtml += "	<div class=\"dd-content bg-light\">";
+					processHtml += step + ". " + displayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + random + "&nbsp]";
+					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + activityID + "')\">편집</button>";
+					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + activityID + "')\">삭제</button>";
+					processHtml += "	</div>";
+					processHtml += "</li>";
+
+					$("#divProcessStep > ol").append(processHtml);
+
+					initializeActivityInfo();
+				}
+			});
+		}
+
+		function saveProcessStep(bAlert) {
+			if ($("li[data-id]").length == 0) {
+				return;
+			}
+
+			var stepInfoArray = [];
+
+			$("li[data-id]").each(function () {
+				var stepInfo = {};
+				stepInfo.ActivityID = $(this).attr("data-id");
+				stepInfo.ParentActivityID = $(this).attr("data-parentActivityID");
+				stepInfo.Step = $(this).attr("data-step");
+				stepInfo.SubStep = 0;
+				stepInfo.InLine = $(this).find("ol").find("li").length > 0 ? "Y" : "N";
+
+				stepInfoArray.push(stepInfo);
+			});
+
+			$.ajax({
+                url: '@Url.Action("UpdateProcessActivityStep", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{stepInfoJson: ' + JSON.stringify(stepInfoArray) + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					if (bAlert) {
+						alert("정상적으로 처리되었습니다.");
+					}
+                }
+			});
+		}
+
+		function initializeActivityInfo() {
+			$("*.activity-edit-area").hide();
+			$("*.activity-create-area").show();
+			
+			$("#activity-general,#activity-part,#activity-status,#activity-info").find("input").val("");
+			$("#activity-general,#activity-part,#activity-status,#activity-info").find("textarea").val("");
+			$("#activity-general,#activity-part,#activity-status,#activity-info").find("select").prop("selectedIndex", 0);
+			$("#activity-general,#activity-part,#activity-status,#activity-info").find("table tbody").empty();
+
+			$("#divActivityTarget").hide();
+			$("#selActivityTargetUser,#selActivityTargetGroup,#selActivityTargetActivity").parent().hide();
+			$("#selActivityTargetUser,#selActivityTargetGroup,#selActivityTargetActivity").prop("selectedIndex", 0);
+
+			$("#selActivityRandom").prop("selectedIndex", 1);
+			$("#selActivityAttribute").trigger("change");
+
+			$("#ulActivity > li > a.nav-link:eq(0)").trigger("click");
+		}
+
+		function saveActivityGeneral() {
+			if ($("#txtActivityName").val() == "") {
+				alert("Activity명을 입력하세요.");
+				return false;
+			}	
+
+			var strPartType = $("#txtActivityPartType").val();
+
+			var isRandomCheck = false;
+    
+			switch (strPartType) {
+				case "u_b__" :
+				case "u_f__" :
+				case "u_g_f" :
+				case "u_g_l" :
+				case "u_g_a" :
+				case "u_g_c" :
+				case "g_b__" :
+				case "g_f__" :
+				case "g_g_f" :
+				case "g_g_l" :
+				case "g_g_a" :
+				case "g_g_c" :
+				case "r_b__" :
+					isRandomCheck = true;
+					break;
+				default :
+					isRandomCheck = false;
+					break;  
+			}
+
+			if ($("#selActivityRandom").val() == "Y") {
+				if (!isRandomCheck) {
+					alert("현재 Activity의 Random이 Y입니다.\r\n참여 형태를 정확하게 선택해 주세요.");
+					return false; 
+				}
+			}
+
+			var activityID = $("#txtActivityID").val();
+			var displayName = $("#txtActivityName").val();
+			var bizRole = $("#selActivityBizRole").val();
+			var actRole = $("#selActivityActRole").val();
+			var review = $("#selActivityReview").val();
+			var progress = $("#selActivityProgress").val();
+			var random = $("#selActivityRandom").val();
+			var showLine = $("#selActivityShowLine").val();
+			var mandatory = $("#selActivityMandatory").val();
+
+			$.ajax({
+				url: '@Url.Action("UpdateProcessActivityGeneral", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{activityID:' + activityID + ', displayName:"' + displayName + '", bizRole:"' + bizRole + '", actRole:"' + actRole + '", review:"' + review + '", progress:"' + progress + '", random:"' + random + '", showLine:"' + showLine + '", mandatory:"' + mandatory + '"}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+				}
+			});
+		}
+		
 	</script>
 }
 
@@ -1388,53 +2060,9 @@
 							</h6>
 							<div class="card-body">
 								<div class="dd" id="divProcessStep" style="margin-bottom: 30px;">
-									@*<ol class="dd-list">
-				<li class="dd-item dd-custom-drag-handle" data-id="13">
-					<div class="dd-handle">
-						<span class="ion ion-md-radio-button-off text-muted"></span>
-					</div>
-					<div class="dd-content bg-light">Item 13
-						<button type="button" class="btn btn-default btn-sm ml-3" data-action="expand-all" onclick="alert('aaa')">Expand All</button>
-					</div>
-				</li>
-				<li class="dd-item dd-custom-drag-handle" data-id="14">
-					<div class="dd-handle">
-						<span class="ion ion-md-radio-button-off text-muted"></span>
-					</div>
-					<div class="dd-content bg-light">Item 14</div>
-				</li>
-				<li class="dd-item dd-custom-drag-handle" data-id="15">
-					<div class="dd-handle">
-						<span class="ion ion-md-radio-button-off text-muted"></span>
-					</div>
-					<div class="dd-content bg-light">Item 15</div>
-					<ol class="dd-list">
-						<li class="dd-item dd-custom-drag-handle" data-id="16">
-							<div class="dd-handle">
-								<span class="ion ion-md-radio-button-off text-muted"></span>
-							</div>
-							<div class="dd-content bg-light">Item 16
-								<button type="button" class="btn btn-default btn-sm ml-3" data-action="expand-all" onclick="alert('aaa')">Expand All</button>
-							</div>
-						</li>
-						<li class="dd-item dd-custom-drag-handle" data-id="17">
-							<div class="dd-handle">
-								<span class="ion ion-md-radio-button-off text-muted"></span>
-							</div>
-							<div class="dd-content bg-light">Item 17</div>
-						</li>
-						<li class="dd-item dd-custom-drag-handle" data-id="18">
-							<div class="dd-handle">
-								<span class="ion ion-md-radio-button-off text-muted"></span>
-							</div>
-							<div class="dd-content bg-light">Item 18</div>
-						</li>
-					</ol>
-				</li>
-			</ol>*@
 								</div>
 								<hr class="border-light m-0">
-								<button type="button" id="btnSaveShare" class="btn btn-primary" style="margin-top: 10px;" onclick="saveShareDoc()">프로세스 단계 저장</button>
+								<button type="button" id="btnSaveShare" class="btn btn-primary" style="margin-top: 10px;" onclick="saveProcessStep(true)">프로세스 단계 저장</button>
 							</div>
 						</div>
 					</div>
@@ -1444,16 +2072,7 @@
 								프로세스 상세
 							</h6>
 							<div class="card-body">
-								<hr class="border-light m-0">
-								<div class="form-group" style="margin-bottom: 10px;">
-									<button type="button" id="btnSaveShare" class="btn btn-default" style="margin-top: 10px;" onclick="saveShareDoc()">Review(0) 추가</button>
-									<button type="button" id="btnSaveShare" class="btn btn-default ml-2" style="margin-top: 10px;" onclick="saveShareDoc()">Review(1) 추가</button>
-									<button type="button" id="btnSaveShare" class="btn btn-default ml-2" style="margin-top: 10px;" onclick="saveShareDoc()">Review(2) 추가</button>
-									<button type="button" id="btnSaveShare" class="btn btn-default ml-2" style="margin-top: 10px;" onclick="saveShareDoc()">Review(3) 추가</button>
-									<button type="button" id="btnSaveShare" class="btn btn-default" style="margin-top: 10px;" onclick="saveShareDoc()">Review(4) 추가</button>
-								</div>
-								<hr class="border-light m-0">
-								<div id="divActivity" class="nav-tabs-top nav-responsive-sm" style="margin-top:10px;margin-bottom:10px;">
+								<div id="divActivity" class="nav-tabs-top nav-responsive-sm" style="margin-bottom:10px;">
 									<ul id="ulActivity" class="nav nav-tabs">
 										<li class="nav-item">
 											<a class="nav-link active" data-toggle="tab" href="#activity-general">일반</a>
@@ -1510,7 +2129,7 @@
 													</div>
 													<div class="form-group col">
 														<label class="form-label">ProcessMethod</label>
-														<select class="custom-select" id="selActivityProcessMethod">
+														<select class="custom-select" id="selActivityProgress">
 															<option value="none">단일</option>
 															<option value="serial">순차</option>
 															<option value="parallel">병렬</option>
@@ -1522,7 +2141,7 @@
 														<label class="form-label">Random</label>
 														<select class="custom-select" id="selActivityRandom">
 															<option value="Y">선택</option>
-															<option value="N">선택하지 않음</option>
+															<option value="N" selected="selected">선택하지 않음</option>
 														</select>
 													</div>
 													<div class="form-group col">
@@ -1540,12 +2159,11 @@
 														</select>
 													</div>
 												</div>
-												<div class="card-footer">
-													<button type="button" class="btn btn-primary mr-2" onclick="saveBasicProcess()">프로세스 저장</button>
-													<button type="button" class="btn btn-default ml-sm-3" style="display: none " id="btnExportProcess" onclick="exportProcessInfoForXml();">프로세스 정보(XML) 내보내기</button>
+												<div class="card-footer activity-edit-area" style="padding-left: 0;">
+													<button type="button" class="btn btn-primary" onclick="saveActivityGeneral()">일반 정보 저장</button>
 												</div>
 											</div>
-										</div>		
+										</div>
 										<div class="tab-pane fade" id="activity-part">
 											<div class="card-body">
 												<div class="form-group">
@@ -1615,44 +2233,238 @@
 													<label class="form-label">선택 정보</label>
 													<textarea class="form-control" id="txtActivityPartDescription" placeholder="선택 정보" rows="3"></textarea>
 												</div>
-												<div class="form-group">
+												<div class="form-group" id="divActivityTarget" style="display:none;">
 													<label class="form-label">대상 선택</label>
-													<select class="custom-select" id="selActivityTargetUser"></select>
-													<select class="custom-select" id="selActivityTargetGroup"></select>
-													<select class="custom-select" id="selActivityTargetActivity"></select>
+													<select class="custom-select selectpicker" id="selActivityTargetUser" data-live-search="true" title="사용자를 선택하세요." onchange="appendPartType('U')" style="display:none;"></select>
+													<select class="custom-select selectpicker" id="selActivityTargetGroup" data-live-search="true" title="부서를 선택하세요." onchange="appendPartType('G')" style="display:none;"></select>
+													<select class="custom-select selectpicker" id="selActivityTargetActivity" data-live-search="true" title="Activity를 선택하세요." onchange="appendPartType('S')" style="display:none;"></select>
 												</div>
 												<div class="form-group">
 													<label class="form-label">참여 정보</label>
-													<div class="card-body" style="margin-bottom: 0;">
+													<div class="card-body" style="padding: 0;">
 														<div class="table-responsive">
-															<table id="tblProcessAppliedList" class="table table-striped table-bordered" style="margin-bottom:0;">
+															<table id="tblPartList" class="table table-striped table-bordered" style="margin-bottom:0;height:150px;">
 																<tbody></tbody>
 															</table>
 														</div>
 													</div>
 												</div>
-												
+												<div class="card-footer activity-edit-area" style="padding-left: 0;">
+													<button type="button" class="btn btn-primary" onclick="saveActivityPart()">참여 정보 저장</button>
+												</div>
 											</div>
 										</div>
-
 										<div class="tab-pane fade" id="activity-status">
 											<div class="card-body">
-
+												<div class="form-group">
+													<label class="form-label">프로세스 속성 정보</label>
+													<div class="card-body" style="padding: 0;">
+														<div class="table-responsive">
+															<table id="tblProcessAttributeInfo" class="table table-striped table-bordered" style="margin-bottom:0;height:150px;">
+																<tbody></tbody>
+															</table>
+														</div>
+													</div>
+												</div>
+												<div class="form-row">
+													<div class="form-group col">
+														<label class="form-label">속성</label>
+														<select class="custom-select" id="selActivityAttribute" onchange="changeActivityAttribute()">
+															<option value="0">선택하세요.</option>
+															<option value="docnumber" data-cond2="" data-cond3="" data-cond4="" data-cond5="">문서번호</option>
+															<option value="etcnumber" data-cond2="" data-cond3="" data-cond4="" data-cond5="">기타번호</option>
+															<option value="xfinst" data-cond3="" data-cond4="" data-cond5="">공통필드</option>
+															<option value="maintable" data-cond3="" data-cond4="" data-cond5="">주필드</option>
+															<option value="subtable" data-cond3="" data-cond4="" data-cond5="">보조필드</option>
+															<option value="alarm" data-cond4="EA/Forms/XFormMain.aspx?M=mail&mi={$mi}&fi={$fi}&wi={$wi}&oi={$oi}" data-cond5="">알림</option>
+															<option value="transfer" data-cond4="" data-cond5="">문서이관</option>
+															<option value="interface" data-cond3="" data-cond4="" data-cond5="">외부연동</option>
+															<option value="progress" data-cond2="" data-cond3="" data-cond4="" data-cond5="">반려처리</option>
+															<option value="worknotice" data-cond3="" data-cond4="" data-cond5="EA/Forms/XFormMain.aspx?M=new&fi={$fi}&wn={$wn}">작업연결</option>
+															<option value="add_worknotice" data-cond3="" data-cond4="" data-cond5="">작업연결(타조건에추가)</option>
+														</select>
+													</div>
+													<div class="form-group col">
+														<label class="form-label">작업</label>
+														<input type="text" id="txtActivityAttributeText" class="form-control">
+													</div>
+												</div>
+												<div class="form-row">
+													<div class="form-group col">
+														<label class="form-label">상태</label>
+														<select class="custom-select" id="selActivityConditionStatus">
+															<option value="0">None</option>
+															<option value="2">Confirmed</option>
+															<option value="3">Reserve</option>
+															<option value="4">Cancel</option>
+															<option value="5">Transfer</option>
+															<option value="6">Disagree</option>
+															<option value="7">Approval</option>
+															<option value="8">Reject</option>
+															<option value="9">Withdraw</option>
+															<option value="10">Back</option>
+														</select>
+													</div>
+													<div class="form-group col">
+														<label class="form-label">조건1</label>
+														<select class="custom-select" id="selActivityCondition1" style="display:none">
+															<option value="per_form_month" data-cond="docnumber">양식-월별 발번</option>
+															<option value="per_form_day" data-cond="docnumber">양식-일별 발번</option>
+															<option value="per_dept_month" data-cond="docnumber">부서-월별 발번</option>
+															<option value="per_dept_day" data-cond="docnumber">부서-일별 발번</option>
+															<option value="certificate_cresyn" data-cond="etcnumber">(크레신)증명신청번호</option>
+															<option value="apinvoice_cresyn" data-cond="etcnumber">(크레신)전표번호</option>
+															<option value="tooling_cresyn" data-cond="etcnumber">(크레신)금형번호</option>
+															<option value="ecn_cresyn" data-cond="etcnumber">(크레신)ECN번호</option>
+															<option value="offical_sundo" data-cond="etcnumber">(선도)공문번호</option>
+															<option value="d" data-cond="xfinst">정의된 값</option>
+															<option value="p" data-cond="xfinst">양식에서 받은 값</option>
+															<option value="b" data-cond="xfinst">양식에서 받은 값(일괄)</option>
+															<option value="t" data-cond="xfinst">공통필드 값</option>
+															<option value="d" data-cond="maintable">정의된 값</option>
+															<option value="p" data-cond="maintable">양식에서 받은 값</option>
+															<option value="b" data-cond="maintable">양식에서 받은 값(일괄)</option>
+															<option value="s" data-cond="maintable">양식에서 받은 값(부분)</option>
+															<option value="t" data-cond="maintable">공통필드 값</option>
+															<option value="d" data-cond="subtable">정의된 값</option>
+															<option value="p" data-cond="subtable">양식에서 받은 값</option>
+															<option value="b" data-cond="subtable">양식에서 받은 값(일괄)</option>
+															<option value="mail_notice" data-cond="alarm">각종 알림메일</option>
+															<option value="mail_complete" data-cond="alarm">완료 메일</option>
+															<option value="mail_complete_d" data-cond="alarm">완료 메일(기안자에게만)</option>
+															<option value="mail_web" data-cond="alarm">외부로 메일 전송</option>
+															<option value="mail_dl" data-cond="alarm">배포 메일 전송</option>
+															<option value="mail_cabinet" data-cond="alarm">문서배포 및 메일전송</option>
+															<option value="mail_cabinet_sp" data-cond="alarm">문서배포 및 메일전송(별도)</option>
+															<option value="table_a" data-cond="transfer">이관정보테이블사용</option>
+															<option value="table_b" data-cond="transfer">이관정보테이블사용 및 PDM이관</option>
+															<option value="table_c" data-cond="transfer">게시판 등록</option>
+															<option value="erp_a" data-cond="interface">연동 A형</option>
+															<option value="erp_b" data-cond="interface">연동 B형</option>
+															<option value="erp_c" data-cond="interface">연동 C형</option>
+															<option value="erp_d" data-cond="interface">연동 D형</option>
+															<option value="register_a" data-cond="interface">대장등록 A형</option>
+															<option value="register_b" data-cond="interface">대장등록 B형</option>
+															<option value="register_c" data-cond="interface">대장등록 C형</option>
+															<option value="register_d" data-cond="interface">대장등록 D형</option>
+															<option value="a" data-cond="progress">전체 반려</option>
+															<option value="l" data-cond="progress">현 수준 반려 처리</option>
+															<option value="w" data-cond="progress">현 참여자 반려</option>
+															<option value="new" data-cond="worknotice">신규작성</option>
+															<option value="new_mail" data-cond="worknotice">신규작성 및 메일알림</option>
+															<option value="new_messanger" data-cond="worknotice">신규작성 및 메신저알림</option>
+															<option value="new" data-cond="add_worknotice">신규작성</option>
+															<option value="new_mail" data-cond="add_worknotice">신규작성 및 메일알림</option>
+															<option value="new_messanger" data-cond="add_worknotice">신규작성 및 메신저알림</option>
+														</select>
+														<input type="text" id="txtActivityCondition1" class="form-control">
+													</div>
+												</div>
+												<div class="form-row">
+													<div class="form-group col">
+														<label class="form-label">조건2</label>
+														<select class="custom-select" id="selActivityCondition2" style="display:none">
+															<option value="1" data-cond="xfinst">이력관리 안함</option>
+															<option value="2" data-cond="xfinst">이력관리 함</option>
+															<option value="1" data-cond="maintable">이력관리 안함</option>
+															<option value="2" data-cond="maintable">이력관리 함</option>
+															<option value="1" data-cond="subtable">이력관리 안함</option>
+															<option value="2" data-cond="subtable">이력관리 함</option>
+															<option value="out" data-cond="alarm">결재 후 처리</option>
+															<option value="svc" data-cond="alarm">서비스로 처리</option>
+															<option value="out" data-cond="transfer">결재 후 처리</option>
+															<option value="svc" data-cond="transfer">서비스로 처리</option>
+															<option value="out" data-cond="interface">결재 후 처리</option>
+															<option value="svc" data-cond="interface">서비스로 처리</option>
+															<option value="u_a__" data-cond="worknotice">작업자 정의</option>
+															<option value="u_b__" data-cond="worknotice">작업자 지정</option>
+															<option value="u_b_b" data-cond="worknotice">작업자 복수지정</option>
+															<option value="u_c__" data-cond="worknotice">현프로세스 참여자</option>
+															<option value="u_d__" data-cond="worknotice">현프로세스 기안자</option>
+															<option value="u_a__" data-cond="add_worknotice">작업자 정의</option>
+															<option value="u_b__" data-cond="add_worknotice">작업자 지정</option>
+															<option value="u_b_b" data-cond="add_worknotice">작업자 복수지정</option>
+															<option value="u_c__" data-cond="add_worknotice">현프로세스 참여자</option>
+															<option value="u_d__" data-cond="add_worknotice">현프로세스 기안자</option>
+														</select>
+														<input type="text" id="txtActivityCondition2" class="form-control">
+													</div>
+													<div class="form-group col">
+														<label class="form-label">조건3</label>
+														<select class="custom-select" id="selActivityCondition3" style="display:none">
+															<option value="1" data-cond="alarm">간단내용</option>
+															<option value="2" data-cond="alarm">결재본문포함</option>
+															<option value="3" data-cond="alarm">간단내용 + 결재본문포함</option>
+															<option value="1" data-cond="transfer">결재문서전체</option>
+															<option value="2" data-cond="transfer">결재본문</option>
+															<option value="4" data-cond="transfer">본문구성파일이용</option>
+														</select>
+														<input type="text" id="txtActivityCondition3" class="form-control">
+													</div>
+												</div>
+												<div class="form-row">
+													<div class="form-group col">
+														<label class="form-label">조건4</label>
+														<input type="text" id="txtActivityCondition4" class="form-control">
+													</div>
+													<div class="form-group col">
+														<label class="form-label">조건5</label>
+														<input type="text" id="txtActivityCondition5" class="form-control">
+													</div>
+												</div>
+												<div class="card-footer activity-edit-area" style="padding-left: 0;">
+													<button type="button" class="btn btn-primary" onclick="saveActivityStatus()">상태 정보 저장</button>
+												</div>
+												<div class="card-footer activity-create-area" style="padding-left: 0;">
+													<button type="button" id="btnActivityPreCondition" class="btn btn-default" onclick="fnAddProcess(1)">Activity 이전 조건 추가</button>
+													<button type="button" id="btnActivityPostCondition" class="btn btn-default ml-2" onclick="fnAddProcess(2)">Activity 이후 조건 추가</button>
+													<button type="button" id="btnWorkItemPreCondition" class="btn btn-default ml-2" onclick="fnAddProcess(3)">WorkItem 이전 조건 추가</button>
+													<button type="button" id="btnWorkItemPostCondition" class="btn btn-default ml-2" onclick="fnAddProcess(4)">WorkItem 이후 조건 추가</button>
+												</div>
 											</div>
 										</div>
-
 										<div class="tab-pane fade" id="activity-info">
 											<div class="card-body">
-
+												<div class="form-group">
+													<label class="form-label">참여자 지정 가능 단계</label>
+													<input type="text" id="txtActivityScopeLine" class="form-control">
+												</div>
+												<div class="form-row">
+													<div class="form-group col">
+														<label class="form-label">하위 유무</label>
+														<select class="custom-select" id="selActivityInLine">
+															<option value="Y">하위 있음</option>
+															<option value="N">하위 없음</option>
+														</select>
+													</div>
+													<div class="form-group col">
+														<label class="form-label">사용 제한</label>
+														<select class="custom-select" id="selActivityLimited">
+															<option value="Y">제한 있음</option>
+															<option value="N">제한 없음</option>
+														</select>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="form-label">평가표</label>
+													<select class="custom-select" id="selActivityEvalChart">
+														<option value="0">평가표 없음</option>
+													</select>
+												</div>
+												<div class="form-group">
+													<label class="form-label">설명</label>
+													<textarea class="form-control" id="txtActivityDesc" placeholder="설명" rows="5"></textarea>
+												</div>
+												<div class="card-footer activity-edit-area" style="padding-left: 0;">
+													<button type="button" class="btn btn-primary" onclick="saveActivityInfo()">프로세스 정보 저장</button>
+												</div>
 											</div>
-											<div class="card-footer">
-												<button type="button" class="btn btn-primary mr-2" onclick="copyProcess()">다른 이름으로 프로세스 저장</button>
-											</div>
+											
 										</div>
 									</div>
 								</div>
-								<hr class="border-light m-0">
-								<button type="button" id="btnSaveShare" class="btn btn-primary" style="margin-top: 10px;" onclick="saveShareDoc()" data-group_id="">변경 사항 저장</button>
+								<hr class="border-light m-0 activity-create-area">
+								<button type="button" class="btn btn-primary activity-create-area" style="margin-top: 10px;" onclick="addNewActivityInfo()">Activity 추가</button>
 							</div>
 						</div>
 					</div>
