@@ -366,6 +366,11 @@
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\ExS\worktime.js" />
     <Content Include="Scripts\Report\report.js" />
+    <Content Include="Temp\ph_up_BaseDeleteURInfo.sql" />
+    <Content Include="Temp\ph_up_BaseUpdateURBasicInfo.sql" />
+    <Content Include="Temp\ph_up_BaseUpdateURDetail1Info.sql" />
+    <Content Include="Temp\ph_up_BaseUpdateURDetail2Info.sql" />
+    <Content Include="Temp\ph_up_BFChangeProcessActivityStep.sql" />
     <Content Include="Views\Portal\Webpart\Html\PortalMailList.xsl" />
     <Content Include="Content\site.css" />
     <Content Include="External\FusionChartsXT\js\fusioncharts.charts.js" />
@@ -1073,7 +1078,6 @@
     <Content Include="Areas\WoA\Views\Dashboard\Webpart.cshtml" />
     <Content Include="Areas\WoA\Views\App\Charge.cshtml" />
     <Content Include="Areas\WoA\Views\App\Option.cshtml" />
-    <Content Include="Areas\WoA\Views\App\Charge1.cshtml" />
     <Content Include="Areas\EA\Views\Main\List.cshtml" />
     <Content Include="Areas\EA\Views\Main\_ListCount.cshtml" />
     <Content Include="Areas\EA\Views\Main\_ListPagination.cshtml" />

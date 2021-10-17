@@ -677,7 +677,6 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 if (result.ResultCode >= 0)
                 {
-                    ResultMessage = activityID;
                     return CreateJsonData();
                 }
                 else

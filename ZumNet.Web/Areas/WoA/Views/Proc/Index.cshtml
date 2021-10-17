@@ -22,13 +22,14 @@
 			line-height: 1.25rem;
 		}
 
-			.dd-custom-drag-handle .dd-handle > * {
-				vertical-align: middle;
-			}
+		.dd-custom-drag-handle .dd-handle > * {
+			vertical-align: middle;
+		}
 
-		.dd-custom-drag-handle.edit {
+		.dd-custom-drag-handle.edit > div.dd-content {
 			color: white;
-			background-color: red;
+			background-color: red!important;
+			font-weight:bold;
 		}
 	</style>
 }
@@ -541,13 +542,13 @@
 							var processAct = result.data.dtAct[i];
 
 							if (processAct.ParentActivityID == "") {
-								processHtml += "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + processAct.ActivityID + "\" data-step=\"" + processAct.Step + "\" data-displayname=\"" + processAct.DisplayName + "\" data-parentActivityID=\"" + processAct.ParentActivityID + "\" data-random=\"" + processAct.Random + "\" data-depth=\"1\" data-inline=\"" + processAct.Inline + "\" data-review=\"" + processAct.Review + "\">";
+								processHtml += "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + processAct.ActivityID + "\" data-actrole=\"" + processAct.ActRole + "\" data-actpostcond=\"" + processAct.ActivityPostCond + "\" data-actprecond=\"" + processAct.ActivityPreCond + "\" data-bizrole=\"" + processAct.BizRole + "\" data-desc=\"" + processAct.Description + "\" data-displayname=\"" + processAct.DisplayName + "\" data-evalchart=\"" + processAct.EvalChart + "\" data-inline=\"" + processAct.Inline + "\" data-limited=\"" + processAct.Limited + "\" data-mandatory=\"" + processAct.Mandatory + "\" data-parentActivityID=\"" + processAct.ParentActivityID + "\" data-parttype=\"" + processAct.PartType + "\" data-progress=\"" + processAct.Progress + "\" data-random=\"" + processAct.Random + "\" data-review=\"" + processAct.Review + "\" data-scopeline=\"" + processAct.ScopeLine + "\" data-showline=\"" + processAct.ShowLine + "\" data-step=\"" + processAct.Step + "\" data-substep=\"" + processAct.SubStep + "\" data-wipostcond=\"" + processAct.WorkItemPostCond + "\" data-wiprecond=\"" + processAct.WorkItemPreCond + "\" data-depth=\"1\">";
 								processHtml += "	<div class=\"dd-handle\">";
 								processHtml += "		<span class=\"ion ion-md-radio-button-off text-muted\"></span>";
 								processHtml += "	</div>";
 								processHtml += "	<div class=\"dd-content bg-light\">";
-								processHtml += processAct.Step + ". " + processAct.DisplayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + processAct.Review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + processAct.Random + "&nbsp]";
-								processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + processAct.ActivityID + "')\">편집</button>";
+								processHtml += processAct.Step + ". " + processAct.DisplayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + processAct.Review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + processAct.Random + "&nbsp;]";
+								processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnEditActivity('" + processAct.ActivityID + "')\">편집</button>";
 								processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + processAct.ActivityID + "')\">삭제</button>";
 								processHtml += "	</div>";
 								processHtml += "</li>";
@@ -572,13 +573,13 @@
 								for (var j = 0; j < childActivities.length; j++) {
 									var childActivity = childActivities[j];
 
-									childHtml += "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + childActivity.ActivityID + "\" data-step=\"" + childActivity.Step + "\" data-displayname=\"" + childActivity.DisplayName + "\" data-parentActivityID=\"" + childActivity.ParentActivityID + "\" data-random=\"" + childActivity.Random + "\" data-depth=\"2\" data-inline=\"" + childActivity.Inline + "\" data-review=\"" + childActivity.Review + "\">";
+									childHtml += "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + childActivity.ActivityID + "\" data-actrole=\"" + childActivity.ActRole + "\" data-actpostcond=\"" + childActivity.ActivityPostCond + "\" data-actprecond=\"" + childActivity.ActivityPreCond + "\" data-bizrole=\"" + childActivity.BizRole + "\" data-desc=\"" + childActivity.Description + "\" data-displayname=\"" + childActivity.DisplayName + "\" data-evalchart=\"" + childActivity.EvalChart + "\" data-inline=\"" + childActivity.Inline + "\" data-limited=\"" + childActivity.Limited + "\" data-mandatory=\"" + childActivity.Mandatory + "\" data-parentActivityID=\"" + childActivity.ParentActivityID + "\" data-parttype=\"" + childActivity.PartType + "\" data-progress=\"" + childActivity.Progress + "\" data-random=\"" + childActivity.Random + "\" data-review=\"" + childActivity.Review + "\" data-scopeline=\"" + childActivity.ScopeLine + "\" data-showline=\"" + childActivity.ShowLine + "\" data-step=\"" + childActivity.Step + "\" data-substep=\"" + childActivity.SubStep + "\" data-wipostcond=\"" + childActivity.WorkItemPostCond + "\" data-wiprecond=\"" + childActivity.WorkItemPreCond + "\" data-depth=\"1\">";
 									childHtml += "	<div class=\"dd-handle\">";
 									childHtml += "		<span class=\"ion ion-md-radio-button-off text-muted\"></span>";
 									childHtml += "	</div>";
 									childHtml += "	<div class=\"dd-content bg-light\">";
-									childHtml += childActivity.Step + ". " + childActivity.DisplayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + childActivity.Review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + childActivity.Random + "&nbsp]";
-									childHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + childActivity.ActivityID + "')\">편집</button>";
+									childHtml += childActivity.Step + ". " + childActivity.DisplayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + childActivity.Review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + childActivity.Random + "&nbsp;]";
+									childHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnEditActivity('" + childActivity.ActivityID + "')\">편집</button>";
 									childHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + childActivity.ActivityID + "')\">삭제</button>";
 									childHtml += "	</div>";
 									childHtml += "</li>";
@@ -587,7 +588,6 @@
 								childHtml += "</ol>";
 
 								$(this).append(childHtml);
-								//$(this).prepend("<button data-action=\"collapse\" type=\"button\" style=\"\">Collapse</button><button data-action=\"expand\" type=\"button\" style=\"display: none;\">Expand</button>");
 							}
 						});
 
@@ -606,135 +606,6 @@
 			if ($("ul.nav-tabs").find("a[href='#process-processing']").hasClass("active")) {
 				searchList();
 			}
-		}
-
-		// Activity 보기
-		function fnShowActivity(activityID) {
-			$("li[data-id='" + activityID + "']").addClass("edit");
-		}
-
-		// Activity 삭제
-		function fnDeleteActivity(activityID) {
-			if (!window.confirm("이 Activity를 삭제하시겠습니까? 취소하실 수 없습니다.")) {
-				return false;
-			}
-
-			var $activityObj = $("li[data-id='" + activityID + "']");
-
-			// 하위가 있는 경우
-			if ($activityObj.find("ol").length > 0) {
-				alert("삭제하려는 Activity가 하위 Activity를 가지고 있습니다.\r\n우선, 하위 Activity를 삭제하신 후 다시 시도하십시요.");
-				return false;
-			}
-
-			var randomCount = 0;
-
-			//// 랜덤 처리
-			//if ($activityObj.attr("data-random") == "Y") {
-			//	// 상위 Activity
-			//	if ($activityObj.attr("data-depth") == "1") {
-			//		randomCount = $("li[data-id][data-step='" + $activityObj.attr("data-step") + "']").length - 1;				// 자기 자신 제외
-			//	} else {
-			//		randomCount = $("li[data-id][data-step='" + $activityObj.attr("data-step") + "'][data-parentActivityID='" + $activityObj.attr("data-id") + "']").length - 1;				// 자기 자신 제외
-			//	}
-			//}
-
-			var mode = "0";
-			var processID = $("#selProcess").val();
-			var parentActivityID = $activityObj.attr("data-parentActivityID");
-			var step = $activityObj.attr("data-step");
-			
-			$.ajax({
-                url: '@Url.Action("DeleteProcessActivity", "Proc")',
-				type: 'POST',
-				dataType: 'JSON',
-				data: '{mode:"' + mode + '", processID:' + processID + ', activityID:"' + activityID + '", parentActivityID:"' + parentActivityID + '", step:' + step + '}',
-				success: function (result) {
-					if (result.code != "OK") {
-						alert(result.message);
-						return;
-					}
-
-					alert("정상적으로 처리되었습니다.");
-
-					// 요소 삭제
-					$activityObj.remove();
-
-					adjustActivityStep();
-                }
-			});
-
-
-			// 요소 삭제
-			$activityObj.remove();
-
-			adjustActivityStep();
-		}
-
-		function adjustActivityStep() {
-			$("#divProcessStep > ol > li").each(function (index) {
-				$(this).attr("data-step", index + 1);
-				$(this).attr("data-parentActivityID", "");
-
-				var contentHtml = "";
-
-				contentHtml += $(this).attr("data-step") + ". " + $(this).attr("data-displayname") + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + $(this).attr("data-review") + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + $(this).attr("data-random") + "&nbsp]";
-				contentHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + $(this).attr("data-id") + "')\">편집</button>";
-				contentHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + $(this).attr("data-id") + "')\">삭제</button>";
-
-				$(this).find("div.dd-content").empty().append(contentHtml);
-
-				$(this).find("ol").find("li").each(function (subIndex) {
-					$(this).attr("data-step", subIndex + 1);
-					$(this).attr("data-parentActivityID", $(this).parent().parent().attr("data-id"));
-
-					var contentSubHtml = "";
-
-					contentSubHtml += $(this).attr("data-step") + ". " + $(this).attr("data-displayname") + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + $(this).attr("data-review") + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + $(this).attr("data-random") + "&nbsp]";
-					contentSubHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + $(this).attr("data-id") + "')\">편집</button>";
-					contentSubHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + $(this).attr("data-id") + "')\">삭제</button>";
-
-					$(this).find("div.dd-content").empty().append(contentSubHtml);
-				});
-			});
-
-			//$("li[data-id][data-parentActivityID='']").each(function (index) {
-			//	var changeStep = parseInt(index) + 1;
-
-			//	$(this).attr("data-step", changeStep);
-
-			//	var contentHtml = "";
-
-			//	contentHtml += $(this).attr("data-step") + ". " + $(this).attr("data-displayname") + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + $(this).attr("data-review") + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + $(this).attr("data-random") + "&nbsp]";
-			//	contentHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + $(this).attr("data-id") + "')\">편집</button>";
-			//	contentHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + $(this).attr("data-id") + "')\">삭제</button>";
-
-			//	$(this).find("div.dd-content").empty().append(contentHtml);
-
-			//	// 하위가 없는 경우
-			//	if ($(this).find("ol").find("li").length == 0) {
-			//		$(this).find("ol").remove();
-
-			//		$(this).attr("inline", "N");
-			//	} else {
-			//		$(this).find("ol").find("li").each(function (subIndex) {
-			//			var prevSubStep = parseInt($(this).attr("data-step"));
-			//			var changeSubStep = parseInt(subIndex) + 1;
-
-			//			$(this).attr("data-step", changeSubStep);
-
-			//			var contentSubHtml = "";
-
-			//			contentSubHtml += $(this).attr("data-step") + ". " + $(this).attr("data-displayname") + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + $(this).attr("data-review") + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + $(this).attr("data-random") + "&nbsp]";
-			//			contentSubHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + $(this).attr("data-id") + "')\">편집</button>";
-			//			contentSubHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + $(this).attr("data-id") + "')\">삭제</button>";
-
-			//			$(this).find("div.dd-content").empty().append(contentSubHtml);
-			//		});
-			//	}
-			//});
-
-
 		}
 
 		// 프로세스 정보 저장
@@ -773,8 +644,6 @@
 
 				return false;
 			}
-
-
 
 			if ($("#txtProcessCreator").val() == "") {
 				alert("작성자를 입력하세요.");
@@ -875,6 +744,256 @@
 			window.location.href = "/Woa/proc/Export?processid=" + processID + "&processName=" + processName;
 		}
 
+		// Activity 보기
+		function fnEditActivity(activityID) {
+			initializeActivityInfo();
+
+			$("*.activity-create-area").hide();
+			$("*.activity-edit-area").show();
+
+			$("li[data-id]").removeClass("edit");
+
+			var $targetObj = $("li[data-id='" + activityID + "']");
+
+			$targetObj.addClass("edit");
+
+			$("#txtActivityID").val($targetObj.attr("data-id"));
+			$("#txtParentActivityID").val($targetObj.attr("data-parentactivityid"));
+			$("#txtActivityName").val($targetObj.attr("data-displayname"));
+			$("#selActivityBizRole").val($targetObj.attr("data-bizrole"));
+			$("#selActivityActRole").val($targetObj.attr("data-actrole"));
+			$("#selActivityReview").val($targetObj.attr("data-review"));
+			$("#selActivityProgress").val($targetObj.attr("data-progress"));
+			$("#selActivityRandom").val($targetObj.attr("data-random"));
+			$("#selActivityShowLine").val($targetObj.attr("data-showline"));
+			$("#selActivityMandatory").val($targetObj.attr("data-mandatory"));
+			
+			// 참여 형태 설정
+			var partType = $targetObj.attr("data-parttype").substring(0, 1);
+
+			$("#selActivityPartType").val(partType);
+			$("#selActivityPartType").trigger("change");
+
+			var subPartType = $targetObj.attr("data-parttype").substring(2, 3);
+
+			if (subPartType == "_") {
+				$("#selActivitySubPartType").val("0");
+			} else {
+				$("#selActivitySubPartType").val(subPartType);
+			}
+			
+			$("#selActivitySubPartType").trigger("change");
+
+			var subKey = $targetObj.attr("data-parttype").substring(4, 5);
+
+			if (subKey == "_") {
+				$("#selActivitySubKey").val("0");
+			} else {
+				$("#selActivitySubKey").val(subKey);
+			}
+
+			$("#selActivitySubKey").trigger("change");
+
+			var isPartSearch = false;
+
+			switch ($targetObj.attr("data-parttype")) {
+				case "u_a__" :
+				case "u_f__" :
+				case "u_c_f" :
+				case "u_c_l" :
+				case "u_c_a" :
+				case "g_a_a" :
+				case "g_c__" :
+				case "g_e__":
+				case "g_f__": 
+					isPartSearch = true;
+					break;
+				default :
+					isPartSearch = false;
+					break;  
+			}
+
+			if (isPartSearch) {
+				$.ajax({
+					url: '@Url.Action("SelectProcessActivityParticipant", "Proc")',
+					type: 'POST',
+					dataType: 'JSON',
+					data: '{activityID:"' + $targetObj.attr("data-id") + '", actType:"' + partType + '", subType:"' + subPartType + '"}',
+					success: function (result) {
+						if (result.code != "OK") {
+							alert(result.message);
+							return;
+						}
+
+						if (result.data != undefined && result.data.length > 0) {
+							var partHtml = "";
+
+							for (var i = 0; i < result.data.length; i++) {
+								var partInfo = result.data[i];
+
+								if (i % 2 == 0) {
+									partHtml = "<tr class=\"odd\" data-partid=\"" + partInfo.ParticipantID + "\" data-partname=\"" + partInfo.ParticipantName + "\" data-partdeptcode=\"" + partInfo.ParticipantDeptCode + "\">";
+								} else {
+									partHtml = "<tr class=\"even\" data-partid=\"" + partInfo.ParticipantID + "\" data-partname=\"" + partInfo.ParticipantName + "\" data-partdeptcode=\"" + partInfo.ParticipantDeptCode + "\">";
+								}
+								
+								partHtml += "<td>[" + partInfo.ParticipantID + "] " + partInfo.ParticipantName + "<td>";
+								partHtml += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"removePartList(this)\">삭제</button></td>";
+								partHtml += "</tr>";
+							}
+
+							$("#tblPartList tbody").append(partHtml);
+						}
+					}
+				});
+			}
+
+			// 상태 정보 설정
+			if ($targetObj.attr("data-actpostcond") == "Y" || $targetObj.attr("data-actprecond") == "Y" || $targetObj.attr("data-wipostcond") == "Y" || $targetObj.attr("data-wiprecond") == "Y") {
+				$.ajax({
+					url: '@Url.Action("SelectProcessAttribute", "Proc")',
+					type: 'POST',
+					dataType: 'JSON',
+					data: '{activityID:"' + $targetObj.attr("data-id") + '", processID:' + $("#selProcess").val() + '}',
+					success: function (result) {
+						if (result.code != "OK") {
+							alert(result.message);
+							return;
+						}
+
+						if (result.data != undefined && result.data.length > 0) {
+							var attrHtml = "";
+							var cDiv = String.fromCharCode(1);
+
+							for (var i = 0; i < result.data.length; i++) {
+								var attrInfo = result.data[i];
+
+								var strID = attrInfo.Pos + cDiv + attrInfo.Condition + cDiv + attrInfo.Attribute + cDiv + attrInfo.Status + cDiv + attrInfo.Item1 + cDiv + attrInfo.Item2 + cDiv + attrInfo.Item3 + cDiv + attrInfo.Item4 + cDiv + attrInfo.Item5;
+								var strDesc = "속성 : " + attrInfo.Attribute + "\n상태 : " + attrInfo.Status;
+								var strPrefixPos = (attrInfo.Pos == "a") ? "[ACT " : "[WI ";
+								var strPrefixCond = (attrInfo.Condition == "pre") ? "PRE] " : "POST] ";
+
+								strDesc += "\nItem1 : " + $("#selActivityCondition1 option[data-cond='" + attrInfo.Attribute+ "'][value='" + attrInfo.Item1 + "']").text(); 
+
+								var cond2 = $("#selActivityAttribute option[value='" + attrInfo.Attribute + "']").is("[data-cond2]");
+								var cond3 = $("#selActivityAttribute option[value='" + attrInfo.Attribute + "']").is("[data-cond3]");
+								var cond4 = $("#selActivityAttribute option[value='" + attrInfo.Attribute + "']").attr("data-cond4");
+								var cond5 = $("#selActivityAttribute option[value='" + attrInfo.Attribute + "']").attr("data-cond5");
+
+								if (cond2) {
+									strDesc += "\nItem2 : " + attrInfo.Item2;
+								} else {
+									strDesc += "\nItem2 : " + $("#selActivityCondition2 option[data-cond='" + attrInfo.Attribute + "'][value='" + attrInfo.Item2 + "']").text(); 
+								}
+
+								if (cond3) {
+									strDesc += "\nItem3 : " + attrInfo.Item3;
+								} else {
+									strDesc += "\nItem3 : " + $("#selActivityCondition3 option[data-cond='" + attrInfo.Attribute + "'][value='" + attrInfo.Item3 + "']").text(); 
+								}
+
+								strDesc += "\nItem4 : " + attrInfo.Item4 + "\nItem5 : " + attrInfo.Item5;
+
+								attrHtml += "<tr data-id='" + strID + "'>";
+								attrHtml += "<td title='" + strDesc + "'>" + strPrefixPos + strPrefixCond + attrInfo.Description + "</td>";
+								attrHtml += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"removePartList(this)\">삭제</button></td>";
+								attrHtml += "</tr>";
+							}
+
+							$("#tblProcessAttributeInfo tbody").append(attrHtml);
+						}
+					}
+				});
+			}
+
+			$("#txtActivityScopeLine").val($targetObj.attr("data-scopeline"));
+			$("#selActivityInLine").val($targetObj.attr("data-inline"));
+			$("#selActivityLimited").val($targetObj.attr("data-limited"));
+			$("#txtActivityDesc").val($targetObj.attr("data-desc"));
+		}
+
+		// Activity 삭제
+		function fnDeleteActivity(activityID) {
+			if (!window.confirm("이 Activity를 삭제하시겠습니까? 취소하실 수 없습니다.")) {
+				return false;
+			}
+
+			var $activityObj = $("li[data-id='" + activityID + "']");
+
+			// 하위가 있는 경우
+			if ($activityObj.find("ol").length > 0) {
+				alert("삭제하려는 Activity가 하위 Activity를 가지고 있습니다.\r\n우선, 하위 Activity를 삭제하신 후 다시 시도하십시요.");
+				return false;
+			}
+
+			var randomCount = 0;
+
+			//// 랜덤 처리
+			//if ($activityObj.attr("data-random") == "Y") {
+			//	// 상위 Activity
+			//	if ($activityObj.attr("data-depth") == "1") {
+			//		randomCount = $("li[data-id][data-step='" + $activityObj.attr("data-step") + "']").length - 1;				// 자기 자신 제외
+			//	} else {
+			//		randomCount = $("li[data-id][data-step='" + $activityObj.attr("data-step") + "'][data-parentActivityID='" + $activityObj.attr("data-id") + "']").length - 1;				// 자기 자신 제외
+			//	}
+			//}
+
+			var mode = "0";
+			var processID = $("#selProcess").val();
+			var parentActivityID = $activityObj.attr("data-parentActivityID");
+			var step = $activityObj.attr("data-step");
+			
+			$.ajax({
+                url: '@Url.Action("DeleteProcessActivity", "Proc")',
+				type: 'POST',
+				dataType: 'JSON',
+				data: '{mode:"' + mode + '", processID:' + processID + ', activityID:"' + activityID + '", parentActivityID:"' + parentActivityID + '", step:' + step + '}',
+				success: function (result) {
+					if (result.code != "OK") {
+						alert(result.message);
+						return;
+					}
+
+					alert("정상적으로 처리되었습니다.");
+
+					// 요소 삭제
+					$activityObj.remove();
+
+					adjustActivityStep();
+                }
+			});
+		}
+
+		// Activity 순번 조정
+		function adjustActivityStep() {
+			$("#divProcessStep > ol > li").each(function (index) {
+				$(this).attr("data-step", index + 1);
+				$(this).attr("data-parentActivityID", "");
+
+				var contentHtml = "";
+
+				contentHtml += $(this).attr("data-step") + ". " + $(this).attr("data-displayname") + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + $(this).attr("data-review") + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + $(this).attr("data-random") + "&nbsp;]";
+				contentHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnEditActivity('" + $(this).attr("data-id") + "')\">편집</button>";
+				contentHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + $(this).attr("data-id") + "')\">삭제</button>";
+
+				$(this).find("div.dd-content").empty().append(contentHtml);
+
+				$(this).find("ol").find("li").each(function (subIndex) {
+					$(this).attr("data-step", subIndex + 1);
+					$(this).attr("data-parentActivityID", $(this).parent().parent().attr("data-id"));
+
+					var contentSubHtml = "";
+
+					contentSubHtml += $(this).attr("data-step") + ". " + $(this).attr("data-displayname") + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + $(this).attr("data-review") + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + $(this).attr("data-random") + "&nbsp;]";
+					contentSubHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnEditActivity('" + $(this).attr("data-id") + "')\">편집</button>";
+					contentSubHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + $(this).attr("data-id") + "')\">삭제</button>";
+
+					$(this).find("div.dd-content").empty().append(contentSubHtml);
+				});
+			});
+		}
+
+		// 상태 탭의 속성 select 변경 시
 		function fnShowSubType() {
 			var partType = $("#selActivityPartType").val();
 
@@ -1271,7 +1390,7 @@
 			}
 		}
 
-		function fnAddProcess(seq) {
+		function fnAddAttribute(seq) {
 			var strPos = "";
 			var strCondition = "";
 			var strPrefixState = "";
@@ -1307,7 +1426,7 @@
 					break;     
 			}
 
-			var strID = strPos + cDiv + strCondition + cDiv + $("#selActivityAttribute").val() + cDiv + $("#selActivityConditionStatus").val() + cDiv + $("#txtActivityAttributeText").val() + cDiv + $("#selActivityCondition1").val() + cDiv;
+			var strID = strPos + cDiv + strCondition + cDiv + $("#selActivityAttribute").val() + cDiv + $("#selActivityConditionStatus").val() + cDiv + $("#selActivityCondition1").val() + cDiv;
 
 			strDesc = "속성 : " + $("#selActivityAttribute").val();
 			strDesc += "\n상태 : " + $("#selActivityConditionStatus").val();
@@ -1326,7 +1445,7 @@
 				strDesc += "\nItem2 : " + $("#selActivityCondition2 option:selected").text();
 			}
 
-			if (cond2) {
+			if (cond3) {
 				strID += $("#txtActivityCondition3").val() + cDiv;
 				strDesc += "\nItem3 : " + $("#txtActivityCondition3").val();
 			} else {
@@ -1345,7 +1464,7 @@
 
 			var html = "<tr data-id='" + strID + "'>";
 			html += "<td title='" + strDesc + "'>" + strPrefixState + $("#txtActivityAttributeText").val() + "</td>";
-			html += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"removePartList(this)\">편집</button><button type=\"button\" class=\"btn btn-default ml-2\" onclick=\"removePartList(this)\">삭제</button></td>";
+			html += "<td><button type=\"button\" class=\"btn btn-default\" onclick=\"removePartList(this)\">삭제</button></td>";
 			html += "</tr>";
 
 			$("#tblProcessAttributeInfo tbody").append(html);
@@ -1354,7 +1473,7 @@
 			$("#selActivityAttribute").trigger("change");
 		}
 
-		// 신규 Activity 정보 추가
+		// Activity 추가
 		function addNewActivityInfo() {
 			if ($("#txtActivityName").val() == "") {
 				alert("Activity명을 입력하세요.");
@@ -1428,6 +1547,26 @@
 				}
 			}
 
+			// Review가 0,4이면 Showline은 "Y"가 될 수 없고, Random도 "Y"가 될 수 없다.
+            // Review가 2,3이면 Showline은 무조건 "Y"이다.
+            // Random이 "Y"이면 b,g,f만 가능하다.
+			if ($("#selActivityReview").val() == "0" || $("#selActivityReview").val() == "4") {
+				if ($("#selActivityShowLine").val() == "Y") {
+					alert("선택한 Review 타입은 ShowLine이 선택하지 않음으로 설정되어야 합니다.");
+					return false;
+				}
+
+				if ($("#selActivityRandom").val() == "Y") {
+					alert("선택한 Review 타입은 Random이 선택하지 않음으로 설정되어야 합니다.");
+					return false;
+				}
+			} else if ($("#selActivityReview").val() == "2" || $("#selActivityReview").val() == "3") {
+				if ($("#selActivityShowLine").val() == "N") {
+					alert("선택한 Review 타입은 ShowLine이 선택으로 설정되어야 합니다.");
+					return false;
+				}
+			}
+
 			var cDiv = String.fromCharCode(1);
 
 			var activityID = "";
@@ -1463,18 +1602,19 @@
 			for (var i = 0; i < $("#tblProcessAttributeInfo tbody tr").length; i++) {
 				var $trObj = $("#tblProcessAttributeInfo tbody tr").eq(i);
 				var dataID = $trObj.attr("data-id");
+				var discription = $trObj.find("td:eq(0)").text().replace("[ACT ", "").replace("[WI ", "").replace("PRE] ", "").replace("POST] ", "");
 
 				var attrInfo = {};
 				attrInfo.Pos = dataID.split(cDiv)[0];
 				attrInfo.Condition = dataID.split(cDiv)[1];
 				attrInfo.Attribute = dataID.split(cDiv)[2];
 				attrInfo.Status = dataID.split(cDiv)[3];
-				attrInfo.Dscpt = dataID.split(cDiv)[4];
-				attrInfo.Item1 = dataID.split(cDiv)[5];
-				attrInfo.Item2 = dataID.split(cDiv)[6];
-				attrInfo.Item3 = dataID.split(cDiv)[7];
-				attrInfo.Item4 = dataID.split(cDiv)[8];
-				attrInfo.Item5 = dataID.split(cDiv)[9];
+				attrInfo.Dscpt = discription;
+				attrInfo.Item1 = dataID.split(cDiv)[4];
+				attrInfo.Item2 = dataID.split(cDiv)[5];
+				attrInfo.Item3 = dataID.split(cDiv)[6];
+				attrInfo.Item4 = dataID.split(cDiv)[7];
+				attrInfo.Item5 = dataID.split(cDiv)[8];
 
 				attrInfoArray.push(attrInfo);
 			}
@@ -1494,16 +1634,14 @@
 
 					activityID = result.message;
 
-					$("#txtActivityID").val(activityID);
-
 					// 저장 후 프로세스 단계를 가장 마지막으로 생성
-					var processHtml = "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + activityID + "\" data-step=\"" + step + "\" data-displayname=\"" + displayName + "\" data-parentActivityID=\"" + parentActivityID + "\" data-random=\"" + random + "\" data-depth=\"1\" data-inline=\"" + inLine + "\" data-review=\"" + review + "\">";
+					var processHtml = "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + activityID + "\" data-actrole=\"" + actRole + "\" data-actpostcond=\"" + actPostCond + "\" data-actprecond=\"" + actPreCond + "\" data-bizrole=\"" + bizRole + "\" data-desc=\"" + description + "\" data-displayname=\"" + displayName + "\" data-evalchart=\"" + evalchart + "\" data-inline=\"" + inLine + "\" data-limited=\"" + limited + "\" data-mandatory=\"" + mandatory + "\" data-parentActivityID=\"\" data-parttype=\"" + partType + "\" data-progress=\"" + progress + "\" data-random=\"" + random + "\" data-review=\"" + review + "\" data-scopeline=\"" + scopeLine + "\" data-showline=\"" + showLine + "\" data-step=\"" + step + "\" data-substep=\"" + subStep + "\" data-wipostcond=\"" +wiPostCond + "\" data-wiprecond=\"" + wiPreCond + "\" data-depth=\"1\">";
 					processHtml += "	<div class=\"dd-handle\">";
 					processHtml += "		<span class=\"ion ion-md-radio-button-off text-muted\"></span>";
 					processHtml += "	</div>";
 					processHtml += "	<div class=\"dd-content bg-light\">";
-					processHtml += step + ". " + displayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + random + "&nbsp]";
-					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + activityID + "')\">편집</button>";
+					processHtml += step + ". " + displayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + random + "&nbsp;]";
+					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnEditActivity('" + activityID + "')\">편집</button>";
 					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + activityID + "')\">삭제</button>";
 					processHtml += "	</div>";
 					processHtml += "</li>";
@@ -1515,6 +1653,7 @@
 			});
 		}
 
+		// Activity 수정
 		function updateActivityInfo() {
 			if ($("#txtActivityName").val() == "") {
 				alert("Activity명을 입력하세요.");
@@ -1588,6 +1727,26 @@
 				}
 			}
 
+			// Review가 0,4이면 Showline은 "Y"가 될 수 없고, Random도 "Y"가 될 수 없다.
+            // Review가 2,3이면 Showline은 무조건 "Y"이다.
+            // Random이 "Y"이면 b,g,f만 가능하다.
+			if ($("#selActivityReview").val() == "0" || $("#selActivityReview").val() == "4") {
+				if ($("#selActivityShowLine").val() == "Y") {
+					alert("선택한 Review 타입은 ShowLine이 선택하지 않음으로 설정되어야 합니다.");
+					return false;
+				}
+
+				if ($("#selActivityRandom").val() == "Y") {
+					alert("선택한 Review 타입은 Random이 선택하지 않음으로 설정되어야 합니다.");
+					return false;
+				}
+			} else if ($("#selActivityReview").val() == "2" || $("#selActivityReview").val() == "3") {
+				if ($("#selActivityShowLine").val() == "N") {
+					alert("선택한 Review 타입은 ShowLine이 선택으로 설정되어야 합니다.");
+					return false;
+				}
+			}
+
 			var cDiv = String.fromCharCode(1);
 
 			var processID = $("#selProcess").val();
@@ -1623,18 +1782,19 @@
 			for (var i = 0; i < $("#tblProcessAttributeInfo tbody tr").length; i++) {
 				var $trObj = $("#tblProcessAttributeInfo tbody tr").eq(i);
 				var dataID = $trObj.attr("data-id");
+				var discription = $trObj.find("td:eq(0)").text().replace("[ACT ", "").replace("[WI ", "").replace("PRE] ", "").replace("POST] ", "");
 
 				var attrInfo = {};
 				attrInfo.Pos = dataID.split(cDiv)[0];
 				attrInfo.Condition = dataID.split(cDiv)[1];
 				attrInfo.Attribute = dataID.split(cDiv)[2];
 				attrInfo.Status = dataID.split(cDiv)[3];
-				attrInfo.Dscpt = dataID.split(cDiv)[4];
-				attrInfo.Item1 = dataID.split(cDiv)[5];
-				attrInfo.Item2 = dataID.split(cDiv)[6];
-				attrInfo.Item3 = dataID.split(cDiv)[7];
-				attrInfo.Item4 = dataID.split(cDiv)[8];
-				attrInfo.Item5 = dataID.split(cDiv)[9];
+				attrInfo.Dscpt = discription;
+				attrInfo.Item1 = dataID.split(cDiv)[4];
+				attrInfo.Item2 = dataID.split(cDiv)[5];
+				attrInfo.Item3 = dataID.split(cDiv)[6];
+				attrInfo.Item4 = dataID.split(cDiv)[7];
+				attrInfo.Item5 = dataID.split(cDiv)[8];
 
 				attrInfoArray.push(attrInfo);
 			}
@@ -1650,31 +1810,43 @@
 						return;
 					}
 
-					alert("정상적으로 Activity가 생성되었습니다.");
+					alert("정상적으로 Activity가 수정되었습니다.");
 
-					activityID = result.message;
+					var $targetObj = $("li[data-id='" + activityID + "']");
 
-					$("#txtActivityID").val(activityID);
+					var orgDisplayText = $targetObj.attr("data-step") + ". " + $targetObj.attr("data-displayname") + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + $targetObj.attr("data-review") + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + $targetObj.attr("data-random") + "&nbsp;]";
 
-					// 저장 후 프로세스 단계를 가장 마지막으로 생성
-					var processHtml = "<li class=\"dd-item dd-custom-drag-handle\" data-id=\"" + activityID + "\" data-step=\"" + step + "\" data-displayname=\"" + displayName + "\" data-parentActivityID=\"" + parentActivityID + "\" data-random=\"" + random + "\" data-depth=\"1\" data-inline=\"" + inLine + "\" data-review=\"" + review + "\">";
-					processHtml += "	<div class=\"dd-handle\">";
-					processHtml += "		<span class=\"ion ion-md-radio-button-off text-muted\"></span>";
-					processHtml += "	</div>";
-					processHtml += "	<div class=\"dd-content bg-light\">";
-					processHtml += step + ". " + displayName + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + review + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + random + "&nbsp]";
-					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-3\" onclick=\"fnShowActivity('" + activityID + "')\">편집</button>";
-					processHtml += "		<button type=\"button\" class=\"btn btn-default btn-sm ml-1\" onclick=\"fnDeleteActivity('" + activityID + "')\">삭제</button>";
-					processHtml += "	</div>";
-					processHtml += "</li>";
+					$targetObj.attr("data-actrole", actRole);
+					$targetObj.attr("data-actpostcond", actPostCond);
+					$targetObj.attr("data-actprecond", actPreCond);
+					$targetObj.attr("data-bizrole", bizRole);
+					$targetObj.attr("data-desc", description);
+					$targetObj.attr("data-displayname", displayName);
+					$targetObj.attr("data-evalchart", evalchart);
+					$targetObj.attr("data-inline", inLine);
+					$targetObj.attr("data-limited", limited);
+					$targetObj.attr("data-mandatory", mandatory);
+					$targetObj.attr("data-parentActivityID", parentActivityID);
+					$targetObj.attr("data-parttype", partType);
+					$targetObj.attr("data-progress", progress);
+					$targetObj.attr("data-random", random);
+					$targetObj.attr("data-review", review);
+					$targetObj.attr("data-scopeline", scopeLine);
+					$targetObj.attr("data-showline", showLine);
+					$targetObj.attr("data-step", step);
+					$targetObj.attr("data-substep", subStep);
+					$targetObj.attr("data-wipostcond", wiPostCond);
+					$targetObj.attr("data-wiprecond", wiPreCond);
 
-					$("#divProcessStep > ol").append(processHtml);
+					// li 이름 변경
+					var newDisplayText = $targetObj.attr("data-step") + ". " + $targetObj.attr("data-displayname") + "&nbsp;&nbsp;[&nbsp;ReView&nbsp;:&nbsp;" + $targetObj.attr("data-review") + "&nbsp;,&nbsp;Random&nbsp;:&nbsp;" + $targetObj.attr("data-random") + "&nbsp;]";
 
-					initializeActivityInfo();
+					$targetObj.html($targetObj.html().replace(orgDisplayText, newDisplayText));
 				}
 			});
 		}
 
+		// Activity 구조 저장
 		function saveProcessStep(bAlert) {
 			if ($("li[data-id]").length == 0) {
 				return;
@@ -1711,6 +1883,7 @@
 			});
 		}
 
+		// Activity 속성 탭 정보 초기화
 		function initializeActivityInfo() {
 			$("*.activity-edit-area").hide();
 			$("*.activity-create-area").show();
@@ -1725,75 +1898,29 @@
 			$("#selActivityTargetUser,#selActivityTargetGroup,#selActivityTargetActivity").prop("selectedIndex", 0);
 
 			$("#selActivityRandom").prop("selectedIndex", 1);
+			$("#selActivityInLine").prop("selectedIndex", 1);
 			$("#selActivityAttribute").trigger("change");
 
 			$("#ulActivity > li > a.nav-link:eq(0)").trigger("click");
 		}
 
-		function saveActivityGeneral() {
-			if ($("#txtActivityName").val() == "") {
-				alert("Activity명을 입력하세요.");
-				return false;
-			}	
+		function cancelActivityInfo() {
+			initializeActivityInfo();
 
-			var strPartType = $("#txtActivityPartType").val();
-
-			var isRandomCheck = false;
-    
-			switch (strPartType) {
-				case "u_b__" :
-				case "u_f__" :
-				case "u_g_f" :
-				case "u_g_l" :
-				case "u_g_a" :
-				case "u_g_c" :
-				case "g_b__" :
-				case "g_f__" :
-				case "g_g_f" :
-				case "g_g_l" :
-				case "g_g_a" :
-				case "g_g_c" :
-				case "r_b__" :
-					isRandomCheck = true;
-					break;
-				default :
-					isRandomCheck = false;
-					break;  
-			}
-
-			if ($("#selActivityRandom").val() == "Y") {
-				if (!isRandomCheck) {
-					alert("현재 Activity의 Random이 Y입니다.\r\n참여 형태를 정확하게 선택해 주세요.");
-					return false; 
-				}
-			}
-
-			var activityID = $("#txtActivityID").val();
-			var displayName = $("#txtActivityName").val();
-			var bizRole = $("#selActivityBizRole").val();
-			var actRole = $("#selActivityActRole").val();
-			var review = $("#selActivityReview").val();
-			var progress = $("#selActivityProgress").val();
-			var random = $("#selActivityRandom").val();
-			var showLine = $("#selActivityShowLine").val();
-			var mandatory = $("#selActivityMandatory").val();
-
-			$.ajax({
-				url: '@Url.Action("UpdateProcessActivityGeneral", "Proc")',
-				type: 'POST',
-				dataType: 'JSON',
-				data: '{activityID:' + activityID + ', displayName:"' + displayName + '", bizRole:"' + bizRole + '", actRole:"' + actRole + '", review:"' + review + '", progress:"' + progress + '", random:"' + random + '", showLine:"' + showLine + '", mandatory:"' + mandatory + '"}',
-				success: function (result) {
-					if (result.code != "OK") {
-						alert(result.message);
-						return;
-					}
-
-					alert("정상적으로 처리되었습니다.");
-				}
-			});
+			$("li[data-id]").removeClass("edit");
 		}
-		
+
+		function changeActivityReview() {
+			// Review가 0,4이면 Showline은 "Y"가 될 수 없고, Random도 "Y"가 될 수 없다.
+            // Review가 2,3이면 Showline은 무조건 "Y"이다.
+            // Random이 "Y"이면 b,g,f만 가능하다.
+			if ($("#selActivityReview").val() == "0" || $("#selActivityReview").val() == "4") {
+				$("#selActivityShowLine").val("N");
+				$("#selActivityRandom").val("N");
+			} else if ($("#selActivityReview").val() == "2" || $("#selActivityReview").val() == "3") {
+				$("#selActivityShowLine").val("Y");
+			}
+		}
 	</script>
 }
 
@@ -2119,7 +2246,7 @@
 												<div class="form-row">
 													<div class="form-group col">
 														<label class="form-label">Review</label>
-														<select class="custom-select" id="selActivityReview">
+														<select class="custom-select" id="selActivityReview" onchange="changeActivityReview();">
 															<option value="0">WorkItem 생성하지 않음</option>
 															<option value="1">WorkItem 생성</option>
 															<option value="2">WorkItem 생성 후 대기</option>
@@ -2158,9 +2285,6 @@
 															<option value="N">옵션</option>
 														</select>
 													</div>
-												</div>
-												<div class="card-footer activity-edit-area" style="padding-left: 0;">
-													<button type="button" class="btn btn-primary" onclick="saveActivityGeneral()">일반 정보 저장</button>
 												</div>
 											</div>
 										</div>
@@ -2248,9 +2372,6 @@
 															</table>
 														</div>
 													</div>
-												</div>
-												<div class="card-footer activity-edit-area" style="padding-left: 0;">
-													<button type="button" class="btn btn-primary" onclick="saveActivityPart()">참여 정보 저장</button>
 												</div>
 											</div>
 										</div>
@@ -2412,14 +2533,11 @@
 														<input type="text" id="txtActivityCondition5" class="form-control">
 													</div>
 												</div>
-												<div class="card-footer activity-edit-area" style="padding-left: 0;">
-													<button type="button" class="btn btn-primary" onclick="saveActivityStatus()">상태 정보 저장</button>
-												</div>
-												<div class="card-footer activity-create-area" style="padding-left: 0;">
-													<button type="button" id="btnActivityPreCondition" class="btn btn-default" onclick="fnAddProcess(1)">Activity 이전 조건 추가</button>
-													<button type="button" id="btnActivityPostCondition" class="btn btn-default ml-2" onclick="fnAddProcess(2)">Activity 이후 조건 추가</button>
-													<button type="button" id="btnWorkItemPreCondition" class="btn btn-default ml-2" onclick="fnAddProcess(3)">WorkItem 이전 조건 추가</button>
-													<button type="button" id="btnWorkItemPostCondition" class="btn btn-default ml-2" onclick="fnAddProcess(4)">WorkItem 이후 조건 추가</button>
+												<div class="card-footer activity-create-area activity-edit-area" style="padding-left: 0;padding-right: 0;">
+													<button type="button" class="btn btn-default" onclick="fnAddAttribute(1)">Activity 이전 조건 추가</button>
+													<button type="button" class="btn btn-default ml-2" onclick="fnAddAttribute(2)">Activity 이후 조건 추가</button>
+													<button type="button" class="btn btn-default ml-2" onclick="fnAddAttribute(3)">WorkItem 이전 조건 추가</button>
+													<button type="button" class="btn btn-default ml-2" onclick="fnAddAttribute(4)">WorkItem 이후 조건 추가</button>
 												</div>
 											</div>
 										</div>
@@ -2432,7 +2550,7 @@
 												<div class="form-row">
 													<div class="form-group col">
 														<label class="form-label">하위 유무</label>
-														<select class="custom-select" id="selActivityInLine">
+														<select class="custom-select" id="selActivityInLine" disabled>
 															<option value="Y">하위 있음</option>
 															<option value="N">하위 없음</option>
 														</select>
@@ -2455,16 +2573,15 @@
 													<label class="form-label">설명</label>
 													<textarea class="form-control" id="txtActivityDesc" placeholder="설명" rows="5"></textarea>
 												</div>
-												<div class="card-footer activity-edit-area" style="padding-left: 0;">
-													<button type="button" class="btn btn-primary" onclick="saveActivityInfo()">프로세스 정보 저장</button>
-												</div>
 											</div>
-											
+
 										</div>
 									</div>
 								</div>
 								<hr class="border-light m-0 activity-create-area">
 								<button type="button" class="btn btn-primary activity-create-area" style="margin-top: 10px;" onclick="addNewActivityInfo()">Activity 추가</button>
+								<button type="button" class="btn btn-primary activity-edit-area" style="margin-top: 10px;" onclick="updateActivityInfo()">Activity 수정</button>
+								<button type="button" class="btn btn-default activity-edit-area" style="margin-top: 10px;" onclick="cancelActivityInfo()">수정 취소</button>
 							</div>
 						</div>
 					</div>
