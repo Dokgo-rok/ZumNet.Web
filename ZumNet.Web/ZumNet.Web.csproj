@@ -366,6 +366,15 @@
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\ExS\worktime.js" />
     <Content Include="Scripts\Report\report.js" />
+    <Content Include="Temp\admin.ph_up_BaseGradeCodeHandler.sql" />
+    <Content Include="Temp\admin.ph_up_BFGetEAFormList.sql" />
+    <Content Include="Temp\admin.ph_up_BFHandleEAFormBasicManagement.sql" />
+    <Content Include="Temp\admin.ph_up_BFHandleEAFormEtcManagement.sql" />
+    <Content Include="Temp\admin.ph_up_BFHandleEAFormTableManagement.sql" />
+    <Content Include="Temp\admin.ph_up_DeleteEAFormNoticeFormSet.sql" />
+    <Content Include="Temp\admin.ph_up_SelectEAFormNotice.sql" />
+    <Content Include="Temp\admin.ph_up_UpdateEAFormChargeJson.sql" />
+    <Content Include="Temp\admin.ph_up_UpdateEAFormNoticeFormSet.sql" />
     <Content Include="Temp\ph_up_BaseDeleteURInfo.sql" />
     <Content Include="Temp\ph_up_BaseUpdateURBasicInfo.sql" />
     <Content Include="Temp\ph_up_BaseUpdateURDetail1Info.sql" />
