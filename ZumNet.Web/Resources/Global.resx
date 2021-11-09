@@ -129,6 +129,9 @@
   <data name="Attach" xml:space="preserve">
     <value>Attach</value>
   </data>
+  <data name="AttachFile" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
   <data name="AttendWork" xml:space="preserve">
     <value>Go to Work</value>
   </data>
@@ -140,6 +143,9 @@
   </data>
   <data name="Auth_Fault" xml:space="preserve">
     <value>Invalid login attempt.</value>
+  </data>
+  <data name="Auth_InvalidPath" xml:space="preserve">
+    <value>Invalid path access.</value>
   </data>
   <data name="Auth_NoDB" xml:space="preserve">
     <value>ID does not exist.</value>
@@ -170,6 +176,9 @@
   </data>
   <data name="Close" xml:space="preserve">
     <value>Close</value>
+  </data>
+  <data name="CommentCount" xml:space="preserve">
+    <value>Comments</value>
   </data>
   <data name="Compose" xml:space="preserve">
     <value>Compose</value>
@@ -363,6 +372,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>Off Work</value>
   </data>
+  <data name="List" xml:space="preserve">
+    <value>List</value>
+  </data>
   <data name="ListCount" xml:space="preserve">
     <value>List Count</value>
   </data>
@@ -484,6 +496,9 @@
     <value>Save ID</value>
   </data>
   <data name="Reply" xml:space="preserve">
+    <value>Reply</value>
+  </data>
+  <data name="ReplyWrite" xml:space="preserve">
     <value>Reply</value>
   </data>
   <data name="ReqDept" xml:space="preserve">

@@ -1,0 +1,173 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = ViewBag.AppView["Subject"];
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/Scripts/Board/list.js")
+
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="zf-menu d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
+                <div class="d-flex align-items-center font-weight-bold">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
+
+                    <div class="btn-group">
+                        @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M"))
+                        {
+                            <button class="btn btn-outline-secondary font-weight-bold" data-zf-menu="reply" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ReplyWrite"><i class="fas fa-reply"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.ReplyWrite</span></button>
+                            <button class="btn btn-outline-secondary font-weight-bold" data-zf-menu="write" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>
+                        }
+                        @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "E"))
+                        {
+                            <button class="btn btn-outline-secondary font-weight-bold" data-zf-menu="modify" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                        }
+                        @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "D"))
+                        {
+                            <button class="btn btn-outline-secondary font-weight-bold" data-zf-menu="delete" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
+                        }
+                    </div>
+                </div>
+                <div>
+                    <div class="btn-group">
+                        <button class="btn btn-default" data-zf-menu="list" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.List"><i class="fas fa-list"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.List</span></button>
+                        <button class="btn btn-default" data-zf-menu="previous" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Previous"><i class="fas fa-chevron-left"></i></button>
+                        <button class="btn btn-default" data-zf-menu="next" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default" data-zf-menu="print" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Print"><i class="fe-printer"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-1 position-relative" style="border-top: 2px solid #eee">
+            <div class="z-list-scroll">
+                <div class="h5 container-p-x my-3">
+                    <span>@ViewBag.AppView["Subject"]</span>
+                </div>
+                <div class="d-flex justify-content-between container-p-x mb-2">
+                    <div>@ViewBag.AppView["CreatorName"] / @ViewBag.AppView["CreatorDept"] / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.AppView["PublishDate"].ToString(), true)</div>
+                    <div>
+                        <span class="d-inline-block mr-2 text-info" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ViewCount"><i class="fe-eye"></i> @ViewBag.AppView["ViewCount"]</span>
+                        <span class="d-inline-block text-danger" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.CommentCount"><i class="far fa-comment-dots"></i> @ViewBag.AppView["CommentCount"]</span>
+                    </div>
+                </div>
+
+                <div class="border-top container-p-x pt-3 pb-4">
+                    @Html.Raw(ViewBag.AppView["Body"])
+                </div>
+
+                <div class="container-p-x my-2">
+                    <h6 class="mb-2"><i class="fas fa-paperclip"></i> @Resources.Global.AttachFile</h6>
+                    @if (ViewBag.AppFile != null && ViewBag.AppFile.Rows.Count > 0)
+                    {
+                        <div class="d-flex">
+                        @foreach(DataRow dr in ViewBag.AppFile.Rows)
+                        {
+                            <div class="media border rounded px-2 pt-2 pb-1 mr-1">
+                                <div class="mr-2">
+                                    <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(dr["FileType"].ToString()) text-large"></i>
+                                </div>
+                                <div class="media-body">
+                                    <h6 class="my-0"><a href="/file/download?fn=@Server.UrlEncode(dr["FileName"].ToString())&fp=@Server.UrlEncode(dr["FilePath"].ToString() + "\\" + dr["SavedName"].ToString())">@dr["FileName"]</a></h6>
+                                    <div>@ZumNet.Web.Bc.CommonUtils.StrFileSize(dr["FileSize"].ToString())</div>
+                                </div>
+                            </div>
+                        }
+                        </div>
+                    }
+                </div>
+
+                @if (ViewBag.AppFile != null && ViewBag.AppReply.Rows.Count > 0)
+                {
+                    <div class="container-p-x my-3">
+                        <h6 class="mb-2"><i class="fas fa-reply"></i> @Resources.Global.ReplyWrite @Resources.Global.List</h6>
+                        <ul class="list-group messages-list">
+                        @foreach (DataRow dr in ViewBag.AppReply.Rows)
+                        {
+                            <li class="list-group-item list-group-item-action d-flex align-items-center@(dr["MessageID"].ToString() == ViewBag.AppView["MessageID"].ToString() ? " bg-light" : "")">
+                                <div class="wd-99 flex-fill text-truncate d-flex align-items-center">
+                                    @if (Convert.ToInt32(dr["Depth"]) > 0)
+                                    {
+                                        for (int k = 1; k < Convert.ToInt32(dr["Depth"]); k++)
+                                        {
+                                            <span class="px-1"></span>
+                                        }
+                                        <i class="fe-corner-down-right text-big text-warning font-weight-bold mx-1"></i>
+                                    }
+                                    <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg();">@dr["Subject"].ToString()</a>
+                                </div>
+                                <div class="w-100 d-sm-none py-0"></div>
+
+                                <div class="wd-99 wd-lg-34 wd-xl-32 d-flex">
+                                    @if (Convert.ToInt32(dr["Depth"]) > 0)
+                                    {
+                                    <div class="d-sm-none">
+                                        <span class="d-inline-block">&nbsp;&nbsp;&nbsp;</span>
+                                        @for (int k = 0; k < Convert.ToInt32(dr["Depth"]); k++)
+                                        {
+                                            <span class="d-inline-block">&nbsp;</span>
+                                        }
+                                    </div>
+                                    }
+                                    <div class="wd-20 wd-lg-35 wd-xl-35 t-sm text-sm-center pr-2">
+                                        <span class="">@dr["DisplayName"]</span>
+                                    </div>
+
+                                    <div class="wd-20 wd-lg-35 wd-xl-30 t-sm text-sm-center pr-2">
+                                        <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(dr["CreateDate"].ToString())</span>
+                                    </div>
+
+                                    <div class="text-right text-pink flex-fill pr-1">
+                                        <span class="">@dr["ViewCount"]</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+
+</div><!-- / .messages-wrapper -->

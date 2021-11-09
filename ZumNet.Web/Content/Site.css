@@ -451,3 +451,11 @@
         position: relative;
     }
 /* grid listview <----- */
+
+/* board form -----> */
+.zf-menu .btn-group .btn {
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+}
+
+/* board form <----- */

@@ -97,6 +97,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Attachments과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AttachFile {
+            get {
+                return ResourceManager.GetString("AttachFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Go to Work과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AttendWork {
@@ -129,6 +138,15 @@ namespace Resources {
         public static string Auth_Fault {
             get {
                 return ResourceManager.GetString("Auth_Fault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Invalid path access.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Auth_InvalidPath {
+            get {
+                return ResourceManager.GetString("Auth_InvalidPath", resourceCulture);
             }
         }
         
@@ -219,6 +237,15 @@ namespace Resources {
         public static string Close {
             get {
                 return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Comments과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CommentCount {
+            get {
+                return ResourceManager.GetString("CommentCount", resourceCulture);
             }
         }
         
@@ -799,6 +826,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   List과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string List {
+            get {
+                return ResourceManager.GetString("List", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   List Count과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string ListCount {
@@ -1164,6 +1200,15 @@ namespace Resources {
         public static string Reply {
             get {
                 return ResourceManager.GetString("Reply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Reply과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ReplyWrite {
+            get {
+                return ResourceManager.GetString("ReplyWrite", resourceCulture);
             }
         }
         

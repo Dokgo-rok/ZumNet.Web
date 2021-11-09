@@ -251,7 +251,18 @@ $(function () {
 
     //메뉴
     _zw.mu = {
+        "readMsg": function () {
+            var el = event.target ? event.target : event.srcElement; //alert(el.outerHTML)
+            var p = $(el).parent().parent();
 
+            _zw.V.xfalias = p.attr('xf');
+            _zw.V.current.acl = p.attr('acl');
+            _zw.V.appid = p.attr('appid');
+            _zw.V.ttl = $(el).text();
+
+            var postData = _zw.fn.getAppQuery(_zw.V.fdid);
+            window.location.href = '/Board/Read?qi=' + encodeURIComponent(postData);
+        }
     };
 
     //함수
@@ -324,6 +335,36 @@ $(function () {
 
             if (barLen > 100) barLen = 100;
             $('.progress-bar[data-for="extrahour"]').css('width', barLen + '%');
+        },
+        "getAppQuery": function (tgt) {
+            var j = {};
+            j["ct"] = _zw.V.ct;
+            j["ctalias"] = _zw.V.ctalias;
+            j["ot"] = _zw.V.ot;
+            j["alias"] = _zw.V.alias;
+            j["xfalias"] = _zw.V.xfalias;
+            j["fdid"] = _zw.V.fdid;
+            j["appid"] = _zw.V.appid;
+            j["acl"] = _zw.V.current.acl;
+            j["opnode"] = _zw.V.opnode;
+            j["ft"] = _zw.V.ft;
+            j["ttl"] = _zw.V.ttl;
+
+
+            j["tgt"] = tgt;
+            j["page"] = _zw.V.lv.page;
+            j["count"] = _zw.V.lv.count;
+            j["sort"] = _zw.V.lv.sort;
+            j["sortdir"] = _zw.V.lv.sortdir;
+            j["search"] = _zw.V.lv.search;
+            j["searchtext"] = _zw.V.lv.searchtext;
+            j["start"] = _zw.V.lv.start;
+            j["end"] = _zw.V.lv.end;
+            j["basesort"] = _zw.V.lv.basesort;
+            j["boundary"] = _zw.V.lv.boundary;
+
+            //alert(j["permission"])
+            return JSON.stringify(j);
         }
     };
 

@@ -129,6 +129,9 @@
   <data name="Attach" xml:space="preserve">
     <value>附件</value>
   </data>
+  <data name="AttachFile" xml:space="preserve">
+    <value>附件</value>
+  </data>
   <data name="AttendWork" xml:space="preserve">
     <value>去工作</value>
   </data>
@@ -140,6 +143,9 @@
   </data>
   <data name="Auth_Fault" xml:space="preserve">
     <value>无效的登录尝试。</value>
+  </data>
+  <data name="Auth_InvalidPath" xml:space="preserve">
+    <value>无效的路径访问。</value>
   </data>
   <data name="Auth_NoDB" xml:space="preserve">
     <value>身份证不存在。</value>
@@ -170,6 +176,9 @@
   </data>
   <data name="Close" xml:space="preserve">
     <value>关闭</value>
+  </data>
+  <data name="CommentCount" xml:space="preserve">
+    <value>评论数</value>
   </data>
   <data name="Compose" xml:space="preserve">
     <value>撰写</value>
@@ -363,6 +372,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>下班</value>
   </data>
+  <data name="List" xml:space="preserve">
+    <value>列表</value>
+  </data>
   <data name="ListCount" xml:space="preserve">
     <value>列表数</value>
   </data>
@@ -484,6 +496,9 @@
     <value>保存 ID</value>
   </data>
   <data name="Reply" xml:space="preserve">
+    <value>回复</value>
+  </data>
+  <data name="ReplyWrite" xml:space="preserve">
     <value>回复</value>
   </data>
   <data name="ReqDept" xml:space="preserve">

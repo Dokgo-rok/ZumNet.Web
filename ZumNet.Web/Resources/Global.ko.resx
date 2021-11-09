@@ -129,6 +129,9 @@
   <data name="Attach" xml:space="preserve">
     <value>첨부</value>
   </data>
+  <data name="AttachFile" xml:space="preserve">
+    <value>첨부파일</value>
+  </data>
   <data name="AttendWork" xml:space="preserve">
     <value>출근</value>
   </data>
@@ -140,6 +143,9 @@
   </data>
   <data name="Auth_Fault" xml:space="preserve">
     <value>잘못된 로그인 시도입니다.</value>
+  </data>
+  <data name="Auth_InvalidPath" xml:space="preserve">
+    <value>잘못된 경로로 접근했습니다.</value>
   </data>
   <data name="Auth_NoDB" xml:space="preserve">
     <value>존재하지 않는 아이디입니다.</value>
@@ -170,6 +176,9 @@
   </data>
   <data name="Close" xml:space="preserve">
     <value>닫기</value>
+  </data>
+  <data name="CommentCount" xml:space="preserve">
+    <value>댓글수</value>
   </data>
   <data name="Compose" xml:space="preserve">
     <value>작성</value>
@@ -363,6 +372,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>퇴근</value>
   </data>
+  <data name="List" xml:space="preserve">
+    <value>목록</value>
+  </data>
   <data name="ListCount" xml:space="preserve">
     <value>목록수</value>
   </data>
@@ -394,7 +406,7 @@
     <value>이름</value>
   </data>
   <data name="New" xml:space="preserve">
-    <value>새문서</value>
+    <value>새글</value>
   </data>
   <data name="Next" xml:space="preserve">
     <value>다음</value>
@@ -485,6 +497,9 @@
   </data>
   <data name="Reply" xml:space="preserve">
     <value>회신</value>
+  </data>
+  <data name="ReplyWrite" xml:space="preserve">
+    <value>답글</value>
   </data>
   <data name="ReqDept" xml:space="preserve">
     <value>요청부서</value>

@@ -11,7 +11,7 @@
         string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
         string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
 
-        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)@(sTopLine)">
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)@(sTopLine)" xf="@row["XFAlias"]" appid="@row["MessageID"]" acl="@row["AclKind"]" auth="@row["Authority"]">
             <div class="wd-8 wd-lg-5 wd-xl-4 message-checkbox">
                 <label class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input">
@@ -41,7 +41,7 @@
                 {
                     <img src="~/images/plugins/new.gif" alt="" />
                 }
-                <a class="text-truncate" href="javascript:void(0)">@row["Subject"].ToString()</a>
+                <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg();">@row["Subject"].ToString()</a>
                 @if (Convert.ToInt32(row["CommentCount"]) > 0)
                 {
                     <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>
@@ -52,6 +52,16 @@
 
             <div class="wd-99 wd-lg-34 wd-xl-32 d-flex">
                 <div class="wd-8 d-sm-none"></div>
+                @if (Convert.ToInt32(row["Depth"]) > 0)
+                {
+                    <div class="d-sm-none">
+                        <span class="d-inline-block">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        @for (int k = 0; k < Convert.ToInt32(row["Depth"]); k++)
+                        {
+                            <span class="d-inline-block">&nbsp;</span>
+                        }
+                    </div>
+                }
                 @if (row["HasAttachFile"].ToString() != "0")
                 {
                     <div class="wd-5 wd-lg-12 wd-xl-10 text-sm-right">

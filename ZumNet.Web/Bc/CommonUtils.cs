@@ -659,6 +659,117 @@ namespace ZumNet.Web.Bc
             //return s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("&quot;", "\\\"").Replace("&quot", "\\\"").Replace(" ", "&nbsp;").Replace(Environment.NewLine, "<br />");
             return s.Replace(" ", "&nbsp;").Replace(Environment.NewLine, "<br />");
         }
+
+        /// <summary>
+        /// 첨부파일 크기 변환
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string StrFileSize(string s)
+        {
+            string rt = "";
+            if (s == "")
+            {
+                rt = "N/A";
+            }
+            else
+            {
+                double v = StringHelper.SafeDouble(s);
+                if (v < 1024) rt = v.ToString("n0") + "B";
+                else
+                {
+                    v = v / 1024;
+                    if (v < 1024) rt = v.ToString("n0") + "KB";
+                    else
+                    {
+                        v = v / 1024;
+                        if (v < 1024) rt = v.ToString("n0") + "MB";
+                        else
+                        {
+                            v = v / 1024;
+                            rt = v.ToString("n0") + "GB";
+                        }
+
+                    }
+                }
+            }
+            return rt;
+        }
+        #endregion
+
+        #region [파일 아이콘 이미지/클래스 반환]
+        /// <summary>
+        /// 파일확장자 클래스 반환
+        /// </summary>
+        /// <param name="ext"></param>
+        /// <returns></returns>
+        public static string GetFileExt(string ext)
+        {
+            string rt = "";
+
+            switch (ext.ToLower())
+            {
+                case "mht":
+                    rt = "far fa-file-alt text-danger";
+                    break;
+
+                case "txt":
+                    rt = "far fa-file-alt text-secondary";
+                    break;
+
+                case "zip":
+                    rt = "far fa-file-archive text-purple";
+                    break;
+
+                case "doc":
+                case "docx":
+                    rt = "far fa-file-word text-blue";
+                    break;
+
+                case "xls":
+                case "xlsx":
+                    rt = "far fa-file-excel text-teal";
+                    break;
+
+                case "ppt":
+                case "pptx":
+                    rt = "far fa-file-powerpoint text-danger";
+                    break;
+
+                case "pdf":
+                    rt = "far fa-file-pdf text-danger";
+                    break;
+
+                case "png":
+                case "bmp":
+                case "jpg":
+                case "gif":
+                    rt = "far fa-file-image text-secondary";
+                    break;
+
+                case "avi":
+                case "mkv":
+                case "mov":
+                case "mp4":
+                case "mpg":
+                case "wmv":
+                    rt = "far fa-file-video text-secondary";
+                    break;
+
+                case "mp3":
+                case "ogg":
+                case "wma":
+                case "wav":
+                    rt = "far fa-file-audio text-secondary";
+                    break;
+
+                default:
+                    rt = "far fa-file text-secondary";
+                    break;
+            }
+
+            return rt;
+        }
         #endregion
 
         #region [리스트뷰 날짜 표현]
