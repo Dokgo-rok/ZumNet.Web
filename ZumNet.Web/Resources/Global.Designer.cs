@@ -241,6 +241,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Comment과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Comment {
+            get {
+                return ResourceManager.GetString("Comment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Comments과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string CommentCount {

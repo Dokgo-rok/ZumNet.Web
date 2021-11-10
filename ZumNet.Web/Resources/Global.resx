@@ -177,6 +177,9 @@
   <data name="Close" xml:space="preserve">
     <value>Close</value>
   </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Comment</value>
+  </data>
   <data name="CommentCount" xml:space="preserve">
     <value>Comments</value>
   </data>

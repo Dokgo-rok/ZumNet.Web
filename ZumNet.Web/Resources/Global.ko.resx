@@ -177,6 +177,9 @@
   <data name="Close" xml:space="preserve">
     <value>닫기</value>
   </data>
+  <data name="Comment" xml:space="preserve">
+    <value>댓글</value>
+  </data>
   <data name="CommentCount" xml:space="preserve">
     <value>댓글수</value>
   </data>

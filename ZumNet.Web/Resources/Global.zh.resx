@@ -177,6 +177,9 @@
   <data name="Close" xml:space="preserve">
     <value>关闭</value>
   </data>
+  <data name="Comment" xml:space="preserve">
+    <value>评论</value>
+  </data>
   <data name="CommentCount" xml:space="preserve">
     <value>评论数</value>
   </data>
