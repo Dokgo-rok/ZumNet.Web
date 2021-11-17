@@ -71,10 +71,13 @@ $(function () {
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 
+        if ($('.messages-wrapper, .messages-card').hasClass('messages-sidebox-open')) $('.z-mobile-navbar button.close').click();
+
         $.ajax({
             type: "POST",
             url: url,
             success: function (res) {
+                
                 if (res.substr(0, 2) == "OK") {
                     history.pushState(null, null, url);
 

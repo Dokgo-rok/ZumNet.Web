@@ -1195,6 +1195,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Register과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Register {
+            get {
+                return ResourceManager.GetString("Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Save ID과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string RememberMe {
@@ -1344,6 +1353,15 @@ namespace Resources {
         public static string TempBox2 {
             get {
                 return ResourceManager.GetString("TempBox2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Temporary save과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TempSave {
+            get {
+                return ResourceManager.GetString("TempSave", resourceCulture);
             }
         }
         

@@ -102,6 +102,8 @@ $(function () {
                 //alert(n.li_attr.objecttype + ' : ' + n.li_attr.alias + ' : ' + n.li_attr.xfalias + ' : ' + n.li_attr.acl.substr(n.li_attr.acl.length-1, 1))
                 var vId = n.id.split('.');
 
+                //$('.z-mobile-navbar button[data-dismiss="modal"]').click()
+
                 if (vId[vId.length - 1] == _zw.V.fdid) return false;
 
                 //var vPath = $("#__FolderTree").jstree("get_path", d.selected[0]);
@@ -254,6 +256,8 @@ $(function () {
                         }
                     }
                 }
+
+                if ($('.messages-wrapper, .messages-card').hasClass('messages-sidebox-open')) $('.z-mobile-navbar button.close').click();
             }
         })
         .on("open_node.jstree", function (e, d) {

@@ -105,6 +105,11 @@
 }
 
 /* modal, navbar-right */
+.messages-wrapper .messages-sidebox {
+    transition: transform .2s ease-out;
+    -webkit-transition: transform .2s ease-out;
+}
+
 @media (min-width: 992px) {
     .z-mobile-navbar {
         display: none;
@@ -455,7 +460,7 @@
 /* board form -----> */
 .zf-menu .btn-group .btn {
     padding-top: .25rem;
-    padding-bottom: .15rem;
+    padding-bottom: .2rem;
 }
 .zf-prevbody {
     color: #000000;

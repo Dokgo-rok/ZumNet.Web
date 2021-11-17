@@ -1141,7 +1141,7 @@ namespace ZumNet.Web.Bc
                 sb.AppendFormat(",\"alias\":\"{0}\"", StringHelper.SafeString(jReq["alias"])); //Report용
                 sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"]));
                 sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
-                sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"]));
+                sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.HtmlEncode(StringHelper.SafeString(jReq["ttl"])));
                 sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
                 sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
                 sb.AppendFormat(",\"qi\":\"{0}\"", "");
@@ -1222,7 +1222,7 @@ namespace ZumNet.Web.Bc
                         sb.AppendFormat(",\"alias\":\"{0}\"", StringHelper.SafeString(jReq["alias"])); //Report용
                         sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"]));
                         sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
-                        sb.AppendFormat(",\"ttl\":\"{0}\"", StringHelper.SafeString(jReq["ttl"]));
+                        sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.HtmlEncode(StringHelper.SafeString(jReq["ttl"])));
                         sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
                         sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
                         sb.AppendFormat(",\"qi\":\"{0}\"", "");

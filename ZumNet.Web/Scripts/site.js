@@ -80,7 +80,8 @@ $(function () {
         //$(this).removeClass('mobile');
         $(this).css('display', '');
         //$(this).css('transform', 'translateX(-15%)');
-        //$(this).css('transition', 'transform .2s ease-out');
+        //$(this).css('-ms-transition', 'transform .2s ease-out');
+        //$(this).css('-webkit-transition', 'transform .2s ease-out');
 
         $('.messages-wrapper, .messages-card').removeClass('messages-sidebox-open');
     });
@@ -260,7 +261,7 @@ $(function () {
             _zw.V.appid = p.attr('appid');
             _zw.V.ttl = $(el).text();
 
-            var postData = _zw.fn.getAppQuery(_zw.V.fdid);
+            var postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
             window.location.href = '/Board/Read?qi=' + encodeURIComponent(postData);
         }
     };

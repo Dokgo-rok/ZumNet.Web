@@ -495,6 +495,9 @@
   <data name="Refresh" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Save ID</value>
   </data>
@@ -545,6 +548,9 @@
   </data>
   <data name="TempBox2" xml:space="preserve">
     <value>Temp Box</value>
+  </data>
+  <data name="TempSave" xml:space="preserve">
+    <value>Temporary save</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Title</value>

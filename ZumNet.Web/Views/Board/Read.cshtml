@@ -11,7 +11,7 @@
 
     string sSitePath = "";
     string[] vSiteMap = ViewBag.SiteMap.Split(new char[] { '' });
-    foreach(string fd in vSiteMap)
+    foreach (string fd in vSiteMap)
     {
         string[] s = fd.Split(new char[] { '' });
         sSitePath += (sSitePath == "") ? s[1] : " > " + s[1];
@@ -33,6 +33,7 @@
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
     @Scripts.Render("~/Scripts/Board/list.js")
 
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
@@ -143,7 +144,7 @@
                 }
 
 
-                @if (ViewBag.AppFile != null && ViewBag.AppReply.Rows.Count > 0)
+                @if (ViewBag.AppFile != null && ViewBag.AppReply.Rows.Count > 1)
                 {
                     <div class="container-p-x my-3">
                         <h6 class="mb-2"><i class="fas fa-reply"></i> @Resources.Global.ReplyWrite @Resources.Global.List</h6>
@@ -194,17 +195,41 @@
                 }
                 <div class="container-p-x my-3">
                     <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.AppView["CommentCount"]</span></h6>
-                    <div class="bg-lighter border">
-                        @foreach (DataRow dr in ViewBag.AppComment.Rows)
+                    <div class="bg-lighter border p-3">
+                        @if (ViewBag.AppComment != null && ViewBag.AppComment.Rows.Count > 0)
                         {
-                            <div class="media">
-                                <img src="~/images/users/sjaekim.jpg" class="mr-3 rounded-circle" height="42" alt="user" />
-                                <div class="media-body">
-                                    
-                                    <p></p>
+                            for (int i = ViewBag.AppComment.Rows.Count - 1; i >= 0; i--)
+                            {
+                                DataRow dr = ViewBag.AppComment.Rows[i];
+                                <div class="media">
+                                    <img src="~/images/users/sjaekim.jpg" class="mr-3 rounded-circle" style="height:32px" alt="user" />
+                                    <div class="media-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div class="d-flex">
+                                                <div class="font-weight-bold mr-3">@dr["Creator"]</div>
+                                                <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(dr["CreateDate"].ToString())</div>
+                                            </div>
+                                            <div>
+                                                @if (dr["CreatorID"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
+                                                {
+                                                    <a class="text-dark mr-2" href="javascript:void();">@Resources.Global.Modify</a>
+                                                    <a class="text-muted" href="javascript:void();">@Resources.Global.Delete</a>
+                                                }
+                                            </div>
+                                        </div>
+                                        <p>@Html.Raw(dr["Comment"])</p>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         }
+                        <div class="">
+                            <div class="">
+                                <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500"></textarea>
+                            </div>
+                            <div class="text-right mt-2">
+                                <button class="btn btn-primary" data-zf-menu="write" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register">@Resources.Global.Register</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

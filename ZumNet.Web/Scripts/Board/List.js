@@ -8,6 +8,17 @@ $(function () {
         language: $('#current_culture').val()
     });
 
+    $('.bootstrap-maxlength').each(function () {
+        $(this).maxlength({
+            alwaysShow: true,
+            warningClass: 'text-muted',
+            limitReachedClass: 'text-danger',
+            validate: true,
+            placement: 'bottom-left-inside',
+            threshold: +this.getAttribute('maxlength')
+        });
+    });
+
     _zw.fn.loadList = function () {
 
         //var sJson = '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + _zw.V.ot + '",xfalias:"' + _zw.V.xfalias + '",permission:"' + _zw.V.current.acl + '",tgt:"' + _zw.V.lv.tgt
