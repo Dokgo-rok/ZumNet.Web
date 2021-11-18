@@ -469,5 +469,8 @@
     margin-top: 0;
     margin-bottom: 0;
 }
+.zf-attach div:not(:last-child) {
+    border-bottom: 0 !important;
+}
 
 /* board form <----- */

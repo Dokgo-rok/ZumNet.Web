@@ -66,16 +66,16 @@
                     <div class="btn-group">
                         @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M"))
                         {
-                            <button class="btn btn-outline-secondary font-weight-bold" data-zf-menu="reply" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ReplyWrite"><i class="fas fa-reply"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.ReplyWrite</span></button>
-                            <button class="btn btn-outline-secondary font-weight-bold" data-zf-menu="write" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>
+                            <button class="btn btn-default font-weight-bold" data-zf-menu="reply" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ReplyWrite"><i class="fas fa-reply"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.ReplyWrite</span></button>
+                            <button class="btn btn-default font-weight-bold" data-zf-menu="write" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>
                         }
                         @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "E"))
                         {
-                            <button class="btn btn-outline-secondary font-weight-bold" data-zf-menu="modify" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                            <button class="btn btn-default font-weight-bold" data-zf-menu="modify" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
                         }
                         @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "D"))
                         {
-                            <button class="btn btn-outline-secondary font-weight-bold" data-zf-menu="delete" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
+                            <button class="btn btn-default font-weight-bold" data-zf-menu="delete" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
                         }
                     </div>
                 </div>
@@ -95,58 +95,78 @@
 
         <div class="flex-grow-1 position-relative" style="border-top: 2px solid #eee">
             <div class="z-list-scroll">
-                <div class="d-block d-sm-none container-p-x my-3">
-                    <div class="mb-2 text-muted">@Html.Raw(sSitePath)</div>
-                    <h5 class="mb-0">@ViewBag.AppView["Subject"]</h5>
-                </div>
-                <div class="d-none d-sm-flex justify-content-between container-p-x my-3">
-                    <h5 class="mb-0">@ViewBag.AppView["Subject"]</h5>
-                    <div class="text-muted">@Html.Raw(sSitePath)</div>
-                </div>
-                <div class="d-flex justify-content-between container-p-x mb-2">
-                    <div class="text-muted">@ViewBag.AppView["CreatorName"] / @ViewBag.AppView["CreatorDept"] / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.AppView["PublishDate"].ToString(), true)</div>
-                    <div>
-                        <span class="d-inline-block mr-2 text-info" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ViewCount"><i class="fe-eye"></i> @ViewBag.AppView["ViewCount"]</span>
-                        <span class="d-inline-block text-danger" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.CommentCount"><i class="far fa-comment-dots"></i> @ViewBag.AppView["CommentCount"]</span>
+                <div class="pb-3 border-bottom">
+                    <div class="d-block d-sm-none container-p-x mt-3">
+                        <div class="mb-2 text-muted">@Html.Raw(sSitePath)</div>
+                        <h5 class="mb-0">@ViewBag.AppView["Subject"]</h5>
                     </div>
+                    <div class="d-none d-sm-flex justify-content-between container-p-x mt-3 mt-2">
+                        <h5 class="mb-0">@ViewBag.AppView["Subject"]</h5>
+                        <div class="text-muted">@Html.Raw(sSitePath)</div>
+                    </div>
+                    <div class="d-flex justify-content-between container-p-x mt-2">
+                        <div class="">@ViewBag.AppView["CreatorName"] / @ViewBag.AppView["CreatorDept"] / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.AppView["PublishDate"].ToString(), true)</div>
+                        <div>
+                            <span class="d-inline-block mr-2 text-info" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ViewCount"><i class="fe-eye"></i> @ViewBag.AppView["ViewCount"]</span>
+                            <span class="d-inline-block text-danger" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.CommentCount"><i class="far fa-comment-dots"></i> @ViewBag.AppView["CommentCount"]</span>
+                        </div>
+                    </div>
+                    @if (ViewBag.AppView["Priority"].ToString() == "Y" || ViewBag.AppView["TopLine"].ToString() == "Y")
+                    {
+                        <div class="d-flex container-p-x mt-2">
+                            @if (ViewBag.AppView["Priority"].ToString() == "Y")
+                            {
+                                <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                                    <input type="checkbox" id="ckbPriority" class="custom-control-input" checked disabled>
+                                    <label class="custom-control-label" for="ckbPriority">긴급</label>
+                                </div>
+                            }
+                            @if (ViewBag.AppView["TopLine"].ToString() == "Y")
+                            {
+                                <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                                    <input type="checkbox" id="ckbTopLine" class="custom-control-input" checked disabled>
+                                    <label class="custom-control-label" for="ckbTopLine">TOPLINE</label>
+                                </div>
+                            }
+                        </div>
+                    }
                 </div>
-
-                @if (bPrevEditorBody)
-                {
-                    <div class="border-top container-p-x py-3 zf-prevbody">
-                        @Html.Raw(ZumNet.Framework.Web.Util.WebHelper.BodyInnerHtml(ViewBag.AppView["Body"].ToString()))
-                    </div>
-                }
-                else
-                {
-                    <div class="border-top container-p-x py-3">
-                        @Html.Raw(ViewBag.AppView["Body"])
-                    </div>
-                }
 
                 @if (ViewBag.AppFile != null && ViewBag.AppFile.Rows.Count > 0)
                 {
-                    <div class="border-top container-p-x pt-3 mb-3">
-                        <h6 class="mb-2"><i class="fas fa-paperclip"></i> @Resources.Global.AttachFile</h6>
-                        <div class="d-flex">
+                    <div class="container-p-x pt-3 mb-3">
+                        <h6 class="mb-2"><i class="fas fa-paperclip"></i> @Resources.Global.AttachFile <span class="text-danger">@ViewBag.AppFile.Rows.Count</span></h6>
+                        <div class="zf-attach">
                             @foreach (DataRow dr in ViewBag.AppFile.Rows)
                             {
-                                <div class="d-flex align-items-center border rounded px-2 pt-2 pb-1 mr-1">
+                                <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
                                     <div class="mr-2">
-                                        <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(dr["FileType"].ToString()) text-large"></i>
+                                        <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(dr["FileType"].ToString())"></i>
                                     </div>
-                                    <h6 class="mb-0"><a href="/file/download?fn=@Server.UrlEncode(dr["FileName"].ToString())&fp=@Server.UrlEncode(dr["FilePath"].ToString() + "\\" + dr["SavedName"].ToString())">@dr["FileName"]</a></h6>
-                                    <div class="ml-2">@ZumNet.Web.Bc.CommonUtils.StrFileSize(dr["FileSize"].ToString())</div>
+                                    <div class=""><a href="/file/download?fn=@Server.UrlEncode(dr["FileName"].ToString())&fp=@Server.UrlEncode(dr["FilePath"].ToString() + "\\" + dr["SavedName"].ToString())">@dr["FileName"]</a></div>
+                                    <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(dr["FileSize"].ToString())</div>
                                 </div>
                             }
                         </div>
                     </div>
                 }
 
-
-                @if (ViewBag.AppFile != null && ViewBag.AppReply.Rows.Count > 1)
+                @if (bPrevEditorBody)
                 {
-                    <div class="container-p-x my-3">
+                    <div class="container-p-x py-3 zf-prevbody">
+                        @Html.Raw(ZumNet.Framework.Web.Util.WebHelper.BodyInnerHtml(ViewBag.AppView["Body"].ToString()))
+                    </div>
+                }
+                else
+                {
+                    <div class="container-p-x py-3">
+                        @Html.Raw(ViewBag.AppView["Body"])
+                    </div>
+                }
+
+                @if (ViewBag.AppReply != null && ViewBag.AppReply.Rows.Count > 1)
+                {
+                    <div class="border-top container-p-x py-3">
                         <h6 class="mb-2"><i class="fas fa-reply"></i> @Resources.Global.ReplyWrite @Resources.Global.List</h6>
                         <ul class="list-group messages-list">
                             @foreach (DataRow dr in ViewBag.AppReply.Rows)
@@ -196,32 +216,34 @@
                 <div class="container-p-x my-3">
                     <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.AppView["CommentCount"]</span></h6>
                     <div class="bg-lighter border p-3">
-                        @if (ViewBag.AppComment != null && ViewBag.AppComment.Rows.Count > 0)
-                        {
-                            for (int i = ViewBag.AppComment.Rows.Count - 1; i >= 0; i--)
+                        <div id="__CommentList">
+                            @if (ViewBag.AppComment != null && ViewBag.AppComment.Rows.Count > 0)
                             {
-                                DataRow dr = ViewBag.AppComment.Rows[i];
-                                <div class="media">
-                                    <img src="~/images/users/sjaekim.jpg" class="mr-3 rounded-circle" style="height:32px" alt="user" />
-                                    <div class="media-body">
-                                        <div class="d-flex justify-content-between">
-                                            <div class="d-flex">
-                                                <div class="font-weight-bold mr-3">@dr["Creator"]</div>
-                                                <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(dr["CreateDate"].ToString())</div>
+                                for (int i = ViewBag.AppComment.Rows.Count - 1; i >= 0; i--)
+                                {
+                                    DataRow dr = ViewBag.AppComment.Rows[i];
+                                    <div class="media">
+                                        <img src="~/images/users/sjaekim.jpg" class="mr-3 rounded-circle" style="height:32px" alt="user" />
+                                        <div class="media-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="d-flex">
+                                                    <div class="font-weight-bold mr-3">@dr["Creator"]</div>
+                                                    <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(dr["CreateDate"].ToString())</div>
+                                                </div>
+                                                <div>
+                                                    @if (dr["CreatorID"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
+                                                    {
+                                                        <a class="text-dark mr-2" href="javascript:void();">@Resources.Global.Modify</a>
+                                                        <a class="text-muted" href="javascript:void();">@Resources.Global.Delete</a>
+                                                    }
+                                                </div>
                                             </div>
-                                            <div>
-                                                @if (dr["CreatorID"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
-                                                {
-                                                    <a class="text-dark mr-2" href="javascript:void();">@Resources.Global.Modify</a>
-                                                    <a class="text-muted" href="javascript:void();">@Resources.Global.Delete</a>
-                                                }
-                                            </div>
+                                            <p>@Html.Raw(dr["Comment"])</p>
                                         </div>
-                                        <p>@Html.Raw(dr["Comment"])</p>
                                     </div>
-                                </div>
+                                }
                             }
-                        }
+                        </div>
                         <div class="">
                             <div class="">
                                 <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500"></textarea>

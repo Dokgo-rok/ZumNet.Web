@@ -8,6 +8,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using ZumNet.Framework.Util;
@@ -1078,8 +1080,9 @@ namespace ZumNet.Web.Bc
         public static string RequestInit(this Controller ctrl, string workStatus)
         {
             string strReturn = "";
-            StringBuilder sb = new StringBuilder();
+            
             JObject jReq;
+            JObject jV; //Response Data
 
             try
             {
@@ -1098,73 +1101,140 @@ namespace ZumNet.Web.Bc
                 DateTime nowDate = DateTime.Now;
                 string workDate = nowDate.Hour < 6 ? nowDate.AddDays(-1).ToString("yyyy-MM-dd") : nowDate.ToString("yyyy-MM-dd");
 
-                sb.Append("{");
-                sb.Append("\"current\": {");
-                sb.AppendFormat("\"urid\":\"{0}\"", HttpContext.Current.Session["URID"].ToString());
-                sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
-                sb.AppendFormat(",\"deptid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
-                sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
-                sb.AppendFormat(",\"date\":\"{0}\"", nowDate.ToString("yyyy-MM-dd"));
-                sb.AppendFormat(",\"workdate\":\"{0}\"", workDate); //근무관리
-                sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
-                sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"]));
-                sb.AppendFormat(",\"chief\":\"{0}\"", "");
-                sb.AppendFormat(",\"operator\":\"{0}\"", "");
+                //StringBuilder sb = new StringBuilder();
+                //sb.Append("{");
+                //sb.Append("\"current\": {");
+                //sb.AppendFormat("\"urid\":\"{0}\"", HttpContext.Current.Session["URID"].ToString());
+                //sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
+                //sb.AppendFormat(",\"deptid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
+                //sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
+                //sb.AppendFormat(",\"date\":\"{0}\"", nowDate.ToString("yyyy-MM-dd"));
+                //sb.AppendFormat(",\"workdate\":\"{0}\"", workDate); //근무관리
+                //sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
+                //sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"]));
+                //sb.AppendFormat(",\"chief\":\"{0}\"", "");
+                //sb.AppendFormat(",\"operator\":\"{0}\"", "");
+
+                //if (workStatus != "" && workStatus.IndexOf(';') != -1)
+                //{
+                //    string[] v = workStatus.Split(';');
+                //    if (v[0] == "" || v[0] == "A" || v[0] == "S" || v[0] == "U" || v[0] == "N" || v[0] == "Z")
+                //    {
+                //        sb.AppendFormat(",\"ws\":\"{0}\"", "N"); //퇴근 후 재로그인시 근무중으로 표시
+                //    }
+                //    else
+                //    {
+                //        sb.AppendFormat(",\"ws\":\"{0}\"", v[0]);
+                //    }
+                //    sb.AppendFormat(",\"intime\":\"{0}\"", v[1]);
+                //    sb.AppendFormat(",\"outtime\":\"{0}\"", v[2]);
+                //}
+                //else
+                //{
+                //    sb.AppendFormat(",\"ws\":\"{0}\"", workStatus); //근무현황, N/A일 경우 => 해당없음
+                //    sb.AppendFormat(",\"intime\":\"{0}\"", ""); //출근시각
+                //    sb.AppendFormat(",\"outtime\":\"{0}\"", ""); //퇴근시각
+                //}
+
+                //sb.Append("}"); //current
+                //sb.AppendFormat(",\"mode\":\"{0}\"", StringHelper.SafeString(jReq["M"]));
+                //sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));
+                //sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"]));
+                //sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
+                //sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"]));
+                //sb.AppendFormat(",\"alias\":\"{0}\"", StringHelper.SafeString(jReq["alias"])); //Report용
+                //sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"]));
+                //sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
+                //sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.HtmlEncode(StringHelper.SafeString(jReq["ttl"])));
+                //sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
+                //sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
+                //sb.AppendFormat(",\"qi\":\"{0}\"", "");
+                ////sb.AppendFormat(",\"qi\":\"{0}\"", "");
+                //sb.Append(",\"lv\": {");
+                //sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));
+                //sb.AppendFormat(",\"page\":\"{0}\"", StringHelper.SafeString(jReq["page"]));
+                //sb.AppendFormat(",\"count\":\"{0}\"", StringHelper.SafeString(jReq["count"]));
+                //sb.AppendFormat(",\"total\":\"{0}\"", "");
+                //sb.AppendFormat(",\"sort\":\"{0}\"", StringHelper.SafeString(jReq["sort"]));
+                //sb.AppendFormat(",\"sortdir\":\"{0}\"", StringHelper.SafeString(jReq["sortdir"]));
+                //sb.AppendFormat(",\"search\":\"{0}\"", StringHelper.SafeString(jReq["search"]));
+                //sb.AppendFormat(",\"searchtext\":\"{0}\"", StringHelper.SafeString(jReq["searchtext"]));
+                //sb.AppendFormat(",\"start\":\"{0}\"", StringHelper.SafeString(jReq["start"]));
+                //sb.AppendFormat(",\"end\":\"{0}\"", StringHelper.SafeString(jReq["end"]));
+                //sb.AppendFormat(",\"basesort\":\"{0}\"", StringHelper.SafeString(jReq["basesort"]));
+                //sb.AppendFormat(",\"boundary\":\"{0}\"", CommonUtils.BOUNDARY());
+                //sb.Append("}"); //lv (리스트뷰 요청 정보)
+                //sb.AppendFormat(",\"tree\":\"{0}\"", "");
+
+                //sb.Append("}");
+
+                //ctrl.ViewBag.R = JObject.Parse(sb.ToString());
+
+                //2021-11-18 위 StringBuilder 막고 아래 json 파일 이용으로 변경
+                using (StreamReader reader = File.OpenText(HttpContext.Current.Server.MapPath("~/Content/Json/init.json")))
+                {
+                    jV = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+                }
+
+                jV["current"]["urid"] = HttpContext.Current.Session["URID"].ToString();
+                jV["current"]["user"] = HttpContext.Current.Session["URName"].ToString();
+                jV["current"]["deptid"] = HttpContext.Current.Session["DeptID"].ToString();
+                jV["current"]["dept"] = HttpContext.Current.Session["DeptName"].ToString();
+                jV["current"]["date"] = nowDate.ToString("yyyy-MM-dd");
+                jV["current"]["workdate"] = workDate; //근무관리
+                jV["current"]["page"] = HttpContext.Current.Request.Url.AbsolutePath;
+                jV["current"]["acl"] = StringHelper.SafeString(jReq["acl"]);
+                jV["current"]["chief"] = "";
+                jV["current"]["operator"] = "";
 
                 if (workStatus != "" && workStatus.IndexOf(';') != -1)
                 {
                     string[] v = workStatus.Split(';');
                     if (v[0] == "" || v[0] == "A" || v[0] == "S" || v[0] == "U" || v[0] == "N" || v[0] == "Z")
                     {
-                        sb.AppendFormat(",\"ws\":\"{0}\"", "N"); //퇴근 후 재로그인시 근무중으로 표시
+                        jV["current"]["ws"] = "N"; //퇴근 후 재로그인시 근무중으로 표시
                     }
                     else
                     {
-                        sb.AppendFormat(",\"ws\":\"{0}\"", v[0]);
+                        jV["current"]["ws"] = v[0];
                     }
-                    sb.AppendFormat(",\"intime\":\"{0}\"", v[1]);
-                    sb.AppendFormat(",\"outtime\":\"{0}\"", v[2]);
+                    jV["current"]["intime"] = v[1];
+                    jV["current"]["outtime"] = v[2];
                 }
                 else
                 {
-                    sb.AppendFormat(",\"ws\":\"{0}\"", workStatus); //근무현황, N/A일 경우 => 해당없음
-                    sb.AppendFormat(",\"intime\":\"{0}\"", ""); //출근시각
-                    sb.AppendFormat(",\"outtime\":\"{0}\"", ""); //퇴근시각
+                    jV["current"]["ws"] = workStatus; //근무현황, N/A일 경우 => 해당없음
+                    jV["current"]["intime"] = ""; //출근시각
+                    jV["current"]["outtime"] = ""; //퇴근시각
                 }
 
-                sb.Append("}"); //current
-                sb.AppendFormat(",\"mode\":\"{0}\"", StringHelper.SafeString(jReq["M"]));
-                sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));
-                sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"]));
-                sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
-                sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"]));
-                sb.AppendFormat(",\"alias\":\"{0}\"", StringHelper.SafeString(jReq["alias"])); //Report용
-                sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"]));
-                sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
-                sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.HtmlEncode(StringHelper.SafeString(jReq["ttl"])));
-                sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
-                sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
-                sb.AppendFormat(",\"qi\":\"{0}\"", "");
-                //sb.AppendFormat(",\"qi\":\"{0}\"", "");
-                sb.Append(",\"lv\": {");
-                sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));
-                sb.AppendFormat(",\"page\":\"{0}\"", StringHelper.SafeString(jReq["page"]));
-                sb.AppendFormat(",\"count\":\"{0}\"", StringHelper.SafeString(jReq["count"]));
-                sb.AppendFormat(",\"total\":\"{0}\"", "");
-                sb.AppendFormat(",\"sort\":\"{0}\"", StringHelper.SafeString(jReq["sort"]));
-                sb.AppendFormat(",\"sortdir\":\"{0}\"", StringHelper.SafeString(jReq["sortdir"]));
-                sb.AppendFormat(",\"search\":\"{0}\"", StringHelper.SafeString(jReq["search"]));
-                sb.AppendFormat(",\"searchtext\":\"{0}\"", StringHelper.SafeString(jReq["searchtext"]));
-                sb.AppendFormat(",\"start\":\"{0}\"", StringHelper.SafeString(jReq["start"]));
-                sb.AppendFormat(",\"end\":\"{0}\"", StringHelper.SafeString(jReq["end"]));
-                sb.AppendFormat(",\"basesort\":\"{0}\"", StringHelper.SafeString(jReq["basesort"]));
-                sb.AppendFormat(",\"boundary\":\"{0}\"", CommonUtils.BOUNDARY());
-                sb.Append("}"); //lv (리스트뷰 요청 정보)
-                sb.AppendFormat(",\"tree\":\"{0}\"", "");
+                jV["mode"] = StringHelper.SafeString(jReq["M"]);
+                jV["ct"] = StringHelper.SafeString(jReq["ct"], "0");
+                jV["ctalias"] = StringHelper.SafeString(jReq["ctalias"]);
+                jV["fdid"] = StringHelper.SafeString(jReq["fdid"], "0");
+                jV["ot"] = StringHelper.SafeString(jReq["ot"]);
+                jV["alias"] = StringHelper.SafeString(jReq["alias"]); //Report용
+                jV["xfalias"] = StringHelper.SafeString(jReq["xfalias"]);
+                jV["appid"] = StringHelper.SafeString(jReq["appid"], "0");
+                jV["ttl"] = StringHelper.SafeString(jReq["ttl"]);
+                jV["opnode"] = StringHelper.SafeString(jReq["opnode"]);
+                jV["ft"] = StringHelper.SafeString(jReq["ft"]);
+                jV["qi"] = "";
 
-                sb.Append("}");
+                jV["lv"]["tgt"] = StringHelper.SafeString(jReq["tgt"]);
+                jV["lv"]["page"] = StringHelper.SafeString(jReq["page"]);
+                jV["lv"]["count"] = StringHelper.SafeString(jReq["count"]);
+                jV["lv"]["total"] = "";
+                jV["lv"]["sort"] = StringHelper.SafeString(jReq["sort"]);
+                jV["lv"]["sortdir"] = StringHelper.SafeString(jReq["sortdir"]);
+                jV["lv"]["search"] = StringHelper.SafeString(jReq["search"]);
+                jV["lv"]["searchtext"] = StringHelper.SafeString(jReq["searchtext"]);
+                jV["lv"]["start"] = StringHelper.SafeString(jReq["start"]);
+                jV["lv"]["end"] = StringHelper.SafeString(jReq["end"]);
+                jV["lv"]["basesort"] = StringHelper.SafeString(jReq["basesort"]);
+                jV["lv"]["boundary"] = CommonUtils.BOUNDARY();
 
-                ctrl.ViewBag.R = JObject.Parse(sb.ToString());
+                ctrl.ViewBag.R = jV;
             }
             catch (Exception ex)
             {
@@ -1188,6 +1258,7 @@ namespace ZumNet.Web.Bc
                 string req = StringHelper.SafeString(HttpContext.Current.Request["qi"]);
                 //JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //CommonUtils.PostDataToJson();
                 JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req)); //CommonUtils.PostDataToJson();
+                JObject jV; //Response Data
 
                 if (jReq == null || jReq.Count == 0)
                 {
@@ -1200,49 +1271,94 @@ namespace ZumNet.Web.Bc
                         DateTime nowDate = DateTime.Now;
                         string workDate = nowDate.Hour < 6 ? nowDate.AddDays(-1).ToString("yyyy-MM-dd") : nowDate.ToString("yyyy-MM-dd");
 
-                        StringBuilder sb = new StringBuilder();
-                        sb.Append("{");
-                        sb.Append("\"current\": {");
-                        sb.AppendFormat("\"urid\":\"{0}\"", HttpContext.Current.Session["URID"].ToString());
-                        sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
-                        sb.AppendFormat(",\"deptid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
-                        sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
-                        sb.AppendFormat(",\"date\":\"{0}\"", nowDate.ToString("yyyy-MM-dd"));
-                        sb.AppendFormat(",\"workdate\":\"{0}\"", workDate); //근무관리
-                        sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
-                        sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"]));
-                        sb.AppendFormat(",\"chief\":\"{0}\"", "");
-                        sb.AppendFormat(",\"operator\":\"{0}\"", "");
-                        sb.Append("}"); //current
-                        sb.AppendFormat(",\"mode\":\"{0}\"", StringHelper.SafeString(jReq["M"]));
-                        sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));
-                        sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"]));
-                        sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
-                        sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"]));
-                        sb.AppendFormat(",\"alias\":\"{0}\"", StringHelper.SafeString(jReq["alias"])); //Report용
-                        sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"]));
-                        sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
-                        sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.HtmlEncode(StringHelper.SafeString(jReq["ttl"])));
-                        sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
-                        sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
-                        sb.AppendFormat(",\"qi\":\"{0}\"", "");
-                        sb.Append(",\"lv\": {");
-                        sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));
-                        sb.AppendFormat(",\"page\":\"{0}\"", StringHelper.SafeString(jReq["page"]));
-                        sb.AppendFormat(",\"count\":\"{0}\"", StringHelper.SafeString(jReq["count"]));
-                        sb.AppendFormat(",\"total\":\"{0}\"", "");
-                        sb.AppendFormat(",\"sort\":\"{0}\"", StringHelper.SafeString(jReq["sort"]));
-                        sb.AppendFormat(",\"sortdir\":\"{0}\"", StringHelper.SafeString(jReq["sortdir"]));
-                        sb.AppendFormat(",\"search\":\"{0}\"", StringHelper.SafeString(jReq["search"]));
-                        sb.AppendFormat(",\"searchtext\":\"{0}\"", StringHelper.SafeString(jReq["searchtext"]));
-                        sb.AppendFormat(",\"start\":\"{0}\"", StringHelper.SafeString(jReq["start"]));
-                        sb.AppendFormat(",\"end\":\"{0}\"", StringHelper.SafeString(jReq["end"]));
-                        sb.AppendFormat(",\"basesort\":\"{0}\"", StringHelper.SafeString(jReq["basesort"]));
-                        sb.AppendFormat(",\"boundary\":\"{0}\"", StringHelper.SafeString(jReq["boundary"]));
-                        sb.Append("}"); //lv (리스트뷰 요청 정보)
-                        sb.Append("}");
+                        //StringBuilder sb = new StringBuilder();
+                        //sb.Append("{");
+                        //sb.Append("\"current\": {");
+                        //sb.AppendFormat("\"urid\":\"{0}\"", HttpContext.Current.Session["URID"].ToString());
+                        //sb.AppendFormat(",\"user\":\"{0}\"", HttpContext.Current.Session["URName"].ToString());
+                        //sb.AppendFormat(",\"deptid\":\"{0}\"", HttpContext.Current.Session["DeptID"].ToString());
+                        //sb.AppendFormat(",\"dept\":\"{0}\"", HttpContext.Current.Session["DeptName"].ToString());
+                        //sb.AppendFormat(",\"date\":\"{0}\"", nowDate.ToString("yyyy-MM-dd"));
+                        //sb.AppendFormat(",\"workdate\":\"{0}\"", workDate); //근무관리
+                        //sb.AppendFormat(",\"page\":\"{0}\"", HttpContext.Current.Request.Url.AbsolutePath);
+                        //sb.AppendFormat(",\"acl\":\"{0}\"", StringHelper.SafeString(jReq["acl"]));
+                        //sb.AppendFormat(",\"chief\":\"{0}\"", "");
+                        //sb.AppendFormat(",\"operator\":\"{0}\"", "");
+                        //sb.Append("}"); //current
+                        //sb.AppendFormat(",\"mode\":\"{0}\"", StringHelper.SafeString(jReq["M"]));
+                        //sb.AppendFormat(",\"ct\":\"{0}\"", StringHelper.SafeString(jReq["ct"], "0"));
+                        //sb.AppendFormat(",\"ctalias\":\"{0}\"", StringHelper.SafeString(jReq["ctalias"]));
+                        //sb.AppendFormat(",\"fdid\":\"{0}\"", StringHelper.SafeString(jReq["fdid"], "0"));
+                        //sb.AppendFormat(",\"ot\":\"{0}\"", StringHelper.SafeString(jReq["ot"]));
+                        //sb.AppendFormat(",\"alias\":\"{0}\"", StringHelper.SafeString(jReq["alias"])); //Report용
+                        //sb.AppendFormat(",\"xfalias\":\"{0}\"", StringHelper.SafeString(jReq["xfalias"]));
+                        //sb.AppendFormat(",\"appid\":\"{0}\"", StringHelper.SafeString(jReq["appid"], "0"));
+                        //sb.AppendFormat(",\"ttl\":\"{0}\"", HttpContext.Current.Server.HtmlEncode(StringHelper.SafeString(jReq["ttl"])));
+                        //sb.AppendFormat(",\"opnode\":\"{0}\"", StringHelper.SafeString(jReq["opnode"]));
+                        //sb.AppendFormat(",\"ft\":\"{0}\"", StringHelper.SafeString(jReq["ft"])); //Report용 formtable
+                        //sb.AppendFormat(",\"qi\":\"{0}\"", "");
+                        //sb.Append(",\"lv\": {");
+                        //sb.AppendFormat("\"tgt\":\"{0}\"", StringHelper.SafeString(jReq["tgt"]));
+                        //sb.AppendFormat(",\"page\":\"{0}\"", StringHelper.SafeString(jReq["page"]));
+                        //sb.AppendFormat(",\"count\":\"{0}\"", StringHelper.SafeString(jReq["count"]));
+                        //sb.AppendFormat(",\"total\":\"{0}\"", "");
+                        //sb.AppendFormat(",\"sort\":\"{0}\"", StringHelper.SafeString(jReq["sort"]));
+                        //sb.AppendFormat(",\"sortdir\":\"{0}\"", StringHelper.SafeString(jReq["sortdir"]));
+                        //sb.AppendFormat(",\"search\":\"{0}\"", StringHelper.SafeString(jReq["search"]));
+                        //sb.AppendFormat(",\"searchtext\":\"{0}\"", StringHelper.SafeString(jReq["searchtext"]));
+                        //sb.AppendFormat(",\"start\":\"{0}\"", StringHelper.SafeString(jReq["start"]));
+                        //sb.AppendFormat(",\"end\":\"{0}\"", StringHelper.SafeString(jReq["end"]));
+                        //sb.AppendFormat(",\"basesort\":\"{0}\"", StringHelper.SafeString(jReq["basesort"]));
+                        //sb.AppendFormat(",\"boundary\":\"{0}\"", StringHelper.SafeString(jReq["boundary"]));
+                        //sb.Append("}"); //lv (리스트뷰 요청 정보)
+                        //sb.Append("}");
 
-                        ctrl.ViewBag.R = JObject.Parse(sb.ToString());
+                        //ctrl.ViewBag.R = JObject.Parse(sb.ToString());
+
+                        //2021-11-18 위 StringBuilder 막고 아래 json 파일 이용으로 변경
+                        using (StreamReader reader = File.OpenText(HttpContext.Current.Server.MapPath("~/Content/Json/init.json")))
+                        {
+                            jV = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+                        }
+
+                        jV["current"]["urid"] = HttpContext.Current.Session["URID"].ToString();
+                        jV["current"]["user"] = HttpContext.Current.Session["URName"].ToString();
+                        jV["current"]["deptid"] = HttpContext.Current.Session["DeptID"].ToString();
+                        jV["current"]["dept"] = HttpContext.Current.Session["DeptName"].ToString();
+                        jV["current"]["date"] = nowDate.ToString("yyyy-MM-dd");
+                        jV["current"]["workdate"] = workDate; //근무관리
+                        jV["current"]["page"] = HttpContext.Current.Request.Url.AbsolutePath;
+                        jV["current"]["acl"] = StringHelper.SafeString(jReq["acl"]);
+                        jV["current"]["chief"] = "";
+                        jV["current"]["operator"] = "";
+
+                        jV["mode"] = StringHelper.SafeString(jReq["M"]);
+                        jV["ct"] = StringHelper.SafeString(jReq["ct"], "0");
+                        jV["ctalias"] = StringHelper.SafeString(jReq["ctalias"]);
+                        jV["fdid"] = StringHelper.SafeString(jReq["fdid"], "0");
+                        jV["ot"] = StringHelper.SafeString(jReq["ot"]);
+                        jV["alias"] = StringHelper.SafeString(jReq["alias"]); //Report용
+                        jV["xfalias"] = StringHelper.SafeString(jReq["xfalias"]);
+                        jV["appid"] = StringHelper.SafeString(jReq["appid"], "0");
+                        jV["ttl"] = StringHelper.SafeString(jReq["ttl"]);
+                        jV["opnode"] = StringHelper.SafeString(jReq["opnode"]);
+                        jV["ft"] = StringHelper.SafeString(jReq["ft"]);
+                        jV["qi"] = "";
+
+                        jV["lv"]["tgt"] = StringHelper.SafeString(jReq["tgt"]);
+                        jV["lv"]["page"] = StringHelper.SafeString(jReq["page"]);
+                        jV["lv"]["count"] = StringHelper.SafeString(jReq["count"]);
+                        jV["lv"]["total"] = "";
+                        jV["lv"]["sort"] = StringHelper.SafeString(jReq["sort"]);
+                        jV["lv"]["sortdir"] = StringHelper.SafeString(jReq["sortdir"]);
+                        jV["lv"]["search"] = StringHelper.SafeString(jReq["search"]);
+                        jV["lv"]["searchtext"] = StringHelper.SafeString(jReq["searchtext"]);
+                        jV["lv"]["start"] = StringHelper.SafeString(jReq["start"]);
+                        jV["lv"]["end"] = StringHelper.SafeString(jReq["end"]);
+                        jV["lv"]["basesort"] = StringHelper.SafeString(jReq["basesort"]);
+                        jV["lv"]["boundary"] = StringHelper.SafeString(jReq["boundary"]);
+
+                        ctrl.ViewBag.R = jV;
 
                         strReturn = "";
                     }
