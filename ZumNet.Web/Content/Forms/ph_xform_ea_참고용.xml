@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ph_xform_ea>
+  <config mode="" submode="" css="" js="" html="" partid="" bizrole="" actrole="" wid="" root="" companycode="" web="" showline=""></config>
+	<bizinfo dnid="" processid="" formid="" ver="" parent_oid="" oid="" msgid="" inherited="" priority="" secret="" docstatus="" tms="" prevwork="" nextwork="">
+		<name><!--프로세스명이 들어갑니다.--></name>
+	</bizinfo>
+	<categoryinfo>
+    <!--<category xfalias=""  fdid="" atttype="">
+          <desc>분류표기가 들어갑니다</desc>
+      </category>.-->
+	</categoryinfo>
+	<docinfo>
+		<docname></docname>
+		<msgtype></msgtype>
+		<docnumber></docnumber>
+		<doclevel></doclevel>
+		<keepyear></keepyear>
+		<subject><!--제목이 있는 경우 들어갑니다.--></subject>
+		<createdate></createdate>
+		<publishdate></publishdate>
+		<expireddate></expireddate>
+		<externalkey1></externalkey1>
+		<externalkey2></externalkey2>
+		<reserved1></reserved1>
+		<reserved2></reserved2>
+	</docinfo>
+	<forminfo>
+		<!--<maintable>
+			<필드명1></필드명1>
+			<필드명2></필드명2>
+		</maintable>
+		<subtables>
+			<subtable1>
+				<row>
+					<필드명1></필드명1>
+					<필드명2></필드명2>
+				</row>
+				<row>
+					<필드명1></필드명1>
+					<필드명2></필드명2>
+				</row>
+			</subtable1>
+		</subtables>-->
+	</forminfo>
+	<creatorinfo uid="" account="" deptid="" deptcode="">
+		<name></name>
+		<empno></empno>
+		<grade></grade>
+		<phone></phone>
+		<department></department>
+		<!--<division></division> 사용안함-->
+    <belong></belong>
+    <indate></indate>
+  </creatorinfo>
+  <currentinfo uid="" account="" deptid="" deptcode="">
+    <name></name>
+    <empno></empno>
+    <grade></grade>
+    <phone></phone>
+    <department></department>
+    <belong></belong>
+    <indate></indate>
+  </currentinfo>
+	<fileinfo>
+		<!--<file attachid="" size="" filetype="" prefix="" location="" isfile="" drm="">
+			<filename></filename>
+			<savedname></savedname>
+			<virtualpath></virtualpath>
+			<fullpath></fullpath>
+		</file>
+		<inline attachid="" size="" filetype="" prefix="" location="" isfile="" drm="">
+			<filename></filename>
+			<savedname></savedname>
+			<virtualpath></virtualpath>
+			<fullpath></fullpath>
+		</inline>-->
+	</fileinfo>
+	<linkeddocinfo>
+		<!--<linkeddoc xfalias="" msgid="">
+			<subject></subject>
+			<reserved1></reserved1>
+			<reserved2></reserved2>
+		</linkeddoc>-->
+	</linkeddocinfo>
+	<drminfo></drminfo>
+	<processinfo>
+		<!--<signline>
+			<lines>
+				<line></line>
+			</lines>
+		</signline>
+		<attributes>
+			<attribute actid="" att=""><display>표기</display><value>값</value></attribute>
+      ==> att : workitem, cabinet, mail_dl 이 온다.
+      ==> alarm 인 경우는 메신저,메일(mail_dl) 형태에 따라 value를 구성한다.
+      ==> workitem, cabinet인 경우는 해당 DB에 생성 할 수 있는 형태로 구성한다.
+		</attributes>-->
+	</processinfo>
+  <optioninfo>
+    <!--<foption cd="">
+      ==>DB에서 가져온 필드명으로 하위태그를 구성한다.
+    </foption>
+    <foption1>
+    ==> 옵션 정보와 관련되서 외부키로 가져온 정보들
+    </foption1>   
+    -->
+  </optioninfo>
+  <chartinfo>
+    <!--<fchart type="차트 형태 line, bar, pie">
+      <chart key="설정값">표시값</chart>
+    </fchart>-->
+  </chartinfo>
+	<historyinfo>
+		<!--<history date="">
+			<maintable>
+				<필드명1></필드명1>
+				<필드명2></필드명2>
+			</maintable>
+			<signline>
+				<lines>
+					<line></line>
+				</lines>
+			</signline>
+		</history>
+		<history date="">
+			<maintable>
+				<필드명1></필드명1>
+				<필드명2></필드명2>
+			</maintable>
+			<signline>
+				<lines>
+					<line></line>
+				</lines>
+			</signline>
+		</history>-->
+	</historyinfo>
+	<anothermsginfo>
+		<!--<anothermsg date="" oid="" msgid="">
+			<forminfo>
+				<maintable></maintable>
+			</forminfo>
+			<processinfo>
+			</processinfo>
+			<historyinfo>
+				<history date="" viewkey="">
+					<maintable>
+						<필드명1></필드명1>
+						<필드명2></필드명2>
+					</maintable>
+					<signline>
+						<lines>
+							<line></line>
+						</lines>
+					</signline>
+				</history>
+			</historyinfo>
+		</anothermsg>-->
+	</anothermsginfo>
+</ph_xform_ea>

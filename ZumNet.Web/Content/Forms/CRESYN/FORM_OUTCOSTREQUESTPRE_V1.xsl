@@ -1,0 +1,1026 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xsl:stylesheet [
+	<!ENTITY nbsp "&#160;">
+]>
+
+<xsl:stylesheet  version="1.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+	xmlns:phxsl="http://www.phsoft.co.kr/xslt/ea" exclude-result-prefixes="phxsl">
+
+	<xsl:import href="../../Forms/XFormScript.xsl"/>
+
+	<xsl:variable name="mode" select="//config/@mode" />
+	<xsl:variable name="partid" select="//config/@partid" />
+	<xsl:variable name="bizrole" select="//config/@bizrole" />
+	<xsl:variable name="actrole" select="//config/@actrole" />
+	<xsl:variable name="root" select="//config/@root" />
+	<!--<xsl:variable name="companycode" select="//config/@companycode" />-->
+	<xsl:variable name="displaylog">false</xsl:variable>
+
+	<!--<xsl:strip-space elements="*"/>-->
+	<xsl:template match="/">
+		<xsl:value-of select="phxsl:init(string($root), string(//config/@companycode), string(//config))"/>
+		<html>
+			<head>
+				<title>전자결재</title>
+				<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+				<style type="text/css">
+					html, body {margin:0px;padding:0px;}
+					body {margin-bottom:2px;border:0;background-color:#ffffff;text-align:center;overflow:auto}
+
+					.m {width:1600;vertical-align:top;}
+					.m .ff {height:2px;font-size:1px;vertical-align:top}
+					.m .fh {height:60px;vertical-align:top}
+					.m .fb {height:80px;vertical-align:top}
+					.m .fm {height:;vertical-align:top}
+					.m .fm1 {height:;vertical-align:top}
+					.m .fm2 {height:;vertical-align:top}
+					.m .fm3 {height:;vertical-align:top}
+					.m .fm4 {height:;vertical-align:top}
+					.m .fm-editor {height:500px;vertical-align:top;border:windowtext 1.5pt solid;}
+					.m .fm-file {text-align:left}
+
+					/* 폰트 */
+					.fh h1 {font-family:굴림체;font-weight:bold;font-size:20.0pt;letter-spacing:2pt;}
+					.si-tbl td {font-size:13px;font-family:맑은 고딕}
+					.m .ft td, .m .ft input, .m .ft select, .m .ft textarea, .m .ft div,
+					.m .ft-sub td, .m .ft-sub input, .m .ft-sub select, .m .ft-sub textarea, .m .ft-sub div
+					{font-size:13px;font-family:맑은 고딕}
+					.m .fm span {font-size:14px;font-family:맑은 고딕}
+					.m .fm-file td, .m .fm-file td a {font-size:13px;font-family:맑은 고딕}
+
+					/* 로고 및 양식명 */
+					.fh table {width:100%;height:100%}
+					.fh .fh-l {width:150px;text-align:center}
+					.fh .fh-m {padding-top:15px;text-align:center}
+					.fh .fh-r {width:150px}
+					.fh .fh-l img {border:0px solid red;vertical-align:middle;margin-top:0px}
+
+					/* 결재칸 */
+					.si-tbl {border:windowtext 1.5pt solid}
+					.si-tbl td {vertical-align:middle;border-right:windowtext 1pt solid;border-bottom:windowtext 1pt solid}
+					.si-tbl .si-title {width:5%;text-align:center}
+					.si-tbl .si-top {height:20px;text-align:center;padding-top:2px}
+					.si-tbl .si-middle {height:65px;text-align:center}
+					.si-tbl .si-bottom {height:20px;text-align:center;width:19%}
+					.si-tbl img {margin:0px}
+
+					/* 버튼 스타일 */
+					.btn_bg {height:21px;border:1 solid #b1b1b1;background:url('/<xsl:value-of select="$root" />/EA/Images/btn_bg.gif');background-color:#ffffff;
+					font-size:11px;letter-spacing:-1px;margin:0 2 0 2;padding:0 0 0 0 ;	vertical-align:middle;cursor:hand;}
+					img.blt01	 {margin:0 2 0 -2 ; vertical-align:middle;}
+					.si-tbl img {margin:0px}
+
+					/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+					.m .ft {border:windowtext 1.5pt solid}
+					.m .ft td {height:24px;border-right:windowtext 1pt solid;border-bottom:windowtext 1pt solid;padding-left:2px;padding-right:2px;padding-top:1px}
+					.m .ft .f-lbl {width:15%;text-align:center}
+					.m .ft .f-lbl-title {width:77.6px;text-align:center}
+					.m .ft .f-lbl1 {width:26%;text-align:center}
+					.m .ft .f-lbl2 {width:37%;text-align:center}
+					.m .ft .f-lbl3 {width:47%;text-align:center}
+					.fb table, .fm table, .fm1 table, .fm2 table, .fm3 table, .fm4 table {width:100%;height:100%}
+					.fm span {text-align:left;width:100%}
+
+					/* 본문 하위 테이블 */
+					.m .ft-sub {border:windowtext 1.5pt solid}
+					.m .ft-sub td {height:24px;border-right:windowtext 1pt solid;border-top:windowtext 1pt solid;padding-left:2px;padding-right:2px;padding-top:1px}
+					.m .ft-sub .f-lbl-sub {text-align:center;}
+
+					/* 첨부파일 */
+					.m .fm-file table {width:;height:100%}
+					.m .fm-file td.file-title {vertical-align:top}
+					.m .fm-file td.file-end {vertical-align:bottom;padding:0 0 3px 10px}
+					.m .fm-file td.file-info {vertical-align:top}
+					.m .fm-file td.file-info div {height:20px}
+
+					/* 각종 필드 정의 - txt : input, txa : textarea */
+					.m .txtText {ime-mode:active;width:100%;padding-top:2px}
+					.m .txtText_m {ime-mode:active;width:100%;border:1px solid red;;padding-top:2px}
+					.m .txaText {ime-mode:active;width:100%;height:98%;overflow:auto}
+
+					.m .txtNo {width:100%;padding-top:2px;padding-right:2;text-align:right}
+					.m .txtNumberic, .m .txtVolume {width:100%;padding-top:2px;direction:rtl;padding-right:2;ime-mode:disabled}
+					.m .txtJuminDash {width:100%;padding-top:2px;padding-right:2;text-align:center;ime-mode:disabled}
+					.m .txtCurrency, .m .txtDollar, .m .txtDollar1, .m .txtDollar2, .m .txtDollarMinus1, .m .txtDollarMinus2, .m .txtDollarMinus3
+					{direction:rtl;ime-mode:active;width:100%;padding-top:2px;padding-right:2;text-align:right;}
+					.m .txtDate, .m .txtMonth, .m .txtHHmm, .m .txtHHmmss
+					{ime-mode:disabled;width:100%;padding-top:2px;text-align:center}
+					.m .txtCalculate {ime-mode:active;width:100%;padding-top:2px;padding-right:2}
+
+					.m .txaRead {width:100%;text-align:left}
+					.m .txtRead {width:100%;border:0;padding-top:2px}
+					.m .txtRead_Right {width:100%;border:0;padding-top:2px;padding-right:2;text-align:right}
+					.m .txtRead_Center {width:100%;border:0;padding-top:2px;text-align:center}
+
+					.m .ddlSelect {width:100%}
+
+					/* 인쇄 설정 : 맨하단으로 */
+					@media print {
+					.m .fm-editor {height:900px}
+					.m .fm-file td a {text-decoration:none;color:#000000}
+					}
+				</style>
+			</head>
+			<body>
+				<div class="m">
+					<div class="fh">
+						<table border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td class="fh-l">
+									<img alt="">
+										<xsl:attribute name="src">
+											<xsl:choose>
+												<xsl:when test="$mode='read'">
+													<xsl:value-of select="//forminfo/maintable/LOGOPATH" />
+												</xsl:when>
+												<xsl:otherwise>
+													/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
+												</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+									</img>
+								</td>
+								<td class="fh-m">
+									<h1>
+										<xsl:value-of select="//docinfo/docname" />
+									</h1>
+								</td>
+								<td class="fh-r">&nbsp;</td>
+							</tr>
+						</table>
+						<xsl:choose>
+							<xsl:when test="$mode='read'">
+								<input type="hidden" id="__mainfield" name="LOGOPATH">
+									<xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
+								</input>
+							</xsl:when>
+							<xsl:otherwise>
+								<input type="hidden" id="__mainfield" name="LOGOPATH">
+									<xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
+								</input>
+							</xsl:otherwise>
+						</xsl:choose>
+					</div>
+
+					<div class="ff" />
+
+					<div class="fb">
+						<table border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td style="width:27%">
+									<table border="0" cellspacing="0" cellpadding="0">
+										<tr>
+											<td>
+												<xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4')"/>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td style="width:43%;font-size:1px">&nbsp;</td>
+								<td style="width:8%">
+									<table border="0" cellspacing="0" cellpadding="0">
+										<tr>
+											<td>
+												<xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='agree' and @partid!='' and @step!='0'], '__si_Agree', '1')"/>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td style="width:2%;font-size:1px">&nbsp;</td>
+								<td>
+									<table border="0" cellspacing="0" cellpadding="0">
+										<tr>
+											<td>
+												<xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='receive' and @partid!='' and @actrole!='__r' and @step!='0'], '__si_Receive', '3')"/>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</div>
+
+					<div class="ff" />
+					<div class="ff" />
+					<div class="ff" />
+
+					<div class="fm">
+						<table class="ft" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td class="f-lbl">문서번호</td>
+								<td style="width:35%">
+									<input type="text" id="DocNumber" name="__commonfield">
+										<xsl:attribute name="class">txtRead</xsl:attribute>
+										<xsl:attribute name="readonly">readonly</xsl:attribute>
+										<xsl:attribute name="value">
+											<xsl:value-of select="//docinfo/docnumber" />
+										</xsl:attribute>
+									</input>
+								</td>
+								<td class="f-lbl">작성부서</td>
+								<td style="border-right:0;">
+									<input type="text" id="CreatorDept" name="__commonfield">
+										<xsl:attribute name="class">txtRead</xsl:attribute>
+										<xsl:attribute name="readonly">readonly</xsl:attribute>
+										<xsl:attribute name="value">
+											<xsl:value-of select="//creatorinfo/department" />
+										</xsl:attribute>
+									</input>
+								</td>
+							</tr>
+							<tr>
+								<td class="f-lbl" style="border-bottom:0;">작성일자</td>
+								<td style="border-bottom:0;">
+									<input type="text" id="CreateDate" name="__commonfield">
+										<xsl:attribute name="class">txtRead</xsl:attribute>
+										<xsl:attribute name="readonly">readonly</xsl:attribute>
+										<xsl:attribute name="value">
+											<xsl:value-of disable-output-escaping="yes" select="phxsl:convertDate(string(//docinfo/createdate), '')" />
+										</xsl:attribute>
+									</input>
+								</td>
+								<td class="f-lbl" style="border-bottom:0;">작성자</td>
+								<td style="border-bottom:0;border-right:0;">
+									<input type="text" id="Creator" name="__commonfield">
+										<xsl:attribute name="class">txtRead</xsl:attribute>
+										<xsl:attribute name="readonly">readonly</xsl:attribute>
+										<xsl:attribute name="value">
+											<xsl:value-of select="//creatorinfo/name" />
+										</xsl:attribute>
+									</input>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="ff" />
+					<div class="ff" />
+					<div class="ff" />
+
+					<div class="fm">
+						<table border="0" cellspacing="0" cellpadding="0">
+							<xsl:if test="$mode='new' or $mode='edit'">
+								<tr>
+									<td style="text-align:right">
+										<button onclick="parent.fnAddRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+											<img alt="" class="blt01">
+												<xsl:attribute name="src">
+													/<xsl:value-of select="$root"/>/EA/Images/ico_26.gif
+												</xsl:attribute>
+											</img>추가
+										</button>
+										<button onclick="parent.fnDelRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+											<img alt="" class="blt01">
+												<xsl:attribute name="src">
+													/<xsl:value-of select="$root"/>/EA/Images/ico_27.gif
+												</xsl:attribute>
+											</img>삭제
+										</button>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="ff" />
+										<div class="ff" />
+									</td>
+								</tr>
+							</xsl:if>
+							<tr>
+								<td>
+									<table id="__subtable1" class="ft-sub" header="1"  border="0" cellspacing="0" cellpadding="0">
+										<tr>
+											<td style="width:35px;text-align:center;border-top:0;">NO</td>
+											<td style="width:120px;text-align:center;border-top:0;">고용구분</td>
+											<td style="width:120px;text-align:center;border-top:0;">성명</td>
+											<td style="width:120px;text-align:center;border-top:0;">총지급액</td>
+											<td style="width:100px;text-align:center;border-top:0;">소득구분</td>
+											<td style="width:120px;text-align:center;border-top:0;">소득세율</td>
+											<td style="width:70px;text-align:center;border-top:0;">소득세</td>
+											<td style="width:120px;text-align:center;border-top:0;">주민세율</td>
+											<td style="width:70px;text-align:center;border-top:0;">주민세</td>
+											<td style="width:120px;text-align:center;border-top:0;">실수령액</td>
+											<td style="width:110px;text-align:center;border-top:0;">계약기간From</td>
+											<td style="width:110px;text-align:center;border-top:0;">계약기간To</td>
+											<td style="width:200px;text-align:center;border-top:0;">프로젝트명</td>
+											<td style="width:200px;text-align:center;border-top:0;">수주처</td>
+											<td style="width:150px;text-align:center;border-top:0;">수주번호</td>
+											<td style="width:200px;text-align:center;border-top:0;">계좌번호</td>
+											<td style="width:150px;text-align:center;border-top:0;border-right:0;">은행</td>
+										</tr>
+										<xsl:apply-templates select="//forminfo/subtables/subtable1/row"/>
+										<tr>
+											<td style="text-align:center;">총계</td>
+											<td>&nbsp;</td>
+											<td>&nbsp;</td>
+											<td>
+												<input type="text" name="TOTALCOST" id="__mainfield">
+													<xsl:choose>
+														<xsl:when test="$mode='new' or $mode='edit'">
+															<xsl:attribute name="class">txtCurrency</xsl:attribute>
+															<xsl:attribute name="readonly">readonly</xsl:attribute>
+															<xsl:attribute name="value">
+																<xsl:value-of select="//forminfo/maintable/TOTALCOST" />
+															</xsl:attribute>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+															<xsl:attribute name="readonly">readonly</xsl:attribute>
+															<xsl:attribute name="value">
+																<xsl:value-of select="//forminfo/maintable/TOTALCOST" />
+															</xsl:attribute>
+														</xsl:otherwise>
+													</xsl:choose>
+												</input>
+											</td>
+											<td>&nbsp;</td>
+											<td>&nbsp;</td>
+											<td>
+												<input type="text" name="TOTALINCOME" id="__mainfield">
+													<xsl:choose>
+														<xsl:when test="$mode='new' or $mode='edit'">
+															<xsl:attribute name="class">txtCurrency</xsl:attribute>
+															<xsl:attribute name="readonly">readonly</xsl:attribute>
+															<xsl:attribute name="value">
+																<xsl:value-of select="//forminfo/maintable/TOTALINCOME" />
+															</xsl:attribute>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+															<xsl:attribute name="readonly">readonly</xsl:attribute>
+															<xsl:attribute name="value">
+																<xsl:value-of select="//forminfo/maintable/TOTALINCOME" />
+															</xsl:attribute>
+														</xsl:otherwise>
+													</xsl:choose>
+												</input>
+											</td>
+											<td>&nbsp;</td>
+
+											<td>
+												<input type="text" name="TOTALREGTEX" id="__mainfield">
+													<xsl:choose>
+														<xsl:when test="$mode='new' or $mode='edit'">
+															<xsl:attribute name="class">txtCurrency</xsl:attribute>
+															<xsl:attribute name="readonly">readonly</xsl:attribute>
+															<xsl:attribute name="value">
+																<xsl:value-of select="//forminfo/maintable/TOTALREGTEX" />
+															</xsl:attribute>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+															<xsl:attribute name="readonly">readonly</xsl:attribute>
+															<xsl:attribute name="value">
+																<xsl:value-of select="//forminfo/maintable/TOTALREGTEX" />
+															</xsl:attribute>
+														</xsl:otherwise>
+													</xsl:choose>
+												</input>
+											</td>
+											<td>
+												<input type="text" name="TOTALRECEIPTS" id="__mainfield">
+													<xsl:choose>
+														<xsl:when test="$mode='new' or $mode='edit'">
+															<xsl:attribute name="class">txtCurrency</xsl:attribute>
+															<xsl:attribute name="readonly">readonly</xsl:attribute>
+															<xsl:attribute name="value">
+																<xsl:value-of select="//forminfo/maintable/TOTALRECEIPTS" />
+															</xsl:attribute>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+															<xsl:attribute name="readonly">readonly</xsl:attribute>
+															<xsl:attribute name="value">
+																<xsl:value-of select="//forminfo/maintable/TOTALRECEIPTS" />
+															</xsl:attribute>
+														</xsl:otherwise>
+													</xsl:choose>
+												</input>
+											</td>
+											<td>&nbsp;</td>
+											<td>&nbsp;</td>
+											<td>&nbsp;</td>
+											<td>&nbsp;</td>
+											<td>&nbsp;</td>
+											<td>&nbsp;</td>
+											<td>&nbsp;</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</div>
+
+					<div class="ff"></div>
+					<div class="ff"></div>
+					<div class="ff"></div>
+
+					<div class="fm">
+						<table class="ft" cellspacing="0" cellpadding="0">
+							<tr>
+								<td class="f-lbl" style="border-bottom:0">특이사항</td>
+								<td style="height:200px;border-bottom:0;border-right:0">
+									<xsl:choose>
+										<xsl:when test="$mode='read'">
+											<div name="CONTENTS" id="__mainfield">
+												<xsl:attribute name="class">txaRead</xsl:attribute>
+												<xsl:value-of disable-output-escaping="yes" select="phxsl:replaceTextArea(string(//forminfo/maintable/CONTENTS))" />
+											</div>
+										</xsl:when>
+										<xsl:otherwise>
+											<textarea name="CONTENTS" id="__mainfield">
+												<xsl:attribute name="class">txaText</xsl:attribute>
+												<xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+												<xsl:if test="$mode='edit'">
+													<xsl:value-of select="//forminfo/maintable/CONTENTS" />
+												</xsl:if>
+											</textarea>
+										</xsl:otherwise>
+									</xsl:choose>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+						<div class="ff" />
+						<div class="ff" />
+
+						<div class="fm-file">
+							<table border="0" cellspacing="0" cellpadding="0">
+								<tr>
+									<td class="file-title">첨부 문서&nbsp;:&nbsp;</td>
+									<td class="file-info">
+										<xsl:apply-templates select="//linkeddocinfo/linkeddoc"/>
+										<xsl:apply-templates select="//fileinfo/file[@isfile='Y']"/>
+									</td>
+									<td class="file-end">끝.</td>
+								</tr>
+							</table>
+						</div>
+					</xsl:if>
+				</div>
+
+				<!-- 필수 양식정보 -->
+				<input type="hidden" id="__PHBFF" name="__PHBFF"  value="" />
+				<xsl:if test="$displaylog='true'">
+					<div>
+						<xsl:value-of select="phxsl:getLog()"/>
+					</div>
+				</xsl:if>
+			</body>
+		</html>
+	</xsl:template>
+
+	<xsl:template match="//forminfo/subtables/subtable1/row">
+		<tr class="sub_table_row">
+			<td>
+				<input type="text" name="ROWSEQ">
+					<xsl:choose>
+						<xsl:when test="$mode='new' or $mode='edit'">
+							<xsl:attribute name="class">txtNo</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:attribute name="readonly">readonly</xsl:attribute>
+					<xsl:attribute name="value">
+						<xsl:value-of select="ROWSEQ" />
+					</xsl:attribute>
+				</input>
+			</td>
+			<td style="text-align:center;">
+				<xsl:choose>
+					<xsl:when test="$mode='read'">
+						<input type="text" name="EMPTYPE">
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="EMPTYPE" />
+							</xsl:attribute>
+						</input>
+					</xsl:when>
+					<xsl:otherwise>
+						<select class="txtRead" name="EMPTYPE">
+							<xsl:choose>
+								<xsl:when test="EMPTYPE[.='']">
+									<option value="" selected="true">선택</option>
+									<option value="프리랜서">프리랜서</option>
+									<option value="아르바이트">아르바이트</option>
+									<option value="기타">기타</option>
+								</xsl:when>
+								<xsl:when test="EMPTYPE[.='프리랜서']">
+									<option value="">선택</option>
+									<option value="프리랜서" selected="true">프리랜서</option>
+									<option value="아르바이트">아르바이트</option>
+									<option value="기타">기타</option>
+								</xsl:when>
+								<xsl:when test="EMPTYPE[.='아르바이트']">
+									<option value="">선택</option>
+									<option value="프리랜서">프리랜서</option>
+									<option value="아르바이트" selected="true">아르바이트</option>
+									<option value="기타">기타</option>
+								</xsl:when>
+								<xsl:when test="EMPTYPE[.='기타']">
+									<option value="">선택</option>
+									<option value="프리랜서">프리랜서</option>
+									<option value="아르바이트">아르바이트</option>
+									<option value="기타" selected="true">기타</option>
+								</xsl:when>
+								<xsl:otherwise>
+									<option value="" selected="true">선택</option>
+									<option value="프리랜서">프리랜서</option>
+									<option value="아르바이트">아르바이트</option>
+									<option value="기타">기타</option>
+								</xsl:otherwise>
+							</xsl:choose>
+						</select>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td style="text-align:center;">
+				<input type="text" name="EMPNAME">
+					<xsl:choose>
+						<xsl:when test="$mode='new'">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="maxlength">20</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="$mode='edit'">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="maxlength">20</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="EMPNAME" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead_Center</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="EMPNAME" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+			<td style="text-align:center;">
+				<input type="text" name="COST">
+					<xsl:choose>
+						<xsl:when test="$mode='new'">
+							<xsl:attribute name="class">txtCurrency</xsl:attribute>
+							<xsl:attribute name="onKeyUp">parent.fnsumOutCostPre(this, 'TOTALCOST')</xsl:attribute>
+							<xsl:attribute name="maxlength">15</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="$mode='edit'">
+							<xsl:attribute name="class">txtCurrency</xsl:attribute>
+							<xsl:attribute name="onKeyUp">parent.fnsumOutCostPre(this, 'TOTALCOST')</xsl:attribute>
+							<xsl:attribute name="maxlength">15</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="COST" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="COST" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+			
+			<td style="text-align:center;">
+				<xsl:choose>
+					<xsl:when test="$mode='read'">
+						<input type="text" name="IMCOMETYPE">
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="IMCOMETYPE" />
+							</xsl:attribute>
+						</input>
+					</xsl:when>
+					<xsl:otherwise>
+						<select class="txtRead" name="IMCOMETYPE">
+							<xsl:choose>
+								<xsl:when test="IMCOMETYPE[.='']">
+									<option value="" selected="true">선택</option>
+									<option value="사업소득">사업소득</option>
+									<option value="기타소득">기타소득</option>
+								</xsl:when>
+								<xsl:when test="IMCOMETYPE[.='사업소득']">
+									<option value="">선택</option>
+									<option value="사업소득" selected="true">사업소득</option>
+									<option value="기타소득">기타소득</option>
+								</xsl:when>
+								<xsl:when test="IMCOMETYPE[.='기타소득']">
+									<option value="">선택</option>
+									<option value="사업소득">사업소득</option>
+									<option value="기타소득" selected="true">기타소득</option>
+								</xsl:when>
+								<xsl:otherwise>
+									<option value="" selected="true">선택</option>
+									<option value="사업소득">사업소득</option>
+									<option value="기타소득">기타소득</option>
+								</xsl:otherwise>
+							</xsl:choose>
+						</select>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td>
+				<xsl:choose>
+					<xsl:when test="$mode='read'">
+						<input type="text" name="INCOMERATE">
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="INCOMERATE" />
+							</xsl:attribute>
+						</input>
+					</xsl:when>
+					<xsl:otherwise>
+						<select class="txtRead" name="INCOMERATE1" onchange="parent.fnOutExpSelChange(this)">
+							<xsl:choose>
+								<xsl:when test="INCOMERATE[.='']">
+									<option value="" selected="true">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:when>
+								<xsl:when test="INCOMERATE[.='0%']">
+									<option value="">선택</option>
+									<option value="0%" selected="true">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:when>
+								<xsl:when test="INCOMERATE[.='3.0%']">
+									<option value="">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%" selected="true">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:when>
+								<xsl:when test="INCOMERATE[.='4.0%']">
+									<option value="">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%" selected="true">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:when>
+								<xsl:when test="INCOMERATE[.='사용자정의']">
+									<option value="">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의" selected="true">사용자정의</option>
+								</xsl:when>
+								<xsl:otherwise>
+									<option value="" selected="true">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:otherwise>
+							</xsl:choose>
+						</select>
+						<input type="text" name="INCOMERATE" style="display:none">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="INCOMERATE"/>
+							</xsl:attribute>
+						</input>
+					</xsl:otherwise>
+				</xsl:choose>				
+			</td>
+			<td style="text-align:center;">
+				<input type="text" name="INCOME">
+					<xsl:choose>
+						<xsl:when test="$mode='new'">
+							<xsl:attribute name="class">txtCurrency</xsl:attribute>
+							<xsl:attribute name="onKeyUp">parent.fnsumOutCostPre(this, 'TOTALINCOME')</xsl:attribute>
+							<xsl:attribute name="maxlength">15</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="$mode='edit'">
+							<xsl:attribute name="class">txtCurrency</xsl:attribute>
+							<xsl:attribute name="onKeyUp">parent.fnsumOutCostPre(this, 'TOTALINCOME')</xsl:attribute>
+							<xsl:attribute name="maxlength">15</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="INCOME" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="INCOME" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+			<td>
+				<xsl:choose>
+					<xsl:when test="$mode='read'">
+						<input type="text" name="RESRATE">
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="RESRATE" />
+							</xsl:attribute>
+						</input>
+					</xsl:when>
+					<xsl:otherwise>
+						<select class="txtRead" name="RESRATE1" onchange="parent.fnOutExpSelChange(this)">
+							<xsl:choose>
+								<xsl:when test="RESRATE[.='']">
+									<option value="" selected="true">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:when>
+								<xsl:when test="RESRATE[.='0%']">
+									<option value="">선택</option>
+									<option value="0%" selected="true">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:when>
+								<xsl:when test="RESRATE[.='3.0%']">
+									<option value="">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%" selected="true">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:when>
+								<xsl:when test="RESRATE[.='4.0%']">
+									<option value="">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%" selected="true">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:when>
+								<xsl:when test="RESRATE[.='사용자정의']">
+									<option value="">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의" selected="true">사용자정의</option>
+								</xsl:when>
+								<xsl:otherwise>
+									<option value="" selected="true">선택</option>
+									<option value="0%">0%</option>
+									<option value="3.0%">3.0%</option>
+									<option value="4.0%">4.0%</option>
+									<option value="사용자정의">사용자정의</option>
+								</xsl:otherwise>
+							</xsl:choose>
+						</select>
+						<input type="text" name="RESRATE" style="display:none">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="RESRATE"/>
+							</xsl:attribute>
+						</input>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td style="text-align:center;">
+				<input type="text" name="RESTEX">
+					<xsl:choose>
+						<xsl:when test="$mode='new'">
+							<xsl:attribute name="class">txtCurrency</xsl:attribute>
+							<xsl:attribute name="onKeyUp">parent.fnsumOutCostPre(this, 'TOTALREGTEX')</xsl:attribute>
+							<xsl:attribute name="maxlength">15</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="$mode='edit'">
+							<xsl:attribute name="class">txtCurrency</xsl:attribute>
+							<xsl:attribute name="onKeyUp">parent.fnsumOutCostPre(this, 'TOTALREGTEX')</xsl:attribute>
+							<xsl:attribute name="maxlength">15</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="RESTEX" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="RESTEX" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+			<td style="text-align:center;">
+				<input type="text" name="NETRECEIPTS">
+					<xsl:choose>
+						<xsl:when test="$mode='new'">
+							<xsl:attribute name="class">txtCurrency</xsl:attribute>
+							<xsl:attribute name="onKeyUp">parent.fnsumOutCostPre(this, 'TOTALRECEIPTS')</xsl:attribute>
+							<xsl:attribute name="maxlength">15</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="$mode='edit'">
+							<xsl:attribute name="class">txtCurrency</xsl:attribute>
+							<xsl:attribute name="onKeyUp">parent.fnsumOutCostPre(this, 'TOTALRECEIPTS')</xsl:attribute>
+							<xsl:attribute name="maxlength">15</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="NETRECEIPTS" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead_Right</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="NETRECEIPTS" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+			<td style="text-align:center;">
+				<input type="text" name="FROMDATE">
+					<xsl:choose>
+						<xsl:when test="$mode='new'">
+							<xsl:attribute name="class">txtDate</xsl:attribute>
+							<xsl:attribute name="maxlength">8</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="$mode='edit'">
+							<xsl:attribute name="class">txtDate</xsl:attribute>
+							<xsl:attribute name="maxlength">8</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="FROMDATE" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead_Center</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="FROMDATE" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+			<td style="text-align:center;">
+				<input type="text" name="TODATE">
+					<xsl:choose>
+						<xsl:when test="$mode='new'">
+							<xsl:attribute name="class">txtDate</xsl:attribute>
+							<xsl:attribute name="maxlength">8</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="$mode='edit'">
+							<xsl:attribute name="class">txtDate</xsl:attribute>
+							<xsl:attribute name="maxlength">8</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="TODATE" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead_Center</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="TODATE" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+			<td style="width:200px;">
+				<input type="text" name="PROJECTNAME">
+					<xsl:choose>
+						<xsl:when test="$mode='new' or $mode='edit'">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="PROJECTNAME" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="PROJECTNAME" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:if test="$mode!='read'">
+						<xsl:attribute name="onkeyup">parent.PROJECTNO_onkeyup('project', this, 'next', 'non');</xsl:attribute>
+					</xsl:if>
+				</input>
+				<input type="text" name="PROJECTNO" style="display:none;">
+					<xsl:attribute name="value">
+						<xsl:value-of select="PROJECTNO" />
+					</xsl:attribute>
+				</input>
+			</td>
+			<td>
+				<input type="text" name="ORDERPLACE">
+					<xsl:choose>
+						<xsl:when test="$mode='new' or $mode='edit'">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="width">200</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="ORDERPLACE" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="width">200</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="ORDERPLACE" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:if test="$mode!='read'">
+						<xsl:attribute name="onkeyup">parent.PROJECTNO_onkeyup('order', 'ORDERNO', 'ORDERPLACE', 'biz');</xsl:attribute>
+					</xsl:if>
+				</input>
+			</td>
+			<td>
+				<input type="text" name="ORDERNO">
+					<xsl:choose>
+						<xsl:when test="$mode='new' or $mode='edit'">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="ORDERNO" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="ORDERNO" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:if test="$mode!='read'">
+						<xsl:attribute name="onkeyup">parent.PROJECTNO_onkeyup('order', 'ORDERNO', 'ORDERPLACE', 'biz');</xsl:attribute>
+					</xsl:if>
+				</input>
+			</td>
+			<td>
+				<input type="text" name="ACCNUM">
+					<xsl:choose>
+						<xsl:when test="$mode='new' or $mode='edit'">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="ACCNUM" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="ACCNUM" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+			<td>
+				<input type="text" name="BANKNAME">
+					<xsl:choose>
+						<xsl:when test="$mode='new' or $mode='edit'">
+							<xsl:attribute name="class">txtText</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="BANKNAME" />
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">txtRead</xsl:attribute>
+							<xsl:attribute name="readonly">readonly</xsl:attribute>
+							<xsl:attribute name="value">
+								<xsl:value-of select="BANKNAME" />
+							</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+				</input>
+			</td>
+		</tr>
+	</xsl:template>
+
+	<xsl:template match="//linkeddocinfo/linkeddoc">
+		<div>
+			<a target="_blank">
+				<xsl:attribute name="href">
+					<xsl:value-of select="reserved1" />
+				</xsl:attribute>
+				<xsl:value-of select="subject" />
+			</a>
+		</div>
+	</xsl:template>
+	<xsl:template match="//fileinfo/file[@isfile='Y']">
+		<div>
+			<a target="_blank">
+				<xsl:attribute name="href">
+					<xsl:value-of select="virtualpath" />/<xsl:value-of select="savedname" />
+				</xsl:attribute>
+				<xsl:value-of select="filename" />
+			</a>
+		</div>
+	</xsl:template>
+
+</xsl:stylesheet>

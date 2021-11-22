@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ph_xform_ea>
+  <config mode="" submode="" css="" js="" html="" partid="" bizrole="" actrole="" wid="" root="" companycode="" web="" showline=""></config>
+	<bizinfo dnid="" processid="" formid="" ver="" parent_oid="" oid="" msgid="" inherited="" priority="" secret="" docstatus="" tms="" prevwork="" nextwork="">
+		<name></name>
+	</bizinfo>
+	<categoryinfo/>
+	<docinfo>
+		<docname></docname>
+		<msgtype></msgtype>
+		<docnumber></docnumber>
+		<doclevel></doclevel>
+		<keepyear></keepyear>
+		<subject></subject>
+		<createdate></createdate>
+		<publishdate></publishdate>
+		<expireddate></expireddate>
+		<externalkey1></externalkey1>
+		<externalkey2></externalkey2>
+		<reserved1></reserved1>
+		<reserved2></reserved2>
+	</docinfo>
+	<forminfo/>
+	<creatorinfo uid="" account="" deptid="" deptcode="">
+		<name></name>
+		<empno></empno>
+		<grade></grade>
+		<phone></phone>
+		<department></department>
+    <belong></belong>
+    <indate></indate>
+  </creatorinfo>
+  <currentinfo uid="" account="" deptid="" deptcode="">
+    <name></name>
+    <empno></empno>
+    <grade></grade>
+    <phone></phone>
+    <department></department>
+    <belong></belong>
+    <indate></indate>
+  </currentinfo>
+	<fileinfo/>
+	<linkeddocinfo/>
+	<drminfo/>
+	<processinfo/>
+  <autoprocessinfo/>
+  <schemainfo/>
+  <optioninfo/>
+  <chartinfo/>
+	<historyinfo/>
+	<anothermsginfo/>
+</ph_xform_ea>

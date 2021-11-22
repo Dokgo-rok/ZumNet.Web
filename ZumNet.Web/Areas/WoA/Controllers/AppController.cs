@@ -1404,8 +1404,8 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             string companyCode = StringHelper.SafeString(Session["CompanyCode"].ToString());
             //string frontName = StringHelper.SafeString(Session["FRONTNAME"].ToString());
             string frontName = "Zumwork";
-            string eaFormFolder = StringHelper.SafeString(WebConfigurationManager.AppSettings["EAFormFolder"]);
-            string eaFormSchemaPath = StringHelper.SafeString(WebConfigurationManager.AppSettings["EAFormSchemaPath"]);
+            string eaFormFolder = Server.MapPath(ZumNet.Framework.Configuration.Config.Read("EAFormFolder") + "/" + Session["CompanyCode"].ToString());
+            string eaFormSchemaPath = Server.MapPath(ZumNet.Framework.Configuration.Config.Read("EAFormSchemaPath"));
 
             ServiceResult result = new ServiceResult();
 
@@ -1418,7 +1418,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     XFormInstance xformIns = (XFormInstance)result.ResultDataDetail["xformIns"];
                     XFormDefinition xformDef = (XFormDefinition)result.ResultDataDetail["xformDef"];
 
-                    result = eApprovalBiz.ParsingXFormToHTML(companyCode, xformDef, xformIns, oid, "ea", domainID.ToString(), frontName, "BizForce", eaFormSchemaPath, eaFormFolder);
+                    result = eApprovalBiz.ParsingXFormToHTML(companyCode, xformDef, xformIns, oid, "ea", domainID.ToString(), frontName, "", eaFormSchemaPath, eaFormFolder);
                 }
             }
 
