@@ -325,6 +325,7 @@
     <Compile Include="Areas\WoA\WoAAreaRegistration.cs" />
     <Compile Include="Bc\AuthManager.cs" />
     <Compile Include="Bc\CommonUtils.cs" />
+    <Compile Include="Bc\FormHandler.cs" />
     <Compile Include="Bc\LunisolarDate.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AddrController.cs" />
@@ -1592,6 +1593,7 @@
     <Content Include="Areas\ExS\Views\WorkTime\_WorkTimeMgr.cshtml" />
     <Content Include="Areas\WoA\Views\App\Form.cshtml" />
     <Content Include="Content\Json\init.json" />
+    <Content Include="Content\Json\jform_bbs.json" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

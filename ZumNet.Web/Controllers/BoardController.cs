@@ -293,13 +293,16 @@ namespace ZumNet.Web.Controllers
 
             if (svcRt != null && svcRt.ResultCode == 0)
             {
-                ViewBag.AppView = svcRt.ResultDataSet.Tables["TBL_BOARD"].Rows[0];
-                ViewBag.AppFile = svcRt.ResultDataSet.Tables["TBL_FILE"];
-                ViewBag.AppReply = svcRt.ResultDataSet.Tables["TBL_REPLY"];
-                ViewBag.AppComment = svcRt.ResultDataSet.Tables["TBL_COMMENT"];
+                //ViewBag.AppView = svcRt.ResultDataSet.Tables["TBL_BOARD"].Rows[0];
+                //ViewBag.AppFile = svcRt.ResultDataSet.Tables["TBL_FILE"];
+                //ViewBag.AppReply = svcRt.ResultDataSet.Tables["TBL_REPLY"];
+                //ViewBag.AppComment = svcRt.ResultDataSet.Tables["TBL_COMMENT"];
 
-                ViewBag.AppPrev = svcRt.ResultDataDetail["prevMsgID"].ToString();
-                ViewBag.AppNext = svcRt.ResultDataDetail["nextMsgID"].ToString();
+                //ViewBag.AppPrev = svcRt.ResultDataDetail["prevMsgID"].ToString();
+                //ViewBag.AppNext = svcRt.ResultDataDetail["nextMsgID"].ToString();
+                
+                rt = FormHandler.BindFormToJson(this, svcRt);
+                if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
             else
             {
