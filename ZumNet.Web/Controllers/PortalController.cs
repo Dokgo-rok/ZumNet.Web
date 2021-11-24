@@ -176,10 +176,12 @@ namespace ZumNet.Web.Controllers
                     Session["UseWorkTime"] = "Y"; //허용
 
                     //근무상태확인
-                    using (WorkTimeBiz wtBiz = new WorkTimeBiz())
-                    {
-                        svcRt = wtBiz.CheckWorkTimeStatus("", Convert.ToInt32(Session["URID"]), sWorkDate, 0, sIP, sUA);
-                    }
+                    //using (WorkTimeBiz wtBiz = new WorkTimeBiz())
+                    //{
+                    //    svcRt = wtBiz.CheckWorkTimeStatus("", Convert.ToInt32(Session["URID"]), sWorkDate, 0, sIP, sUA);
+                    //}
+                    WorkTimeBiz wtBiz = new WorkTimeBiz();
+                    svcRt = wtBiz.CheckWorkTimeStatus("", Convert.ToInt32(Session["URID"]), sWorkDate, 0, sIP, sUA);
 
                     if (svcRt.ResultDataDetail.Count > 0)
                     {
@@ -189,7 +191,15 @@ namespace ZumNet.Web.Controllers
                         }
                     }
 
-                    if (dicStatus["PwdChange"] == "Y" || dicStatus["WorkStatus"] == "A" || dicStatus["WorkStatus"] == "Z")
+                    //2021-11-24 출근하기 로그인으로 대체
+                    if (dicStatus["WorkStatus"] == "A")
+                    {
+                        svcRt = wtBiz.CreateWorkTimeStatus(Convert.ToInt32(Session["URID"]), DateTime.Now.ToString("yyyy-MM-dd")
+                                                    , dicStatus["WorkStatus"].ToString(), Request.ServerVariables["REMOTE_HOST"], sUA);
+                    }
+                    wtBiz.Dispose();
+
+                    if (dicStatus["PwdChange"] == "Y" || dicStatus["WorkStatus"] == "__A" || dicStatus["WorkStatus"] == "Z")
                     {
                     }
                     else
