@@ -54,7 +54,7 @@ namespace ZumNet.Web.Controllers
                                         , iLevel, Convert.ToInt32(Session["URID"]), StringHelper.SafeString(jPost["open"], "")
                                         , Session["Admin"].ToString(), StringHelper.SafeString(jPost["acl"], ""), 0, 0, "");
                 }
-                
+
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
                     string sIconType = "";
@@ -217,12 +217,51 @@ namespace ZumNet.Web.Controllers
                         break;
 
                     case "F":
-                        
+
                         break;
 
                     default:
                         break;
                 }
+            }
+
+            return strView;
+        }
+
+        /// <summary>
+        /// 게시물 조회 기록
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string AddViewCount()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    return "전송 데이터 누락!";
+                }
+                else if (StringHelper.SafeString(jPost["xf"]) == "" || StringHelper.SafeString(jPost["urid"]) == "" || StringHelper.SafeString(jPost["mi"]) == "")
+                {
+                    return "필수값 누락!";
+                }
+
+                int iFolderId = StringHelper.SafeInt(jPost["fdid"]);
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.AddViewCount(jPost["xf"].ToString(), iFolderId, Convert.ToInt32(jPost["urid"]), Convert.ToInt32(jPost["mi"]), Request.ServerVariables["REMOTE_ADDR"]);
+                }
+
+                if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                else strView = "OK";
             }
 
             return strView;

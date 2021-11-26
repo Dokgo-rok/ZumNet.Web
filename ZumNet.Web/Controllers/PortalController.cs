@@ -108,7 +108,7 @@ namespace ZumNet.Web.Controllers
         [Authorize]
         public ActionResult AddCheck(string Qi, string returnUrl)
         {
-            string sIP = Request.ServerVariables["REMOTE_HOST"];
+            string sIP = Request.ServerVariables["REMOTE_ADDR"];
             string sUA = CommonUtils.UserAgent(Request.ServerVariables["HTTP_USER_AGENT"]);
             bool bWorkTimeCheck = true;
 
@@ -195,7 +195,7 @@ namespace ZumNet.Web.Controllers
                     if (dicStatus["WorkStatus"] == "A")
                     {
                         svcRt = wtBiz.CreateWorkTimeStatus(Convert.ToInt32(Session["URID"]), DateTime.Now.ToString("yyyy-MM-dd")
-                                                    , dicStatus["WorkStatus"].ToString(), Request.ServerVariables["REMOTE_HOST"], sUA);
+                                                    , dicStatus["WorkStatus"].ToString(), Request.ServerVariables["REMOTE_ADDR"], sUA);
                     }
                     wtBiz.Dispose();
 

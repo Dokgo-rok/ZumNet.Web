@@ -22,6 +22,9 @@
     {
         bPrevEditorBody = true;
     }
+
+    //Response.Write("REMOTE_ADDR : " + Request.ServerVariables["REMOTE_ADDR"].ToString() + "<br />");
+    //Response.Write("REMOTE_HOST : " + Request.ServerVariables["REMOTE_HOST"].ToString() + "<br />");
 }
 
 @section Styles {
@@ -40,7 +43,13 @@
     {
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
     }
-    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+    <script type="text/javascript">
+        (function () {
+            _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
+
+            _zw.fn.view();
+        }());
+    </script>
 }
 
 <!--

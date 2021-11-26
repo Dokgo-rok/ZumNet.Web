@@ -259,7 +259,7 @@ $(function () {
             _zw.V.xfalias = p.attr('xf');
             _zw.V.current.acl = p.attr('acl');
             _zw.V.appid = p.attr('appid');
-            _zw.V.ttl = $(el).text();
+            //_zw.V.ttl = $(el).text();
 
             var postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
             window.location.href = '/Board/Read?qi=' + encodeURIComponent(postData);
@@ -270,6 +270,16 @@ $(function () {
     _zw.fn = {
         "org": function () {
             alert("org")
+        },
+        "view": function () {
+            $.ajax({
+                type: "POST",
+                url: "/Common/AddViewCount",
+                data: '{xf:"' + _zw.V.xfalias + '",fdid:"' + _zw.V.fdid + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '"}',
+                success: function (res) {
+                    if (res != "OK") console.log(res);
+                }
+            });
         },
         "getTotalWorkTime": function () {
             $.ajax({
