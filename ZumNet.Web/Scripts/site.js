@@ -252,18 +252,51 @@ $(function () {
 
     //메뉴
     _zw.mu = {
-        "readMsg": function () {
-            var el = event.target ? event.target : event.srcElement; //alert(el.outerHTML)
-            var p = $(el).parent().parent();
+        "readMsg": function (m) {
+            var el, p;
+            m = m || '';
+            if (m == 'prev') {
+                _zw.V.appid = _zw.V.app.next;
+            } else if (m == 'next') {
+                _zw.V.appid = _zw.V.app.prev;
+            } else {
+                el = event.target ? event.target : event.srcElement; //alert(el.outerHTML)
+                p = $(el).parent().parent();
 
-            _zw.V.xfalias = p.attr('xf');
-            _zw.V.current.acl = p.attr('acl');
-            _zw.V.appid = p.attr('appid');
-            //_zw.V.ttl = $(el).text();
+                _zw.V.appid = p.attr('appid');
+                //_zw.V.ttl = $(el).text();
+            }
+
+            if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
 
             var postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
-            //window.location.href = '/Board/Read?qi=' + encodeURIComponent(postData);
-            window.location.href = '/Board/Read?qi=' + _zw.base64.encode(postData);
+            console.log(postData)
+            var url = _zw.V.current.page + '?qi=' + _zw.base64.encode(postData);
+
+            if (_zw.V.current.page.toLowerCase() == '/board/read') {
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    success: function (res) {
+                        if (res.substr(0, 2) == "OK") {
+                            history.pushState(null, null, url);
+
+                            var v = res.substr(2).split(_zw.V.lv.boundary);
+                            $('#__FormView').html(v[0]);
+                            _zw.V.app = JSON.parse(v[1]);
+
+                            window.document.title = _zw.V.app['subject'];
+
+                        } else bootbox.alert(res);
+                    }
+                });
+            } else {
+                _zw.V.xfalias = p.attr('xf');
+                _zw.V.current.acl = p.attr('acl');
+
+                window.location.href = '/Board/Read?qi=' + _zw.base64.encode(postData);
+            }
+            
         }
     };
 

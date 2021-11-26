@@ -1,0 +1,217 @@
+﻿@using Newtonsoft.Json;
+
+@{
+    bool bPrevEditorBody = false;
+    if (DateTime.Compare(Convert.ToDateTime("2022-01-01"), Convert.ToDateTime(ViewBag.R.app["credate"].Value)) > 0)
+    {
+        bPrevEditorBody = true;
+    }
+}
+
+<!-- Header -->
+<div class="flex-grow-0">
+    <div class="zf-menu d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
+        <div class="d-flex align-items-center font-weight-bold">
+            <div class="h5 mb-0">
+                <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+            </div>
+
+            <div class="btn-group">
+                @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M"))
+                {
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.writeMsg('reply');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ReplyWrite"><i class="fas fa-reply"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.ReplyWrite</span></button>
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.writeMsg('write');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>
+                }
+                @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "E"))
+                {
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.writeMsg('modify');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                }
+                @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "D"))
+                {
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.deleteMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
+                }
+            </div>
+        </div>
+        <div>
+            <div class="btn-group">
+                <button class="btn btn-default" onclick="_zw.mu.goList();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.List"><i class="fas fa-list"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.List</span></button>
+                <button class="btn btn-default" onclick="_zw.mu.readMsg('prev');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Previous"><i class="fas fa-chevron-left"></i></button>
+                <button class="btn btn-default" onclick="_zw.mu.readMsg('next');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-default" onclick="_zw.mu.preview();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Print"><i class="fe-printer"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- / Header -->
+
+<div class="flex-grow-1 position-relative" style="border-top: 2px solid #eee">
+    <div class="z-list-scroll">
+        <div class="pb-3 border-bottom">
+            <div class="d-block d-sm-none container-p-x mt-3">
+                <div class="mb-2 text-muted">@Html.Raw(ViewBag.SiteMap)</div>
+                <h5 class="mb-0">@ViewBag.R.app["subject"]</h5>
+            </div>
+            <div class="d-none d-sm-flex justify-content-between container-p-x mt-3 mt-2">
+                <h5 class="mb-0">@ViewBag.R.app["subject"]</h5>
+                <div class="text-muted">@Html.Raw(ViewBag.SiteMap)</div>
+            </div>
+            <div class="d-flex justify-content-between container-p-x mt-2">
+                <div class="">@ViewBag.R.app["creur"] / @ViewBag.R.app["credept"] / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.R.app["pubdate"].ToString(), true)</div>
+                <div>
+                    <span class="d-inline-block mr-2 text-info" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ViewCount"><i class="fe-eye"></i> @ViewBag.R.app["viewcount"]</span>
+                    <span class="d-inline-block text-danger" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.CommentCount"><i class="far fa-comment-dots"></i> @ViewBag.R.app["cmntcount"]</span>
+                </div>
+            </div>
+            @if (ViewBag.R.app["priority"].ToString() == "Y" || ViewBag.R.app["topline"].ToString() == "Y")
+            {
+                <div class="d-flex container-p-x mt-2">
+                    @if (ViewBag.R.app["priority"].ToString() == "Y")
+                    {
+                        <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                            <input type="checkbox" id="ckbPriority" class="custom-control-input" checked disabled>
+                            <label class="custom-control-label" for="ckbPriority">긴급</label>
+                        </div>
+                    }
+                    @if (ViewBag.R.app["topline"].ToString() == "Y")
+                    {
+                        <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                            <input type="checkbox" id="ckbTopLine" class="custom-control-input" checked disabled>
+                            <label class="custom-control-label" for="ckbTopLine">TOPLINE</label>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (Convert.ToInt32(ViewBag.R.app["attachcount"]) > 0)
+        {
+            <div class="container-p-x pt-3 mb-3">
+                <h6 class="mb-2">
+                    <i class="fas fa-paperclip"></i> @Resources.Global.AttachFile
+                    @if (Convert.ToInt32(ViewBag.R.app["attachcount"]) > 1)
+                    {
+                        <span class="text-danger ml-1">@ViewBag.R.app["attachcount"]</span><span class="text-muted ml-1">@ViewBag.R.app["attachsize"]</span>
+                    }
+                </h6>
+                <div class="zf-attach">
+                    @foreach (var j in ViewBag.R.app.attachlist)
+                    {
+                        <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
+                            <div class="mr-2">
+                                <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
+                            </div>
+                            <div class=""><a href="/file/download?fn=@Server.UrlEncode(j["filename"].ToString())&fp=@Server.UrlEncode(j["filepath"].ToString() + "\\" + j["savedname"].ToString())">@j["filename"]</a></div>
+                            <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (bPrevEditorBody)
+        {
+            <div class="container-p-x py-3 zf-prevbody">
+                @Html.Raw(ZumNet.Framework.Web.Util.WebHelper.BodyInnerHtml(ViewBag.R.app["body"].ToString()))
+            </div>
+        }
+        else
+        {
+            <div class="container-p-x py-3">
+                @Html.Raw(ViewBag.R.app["body"])
+            </div>
+        }
+
+        @if (Convert.ToInt32(ViewBag.R.app["replycount"]) > 1)
+        {
+            <div class="border-top container-p-x py-3">
+                <h6 class="mb-2"><i class="fas fa-reply"></i> @Resources.Global.ReplyWrite @Resources.Global.List</h6>
+                <ul class="list-group messages-list">
+                    @foreach (var j in ViewBag.R.app.replylist)
+                    {
+                        <li class="list-group-item list-group-item-action d-flex align-items-center@(j["msgid"].ToString() == ViewBag.R["appid"].ToString() ? " bg-light" : "")" xf="" appid="@j["msgid"]" acl="" auth="">
+                            <div class="wd-99 flex-fill text-truncate d-flex align-items-center">
+                                @if (Convert.ToInt32(j["depth"]) > 0)
+                                {
+                                    for (int k = 1; k < Convert.ToInt32(j["depth"]); k++)
+                                    {
+                                        <span class="px-1"></span>
+                                    }
+                                    <i class="fe-corner-down-right text-big text-warning font-weight-bold mx-1"></i>
+                                }
+                                <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg();">@j["subject"].ToString()</a>
+                            </div>
+                            <div class="w-100 d-sm-none py-0"></div>
+
+                            <div class="wd-99 wd-lg-34 wd-xl-32 d-flex">
+                                @if (Convert.ToInt32(j["depth"]) > 0)
+                                {
+                                    <div class="d-sm-none">
+                                        <span class="d-inline-block">&nbsp;&nbsp;&nbsp;</span>
+                                        @for (int k = 0; k < Convert.ToInt32(j["depth"]); k++)
+                                        {
+                                            <span class="d-inline-block">&nbsp;</span>
+                                        }
+                                    </div>
+                                }
+                                <div class="wd-20 wd-lg-35 wd-xl-35 t-sm text-sm-center pr-2">
+                                    <span class="">@j["displayname"]</span>
+                                </div>
+
+                                <div class="wd-20 wd-lg-35 wd-xl-30 t-sm text-sm-center pr-2">
+                                    <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(j["credate"].ToString())</span>
+                                </div>
+
+                                <div class="text-right text-pink flex-fill pr-1">
+                                    <span class="">@j["viewcount"]</span>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        <div class="container-p-x my-3">
+            <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.R.app["cmntcount"]</span></h6>
+            <div class="bg-lighter border p-3">
+                <div id="__CommentList">
+                    @if (Convert.ToInt32(ViewBag.R.app["cmntcount"]) > 0)
+                    {
+                        for (int i = ViewBag.R.app["cmntlist"].Count - 1; i >= 0; i--)
+                        {
+                            var j = ViewBag.R.app["cmntlist"][i];
+                            <div class="media">
+                                <img src="~/images/users/sjaekim.jpg" class="mr-3 rounded-circle" style="height:32px" alt="user" />
+                                <div class="media-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="d-flex">
+                                            <div class="font-weight-bold mr-3">@j["creur"]</div>
+                                            <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(j["credate"].ToString())</div>
+                                        </div>
+                                        <div>
+                                            @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
+                                            {
+                                                <a class="text-dark mr-2" href="javascript:void();">@Resources.Global.Modify</a>
+                                                <a class="text-muted" href="javascript:void();">@Resources.Global.Delete</a>
+                                            }
+                                        </div>
+                                    </div>
+                                    <p>@Html.Raw(j["comment"])</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="">
+                    <div class="">
+                        <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500"></textarea>
+                    </div>
+                    <div class="text-right mt-2">
+                        <button class="btn btn-primary" data-zf-menu="write" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register">@Resources.Global.Register</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

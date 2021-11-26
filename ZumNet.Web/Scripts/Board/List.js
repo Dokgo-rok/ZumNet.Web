@@ -19,6 +19,27 @@ $(function () {
         });
     });
 
+    _zw.mu.writeMsg = function (m) {
+        var el = event.target ? event.target : event.srcElement;
+
+    }
+
+    _zw.mu.deleteMsg = function () {
+        var el = event.target ? event.target : event.srcElement;
+
+    }
+
+    _zw.mu.goList = function () {
+        var postData = _zw.fn.getLvQuery();
+        window.location.href = '/Board/List?qi=' + _zw.base64.encode(postData);
+    }
+
+    _zw.mu.preview = function () {
+        var el = event.target ? event.target : event.srcElement;
+
+    }
+
+
     _zw.fn.loadList = function () {
 
         //var sJson = '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + _zw.V.ot + '",xfalias:"' + _zw.V.xfalias + '",permission:"' + _zw.V.current.acl + '",tgt:"' + _zw.V.lv.tgt

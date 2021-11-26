@@ -1370,7 +1370,7 @@ namespace ZumNet.Web.Bc
             }
             else
             {
-                strReturn = "잘못된 경로로 접근했습니다!";
+                strReturn = Resources.Global.Auth_InvalidPath; // "잘못된 경로로 접근했습니다!";
             }
             return strReturn;
         }

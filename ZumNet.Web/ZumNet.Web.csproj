@@ -1669,6 +1669,7 @@
     <Content Include="Views\Report\_FORM_BIZTRIPPLAN.cshtml" />
     <Content Include="Views\Report\_FORM_NEWDEVELOPREQUEST.cshtml" />
     <Content Include="Views\Board\Read.cshtml" />
+    <Content Include="Views\Board\_Read.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

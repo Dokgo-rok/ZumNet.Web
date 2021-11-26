@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
@@ -336,6 +337,95 @@ namespace ZumNet.Web.Controllers
             }
 
             return View();
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Read()
+        {
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
+            if (rt == "")
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    sPos = "200";
+                    int iCategoryId = Convert.ToInt32(jPost["ct"]);
+                    int iFolderId = Convert.ToInt32(jPost["fdid"]);
+                    int iAppId = Convert.ToInt32(jPost["appid"]);
+
+                    //권한체크
+                    if (Session["Admin"].ToString() == "Y")
+                    {
+                        ViewBag.R.current["operator"] = "Y";
+                    }
+                    else
+                    {
+                        sPos = "300";
+                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        {
+                            svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iAppId, ViewBag.R.xfalias.ToString(), "0");
+
+                            sPos = "310";
+                            ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                            ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                        }
+                    }
+
+                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+                    {
+                        return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                    }
+
+                    sPos = "400";
+                    rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+                    if (rt != "")
+                    {
+                        return "[" + sPos + "] " + rt;
+                    }
+
+                    sPos = "500";
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        svcRt = bd.GetBoardMsgView(Convert.ToInt32(Session["URID"]), Convert.ToInt32(Session["DNID"]), iCategoryId, iFolderId, iAppId.ToString(), ViewBag.R.xfalias.ToString()
+                                        , ViewBag.R.current["operator"].ToString(), ViewBag.R.current["acl"].ToString(), ViewBag.R.lv["sort"].ToString(), ViewBag.R.lv["sortdir"].ToString()
+                                        , ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString(), ViewBag.R.lv["start"].ToString(), ViewBag.R.lv["end"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "510";
+                        rt = FormHandler.BindFormToJson(this, svcRt);
+
+                        if (rt != "")
+                        {
+                            rt = "[" + sPos + "] " + rt;
+                        }
+                        else
+                        {
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Read", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + JsonConvert.SerializeObject(ViewBag.R.app);
+                        }
+                    }
+                    else
+                    {
+                        rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
         }
     }
 }
