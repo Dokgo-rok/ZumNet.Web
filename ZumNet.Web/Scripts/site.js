@@ -262,7 +262,8 @@ $(function () {
             //_zw.V.ttl = $(el).text();
 
             var postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
-            window.location.href = '/Board/Read?qi=' + encodeURIComponent(postData);
+            //window.location.href = '/Board/Read?qi=' + encodeURIComponent(postData);
+            window.location.href = '/Board/Read?qi=' + _zw.base64.encode(postData);
         }
     };
 

@@ -52,7 +52,18 @@ namespace ZumNet.Web.Controllers
             {
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
-            
+
+            if (ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.ttl) == "")
+            {
+                //Title이 빈값인 경우(Ajax로 불러온 경우 ttl=''로 설정, 이후 로그아웃 되어 returnUrl로 넘어 왔을 때)
+                rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+                if (rt != "")
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+
             //검색 조건
             string strWhere = "";
             if (formTable == "REGISTER_TOOLING")

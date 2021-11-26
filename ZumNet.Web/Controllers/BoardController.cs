@@ -112,6 +112,17 @@ namespace ZumNet.Web.Controllers
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
+            if (ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.ttl) == "")
+            {
+                //Title이 빈값인 경우(Ajax로 불러온 경우 ttl=''로 설정, 이후 로그아웃 되어 returnUrl로 넘어 왔을 때)
+                rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+                if (rt != "")
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+
             ViewBag.R.lv["page"] = "1";
             ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("").ToString();
             ViewBag.R.lv["basesort"] = "SeqID";
@@ -189,6 +200,13 @@ namespace ZumNet.Web.Controllers
                     {
                         return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
                     }
+
+                    //sPos = "320";
+                    //rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+                    //if (rt != "")
+                    //{
+                    //    return "[" + sPos + "] " + svcRt.ResultMessage;
+                    //}
 
                     sPos = "400";
                     using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
@@ -284,6 +302,13 @@ namespace ZumNet.Web.Controllers
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
+            rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+            if (rt != "")
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
             using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
             {
                 svcRt = bd.GetBoardMsgView(Convert.ToInt32(Session["URID"]), Convert.ToInt32(Session["DNID"]), iCategoryId, iFolderId, iAppId.ToString(), ViewBag.R.xfalias.ToString()
@@ -303,21 +328,6 @@ namespace ZumNet.Web.Controllers
                 
                 rt = FormHandler.BindFormToJson(this, svcRt);
                 if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
-            else
-            {
-                rt = svcRt.ResultMessage;
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
-
-            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
-            {
-                svcRt = cb.GetSiteMapNavigation(Convert.ToInt32(Session["DNID"]), iCategoryId, ViewBag.R["opnode"].ToString());
-            }
-
-            if (svcRt != null && svcRt.ResultCode == 0)
-            {
-                ViewBag.SiteMap = svcRt.ResultDataString;
             }
             else
             {

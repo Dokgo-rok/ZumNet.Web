@@ -91,7 +91,7 @@ namespace ZumNet.Web.Controllers
 
                         sb.AppendFormat("\"id\":\"{0}\"", row["NodeID"].ToString());
                         sb.AppendFormat(",\"parent\":\"{0}\"", row["MemberOf"].ToString() == "0.0.0" ? "#" : row["MemberOf"].ToString());
-                        sb.AppendFormat(",\"text\":\"{0}\"", row["DisplayName"].ToString());
+                        sb.AppendFormat(",\"text\":\"{0}\"", row["DisplayName"].ToString().Trim());
                         //sb.AppendFormat(",\"icon\":\"{0}\"", "");
                         sb.AppendFormat(",\"type\":\"{0}\"", sIconType);
 

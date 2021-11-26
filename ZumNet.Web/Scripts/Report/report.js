@@ -22,7 +22,8 @@ $(function () {
 
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
-        var url = '?qi=' + encodeURIComponent(postData);
+        //var url = '?qi=' + encodeURIComponent(postData);
+        var url = '?qi=' + _zw.base64.encode(postData);
 
         $.ajax({
             type: "POST",
@@ -30,6 +31,9 @@ $(function () {
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
                     history.pushState(null, null, url);
+
+                    window.document.title = _zw.V.ttl;
+                    $('.z-ttl span').html(_zw.V.ttl);
 
                     var v = res.substr(2).split(_zw.V.lv.boundary);
                     $('#__List').html(v[0]);
@@ -72,7 +76,7 @@ $(function () {
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
         j["ft"] = _zw.V.ft;
-        j["ttl"] = _zw.V.ttl;
+        //j["ttl"] = _zw.V.ttl;
 
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;

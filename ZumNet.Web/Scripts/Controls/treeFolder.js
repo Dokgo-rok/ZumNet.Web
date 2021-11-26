@@ -107,13 +107,14 @@ $(function () {
                 if (vId[vId.length - 1] == _zw.V.fdid) return false;
 
                 //var vPath = $("#__FolderTree").jstree("get_path", d.selected[0]);
-                var vPath = d.instance.get_path(d.selected[0]);
+                var vPath = d.instance.get_path(d.selected[0]); console.log(vPath)
                 //$('.z-ttl span').html(vPath.join(' / '));
                 var encQi = '', ttl = vPath.join(' / ');
 
                 if (n.li_attr.acl.substr(n.li_attr.acl.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
                     //alert(_zw.base64.decode('e2N0OiIxMDMiLGN0YWxpYXM6ImJib2FyZCIsb3Q6IkciLHhmOiJiYnMiLGZkaWQ6IjE0NDk5IixvcG5vZGU6IjAuMC4xNDQ5OSIsdHRsOiIyMDIw64WE64+EIixwZXJtaXNzaW9uOiJTRkRFUlZTREVNV1JWIn0='))
-                    encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                    //encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                    encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                     //encQi = encQi.replace(/ /gi, '+');
                     switch (n.li_attr.xfalias) {
                         case "notice":
@@ -220,12 +221,14 @@ $(function () {
                                 _zw.fn.initLv(_zw.V.current.urid);
                                 _zw.fn.loadList();
                             } else {
-                                encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                                //encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                                encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                                 window.location.href = '/Report?qi=' + encQi;
                             }
 
                         } else {
-                            encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                            //encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                            encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                             window.location.href = n.a_attr.url + '?qi=' + encQi;
                         }
                     }
@@ -236,7 +239,7 @@ $(function () {
                         //alert(n.li_attr.alias + " : " + n.a_attr.url)
                         if (n.li_attr.alias == "ea.form.select") {
                             bootbox.alert('준비중!');
-                        } else if (n.li_attr.alias == "ea.form.report") {
+                        } else if (n.li_attr.alias == "ea.form.report") { console.log(ttl);
                             if (_zw.V.current.page.toLowerCase() == '/report') {
                                 _zw.V.ot = n.li_attr.objecttype;
                                 _zw.V.alias = n.li_attr.alias;
@@ -250,7 +253,8 @@ $(function () {
                                 _zw.fn.initLv(_zw.V.current.urid);
                                 _zw.fn.loadList();
                             } else {
-                                encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                                //encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                                encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                                 window.location.href = '/Report?qi=' + encQi;
                             }
                         }

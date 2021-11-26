@@ -1090,8 +1090,8 @@ namespace ZumNet.Web.Bc
                 string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], ""); //.Replace("+", " ");
                 if (req != "")
                 {
-                    //jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
-                    jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req));
+                    jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
+                    //jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req));
                 }
                 else
                 {
@@ -1256,8 +1256,8 @@ namespace ZumNet.Web.Bc
             if (ctrl.Request.IsAjaxRequest())
             {
                 string req = StringHelper.SafeString(HttpContext.Current.Request["qi"]);
-                //JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //CommonUtils.PostDataToJson();
-                JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req)); //CommonUtils.PostDataToJson();
+                JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //CommonUtils.PostDataToJson();
+                //JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req)); //CommonUtils.PostDataToJson();
                 JObject jV; //Response Data
 
                 if (jReq == null || jReq.Count == 0)
@@ -1671,7 +1671,8 @@ namespace ZumNet.Web.Bc
 
             if (strReturn == "" && qi != "")
             {
-                JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(qi));
+                //JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(qi));
+                JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(qi));
 
                 ctrl.ViewBag.R.lv.Add("cd1", StringHelper.SafeString(jReq["cd1"]));
                 ctrl.ViewBag.R.lv.Add("cd2", StringHelper.SafeString(jReq["cd2"]));
@@ -1685,6 +1686,57 @@ namespace ZumNet.Web.Bc
                 ctrl.ViewBag.R.lv.Add("cd10", StringHelper.SafeString(jReq["cd10"]));
                 ctrl.ViewBag.R.lv.Add("cd11", StringHelper.SafeString(jReq["cd11"]));
                 ctrl.ViewBag.R.lv.Add("cd12", StringHelper.SafeString(jReq["cd12"]));
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
+        /// 폴더 사이트맵 경로 가져오기
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="ctId"></param>
+        /// <param name="fdId"></param>
+        /// <param name="openNode"></param>
+        /// <returns></returns>
+        public static string SiteMap(this Controller ctrl, int ctId, int fdId, string openNode)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            try
+            {
+                if (openNode == "" || openNode.IndexOf('.') < 0) openNode = "0.0." + fdId.ToString(); //folderid만 넘어오는 경우
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetSiteMapNavigation(Convert.ToInt32(HttpContext.Current.Session["DNID"]), ctId, openNode);
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    string sSitePath = "";
+                    string sFolderTitle = "";
+                    string[] vSiteMap = svcRt.ResultDataString.Split(new char[] { '' });
+                    for (int i = 0; i < vSiteMap.Length; i++)
+                    {
+                        string[] s = vSiteMap[i].Split(new char[] { '' });
+                        sSitePath += (sSitePath == "") ? s[1] : " > " + s[1];
+
+                        if (i > 0) sFolderTitle += (sFolderTitle == "") ? s[1] : " / " + s[1];
+                    }
+
+                    ctrl.ViewBag.SiteMap = sSitePath;
+                    ctrl.ViewBag.R.ttl = sFolderTitle;
+                }
+                else
+                {
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                strReturn = ex.Message;
             }
 
             return strReturn;

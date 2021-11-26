@@ -30,7 +30,8 @@ $(function () {
             _zw.fn.loadList();
 
         } else {
-            window.location.href = '/EA/Main/List?qi=' + encodeURIComponent(_zw.fn.getLvQuery(false));
+            //window.location.href = '/EA/Main/List?qi=' + encodeURIComponent(_zw.fn.getLvQuery(false));
+            window.location.href = '/EA/Main/List?qi=' + _zw.base64.encode(_zw.fn.getLvQuery(false));
         }
     });
     
@@ -67,7 +68,7 @@ $(function () {
 
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
-        var url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
+        var url = '/EA/Main/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 

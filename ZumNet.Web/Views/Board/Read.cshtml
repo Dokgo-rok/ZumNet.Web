@@ -9,13 +9,13 @@
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
-    string sSitePath = "";
-    string[] vSiteMap = ViewBag.SiteMap.Split(new char[] { '' });
-    foreach (string fd in vSiteMap)
-    {
-        string[] s = fd.Split(new char[] { '' });
-        sSitePath += (sSitePath == "") ? s[1] : " > " + s[1];
-    }
+    //string sSitePath = "";
+    //string[] vSiteMap = ViewBag.SiteMap.Split(new char[] { '' });
+    //foreach (string fd in vSiteMap)
+    //{
+    //    string[] s = fd.Split(new char[] { '' });
+    //    sSitePath += (sSitePath == "") ? s[1] : " > " + s[1];
+    //}
 
     bool bPrevEditorBody = false;
     if (DateTime.Compare(Convert.ToDateTime("2022-01-01"), Convert.ToDateTime(ViewBag.R.app["credate"].Value)) > 0)
@@ -106,12 +106,12 @@
             <div class="z-list-scroll">
                 <div class="pb-3 border-bottom">
                     <div class="d-block d-sm-none container-p-x mt-3">
-                        <div class="mb-2 text-muted">@Html.Raw(sSitePath)</div>
+                        <div class="mb-2 text-muted">@Html.Raw(ViewBag.SiteMap)</div>
                         <h5 class="mb-0">@ViewBag.R.app["subject"]</h5>
                     </div>
                     <div class="d-none d-sm-flex justify-content-between container-p-x mt-3 mt-2">
                         <h5 class="mb-0">@ViewBag.R.app["subject"]</h5>
-                        <div class="text-muted">@Html.Raw(sSitePath)</div>
+                        <div class="text-muted">@Html.Raw(ViewBag.SiteMap)</div>
                     </div>
                     <div class="d-flex justify-content-between container-p-x mt-2">
                         <div class="">@ViewBag.R.app["creur"] / @ViewBag.R.app["credept"] / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.R.app["pubdate"].ToString(), true)</div>
