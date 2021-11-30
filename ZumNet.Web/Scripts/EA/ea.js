@@ -96,9 +96,6 @@ $(function () {
             }
         });
     }
-    _zw.fn.goSearch = function () {
-        alert(1)
-    }
 
     _zw.fn.getLvQuery = function (lv) {
         var j = {};

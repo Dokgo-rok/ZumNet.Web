@@ -19,6 +19,14 @@ $(function () {
         });
     });
 
+    _zw.mu.write = function () {
+        
+    }
+
+    _zw.mu.delete = function () {
+        
+    }
+
     _zw.mu.writeMsg = function (m) {
         var el = event.target ? event.target : event.srcElement;
 
@@ -70,12 +78,17 @@ $(function () {
                     $('#__ListCount').html(v[1]);
                     $('#__ListPage').html(v[2]);
 
+                    $('.pagination li a.page-link').click(function () {
+                        _zw.mu.search($(this).attr('data-for'));
+                    });
+
+                    $('.z-lv-cnt select').change(function () {
+                        _zw.fn.setLvCnt($(this).val());
+                    });
+
                 } else bootbox.alert(res);
             }
         });
-    }
-    _zw.fn.goSearch = function () {
-        alert(1)
     }
 
     _zw.fn.getLvQuery = function () {
@@ -108,6 +121,11 @@ $(function () {
     }
 
     _zw.fn.initLv = function (tgt) {
+        $('.z-lv-date .start-date').val('');
+        $('.z-lv-date .end-date').val('');
+        $('.z-lv-search select').val('');
+        $('.z-lv-search .search-text').val('');
+
         var sCnt = _zw.ut.getCookie('bbsLvCount');
         sCnt = $('.z-lv-page select').val();
         
@@ -122,6 +140,4 @@ $(function () {
         _zw.V.lv.end = '';
         _zw.V.lv.basesort = '';
     }
-    
-
 });

@@ -194,6 +194,24 @@ $(function () {
         }
     });
 
+    //ListView Menu
+    $('.z-lv-menu .btn[data-zv-menu], .z-lv-search .btn[data-zv-menu]').click(function () {
+        var mn = $(this).attr('data-zv-menu');
+        if (mn != '') _zw.mu[mn]();
+    });
+
+    $('.z-lv-search input.search-text').keyup(function (e) {
+        if (e.which == 13) _zw.mu.search();
+    });
+
+    $('.pagination li a.page-link').click(function () {
+        _zw.mu.search($(this).attr('data-for'));
+    });
+
+    $('.z-lv-cnt select').change(function () {
+        _zw.fn.setLvCnt($(this).val());
+    });
+
     //근무 시간 조회
     if (_zw.V.current && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
         _zw.fn.getTotalWorkTime();
@@ -211,7 +229,7 @@ $(function () {
         $("#LoginId").focus();
     }
 
-    $("#loginForm").submit(function () {
+    $("#loginForm").submit(function() {
         //console.log(event);
 
         if ($("#RememberMe").prop('checked')) {
@@ -224,7 +242,7 @@ $(function () {
         //event.preventDefault();
     });
 
-    $("[data-password]").on('click', function () {
+    $("[data-password]").on('click', function() {
         if ($(this).attr('data-password') == "false") {
             $(this).siblings("input").attr("type", "text");
             $(this).attr('data-password', 'true');
@@ -252,6 +270,32 @@ $(function () {
 
     //메뉴
     _zw.mu = {
+        "refresh": function () {
+            _zw.fn.initLv(_zw.V.fdid);
+            _zw.fn.loadList();
+        },
+        "search": function (page) {
+            var e1 = $('.z-lv-date .start-date');
+            var e2 = $('.z-lv-date .end-date');
+            var e3 = $('.z-lv-search select');
+            var e4 = $('.z-lv-search .search-text');
+
+            if (!page && e1.val() == '' && e2.val() == '' && $.trim(e4.val()) == '') {
+                bootbox.alert("검색 조건이 누락됐습니다!"); return;
+            }
+
+            var s = "['\\%^&\"*]";
+            var reg = new RegExp(s, 'g');
+            if (e3.val() != '' && e4.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!"); e4.val(''); return; }
+
+            _zw.V.lv.page = (page) ? page : 1;
+            _zw.V.lv.start = e1.val();
+            _zw.V.lv.end = e2.val();
+            _zw.V.lv.search = e3.val();
+            _zw.V.lv.searchtext = ($.trim(e4.val()) == '') ? '' : e4.val();
+
+            _zw.fn.loadList();
+        },
         "readMsg": function (m) {
             var el, p;
             m = m || '';
@@ -410,6 +454,17 @@ $(function () {
 
             //alert(j["permission"])
             return JSON.stringify(j);
+        },
+        "setLvCnt": function (cnt) {
+            var cookieName = '';
+            if (_zw.V.ctalias == 'ea') cookieName = 'eaLvCount';
+            else if (_zw.V.ctalias == 'doc') cookieName = 'docLvCount';
+            else cookieName = 'bbsLvCount';
+
+            _zw.V.lv.count = cnt;
+            _zw.V.lv.page = 1;
+            _zw.ut.setCookie(cookieName, cnt, 365);
+            _zw.mu.search(1);
         }
     };
 
