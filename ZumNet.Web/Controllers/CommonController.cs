@@ -266,5 +266,108 @@ namespace ZumNet.Web.Controllers
 
             return strView;
         }
+
+        #region [댓글 관련]
+        /// <summary>
+        /// 댓글 등록
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string AddComment()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0)
+                    {
+                        return "전송 데이터 누락!";
+                    }
+                    else if (StringHelper.SafeString(jPost["xfalias"]) == "" || StringHelper.SafeString(jPost["msgid"]) == "" || StringHelper.SafeString(jPost["seqid"]) == "" || StringHelper.SafeString(jPost["comment"]) == "")
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        svcRt = bb.SetBoardMsgComment(jPost["xfalias"].ToString(), Convert.ToInt32(jPost["msgid"]), Convert.ToInt32(jPost["seqid"]), jPost["creurid"].ToString(), jPost["creur"].ToString(), jPost["comment"].ToString(), "");
+                    }
+
+                    if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                    else strView = "OK";
+                }
+                catch(Exception ex)
+                {
+                    strView = ex.Message;
+                }
+            }
+
+            return strView;
+        }
+
+        /// <summary>
+        /// 댓글 삭제
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DeleteComment()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0)
+                    {
+                        return "전송 데이터 누락!";
+                    }
+                    else if (StringHelper.SafeString(jPost["xfalias"]) == "" || StringHelper.SafeString(jPost["msgid"]) == "" || StringHelper.SafeString(jPost["seqid"]) == "")
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        svcRt = bb.DeleteBoardMsgComment(jPost["xfalias"].ToString(), jPost["msgid"].ToString(), jPost["seqid"].ToString());
+                    }
+
+                    if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                    else strView = "OK";
+                }
+                catch (Exception ex)
+                {
+                    strView = ex.Message;
+                }
+            }
+
+            return strView;
+        }
+        #endregion
+
+        /// <summary>
+        /// 게시물 미리보기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Preview()
+        {
+            return View();
+        }
     }
 }

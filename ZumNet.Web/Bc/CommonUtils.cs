@@ -1045,7 +1045,7 @@ namespace ZumNet.Web.Bc
                 using (ZumNet.BSL.ServiceBiz.CommonBiz com = new ZumNet.BSL.ServiceBiz.CommonBiz())
                 {
                     //svcRt = com.GetMenuInformation(1, 0, 101374, "N", "0", "KO");
-                    svcRt = com.GetMenuTop(1, Convert.ToInt32(HttpContext.Current.Session["URID"]), HttpContext.Current.Session["Admin"].ToString(), HttpContext.Current.Session["UseWorkTime"].ToString(), strLocale);
+                    svcRt = com.GetMenuTop(Convert.ToInt32(HttpContext.Current.Session["DNID"]), Convert.ToInt32(HttpContext.Current.Session["URID"]), HttpContext.Current.Session["Admin"].ToString(), HttpContext.Current.Session["UseWorkTime"].ToString(), strLocale);
                 }
 
                 if (svcRt != null && svcRt.ResultCode == 0)
@@ -1561,7 +1561,7 @@ namespace ZumNet.Web.Bc
             {
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.GetObjectPermission(1, ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]), 0, "", "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]), 0, "", "0");
                 }
 
                 if (svcRt != null && svcRt.ResultCode == 0)
@@ -1639,7 +1639,7 @@ namespace ZumNet.Web.Bc
                 }
                 else
                 {
-                    svcRt = cb.GetObjectPermission(1, ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]), fdId, "O", "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]), fdId, "O", "0");
 
                     if (svcRt != null && svcRt.ResultCode == 0)
                     {

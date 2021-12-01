@@ -9,6 +9,8 @@ using Newtonsoft.Json.Linq;
 using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
 
+using ZumNet.Framework.Util;
+
 namespace ZumNet.Web.Controllers
 {
     public class BoardController : Controller
@@ -48,8 +50,8 @@ namespace ZumNet.Web.Controllers
             using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
             {
                 //svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iOpenNode, Convert.ToInt32(Session["URID"]), Session["Admin"].ToString(), "", 1, 20, "SeqID", "DESC", "", "", "", "");
-                svcRt = bd.GetRecentNoticeList(1, 0, "", "notice", iCategoryId, Convert.ToInt32(Session["URID"]), 5, "N", Session["Admin"].ToString(), "");
-                svcRt2 = bd.GetRecentNoticeList(1, 0, "650", "bbs", iCategoryId, Convert.ToInt32(Session["URID"]), 10, "B", Session["Admin"].ToString(), "");
+                svcRt = bd.GetRecentNoticeList(Convert.ToInt32(Session["DNID"]), 0, "", "notice", iCategoryId, Convert.ToInt32(Session["URID"]), 5, "N", Session["Admin"].ToString(), "");
+                svcRt2 = bd.GetRecentNoticeList(Convert.ToInt32(Session["DNID"]), 0, "650", "bbs", iCategoryId, Convert.ToInt32(Session["URID"]), 10, "B", Session["Admin"].ToString(), "");
             }
 
             if (svcRt != null && svcRt.ResultCode == 0 && svcRt2 != null && svcRt2.ResultCode == 0)
@@ -97,7 +99,7 @@ namespace ZumNet.Web.Controllers
             {
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
                     ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                     ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
@@ -124,22 +126,25 @@ namespace ZumNet.Web.Controllers
                 }
             }
 
-            ViewBag.R.lv["page"] = "1";
-            ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("").ToString();
-            ViewBag.R.lv["basesort"] = "SeqID";
-            ViewBag.R.lv["sort"] = "SeqID";
+            ViewBag.R.lv["page"] = ViewBag.R.lv["page"].ToString() == "" || ViewBag.R.lv["page"].ToString() == "0" ? "1" : ViewBag.R.lv["page"].ToString();
+            ViewBag.R.lv["count"] = ViewBag.R.lv["count"].ToString() == "" || ViewBag.R.lv["count"].ToString() == "0" ? Bc.CommonUtils.GetLvCookie("").ToString() : ViewBag.R.lv["count"].ToString();
+            ViewBag.R.lv["basesort"] = ViewBag.R.lv["basesort"].ToString() == "" ? "SeqID" : ViewBag.R.lv["basesort"].ToString();
+            ViewBag.R.lv["sort"] = ViewBag.R.lv["sort"].ToString() == "" ? "SeqID" : ViewBag.R.lv["sort"].ToString();
+            ViewBag.R.lv["sortdir"] = ViewBag.R.lv["sortdir"].ToString() == "" ? "DESC" : ViewBag.R.lv["sortdir"].ToString();
 
             using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
             {
                 if (ViewBag.R.xfalias.ToString() == "notice")
                 {
-                    svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
-                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC", "", "", "", "");
+                    svcRt = bd.GetMessgaeListInfoAddTopLine(Convert.ToInt32(Session["DNID"]), iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
+                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), ViewBag.R.lv["sortdir"].ToString()
+                                        , ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString(), ViewBag.R.lv["start"].ToString(), ViewBag.R.lv["end"].ToString());
                 }
                 else
                 {
-                    svcRt = bd.GetMessgaeListInfo(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
-                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC", "", "", "", "");
+                    svcRt = bd.GetMessgaeListInfo(Convert.ToInt32(Session["DNID"]), iCategoryId, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
+                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), ViewBag.R.lv["sortdir"].ToString()
+                                        , ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString(), ViewBag.R.lv["start"].ToString(), ViewBag.R.lv["end"].ToString());
                 }
             }
 
@@ -189,7 +194,7 @@ namespace ZumNet.Web.Controllers
                         sPos = "300";
                         using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                         {
-                            svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+                            svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
                             sPos = "310";
                             ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
@@ -214,7 +219,7 @@ namespace ZumNet.Web.Controllers
                     {
                         if (jPost["xfalias"].ToString() == "notice")
                         {
-                            svcRt = bd.GetMessgaeListInfoAddTopLine(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"])
+                            svcRt = bd.GetMessgaeListInfoAddTopLine(Convert.ToInt32(Session["DNID"]), iCategoryId, iFolderId, Convert.ToInt32(Session["URID"])
                                                     , ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
                                                     , Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
                                                     , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString()
@@ -222,7 +227,7 @@ namespace ZumNet.Web.Controllers
                         }
                         else
                         {
-                            svcRt = bd.GetMessgaeListInfo(1, iCategoryId, iFolderId, Convert.ToInt32(Session["URID"])
+                            svcRt = bd.GetMessgaeListInfo(Convert.ToInt32(Session["DNID"]), iCategoryId, iFolderId, Convert.ToInt32(Session["URID"])
                                                     , ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
                                                     , Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
                                                     , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString()
@@ -290,7 +295,7 @@ namespace ZumNet.Web.Controllers
             {
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iAppId, ViewBag.R.xfalias.ToString(), "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iAppId, ViewBag.R.xfalias.ToString(), "0");
 
                     ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                     ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
@@ -371,7 +376,7 @@ namespace ZumNet.Web.Controllers
                         sPos = "300";
                         using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                         {
-                            svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iAppId, ViewBag.R.xfalias.ToString(), "0");
+                            svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iAppId, ViewBag.R.xfalias.ToString(), "0");
 
                             sPos = "310";
                             ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();

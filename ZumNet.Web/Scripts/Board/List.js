@@ -2,29 +2,14 @@
 
 $(function () {
 
-    $('.datepicker').datepicker({
-        autoclose: true,
-        //format: "yyyy-mm-dd",
-        language: $('#current_culture').val()
-    });
-
-    $('.bootstrap-maxlength').each(function () {
-        $(this).maxlength({
-            alwaysShow: true,
-            warningClass: 'text-muted',
-            limitReachedClass: 'text-danger',
-            validate: true,
-            placement: 'bottom-left-inside',
-            threshold: +this.getAttribute('maxlength')
-        });
-    });
+    
 
     _zw.mu.write = function () {
-        
+        alert(1)
     }
 
     _zw.mu.delete = function () {
-        
+        alert(2)
     }
 
     _zw.mu.writeMsg = function (m) {
@@ -41,12 +26,6 @@ $(function () {
         var postData = _zw.fn.getLvQuery();
         window.location.href = '/Board/List?qi=' + _zw.base64.encode(postData);
     }
-
-    _zw.mu.preview = function () {
-        var el = event.target ? event.target : event.srcElement;
-
-    }
-
 
     _zw.fn.loadList = function () {
 
@@ -125,6 +104,10 @@ $(function () {
         $('.z-lv-date .end-date').val('');
         $('.z-lv-search select').val('');
         $('.z-lv-search .search-text').val('');
+
+        $('.z-lv-hdr a[data-val]').each(function () {
+            $(this).find('i').removeClass();
+        });
 
         var sCnt = _zw.ut.getCookie('bbsLvCount');
         sCnt = $('.z-lv-page select').val();

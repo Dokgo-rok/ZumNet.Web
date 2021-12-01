@@ -172,46 +172,6 @@
                 </ul>
             </div>
         }
-        <div class="container-p-x my-3">
-            <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.R.app["cmntcount"]</span></h6>
-            <div class="bg-lighter border p-3">
-                <div id="__CommentList">
-                    @if (Convert.ToInt32(ViewBag.R.app["cmntcount"]) > 0)
-                    {
-                        for (int i = ViewBag.R.app["cmntlist"].Count - 1; i >= 0; i--)
-                        {
-                            var j = ViewBag.R.app["cmntlist"][i];
-                            <div class="media">
-                                <img src="~/images/users/sjaekim.jpg" class="mr-3 rounded-circle" style="height:32px" alt="user" />
-                                <div class="media-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div class="d-flex">
-                                            <div class="font-weight-bold mr-3">@j["creur"]</div>
-                                            <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(j["credate"].ToString())</div>
-                                        </div>
-                                        <div>
-                                            @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
-                                            {
-                                                <a class="text-dark mr-2" href="javascript:void();">@Resources.Global.Modify</a>
-                                                <a class="text-muted" href="javascript:void();">@Resources.Global.Delete</a>
-                                            }
-                                        </div>
-                                    </div>
-                                    <p>@Html.Raw(j["comment"])</p>
-                                </div>
-                            </div>
-                        }
-                    }
-                </div>
-                <div class="">
-                    <div class="">
-                        <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500"></textarea>
-                    </div>
-                    <div class="text-right mt-2">
-                        <button class="btn btn-primary" data-zf-menu="write" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register">@Resources.Global.Register</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @Html.Partial("~/Views/Common/_ListComment.cshtml")
     </div>
 </div>

@@ -195,6 +195,23 @@ $(function () {
     });
 
     //ListView Menu
+    $('.datepicker').datepicker({
+        autoclose: true,
+        //format: "yyyy-mm-dd",
+        language: $('#current_culture').val()
+    });
+
+    $('.bootstrap-maxlength').each(function () {
+        $(this).maxlength({
+            alwaysShow: true,
+            warningClass: 'text-muted',
+            limitReachedClass: 'text-danger',
+            validate: true,
+            placement: 'top-right-inside',
+            threshold: +this.getAttribute('maxlength')
+        });
+    });
+
     $('.z-lv-menu .btn[data-zv-menu], .z-lv-search .btn[data-zv-menu]').click(function () {
         var mn = $(this).attr('data-zv-menu');
         if (mn != '') _zw.mu[mn]();
@@ -210,6 +227,30 @@ $(function () {
 
     $('.z-lv-cnt select').change(function () {
         _zw.fn.setLvCnt($(this).val());
+    });
+
+    $('.z-lv-hdr input:checkbox').click(function () {
+        var b = $(this).prop('checked');
+        $('#__ListView input:checkbox').each(function () {
+            $(this).prop('checked', b);
+        });
+    });
+
+    $('.z-lv-hdr a[data-val]').click(function () {
+        var t = $(this); _zw.V.lv.sort = t.attr('data-val');
+        $('.z-lv-hdr a[data-val]').each(function () {
+            if ($(this).attr('data-val') == _zw.V.lv.sort) {
+                var c = t.find('i');
+                if (c.hasClass('fe-arrow-up')) {
+                    c.removeClass('fe-arrow-up').addClass('fe-arrow-down'); _zw.V.lv.sortdir = 'DESC';
+                } else {
+                    c.removeClass('fe-arrow-down').addClass('fe-arrow-up'); _zw.V.lv.sortdir = 'ASC';
+                }
+            } else {
+                $(this).find('i').removeClass();
+            }
+        });
+        _zw.fn.loadList();
     });
 
     //근무 시간 조회
@@ -299,22 +340,27 @@ $(function () {
         "readMsg": function (m) {
             var el, p;
             m = m || '';
-            if (m == 'prev') {
-                _zw.V.appid = _zw.V.app.next;
-            } else if (m == 'next') {
-                _zw.V.appid = _zw.V.app.prev;
-            } else {
-                el = event.target ? event.target : event.srcElement; //alert(el.outerHTML)
-                p = $(el).parent().parent();
 
-                _zw.V.appid = p.attr('appid');
-                //_zw.V.ttl = $(el).text();
+            if (m != 'reload') {
+                if (m == 'prev') {
+                    _zw.V.appid = _zw.V.app.next;
+                } else if (m == 'next') {
+                    _zw.V.appid = _zw.V.app.prev;
+                } else {
+                    el = event.target ? event.target : event.srcElement; //alert(el.outerHTML)
+                    p = $(el).parent().parent();
+
+                    _zw.V.appid = p.attr('appid');
+                    _zw.V.xfalias = p.attr('xf');
+                    _zw.V.current.acl = p.attr('acl');
+                    _zw.V.ttl = ''; //$(el).text();
+                }
+
+                if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
             }
 
-            if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
-
             var postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
-            console.log(postData)
+            console.log(postData); 
             var url = _zw.V.current.page + '?qi=' + _zw.base64.encode(postData);
 
             if (_zw.V.current.page.toLowerCase() == '/board/read') {
@@ -340,7 +386,73 @@ $(function () {
 
                 window.location.href = '/Board/Read?qi=' + _zw.base64.encode(postData);
             }
-            
+        },
+        "setComment": function (seq) {
+            var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
+            var txt = p.find('[data-column="Comment"]');
+            if ($.trim(txt.val()) == '') { bootbox.alert('입력값이 없습니다!'); return false; }
+
+            var jPost = {};
+            jPost["xfalias"] = _zw.V.xfalias;
+            jPost["msgid"] = _zw.V.appid;
+            jPost["seqid"] = seq;
+            jPost["creurid"] = p.find('[data-column="CreatorID"]').text();
+            jPost["creur"] = p.find('[data-column="Creator"]').text();
+            jPost["comment"] = txt.val();
+
+            //alert(JSON.stringify(jPost)); return
+
+            $.ajax({
+                type: "POST",
+                url: "/Common/AddComment",
+                data: JSON.stringify(jPost),
+                dataType: "text",
+                contentType: "application/json; charset=utf-8",
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        _zw.mu.readMsg('reload');
+
+                    } else bootbox.alert(res);
+                }
+            });
+        },
+        "editComment": function (seq) {
+            var el = event.target ? event.target : event.srcElement;
+            $(el).parent().hide();
+
+            var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
+            p.find('p').hide();
+            p.find('p').next().removeClass('d-none');
+        },
+        "cancelComment": function (seq) {
+            var el = event.target ? event.target : event.srcElement;
+            var p = $(el).parent().parent();
+            p.addClass('d-none');
+            p.prev().show();
+            p.prev().prev().children().last().show();
+        },
+        "deleteComment": function (seq) {
+            var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
+
+            bootbox.confirm("삭제하시겠습니까?", function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Common/deleteComment",
+                        data: '{xfalias:"' + _zw.V.xfalias + '",msgid:"' + _zw.V.appid + '",seqid:"' + seq.toString() + '"}',
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                _zw.mu.readMsg('reload');
+
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
+        },
+        "preview": function () {
+            var url = "/Common/Preview?ctalias=" + _zw.V.ctalias + "&xfalias=" + _zw.V.xfalias;
+            _zw.ut.openWnd(url, "preview", 800, 600, "resize");
         }
     };
 
@@ -540,6 +652,9 @@ $(function () {
                 t.push(v[i]);
             }
             return true;
+        },
+        "toBR": function (s) {
+            //s.replace(/\n/gi, '<br />')
         },
         "emSpace": function (s) {
             if (s && $.trim(s) != '') {

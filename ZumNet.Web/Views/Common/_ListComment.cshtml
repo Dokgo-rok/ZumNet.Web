@@ -1,0 +1,58 @@
+﻿@{
+}
+<div class="container-p-x my-3">
+    <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.R.app["cmntcount"]</span></h6>
+    <div class="bg-lighter border p-3">
+        <div id="__CommentList">
+            @if (Convert.ToInt32(ViewBag.R.app["cmntcount"]) > 0)
+            {
+                foreach (var j in ViewBag.R.app["cmntlist"])
+                {
+                    <div class="media" data-for="comment_@j["seqid"]">
+                        <img src="~/images/users/sjaekim.jpg" class="mr-3 rounded-circle" style="height:32px" alt="user" />
+                        <div class="media-body">
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex">
+                                    <div class="font-weight-bold mr-3" data-column="Creator">@j["creur"]</div><span class="d-none" data-column="CreatorID">@j["creurid"]</span>
+                                    <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(j["credate"].ToString())</div>
+                                </div>
+                                <div>
+                                    @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString())
+                                    {
+                                        <a class="text-dark mr-2" href="javascript:void();" onclick="_zw.mu.editComment(@j["seqid"]);">@Resources.Global.Modify</a>
+                                    }
+                                    @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
+                                    {
+                                        <a class="text-muted" href="javascript:void();" onclick="_zw.mu.deleteComment(@j["seqid"]);">@Resources.Global.Delete</a>
+                                    }
+                                </div>
+                            </div>
+                            <p>@Html.Raw(j["comment"].ToString().Replace("\n", "<br />"))</p>
+                            <div class="d-none mt-1 mb-3">
+                                <div>
+                                    <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment">@j["comment"]</textarea>
+                                </div>
+                                <div class="text-right mt-2">
+                                    <button class="btn btn-default" onclick="_zw.mu.cancelComment(@j["seqid"]);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Cancel">@Resources.Global.Cancel</button>
+                                    <button class="btn btn-primary" onclick="_zw.mu.setComment(@j["seqid"]);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify">@Resources.Global.Modify</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            <div class="" data-for="comment_0">
+                <div class="ml-2 mb-1">
+                    <span data-column="Creator">@ViewBag.R.current.user</span><span class="d-none" data-column="CreatorID">@ViewBag.R.current.urid</span>
+                </div>
+                <div>
+                    <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment"></textarea>
+                </div>
+                <div class="text-right mt-2">
+                    <button class="btn btn-primary" onclick="_zw.mu.setComment(0);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register">@Resources.Global.Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

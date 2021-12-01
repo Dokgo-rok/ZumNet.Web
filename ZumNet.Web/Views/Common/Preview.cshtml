@@ -1,0 +1,26 @@
+﻿@using System;
+@using System.Web;
+
+@{
+    ViewBag.Title = Resources.Global.Preview;
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+
+    string _CTAlias = ZumNet.Framework.Util.StringHelper.SafeString(Request["ctalias"], "");
+    string _XFAlias = ZumNet.Framework.Util.StringHelper.SafeString(Request["xfalias"], "");
+}
+@section Styles {
+
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        (function () {
+            $('#__Preview').html($(opener.document).find('#__FormView .flex-grow-1').html());
+            $('#__Preview').find('[data-for="comment_0"]').hide();
+
+            window.print();
+        }());
+    </script>
+}
+
+<div class="" id="__Preview"></div>
