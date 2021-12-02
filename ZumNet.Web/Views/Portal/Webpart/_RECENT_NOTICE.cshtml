@@ -20,7 +20,7 @@
                     string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
                     string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
 
-                    <div class="@(iCnt < col.Length - 1 ? "mb-2" : "")@(sRead)@(sTopLine)">
+                    <div class="@(iCnt < col.Length - 1 ? "mb-2" : "")@(sRead)@(sTopLine)" xf="@row["XFAlias"]" appid="@row["MessageID"]" ctid="@row["CT_ID"]" fdid="@row["FD_ID"]" seqid="@row["SeqID"]">
                         <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</div>
                         <div class="text-truncate">
                             @if (Convert.ToInt32(row["Depth"]) > 0)
@@ -39,7 +39,7 @@
                             {
                                 <img src="~/images/plugins/new.gif" alt="" />
                             }
-                            <a class="text-truncate" href="javascript:void(0)">[@row["DisplayName"].ToString()] @row["Subject"].ToString()</a>
+                            <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');">[@row["DisplayName"].ToString()] @row["Subject"].ToString()</a>
                             @if (Convert.ToInt32(row["CommentCount"]) > 0)
                             {
                                 <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>
@@ -60,7 +60,7 @@
                     string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
                     string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
 
-                    <div class="@(iCnt < col.Length - 1 ? "mb-2" : "")@(sRead)@(sTopLine)">
+                    <div class="@(iCnt < col.Length - 1 ? "mb-2" : "")@(sRead)@(sTopLine)" xf="@row["XFAlias"]" appid="@row["MessageID"]" ctid="@row["CT_ID"]" fdid="@row["FD_ID"]" seqid="@row["SeqID"]">
                         <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</div>
                         <div class="text-truncate">
                             @if (Convert.ToInt32(row["Depth"]) > 0)
@@ -79,7 +79,7 @@
                             {
                                 <img src="~/images/plugins/new.gif" alt="" />
                             }
-                            <a class="text-truncate" href="javascript:void(0)">[@row["DisplayName"].ToString()] @row["Subject"].ToString()</a>
+                            <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');">[@row["DisplayName"].ToString()] @row["Subject"].ToString()</a>
                             @if (Convert.ToInt32(row["CommentCount"]) > 0)
                             {
                                 <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>

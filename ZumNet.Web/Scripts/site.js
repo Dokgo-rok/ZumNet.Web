@@ -340,45 +340,73 @@ $(function () {
             _zw.fn.loadList();
         },
         "readMsg": function (m) {
-            var el, p;
+            var el, p, postData, tgtPage;
             m = m || '';
 
-            if (m != 'reload') {
+            if (m == 'reload') {
+                if (_zw.V.mode == 'popup') {
+                    window.location.reload(); return false;
+                }
+                postData = _zw.fn.getAppQuery(_zw.V.fdid);
+                tgtPage = _zw.V.current.page;
+
+            } else if (m == 'popup') {
+                el = event.target ? event.target : event.srcElement;
+                p = $(el).parent().parent();
+                if (p.attr('xf') == undefined) p = $(el).parent().parent().parent();
+
+                postData = '{M:"' + m + '",ct:"' + (p.attr('ctid') != undefined ? p.attr('ctid') : _zw.V.ct) + '",ctalias:"",ot:"",alias:"",xfalias:"' + p.attr('xf') + '",fdid:"' + p.attr('fdid') + '",appid:"' + p.attr('appid') + '",opnode:"",ttl:"",acl:"",sort:"SeqID",sortdir:"DESC",boundary:"' + _zw.V.lv.boundary + '"}';
+                tgtPage = '/Board/Read';
+                //alert(postData); return
+
+            } else {
                 if (m == 'prev') {
                     _zw.V.appid = _zw.V.app.next;
                 } else if (m == 'next') {
                     _zw.V.appid = _zw.V.app.prev;
                 } else {
-                    el = event.target ? event.target : event.srcElement; //alert(el.outerHTML)
+                    el = event.target ? event.target : event.srcElement;
                     p = $(el).parent().parent();
 
                     _zw.V.appid = p.attr('appid');
                     _zw.V.xfalias = p.attr('xf');
-                    _zw.V.current.acl = p.attr('acl');
                     _zw.V.ttl = ''; //$(el).text();
+                    _zw.V.current.acl = p.attr('acl');
                 }
 
                 if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
+
+                postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
+                //console.log(postData);
+                tgtPage = _zw.V.current.page;
             }
+            
+            var url = tgtPage + '?qi=' + _zw.base64.encode(postData);
 
-            var postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
-            console.log(postData); 
-            var url = _zw.V.current.page + '?qi=' + _zw.base64.encode(postData);
+            if (m == 'popup') {
+                _zw.ut.openWnd(url, "popupform", 800, 600, "resize");
 
-            if (_zw.V.current.page.toLowerCase() == '/board/read') {
+            } else if (tgtPage.toLowerCase() == '/board/read') {
                 $.ajax({
                     type: "POST",
                     url: url,
                     success: function (res) {
                         if (res.substr(0, 2) == "OK") {
-                            history.pushState(null, null, url);
-
                             var v = res.substr(2).split(_zw.V.lv.boundary);
-                            $('#__FormView').html(v[0]);
-                            _zw.V.app = JSON.parse(v[1]);
 
-                            window.document.title = _zw.V.app['subject'];
+                            if (m == 'modal') {
+                                $('#popForm .modal-body').html(v[0]);
 
+                                $('#popForm').modal('show');
+
+                            } else {
+                                history.pushState(null, null, url);
+                                
+                                $('#__FormView').html(v[0]);
+                                _zw.V.app = JSON.parse(v[1]);
+
+                                window.document.title = _zw.V.app['subject'];
+                            }
                         } else bootbox.alert(res);
                     }
                 });

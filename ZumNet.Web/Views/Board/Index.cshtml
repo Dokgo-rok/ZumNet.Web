@@ -137,7 +137,7 @@
                                 for (int i = 0; i < ViewBag.RecentBBS.Rows.Count; i++)
                                 {
                                     DataRow row = ViewBag.RecentBBS.Rows[i];
-                                    <div class="d-flex justify-content-between align-items-center py-2">
+                                    <div class="d-flex justify-content-between align-items-center py-2" xf="@row["XFAlias"]" appid="@row["MessageID"]" fdid="@row["FD_ID"]">
                                         <div class="text-truncate">
                                             @if (i % 3 == 0)
                                             {
@@ -151,7 +151,7 @@
                                             {
                                                 <div class="badge badge-pill badge-primary opacity-75">@row["DisplayName"]</div>
                                             }
-                                            <div class="text-truncate mt-1"><a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
+                                            <div class="text-truncate mt-1"><a href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
                                         </div>
                                         <div class="text-truncate">
                                             @if (Convert.ToInt32(row["CommentCount"]) > 0)
@@ -181,12 +181,12 @@
                                 {
                                     foreach (DataRow row in ViewBag.RecentNotice.Rows)
                                     {
-                                        <div class="d-flex justify-content-between align-items-center py-2">
+                                        <div class="d-flex justify-content-between align-items-center py-2" xf="@row["XFAlias"]" appid="@row["MessageID"]" fdid="@row["FD_ID"]">
                                             <div class="text-truncate">
                                                 <div class="badge badge-pill badge-default">@row["DisplayName"]</div>
 
                                                 <div class="text-truncate mt-1">
-                                                    <a href="javascript:void(0)" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a>
+                                                    <a href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a>
                                                 </div>
                                             </div>
                                             <div class="text-truncate">

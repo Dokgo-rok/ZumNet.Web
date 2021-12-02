@@ -5,7 +5,16 @@
 
 @{
     ViewBag.Title = ViewBag.R.app["subject"];
-    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    if (ViewBag.R.mode.ToString() == "popup")
+    {
+        Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+    }
+
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
@@ -17,29 +26,31 @@
     //    sSitePath += (sSitePath == "") ? s[1] : " > " + s[1];
     //}
 
-    bool bPrevEditorBody = false;
-    if (DateTime.Compare(Convert.ToDateTime("2022-01-01"), Convert.ToDateTime(ViewBag.R.app["credate"].Value)) > 0)
-    {
-        bPrevEditorBody = true;
-    }
 
     //Response.Write("REMOTE_ADDR : " + Request.ServerVariables["REMOTE_ADDR"].ToString() + "<br />");
     //Response.Write("REMOTE_HOST : " + Request.ServerVariables["REMOTE_HOST"].ToString() + "<br />");
 }
 
 @section Styles {
-    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
-    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
-    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @if (ViewBag.R.mode.ToString() == "")
+    {
+        @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+        @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+        @Styles.Render("~/bundle/vendor/css/pages/messages")
+    }
 }
 
 @section Scripts {
-    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
-    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @if (ViewBag.R.mode.ToString() == "")
+    {
+        @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+        @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    }
+
     @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
     @Scripts.Render("~/Scripts/Board/list.js")
 
-    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    @if (ViewBag.R.mode.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
     }
@@ -52,20 +63,30 @@
     </script>
 }
 
-<!--
-=================================================================
-**************************** CONTENT ****************************
--->
-<!-- `.messages-wrapper` fills all available space of container -->
-<div class="messages-wrapper">
-
-    <!-- sidebox -->
-    @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
-    <!-- / sidebox -->
-    <!-- content -->
-    <div class="d-flex flex-column w-100" id="__FormView">
+@if (ViewBag.R.mode.ToString() == "popup")
+{
+    <div class="" id="__FormView">
         @Html.Partial("_Read")
     </div>
-    <!-- / content -->
+}
+else
+{
+    <!--
+    =================================================================
+    **************************** CONTENT ****************************
+    -->
+    <!-- `.messages-wrapper` fills all available space of container -->
+    <div class="messages-wrapper">
 
-</div><!-- / .messages-wrapper -->
+        <!-- sidebox -->
+        @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+        <!-- / sidebox -->
+        <!-- content -->
+        <div class="d-flex flex-column w-100" id="__FormView">
+            @Html.Partial("_Read")
+        </div>
+        <!-- / content -->
+
+    </div><!-- / .messages-wrapper -->
+}
+
