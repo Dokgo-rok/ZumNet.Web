@@ -195,11 +195,13 @@ $(function () {
     });
 
     //ListView Menu
-    $('.datepicker').datepicker({
-        autoclose: true,
-        //format: "yyyy-mm-dd",
-        language: $('#current_culture').val()
-    });
+    if ($('.datepicker').length > 0) {
+        $('.datepicker').datepicker({
+            autoclose: true,
+            //format: "yyyy-mm-dd",
+            language: $('#current_culture').val()
+        });
+    }
 
     $('.bootstrap-maxlength').each(function () {
         $(this).maxlength({
