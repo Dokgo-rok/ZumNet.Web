@@ -8,7 +8,7 @@
         //string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
         //string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
 
-        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x">
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x" xf="@row["XFAlias"]" appid="@row["MessageID"]" acl="@row["AclKind"]" auth="@row["Authority"]">
             <div class="wd-8 wd-lg-5 wd-xl-4 message-checkbox">
                 <label class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input">
@@ -38,7 +38,7 @@
                 {
                     <img src="~/images/plugins/new.gif" alt="" />
                 }
-                <a class="text-truncate" href="javascript:void(0)">@row["Subject"].ToString()</a>
+                <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg();">@row["Subject"].ToString()</a>
                 @if (Convert.ToInt32(row["CommentCount"]) > 0)
                 {
                     <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>

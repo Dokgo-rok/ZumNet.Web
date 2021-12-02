@@ -2,8 +2,6 @@
 
 $(function () {
 
-    
-
     _zw.mu.write = function () {
         alert(1)
     }
@@ -34,9 +32,9 @@ $(function () {
         //    + '",searchtext:"' + _zw.V.lv.searchtext + '",start:"' + _zw.V.lv.start + '",end:"' + _zw.V.lv.end + '",boundary:"' + _zw.V.lv.boundary + '"}';
 
         //var j = JSON.parse(sJson);
-        //console.log(j.ctalias);
+        
 
-        var postData = _zw.fn.getLvQuery();
+        var postData = _zw.fn.getLvQuery(); console.log(postData);
         var url = '/Board/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/Board/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);

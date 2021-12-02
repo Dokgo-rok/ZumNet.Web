@@ -2,11 +2,28 @@
 
 $(function () {
 
-    $('.datepicker').datepicker({
-        autoclose: true,
-        //format: "yyyy-mm-dd",
-        language: $('#current_culture').val()
-    });
+    _zw.mu.write = function () {
+        alert(1)
+    }
+
+    _zw.mu.delete = function () {
+        alert(2)
+    }
+
+    _zw.mu.writeMsg = function (m) {
+        var el = event.target ? event.target : event.srcElement;
+
+    }
+
+    _zw.mu.deleteMsg = function () {
+        var el = event.target ? event.target : event.srcElement;
+
+    }
+
+    _zw.mu.goList = function () {
+        var postData = _zw.fn.getLvQuery();
+        window.location.href = '/Docs/Kms/List?qi=' + _zw.base64.encode(postData);
+    }
 
     _zw.fn.loadList = function () {
 
@@ -17,7 +34,7 @@ $(function () {
         //var j = JSON.parse(sJson);
         //console.log(j.ctalias);
 
-        var postData = _zw.fn.getLvQuery();
+        var postData = _zw.fn.getLvQuery(); console.log(postData);
         var url = '/Docs/Kms/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/Docs/Kms/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
@@ -38,12 +55,17 @@ $(function () {
                     $('#__ListCount').html(v[1]);
                     $('#__ListPage').html(v[2]);
 
+                    $('.pagination li a.page-link').click(function () {
+                        _zw.mu.search($(this).attr('data-for'));
+                    });
+
+                    $('.z-lv-cnt select').change(function () {
+                        _zw.fn.setLvCnt($(this).val());
+                    });
+
                 } else bootbox.alert(res);
             }
         });
-    }
-    _zw.fn.goSearch = function () {
-        alert(1)
     }
 
     _zw.fn.getLvQuery = function () {
@@ -76,13 +98,22 @@ $(function () {
     }
 
     _zw.fn.initLv = function (tgt) {
+        $('.z-lv-date .start-date').val('');
+        $('.z-lv-date .end-date').val('');
+        $('.z-lv-search select').val('');
+        $('.z-lv-search .search-text').val('');
+
+        $('.z-lv-hdr a[data-val]').each(function () {
+            $(this).find('i').removeClass();
+        });
+
         var sCnt = _zw.ut.getCookie('docLvCount');
         sCnt = $('.z-lv-page select').val();
 
         _zw.V.lv.tgt = tgt;
         _zw.V.lv.page = '1';
         _zw.V.lv.count = sCnt == '' ? '20' : sCnt;
-        _zw.V.lv.sort = 'SeqID';
+        _zw.V.lv.sort = 'CreateDate';
         _zw.V.lv.sortdir = 'DESC';
         _zw.V.lv.search = '';
         _zw.V.lv.searchtext = '';
@@ -90,6 +121,4 @@ $(function () {
         _zw.V.lv.end = '';
         _zw.V.lv.basesort = '';
     }
-    
-
 });

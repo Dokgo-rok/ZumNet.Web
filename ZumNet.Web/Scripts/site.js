@@ -331,6 +331,7 @@ $(function () {
             var reg = new RegExp(s, 'g');
             if (e3.val() != '' && e4.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!"); e4.val(''); return; }
 
+            _zw.V.lv.tgt = _zw.V.fdid;
             _zw.V.lv.page = (page) ? page : 1;
             _zw.V.lv.start = e1.val();
             _zw.V.lv.end = e2.val();

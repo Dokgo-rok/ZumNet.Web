@@ -69,7 +69,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
-            rt = "잘못된 경로로 접근했습니다!!";
+            rt = Resources.Global.Auth_InvalidPath;
             if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -89,14 +89,14 @@ namespace ZumNet.Web.Areas.Docs.Controllers
             {
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
                     ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                     ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
                 }
             }
 
-            rt = "권한이 없습니다!!";
+            rt = Resources.Global.Auth_NoPermission;
             if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
             {
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -113,15 +113,17 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                 }
             }
 
-            ViewBag.R.lv["page"] = "1";
-            ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("doc").ToString();
-            ViewBag.R.lv["basesort"] = "SeqID";
-            ViewBag.R.lv["sort"] = "SeqID";
+            ViewBag.R.lv["page"] = ViewBag.R.lv["page"].ToString() == "" || ViewBag.R.lv["page"].ToString() == "0" ? "1" : ViewBag.R.lv["page"].ToString();
+            ViewBag.R.lv["count"] = ViewBag.R.lv["count"].ToString() == "" || ViewBag.R.lv["count"].ToString() == "0" ? Bc.CommonUtils.GetLvCookie("doc").ToString() : ViewBag.R.lv["count"].ToString();
+            ViewBag.R.lv["basesort"] = ViewBag.R.lv["basesort"].ToString() == "" ? "SeqID" : ViewBag.R.lv["basesort"].ToString();
+            ViewBag.R.lv["sort"] = ViewBag.R.lv["sort"].ToString() == "" ? "SeqID" : ViewBag.R.lv["sort"].ToString();
+            ViewBag.R.lv["sortdir"] = ViewBag.R.lv["sortdir"].ToString() == "" ? "DESC" : ViewBag.R.lv["sortdir"].ToString();
 
             using (ZumNet.BSL.ServiceBiz.DocBiz db = new BSL.ServiceBiz.DocBiz())
             {
-                svcRt = db.GetDocumentMessageList(1, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
-                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC", "", "", "", "");
+                svcRt = db.GetDocumentMessageList(Convert.ToInt32(Session["DNID"]), iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
+                                        , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), ViewBag.R.lv["sortdir"].ToString()
+                                        , ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString(), ViewBag.R.lv["start"].ToString(), ViewBag.R.lv["end"].ToString());
             }
 
             if (svcRt != null && svcRt.ResultCode == 0)
@@ -170,7 +172,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                         sPos = "300";
                         using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                         {
-                            svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+                            svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
                             sPos = "310";
                             ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
@@ -180,13 +182,13 @@ namespace ZumNet.Web.Areas.Docs.Controllers
 
                     if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
                     {
-                        return "권한이 없습니다!!";
+                        return Resources.Global.Auth_NoPermission;
                     }
 
                     sPos = "400";
                     using (ZumNet.BSL.ServiceBiz.DocBiz db = new BSL.ServiceBiz.DocBiz())
                     {
-                        svcRt = db.GetDocumentMessageList(1, iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
+                        svcRt = db.GetDocumentMessageList(Convert.ToInt32(Session["DNID"]), iFolderId, Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString(), ViewBag.R.current.acl.ToString()
                                         , Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"]), jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString()
                                         , jPost["lv"]["search"].ToString(), jPost["lv"]["searchtext"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString());
                     }

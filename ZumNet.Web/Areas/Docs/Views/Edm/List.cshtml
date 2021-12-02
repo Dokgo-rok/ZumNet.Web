@@ -83,21 +83,21 @@
                 <div class="px-1 flex-grow-1"></div>
                 <div class="d-flex z-lv-cond">
                     <div class="datepicker input-group input-daterange z-lv-date mr-1">
-                        <input type="text" class="form-control start-date px-1">
+                        <input type="text" class="form-control start-date px-1" value="@ViewBag.R.lv.start">
                         <div class="input-group-prepend">
                             <span class="input-group-text">~</span>
                         </div>
-                        <input type="text" class="form-control end-date px-1">
+                        <input type="text" class="form-control end-date px-1" value="@ViewBag.R.lv.end">
                     </div>
                     <div class="input-group z-lv-search">
                         <select class="custom-select">
-                            <option>@Resources.Global.Select...</option>
-                            <option>@Resources.Global.Title</option>
-                            <option>@Resources.Global.Writer</option>
+                            <option value="">@Resources.Global.Select...</option>
+                            <option value="Subject" @(ViewBag.R.lv.search == "Subject" ? " selected" : "")>@Resources.Global.Title</option>
+                            <option value="Creator" @(ViewBag.R.lv.search == "Creator" ? " selected" : "")>@Resources.Global.Writer</option>
                         </select>
-                        <input type="text" class="form-control" placeholder="@Resources.Global.Search">
+                        <input type="text" class="form-control search-text" placeholder="@Resources.Global.Search" value="@ViewBag.R.lv.searchtext">
                         <span class="input-group-append">
-                            <button class="btn btn-secondary" type="button"><i class="fe-search"></i></button>
+                            <button class="btn btn-secondary" type="button" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Search" data-zv-menu="search"><i class="fe-search"></i></button>
                         </span>
                     </div>
                 </div>
@@ -108,8 +108,8 @@
         <div class="flex-grow-0 z-lv-hdr">
             <ul class="list-group d-none d-sm-block">
                 <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x" style="background-color: rgba(52, 79, 233, 0.1)">
-                    <div class="d-none d-md-block wd-lg-6 wd-xl-4 text-center">
-                        <span class="flex-fill">@Resources.Global.SeqNo</span>
+                    <div class="d-none d-md-block wd-lg-6 wd-xl-4 text-center text-truncate">
+                        <a href="javascript:void(0)" class="flex-fill" data-val="SeqID">@Resources.Global.SeqNo<i class="@(ViewBag.R.lv.sort == "SeqID" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "") : "")"></i></a>
                     </div>
 
                     <div class="wd-12 wd-lg-10 wd-xl-8 text-center text-truncate">
@@ -117,27 +117,27 @@
                     </div>
 
                     <div class="flex-fill text-truncate text-center">
-                        <a href="javascript:void(0)">@Resources.Global.Title</a>
+                        <a href="javascript:void(0)" data-val="Subject">@Resources.Global.Title<i class="@(ViewBag.R.lv.sort == "Subject" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
                     </div>
 
                     <div class="d-none d-md-block wd-lg-15 wd-xl-15 pl-2">
-                        <a href="javascript:void(0)">@Resources.Global.DocNumber</a>
+                        <a href="javascript:void(0)" data-val="DocNum">@Resources.Global.DocNumber<i class="@(ViewBag.R.lv.sort == "DocNum" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
                     </div>
 
                     <div class="wd-lg-32 wd-xl-32 d-flex">
                         <div class="d-none d-md-block wd-lg-35 wd-xl-35 text-center pr-2">
-                            <a href="javascript:void(0)">@Resources.Global.WriteDept</a>
+                            <a href="javascript:void(0)" data-val="CreatorDept">@Resources.Global.WriteDept<i class="@(ViewBag.R.lv.sort == "CreatorDept" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
                         </div>
                         <div class="wd-md-40 wd-lg-25 wd-xl-25 text-center pr-2">
-                            <a href="javascript:void(0)">@Resources.Global.Writer</a>
+                            <a href="javascript:void(0)" data-val="Creator">@Resources.Global.Writer<i class="@(ViewBag.R.lv.sort == "Creator" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
                         </div>
 
                         <div class="wd-md-40 wd-lg-23 wd-xl-25 text-center">
-                            <a href="javascript:void(0)">@Resources.Global.Date_Created</a>
+                            <a href="javascript:void(0)" data-val="CreateDate">@Resources.Global.Date_Created<i class="@(ViewBag.R.lv.sort == "CreateDate" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
                         </div>
 
                         <div class="text-right text-pink flex-fill">
-                            <span class="">@Resources.Global.ViewCount</span>
+                            <a href="javascript:void(0)" data-val="ViewCount">@Resources.Global.ViewCount<i class="@(ViewBag.R.lv.sort == "ViewCount" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
                         </div>
                     </div>
                 </li>
