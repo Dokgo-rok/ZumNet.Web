@@ -252,6 +252,8 @@ $(function () {
                 $(this).find('i').removeClass();
             }
         });
+
+        _zw.V.lv.tgt = _zw.V.fdid;
         _zw.fn.loadList();
     });
 

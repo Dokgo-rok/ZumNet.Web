@@ -11,7 +11,7 @@
     padding-top: 0;
     padding-bottom: 0;
     /*height: 56px;*/
-    box-shadow: 0 1px 1px rgb(50 58 70 / 10%);
+    box-shadow: 0 1px 1px rgba(50,58,70,0.1);
 }
 .navbar-brand {
     padding-left: 0.1rem;

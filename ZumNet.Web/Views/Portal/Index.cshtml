@@ -20,6 +20,8 @@
             sbChart.Append(RenderChartItem(ViewBag.KPI_A.Tables[0], ViewBag.KPI_A.Tables[1], ViewBag.KPI_A.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
         }
     }
+
+    //Response.Write("--------------------------------------------------" + JsonConvert.SerializeObject(ViewBag.R));
 }
 
 @functions {
@@ -197,6 +199,4 @@
     </div>
 
     @Html.Partial("Webpart/_ERP_KPI")
-
-
 </div>
