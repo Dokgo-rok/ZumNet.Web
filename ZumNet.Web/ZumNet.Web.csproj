@@ -1594,6 +1594,9 @@
     <Content Include="Areas\WoA\Views\App\Form.cshtml" />
     <Content Include="Content\Json\init.json" />
     <Content Include="Content\Json\jform_bbs.json" />
+    <Content Include="Content\Json\jform_knowledge.json" />
+    <Content Include="Areas\Docs\Views\Kms\Read.cshtml" />
+    <Content Include="Areas\Docs\Views\Kms\_Read.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -1672,6 +1675,7 @@
     <Content Include="Views\Board\_Read.cshtml" />
     <Content Include="Views\Common\_ListComment.cshtml" />
     <Content Include="Views\Common\Preview.cshtml" />
+    <Content Include="Views\Common\_ListMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

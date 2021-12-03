@@ -1183,7 +1183,8 @@ namespace ZumNet.Web.Bc
                 jV["current"]["date"] = nowDate.ToString("yyyy-MM-dd");
                 jV["current"]["workdate"] = workDate; //근무관리
                 jV["current"]["page"] = HttpContext.Current.Request.Url.AbsolutePath;
-                jV["current"]["acl"] = StringHelper.SafeString(jReq["acl"]);
+                jV["current"]["acl"] = StringHelper.SafeString(jReq["acl"]); //폴더, 게시판 권한
+                jV["current"]["appacl"] = StringHelper.SafeString(jReq["appacl"]); //게시물권한
                 jV["current"]["chief"] = "";
                 jV["current"]["operator"] = "";
 
@@ -1328,7 +1329,8 @@ namespace ZumNet.Web.Bc
                         jV["current"]["date"] = nowDate.ToString("yyyy-MM-dd");
                         jV["current"]["workdate"] = workDate; //근무관리
                         jV["current"]["page"] = HttpContext.Current.Request.Url.AbsolutePath;
-                        jV["current"]["acl"] = StringHelper.SafeString(jReq["acl"]);
+                        jV["current"]["acl"] = StringHelper.SafeString(jReq["acl"]); //폴더, 게시판 권한
+                        jV["current"]["appacl"] = StringHelper.SafeString(jReq["appacl"]); //게시물권한
                         jV["current"]["chief"] = "";
                         jV["current"]["operator"] = "";
 

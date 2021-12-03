@@ -1,0 +1,36 @@
+﻿@{
+
+}
+
+@if (ViewBag.R.xfalias == "notice" || ViewBag.R.xfalias == "bbs" || ViewBag.R.xfalias == "file")
+{
+    <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
+    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
+    {
+        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeNew" data-zv-menu="write"><i class="fe-edit-2"></i></button>
+    }
+    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "D"))
+    {
+        <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zv-menu="delete"><i class="fe-trash-2"></i></button>
+    }
+}
+else if (ViewBag.R.xfalias == "doc")
+{
+    <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
+    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
+    {
+        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeDoc" data-zv-menu="write"><i class="fe-edit-2"></i></button>
+    }
+}
+else if (ViewBag.R.xfalias == "knowledge")
+{
+    <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
+    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
+    {
+        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeKnowledge" data-zv-menu="write"><i class="fe-edit-2"></i></button>
+    }
+    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "D"))
+    {
+        <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zv-menu="delete"><i class="fe-trash-2"></i></button>
+    }
+}

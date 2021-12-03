@@ -15,22 +15,7 @@
         Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
     }
 
-
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
-
-    //string sSitePath = "";
-    //string[] vSiteMap = ViewBag.SiteMap.Split(new char[] { '' });
-    //foreach (string fd in vSiteMap)
-    //{
-    //    string[] s = fd.Split(new char[] { '' });
-    //    sSitePath += (sSitePath == "") ? s[1] : " > " + s[1];
-    //}
-
-
-    //Response.Write("REMOTE_ADDR : " + Request.ServerVariables["REMOTE_ADDR"].ToString() + "<br />");
-    //Response.Write("REMOTE_HOST : " + Request.ServerVariables["REMOTE_HOST"].ToString() + "<br />");
-    //Response.Write(ViewBag.R.current["acl"].ToString());
-    //Response.Write(ViewBag.R.current["acl"].ToString().Substring(6, 4) + " : " + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2));
 }
 
 @section Styles {
@@ -50,7 +35,7 @@
     }
 
     @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
-    @Scripts.Render("~/Scripts/Board/list.js")
+    @Scripts.Render("~/Scripts/Docs/kms.js")
 
     @if (ViewBag.R.mode.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {

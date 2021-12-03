@@ -107,14 +107,14 @@ $(function () {
                 if (vId[vId.length - 1] == _zw.V.fdid) return false;
 
                 //var vPath = $("#__FolderTree").jstree("get_path", d.selected[0]);
-                var vPath = d.instance.get_path(d.selected[0]); console.log(vPath)
+                var vPath = d.instance.get_path(d.selected[0]); //console.log(vPath)
                 //$('.z-ttl span').html(vPath.join(' / '));
                 var encQi = '', ttl = vPath.join(' / ');
 
                 if (n.li_attr.acl.substr(n.li_attr.acl.length - 1, 1) == 'V' && n.li_attr.objecttype == 'G') {
-                    //alert(_zw.base64.decode('e2N0OiIxMDMiLGN0YWxpYXM6ImJib2FyZCIsb3Q6IkciLHhmOiJiYnMiLGZkaWQ6IjE0NDk5IixvcG5vZGU6IjAuMC4xNDQ5OSIsdHRsOiIyMDIw64WE64+EIixwZXJtaXNzaW9uOiJTRkRFUlZTREVNV1JWIn0='))
+                    //alert('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}')
                     //encQi = encodeURIComponent('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
-                    encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                    encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"",acl:"' + n.li_attr.acl + '"}');
                     //encQi = encQi.replace(/ /gi, '+');
                     switch (n.li_attr.xfalias) {
                         case "notice":

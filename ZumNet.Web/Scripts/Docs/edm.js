@@ -53,7 +53,8 @@ $(function () {
                     var v = res.substr(2).split(_zw.V.lv.boundary);
                     $('#__ListView').html(v[0]);
                     $('#__ListCount').html(v[1]);
-                    $('#__ListPage').html(v[2]);
+                    $('#__ListMenu').html(v[2]);
+                    $('#__ListPage').html(v[3]);
 
                     $('.pagination li a.page-link').click(function () {
                         _zw.mu.search($(this).attr('data-for'));

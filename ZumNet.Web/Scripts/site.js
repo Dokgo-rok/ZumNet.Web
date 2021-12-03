@@ -343,8 +343,12 @@ $(function () {
             _zw.fn.loadList();
         },
         "readMsg": function (m) {
-            var el, p, postData, tgtPage;
+            var el, p, postData, tgtPage, stdPage;
             m = m || '';
+
+            if (_zw.V.xfalias == 'knowledge') stdPage = '/Docs/Kms/Read';
+            else if (_zw.V.xfalias == 'doc') stdPage = '/Docs/Edm/Read';
+            else stdPage = '/Board/Read';
 
             if (m == 'reload') {
                 if (_zw.V.mode == 'popup') {
@@ -358,8 +362,10 @@ $(function () {
                 p = $(el).parent().parent();
                 if (p.attr('xf') == undefined) p = $(el).parent().parent().parent();
 
-                postData = '{M:"' + m + '",ct:"' + (p.attr('ctid') != undefined ? p.attr('ctid') : _zw.V.ct) + '",ctalias:"",ot:"",alias:"",xfalias:"' + p.attr('xf') + '",fdid:"' + p.attr('fdid') + '",appid:"' + p.attr('appid') + '",opnode:"",ttl:"",acl:"",sort:"SeqID",sortdir:"DESC",boundary:"' + _zw.V.lv.boundary + '"}';
-                tgtPage = '/Board/Read';
+                postData = '{M:"' + m + '",ct:"' + (p.attr('ctid') != undefined ? p.attr('ctid') : _zw.V.ct) + '",ctalias:"",ot:"",alias:"",xfalias:"' + p.attr('xf')
+                    + '",fdid:"' + (p.attr('fdid') != undefined ? p.attr('fdid') : _zw.V.fdid) + '",appid:"' + p.attr('appid') + '",opnode:"",ttl:"",acl:"'
+                    + '",appacl:"' + (p.attr('acl') != undefined ? p.attr('acl') : '') + '",sort:"SeqID",sortdir:"DESC",boundary:"' + _zw.V.lv.boundary + '"}';
+                tgtPage = stdPage;
                 //alert(postData); return
 
             } else {
@@ -373,14 +379,14 @@ $(function () {
 
                     _zw.V.appid = p.attr('appid');
                     _zw.V.xfalias = p.attr('xf');
-                    _zw.V.ttl = ''; //$(el).text();
-                    _zw.V.current.acl = p.attr('acl');
+                    //_zw.V.ttl = $(el).text();
+                    _zw.V.current.appacl = p.attr('acl');
                 }
 
                 if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
 
                 postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
-                //console.log(postData);
+                //alert(postData);
                 tgtPage = _zw.V.current.page;
             }
             
@@ -389,7 +395,7 @@ $(function () {
             if (m == 'popup') {
                 _zw.ut.openWnd(url, "popupform", 800, 600, "resize");
 
-            } else if (tgtPage.toLowerCase() == '/board/read') {
+            } else if (tgtPage.toLowerCase() == stdPage.toLowerCase()) {
                 $.ajax({
                     type: "POST",
                     url: url,
@@ -417,7 +423,7 @@ $(function () {
                 _zw.V.xfalias = p.attr('xf');
                 _zw.V.current.acl = p.attr('acl');
 
-                window.location.href = '/Board/Read?qi=' + _zw.base64.encode(postData);
+                window.location.href = stdPage + '?qi=' + _zw.base64.encode(postData);
             }
         },
         "setComment": function (seq) {
@@ -580,10 +586,10 @@ $(function () {
             j["fdid"] = _zw.V.fdid;
             j["appid"] = _zw.V.appid;
             j["acl"] = _zw.V.current.acl;
+            j["appacl"] = _zw.V.current.appacl;
             j["opnode"] = _zw.V.opnode;
             j["ft"] = _zw.V.ft;
-            j["ttl"] = _zw.V.ttl;
-
+            j["ttl"] = ''; //_zw.V.ttl;
 
             j["tgt"] = tgt;
             j["page"] = _zw.V.lv.page;

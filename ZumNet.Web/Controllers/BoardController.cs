@@ -15,6 +15,7 @@ namespace ZumNet.Web.Controllers
 {
     public class BoardController : Controller
     {
+        #region [게시물 목록]
         // GET: Board
         [SessionExpireFilter]
         [Authorize]
@@ -110,7 +111,7 @@ namespace ZumNet.Web.Controllers
             }
 
             rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
-            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "V")))
             {
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
@@ -202,7 +203,7 @@ namespace ZumNet.Web.Controllers
                         }
                     }
 
-                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "V")))
                     {
                         return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
                     }
@@ -247,6 +248,8 @@ namespace ZumNet.Web.Controllers
                                 + jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListCount.cshtml", ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListMenu.cshtml", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListPagination.cshtml", ViewBag);
                     }
                     else
@@ -262,7 +265,9 @@ namespace ZumNet.Web.Controllers
             }            
             return rt;
         }
+        #endregion
 
+        #region [게시물 작성, 조회]
         // GET: Board
         [SessionExpireFilter]
         [Authorize]
@@ -295,15 +300,16 @@ namespace ZumNet.Web.Controllers
             {
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iAppId, ViewBag.R.xfalias.ToString(), "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
                     ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                     ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                    if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
                 }
             }
 
             rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
-            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
             {
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
@@ -376,15 +382,16 @@ namespace ZumNet.Web.Controllers
                         sPos = "300";
                         using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                         {
-                            svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iAppId, ViewBag.R.xfalias.ToString(), "0");
+                            svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
                             sPos = "310";
                             ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                             ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                            if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
                         }
                     }
 
-                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
                     {
                         return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
                     }
@@ -432,5 +439,6 @@ namespace ZumNet.Web.Controllers
             }
             return rt;
         }
+        #endregion
     }
 }

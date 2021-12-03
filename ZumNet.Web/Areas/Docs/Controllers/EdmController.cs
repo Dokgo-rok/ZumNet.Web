@@ -14,6 +14,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
 {
     public class EdmController : Controller
     {
+        #region [게시물 목록]
         // GET: Docs
         [SessionExpireFilter]
         [Authorize]
@@ -97,7 +98,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
             }
 
             rt = Resources.Global.Auth_NoPermission;
-            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "V")))
             {
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
@@ -180,7 +181,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                         }
                     }
 
-                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "V")))
                     {
                         return Resources.Global.Auth_NoPermission;
                     }
@@ -204,6 +205,8 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                                 + jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListCount.cshtml", ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListMenu.cshtml", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListPagination.cshtml", ViewBag);
                     }
                     else
@@ -219,5 +222,9 @@ namespace ZumNet.Web.Areas.Docs.Controllers
             }
             return rt;
         }
+        #endregion
+
+        #region [게시물 작성, 조회]
+        #endregion
     }
 }

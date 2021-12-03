@@ -128,7 +128,7 @@
             <div class="messages-content flex-grow-0">
                 <div id="__CtDashboard" class="row container-p-x">
                     <div class="order-2 order-md-1 col-12 col-md-7">
-                        <div class="font-weight-bold text-black-50">
+                        <div class="font-weight-bold">
                             <i class="mdi mdi-clock-check-outline"></i> &nbsp;<span>@Resources.Global.RecentPosts</span>
                         </div>
                         <div>
@@ -151,7 +151,7 @@
                                             {
                                                 <div class="badge badge-pill badge-primary opacity-75">@row["DisplayName"]</div>
                                             }
-                                            <div class="text-truncate mt-1"><a href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
+                                            <div class="text-truncate mt-1"><a href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');" class="@(row["IsRead"].ToString() == "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a></div>
                                         </div>
                                         <div class="text-truncate">
                                             @if (Convert.ToInt32(row["CommentCount"]) > 0)
@@ -173,7 +173,7 @@
 
                     <div class="order-1 order-md-2 col-12 col-md-5 pl-md-4">
                         <div class="">
-                            <div class="font-weight-bold text-black-50">
+                            <div class="font-weight-bold">
                                 <i class="fe-message-circle"></i> &nbsp;<span>@Resources.Global.RecentNotice</span>
                             </div>
                             <div>
@@ -186,7 +186,7 @@
                                                 <div class="badge badge-pill badge-default">@row["DisplayName"]</div>
 
                                                 <div class="text-truncate mt-1">
-                                                    <a href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');" class="@(row["IsRead"].ToString() != "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a>
+                                                    <a href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');" class="@(row["IsRead"].ToString() == "N" ? "font-weight-bold" : "")" title="@Html.Raw(row["Subject"])" data-toggle="tooltip" data-placement="bottom">@row["Subject"]</a>
                                                 </div>
                                             </div>
                                             <div class="text-truncate">

@@ -14,6 +14,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
 {
     public class KmsController : Controller
     {
+        #region [게시물 목록]
         // GET: Docs/Kms
         [SessionExpireFilter]
         [Authorize]
@@ -25,7 +26,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
-            rt = "잘못된 경로로 접근했습니다!!";
+            rt = Resources.Global.Auth_InvalidPath;
             if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -53,7 +54,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                         svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
 
                         ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
-                        ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                        //ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
                     }
                     svcRt = null;
                 }
@@ -154,7 +155,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
             }
 
             rt = Resources.Global.Auth_NoPermission;
-            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "V")))
             {
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
@@ -236,7 +237,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                         }
                     }
 
-                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
+                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "V")))
                     {
                         return Resources.Global.Auth_NoPermission;
                     }
@@ -262,6 +263,8 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                                 + jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListCount.cshtml", ViewBag)
                                 + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListMenu.cshtml", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListPagination.cshtml", ViewBag);
                     }
                     else
@@ -277,5 +280,88 @@ namespace ZumNet.Web.Areas.Docs.Controllers
             }
             return rt;
         }
+        #endregion
+
+        #region [게시물 작성, 조회]
+        // GET: Board
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Read(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath; //"잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+            int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
+            int iAppId = Convert.ToInt32(ViewBag.R.appid.Value); //messageid
+
+            //권한체크
+            if (Session["Admin"].ToString() == "Y")
+            {
+                ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+
+                    ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                    ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                    if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
+                }
+            }
+
+            rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
+            {
+                return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+            if (rt != "")
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            using (ZumNet.BSL.ServiceBiz.KnowledgeBiz kb = new BSL.ServiceBiz.KnowledgeBiz())
+            {
+                svcRt = kb.GetKmsView(Convert.ToInt32(Session["URID"]), Convert.ToInt32(Session["DNID"]), iCategoryId, iFolderId, iAppId.ToString(), ViewBag.R.xfalias.ToString());
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                //ViewBag.AppView = svcRt.ResultDataSet.Tables["TBL_BOARD"].Rows[0];
+                //ViewBag.AppFile = svcRt.ResultDataSet.Tables["TBL_FILE"];
+                //ViewBag.AppReply = svcRt.ResultDataSet.Tables["TBL_REPLY"];
+                //ViewBag.AppComment = svcRt.ResultDataSet.Tables["TBL_COMMENT"];
+
+                //ViewBag.AppPrev = svcRt.ResultDataDetail["prevMsgID"].ToString();
+                //ViewBag.AppNext = svcRt.ResultDataDetail["nextMsgID"].ToString();
+
+                rt = FormHandler.BindFormToJson(this, svcRt);
+                if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+        #endregion
     }
 }
