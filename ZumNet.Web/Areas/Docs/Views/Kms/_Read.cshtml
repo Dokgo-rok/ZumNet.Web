@@ -97,6 +97,25 @@
             }
         </div>
 
+        <div class="container-p-x pt-3 mb-3">
+            <h6 class="mb-2">
+                <i class="fe-users"></i> 지식공유자
+                <span class="text-danger ml-1">@ViewBag.R.app["coregcount"]</span>
+            </h6>
+            @if (Convert.ToInt32(ViewBag.R.app["coregcount"]) > 0)
+            {
+                <div class="row">
+                    @foreach (var j in ViewBag.R.app.coreglist)
+                    {
+                        <div class="d-flex align-items-center px-2 pt-2 pb-1 mr-1">
+                            <div class=""><a href="javascript:void(0)">@j["actordept"] [@j["actorgrade"]] @j["actor"]</a></div>
+                            <div class="ml-2 text-muted">@(j["isread"].ToString() == "Y" ? ZumNet.Web.Bc.CommonUtils.LvDate(j["vewdate"].ToString(), true) : "읽지않음")</div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
         @if (Convert.ToInt32(ViewBag.R.app["attachcount"]) > 0)
         {
             <div class="container-p-x pt-3 mb-3">

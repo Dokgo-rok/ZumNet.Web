@@ -393,7 +393,7 @@ $(function () {
             var url = tgtPage + '?qi=' + _zw.base64.encode(postData);
 
             if (m == 'popup') {
-                _zw.ut.openWnd(url, "popupform", 800, 600, "resize");
+                _zw.ut.openWnd(url, "popupform", 800, 650, "resize");
 
             } else if (tgtPage.toLowerCase() == stdPage.toLowerCase()) {
                 $.ajax({
