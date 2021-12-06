@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <dext5>
   <license>
-    <product_key></product_key>
-    <license_key></license_key>
+    <product_key>0YH1-KVD4-HX26-2P1Y</product_key>
+    <license_key>BJXtnJrtnJVCXuWXq3jYo3nZm2jZlYR4SuUlC9crv9NlE9lrPmIsDSUlC9dkwuvrv9NlE9lrPmIsDSUjC9crv9NlE9lrPmIsDutVQfMUPTeVPTe1BfQtQHttzxGUPxqzRfLqSaGVIi6VxfawBfctQexZQTeUJSttBc==</license_key>
     <mime_use mimeCharset="utf-8">0</mime_use>
     <print_preview></print_preview>
     <print_header>Header</print_header>
@@ -188,7 +188,7 @@
     <width>900px</width>
     <height>550px</height>
     <skinname></skinname>
-    <font_family>굴림</font_family>
+    <font_family>맑은 고딕</font_family>
     <font_size>12pt</font_size>
     <line_height mode="2">1.2</line_height>
     <show_font_real desc="0: 기본값 사용, 1: 실제 폰트명, 크기 사용">1</show_font_real>
