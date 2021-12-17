@@ -2877,6 +2877,8 @@
     <Content Include="Views\Common\_ListComment.cshtml" />
     <Content Include="Views\Common\Preview.cshtml" />
     <Content Include="Views\Common\_ListMenu.cshtml" />
+    <Content Include="Views\Board\Write.cshtml" />
+    <Content Include="Views\Board\_Write.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

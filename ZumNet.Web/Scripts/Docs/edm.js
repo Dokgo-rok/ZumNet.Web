@@ -2,19 +2,6 @@
 
 $(function () {
 
-    _zw.mu.write = function () {
-        alert(1)
-    }
-
-    _zw.mu.delete = function () {
-        alert(2)
-    }
-
-    _zw.mu.writeMsg = function (m) {
-        var el = event.target ? event.target : event.srcElement;
-
-    }
-
     _zw.mu.deleteMsg = function () {
         var el = event.target ? event.target : event.srcElement;
 

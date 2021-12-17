@@ -148,7 +148,7 @@ $(function () {
                 _zw.ut.openWnd(url, "externalWin");
                 break;
             case "edm.new":
-                _zw.ut.ajaxLoader(true, "불러오는 중..")
+                _zw.mu.writeMsg('doc');
                 //bootbox.alert("문서관리 신규 문서 등록", function () { _zw.ut.ajaxLoader(false) });
                 break;
             case "ea.newdoc":
@@ -256,6 +256,16 @@ $(function () {
         _zw.V.lv.tgt = _zw.V.fdid;
         _zw.fn.loadList();
     });
+
+    //Editor, Upload
+    if ($('#__DextEditor').length > 0) {
+        DEXT5.config.EditorHolder = "__DextEditor";
+        new Dext5editor("editor1");
+    }
+    if ($('#__DextUpload').length > 0) {
+        DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
+        new Dext5Upload("upload1");
+    }
 
     //근무 시간 조회
     if (_zw.V.current && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
@@ -424,6 +434,11 @@ $(function () {
                 _zw.V.current.acl = p.attr('acl');
 
                 window.location.href = stdPage + '?qi=' + _zw.base64.encode(postData);
+            }
+        },
+        "writeMsg": function (xf, m) {
+            if (xf == 'doc') {
+
             }
         },
         "setComment": function (seq) {

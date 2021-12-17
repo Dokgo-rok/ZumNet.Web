@@ -52,8 +52,8 @@
     <tool>image_create</tool>
     <!--<tool>image_editor</tool>-->
     <tool>insert_link_media</tool>
-    <tool>media_create</tool>
-    <tool>insert_file</tool>
+    <!--<tool>media_create</tool>-->
+    <!--<tool>insert_file</tool>-->
     <tool>separator</tool>
     <tool>table_insert</tool>
     <tool>insert_row_down</tool>
@@ -66,8 +66,8 @@
     <tool>table_same_height</tool>
     <tool>cell_bg_color</tool>
     <tool>separator</tool>
-    <tool>accessibility_validation</tool>
-    <tool>setting</tool>
+    <!--<tool>accessibility_validation</tool>-->
+    <!--<tool>setting</tool>-->
     <tool>full_screen</tool>    
   </tool_bar_1>
   <tool_bar_2>
@@ -147,8 +147,11 @@
   <font_size use_inc_dec="1">
     <size>9pt</size>
     <size>10pt</size>
+    <size>11pt</size>
     <size>12pt</size>
+    <size>13pt</size>
     <size>14pt</size>
+    <size>15pt</size>
     <size>16pt</size>
     <size>20pt</size>
     <size>24pt</size>
@@ -185,11 +188,11 @@
     <ie_compatible desc="IE 랜더링 모드을 설정합니다. 예) EmulateIE8 또는 8 등 버전만 입력 합니다."></ie_compatible>
     <xmlnsname></xmlnsname>
     <lang>ko-kr</lang>
-    <width>900px</width>
-    <height>550px</height>
+    <width>100%</width>
+    <height>100%</height>
     <skinname></skinname>
     <font_family>맑은 고딕</font_family>
-    <font_size>12pt</font_size>
+    <font_size>11pt</font_size>
     <line_height mode="2">1.2</line_height>
     <show_font_real desc="0: 기본값 사용, 1: 실제 폰트명, 크기 사용">1</show_font_real>
     <accessibility>0</accessibility>

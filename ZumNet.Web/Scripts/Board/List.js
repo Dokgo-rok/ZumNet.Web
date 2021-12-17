@@ -2,21 +2,23 @@
 
 $(function () {
 
-    _zw.mu.write = function () {
-        alert(1)
+    _zw.mu.writeMsg = function (xf, m) {
+        var el, p, postData, tgtPage, stdPage;
+        m = m || '';
+
+        postData = _zw.fn.getAppQuery(_zw.V.fdid);
+        window.location.href = '/Board/Write?qi=' + _zw.base64.encode(postData);
     }
 
-    _zw.mu.delete = function () {
-        alert(2)
+    _zw.mu.editMsg = function () {
+
     }
 
-    _zw.mu.writeMsg = function (m) {
-        var el = event.target ? event.target : event.srcElement;
+    _zw.mu.replyMsg = function () {
 
     }
 
     _zw.mu.deleteMsg = function () {
-        var el = event.target ? event.target : event.srcElement;
 
     }
 
@@ -34,7 +36,7 @@ $(function () {
         //var j = JSON.parse(sJson);
         
 
-        var postData = _zw.fn.getLvQuery(); console.log(postData);
+        var postData = _zw.fn.getLvQuery(); //console.log(postData);
         var url = '/Board/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/Board/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);

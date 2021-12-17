@@ -1,0 +1,99 @@
+﻿@using Newtonsoft.Json;
+
+@{
+    bool bPrevEditorBody = false;
+
+}
+
+<!-- Header -->
+<div class="flex-grow-0">
+    <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.mode.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.mode.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
+        <div class="d-flex align-items-center font-weight-bold">
+            @if (ViewBag.R.mode.ToString() == "")
+            {
+                <div class="h5 mb-0">
+                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                </div>
+            }
+
+            <div class="btn-group">
+                <button class="btn btn-default font-weight-bold" onclick="_zw.mu.readMsg('reload');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh"><i class="fe-refresh-cw"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Refresh</span></button>
+                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
+                {
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.replyMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ReplyWrite"><i class="fas fa-reply"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.ReplyWrite</span></button>
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.writeMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>
+                }
+                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E"))
+                {
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                }
+                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "D"))
+                {
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.deleteMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
+                }
+            </div>
+        </div>
+        <div>
+            @if (ViewBag.R.mode.ToString() != "")
+            {
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- / Header -->
+
+<div class="flex-grow-1@(ViewBag.R.mode.ToString() == "" ? " position-relative" : "")" style="border-top: 2px solid #eee">
+    <div class="z-list-scroll" style="@(ViewBag.R.mode.ToString() == "" ? "" : "top: 48px")">
+        <div class="pb-3 border-bottom">
+            <div class="d-flex container-p-x mt-2">
+                <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                    <input type="checkbox" id="ckbPriority" class="custom-control-input">
+                    <label class="custom-control-label" for="ckbPriority">긴급</label>
+                </div>
+                <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                    <input type="checkbox" id="ckbTopLine" class="custom-control-input">
+                    <label class="custom-control-label" for="ckbTopLine">TOPLINE</label>
+                </div>
+                <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                    <input type="checkbox" id="ckbUsePopup" class="custom-control-input">
+                    <label class="custom-control-label" for="ckbUsePopup">팝업 사용</label>
+                </div>
+            </div>
+            
+            <div class="container-p-x mt-2">
+                <div class="form-group row mb-1">
+                    <label class="col-form-label col-sm-2">게시 분류</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="게시 분류 선택" readonly value="@ViewBag.SiteMap">
+                    </div>
+                </div>
+
+                <div class="form-group row mb-1">
+                    <label class="col-form-label col-sm-2">@Resources.Global.Subject</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="@Resources.Global.Subject">
+                    </div>
+                </div>
+
+                <div class="form-inline row mb-1">
+                    <label class="col-form-label col-sm-2 d-inline-block">@Resources.Global.Writer</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" readonly value="@ViewBag.R.current.user">
+                        <input type="text" class="form-control" readonly value="@ViewBag.R.current.dept">
+                        
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="container-p-x pt-3 h-50" id="__DextEditor"></div>
+
+        <div class="container-p-x py-3" id="__DextUpload"></div>
+
+    </div>
+</div>
