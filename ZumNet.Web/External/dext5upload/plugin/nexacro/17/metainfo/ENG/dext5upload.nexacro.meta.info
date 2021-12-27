@@ -407,6 +407,12 @@
 			  unused="false" objectinfo="" enuminfo="enum_01" enuminfo2="" delimiter="" unitinfo=""
 			  requirement="" csspropertyname="" csselementname="" normalpropertyname="AllowedZeroFileSize"
 			  description="0byte 파일의 업로드를 허용 할지 설정합니다. 기본값은 '0' 허용안함이고, 1'로 설정시 허용입니다. " />
+	 <Property name="AllowedEmptyFolder"
+	         edittype="Enum" group="DEXT5Upload_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+	         readonly="false" initonly="false" hidden="false" control="false" style="false" expr="false" deprecated="false"
+	         unused="false" objectinfo="" enuminfo="enum_01" enuminfo2="" delimiter="" unitinfo=""
+	         requirement="" csspropertyname="" csselementname="" normalpropertyname="AllowedZeroFileSize"
+		     description="폴더 구조로 업로드 시 빈 폴더 업로드를 허용 할지 설정합니다. 기본값은 '0' 허용안함이고, 1'로 설정시 허용입니다. " />
       <Property name="UploadTransferWindowView"
 			  edittype="Enum" group="DEXT5Upload_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
 			  readonly="false" initonly="false" hidden="false" control="false" style="false" expr="false" deprecated="false"

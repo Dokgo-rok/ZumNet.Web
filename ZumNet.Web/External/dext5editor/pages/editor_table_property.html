@@ -70,17 +70,17 @@
 	            document.getElementById('tr_back_image1').style.display = 'none';
 	            document.getElementById('tr_back_image2').style.display = 'none';
 	            document.getElementById('tr_back_image3').style.display = 'none';
-	        }
+			}
+
+            var accessibility = LayerWin._dext_editor._config.accessibility;
+            if (accessibility == "-1") {
+                if (document.getElementById("access_img_1")) document.getElementById("access_img_1").style.display = "none";
+                if (document.getElementById("access_img_2")) document.getElementById("access_img_2").style.display = "none";
+                if (document.getElementById("access_img_3")) document.getElementById("access_img_3").style.display = "none";
+            }
 
 	        if (LayerWin._dext_editor._config.uploadUseHTML5 != "1") {
 	            var _upload_frame = document.getElementById("upload_frame");
-
-	            var accessibility = LayerWin._dext_editor._config.accessibility;
-	            if (accessibility == "-1") {
-	                if (document.getElementById("access_img_1")) document.getElementById("access_img_1").style.display = "none";
-	                if (document.getElementById("access_img_2")) document.getElementById("access_img_2").style.display = "none";
-	                if (document.getElementById("access_img_3")) document.getElementById("access_img_3").style.display = "none";
-				}
 
                 if (LayerWin._dext_editor._config.isCrossDomain) {
                     postMessageEvent(_upload_frame, "table_property"); // 크로스 도메인 환경 포스트 메시지 방식 추가 by JinYoung 21.05.21   

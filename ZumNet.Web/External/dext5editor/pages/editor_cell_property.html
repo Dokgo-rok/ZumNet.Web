@@ -79,15 +79,15 @@
 	        if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
 
 	            setDragAndDropEvent('drop_zone');
-	        }
+			}
+
+            var accessibility = LayerWin._dext_editor._config.accessibility;
+            if (accessibility == "-1") {
+                if (document.getElementById("access_img")) document.getElementById("access_img").style.display = "none";
+            }
 
 	        if (LayerWin._dext_editor._config.uploadUseHTML5 != "1") {
 	            var _upload_frame = document.getElementById("upload_frame");
-
-	            var accessibility = LayerWin._dext_editor._config.accessibility;
-	            if (accessibility == "-1") {
-	                if (document.getElementById("access_img")) document.getElementById("access_img").style.display = "none";
-	            }
 
 				if (LayerWin._dext_editor._config.isCrossDomain) {
                     postMessageEvent(_upload_frame, "cell_property"); // 크로스 도메인 환경 포스트 메시지 방식 추가 by JinYoung 21.05.21

@@ -73,7 +73,15 @@
 	            document.getElementById('tr_back_image1').style.display = 'none';
 	            document.getElementById('tr_back_image2').style.display = 'none';
 	            document.getElementById('tr_back_image3').style.display = 'none';
-	        }
+            }
+
+            var accessibility = LayerWin._dext_editor._config.accessibility;
+            if (accessibility == "-1") {
+                if (document.getElementById("access_img_1")) document.getElementById("access_img_1").style.display = "none";
+                if (document.getElementById("access_img_2")) document.getElementById("access_img_2").style.display = "none";
+                if (document.getElementById("access_img_3")) document.getElementById("access_img_3").style.display = "none";
+                if (document.getElementById("access_img_4")) document.getElementById("access_img_4").style.display = "none";
+            }
 
 	        if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
 

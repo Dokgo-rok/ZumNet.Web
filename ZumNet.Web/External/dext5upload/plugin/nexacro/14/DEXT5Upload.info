@@ -1123,6 +1123,24 @@
 				requirement="Runtime,HTML5"
 				description="0바이트의 파일 추가를 허용할지에 대한 설정 값입니다. 기본값은 '0' 허용안함이고, 1'로 설정시 허용입니다. "
 			/>
+	 <Property
+			 name="AllowedEmptyFolder"
+			 group="Misc"
+			 defaultvalue=""
+			 readonly="false"
+			 initonly="false"
+			 hidden="false"
+			 control="false"
+			 style="false"
+			 expr="false"
+			 deprecated="false"
+			 unused="false"
+			 objectinfo=""
+			 enuminfo="enum_01"
+			 unitinfo=""
+			 requirement="Runtime,HTML5"
+			 description="폴더 구조로 업로드 시 빈 폴더 업로드를 허용 할지 설정합니다. 기본값은 '0' 허용안함이고, 1'로 설정시 허용입니다. "
+				/>
       <Property
 				name="FileNameRule"
 				group="Misc"
