@@ -10,7 +10,8 @@
 
     if (sRt == "OK")
     {
-        sRt = ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
+        //sRt = ZumNet.Framework.Web.HtmlHandler.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
+        sRt = ZumNet.Framework.Util.FileHelper.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
     }
 
     //Response.Write(SendMail()); // SendMailSimple() ERROR: HTTP 상태 403: Forbidden(으)로 인해 요청하지 못했습니다.
@@ -77,47 +78,6 @@
         {
             esb.Dispose();
             oMailList = null;
-        }
-        return sRt;
-    }
-
-    private string ConvertXmlToHtml(string xmlText, string xslPath)
-    {
-        XmlDocument xmlDoc = null;
-        System.Xml.Xsl.XslTransform xt = null;
-
-        string sRt = "";
-
-        try
-        {
-            xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(xmlText);
-
-            xt = new System.Xml.Xsl.XslTransform();
-            xt.Load(xslPath);
-
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Async = true;
-
-            StringWriter sw = new StringWriter();
-            XmlWriter xw = XmlWriter.Create(sw, settings);
-
-            xt.Transform(xmlDoc, null, xw);
-            xw.Flush();
-
-            //System.Xml.Xsl.XsltSettings xst = new System.Xml.Xsl.XsltSettings();
-            //xst.EnableScript = true;
-
-            sRt = sw.ToString();
-        }
-        catch (Exception ex)
-        {
-            sRt = ex.Message;
-        }
-        finally
-        {
-            xmlDoc = null;
-            xt = null;
         }
         return sRt;
     }

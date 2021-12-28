@@ -126,7 +126,7 @@
         @if (bPrevEditorBody)
         {
             <div class="container-p-x py-3 zf-prevbody">
-                @Html.Raw(ZumNet.Framework.Web.Util.WebHelper.BodyInnerHtml(ViewBag.R.app["body"].ToString()))
+                @Html.Raw(ZumNet.Framework.Web.HtmlHandler.BodyInnerHtml(ViewBag.R.app["body"].ToString()))
             </div>
         }
         else

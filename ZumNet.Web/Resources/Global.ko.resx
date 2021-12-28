@@ -165,6 +165,12 @@
   <data name="BatchProcess" xml:space="preserve">
     <value>일괄처리</value>
   </data>
+  <data name="BBoard" xml:space="preserve">
+    <value>게시판</value>
+  </data>
+  <data name="Calendar" xml:space="preserve">
+    <value>달력</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>취소</value>
   </data>
@@ -297,11 +303,26 @@
   <data name="DocNumber" xml:space="preserve">
     <value>문서번호</value>
   </data>
+  <data name="Document" xml:space="preserve">
+    <value>문서</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>편집</value>
   </data>
+  <data name="Editor" xml:space="preserve">
+    <value>에디터</value>
+  </data>
+  <data name="EditorExpand" xml:space="preserve">
+    <value>에디터 펼치기</value>
+  </data>
+  <data name="EditorFold" xml:space="preserve">
+    <value>에이터 접기</value>
+  </data>
   <data name="Exit" xml:space="preserve">
     <value>나가기</value>
+  </data>
+  <data name="Expand" xml:space="preserve">
+    <value>펼치기</value>
   </data>
   <data name="FileExt" xml:space="preserve">
     <value>파일확장자</value>
@@ -314,6 +335,9 @@
   </data>
   <data name="First2" xml:space="preserve">
     <value>처음</value>
+  </data>
+  <data name="Folding" xml:space="preserve">
+    <value>접기</value>
   </data>
   <data name="Forward" xml:space="preserve">
     <value>전달</value>
@@ -332,6 +356,9 @@
   </data>
   <data name="ID" xml:space="preserve">
     <value>아이디</value>
+  </data>
+  <data name="Important" xml:space="preserve">
+    <value>중요</value>
   </data>
   <data name="InBiz" xml:space="preserve">
     <value>출장 중</value>
@@ -359,6 +386,9 @@
   </data>
   <data name="Jikwi" xml:space="preserve">
     <value>직위</value>
+  </data>
+  <data name="Knowledge" xml:space="preserve">
+    <value>지식</value>
   </data>
   <data name="LangSet" xml:space="preserve">
     <value>언어 설정</value>
@@ -465,8 +495,17 @@
   <data name="PlanWorktTime" xml:space="preserve">
     <value>계획출근시간</value>
   </data>
+  <data name="Popup" xml:space="preserve">
+    <value>팝업</value>
+  </data>
   <data name="Portal" xml:space="preserve">
     <value>포탈</value>
+  </data>
+  <data name="Post" xml:space="preserve">
+    <value>게시물</value>
+  </data>
+  <data name="Posting" xml:space="preserve">
+    <value>게시</value>
   </data>
   <data name="Preview" xml:space="preserve">
     <value>미리보기</value>
@@ -522,6 +561,9 @@
   <data name="SaveAs" xml:space="preserve">
     <value>다른 이름으로</value>
   </data>
+  <data name="Schedule" xml:space="preserve">
+    <value>일정</value>
+  </data>
   <data name="Search" xml:space="preserve">
     <value>검색</value>
   </data>
@@ -542,6 +584,12 @@
   </data>
   <data name="Subject" xml:space="preserve">
     <value>제목</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>업무</value>
+  </data>
+  <data name="TaskLog" xml:space="preserve">
+    <value>일지</value>
   </data>
   <data name="TempBox" xml:space="preserve">
     <value>임시저장함</value>
@@ -567,8 +615,23 @@
   <data name="Untitled" xml:space="preserve">
     <value>제목없음</value>
   </data>
+  <data name="Uploader" xml:space="preserve">
+    <value>파일업로더</value>
+  </data>
+  <data name="UploaderExpand" xml:space="preserve">
+    <value>업로더 펼치기</value>
+  </data>
+  <data name="UploaderFold" xml:space="preserve">
+    <value>업로더 접기</value>
+  </data>
+  <data name="Use" xml:space="preserve">
+    <value>사용</value>
+  </data>
   <data name="ViewCount" xml:space="preserve">
     <value>조회수</value>
+  </data>
+  <data name="Work" xml:space="preserve">
+    <value>작업</value>
   </data>
   <data name="WorkCond" xml:space="preserve">
     <value>근무상태</value>

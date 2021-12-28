@@ -472,5 +472,14 @@
 .zf-attach div:not(:last-child) {
     border-bottom: 0 !important;
 }
-
+.zf-btn-sm {
+    padding: 0px 4px;
+    font-size: .75rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+}
+.zf-editor {
+    background-color: white;
+    z-index: 1;
+}
 /* board form <----- */

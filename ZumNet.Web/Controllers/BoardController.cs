@@ -458,6 +458,8 @@ namespace ZumNet.Web.Controllers
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
+            if (ViewBag.R.xfalias == "") ViewBag.R.xfalias = "bbs";
+
             int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
             int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
             string sObjectType = iFolderId == 0 ? "" : "O";
@@ -497,6 +499,9 @@ namespace ZumNet.Web.Controllers
                     return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
                 }
             }
+
+            rt = FormHandler.BindFormToJson(this, null);
+            if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
 
             return View();
         }

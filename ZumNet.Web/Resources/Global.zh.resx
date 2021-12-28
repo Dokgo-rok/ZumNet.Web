@@ -165,6 +165,12 @@
   <data name="BatchProcess" xml:space="preserve">
     <value>批量处理</value>
   </data>
+  <data name="BBoard" xml:space="preserve">
+    <value>布告栏</value>
+  </data>
+  <data name="Calendar" xml:space="preserve">
+    <value>日历</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
@@ -297,11 +303,26 @@
   <data name="DocNumber" xml:space="preserve">
     <value>文件编号</value>
   </data>
+  <data name="Document" xml:space="preserve">
+    <value>文档</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>编辑</value>
   </data>
+  <data name="Editor" xml:space="preserve">
+    <value>编辑器</value>
+  </data>
+  <data name="EditorExpand" xml:space="preserve">
+    <value>展开编辑器</value>
+  </data>
+  <data name="EditorFold" xml:space="preserve">
+    <value>折叠编辑器</value>
+  </data>
   <data name="Exit" xml:space="preserve">
     <value>出口</value>
+  </data>
+  <data name="Expand" xml:space="preserve">
+    <value>扩张</value>
   </data>
   <data name="FileExt" xml:space="preserve">
     <value>文件扩展名</value>
@@ -314,6 +335,9 @@
   </data>
   <data name="First2" xml:space="preserve">
     <value>第一的</value>
+  </data>
+  <data name="Folding" xml:space="preserve">
+    <value>折叠</value>
   </data>
   <data name="Forward" xml:space="preserve">
     <value>转发</value>
@@ -332,6 +356,9 @@
   </data>
   <data name="ID" xml:space="preserve">
     <value>ID</value>
+  </data>
+  <data name="Important" xml:space="preserve">
+    <value>重要</value>
   </data>
   <data name="InBiz" xml:space="preserve">
     <value>出差</value>
@@ -359,6 +386,9 @@
   </data>
   <data name="Jikwi" xml:space="preserve">
     <value>现在</value>
+  </data>
+  <data name="Knowledge" xml:space="preserve">
+    <value>知识</value>
   </data>
   <data name="LangSet" xml:space="preserve">
     <value>语言设定</value>
@@ -465,8 +495,17 @@
   <data name="PlanWorktTime" xml:space="preserve">
     <value>计划工作</value>
   </data>
+  <data name="Popup" xml:space="preserve">
+    <value>弹出</value>
+  </data>
   <data name="Portal" xml:space="preserve">
     <value>门户网站</value>
+  </data>
+  <data name="Post" xml:space="preserve">
+    <value>邮政</value>
+  </data>
+  <data name="Posting" xml:space="preserve">
+    <value>发布</value>
   </data>
   <data name="Preview" xml:space="preserve">
     <value>预览</value>
@@ -522,6 +561,9 @@
   <data name="SaveAs" xml:space="preserve">
     <value>另存为</value>
   </data>
+  <data name="Schedule" xml:space="preserve">
+    <value>日程</value>
+  </data>
   <data name="Search" xml:space="preserve">
     <value>搜索</value>
   </data>
@@ -542,6 +584,12 @@
   </data>
   <data name="Subject" xml:space="preserve">
     <value>标题</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>任务</value>
+  </data>
+  <data name="TaskLog" xml:space="preserve">
+    <value>日志</value>
   </data>
   <data name="TempBox" xml:space="preserve">
     <value>临时储物箱</value>
@@ -567,8 +615,23 @@
   <data name="Untitled" xml:space="preserve">
     <value>无标题</value>
   </data>
+  <data name="Uploader" xml:space="preserve">
+    <value>文件上传器</value>
+  </data>
+  <data name="UploaderExpand" xml:space="preserve">
+    <value>展开上传器</value>
+  </data>
+  <data name="UploaderFold" xml:space="preserve">
+    <value>折叠上传器</value>
+  </data>
+  <data name="Use" xml:space="preserve">
+    <value>利用</value>
+  </data>
   <data name="ViewCount" xml:space="preserve">
     <value>意见</value>
+  </data>
+  <data name="Work" xml:space="preserve">
+    <value>工作</value>
   </data>
   <data name="WorkCond" xml:space="preserve">
     <value>工作条件</value>

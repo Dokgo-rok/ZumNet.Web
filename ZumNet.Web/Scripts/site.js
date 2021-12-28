@@ -257,16 +257,6 @@ $(function () {
         _zw.fn.loadList();
     });
 
-    //Editor, Upload
-    if ($('#__DextEditor').length > 0) {
-        DEXT5.config.EditorHolder = "__DextEditor";
-        new Dext5editor("editor1");
-    }
-    if ($('#__DextUpload').length > 0) {
-        DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
-        new Dext5Upload("upload1");
-    }
-
     //근무 시간 조회
     if (_zw.V.current && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
         _zw.fn.getTotalWorkTime();
@@ -924,6 +914,93 @@ $(function () {
         }
     }
 
+    _zw.dext5 = {
+        "transferFile": function (currUploadID) {// 전송시작
+            if (currUploadID) {
+                DEXT5UPLOAD.Transfer(currUploadID);
+            } else {
+                DEXT5UPLOAD.Transfer(G_UploadID);
+            }
+        },
+        "openFileDialog": function (currUploadID) {// 파일추가 대화창
+            if (currUploadID) {
+                DEXT5UPLOAD.OpenFileDialog(currUploadID);
+            } else {
+                DEXT5UPLOAD.OpenFileDialog(G_UploadID);
+            }
+        },
+        "deleteAllFile": function (currUploadID) {// 모든 파일삭제
+            if (currUploadID) {
+                DEXT5UPLOAD.DeleteAllFile(currUploadID);
+            } else {
+                DEXT5UPLOAD.DeleteAllFile(G_UploadID);
+            }
+        },
+        "deleteSelectedFile": function (currUploadID) {// 선택한 파일삭제
+            if (currUploadID) {
+                DEXT5UPLOAD.DeleteSelectedFile(currUploadID);
+            } else {
+                DEXT5UPLOAD.DeleteSelectedFile(G_UploadID);
+            }
+        },
+        "downloadFile": function  (currUploadID) {// 선택한 파일 다운로드
+            if (currUploadID) {
+                DEXT5UPLOAD.DownloadFile(currUploadID);
+            } else {
+                DEXT5UPLOAD.DownloadFile(G_UploadID);
+            }
+        },
+        "downloadAllFile": function (currUploadID) {// 모든파일 다운로드
+            if (currUploadID) {
+                DEXT5UPLOAD.DownloadAllFile(currUploadID);
+            } else {
+                DEXT5UPLOAD.DownloadAllFile(G_UploadID);
+            }
+        },
+        "getTotalFileCount": function (currUploadID) {// 전체 파일개수
+            if (currUploadID) {
+                alert(DEXT5UPLOAD.GetTotalFileCount(currUploadID));
+            } else {
+                alert(DEXT5UPLOAD.GetTotalFileCount(G_UploadID));
+            }
+        },
+        "getTotalFileSize": function (currUploadID) {// 전체 파일크기(Bytes)
+            if (currUploadID) {
+                alert(DEXT5UPLOAD.GetTotalFileSize(currUploadID));
+            } else {
+                alert(DEXT5UPLOAD.GetTotalFileSize(G_UploadID));
+            }
+        },
+        "setUploadMode": function (mode, currUploadID) {// 업로드 모드 변경
+            // mode : edit / view / open / download
+            if (currUploadID) {
+                DEXT5UPLOAD.SetUploadMode(mode, currUploadID);
+            } else {
+                DEXT5UPLOAD.SetUploadMode(mode, G_UploadID);
+            }
+        },
+        "uploadShow": function (currUploadID) {// 업로드 보이기
+            if (currUploadID) {
+                DEXT5UPLOAD.Show(currUploadID);
+            } else {
+                DEXT5UPLOAD.Show(G_UploadID);
+            }
+        },
+        "uploadHidden": function (currUploadID) {// 업로드 숨기기
+            if (currUploadID) {
+                DEXT5UPLOAD.Hidden(currUploadID);
+            } else {
+                DEXT5UPLOAD.Hidden(G_UploadID);
+            }
+        },
+        "setSkinColor": function (currUploadID) {// 업로드 스킨설정
+            if (currUploadID) {
+                DEXT5UPLOAD.SetSkinColor('#ff0000', '#f7f140', '#33e8f5', '#c2ffd0', currUploadID);
+            } else {
+                DEXT5UPLOAD.SetSkinColor('#ff0000', '#f7f140', '#33e8f5', '#c2ffd0', G_UploadID);
+            }
+        }
+    }
 }());
 
 
