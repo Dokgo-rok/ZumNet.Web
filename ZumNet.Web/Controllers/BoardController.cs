@@ -87,27 +87,27 @@ namespace ZumNet.Web.Controllers
             }
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
+            ZumNet.Framework.Entities.Common.FolderEnvironmentEntity fdEnv = null;
 
             int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
             int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
 
-            //권한체크
-            if (Session["Admin"].ToString() == "Y")
+            //권한체크, 폴더환경정보
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
             {
-                ViewBag.R.current["operator"] = "Y";
-            }
-            else
-            {
-                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                if (Session["Admin"].ToString() == "Y")
+                {
+                    ViewBag.R.current["operator"] = "Y";
+                }
+                else
                 {
                     svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
                     ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                     ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
-
-                    //svcRt = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
-                    //xfalias에 따라 폴더환경설정 고정 (공지 경우만 popup, topline 사용)
                 }
+
+                fdEnv = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
             }
 
             rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
@@ -152,6 +152,7 @@ namespace ZumNet.Web.Controllers
             if (svcRt != null && svcRt.ResultCode == 0)
             {
                 ViewBag.BoardList = svcRt.ResultDataRowCollection;
+                ViewBag.FolderEnv = fdEnv;
                 //ViewBag.BoardTotal = svcRt.ResultItemCount;
                 ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
             }
@@ -180,27 +181,32 @@ namespace ZumNet.Web.Controllers
                     JObject jPost = ViewBag.R;
 
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    ZumNet.Framework.Entities.Common.FolderEnvironmentEntity fdEnv = null;
 
                     sPos = "200";
                     int iCategoryId = Convert.ToInt32(jPost["ct"]);
                     int iFolderId = Convert.ToInt32(jPost["lv"]["tgt"]);
 
-                    //권한체크
-                    if (Session["Admin"].ToString() == "Y")
+                    //권한체크, 폴더환경정보
+                    sPos = "300";
+                    using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                     {
-                        ViewBag.R.current["operator"] = "Y";
-                    }
-                    else
-                    {
-                        sPos = "300";
-                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        if (Session["Admin"].ToString() == "Y")
                         {
+                            ViewBag.R.current["operator"] = "Y";
+                        }
+                        else
+                        {
+                            sPos = "310";
                             svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
-                            sPos = "310";
+                            sPos = "320";
                             ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                             ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
                         }
+
+                        sPos = "330";
+                        fdEnv = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
                     }
 
                     if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "V")))
@@ -242,6 +248,7 @@ namespace ZumNet.Web.Controllers
                         sPos = "500";
 
                         ViewBag.BoardList = svcRt.ResultDataRowCollection;
+                        ViewBag.FolderEnv = fdEnv;
                         ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
 
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListView", ViewBag)
@@ -286,19 +293,20 @@ namespace ZumNet.Web.Controllers
             }
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
+            ZumNet.Framework.Entities.Common.FolderEnvironmentEntity fdEnv = null;
 
             int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
             int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
             int iAppId = Convert.ToInt32(ViewBag.R.appid.Value); //messageid
 
-            //권한체크
-            if (Session["Admin"].ToString() == "Y")
+            //권한체크, 폴더환경정보
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
             {
-                ViewBag.R.current["operator"] = "Y";
-            }
-            else
-            {
-                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                if (Session["Admin"].ToString() == "Y")
+                {
+                    ViewBag.R.current["operator"] = "Y";
+                }
+                else
                 {
                     svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
@@ -306,6 +314,7 @@ namespace ZumNet.Web.Controllers
                     ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
                     if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
                 }
+                fdEnv = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
             }
 
             rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
@@ -337,7 +346,8 @@ namespace ZumNet.Web.Controllers
 
                 //ViewBag.AppPrev = svcRt.ResultDataDetail["prevMsgID"].ToString();
                 //ViewBag.AppNext = svcRt.ResultDataDetail["nextMsgID"].ToString();
-                
+
+                ViewBag.FolderEnv = fdEnv;
                 rt = FormHandler.BindFormToJson(this, svcRt);
                 if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
@@ -366,29 +376,34 @@ namespace ZumNet.Web.Controllers
                     JObject jPost = ViewBag.R;
 
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    ZumNet.Framework.Entities.Common.FolderEnvironmentEntity fdEnv = null;
 
                     sPos = "200";
                     int iCategoryId = Convert.ToInt32(jPost["ct"]);
                     int iFolderId = Convert.ToInt32(jPost["fdid"]);
                     int iAppId = Convert.ToInt32(jPost["appid"]);
 
-                    //권한체크
-                    if (Session["Admin"].ToString() == "Y")
+                    //권한체크, 폴더환경정보
+                    sPos = "300";
+                    using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                     {
-                        ViewBag.R.current["operator"] = "Y";
-                    }
-                    else
-                    {
-                        sPos = "300";
-                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        if (Session["Admin"].ToString() == "Y")
                         {
+                            ViewBag.R.current["operator"] = "Y";
+                        }
+                        else
+                        {
+                            sPos = "310";
                             svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
 
-                            sPos = "310";
+                            sPos = "320";
                             ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                             ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
                             if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
                         }
+
+                        sPos = "330";
+                        fdEnv = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
                     }
 
                     if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
@@ -414,6 +429,7 @@ namespace ZumNet.Web.Controllers
                     if (svcRt != null && svcRt.ResultCode == 0)
                     {
                         sPos = "510";
+                        ViewBag.FolderEnv = fdEnv;
                         rt = FormHandler.BindFormToJson(this, svcRt);
 
                         if (rt != "")
@@ -457,6 +473,7 @@ namespace ZumNet.Web.Controllers
             }
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
+            ZumNet.Framework.Entities.Common.FolderEnvironmentEntity fdEnv = null;
 
             if (ViewBag.R.xfalias == "") ViewBag.R.xfalias = "bbs";
 
@@ -464,14 +481,14 @@ namespace ZumNet.Web.Controllers
             int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
             string sObjectType = iFolderId == 0 ? "" : "O";
 
-            //권한체크
-            if (Session["Admin"].ToString() == "Y")
+            //권한체크, 폴더환경정보
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
             {
-                ViewBag.R.current["operator"] = "Y";
-            }
-            else
-            {
-                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                if (Session["Admin"].ToString() == "Y")
+                {
+                    ViewBag.R.current["operator"] = "Y";
+                }
+                else
                 {
                     svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, sObjectType, "0");
 
@@ -482,6 +499,8 @@ namespace ZumNet.Web.Controllers
                         if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
                     }
                 }
+
+                if (iFolderId > 0)  fdEnv = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
             }
 
             if (iFolderId > 0)
@@ -498,8 +517,14 @@ namespace ZumNet.Web.Controllers
                     rt = svcRt.ResultMessage;
                     return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
                 }
-            }
 
+                ViewBag.FolderEnv = fdEnv;
+            }
+            else
+            {
+                ViewBag.FolderEnv = null;
+            }
+            
             rt = FormHandler.BindFormToJson(this, null);
             if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
 

@@ -50,7 +50,7 @@ namespace ZumNet.Web.Controllers
 
                 using (ZumNet.BSL.ServiceBiz.CommonBiz com = new ZumNet.BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = com.GetTreeInformation(1, Convert.ToInt32(jPost["ct"]), sSelected, StringHelper.SafeString(jPost["seltype"], "")
+                    svcRt = com.GetTreeInformation(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(jPost["ct"]), sSelected, StringHelper.SafeString(jPost["seltype"], "")
                                         , iLevel, Convert.ToInt32(Session["URID"]), StringHelper.SafeString(jPost["open"], "")
                                         , Session["Admin"].ToString(), StringHelper.SafeString(jPost["acl"], ""), 0, 0, "");
                 }
