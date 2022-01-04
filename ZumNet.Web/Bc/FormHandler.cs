@@ -41,15 +41,16 @@ namespace ZumNet.Web.Bc
             string sNextApp = "";
             string sPos = "";
 
-            if (ctrl.ViewBag.R.xfalias == "")
-            {
-                return "No Form Alias!";
-            }
+            //if (ctrl.ViewBag.R.xfalias == "")
+            //{
+            //    return "No Form Alias!";
+            //}
 
             if (ctrl.ViewBag.R.xfalias == "bbs" || ctrl.ViewBag.R.xfalias == "notice" || ctrl.ViewBag.R.xfalias == "file") sJsonPath = "~/Content/Json/jform_bbs.json";
             else if (ctrl.ViewBag.R.xfalias == "doc") sJsonPath = "~/Content/Json/jform_doc.json";
             else if (ctrl.ViewBag.R.xfalias == "knowledge") sJsonPath = "~/Content/Json/jform_knowledge.json";
             else if (ctrl.ViewBag.R.xfalias == "ea") sJsonPath = "~/Content/Json/jform_ea.json";
+            else sJsonPath = "~/Content/Json/jform_bbs.json"; //xfalias='' 인 경우 일반게시 또는 공지사항으로 적용
 
             try
             {

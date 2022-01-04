@@ -2879,6 +2879,7 @@
     <Content Include="Views\Common\_ListMenu.cshtml" />
     <Content Include="Views\Board\Write.cshtml" />
     <Content Include="Views\Board\_Write.cshtml" />
+    <Content Include="Views\Board\Modal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

@@ -2,6 +2,14 @@
 
 $(function () {
 
+    $('#ckbUsePopup').click(function () {
+        if ($(this).prop('checked')) {
+            $('#txtPopDate').prop('disabled', false); _zw.fn.input($('#txtPopDate')[0]);
+        } else {
+            $('#txtPopDate').val('').prop('disabled', true);
+        }
+    });
+
     _zw.mu.writeMsg = function (xf, m) {
         var el, p, postData, tgtPage, stdPage;
         m = m || '';
@@ -22,6 +30,27 @@ $(function () {
 
     }
 
+    _zw.mu.registerMsg = function () {
+        DEXT5UPLOAD.Transfer(G_UploadID);
+
+        console.log('registerMsg => ' + (new Date()))
+
+        var file_list = DEXT5UPLOAD.GetAllFileListForJson(G_UploadID);
+        console.log(file_list)
+    }
+
+    _zw.mu.previewMsg = function () {
+
+    }
+
+    _zw.mu.saveMsg = function () {
+
+    }
+
+    _zw.mu.cancelMsg = function () {
+        history.back();
+    }
+
     _zw.mu.goList = function () {
         var postData = _zw.fn.getLvQuery();
         window.location.href = '/Board/List?qi=' + _zw.base64.encode(postData);
@@ -35,7 +64,6 @@ $(function () {
 
         //var j = JSON.parse(sJson);
         
-
         var postData = _zw.fn.getLvQuery(); //console.log(postData);
         var url = '/Board/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);

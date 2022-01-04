@@ -39,6 +39,9 @@
     }
 
     @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
+
     @Scripts.Render("~/Scripts/Board/list.js")
 
     @if (ViewBag.R.mode.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
@@ -56,27 +59,8 @@
             _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
 
             //Editor, Upload
-            if ($('#__DextEditor').length > 0) {
-                //DEXT5.config.ToSaveFilePathURL = "@sUploadPath";
-
-                DEXT5.config.EditorHolder = "__DextEditor";
-                new Dext5editor("editor1");
-
-                $('.btn[data-zf-menu="toggleEditor"]').click(function () {
-                    var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'];
-                    var vIcon = ['fe-arrow-down', 'fe-arrow-up'];
-                    if ($(this).attr('aria-expanded') == 'false') {
-                        $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
-                        $('#__DextEditor').css('top', '0');
-                    } else {
-                        $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
-                        $('#__DextEditor').css('top', '360px');
-                    }
-                });
-            }
-
             if ($('#__DextUpload').length > 0) {
-                //DEXT5UPLOAD.config.ButtonBarEdit = '0';
+                DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove';
 
                 DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
                 new Dext5Upload(G_UploadID);
@@ -91,11 +75,62 @@
                     } else {
                         $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
                         $('#__DextUpload').show();
-                        $('#__DextEditor').css('top', '360px');
+                        $('#__DextEditor').css('top', '350px');
+                    }
+                });
+
+
+            }
+
+            if ($('#__DextEditor').length > 0) {
+                _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
+                $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+
+                //DEXT5.config.ToSaveFilePathURL = "@sUploadPath";
+
+                DEXT5.config.EditorHolder = "__DextEditor";
+                DEXT5.config.FocusInitObjId = "txtSubject";
+
+                new Dext5editor("editor1");
+
+                $('.btn[data-zf-menu="toggleEditor"]').click(function () {
+                    //var os = $('.z-list-scroll .zf-editor').offset();
+
+                    //alert(DEXT5.getBodyValue('editor1'));
+
+                    var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'];
+                    var vIcon = ['fe-arrow-down', 'fe-arrow-up'];
+                    if ($(this).attr('aria-expanded') == 'false') {
+                        $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
+                        $('#__DextEditor').css('top', '0');
+                    } else {
+                        $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
+                        $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
                     }
                 });
             }
         }());
+
+        function dext_editor_loaded_event() {
+            // 에디터가 로드된 후 사용자의 css를 에디터에 적용시킵니다.
+            
+        }
+
+        function DEXT5UPLOAD_AfterAddItemEndTime() {
+            console.log('transfer')
+            // 파일 추가후 처리할 내용
+            //DEXT5UPLOAD.TransferEx(G_UploadID);
+        }
+
+        function DEXT5UPLOAD_OnTransfer_Start() {
+            // 업로드 시작 후 처리할 내용
+            console.log('start => ' + (new Date()))
+            return true;
+        }
+
+        function DEXT5UPLOAD_OnTransfer_Complete() {
+            console.log('complete => ' + (new Date()))
+        }
 </script>
 }
 

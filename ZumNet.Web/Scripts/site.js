@@ -257,10 +257,85 @@ $(function () {
         _zw.fn.loadList();
     });
 
+    //Common Form Menu
+    //_zw.fn.input();
+    
+    $('.btn[data-zf-menu="openClassWnd"]').click(function () {
+        var ttl = $(this).prev().html();
+
+        $('#popLayer').on('show.bs.modal', function (e) {
+            //var w = ''
+            //if ($(this).attr("data-width") && parseInt($(this).attr("data-width")) > 0) w = ' style="width: ' + $(this).attr("data-width") + 'px;"';
+            //var s = '<div class="modal-dialog modal-dialog-scrollable"' + w + '>'
+            //    + '<div class="modal-content">'
+            //    + '<div class="modal-header">'
+            //    + '<h6 class="modal-title">' + ttl + '</h6>'
+            //    + '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+            //    + '</div>'
+            //    + '<div class="modal-body"><div id="__ClassTree"></div></div>'
+            //    + '<div class="modal-footer">'
+            //    + '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
+            //    + '<button type="button" class="btn btn-primary">Understood</button>'
+            //    + '</div>'
+            //    + '</div>'
+            //    + '</div>'
+            //$(this).html(s);
+
+            $(this).find('.modal-title').html(ttl);
+            $(this).find('.modal-body').html('<div id="__ClassTree"></div>');
+            var pAdd = $(this).find('.modal-footer div[data-for="zf-addinfo"]');
+            pAdd.html('<input type="text" class="form-control text-danger" data-for="addinfo" value="" /><input type="hidden" data-for="addinfo2" value="" /><input type="hidden" data-for="addinfo3" value="" />');
+
+            if ($(this).attr("data-width") && parseInt($(this).attr("data-width")) > 0) $(this).find(".modal-dialog").css("width", $(this).attr("data-width") + "px");
+
+            var cSelect = pAdd.find('input[data-for="addinfo"]'), cSelect2 = pAdd.find('input[data-for="addinfo2"]'), cSelect3 = pAdd.find('input[data-for="addinfo3"]');
+
+            $('#__ClassTree').jstree(_zw.T.tree)
+                .on("select_node.jstree", function (e, d) {
+                    var n = d.instance.get_node(d.selected);
+                    var vId = n.id.split('.');
+                    var vPath = d.instance.get_path(d.selected[0]).join(' / ');
+
+                    //console.log(vPath + " : " + n.li_attr.objecttype + " : " + n.li_attr.acl.substr(10, 1) + " : " + n.li_attr.xfalias)
+
+                    if (n.li_attr.objecttype == 'G' && n.li_attr.acl.substr(10, 1) == 'W'
+                        && ((_zw.V.xfalias == '' && (n.li_attr.xfalias == 'notice' || n.li_attr.xfalias == 'bbs'))
+                            || (_zw.V.xfalias == n.li_attr.xfalias)
+                        )) {
+
+                        if (_zw.V.current.operator == 'Y' || n.li_attr.acl.substr(10, 1) == 'W') {
+                            cSelect.val(vPath); cSelect2.val(vId[vId.length - 1]); cSelect3.val(n.li_attr.xfalias);
+                        } else {
+                            cSelect.val('Not Permission!'); cSelect2.val(''); cSelect3.val('');
+                        }
+                    } else {
+                        cSelect.val('Mismatched Folder!!'); cSelect2.val(''); cSelect3.val('');
+                    }
+            })
+
+            $(this).find('.btn[data-zm-menu="confirm"]').click(function () {
+                $('#__FormView input[data-for="SelectedFolderPath"]').val(cSelect.val());
+                $('#__FormView input[data-for="SelectedFolder"]').val(cSelect2.val());
+                $('#__FormView input[data-for="SelectedXFAlias"]').val(cSelect3.val());
+
+                $('#popLayer').modal('hide');
+            });
+        }).modal();
+    });    
+
     //근무 시간 조회
     if (_zw.V.current && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
         _zw.fn.getTotalWorkTime();
     }
+
+    //Browser Resize
+    $(window).resize(function () {
+        //console.log('resize : ' + $(this).height())
+        //if ($('#__DextEditor').length > 0) {//editor position
+        //    _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8;
+        //    $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+        //}
+    });
 });
 
 $(function () {
@@ -311,7 +386,53 @@ $(function () {
         _zw = root._zw = {};
     }
 
-    _zw.V = {};     //사용할 변수, 데이터
+    _zw.V = {}; //사용할 변수, 데이터
+
+    _zw.T = {   //사용할 템플릿
+        "tree": {
+            core: {
+                check_callback: true,
+                data: {
+                    type: 'POST',
+                    url: '/Common/Tree',
+                    data: function (node) {
+                        var lvl = node.id == '#' ? '0' : node.li_attr.level;
+                        var selType = node.id == '#' ? '' : node.li_attr.objecttype;
+                        var acl = node.id == '#' ? _zw.V.current.acl : node.li_attr.acl;
+                        var openNode = '';
+                        if (_zw.V.opnode != '' && _zw.V.opnode.indexOf('.') != -1) {
+                            var v = _zw.V.opnode.split('.');
+                            openNode = node.id == v[v.length - 1] ? '' : _zw.V.opnode;
+                        }
+
+                        return '{ct:"' + _zw.V.ct + '",selected:"' + node.id + '",seltype:"' + selType + '",lvl:"' + lvl + '",open:"' + openNode + '",acl:"' + acl + '"}'
+                    },
+                    dataType: 'json',
+                    beforeSend: function () {
+                    },
+                }
+            },
+            plugins: ["types", "wholerow"],
+            //plugins: ["dnd", "massload", "search", "state", "types", "unique", "wholerow", "changed", "conditionalselect"]
+            types: {
+                default: { icon: "fas fa-folder" },
+                folder: { icon: "fas fa-folder text-warning" },
+                //fdopen: { icon: "fas fa-folder-open text-warning" },
+                group: { icon: "fas fa-user-friends text-facebook" },
+                user: { icon: "fas fa-user" },
+                cat: { icon: "fas fa-desktop text-indigo" },
+                res: { icon: "fas fa-chalkboard text-danger" },
+                sch: { icon: "fas fa-calendar-alt text-danger" },
+                lnk: { icon: "fas fa-globe text-blue" },
+                short: { icon: "fas fa-folder" },
+                fav: { icon: "fas fa-star text-warning" },
+                shared: { icon: "fas fa-share-square text-teal" }
+            }
+        },
+        "editor": {
+            "top": ""
+        }
+    };
 
     //메뉴
     _zw.mu = {
@@ -583,6 +704,7 @@ $(function () {
         },
         "getAppQuery": function (tgt) {
             var j = {};
+            j["M"] = _zw.V.mode;
             j["ct"] = _zw.V.ct;
             j["ctalias"] = _zw.V.ctalias;
             j["ot"] = _zw.V.ot;
@@ -621,6 +743,51 @@ $(function () {
             _zw.V.lv.page = 1;
             _zw.ut.setCookie(cookieName, cnt, 365);
             _zw.mu.search(1);
+        },
+        "modalMsg": function (xf, appid, fdid) {
+            var postData = '{ct:"' + _zw.V.ct + '",ctalias:"",ot:"",alias:"",xfalias:"' + xf + '",fdid:"' + fdid + '",appid:"' + appid + '",opnode:"",ttl:"",acl:"' + '",appacl:"",sort:"SeqID",sortdir:"DESC",boundary:"' + _zw.V.lv.boundary + '"}';
+
+            $.ajax({
+                type: "POST",
+                url: "/Board/Modal?qi=" + _zw.base64.encode(postData),
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        var v = res.substr(2).split(_zw.V.lv.boundary);
+                        $('#popForm').on('show.bs.modal', function (e) {
+                            $(this).find('.modal-title').html(v[1]);
+                            $(this).find('.modal-body').html(v[0])
+                        }).modal();
+
+                    } else bootbox.alert(res);
+                }
+            });
+        },
+        "input": function (e, p) {
+            if (e) {
+                if (!$(e).prop('readonly') && !$(e).prop('disabled')) _zw.ut.maskInput(e);
+            } else {
+                if (p && p.length > 0) {
+                    p.each(function () {
+                        if (!$(this).prop('readonly') && !$(this).prop('disabled')) _zw.ut.maskInput($(this)[0]);
+                    });
+                } else {
+                    $('input[data-inputmask]').each(function () {
+                        if (!$(this).prop('readonly') && !$(this).prop('disabled')) _zw.ut.maskInput($(this)[0]);
+                    });
+                }
+            }
+        },
+        "onblur": function (e, v) {
+            var dec = '', e1, e2, e3, e4, e5;
+
+            if (e.value != '' && (v[0] == 'number' || v[0] == 'percent')) {
+                if (v[2] && parseInt(v[2]) > 0) {
+                    for (var i = 0; i < parseInt(v[2]); i++) { dec += '0'; }
+                }
+                if (dec != '') dec = '.' + dec;
+                e.value = numeral(e.value.replace('%', '')).format('0,0' + dec);
+                if (v[0] == 'percent') e.value += '%';
+            }
         }
     };
 
@@ -648,16 +815,16 @@ $(function () {
         },
         "add": function (n) {
             var iAdd = 0; if (n == '') n = 0;
-            if (arguments.length > 1) { for (var i = 1; i < arguments.length; i++) { iAdd = (parseFloat(iAdd) + parseFloat(_WTM.util.empty(arguments[i]))).toFixed(n); } }
+            if (arguments.length > 1) { for (var i = 1; i < arguments.length; i++) { iAdd = (parseFloat(iAdd) + parseFloat(_zw.ut.empty(arguments[i]))).toFixed(n); } }
             return iAdd;
         },
         "sub": function (n, c) {
-            var iSub = (c == '') ? 0 : parseFloat(_WTM.util.empty(c)); if (n == '') n = 0;
-            if (arguments.length > 2) { for (var i = 2; i < arguments.length; i++) { iSub = (parseFloat(iSub) - parseFloat(_WTM.util.empty(arguments[i]))).toFixed(n); } }
+            var iSub = (c == '') ? 0 : parseFloat(_zw.ut.empty(c)); if (n == '') n = 0;
+            if (arguments.length > 2) { for (var i = 2; i < arguments.length; i++) { iSub = (parseFloat(iSub) - parseFloat(_zw.ut.empty(arguments[i]))).toFixed(n); } }
             return iSub;
         },
         "maskInput": function (e) {
-            var v = $(e).attr('data-zf-inputmask').split(';');
+            var v = $(e).attr('data-inputmask').split(';'); //alert(v)
             if (v[0] == "number" || v[0] == "percent") {
                 vanillaTextMask.maskInput({
                     inputElement: e,
@@ -683,7 +850,7 @@ $(function () {
             }
 
             $(e).blur(function () {
-                //_ZF.fn.onblur(e, v);
+                _zw.fn.onblur(e, v);
             });
         },
         "destroyInput": function (e) {

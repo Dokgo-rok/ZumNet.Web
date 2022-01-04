@@ -42,47 +42,9 @@ $(function () {
         //    p.state.loaded = true;
         //});
 
-        $('#__FolderTree').jstree({
-            core: {
-                check_callback: true,
-                data: {
-                    type: 'POST',
-                    url: '/Common/Tree',
-                    data: function (node) {
-                        var lvl = node.id == '#' ? '0' : node.li_attr.level;
-                        var selType = node.id == '#' ? '' : node.li_attr.objecttype;
-                        var acl = node.id == '#' ? _zw.V.current.acl : node.li_attr.acl;
-                        var openNode = '';
-                        if (_zw.V.opnode != '' && _zw.V.opnode.indexOf('.') != -1) {
-                            var v = _zw.V.opnode.split('.');
-                            openNode = node.id == v[v.length - 1] ? '' : _zw.V.opnode;
-                        }
-
-                        return '{ct:"' + _zw.V.ct + '",selected:"' + node.id + '",seltype:"' + selType + '",lvl:"' + lvl + '",open:"' + openNode + '",acl:"' + acl + '"}'
-                    },
-                    dataType: 'json',
-                    beforeSend: function () {//jstree ajax event와 충돌하는 듯....pace.js가 이벤트 종료가 안됨!!
-                        //$('#ajaxLoader').modal('show');
-                    },
-                }
-            },
-            plugins: ["types", "wholerow"],
-            //plugins: ["dnd", "massload", "search", "state", "types", "unique", "wholerow", "changed", "conditionalselect"]
-            types: {
-                default: { icon: "fas fa-folder" },
-                folder: { icon: "fas fa-folder text-warning" },
-                //fdopen: { icon: "fas fa-folder-open text-warning" },
-                group: { icon: "fas fa-user-friends text-facebook" },
-                user: { icon: "fas fa-user" },
-                cat: { icon: "fas fa-desktop text-indigo" },
-                res: { icon: "fas fa-chalkboard text-danger" },
-                sch: { icon: "fas fa-calendar-alt text-danger" },
-                lnk: { icon: "fas fa-globe text-blue" },
-                short: { icon: "fas fa-folder" },
-                fav: { icon: "fas fa-star text-warning" },
-                shared: { icon: "fas fa-share-square text-teal" }
-            }
-        })
+        $('#__FolderTree').jstree(
+            _zw.T.tree
+        )
         .on('loaded.jstree', function (e, d) {
             //if (d.selected && d.selected.length == 1) {
             //    var n = d.instance.get_node(d.selected[0]);

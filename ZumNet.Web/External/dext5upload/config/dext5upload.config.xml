@@ -8,7 +8,7 @@
     <runtimes desc="html5,ieplugin,versionieplugin">html5</runtimes>    
     <plugin_version desc="설정된 cab버전의 값이 우선순위로 적용됨"></plugin_version>
     <width>100%</width>
-    <height desc="minHeight:120px">200px</height>    
+    <height desc="minHeight:120px">190px</height>    
     <skin_name desc="blue,red,green,orange,purple,silver,brown,darkgray,gold,gray,pink,yellow" css_root_path="" color1="" color2="" color3="" text_color="" webfile_color="">blue</skin_name>
     <lang>ko-kr</lang>
     <mode views="list" desc="views : list - 리스트형태로 보기, thumbs - 썸네일형태로 보기">upload</mode>

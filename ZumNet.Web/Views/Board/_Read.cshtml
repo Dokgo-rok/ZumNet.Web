@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json;
+@using ZumNet.Framework.Util;
 
 @{
     bool bPrevEditorBody = false;
@@ -23,7 +24,10 @@
                 <button class="btn btn-default font-weight-bold" onclick="_zw.mu.readMsg('reload');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh"><i class="fe-refresh-cw"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Refresh</span></button>
                 @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
                 {
-                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.replyMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ReplyWrite"><i class="fas fa-reply"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.ReplyWrite</span></button>
+                    if (StringHelper.SafeBool(ViewBag.FolderEnv["UseReply"]))
+                    {
+                        <button class="btn btn-default font-weight-bold" onclick="_zw.mu.replyMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ReplyWrite"><i class="fas fa-reply"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.ReplyWrite</span></button>
+                    }
                     <button class="btn btn-default font-weight-bold" onclick="_zw.mu.writeMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>
                 }
                 @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E"))
@@ -84,7 +88,7 @@
                     {
                         <div class="custom-control custom-checkbox custom-control-inline mb-0">
                             <input type="checkbox" id="ckbPriority" class="custom-control-input" checked disabled>
-                            <label class="custom-control-label" for="ckbPriority">긴급</label>
+                            <label class="custom-control-label" for="ckbPriority">@Resources.Global.Important</label>
                         </div>
                     }
                     @if (ViewBag.R.app["topline"].ToString() == "Y")
