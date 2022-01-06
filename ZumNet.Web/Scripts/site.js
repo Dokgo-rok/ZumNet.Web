@@ -430,7 +430,13 @@ $(function () {
             }
         },
         "editor": {
+            "id": "dext5editor",
             "top": ""
+        },
+        "uploader": {
+            "id": "dext5upload",
+            "df": "\u000B", //파일구분자
+            "da": "\u000C" //속성구분자
         }
     };
 
@@ -1086,56 +1092,56 @@ $(function () {
             if (currUploadID) {
                 DEXT5UPLOAD.Transfer(currUploadID);
             } else {
-                DEXT5UPLOAD.Transfer(G_UploadID);
+                DEXT5UPLOAD.Transfer(_zw.T.uploader.id);
             }
         },
         "openFileDialog": function (currUploadID) {// 파일추가 대화창
             if (currUploadID) {
                 DEXT5UPLOAD.OpenFileDialog(currUploadID);
             } else {
-                DEXT5UPLOAD.OpenFileDialog(G_UploadID);
+                DEXT5UPLOAD.OpenFileDialog(_zw.T.uploader.id);
             }
         },
         "deleteAllFile": function (currUploadID) {// 모든 파일삭제
             if (currUploadID) {
                 DEXT5UPLOAD.DeleteAllFile(currUploadID);
             } else {
-                DEXT5UPLOAD.DeleteAllFile(G_UploadID);
+                DEXT5UPLOAD.DeleteAllFile(_zw.T.uploader.id);
             }
         },
         "deleteSelectedFile": function (currUploadID) {// 선택한 파일삭제
             if (currUploadID) {
                 DEXT5UPLOAD.DeleteSelectedFile(currUploadID);
             } else {
-                DEXT5UPLOAD.DeleteSelectedFile(G_UploadID);
+                DEXT5UPLOAD.DeleteSelectedFile(_zw.T.uploader.id);
             }
         },
         "downloadFile": function  (currUploadID) {// 선택한 파일 다운로드
             if (currUploadID) {
                 DEXT5UPLOAD.DownloadFile(currUploadID);
             } else {
-                DEXT5UPLOAD.DownloadFile(G_UploadID);
+                DEXT5UPLOAD.DownloadFile(_zw.T.uploader.id);
             }
         },
         "downloadAllFile": function (currUploadID) {// 모든파일 다운로드
             if (currUploadID) {
                 DEXT5UPLOAD.DownloadAllFile(currUploadID);
             } else {
-                DEXT5UPLOAD.DownloadAllFile(G_UploadID);
+                DEXT5UPLOAD.DownloadAllFile(_zw.T.uploader.id);
             }
         },
         "getTotalFileCount": function (currUploadID) {// 전체 파일개수
             if (currUploadID) {
                 alert(DEXT5UPLOAD.GetTotalFileCount(currUploadID));
             } else {
-                alert(DEXT5UPLOAD.GetTotalFileCount(G_UploadID));
+                alert(DEXT5UPLOAD.GetTotalFileCount(_zw.T.uploader.id));
             }
         },
         "getTotalFileSize": function (currUploadID) {// 전체 파일크기(Bytes)
             if (currUploadID) {
                 alert(DEXT5UPLOAD.GetTotalFileSize(currUploadID));
             } else {
-                alert(DEXT5UPLOAD.GetTotalFileSize(G_UploadID));
+                alert(DEXT5UPLOAD.GetTotalFileSize(_zw.T.uploader.id));
             }
         },
         "setUploadMode": function (mode, currUploadID) {// 업로드 모드 변경
@@ -1143,28 +1149,28 @@ $(function () {
             if (currUploadID) {
                 DEXT5UPLOAD.SetUploadMode(mode, currUploadID);
             } else {
-                DEXT5UPLOAD.SetUploadMode(mode, G_UploadID);
+                DEXT5UPLOAD.SetUploadMode(mode, _zw.T.uploader.id);
             }
         },
         "uploadShow": function (currUploadID) {// 업로드 보이기
             if (currUploadID) {
                 DEXT5UPLOAD.Show(currUploadID);
             } else {
-                DEXT5UPLOAD.Show(G_UploadID);
+                DEXT5UPLOAD.Show(_zw.T.uploader.id);
             }
         },
         "uploadHidden": function (currUploadID) {// 업로드 숨기기
             if (currUploadID) {
                 DEXT5UPLOAD.Hidden(currUploadID);
             } else {
-                DEXT5UPLOAD.Hidden(G_UploadID);
+                DEXT5UPLOAD.Hidden(_zw.T.uploader.id);
             }
         },
         "setSkinColor": function (currUploadID) {// 업로드 스킨설정
             if (currUploadID) {
                 DEXT5UPLOAD.SetSkinColor('#ff0000', '#f7f140', '#33e8f5', '#c2ffd0', currUploadID);
             } else {
-                DEXT5UPLOAD.SetSkinColor('#ff0000', '#f7f140', '#33e8f5', '#c2ffd0', G_UploadID);
+                DEXT5UPLOAD.SetSkinColor('#ff0000', '#f7f140', '#33e8f5', '#c2ffd0', _zw.T.uploader.id);
             }
         }
     }

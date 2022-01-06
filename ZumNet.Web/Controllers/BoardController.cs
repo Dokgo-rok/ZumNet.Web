@@ -620,5 +620,57 @@ namespace ZumNet.Web.Controllers
             return View();
         }
         #endregion
+
+        #region [게시물 저장, 등록]
+        /// <summary>
+        /// 게시물 저장, 등록
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Send()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0)
+                    {
+                        return "전송 데이터 누락!";
+                    }
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        if (jPost["M"].ToString() == "save")
+                        {
+                            //임시저장
+                            svcRt = bb.SetBoardMessagTempSave(jPost);
+                        }
+                        else
+                        {
+                            svcRt = bb.SetBoardMessage(jPost);
+                        }
+                        
+                    }
+
+                    if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                    else strView = "OK";
+                }
+                catch (Exception ex)
+                {
+                    strView = ex.Message;
+                }
+            }
+
+            return strView;
+        }
+        #endregion
     }
 }

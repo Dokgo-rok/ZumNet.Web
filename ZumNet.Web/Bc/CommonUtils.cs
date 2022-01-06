@@ -1176,10 +1176,13 @@ namespace ZumNet.Web.Bc
                     jV = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
                 }
 
-                jV["current"]["urid"] = HttpContext.Current.Session["URID"].ToString();
                 jV["current"]["user"] = HttpContext.Current.Session["URName"].ToString();
-                jV["current"]["deptid"] = HttpContext.Current.Session["DeptID"].ToString();
+                jV["current"]["urid"] = HttpContext.Current.Session["URID"].ToString();
+                jV["current"]["urcn"] = HttpContext.Current.Session["LogonID"].ToString();
                 jV["current"]["dept"] = HttpContext.Current.Session["DeptName"].ToString();
+                jV["current"]["deptid"] = HttpContext.Current.Session["DeptID"].ToString();
+                jV["current"]["deptcd"] = HttpContext.Current.Session["DeptAlias"].ToString();
+
                 jV["current"]["date"] = nowDate.ToString("yyyy-MM-dd");
                 jV["current"]["workdate"] = workDate; //근무관리
                 jV["current"]["page"] = HttpContext.Current.Request.Url.AbsolutePath;
@@ -1210,6 +1213,7 @@ namespace ZumNet.Web.Bc
                 }
 
                 jV["mode"] = StringHelper.SafeString(jReq["M"]);
+                jV["wnd"] = StringHelper.SafeString(jReq["wnd"]); // 빈값(내부), popup(새창), modal(모달창)
                 jV["ct"] = StringHelper.SafeString(jReq["ct"], "0");
                 jV["ctalias"] = StringHelper.SafeString(jReq["ctalias"]);
                 jV["fdid"] = StringHelper.SafeString(jReq["fdid"], "0");
@@ -1322,10 +1326,13 @@ namespace ZumNet.Web.Bc
                             jV = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
                         }
 
-                        jV["current"]["urid"] = HttpContext.Current.Session["URID"].ToString();
                         jV["current"]["user"] = HttpContext.Current.Session["URName"].ToString();
-                        jV["current"]["deptid"] = HttpContext.Current.Session["DeptID"].ToString();
+                        jV["current"]["urid"] = HttpContext.Current.Session["URID"].ToString();
+                        jV["current"]["urcn"] = HttpContext.Current.Session["LogonID"].ToString();
                         jV["current"]["dept"] = HttpContext.Current.Session["DeptName"].ToString();
+                        jV["current"]["deptid"] = HttpContext.Current.Session["DeptID"].ToString();
+                        jV["current"]["deptcd"] = HttpContext.Current.Session["DeptAlias"].ToString();
+
                         jV["current"]["date"] = nowDate.ToString("yyyy-MM-dd");
                         jV["current"]["workdate"] = workDate; //근무관리
                         jV["current"]["page"] = HttpContext.Current.Request.Url.AbsolutePath;
@@ -1335,6 +1342,7 @@ namespace ZumNet.Web.Bc
                         jV["current"]["operator"] = "";
 
                         jV["mode"] = StringHelper.SafeString(jReq["M"]);
+                        jV["wnd"] = StringHelper.SafeString(jReq["wnd"]); // 빈값(내부), popup(새창), modal(모달창)
                         jV["ct"] = StringHelper.SafeString(jReq["ct"], "0");
                         jV["ctalias"] = StringHelper.SafeString(jReq["ctalias"]);
                         jV["fdid"] = StringHelper.SafeString(jReq["fdid"], "0");

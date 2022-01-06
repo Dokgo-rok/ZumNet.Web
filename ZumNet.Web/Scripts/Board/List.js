@@ -31,12 +31,28 @@ $(function () {
     }
 
     _zw.mu.registerMsg = function () {
-        DEXT5UPLOAD.Transfer(G_UploadID);
+        //var fp = $('#__FormView input[data-for="SelectedFolderPath"]').val();
+        var fd = $('#__FormView input[data-for="SelectedFolder"]').val();
+        var fxf = $('#__FormView input[data-for="SelectedXFAlias"]').val();
+        if (fd == '' || fxf == '') {
+            alert("게시분류를 선택하세요!"); return;
+        }
 
-        console.log('registerMsg => ' + (new Date()))
+        var $subject = $('#txtSubject');
+        if (!$.trim($subject.val())) {
+            alert("제목을 입력하세요."); $subject.focus(); return;
+        }
 
-        var file_list = DEXT5UPLOAD.GetAllFileListForJson(G_UploadID);
-        console.log(file_list)
+        if ($('#ckbUsePopup').prop('checked') && $.trim($('#txtPopDate').val()) == '') {
+            alert("팝업일을 입력하세요."); $('#txtPopDate').focus(); return;
+        }
+
+        if (DEXT5.isEmpty()) {
+            alert("작성된 내용이 없습니다. 내용을 입력하세요."); DEXT5.setFocusToEditor(); return;
+        }
+
+        _zw.V.mode = "";
+        DEXT5UPLOAD.Transfer();
     }
 
     _zw.mu.previewMsg = function () {
@@ -44,7 +60,13 @@ $(function () {
     }
 
     _zw.mu.saveMsg = function () {
+        var $subject = $('#txtSubject');
+        if (!$.trim($subject.val())) {
+            alert("제목을 입력하세요."); $subject.focus(); return;
+        }
 
+        _zw.V.mode = "save";
+        DEXT5UPLOAD.Transfer();
     }
 
     _zw.mu.cancelMsg = function () {
@@ -152,4 +174,154 @@ $(function () {
         _zw.V.lv.end = '';
         _zw.V.lv.basesort = '';
     }
+
+    _zw.fn.sendForm = function () {
+        var fileList = DEXT5UPLOAD.GetNewUploadListForText(); //DEXT5UPLOAD.GetNewUploadListForJson();
+        //console.log(fileList)
+
+        var imgList = DEXT5.getImages();
+        //console.log(imgList)
+
+        var jPost = _zw.V.app;
+        jPost["ct"] = _zw.V.ct;
+        jPost["xfalias"] = $('#__FormView input[data-for="SelectedXFAlias"]').val();
+        jPost["fdid"] = $('#__FormView input[data-for="SelectedFolder"]').val();
+        jPost["appid"] = _zw.V.appid;
+
+        if (fileList) {
+            var vFile = fileList.split(_zw.T.uploader.df);
+            for (var i = 0; i < vFile.length; i++) {
+                var vInfo = vFile[i].split(_zw.T.uploader.da);
+                var v = {};
+                v["attachid"] = 0;
+                v["seq"] = i + 1;
+                v["isfile"] = "Y";
+                v["filename"] = vInfo[0];
+                v["savedname"] = vInfo[1];
+                v["size"] = vInfo[2];
+                v["ext"] = vInfo[7];
+                v["filepath"] = vInfo[4];
+                v["storagefolder"] = "";
+
+                jPost["attachlist"].push(v);
+            }
+            jPost["attachcount"] = fileList.length;
+            jPost["attachsize"] = DEXT5UPLOAD.GetTotalFileSize();
+        }
+        else {
+            jPost["attachcount"] = 0;
+        }
+        jPost["msg"] = "";
+        jPost["inherited"] = "Y";
+        jPost["priority"] = (!$('#ckbPriority').prop("disabled") && $('#ckbPriority').prop('checked')) ? "Y" : "N";
+        jPost["topline"] = (!$('#ckbTopLine').prop("disabled") && $('#ckbTopLine').prop('checked')) ? "Y" : "N";
+        jPost["ispopup"] = (!$('#ckbUsePopup').prop("disabled") && $('#ckbUsePopup').prop('checked')) ? "Y" : "N";
+        jPost["popdate"] = (!$('#ckbUsePopup').prop("disabled") && $('#ckbUsePopup').prop('checked') && $.trim($('#txtPopDate').val()) != '') ? $('#txtPopDate').val() : "";
+        jPost["replymail"] = "N";
+
+        jPost["creur"] = _zw.V.current.user;
+        jPost["creurid"] = _zw.V.current.urid;
+        jPost["creurcn"] = _zw.V.current.urcn;
+        jPost["credept"] = _zw.V.current.dept;
+        jPost["credpid"] = _zw.V.current.deptid;
+        jPost["credpcd"] = _zw.V.current.deptcd;
+
+        jPost["subject"] = $('#txtSubject').val();
+        jPost["body"] = DEXT5.getBodyValue();
+        jPost["bodytext"] = "";
+        jPost["pwd"] = ""; //익명
+
+        jPost["M"] = _zw.V.mode;
+
+        $.ajax({
+            type: "POST",
+            url: "/Board/Send",
+            data: JSON.stringify(jPost),
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    alert("OK");
+
+                } else bootbox.alert(res);
+            }
+        });
+    }
+
+    //editor, uploader
+    //Editor, Upload
+    if ($('#__DextUpload').length > 0) {
+        DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
+
+        DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
+        new Dext5Upload(_zw.T.uploader.id);
+
+        $('.btn[data-zf-menu="toggleUploader"]').click(function () {
+            var vText = ['@Resources.Global.UploaderFold', '@Resources.Global.UploaderExpand'];
+            var vIcon = ['fe-chevron-down', 'fe-chevron-up'];
+            if ($(this).attr('aria-expanded') == 'false') {
+                $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
+                $('#__DextUpload').hide();
+                $('#__DextEditor').css('top', '188px');
+            } else {
+                $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
+                $('#__DextUpload').show();
+                $('#__DextEditor').css('top', '350px');
+            }
+        });
+    }
+
+    if ($('#__DextEditor').length > 0) {
+        _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
+        $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+
+        //DEXT5.config.ToSaveFilePathURL = "@sUploadPath";
+
+        DEXT5.config.EditorHolder = "__DextEditor";
+        DEXT5.config.FocusInitObjId = "txtSubject";
+
+        new Dext5editor(_zw.T.editor.id);
+
+        $('.btn[data-zf-menu="toggleEditor"]').click(function () {
+            //var os = $('.z-list-scroll .zf-editor').offset();
+
+            //alert(DEXT5.getBodyValue('editor1'));
+
+            var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'];
+            var vIcon = ['fe-arrow-down', 'fe-arrow-up'];
+            if ($(this).attr('aria-expanded') == 'false') {
+                $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
+                $('#__DextEditor').css('top', '0');
+            } else {
+                $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
+                $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+            }
+        });
+    }
 });
+
+function dext_editor_loaded_event() {
+    // 에디터가 로드된 후 사용자의 css를 에디터에 적용시킵니다.
+
+}
+
+function DEXT5UPLOAD_AfterAddItemEndTime() {
+    console.log('transfer')
+    // 파일 추가후 처리할 내용
+    //DEXT5UPLOAD.TransferEx(G_UploadID);
+}
+
+function DEXT5UPLOAD_OnTransfer_Start() {
+    // 업로드 시작 후 처리할 내용
+    console.log('start => ' + (new Date()))
+    return true;
+}
+
+function DEXT5UPLOAD_OnTransfer_Complete() {
+    console.log('complete => ' + (new Date()) + " : " + DEXT5UPLOAD.GetTotalFileSize())
+
+    _zw.fn.sendForm();
+}
+
+function DEXT5UPLOAD_OnError(uploadID, code, message, uploadedFileListObj) {
+    //에러 발생 후 경고창 띄어줌
+    alert("Error Code : " + code + "\nError Message : " + message);
+}
