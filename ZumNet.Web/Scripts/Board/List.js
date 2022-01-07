@@ -35,20 +35,20 @@ $(function () {
         var fd = $('#__FormView input[data-for="SelectedFolder"]').val();
         var fxf = $('#__FormView input[data-for="SelectedXFAlias"]').val();
         if (fd == '' || fxf == '') {
-            alert("게시분류를 선택하세요!"); return;
+            bootbox.alert("게시분류를 선택하세요!"); return;
         }
 
         var $subject = $('#txtSubject');
         if (!$.trim($subject.val())) {
-            alert("제목을 입력하세요."); $subject.focus(); return;
+            bootbox.alert("제목을 입력하세요.", function () { $subject.focus(); }); return;
         }
 
         if ($('#ckbUsePopup').prop('checked') && $.trim($('#txtPopDate').val()) == '') {
-            alert("팝업일을 입력하세요."); $('#txtPopDate').focus(); return;
+            bootbox.alert("팝업일을 입력하세요.", function () { $('#txtPopDate').focus(); }); return;
         }
 
         if (DEXT5.isEmpty()) {
-            alert("작성된 내용이 없습니다. 내용을 입력하세요."); DEXT5.setFocusToEditor(); return;
+            bootbox.alert("작성된 내용이 없습니다. 내용을 입력하세요.", function () { DEXT5.setFocusToEditor(); }); return;
         }
 
         _zw.V.mode = "";
@@ -62,7 +62,7 @@ $(function () {
     _zw.mu.saveMsg = function () {
         var $subject = $('#txtSubject');
         if (!$.trim($subject.val())) {
-            alert("제목을 입력하세요."); $subject.focus(); return;
+            bootbox.alert("제목을 입력하세요.", function () { $subject.focus(); }); return;
         }
 
         _zw.V.mode = "save";

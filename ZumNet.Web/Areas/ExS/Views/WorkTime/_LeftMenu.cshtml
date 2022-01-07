@@ -18,7 +18,8 @@
 @functions {
     private string GetQueryString(string page, string ttl)
     {
-        return "?qi=" + Server.UrlEncode("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
+        //return "?qi=" + Server.UrlEncode("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
     }
 }
 

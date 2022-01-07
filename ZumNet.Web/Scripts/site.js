@@ -127,6 +127,7 @@ $(function () {
     });
 
     $('.modal-ajaxloader .modal-title').html('Loading ...');
+    $('.modal:not(.modal-ajaxloader)').draggable({ handle: ".modal-header" });
 
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip();
@@ -176,7 +177,6 @@ $(function () {
                         } else if ($(this).attr('data-zm-menu') == 'offwork') {
                             bootbox.alert($(this).attr('data-zm-menu'));
                         }
-
                     });
                 }).modal();
                 break;
@@ -561,7 +561,7 @@ $(function () {
         "setComment": function (seq) {
             var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
             var txt = p.find('[data-column="Comment"]');
-            if ($.trim(txt.val()) == '') { bootbox.alert('입력값이 없습니다!'); return false; }
+            if ($.trim(txt.val()) == '') { bootbox.alert('입력값이 없습니다!', function () { txt.focus(); }); return false; }
 
             var jPost = {};
             jPost["xfalias"] = _zw.V.xfalias;
@@ -691,11 +691,15 @@ $(function () {
             var barLen = _zw.ut.rate(real, min, 1) + "%";
             var barText = _zw.ut.rate(real, min, 1) + "% (" + real + "h)";
 
+            //console.log("real => " + barLen + " : " + barText);
+
             $('.progress-bar[data-for="realhour"]').css('width', barLen);
             $('.progress-bar[data-for="realhour-text"]').html(barText);
 
             barLen = _zw.ut.rate(ex, extra, 1);
             barText = _zw.ut.rate(ex, extra, 1) + "% (" + ex + "h)";
+
+            //console.log("rate => " + barLen + " : " + barText);
 
             var barColor = '';
             if (barLen < 51) barColor = 'progress-bar-success';
@@ -767,6 +771,9 @@ $(function () {
                     } else bootbox.alert(res);
                 }
             });
+        },
+        "newEAForm": function () {
+
         },
         "input": function (e, p) {
             if (e) {

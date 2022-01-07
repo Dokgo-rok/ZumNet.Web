@@ -31,7 +31,7 @@ namespace ZumNet.Web
             // can use transformations of the corresponding bundle
             BundleResolver.Current = new CustomBundleResolver();
 
-            bundles.Add(new ScriptBundle("~/bundle/jquery").Include("~/Scripts/jquery-{version}.js"));
+            bundles.Add(new ScriptBundle("~/bundle/jquery").Include("~/Scripts/jquery-{version}.js").Include("~/Scripts/jquery-ui.min.js"));
             bundles.Add(new ScriptBundle("~/bundle/jqueryval").Include("~/Scripts/jquery.validate*"));
 
             // Modernizr의 개발 버전을 사용하여 개발하고 배우십시오. 그런 다음

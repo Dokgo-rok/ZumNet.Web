@@ -2004,6 +2004,7 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\ExS\worktime.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\Report\report.js" />
     <Content Include="Temp\admin.ph_up_BaseGradeCodeHandler.sql" />
     <Content Include="Temp\admin.ph_up_BFGetEAFormList.sql" />

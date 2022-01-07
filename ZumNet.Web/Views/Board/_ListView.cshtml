@@ -35,11 +35,11 @@
                 @if (row["Priority"].ToString() == "Y")
                 {
                     @*<i class="fe-award text-big text-danger font-weight-bold mr-1"></i>*@
-                    <img src="~/images/plugins/hot.gif" alt="" />
+                    <img src="~/images/plugins/hot.gif" alt="" class="mr-1" />
                 }
                 @if (ZumNet.Web.Bc.CommonUtils.DateDiff(row["PublishDate"].ToString(), DateTime.Now.ToString()) <= 1)
                 {
-                    <img src="~/images/plugins/new.gif" alt="" />
+                    <img src="~/images/plugins/new.gif" alt="" class="mr-1" />
                 }
                 <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg();">@row["Subject"].ToString()</a>
                 @if (Convert.ToInt32(row["CommentCount"]) > 0)

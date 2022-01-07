@@ -1,9 +1,11 @@
 {
   "current": {
-    "urid": "",
     "user": "",
-    "deptid": "",
+    "urid": "",
+    "urcn": "",
     "dept": "",
+    "deptid": "",
+    "deptcd": "",
     "date": "",
     "workdate": "",
     "page": "",
@@ -15,6 +17,7 @@
     "outtime": ""
   },
   "mode": "",
+  "wnd": "",
   "ct": "",
   "ctalias": "",
   "fdid": "",
