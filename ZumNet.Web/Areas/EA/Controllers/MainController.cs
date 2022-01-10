@@ -14,6 +14,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
 {
     public class MainController : Controller
     {
+        #region [결재 메인 페이지]
         // GET: EA/Main
         [SessionExpireFilter]
         [Authorize]
@@ -25,7 +26,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
-            rt = "잘못된 경로로 접근했습니다!!";
+            rt = Resources.Global.Auth_InvalidPath;
             if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -45,7 +46,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
             {
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
 
                     ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                     ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
@@ -61,7 +62,9 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
             return View();
         }
+        #endregion
 
+        #region [리스트뷰 및 갯수]
         [SessionExpireFilter]
         [Authorize]
         public ActionResult List(string Qi)
@@ -72,7 +75,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
-            rt = "잘못된 경로로 접근했습니다!!";
+            rt = Resources.Global.Auth_InvalidPath;
             if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -92,7 +95,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
             {
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
 
                     ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                     ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
@@ -111,7 +114,9 @@ namespace ZumNet.Web.Areas.EA.Controllers
             
             ViewBag.R.lv["basesort"] = ViewBag.CurBox[5];
             ViewBag.R.lv["sort"] = ViewBag.CurBox[5];
-            
+            ViewBag.R.lv["sortdir"] = StringHelper.SafeString(ViewBag.R.lv["sortdir"].ToString(), "DESC");
+
+
             int iState = 0;
             string sLocation = ViewBag.CurBox[2].IndexOf('_') >= 0 ? "" : ViewBag.CurBox[2];
 
@@ -130,14 +135,15 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     else if (sLocation == "uc") iState = 7;
 
                     svcRt = wkList.ViewListPerMenu(sLocation, "N", "", 0, Convert.ToInt32(ViewBag.PartID), iState, Convert.ToInt32(ViewBag.R.lv.page.Value)
-                                            , Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), "DESC"
-                                            , ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString(), "", "");
+                                            , Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["sort"].ToString(), ViewBag.R.lv["sortdir"].ToString()
+                                            , ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString(), ViewBag.R.lv["start"].ToString(), ViewBag.R.lv["end"].ToString());
                 }
                 else
                 {
                     svcRt = wkList.ViewProcessWorkList(sLocation, Convert.ToInt32(Session["DNID"]), ViewBag.R["xfalias"].ToString(), "", ViewBag.CurBox[3].ToString(), ViewBag.PartID
                                             , Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value), ViewBag.R.lv["basesort"].ToString()
-                                            , ViewBag.R.lv["sort"].ToString(), "DESC", "", "", "", "", Convert.ToInt32(Session["URID"]));
+                                            , ViewBag.R.lv["sort"].ToString(), ViewBag.R.lv["sortdir"].ToString(), ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString()
+                                            , ViewBag.R.lv["start"].ToString(), ViewBag.R.lv["end"].ToString(), Convert.ToInt32(Session["URID"]));
                 }
             }
 
@@ -185,7 +191,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         sPos = "210";
                         using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                         {
-                            svcRt = cb.GetObjectPermission(1, iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
+                            svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), 0, "", "0");
 
                             ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                             ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
@@ -319,7 +325,60 @@ namespace ZumNet.Web.Areas.EA.Controllers
             }
             return rt;
         }
+        #endregion
 
-        
+        #region [양식 선택]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string NewDocument()
+        {
+            string sPos = "";
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    sPos = "200";
+                    using (BSL.FlowBiz.EApprovalBiz eaBiz = new BSL.FlowBiz.EApprovalBiz())
+                    {
+                        svcRt = eaBiz.SelectEAFormSelect(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(Session["URID"]), "N");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "300";
+                        ViewBag.FormClass = svcRt.ResultDataSet.Tables[0];
+                        ViewBag.FormList = svcRt.ResultDataSet.Tables[1];
+                        ViewBag.ChargeGR = svcRt.ResultDataSet.Tables[2];
+                        ViewBag.ChargeUR = svcRt.ResultDataSet.Tables[3];
+                        ViewBag.Tab = jPost["tab"].ToString();
+
+                        rt = "OK" + "양식선택"
+                                + jPost["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "NewDocument", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            
+
+            return rt;
+        }
+        #endregion
     }
 }

@@ -1,0 +1,83 @@
+﻿@using System.Data;
+@{
+    string sSelected = "";
+}
+
+<div class="row mx-0">
+    <div class="col-4 col-sm-3 px-0">
+        <div class="list-group" role="tablist">
+            @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
+            {
+                DataRow dr = ViewBag.FormClass.Rows[i];
+
+                if (ViewBag.Tab != "")
+                {
+                    if (ViewBag.Tab == dr["ClassName"].ToString())
+                    {
+                        sSelected = " active";
+                    }
+                    else
+                    {
+                        sSelected = "";
+                    }
+                }
+                else
+                {
+                    if (i == 0)
+                    {
+                        sSelected = " active";
+                    }
+                    else
+                    {
+                        sSelected = "";
+                    }
+                }
+                <a class="list-group-item list-group-item-action py-1 pr-1 @sSelected" data-toggle="tab" role="tab" href="#class.@dr["ClassID"]" aria-controls="@dr["ClassName"]">@dr["ClassName"]</a>
+            }
+        </div>
+    </div>
+    <div class="col-8 col-sm-9 px-0">
+        <div class="tab-content h-75 border">
+            @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
+            {
+                DataRow dr = ViewBag.FormClass.Rows[i];
+                DataRow[] col = ViewBag.FormList.Select("ClassID = " + dr["ClassID"].ToString());
+
+                if (ViewBag.Tab != "")
+                {
+                    if (ViewBag.Tab == dr["ClassName"].ToString())
+                    {
+                        sSelected = " active";
+                    }
+                    else
+                    {
+                        sSelected = "";
+                    }
+                }
+                else
+                {
+                    if (i == 0)
+                    {
+                        sSelected = " active";
+                    }
+                    else
+                    {
+                        sSelected = "";
+                    }
+                }
+                <div class="tab-pane @sSelected" id="class.@dr["ClassID"]">
+                    <ul>
+                        @foreach (DataRow r in col)
+                        {
+                            <li>@r["DocName"]</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+        </div>
+        <div class="border h-25">
+            asfasdf
+        </div>
+    </div>
+</div>

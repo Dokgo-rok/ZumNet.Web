@@ -153,7 +153,7 @@ $(function () {
                 //bootbox.alert("문서관리 신규 문서 등록", function () { _zw.ut.ajaxLoader(false) });
                 break;
             case "ea.newdoc":
-                bootbox.confirm("전자결재 신규 양식 작성 하시겠습니까?", function (rt) { alert(rt) });
+                _zw.fn.newEAForm();
                 break;
             case "locale": //언어설정
                 $.ajax({
@@ -772,8 +772,23 @@ $(function () {
                 }
             });
         },
-        "newEAForm": function () {
+        "newEAForm": function (tab) {
+            tab = tab || '';
+            $.ajax({
+                type: "POST",
+                url: "/EA/Main/NewDocument",
+                data: '{tab:"' + tab + '",boundary:"' + _zw.V.lv.boundary + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        var v = res.substr(2).split(_zw.V.lv.boundary);
+                        $('#popLayer').on('show.bs.modal', function (e) {
+                            $(this).find('.modal-title').html(v[0]);
+                            $(this).find('.modal-body').html(v[1])
+                        }).modal();
 
+                    } else bootbox.alert(res);
+                }
+            });
         },
         "input": function (e, p) {
             if (e) {

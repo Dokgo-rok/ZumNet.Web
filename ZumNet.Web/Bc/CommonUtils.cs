@@ -1495,7 +1495,7 @@ namespace ZumNet.Web.Bc
             {
                 string sDel = "/";                
                 string[,] vBox = {
-                    //type, node, location, actrole, query, basesort, 문서함명, basesoft명, count여부, bold여부
+                    //type, node, location, actrole, query, basesort, 문서함명, basesort명, count여부, bold여부
                     { "u", "node.do", "do", "", "do" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReqDate", Resources.EA.BoxToDo, Resources.Global.Date_Request, "Y", "Y" },
                     { "u", "node.ep", "ep", "", "ep" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "PIStart", Resources.EA.BoxExpected, Resources.Global.Date_Draft, "Y", "Y" },
                     { "u", "node.wt", "wt", "", "wt" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CreateDate", Resources.EA.BoxWaiting, Resources.Global.Date_Sent, "Y", "Y" },

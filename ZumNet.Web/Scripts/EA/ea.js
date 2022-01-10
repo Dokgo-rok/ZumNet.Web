@@ -34,6 +34,10 @@ $(function () {
             window.location.href = '/EA/Main/List?qi=' + _zw.base64.encode(_zw.fn.getLvQuery(false));
         }
     });
+
+    $('#__NewMessage').click(function () {
+        _zw.fn.newEAForm();
+    });
     
     _zw.fn.viewCount = function (xf, loc, ar, admin) {
         $.ajax({
