@@ -35,11 +35,11 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             ServiceResult result = new ServiceResult();
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
                 // 프로세스 조회
-                result = eApprovalBiz.SelectProcessListByCondition(domainID, 0, "Y");
-                ServiceResult resultCode = eApprovalBiz.SelectBFCodeRole("ea", "");
+                result = appWk.SelectProcessListByCondition(domainID, 0, "Y");
+                ServiceResult resultCode = appWk.SelectCodeRole("ea", "");
 
                 if (resultCode.ResultCode == 0 && resultCode?.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -107,10 +107,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
                     // 프로세스 조회
-                    result = eApprovalBiz.SelectProcessListByCondition(domainID, 0, "Y");
+                    result = appWk.SelectProcessListByCondition(domainID, 0, "Y");
                 }
 
                 if (result.ResultCode == 0)
@@ -162,10 +162,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 ServiceResult result = new ServiceResult();
                 ServiceResult resultForm = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
                     // 프로세스 조회
-                    result = eApprovalBiz.SelectBFProcessDefinition(processID);
+                    result = appWk.SelectProcessDefinition(processID);
 
                     if (result.ResultCode == 0 && result.ResultItemCount > 0)
                     {
@@ -175,7 +175,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                     }
 
                     // 프로세스를 사용하는 폼 정보 조회
-                    resultForm = eApprovalBiz.SelectBFProcessFormList(processID);
+                    resultForm = appWk.SelectProcessFormList(processID);
 
                     if (resultForm.ResultCode == 0 && resultForm.ResultItemCount > 0)
                     {
@@ -234,9 +234,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             ServiceResult result = new ServiceResult();
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
-                result = eApprovalBiz.SelectProcessActivities(processID, parentActivityID, "");
+                result = appWk.SelectProcessActivities(processID, parentActivityID, "");
 
                 int rowCount = result.ResultDataTable?.Rows?.Count ?? 0;
 
@@ -295,15 +295,15 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
                     if (processID == 0)
                     {
-                        result = eApprovalBiz.CreateBFProcessDefinition(domainID, validFromDate, validToDate, processName, priority, description, inUse, creator, reserved1);
+                        result = appWk.CreateProcessDefinition(domainID, validFromDate, validToDate, processName, priority, description, inUse, creator, reserved1);
                     }
                     else
                     {
-                        result = eApprovalBiz.UpdateBFProcessDefinition(processID, validFromDate, validToDate, processName, priority, description, inUse, creator, reserved1);
+                        result = appWk.UpdateProcessDefinition(processID, validFromDate, validToDate, processName, priority, description, inUse, creator, reserved1);
                     }
                 }
 
@@ -359,9 +359,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    eApprovalBiz.CopyBFProcessDefinition(processID, domainID, validFromDate, validToDate, processName, priority, description, inUse, creator, reserved1);
+                    appWk.CopyProcessDefinition(processID, domainID, validFromDate, validToDate, processName, priority, description, inUse, creator, reserved1);
                 }
 
                 if (result.ResultCode >= 0)
@@ -409,9 +409,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.SelectBFProcessAttribute(attributeID, processID, activityID);
+                    result = appWk.SelectProcessAttribute(attributeID, processID, activityID);
                 }
 
                 if (result.ResultCode == 0)
@@ -462,9 +462,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.SelectBFProcessActivityParticipantForAdmin(activityID, actType, subType);
+                    result = appWk.SelectProcessActivityParticipantForAdmin(activityID, actType, subType);
                 }
 
                 if (result.ResultCode == 0)
@@ -567,9 +567,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.CreateProcessActivity(activityID, processID, parentActivityID, step, subStep, random, inLine, bizRole, actRole, displayName, progress, partType, limited, review, showLine, scopeLine, mandatory, evalChart, actPreCond, actPostCond, workPreCond, workPostCond, description, xmlPartInfo, xmlAttrInfo);
+                    result = appWk.CreateProcessActivity(activityID, processID, parentActivityID, step, subStep, random, inLine, bizRole, actRole, displayName, progress, partType, limited, review, showLine, scopeLine, mandatory, evalChart, actPreCond, actPostCond, workPreCond, workPostCond, description, xmlPartInfo, xmlAttrInfo);
                 }
 
                 if (result.ResultCode >= 0)
@@ -670,9 +670,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.UpdateProcessActivity(processID, activityID, parentActivityID, step, subStep, random, inLine, bizRole, actRole, displayName, progress, partType, limited, review, showLine, scopeLine, mandatory, evalChart, actPreCond, actPostCond, workPreCond, workPostCond, description, xmlPartInfo, xmlAttrInfo);
+                    result = appWk.UpdateProcessActivity(processID, activityID, parentActivityID, step, subStep, random, inLine, bizRole, actRole, displayName, progress, partType, limited, review, showLine, scopeLine, mandatory, evalChart, actPreCond, actPostCond, workPreCond, workPostCond, description, xmlPartInfo, xmlAttrInfo);
                 }
 
                 if (result.ResultCode >= 0)
@@ -734,9 +734,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.DeleteProcessActivity(mode, processID, activityID, xmlInfo, updateText, whereText);
+                    result = appWk.DeleteProcessActivity(mode, processID, activityID, xmlInfo, updateText, whereText);
                 }
 
                 if (result.ResultCode >= 0)
@@ -782,9 +782,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.ChangeProcessActivityStep(stepInfoJson);
+                    result = appWk.ChangeProcessActivityStep(stepInfoJson);
                 }
 
                 if (result.ResultCode >= 0)
@@ -838,9 +838,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    eApprovalBiz.UpdateProcessActivityGeneral(activityID, displayName, bizRole, actRole, review, progress, random, showLine, mandatory);
+                    appWk.UpdateProcessActivityGeneral(activityID, displayName, bizRole, actRole, review, progress, random, showLine, mandatory);
                 }
 
                 if (result.ResultCode >= 0)
@@ -884,9 +884,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             ServiceResult result = new ServiceResult();
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
-                result = eApprovalBiz.SelectBFProcessDefinitionForExport(processID);
+                result = appWk.SelectProcessDefinitionForExport(processID);
             }
 
             if (result.ResultCode >= 0)
@@ -972,9 +972,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                     ServiceResult result = new ServiceResult();
 
-                    using (EApprovalBiz eapprovalBiz = new EApprovalBiz())
+                    using (AppWorks appWk = new AppWorks())
                     {
-                        result = eapprovalBiz.CreateBFProcessWithImport("Y", StringHelper.SafeInt(xdef.Attributes["defid"].Value), StringHelper.SafeInt(xdef.Attributes["dnid"].Value), xdef.SelectSingleNode("nm").InnerText, xdef.OuterXml, xact.OuterXml, xatt.OuterXml, xpart.OuterXml);
+                        result = appWk.CreateProcessWithImport("Y", StringHelper.SafeInt(xdef.Attributes["defid"].Value), StringHelper.SafeInt(xdef.Attributes["dnid"].Value), xdef.SelectSingleNode("nm").InnerText, xdef.OuterXml, xact.OuterXml, xatt.OuterXml, xpart.OuterXml);
                     }
 
                     if (result.ResultCode == 0)
@@ -1016,11 +1016,11 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             string svcMode = "";
             int interval = 0;
 
-            using (EApprovalBiz eapprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
-                eapprovalBiz.ConnectionString = DbConnect.GetString(DbConnect.INITIAL_CATALOG.INIT_CAT_SERVICE);
+                appWk.ConnectionString = DbConnect.GetString(DbConnect.INITIAL_CATALOG.INIT_CAT_SERVICE);
 
-                ServiceResult resultCompnay = eapprovalBiz.SelectBFServiceCompanyDetail(companyCode);
+                ServiceResult resultCompnay = appWk.GetBFFlowSvcMode(companyCode);
 
                 if (resultCompnay.ResultCode == 0)
                 {
@@ -1037,9 +1037,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             if (String.Compare(preAppMode, "S", true) == 0 || String.Compare(svcMode, "S", true) == 0)
             {
-                using (EApprovalBiz eapprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    ServiceResult resultMember = eapprovalBiz.SelectBFServiceMemberDetail();
+                    ServiceResult resultMember = appWk.GetUserSvcMode();
 
                     ViewData["mgrMemberJson"] = JsonConvert.SerializeObject(resultMember.ResultDataTable);
                 }   
@@ -1079,9 +1079,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    eApprovalBiz.ChangeUserServiceMode(userID, svcMode, interval, preAppMode);
+                    appWk.ChangeBFFlowSvcMode(userID, preAppMode, svcMode, interval);
                 }
 
                 if (result.ResultCode >= 0)
@@ -1211,9 +1211,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    eApprovalBiz.ChangeBFServiceState(entityKind, targetID, stateValue);
+                    appWk.ChangeState(entityKind, targetID, stateValue);
                 }
 
                 if (result.ResultCode >= 0)

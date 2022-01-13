@@ -106,11 +106,11 @@ namespace ZumNet.Web.Controllers
                 }
             }
 
-            using (ZumNet.BSL.InterfaceBiz.InterfaceBiz ifBiz = new BSL.InterfaceBiz.InterfaceBiz())
+            using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
             {
                 if (formTable == "REGISTER_TOOLING")
                 {
-                    svcRt = ifBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), formTable, ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                    svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), formTable, ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
                                     , "", "", "", "", ""
                                     , StringHelper.SafeInt(ViewBag.R.lv.page.Value), StringHelper.SafeInt(ViewBag.R.lv.count.Value), ViewBag.R.lv.basesort.ToString()
                                     , ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), ViewBag.R.lv.searchtext.ToString());
@@ -121,7 +121,7 @@ namespace ZumNet.Web.Controllers
                 }
                 else
                 {
-                    svcRt = ifBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), formTable, ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                    svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), formTable, ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
                                     , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
                 }
             }
@@ -214,11 +214,11 @@ namespace ZumNet.Web.Controllers
                     }
 
                     sPos = "500";
-                    using (ZumNet.BSL.InterfaceBiz.InterfaceBiz ifBiz = new BSL.InterfaceBiz.InterfaceBiz())
+                    using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
                     {
                         if (formTable == "REGISTER_TOOLING")
                         {
-                            svcRt = ifBiz.GetReport(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["lv"]["tgt"].ToString()), formTable, jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
+                            svcRt = rpBiz.GetReport(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["lv"]["tgt"].ToString()), formTable, jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
                                             , "", "", "", "", ""
                                             , StringHelper.SafeInt(jPost["lv"]["page"].ToString()), StringHelper.SafeInt(jPost["lv"]["count"].ToString()), jPost["lv"]["basesort"].ToString()
                                             , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["searchtext"].ToString());
@@ -229,7 +229,7 @@ namespace ZumNet.Web.Controllers
                         }
                         else
                         {
-                            svcRt = ifBiz.GetReport(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["lv"]["tgt"].ToString()), formTable, jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
+                            svcRt = rpBiz.GetReport(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["lv"]["tgt"].ToString()), formTable, jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
                                             , jPost["lv"]["cd1"].ToString(), jPost["lv"]["cd2"].ToString(), jPost["lv"]["cd3"].ToString(), jPost["lv"]["cd4"].ToString(), jPost["lv"]["cd5"].ToString());
                         }
                     }

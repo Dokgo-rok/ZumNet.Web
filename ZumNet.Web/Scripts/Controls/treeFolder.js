@@ -338,7 +338,7 @@ $(function () {
                 }
             }
 
-            if ($('.messages-wrapper, .messages-card').hasClass('messages-sidebox-open')) $('.z-mobile-navbar button.close').click();
+            _zw.ut.hideRightBar();
         }
     }
 });

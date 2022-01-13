@@ -9,6 +9,7 @@ using System.Text;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
+
 using ZumNet.BSL.FlowBiz;
 using ZumNet.BSL.ServiceBiz;
 using ZumNet.Framework.Core;
@@ -16,7 +17,7 @@ using ZumNet.Framework.Entities.Flow;
 using ZumNet.Framework.Entities.Web;
 using ZumNet.Framework.Util;
 using ZumNet.Framework.Web.Base;
-using ZumNet.Web.App_Code;
+using ZumNet.Web.Areas.WoA;
 using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
 
@@ -31,10 +32,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
                 // 양식 분류 조회
-                ServiceResult resultClass = eApprovalBiz.SelectEAFormClass(domainID);
+                ServiceResult resultClass = appWk.SelectEAFormClass(domainID);
 
                 if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -42,7 +43,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
 
                 // 양식 문서 리스트 조회
-                ServiceResult resultList = eApprovalBiz.SelectEAFormList(domainID);
+                ServiceResult resultList = appWk.SelectEAFormList(domainID);
 
                 if (resultList.ResultCode == 0)
                 {
@@ -154,9 +155,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.SelectEADocumentTotalData(dnID, messageID);
+                    result = appWk.SelectEADocumentTotalData(dnID, messageID);
                 }
 
                 if (result.ResultCode == 0)
@@ -192,6 +193,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
             if (Request.IsAjaxRequest())
             {
                 JObject jPost = CommonUtils.PostDataToJson();
+                DataSet ds = null;
 
                 if (jPost == null || jPost.Count == 0)
                 {
@@ -204,9 +206,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (WorkList workListBiz = new WorkList())
+                using (WorkList workList = new WorkList())
                 {
-                    result = workListBiz.SelectBFWorkItemOID(oID);
+                    result = workList.SelectBFWorkItemOID(oID);
                 }
 
                 if (result.ResultCode == 0)
@@ -216,9 +218,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                     ServiceResult resultCode = new ServiceResult();
 
-                    using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                    using (AppWorks appWk = new AppWorks())
                     {
-                        resultCode = eApprovalBiz.SelectBFCodeRole(itemKey, itemSubKey);
+                        resultCode = appWk.SelectCodeRole(itemKey, itemSubKey);
 
                         if (resultCode.ResultCode == 0 && resultCode?.ResultDataTable?.Rows?.Count > 0)
                         {
@@ -285,9 +287,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                     ServiceResult resultCode = new ServiceResult();
 
-                    using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                    using (AppWorks appWk = new AppWorks())
                     {
-                        resultCode = eApprovalBiz.SelectBFCodeRole(itemKey, itemSubKey);
+                        resultCode = appWk.SelectCodeRole(itemKey, itemSubKey);
 
                         if (resultCode.ResultCode == 0 && resultCode?.ResultDataTable?.Rows?.Count > 0)
                         {
@@ -344,9 +346,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.DeleteBFEAData(command, messageID);
+                    result = appWk.DeleteEAData(command, messageID);
                 }
 
                 if (result.ResultCode >= 0)
@@ -402,9 +404,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.SelectEAFormClass(domainID);
+                    result = appWk.SelectEAFormClass(domainID);
                 }
 
                 if (result.ResultCode == 0)
@@ -457,9 +459,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.HandleEAFormClass(command, classid, domainid, formname, formseqno);
+                    result = appWk.HandleEAFormClass(command, classid, domainid, formname, formseqno);
                 }
 
                 if (result.ResultCode >= 0)
@@ -489,10 +491,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
                 // 양식 분류 조회
-                ServiceResult resultClass = eApprovalBiz.SelectEAFormClass(domainID);
+                ServiceResult resultClass = appWk.SelectEAFormClass(domainID);
 
                 if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -500,7 +502,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
 
                 // 양식 문서 리스트 조회
-                ServiceResult resultList = eApprovalBiz.SelectEAFormList(domainID);
+                ServiceResult resultList = appWk.SelectEAFormList(domainID);
 
                 if (resultList.ResultCode == 0)
                 {
@@ -511,7 +513,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
 
                 // 프로세스 조회
-                ServiceResult resultProcess = eApprovalBiz.SelectProcessListByCondition(domainID, 0, "Y");
+                ServiceResult resultProcess = appWk.SelectProcessListByCondition(domainID, 0, "Y");
 
                 if (resultProcess.ResultCode == 0 && resultProcess.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -564,9 +566,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.SelectBFEAFormData(domainID, formID);
+                    result = appWk.SelectEAFormData(domainID, formID);
                 }
 
                 if (result.ResultCode == 0)
@@ -629,9 +631,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.HandleEAFormBasicManagement(command, domainID, formID, classID, processID, docName, description, selectable, xslName, cssName, jsName, usage, mainTable);
+                    result = appWk.HandleEAFormBasicManagement(command, domainID, formID, classID, processID, docName, description, selectable, xslName, cssName, jsName, usage, mainTable);
                 }
 
                 if (result.ResultCode >= 0)
@@ -679,9 +681,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.HandleEAFormTableManagement(command, formID, "", 0, usage);
+                    result = appWk.HandleEAFormTableManagement(command, formID, "", 0, usage);
                 }
 
                 if (result.ResultCode >= 0)
@@ -729,9 +731,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.HandleEAFormTableManagement(command, formID, tableDef, 0, "");
+                    result = appWk.HandleEAFormTableManagement(command, formID, tableDef, 0, "");
                 }
 
                 if (result.ResultCode >= 0)
@@ -780,9 +782,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.HandleEAFormTableManagement(command, formID, tableDef, tableCount, "");
+                    result = appWk.HandleEAFormTableManagement(command, formID, tableDef, tableCount, "");
                 }
 
                 if (result.ResultCode >= 0)
@@ -832,9 +834,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.HandleEAFormEtcManagement(formID, webEditor, htmlFile, processNameString, validation);
+                    result = appWk.HandleEAFormEtcManagement(formID, webEditor, htmlFile, processNameString, validation);
                 }
 
                 if (result.ResultCode >= 0)
@@ -864,10 +866,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
                 // 양식 분류 조회
-                ServiceResult result = eApprovalBiz.SelectEAFormSelect(domainID, 0, "Y");
+                ServiceResult result = appWk.SelectEAFormSelect(domainID, 0, "Y");
 
                 if (result.ResultCode == 0 && result.ResultDataSet?.Tables?.Count > 0)
                 {
@@ -968,9 +970,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.UpdateEAFormChargeJson(formID, chargeJson);
+                    result = appWk.UpdateEAFormChargeJson(formID, chargeJson);
                 }
 
                 if (result.ResultCode >= 0)
@@ -1000,10 +1002,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         {
             int domainID = StringHelper.SafeInt(Session["DNID"].ToString());
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
                 // 양식 분류 조회
-                ServiceResult resultClass = eApprovalBiz.SelectEAFormClass(domainID);
+                ServiceResult resultClass = appWk.SelectEAFormClass(domainID);
 
                 if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -1011,7 +1013,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
 
                 // 양식 문서 리스트 조회
-                ServiceResult resultList = eApprovalBiz.SelectEAFormList(domainID);
+                ServiceResult resultList = appWk.SelectEAFormList(domainID);
 
                 if (resultList.ResultCode == 0)
                 {
@@ -1111,9 +1113,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.UpdateEAFormFieldValue(formID, targetField, targetValue);
+                    result = appWk.UpdateEAFormFieldValue(formID, targetField, targetValue);
                 }
 
                 if (result.ResultCode >= 0)
@@ -1171,10 +1173,10 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
             }
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
                 // 양식 분류 조회
-                ServiceResult resultClass = eApprovalBiz.SelectEAFormClass(domainID);
+                ServiceResult resultClass = appWk.SelectEAFormClass(domainID);
 
                 if (resultClass.ResultCode == 0 && resultClass.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -1182,7 +1184,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
 
                 // 양식 문서 리스트 조회
-                ServiceResult resultList = eApprovalBiz.SelectEAFormList(domainID);
+                ServiceResult resultList = appWk.SelectEAFormList(domainID);
 
                 if (resultList.ResultCode == 0)
                 {
@@ -1206,7 +1208,7 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                         }
 
                         // 양식 알림 조회
-                        ServiceResult resultNotice = eApprovalBiz.SelectEAFormNotice("");
+                        ServiceResult resultNotice = appWk.SelectEAFormNotice("");
 
                         if (resultNotice.ResultCode == 0 && resultNotice.ResultDataTable?.Rows?.Count > 0)
                         {
@@ -1262,9 +1264,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.UpdateEAFormNoticeFormSet(formID, period, field, deferment, mailuse);
+                    result = appWk.UpdateEAFormNoticeFormSet(formID, period, field, deferment, mailuse);
                 }
 
                 if (result.ResultCode >= 0)
@@ -1310,9 +1312,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.DeleteEAFormNoticeFormSet(formID);
+                    result = appWk.DeleteEAFormNoticeFormSet(formID);
                 }
 
                 if (result.ResultCode >= 0)
@@ -1409,17 +1411,18 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
             ServiceResult result = new ServiceResult();
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
-                result = eApprovalBiz.SelectXFFormInstanceDefinition(domainID, "ea", mid);
+                result = appWk.SelectXFFormInstanceDefinition(domainID, "ea", mid);
+            }
 
-                if (result.ResultCode == 0 && result.ResultDataDetail?.Count == 2)
-                {
-                    XFormInstance xformIns = (XFormInstance)result.ResultDataDetail["xformIns"];
-                    XFormDefinition xformDef = (XFormDefinition)result.ResultDataDetail["xformDef"];
+            if (result.ResultCode == 0 && result.ResultDataDetail?.Count == 2)
+            {
+                XFormInstance xformIns = (XFormInstance)result.ResultDataDetail["xformIns"];
+                XFormDefinition xformDef = (XFormDefinition)result.ResultDataDetail["xformDef"];
 
-                    result = eApprovalBiz.ParsingXFormToHTML(companyCode, xformDef, xformIns, oid, "ea", domainID.ToString(), frontName, "", eaFormSchemaPath, eaFormFolder);
-                }
+                using(EApproval ea = new EApproval())
+                result = ea.ParsingXFormToHTML(companyCode, xformDef, xformIns, oid, "ea", domainID.ToString(), frontName, "", eaFormSchemaPath, eaFormFolder);
             }
 
             if (result.ResultCode == 0 && !String.IsNullOrWhiteSpace(result.ResultDataString))

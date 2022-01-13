@@ -78,9 +78,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
             }
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
-                ServiceResult resulRcv = eApprovalBiz.SelectReceiverManager("rcvmanager");
+                ServiceResult resulRcv = appWk.SelectReceiverManager("rcvmanager");
 
                 if (resulRcv.ResultCode == 0 && resulRcv.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -116,9 +116,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.ChangeReceiverDeptPolicy(groupID, reserved1);
+                    result = appWk.ChangeReceiverDeptPolicy(groupID, reserved1);
                 }
 
                 if (result.ResultCode == 0)
@@ -170,9 +170,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.HandleRcvAuthorityManager(objID, objType, targetIDs, targetType, auAlias, "");
+                    result = appWk.HandleRcvAuthorityManager(objID, objType, targetIDs, targetType, auAlias, "");
                 }
 
                 if (result.ResultCode == 0)
@@ -258,9 +258,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 }
             }
 
-            using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+            using (AppWorks appWk = new AppWorks())
             {
-                ServiceResult resultFolder = eApprovalBiz.SelectEAFolderView(0);
+                ServiceResult resultFolder = appWk.SelectEAFolderView(0);
 
                 if (resultFolder.ResultCode == 0 && resultFolder.ResultDataTable?.Rows?.Count > 0)
                 {
@@ -297,9 +297,9 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult result = new ServiceResult();
 
-                using (EApprovalBiz eApprovalBiz = new EApprovalBiz())
+                using (AppWorks appWk = new AppWorks())
                 {
-                    result = eApprovalBiz.HandleEAFolderView(groupID, targetIDs, "", registrant); ;
+                    result = appWk.HandleEAFolderView(groupID, targetIDs, "", registrant); ;
                 }
 
                 if (result.ResultCode == 0)

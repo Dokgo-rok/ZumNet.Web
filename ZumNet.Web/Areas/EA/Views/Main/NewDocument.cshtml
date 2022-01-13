@@ -3,81 +3,104 @@
     string sSelected = "";
 }
 
-<div class="row mx-0">
-    <div class="col-4 col-sm-3 px-0">
-        <div class="list-group" role="tablist">
-            @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
-            {
-                DataRow dr = ViewBag.FormClass.Rows[i];
-
-                if (ViewBag.Tab != "")
-                {
-                    if (ViewBag.Tab == dr["ClassName"].ToString())
-                    {
-                        sSelected = " active";
-                    }
-                    else
-                    {
-                        sSelected = "";
-                    }
-                }
-                else
-                {
-                    if (i == 0)
-                    {
-                        sSelected = " active";
-                    }
-                    else
-                    {
-                        sSelected = "";
-                    }
-                }
-                <a class="list-group-item list-group-item-action py-1 pr-1 @sSelected" data-toggle="tab" role="tab" href="#class.@dr["ClassID"]" aria-controls="@dr["ClassName"]">@dr["ClassName"]</a>
-            }
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h6 class="modal-title">@Resources.Global.Select</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
-    </div>
-    <div class="col-8 col-sm-9 px-0">
-        <div class="tab-content h-75 border">
-            @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
-            {
-                DataRow dr = ViewBag.FormClass.Rows[i];
-                DataRow[] col = ViewBag.FormList.Select("ClassID = " + dr["ClassID"].ToString());
-
-                if (ViewBag.Tab != "")
-                {
-                    if (ViewBag.Tab == dr["ClassName"].ToString())
-                    {
-                        sSelected = " active";
-                    }
-                    else
-                    {
-                        sSelected = "";
-                    }
-                }
-                else
-                {
-                    if (i == 0)
-                    {
-                        sSelected = " active";
-                    }
-                    else
-                    {
-                        sSelected = "";
-                    }
-                }
-                <div class="tab-pane @sSelected" id="class.@dr["ClassID"]">
-                    <ul>
-                        @foreach (DataRow r in col)
+        <div class="modal-body p-3">
+            <div class="row mx-0">
+                <div class="col-4 col-sm-3 px-0">
+                    <div class="list-group" role="tablist">
+                        @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
                         {
-                            <li>@r["DocName"]</li>
-                        }
-                    </ul>
-                </div>
-            }
+                            DataRow dr = ViewBag.FormClass.Rows[i];
 
+                            if (ViewBag.Tab != "")
+                            {
+                                if (ViewBag.Tab == dr["ClassName"].ToString())
+                                {
+                                    sSelected = " active";
+                                }
+                                else
+                                {
+                                    sSelected = "";
+                                }
+                            }
+                            else
+                            {
+                                if (i == 0)
+                                {
+                                    sSelected = " active";
+                                }
+                                else
+                                {
+                                    sSelected = "";
+                                }
+                            }
+                            <a class="list-group-item list-group-item-action py-1 pr-1 @sSelected" data-toggle="tab" role="tab" href="#class_@dr["ClassID"]" aria-controls="@dr["ClassName"]">@dr["ClassName"]</a>
+                        }
+                    </div>
+                </div>
+                <div class="col-8 col-sm-9 px-0 d-flex">
+                    <div class="flex-fill">
+                        <div class="tab-content border h-75" style="height: ; overflow: auto">
+                            @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
+                            {
+                                DataRow dr = ViewBag.FormClass.Rows[i];
+                                DataRow[] col = ViewBag.FormList.Select("ClassID = " + dr["ClassID"].ToString());
+
+                                if (ViewBag.Tab != "")
+                                {
+                                    if (ViewBag.Tab == dr["ClassName"].ToString())
+                                    {
+                                        sSelected = " active";
+                                    }
+                                    else
+                                    {
+                                        sSelected = "";
+                                    }
+                                }
+                                else
+                                {
+                                    if (i == 0)
+                                    {
+                                        sSelected = " active";
+                                    }
+                                    else
+                                    {
+                                        sSelected = "";
+                                    }
+                                }
+                                <div class="tab-pane @sSelected" id="class_@dr["ClassID"]">
+                                    <ul>
+                                        @foreach (DataRow r in col)
+                                        {
+                                            <li>@r["DocName"]</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+
+                        </div>
+                        <div class="border h-25">
+                            asfasdf
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="border h-25">
-            asfasdf
+        <div class="modal-footer">
+            <div class="flex-fill" data-for="zf-addinfo"></div>
+            <div>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@Resources.Global.Close</button>
+                <button type="button" class="btn btn-primary" data-zm-menu="confirm">@Resources.Global.Confirm</button>
+            </div>
         </div>
     </div>
 </div>
+
+

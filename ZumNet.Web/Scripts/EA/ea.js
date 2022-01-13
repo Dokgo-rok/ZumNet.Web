@@ -36,7 +36,7 @@ $(function () {
     });
 
     $('#__NewMessage').click(function () {
-        _zw.fn.newEAForm();
+        _zw.ut.hideRightBar(); _zw.fn.newEAForm();
     });
     
     _zw.fn.viewCount = function (xf, loc, ar, admin) {

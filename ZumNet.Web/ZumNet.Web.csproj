@@ -291,7 +291,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Code\ApprovalLine.cs" />
+    <Compile Include="Areas\WoA\ApprovalLine.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\JsEngineSwitcherConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />

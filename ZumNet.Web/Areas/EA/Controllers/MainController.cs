@@ -346,9 +346,9 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
 
                     sPos = "200";
-                    using (BSL.FlowBiz.EApprovalBiz eaBiz = new BSL.FlowBiz.EApprovalBiz())
+                    using (BSL.FlowBiz.AppWorks apWk = new BSL.FlowBiz.AppWorks())
                     {
-                        svcRt = eaBiz.SelectEAFormSelect(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(Session["URID"]), "N");
+                        svcRt = apWk.SelectEAFormSelect(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(Session["URID"]), "N");
                     }
 
                     if (svcRt != null && svcRt.ResultCode == 0)
@@ -360,9 +360,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         ViewBag.ChargeUR = svcRt.ResultDataSet.Tables[3];
                         ViewBag.Tab = jPost["tab"].ToString();
 
-                        rt = "OK" + "양식선택"
-                                + jPost["boundary"].ToString()
-                                + RazorViewToString.RenderRazorViewToString(this, "NewDocument", ViewBag);
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "NewDocument", ViewBag);
                     }
                     else
                     {
@@ -375,7 +373,6 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     rt = "[" + sPos + "] " + ex.Message;
                 }
             }
-            
 
             return rt;
         }

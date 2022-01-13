@@ -8,7 +8,7 @@ using System.Xml;
 using ZumNet.Framework.Entities.Flow;
 using ZumNet.Framework.Util;
 
-namespace ZumNet.Web.App_Code
+namespace ZumNet.Web.Areas.WoA
 {
 	/// <summary>
 	/// 결재선 
