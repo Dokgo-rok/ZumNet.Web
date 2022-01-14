@@ -36,6 +36,7 @@
     @Styles.Render("~/bundle/vendor/css/perfect-scrollbar/perfect-scrollbar")
 
     <!-- Application stylesheets -->
+    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
     @Styles.Render("~/bundle/css/site")
 
     @RenderSection("styles", required: false)
@@ -56,6 +57,7 @@
     @Scripts.Render("~/bundle/vendor/js/perfect-scrollbar/perfect-scrollbar")
 
     <!-- Application javascripts -->
+    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
     @Scripts.Render("~/bundle/js/site")
 
     @RenderSection("scripts", required: false)

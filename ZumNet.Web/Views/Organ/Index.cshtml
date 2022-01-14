@@ -72,13 +72,11 @@
 }
 
 @section Styles {
-    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
     @Styles.Render("~/bundle/vendor/css/pages/messages")
     @*@Styles.Render("~/bundle/vendor/css/pages/contacts")*@
 }
 
 @section Scripts {
-    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
 }
 

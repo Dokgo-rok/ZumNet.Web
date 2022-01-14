@@ -778,6 +778,7 @@ $(function () {
         },
         "newEAForm": function (tab) {
             tab = tab || '';
+
             $.ajax({
                 type: "POST",
                 url: "/EA/Main/NewDocument",
@@ -785,11 +786,46 @@ $(function () {
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {
                         //var v = res.substr(2).split(_zw.V.lv.boundary);
-                        $('#popLayer').on('show.bs.modal', function (e) {
-                            $(this).html(res.substr(2));
-                            //$(this).find('.modal-title').html(v[0]);
-                            //$(this).find('.modal-body').addClass('p-3').html(v[1])
-                        }).modal();
+                        
+                        var p = $('#popBlank');
+                        p.html(res.substr(2));
+                        //$(this).find('.modal-title').html(v[0]);
+                        //$(this).find('.modal-body').addClass('p-3').html(v[1])
+
+                        //new PerfectScrollbar(document.getElementById('__ClassTree'));
+
+                        $('#__ClassTree').jstree({"core": {"multiple": false}
+                        }).on("select_node.jstree", function (e, d) {                                
+                            var n = d.instance.get_node(d.selected);
+                            p.find('.z-lv-newform .card-header').html(d.instance.get_path(d.selected[0]));
+                            p.find('.z-lv-newform .tab-pane.active').removeClass('active');
+                            p.find('#' + n.li_attr.tgt).addClass('active');
+                        });
+
+                        p.find('.z-lv-newform a.list-group-item').on('click', function () {
+                            //var icon = $(this).find('i');
+                            //p.find('.z-lv-newform a.list-group-item').each(function () {
+                            //    var icon2 = $(this).find('i');
+                            //    if (icon == icon2) icon2.removeClass(icon2.attr('aria-controls'));
+                            //    else icon2.addClass(icon2.attr('aria-controls'));
+                            //});
+
+                            var formId = $(this).attr('data-val');
+                            var v = jFormList.find(
+                                function (e) {
+                                    if (e.fid === formId) {
+                                        return true;
+                                    }
+                                }
+                            )
+                            alert(JSON.stringify(v))
+                            
+                        });
+                        
+                        p.modal('show');
+                        p.on('hidden.bs.modal', function (event) {
+                            p.html('');
+                        })
 
                     } else bootbox.alert(res);
                 }

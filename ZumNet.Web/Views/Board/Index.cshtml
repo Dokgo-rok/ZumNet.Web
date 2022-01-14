@@ -87,12 +87,10 @@
 }
 
 @section Styles {
-    @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
     @Styles.Render("~/bundle/vendor/css/pages/messages")
 }
 
 @section Scripts {
-    @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
     @Scripts.Render("~/Scripts/Board/list.js")
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
 }

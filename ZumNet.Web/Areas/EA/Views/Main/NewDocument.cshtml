@@ -1,53 +1,136 @@
 ﻿@using System.Data;
+@using System.Text;
+
 @{
     string sSelected = "";
+    string sSelectClass = "";
+
+    StringBuilder sbForm = new StringBuilder();
+
+    int iForm = 0;
+    int iCharge = 0;
+
+    //sbForm.Append("[");
+    for (int i = 0; i < ViewBag.FormList.Rows.Count; i++)
+    {
+        DataRow dr = ViewBag.FormList.Rows[i];
+
+        if (dr["Selectable"].ToString() == "Y" && dr["Usage"].ToString() != "9" && dr["ClassID"].ToString() != "0")
+        {
+            if (iForm > 0)
+            {
+                sbForm.Append(",");
+            }
+            sbForm.Append("{");
+            sbForm.AppendFormat("fid:\"{0}\",cid:\"{1}\"", dr["FormID"].ToString(), dr["ClassID"].ToString());
+            sbForm.AppendFormat(",editor:\"{0}\",limited:\"{1}\"", dr["WebEditor"].ToString(), dr["Limited"].ToString());
+            sbForm.AppendFormat(",selectable:\"{0}\",usage:\"{1}\"", dr["Selectable"].ToString(), dr["Usage"].ToString());
+            sbForm.AppendFormat(",defid:\"{0}\",ver:\"{1}\",w:\"{2}\"", dr["ProcessID"].ToString(), dr["Version"].ToString(), dr["Reserved1"].ToString());
+            sbForm.AppendFormat(",docname:\"{0}\",defname:\"{0}\"", dr["DocName"].ToString(), dr["ProcessName"].ToString());
+            sbForm.AppendFormat(",chargelist:[");
+            if (ViewBag.ChargeGR != null)
+            {
+                DataRow[] colGR = ViewBag.ChargeGR.Select("FormID='" + dr["FormID"].ToString() + "'");
+                foreach (DataRow r1 in colGR)
+                {
+                    if (iCharge > 0)
+                    {
+                        sbForm.Append(",");
+                    }
+                    sbForm.Append("{");
+                    sbForm.AppendFormat("ot:\"{0}\",cid:\"{1}\",name:\"{2}\"", r1["ObjectType"].ToString(), r1["ChargeID"].ToString(), r1["DisplayName"].ToString());
+                    sbForm.Append("}");
+                    iCharge++;
+                }
+            }
+            if (iCharge > 0)
+            {
+                sbForm.Append(",");
+            }
+            if (ViewBag.ChargeUR != null)
+            {
+                DataRow[] colUR = ViewBag.ChargeUR.Select("FormID='" + dr["FormID"].ToString() + "'");
+                iCharge = 0;
+                foreach (DataRow r2 in colUR)
+                {
+                    if (iCharge > 0)
+                    {
+                        sbForm.Append(",");
+                    }
+                    sbForm.Append("{");
+                    sbForm.AppendFormat("ot:\"{0}\",cid:\"{1}\",name:\"{2} {3}\"", r2["ObjectType"].ToString(), r2["ChargeID"].ToString(), r2["Grade1"].ToString(), r2["DisplayName"].ToString());
+                    sbForm.Append("}");
+                    iCharge++;
+                }
+            }
+            sbForm.AppendFormat("]");
+            sbForm.Append("}");
+
+            iForm++;
+        }
+    }
+    //sbForm.Append("]");
 }
 
-<div class="modal-dialog" role="document">
+<div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h6 class="modal-title">@Resources.Global.Select</h6>
+            <h6 class="modal-title">양식선택</h6>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <div class="modal-body p-3">
+        <div class="modal-body py-2 px-1 p-sm-3">
             <div class="row mx-0">
-                <div class="col-4 col-sm-3 px-0">
-                    <div class="list-group" role="tablist">
-                        @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
-                        {
-                            DataRow dr = ViewBag.FormClass.Rows[i];
+                <div class="col-5 col-md-3 pl-1 pl-sm-2 pr-0">
+                    <div class="d-flex mb-2">
+                        <form class="">
+                            <div class="input-group">
+                                <input type="search" class="form-control" placeholder="검색...">
+                                <button class="btn btn-secondary"><i class="fe-search align-middle"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="__ClassTree" style="margin-left: -0.5rem; height: 394px; overflow: auto">
+                        <ul>
+                            @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
+                            {
+                                DataRow dr = ViewBag.FormClass.Rows[i];
 
-                            if (ViewBag.Tab != "")
-                            {
-                                if (ViewBag.Tab == dr["ClassName"].ToString())
+                                if (ViewBag.Tab != "")
                                 {
-                                    sSelected = " active";
+                                    if (ViewBag.Tab == dr["ClassName"].ToString())
+                                    {
+                                        sSelected = " active";
+                                        sSelectClass = dr["ClassName"].ToString();
+                                    }
+                                    else
+                                    {
+                                        sSelected = "";
+                                    }
                                 }
                                 else
                                 {
-                                    sSelected = "";
+                                    if (i == 0)
+                                    {
+                                        sSelected = " active";
+                                        sSelectClass = dr["ClassName"].ToString();
+                                    }
+                                    else
+                                    {
+                                        sSelected = "";
+                                    }
                                 }
+                                @*<a class="list-group-item list-group-item-action py-1 pr-1 @sSelected" data-toggle="tab" role="tab" href="#class_@dr["ClassID"]" aria-controls="@dr["ClassName"]">@dr["ClassName"]</a>*@
+                                <li data-jstree='{"icon":"fas fa-folder text-warning"}' tgt="class_@dr["ClassID"]">@dr["ClassName"]</li>
                             }
-                            else
-                            {
-                                if (i == 0)
-                                {
-                                    sSelected = " active";
-                                }
-                                else
-                                {
-                                    sSelected = "";
-                                }
-                            }
-                            <a class="list-group-item list-group-item-action py-1 pr-1 @sSelected" data-toggle="tab" role="tab" href="#class_@dr["ClassID"]" aria-controls="@dr["ClassName"]">@dr["ClassName"]</a>
-                        }
+                        </ul>
                     </div>
                 </div>
-                <div class="col-8 col-sm-9 px-0 d-flex">
-                    <div class="flex-fill">
-                        <div class="tab-content border h-75" style="height: ; overflow: auto">
+                <div class="col-7 col-md-5 px-1 px-sm-2">
+                    <div class="card w-100 z-lv-newform">
+                        <div class="card-header bg-light pt-2 pb-1 px-3">@sSelectClass</div>
+                        <div class="card-body tab-content p-0 border-0" style="height: 400px; overflow: auto">
                             @for (int i = 0; i < ViewBag.FormClass.Rows.Count; i++)
                             {
                                 DataRow dr = ViewBag.FormClass.Rows[i];
@@ -76,18 +159,85 @@
                                     }
                                 }
                                 <div class="tab-pane @sSelected" id="class_@dr["ClassID"]">
-                                    <ul>
+                                    @*<ul class="m-0 p-0">
+                                            @foreach (DataRow r in col)
+                                            {
+                                                if (r["Selectable"].ToString() == "Y" && r["Usage"].ToString() != "9" && r["ClassID"].ToString() != "0")
+                                                {
+                                                    <li class="sidenav-item mb-2">
+                                                        @if (r["FormID"].ToString() == "" || r["FormID"].ToString().Length < 30)
+                                                        {
+                                                            if (r["Description"].ToString() == "GWFILE")
+                                                            {
+                                                                <a href="javascript:void(0)" class="sidenav-link"><i class="far fa-file-excel text-teal mr-2"></i>@r["DocName"]</a>
+                                                            }
+                                                            else
+                                                            {
+                                                                //PDM 사용안함
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="javascript:void(0)" class="sidenav-link"><i class="far fa-edit text-blue mr-2"></i>@r["DocName"]</a>
+                                                        }
+                                                    </li>
+                                                }
+                                            }
+                                        </ul>*@
+                                    <div class="list-group m-0 p-0">
                                         @foreach (DataRow r in col)
                                         {
-                                            <li>@r["DocName"]</li>
+                                            if (r["Selectable"].ToString() == "Y" && r["Usage"].ToString() != "9" && r["ClassID"].ToString() != "0")
+                                            {
+                                                if (r["FormID"].ToString() == "" || r["FormID"].ToString().Length < 30)
+                                                {
+                                                    if (r["Description"].ToString() == "GWFILE")
+                                                    {
+                                                        <a target="_blank" href="javascript:void(0)" class="list-group-item list-group-item-action py-2" data-toggle="list"><i aria-controls="text-teal" class="far fa-file-excel text-teal mr-2"></i>@r["DocName"]</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        //PDM 사용안함
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-2" data-toggle="list" data-val="@r["FormID"]"><i aria-controls="text-blue" class="far fa-edit text-blue mr-2"></i>@r["DocName"]</a>
+                                                }
+                                            }
                                         }
-                                    </ul>
+                                    </div>
                                 </div>
                             }
-
                         </div>
-                        <div class="border h-25">
-                            asfasdf
+                    </div>
+                </div>
+                <div class="d-none d-md-block col-sm-4 px-1 px-sm-2">
+                    <div class="card w-100">
+                        <div class="card-header bg-light pt-2 pb-1 px-3">서식정보</div>
+                        <div class="card-body border-top p-2" style="height: 400px;">
+                            <form>
+                                <div class="form-group mb-2">
+                                    <label class="form-label">양식명</label>
+                                    <input type="text" class="form-control p-1" readonly />
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="form-label">버전</label>
+                                    <input type="text" class="form-control p-1" readonly />
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="form-label">담당부서</label>
+                                    <input type="text" class="form-control p-1" readonly />
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="form-label">담당자</label>
+                                    <div class="form-control p-1" style="height: 76px; overflow: auto"></div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="form-label">설명</label>
+                                    <div class="form-control p-1" style="height: 60px; overflow: auto"></div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -100,6 +250,9 @@
                 <button type="button" class="btn btn-primary" data-zm-menu="confirm">@Resources.Global.Confirm</button>
             </div>
         </div>
+        <script type="text/javascript">
+            var jFormList = [@Html.Raw(sbForm.ToString())];
+        </script>
     </div>
 </div>
 
