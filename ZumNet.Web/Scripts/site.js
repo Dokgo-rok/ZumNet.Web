@@ -169,18 +169,7 @@ $(function () {
                 });
                 break;
             case "workstatus": //근무상태
-                $('#popWorkStatus').on('show.bs.modal', function (e) {
-                    $(this).find('.btn').click(function () {
-                        
-                        if ($(this).attr('data-zm-menu') == 'save') {
-                            bootbox.alert($(this).attr('data-zm-menu'));
-                        } else if ($(this).attr('data-zm-menu') == 'form') {
-                            bootbox.alert($(this).attr('data-zm-menu'));
-                        } else if ($(this).attr('data-zm-menu') == 'offwork') {
-                            bootbox.alert($(this).attr('data-zm-menu'));
-                        }
-                    });
-                }).modal();
+                $('#popWorkStatus').modal('show');
                 break;
             case "phonenum": //전화번호 찾기
                 bootbox.alert('준비중!');
@@ -462,7 +451,7 @@ $(function () {
 
             var s = "['\\%^&\"*]";
             var reg = new RegExp(s, 'g');
-            if (e3.val() != '' && e4.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!"); e4.val(''); return; }
+            if (e3.val() != '' && e4.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e4.val(''); e4.focus(); }); return; }
 
             _zw.V.lv.tgt = _zw.V.fdid;
             _zw.V.lv.page = (page) ? page : 1;
@@ -628,6 +617,12 @@ $(function () {
         "preview": function () {
             var url = "/Common/Preview?ctalias=" + _zw.V.ctalias + "&xfalias=" + _zw.V.xfalias;
             _zw.ut.openWnd(url, "preview", 800, 600, "resize");
+        },
+        "saveWorkStatus": function () {
+            alert(1)
+        },
+        "offwork": function () {
+            alert(2)
         }
     };
 
@@ -795,33 +790,58 @@ $(function () {
                         //new PerfectScrollbar(document.getElementById('__ClassTree'));
 
                         $('#__ClassTree').jstree({"core": {"multiple": false}
-                        }).on("select_node.jstree", function (e, d) {                                
+                        }).on("select_node.jstree", function (e, d) {
                             var n = d.instance.get_node(d.selected);
+
+                            _zw.fn.selectNewEAForm(null);
+                            
                             p.find('.z-lv-newform .card-header').html(d.instance.get_path(d.selected[0]));
                             p.find('.z-lv-newform .tab-pane.active').removeClass('active');
                             p.find('#' + n.li_attr.tgt).addClass('active');
                         });
 
                         p.find('.z-lv-newform a.list-group-item').on('click', function () {
-                            //var icon = $(this).find('i');
-                            //p.find('.z-lv-newform a.list-group-item').each(function () {
-                            //    var icon2 = $(this).find('i');
-                            //    if (icon == icon2) icon2.removeClass(icon2.attr('aria-controls'));
-                            //    else icon2.addClass(icon2.attr('aria-controls'));
-                            //});
-
-                            var formId = $(this).attr('data-val');
-                            var v = jFormList.find(
-                                function (e) {
-                                    if (e.fid === formId) {
-                                        return true;
-                                    }
-                                }
-                            )
-                            alert(JSON.stringify(v))
-                            
+                            event.preventDefault(); _zw.fn.selectNewEAForm($(this));
                         });
-                        
+
+                        p.find('.z-lv-formsearch input[type="search"]').keyup(function (e) {
+                            if (e.which == 13) p.find('.z-lv-formsearch .btn').click();
+                        });
+
+                        p.find('.z-lv-formsearch .btn').click(function () {
+                            var txt = p.find('.z-lv-formsearch input[type="search"]'); if ($.trim(txt.val()) == '') return false;
+                            var s = "['\\%^&\"*]";
+                            var reg = new RegExp(s, 'g');
+                            if (txt.val() != '' && txt.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { txt.val(''); txt.focus(); }); return; }
+
+                            var tabSearch = p.find('.z-lv-newform #class_search');
+                            tabSearch.find('.list-group').html('');
+
+                            _zw.fn.selectNewEAForm(null);
+
+                            var iCnt = 0;
+                            p.find('.z-lv-newform .tab-pane:not(#class_search) a.list-group-item:contains("' + txt.val() + '")').each(function () {
+                                $(this).clone().appendTo('.z-lv-newform #class_search .list-group').on('click', function () {
+                                    _zw.fn.selectNewEAForm($(this));
+                                }).on('dblclick', function () {
+                                    _zw.fn.openNewEAForm($(this).attr('data-val'));
+                                });
+                                iCnt++;
+                            });
+
+                            p.find('.z-lv-newform .card-header').html('검색 (' + iCnt.toString() + '개)');
+                            p.find('.z-lv-newform .tab-pane.active').removeClass('active');
+                            tabSearch.addClass('active');
+                        });
+
+                        p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
+                            _zw.fn.openNewEAForm(p.find('.z-lv-newform .tab-pane.active a.list-group-item.active').attr('data-val'))
+                        });
+                        p.find('.z-lv-newform a.list-group-item').on('dblclick', function () {
+                            _zw.fn.openNewEAForm($(this).attr('data-val'));
+                        });
+
+                        if (tab && tab != '') $('#popWorkStatus').modal('hide');
                         p.modal('show');
                         p.on('hidden.bs.modal', function (event) {
                             p.html('');
@@ -830,6 +850,51 @@ $(function () {
                     } else bootbox.alert(res);
                 }
             });
+        },
+        "selectNewEAForm": function (fm) {
+            var p = $('#popBlank'), formId = fm ? fm.attr('data-val') : 'x';
+
+            p.find('.z-lv-newform .tab-pane a.list-group-item').each(function () {
+                var t = $(this).parent().parent(), icon2 = $(this).find('i');
+                if (t.hasClass('active') && formId == $(this).attr('data-val')) {
+                    icon2.removeClass(icon2.attr('aria-controls'));
+                } else {
+                    icon2.addClass(icon2.attr('aria-controls')); $(this).removeClass('active');
+                }
+            });
+
+            var v = jFormList.find(
+                function (e) {
+                    if (e.fid === formId) {
+                        return true;
+                    }
+                }
+            );
+            //console.log(JSON.stringify(v))
+            
+            var sGR = '', sUR = '';
+            if (v && v["chargelist"].length > 0) {
+                for (var i = 0; i < v["chargelist"].length; i++) {
+                    var c = v["chargelist"][i];
+                    if (c["ot"] == 'UR') sUR += (sUR == '' ? '' : "\n") + c["name"];
+                    else if (c["ot"] == 'GR') sGR = c["name"];
+                }
+            }
+            p.find('.z-lv-forminfo .form-group [data-for]').each(function () {
+                if (v) {
+                    if ($(this).attr('data-for') == 'DocName') $(this).val(v["docname"]);
+                    else if ($(this).attr('data-for') == 'File') $(this).val(v["file"]);
+                    else if ($(this).attr('data-for') == 'Description' && v["fid"].length > 30) $(this).val(v["desc"]);
+                    else if ($(this).attr('data-for') == 'ChargeDept') $(this).val(sGR);
+                    else if ($(this).attr('data-for') == 'ChargeUser') $(this).val(sUR);
+                } else {
+                    $(this).val('');
+                }
+            });
+        },
+        "openNewEAForm": function (formId) {
+            if (formId == '') return false;
+            var url = '/EA/Forms/New'
         },
         "input": function (e, p) {
             if (e) {

@@ -121,12 +121,12 @@
 
                 <div class="modal-footer d-block">
                     <div class="d-flex px-2 my-2">
-                        <button type="button" class="flex-fill btn btn-outline-success btn-fill mr-2" data-zm-menu="save">@Resources.Global.Save</button>
-                        <button type="button" class="flex-fill btn btn-primary mr-2" data-zm-menu="form">@Resources.Global.ComposeForm</button>
+                        <button type="button" class="flex-fill btn btn-outline-success btn-fill mr-2" onclick="_zw.mu.saveWorkStatus();">@Resources.Global.Save</button>
+                        <button type="button" class="flex-fill btn btn-primary mr-2" onclick="_zw.fn.newEAForm('근태');">@Resources.Global.ComposeForm</button>
                         <button type="button" class="flex-fill btn btn-default" data-dismiss="modal">@Resources.Global.Close</button>
                     </div>
                     <div class="text-center px-2 my-2">
-                        <button class="btn btn-outline-windows btn-block font-weight-bold" data-zm-menu="offwork">@Resources.Global.OffWork</button>
+                        <button class="btn btn-outline-windows btn-block font-weight-bold" onclick="_zw.mu.offwork();">@Resources.Global.OffWork</button>
                     </div>
                 </div>
             </div>
