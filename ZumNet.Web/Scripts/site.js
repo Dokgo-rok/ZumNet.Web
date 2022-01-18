@@ -824,7 +824,7 @@ $(function () {
                                 $(this).clone().appendTo('.z-lv-newform #class_search .list-group').on('click', function () {
                                     _zw.fn.selectNewEAForm($(this));
                                 }).on('dblclick', function () {
-                                    _zw.fn.openNewEAForm($(this).attr('data-val'));
+                                    _zw.fn.openNewEAForm($(this).attr('data-val')); p.modal('hide');
                                 });
                                 iCnt++;
                             });
@@ -835,10 +835,10 @@ $(function () {
                         });
 
                         p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
-                            _zw.fn.openNewEAForm(p.find('.z-lv-newform .tab-pane.active a.list-group-item.active').attr('data-val'))
+                            _zw.fn.openNewEAForm(p.find('.z-lv-newform .tab-pane.active a.list-group-item.active').attr('data-val')); p.modal('hide');
                         });
                         p.find('.z-lv-newform a.list-group-item').on('dblclick', function () {
-                            _zw.fn.openNewEAForm($(this).attr('data-val'));
+                            _zw.fn.openNewEAForm($(this).attr('data-val')); p.modal('hide');
                         });
 
                         if (tab && tab != '') $('#popWorkStatus').modal('hide');
@@ -894,7 +894,9 @@ $(function () {
         },
         "openNewEAForm": function (formId) {
             if (formId == '') return false;
-            var url = '/EA/Forms/New'
+            var url = '/EA/Form?qi=' + _zw.base64.encode('{M:"new",fi:"' + formId + '"}');
+
+            _zw.ut.openWnd(url, "eanewform", 800, 600, "resize");
         },
         "input": function (e, p) {
             if (e) {

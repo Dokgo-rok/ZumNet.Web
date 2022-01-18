@@ -10,8 +10,8 @@
 
     if (sRt == "OK")
     {
-        //sRt = ZumNet.Framework.Web.HtmlHandler.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
-        sRt = ZumNet.Framework.Util.FileHelper.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
+        sRt = ZumNet.Framework.Web.HtmlHandler.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
+        //sRt = ZumNet.Framework.Util.FileHelper.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
     }
 
     //Response.Write(SendMail()); // SendMailSimple() ERROR: HTTP 상태 403: Forbidden(으)로 인해 요청하지 못했습니다.

@@ -291,6 +291,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Areas\EA\Controllers\FormController.cs" />
     <Compile Include="Areas\WoA\ApprovalLine.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\JsEngineSwitcherConfig.cs" />
@@ -325,6 +326,7 @@
     <Compile Include="Areas\WoA\WoAAreaRegistration.cs" />
     <Compile Include="Bc\AuthManager.cs" />
     <Compile Include="Bc\CommonUtils.cs" />
+    <Compile Include="Bc\EAFormManager.cs" />
     <Compile Include="Bc\FormHandler.cs" />
     <Compile Include="Bc\LunisolarDate.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -829,6 +831,7 @@
     <Content Include="Content\Forms\ph_xform_ea_참고용.xml" />
     <Content Include="Content\Forms\xform.css" />
     <Content Include="Content\Forms\XFormScript.xsl" />
+    <Content Include="Content\Forms\xform.2.0_debug.css" />
     <Content Include="Content\Forms\xform_debug.css" />
     <Content Include="Content\worktime.css" />
     <Content Include="Content\ea.css" />
@@ -2800,6 +2803,7 @@
     <Content Include="External\dext5upload\plugin\nexacro\17\metainfo\KOR\dext5upload.nexacro.event.info" />
     <Content Include="External\dext5upload\plugin\nexacro\17\metainfo\KOR\dext5upload.nexacro.meta.info" />
     <Content Include="Areas\EA\Views\Main\NewDocument.cshtml" />
+    <Content Include="Areas\EA\Views\Form\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -2882,6 +2886,7 @@
     <Content Include="Views\Board\Write.cshtml" />
     <Content Include="Views\Board\_Write.cshtml" />
     <Content Include="Views\Board\Modal.cshtml" />
+    <Content Include="Views\Shared\_ErrorPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

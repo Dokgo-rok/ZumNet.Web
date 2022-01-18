@@ -134,7 +134,7 @@ namespace ZumNet.Web.Bc
                             HttpContext.Current.Session["NickName"] = dr["NickName"].ToString();
                             HttpContext.Current.Session["BtnPath"] = "BaseButton";
                             HttpContext.Current.Session["CodeName1"] = dr["CodeName1"].ToString();      // 직위
-                            //HttpContext.Current.Session["GRADE1"] = dr["CodeName1"].ToString();         // 직위
+                            HttpContext.Current.Session["Grade1"] = dr["CodeName1"].ToString();         // 직위
                             HttpContext.Current.Session["CodeName2"] = dr["CodeName2"].ToString();      // 직책
                             HttpContext.Current.Session["Keyword1"] = dr["Keyword1"].ToString().Trim(); //주업무
 
