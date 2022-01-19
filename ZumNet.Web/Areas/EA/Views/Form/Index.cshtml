@@ -17,8 +17,38 @@
         @Html.Raw(styleNode.InnerHtml)
     </style>
 }
+@section Scripts {
+    @Scripts.Render("~/Scripts/EA/form.js")
+}
 
-@Html.Raw(bodyNode.InnerHtml)
+<div class="" id="__FormView">
+    <!-- Header -->
+    <div class="flex-grow-0">
+        <div class="zf-menu d-flex justify-content-between container-p-x m-0 py-2">
+            <div class="d-flex align-items-center font-weight-bold">
 
-@*@Html.Raw(ZumNet.Framework.Web.HtmlHandler.BodyInnerHtml(ViewBag.FormHtml.ToString()))*@
+                <div class="btn-group">
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.writeMsg('');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.deleteMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
+                </div>
+            </div>
+            <div>
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="_zw.mu.preview();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave"><i class="fe-save"></i></button>
+                    <button class="btn btn-default" onclick="_zw.mu.preview();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Print"><i class="fe-printer"></i></button>
+                    <button class="btn btn-default" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / Header -->
+
+    <div class="flex-grow-1" style="border-top: 2px solid #dee2e6 ">
+        <div class="z-list-scroll pb-2" style="top: 47px; border-left: 0.5rem solid #999999; border-right: 0.5rem solid #999999">
+            @Html.Raw(bodyNode.InnerHtml)
+        </div>
+    </div>
+</div>
+
 

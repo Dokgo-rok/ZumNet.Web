@@ -53,10 +53,27 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
             using (EAFormManager fmMgr = new EAFormManager())
             {
-                svcRt = fmMgr.LoadNewServerForm(jReq["M"].ToString(), jReq["fi"].ToString(), StringHelper.SafeString(jReq["oi"]), StringHelper.SafeString(jReq["wi"])
+                switch(jReq["M"].ToString())
+                {
+                    case "new":
+                        svcRt = fmMgr.LoadNewServerForm(jReq["M"].ToString(), jReq["fi"].ToString(), StringHelper.SafeString(jReq["oi"]), StringHelper.SafeString(jReq["wi"])
                                     , StringHelper.SafeString(jReq["mi"]), StringHelper.SafeString(jReq["pi"]), StringHelper.SafeString(jReq["biz"]), StringHelper.SafeString(jReq["act"])
                                     , StringHelper.SafeString(jReq["k1"]), StringHelper.SafeString(jReq["k2"]), StringHelper.SafeString(jReq["Ba"])
                                     , StringHelper.SafeString(jReq["wn"]), StringHelper.SafeString(jReq["xf"]), StringHelper.SafeString(jReq["tp"]));
+                        break;
+                    
+                    case "read":
+                    case "edit":
+                        svcRt = fmMgr.LoadServerForm(jReq["M"].ToString(), StringHelper.SafeString(jReq["fi"]), StringHelper.SafeString(jReq["oi"]), StringHelper.SafeString(jReq["wi"])
+                                    , StringHelper.SafeString(jReq["mi"]), StringHelper.SafeString(jReq["pi"]), StringHelper.SafeString(jReq["biz"]), StringHelper.SafeString(jReq["act"])
+                                    , StringHelper.SafeString(jReq["k1"]), StringHelper.SafeString(jReq["k2"]), StringHelper.SafeString(jReq["Ba"])
+                                    , StringHelper.SafeString(jReq["wn"]), StringHelper.SafeString(jReq["xf"]), StringHelper.SafeString(jReq["tp"]));
+                        break;
+                    
+                    default:
+                        break;
+                }
+                
             }
 
             if (svcRt != null && svcRt.ResultCode == 0)

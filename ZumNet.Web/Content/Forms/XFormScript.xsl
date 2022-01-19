@@ -139,7 +139,7 @@
     var szComment = ((node.getAttribute("state") == '2' || node.getAttribute("state") == '3') && (node.getAttribute("state") == '2' && node.getAttribute("signstatus") != '3')) ? "" : node.selectSingleNode("comment").text;
     //if (node.getAttribute("state") == '0' && node.getAttribute("signkind") == '6') szComment = ''; //2014-02-20 선결 첨언 안보이게 -> 2014-04-10 품
     if (szComment.replace(/ /gi, '') != '') szHTML = "<a href=\"javascript:\" onclick=\"var b=document.body,p=nextSibling;var st=b.scrollTop,oh=b.offsetHeight,t=40,h=140+t-st;if (h>oh){h=oh;}else if(h<0){h=t;} with(p.style){position='absolute';/*left=b.offsetWidth/2-150;*/top=h;display='block';}\"><img src=\"/Storage/" + m_company + "/pencil.gif\" border=\"0\" alt=\"" + strAlt(szComment) + "\" style=\"vertical-align:middle\" /></a>";
-    szHTML += cmnt(szComment, node.selectSingleNode("partname").text, node.getAttribute("completed"), node.getAttribute("signstatus"));
+    //szHTML += cmnt(szComment, node.selectSingleNode("partname").text, node.getAttribute("completed"), node.getAttribute("signstatus"));
     if (node.getAttribute("completed") != '') szHTML += node.getAttribute("completed").substr(3,5).replace('-','/');
     if (szHTML == '') szHTML = "&nbsp;";
     return szHTML;

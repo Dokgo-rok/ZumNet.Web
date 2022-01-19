@@ -894,8 +894,16 @@ $(function () {
         },
         "openNewEAForm": function (formId) {
             if (formId == '') return false;
-            var url = '/EA/Form?qi=' + _zw.base64.encode('{M:"new",fi:"' + formId + '"}');
+            var xfAlias = _zw.V.xfalias == '' ? 'ea' : _zw.V.xfalias;
+            var url = '/EA/Form?qi=' + _zw.base64.encode('{M:"new",fi:"' + formId + '",xf:"' + xfAlias + '"}');
+            _zw.ut.openWnd(url, "eanewform", 800, 600, "resize");
+        },
+        "openEAForm": function () {
+            var el = event.target, p = el.parentNode.parentNode, vId = p.id.substr(1).split('.'); //console.log(vId)
+            var xfAlias = _zw.V.xfalias == '' ? 'ea' : _zw.V.xfalias;
+            var qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",wi:"' + vId[2] + '",xf:"' + xfAlias + '"}'; console.log(qi)
 
+            var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, "eanewform", 800, 600, "resize");
         },
         "input": function (e, p) {

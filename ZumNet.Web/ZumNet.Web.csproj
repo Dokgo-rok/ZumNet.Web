@@ -2005,6 +2005,7 @@
     <Content Include="External\dext5upload\plugin\nexacro\17\dext5upload.nexacro.html" />
     <Content Include="External\dext5upload\plugin\nexacro\17\dext5upload.nexacro17.js" />
     <Content Include="Scripts\Docs\kms.js" />
+    <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\ExS\worktime.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
