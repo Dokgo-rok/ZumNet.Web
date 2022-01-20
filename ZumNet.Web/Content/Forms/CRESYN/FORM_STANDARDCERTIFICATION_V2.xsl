@@ -286,6 +286,42 @@
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
+                <td class="f-lbl">인증비용</td>
+                <td style="border-right:0">
+                  <xsl:choose>
+                    <xsl:when test="$mode='new' or $mode='edit'">
+                      <input type="text" id="__mainfield" name="CERTIPRICE">
+                        <xsl:attribute name="class">txtText</xsl:attribute>
+                        <xsl:attribute name="maxlength">100</xsl:attribute>
+                        <xsl:attribute name="value">
+                          <xsl:value-of select="//forminfo/maintable/CERTIPRICE" />
+                        </xsl:attribute>
+                      </input>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CERTIPRICE))" />
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </td>
+              </tr>
+              <tr>
+                <td class="f-lbl1">요청부서</td>
+                <td style="">
+                  <xsl:choose>
+                    <xsl:when test="$mode='new' or $mode='edit'">
+                      <input type="text" id="__mainfield" name="REQUESTDEPT">
+                        <xsl:attribute name="class">txtText</xsl:attribute>
+                        <xsl:attribute name="maxlength">100</xsl:attribute>
+                        <xsl:attribute name="value">
+                          <xsl:value-of select="//forminfo/maintable/REQUESTDEPT" />
+                        </xsl:attribute>
+                      </input>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/REQUESTDEPT))" />
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </td>
                 <td class="f-lbl">회수비용</td>
                 <td style="border-right:0">
                   <xsl:choose>
@@ -305,20 +341,22 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl1">인증비용</td>
+                <td class="f-lbl1">
+                  업무협조전
+                </td>
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="CERTIPRICE">
+                      <input type="text" id="__mainfield" name="DRAFTFORM">
                         <xsl:attribute name="class">txtText</xsl:attribute>
                         <xsl:attribute name="maxlength">100</xsl:attribute>
                         <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/CERTIPRICE" />
+                          <xsl:value-of select="//forminfo/maintable/DRAFTFORM" />
                         </xsl:attribute>
                       </input>
                     </xsl:when>
                     <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CERTIPRICE))" />
+                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DRAFTFORM))" />
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
@@ -341,59 +379,10 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl1">
-                  요청부서
-                </td>
-                <td style="">
-                  <xsl:choose>
-                    <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="REQUESTDEPT">
-                        <xsl:attribute name="class">txtText</xsl:attribute>
-                        <xsl:attribute name="maxlength">100</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/REQUESTDEPT" />
-                        </xsl:attribute>
-                      </input>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/REQUESTDEPT))" />
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-                <td class="f-lbl">환율</td>
-                <td style="border-right:0">
-                  <xsl:choose>
-                    <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="TXTCURRENCY" class="txtText" value="{//forminfo/maintable/TXTCURRENCY}" />
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TXTCURRENCY))" />
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-              </tr>
-              <tr>
                 <td class="f-lbl1" style="border-bottom:0">
-                  업무협조전
+                  결제방법
                 </td>
                 <td style="border-bottom:0">
-                  <xsl:choose>
-                    <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="DRAFTFORM">
-                        <xsl:attribute name="class">txtText</xsl:attribute>
-                        <xsl:attribute name="maxlength">100</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/DRAFTFORM" />
-                        </xsl:attribute>
-                      </input>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DRAFTFORM))" />
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-                <td class="f-lbl" style="border-bottom:0">결제방법</td>
-                <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <input type="text" id="__mainfield" name="PAYWAY">
@@ -406,6 +395,17 @@
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PAYWAY))" />
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </td>
+                <td class="f-lbl" style="border-bottom:0">환율</td>
+                <td style="border-right:0;border-bottom:0">
+                  <xsl:choose>
+                    <xsl:when test="$mode='new' or $mode='edit'">
+                      <input type="text" id="__mainfield" name="TXTCURRENCY" class="txtText" value="{//forminfo/maintable/TXTCURRENCY}" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TXTCURRENCY))" />
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>

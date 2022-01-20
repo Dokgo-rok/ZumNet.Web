@@ -92,11 +92,14 @@
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '작성부서')"/>
                 </td>
                 <td style="width:555px;font-size:1px">&nbsp;</td>
-                <td style="width:245px">
-                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='agree' and @partid!='' and @step!='0'], '__si_Agree', '3', '합의부서', 'N')"/>
+                <td style="width:165px">
+                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='agree' and @partid!='' and @step!='0'], '__si_Agree', '2', '합의부서', 'N')"/>
                 </td>
-                <td style="width:80px">
+                <td style="width:85px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignEdgePart($root, //processinfo/signline/lines/line[@bizrole='confirm' and @partid!='' and @step!='0'], '__si_Confirm', '1', '')"/>
+                </td>                
+                <td style="width:85px">
+                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignEdgePart($root, //processinfo/signline/lines/line[@bizrole='last' and @partid!='' and @step!='0'], '__si_Last', '1', '승인')"/>
                 </td>
               </tr>
             </table>
@@ -175,22 +178,38 @@
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="f-lbl" style="border-bottom:0">적용모델명</td>
-                <td style="width:35%;border-bottom:0">
-                  <input type="text" id="__mainfield" name="MODELNAME" style="">
-                    <xsl:attribute name="class">txtText</xsl:attribute>                    
-                    <xsl:attribute name="value">
-                      <xsl:value-of select="//forminfo/maintable/MODELNAME" />
-                    </xsl:attribute>
-                  </input>
+                <td style="width:35%;border-bottom:0">                  
+                  <xsl:choose>
+                    <xsl:when test="$mode='new' or $mode='edit'">
+                      <input type="text" id="__mainfield" name="MODELNAME" style="">
+                        <xsl:attribute name="class">txtText</xsl:attribute>
+                        <xsl:attribute name="value">
+                          <xsl:value-of select="//forminfo/maintable/MODELNAME" />
+                        </xsl:attribute>
+                      </input>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:attribute name="class">tdRead_Center</xsl:attribute>
+                      <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </td>
                 <td class="f-lbl" style="border-bottom:0">구매법인</td>
-                <td style="width:35%;border-bottom:0;border-right:0" >
-                  <input type="text" id="__mainfield" name="BUYFACTORY" style="">
-                    <xsl:attribute name="class">txtText</xsl:attribute>
-                    <xsl:attribute name="value">
-                      <xsl:value-of select="//forminfo/maintable/BUYFACTORY" />
-                    </xsl:attribute>
-                  </input>
+                <td style="width:35%;border-bottom:0;border-right:0" >                  
+                  <xsl:choose>
+                    <xsl:when test="$mode='new' or $mode='edit'">
+                      <input type="text" id="__mainfield" name="BUYFACTORY" style="">
+                        <xsl:attribute name="class">txtText</xsl:attribute>
+                        <xsl:attribute name="value">
+                          <xsl:value-of select="//forminfo/maintable/BUYFACTORY" />
+                        </xsl:attribute>
+                      </input>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:attribute name="class">tdRead_Center</xsl:attribute>
+                      <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/BUYFACTORY))" />
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </td>
               </tr>
             </table>
@@ -372,7 +391,7 @@
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="BUYAMOUNT">
-                              <xsl:attribute name="class">txtCurrency</xsl:attribute>                              
+                              <xsl:attribute name="class">txtDollar</xsl:attribute>                              
                               <xsl:attribute name="value">
                                 <xsl:value-of select="//forminfo/maintable/BUYAMOUNT" />
                               </xsl:attribute>
@@ -388,7 +407,7 @@
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="BUYMONEY">
-                              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+                              <xsl:attribute name="class">txtDollar</xsl:attribute>
                               <xsl:attribute name="value">
                                 <xsl:value-of select="//forminfo/maintable/BUYMONEY" />
                               </xsl:attribute>
@@ -404,7 +423,7 @@
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="BUYGAP">
-                              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+                              <xsl:attribute name="class">txtDollar</xsl:attribute>
                               <xsl:attribute name="value">
                                 <xsl:value-of select="//forminfo/maintable/BUYGAP" />
                               </xsl:attribute>
@@ -420,7 +439,7 @@
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="TOTALAMOUNT">
-                              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+                              <xsl:attribute name="class">txtDollar</xsl:attribute>
                               <xsl:attribute name="value">
                                 <xsl:value-of select="//forminfo/maintable/TOTALAMOUNT" />
                               </xsl:attribute>
@@ -436,7 +455,7 @@
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="TOTALMONEY">
-                              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+                              <xsl:attribute name="class">txtDollar</xsl:attribute>
                               <xsl:attribute name="value">
                                 <xsl:value-of select="//forminfo/maintable/TOTALMONEY" />
                               </xsl:attribute>
@@ -602,7 +621,7 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="NOWMONEY">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+              <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="NOWMONEY" />
@@ -618,7 +637,7 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="MARMONEY">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+              <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="MARMONEY" />
@@ -634,7 +653,7 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="MARGAPMON">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+              <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="MARGAPMON" />
@@ -650,7 +669,7 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="MARAMOUNT">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+              <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="MARAMOUNT" />
@@ -666,7 +685,7 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="MARAMOUNTMONEY">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+              <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="MARAMOUNTMONEY" />
@@ -682,7 +701,7 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="MARGAPMONEY">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+              <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="MARGAPMONEY" />
@@ -698,7 +717,7 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="TOTMARAMOUNT">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+              <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="TOTMARAMOUNT" />
@@ -714,7 +733,7 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="TOTMARMONEY">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
+              <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="TOTMARMONEY" />

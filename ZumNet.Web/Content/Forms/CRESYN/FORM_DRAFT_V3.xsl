@@ -366,6 +366,9 @@
             </xsl:choose>
           </div>
           <div class="fm-editor">
+            <xsl:if test="$mode!='new' and $mode!='edit'">
+              <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+            </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <xsl:if test="$mlvl='A' or $mlvl='B'">
@@ -391,7 +394,7 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" src="/{$root}/EA/External/Editor_tagfree.aspx"></iframe>
+                <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>
@@ -458,13 +461,12 @@
 
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>

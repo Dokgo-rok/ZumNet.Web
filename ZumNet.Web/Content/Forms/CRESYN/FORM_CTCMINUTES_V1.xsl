@@ -27,11 +27,11 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:780px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
+          .m {width:820px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:70px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:} .m .ft .f-lbl2 {width:}
@@ -83,19 +83,23 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:95px">
+                <td style="width:90px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @actrole='_drafter' and @partid!='' and @step!='0'], '__si_Normal', '1', '작성')"/>
                 </td>
                 <td style="font-size:1px;width:">&nbsp;</td>
-                <td style="width:470px">
+                <td style="width:440px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '6', '검토부서')"/>
                 </td>
                 <td style="width:;font-size:1px;width:">&nbsp;</td>
-                <td style="width:95px">
+                <td style="width:90px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @actrole='_approver' and @partid!='' and @step!='0'], '__si_Attr', '1', '승인', '', '', 'biz=normal act=_approver')"/>
                 </td>
                 <td style="width:;font-size:1px;width:">&nbsp;</td>
-                <td style="width:95px">
+                <td style="width:90px">
+                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='confirm' and @actrole='_approver' and @partid!='' and @step!='0'], '__si_Attr', '1', '확인', '', '', 'biz=confirm act=_approver')"/>
+                </td>
+                <td style="width:;font-size:1px;width:">&nbsp;</td>
+                <td style="width:90px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='last' and @partid!='' and @step!='0'], '__si_Last', '1', '최종승인')"/>
                 </td>
               </tr>
@@ -227,6 +231,7 @@
                             </button>
                           </xsl:when>
                           <xsl:otherwise>
+                            <input type="hidden" id="__mainfield" name="STEP" value="{//forminfo/maintable/STEP}"></input>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/STEP))" />
                           </xsl:otherwise>
                         </xsl:choose>
@@ -1427,9 +1432,9 @@
       <td colspan="2" style="padding:0">
         <table border="0" cellspacing="0" cellpadding="0" style="border:0">
           <colgroup>
-            <col width="52px" />
-            <col width="94px" />
-            <col width="" />
+            <col width="50px" />
+            <col width="100px" />
+            <col width="347px" />
           </colgroup>
           <tr>
             <td class="f-lbl-sub" style="border-top:0" >담당</td>

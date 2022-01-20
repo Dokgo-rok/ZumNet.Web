@@ -158,7 +158,7 @@
                 <td style="width:38%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="CUSTOMER" class="txtText_u" readonly="readonly" style="width:92%"  value="{//forminfo/maintable/CUSTOMER}" />
+                      <input type="text" id="__mainfield" name="CUSTOMER" class="txtText"  style="width:92%"  value="{//forminfo/maintable/CUSTOMER}" />
                       <button onclick="parent.fnExternal('erp.customers',240,40,100,70,'','CUSTOMER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_28.gif</xsl:attribute>

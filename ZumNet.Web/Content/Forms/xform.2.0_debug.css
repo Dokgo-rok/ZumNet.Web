@@ -41,7 +41,8 @@
 	background-color: transparent;
 }
 .m .fm-editor {
-	height: auto !important;
+	background-color: white;
+	z-index: 1;
 	/*display: inline-block;*/
 }
 .m .fm-editor p {
@@ -125,6 +126,7 @@
 }
 
 /* 버튼 */
+
 /* 공통,메인,하위 */
 .m .ft td, .m .ft-sub td, .m .ft-sub .ft-sub-sub td {
 	word-break: break-all;
@@ -137,7 +139,7 @@
 	margin-bottom: 0;
 	margin-left: 1.15rem
 }
-.m table input[type="radio"], .m table input[type="checkbox"] {
+.m table span input[type="radio"], .m table span input[type="checkbox"] {
 	position: absolute;
 	margin-top: .25rem;
 	margin-left: .125rem;

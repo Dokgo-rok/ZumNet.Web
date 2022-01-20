@@ -12,12 +12,21 @@
 }
 
 @section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
     @Styles.Render("~/Content/Forms/xform.2.0_debug.css")
     <style type="text/css">
         @Html.Raw(styleNode.InnerHtml)
     </style>
 }
 @section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
+
+
+    @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
+    @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
     @Scripts.Render("~/Scripts/EA/form.js")
 }
 

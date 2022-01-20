@@ -15,8 +15,9 @@
             foreach (DataRow row in ViewBag.EA_INBOX.Rows)
             {
                 string sRead = row["Read"].ToString() == "N" ? " font-weight-bold" : "";
+                string strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["WorkItemID"].ToString();
 
-                <div class="@(iCnt < ViewBag.EA_INBOX.Rows.Count - 1 ? "mb-2" : "")@sRead">
+                <div class="@(iCnt < ViewBag.EA_INBOX.Rows.Count - 1 ? "mb-2" : "")@sRead" id="@strId">
                     <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ReceivedDate"].ToString())</div>
                     <div class="text-truncate">
                         @if (row["Priority"].ToString() == "H")
@@ -24,7 +25,7 @@
                             <i class="fe-info text-danger"></i>
                         }
                         
-                        <a class="text-truncate" href="javascript:void(0)">@row["PIName"].ToString()</a>
+                        <a class="text-truncate" href="javascript:void(0)" onclick="_zw.fn.openEAForm();">@row["PIName"].ToString()</a>
                     </div>
                 </div>
 
