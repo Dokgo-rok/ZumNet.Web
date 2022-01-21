@@ -50,18 +50,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+                  <xsl:choose>
+                    <xsl:when test="$mode='read'">
+                      <img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -73,14 +69,10 @@
             </table>
             <xsl:choose>
               <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
+                <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
+                <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
               </xsl:otherwise>
             </xsl:choose>
           </div>
@@ -110,7 +102,7 @@
                         <span class="f-option">
                           <input type="checkbox" id="ckb11" name="ckbDOCCLASS" value="통보">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
                             </xsl:if>
                             <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/DOCCLASS),'통보')">
                               <xsl:attribute name="checked">true</xsl:attribute>
@@ -124,7 +116,7 @@
                         <span class="f-option">
                           <input type="checkbox" id="ckb12" name="ckbDOCCLASS" value="의뢰">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
                             </xsl:if>
                             <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/DOCCLASS),'의뢰')">
                               <xsl:attribute name="checked">true</xsl:attribute>
@@ -138,7 +130,7 @@
                         <span class="f-option">
                           <input type="checkbox" id="ckb13" name="ckbDOCCLASS" value="송부">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
                             </xsl:if>
                             <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/DOCCLASS),'송부')">
                               <xsl:attribute name="checked">true</xsl:attribute>
@@ -162,7 +154,7 @@
                         <span class="f-option">
                           <input type="checkbox" id="ckb21" name="ckbREPLY" value="요">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbREPLY', this, 'REPLY')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbREPLY', this, 'REPLY')</xsl:attribute>
                             </xsl:if>
                             <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/REPLY),'요')">
                               <xsl:attribute name="checked">true</xsl:attribute>
@@ -176,7 +168,7 @@
                         <span class="f-option">
                           <input type="checkbox" id="ckb22" name="ckbREPLY" value="불요">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbREPLY', this, 'REPLY')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbREPLY', this, 'REPLY')</xsl:attribute>
                             </xsl:if>
                             <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/REPLY),'불요')">
                               <xsl:attribute name="checked">true</xsl:attribute>
@@ -279,6 +271,9 @@
           <div class="ff" />
 
           <div class="fm-editor">
+            <xsl:if test="$mode!='new' and $mode!='edit'">
+              <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+            </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <xsl:if test="$mlvl='A' or $mlvl='B'">
@@ -289,7 +284,7 @@
                     <textarea id="bodytext" style="display:none">
                       <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                     </textarea>
-                    <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" src="/{$root}/EA/External/Editor_tagfree.aspx"></iframe>
+                    <div class="h-100" id="__DextEditor"></div>
                   </xsl:when>
                   <xsl:otherwise>
                     <div name="WEBEDITOR" id="__mainfield" class="txaRead" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">
@@ -304,7 +299,7 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" src="/{$root}/EA/External/Editor_tagfree.aspx"></iframe>
+                <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>

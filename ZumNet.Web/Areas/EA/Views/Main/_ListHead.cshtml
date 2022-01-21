@@ -6,21 +6,45 @@
         </label>
     </div>
 
-    @if (ViewBag.CurBox[2] != "wt" && ViewBag.CurBox[2] != "do")
+    @if (ViewBag.CurBox[2] != "wt" && ViewBag.CurBox[2] != "do" && ViewBag.CurBox[2] != "cf" && ViewBag.CurBox[2] != "te")
     {
         <div class="d-none d-md-block wd-lg-7 wd-xl-6 text-truncate pr-2">
-            <span class="flex-fill">@Resources.Global.Division</span>
+            <a href="javascript:void(0)" data-val="MsgType">@Resources.Global.Division<i class="@(ViewBag.R.lv.sort == "MsgType" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
         </div>
     }
+
     @if (ViewBag.CurBox[2] != "do")
     {
         <div class="d-none d-md-block wd-lg-12 wd-xl-10 text-truncate pr-2">
-            <span class="flex-fill">@Resources.Global.DocName</span>
+            @if (ViewBag.CurBox[2] == "wt")
+            {
+                <span class="">@Resources.Global.DocName</span>
+            }
+            else
+            {
+                <a href="javascript:void(0)" data-val="DocName">@Resources.Global.DocName<i class="@(ViewBag.R.lv.sort == "DocName" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+            }
         </div>
     }
-    <div class="flex-fill text-truncate text-center">
-        <a href="javascript:void(0)">@Resources.Global.Title</a>
-    </div>
+
+    @if (ViewBag.CurBox[2] == "do" || ViewBag.CurBox[2] == "wt")
+    {
+        <div class="flex-fill text-truncate text-center">
+            <span class="">@Resources.Global.Title</span>
+        </div>
+    }
+    else if (ViewBag.CurBox[2] == "te")
+    {
+        <div class="flex-fill text-truncate text-center">
+            <a href="javascript:void(0)" data-val="Subject">@Resources.Global.Title<i class="@(ViewBag.R.lv.sort == "Subject" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+        </div>
+    }
+    else
+    {
+        <div class="flex-fill text-truncate text-center">
+            <a href="javascript:void(0)" data-val="PIName">@Resources.Global.Title<i class="@(ViewBag.R.lv.sort == "PIName" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+        </div>
+    }
 
     @if (ViewBag.CurBox[2] == "go")
     {
@@ -32,14 +56,14 @@
                 <i class="fe-paperclip"></i>
             </div>
             <div class="wd-15 wd-lg-31 wd-xl-29 t-sm text-sm-center pr-2">
-                <span class="">@Resources.Global.Writer</span>
+                <a href="javascript:void(0)" data-val="Creator">@Resources.Global.Writer<i class="@(ViewBag.R.lv.sort == "Creator" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
             </div>
             <div class="wd-15 wd-lg-36 wd-xl-34 t-sm text-sm-center pr-2">
-                <span class="">@Resources.Global.WriteDept</span>
+                <a href="javascript:void(0)" data-val="CreatorDept">@Resources.Global.WriteDept<i class="@(ViewBag.R.lv.sort == "CreatorDept" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
             </div>
 
             <div class="text-right flex-fill pr-2">
-                <span class="">@ViewBag.CurBox[7]</span>
+                <a href="javascript:void(0)" data-val="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]<i class="@(ViewBag.R.lv.sort == ViewBag.CurBox[5] ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
             </div>
         </div>
     }
@@ -66,7 +90,7 @@
             </div>
 
             <div class="text-right flex-fill pr-2">
-                <span class="">@ViewBag.CurBox[7]</span>
+                <span class="">@ViewBag.CurBox[7]<i class="fe-arrow-down"></i></span>
             </div>
         </div>
     }
@@ -74,7 +98,7 @@
     {
         <div class="wd-lg-60 wd-xl-58 d-flex">
             <div class="wd-15 wd-lg-20 wd-xl-20 t-sm text-sm-center pr-2">
-                <span class="">@ViewBag.CurBox[7]</span>
+                <span class="">@ViewBag.CurBox[7]<i class="fe-arrow-down"></i></span>
             </div>
             <div class="wd-15 wd-lg-20 wd-xl-20 t-sm text-sm-center pr-2">
                 <span class="">@Resources.Global.Requester</span>
@@ -97,7 +121,7 @@
                 <i class="fe-paperclip"></i>
             </div>
             <div class="text-right flex-fill pr-2">
-                <span class="">@ViewBag.CurBox[7]</span>
+                <a href="javascript:void(0)" data-val="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]<i class="@(ViewBag.R.lv.sort == ViewBag.CurBox[5] ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
             </div>
         </div>
     }
@@ -108,14 +132,14 @@
                 <i class="fe-paperclip"></i>
             </div>
             <div class="wd-15 wd-lg-32 wd-xl-30 t-sm text-sm-center pr-2">
-                <span class="">@Resources.Global.Writer</span>
+                <a href="javascript:void(0)" data-val="Creator">@Resources.Global.Writer<i class="@(ViewBag.R.lv.sort == "Creator" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
             </div>
             <div class="wd-15 wd-lg-37 wd-xl-35 t-sm text-sm-center pr-2">
-                <span class="">@Resources.Global.WriteDept</span>
+                <a href="javascript:void(0)" data-val="CreatorDept">@Resources.Global.WriteDept<i class="@(ViewBag.R.lv.sort == "CreatorDept" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
             </div>
 
             <div class="text-right flex-fill pr-2">
-                <span class="">@ViewBag.CurBox[7]</span>
+                <a href="javascript:void(0)" data-val="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]<i class="@(ViewBag.R.lv.sort == ViewBag.CurBox[5] ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
             </div>
         </div>
     }

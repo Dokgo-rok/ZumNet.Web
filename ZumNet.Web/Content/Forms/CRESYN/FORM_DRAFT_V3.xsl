@@ -124,7 +124,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb11" name="ckbDOCCLASS" value="품의">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/DOCCLASS),'품의')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -138,7 +138,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb12" name="ckbDOCCLASS" value="보고">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/DOCCLASS),'보고')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -152,7 +152,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb13" name="ckbDOCCLASS" value="검토">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbDOCCLASS', this, 'DOCCLASS')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/DOCCLASS),'검토')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -164,11 +164,7 @@
                     <label for="ckb13">검토</label>
                   </span>
                 </td>
-                <input type="hidden" id="__mainfield" name="DOCCLASS">
-                  <xsl:attribute name="value">
-                    <xsl:value-of select="//forminfo/maintable/DOCCLASS"></xsl:value-of>
-                  </xsl:attribute>
-                </input>
+                <input type="hidden" id="__mainfield" name="DOCCLASS" value="{//forminfo/maintable/DOCCLASS}" />
               </tr>              
               <tr>
                 <td class="f-lbl" style="">기안부서</td>
@@ -259,11 +255,11 @@
                 <table border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
-                        <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_26.gif" />추가
+                      <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+                        <i class="fas fa-plus"></i>
                       </button>
-                      <button onclick="parent.fnDelChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
-                        <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_27.gif" />삭제
+                      <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+                        <i class="fas fa-minus"></i>
                       </button>
                     </td>
                   </tr>
@@ -379,7 +375,7 @@
                     <textarea id="bodytext" style="display:none">
                       <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                     </textarea>
-                    <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" src="/{$root}/EA/External/Editor_tagfree.aspx"></iframe>
+                    <div class="h-100" id="__DextEditor"></div>
                   </xsl:when>
                   <xsl:otherwise>
                     <div name="WEBEDITOR" id="__mainfield" class="txaRead" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">

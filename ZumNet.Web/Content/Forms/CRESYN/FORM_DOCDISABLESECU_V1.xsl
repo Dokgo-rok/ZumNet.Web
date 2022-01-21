@@ -158,7 +158,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <font color="red">※ 첨부파일 확장자명은 반드시 소문자로 작성하여 주시기 바랍니다.</font>
+                      <h5 class="text-danger mb-0">※ 첨부파일 확장자명은 반드시 소문자로 작성하여 주시기 바랍니다.</h5>
                     </xsl:when>
                     <xsl:otherwise>
                       &nbsp;
@@ -232,7 +232,7 @@
               <span>
                 위 사항에 대해 동의합니다 <input type="checkbox" id="ckb11" name="ckbAGREE1" value="동의함">
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <xsl:attribute name="onclick">parent.fnCheckYN('ckbAGREE1', this, 'AGREE1')</xsl:attribute>
+                    <xsl:attribute name="onclick">_zw.form.checkYN('ckbAGREE1', this, 'AGREE1')</xsl:attribute>
                   </xsl:if>
                   <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/AGREE1),'동의함')">
                     <xsl:attribute name="checked">true</xsl:attribute>
@@ -255,7 +255,7 @@
               </xsl:choose>
             </p>
 
-            <ul class="ft-ul" style="margin-left:350px">
+            <ul class="ft-ul" style="text-align: right">
               <li>
                 <xsl:if test="//bizinfo/@docstatus='700'">
                   <xsl:attribute name="style">margin-bottom:-2px</xsl:attribute>

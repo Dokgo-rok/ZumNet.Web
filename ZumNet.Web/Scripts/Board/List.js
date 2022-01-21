@@ -245,57 +245,6 @@ $(function () {
             }
         });
     }
-
-    //editor, uploader
-    //Editor, Upload
-    if ($('#__DextUpload').length > 0) {
-        DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
-
-        DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
-        new Dext5Upload(_zw.T.uploader.id);
-
-        $('.btn[data-zf-menu="toggleUploader"]').click(function () {
-            var vText = ['@Resources.Global.UploaderFold', '@Resources.Global.UploaderExpand'];
-            var vIcon = ['fe-chevron-down', 'fe-chevron-up'];
-            if ($(this).attr('aria-expanded') == 'false') {
-                $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
-                $('#__DextUpload').hide();
-                $('#__DextEditor').css('top', '188px');
-            } else {
-                $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
-                $('#__DextUpload').show();
-                $('#__DextEditor').css('top', '350px');
-            }
-        });
-    }
-
-    if ($('#__DextEditor').length > 0) {
-        _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
-        $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
-
-        //DEXT5.config.ToSaveFilePathURL = "@sUploadPath";
-
-        DEXT5.config.EditorHolder = "__DextEditor";
-        DEXT5.config.FocusInitObjId = "txtSubject";
-
-        new Dext5editor(_zw.T.editor.id);
-
-        $('.btn[data-zf-menu="toggleEditor"]').click(function () {
-            //var os = $('.z-list-scroll .zf-editor').offset();
-
-            //alert(DEXT5.getBodyValue('editor1'));
-
-            var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'];
-            var vIcon = ['fe-arrow-down', 'fe-arrow-up'];
-            if ($(this).attr('aria-expanded') == 'false') {
-                $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
-                $('#__DextEditor').css('top', '0');
-            } else {
-                $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
-                $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
-            }
-        });
-    }
 });
 
 function dext_editor_loaded_event() {

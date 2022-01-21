@@ -28,6 +28,44 @@
     @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
     @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
     @Scripts.Render("~/Scripts/EA/form.js")
+
+<script type="text/javascript">
+(function () {
+    if ($('#__DextUpload').length > 0) {
+        DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
+
+        DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
+        new Dext5Upload(_zw.T.uploader.id);
+
+        $('.btn[data-zf-menu="toggleUploader"]').click(function () {
+        });
+    }
+
+    if ($('#__DextEditor').length > 0) {
+        _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
+        $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+
+        DEXT5.config.EditorHolder = "__DextEditor";
+        //DEXT5.config.FocusInitObjId = "txtSubject";
+
+        new Dext5editor(_zw.T.editor.id);
+
+        $('.btn[data-zf-menu="toggleEditor"]').click(function () {
+            var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'], vIcon = ['fe-arrow-down', 'fe-arrow-up'];
+            var p = $('#__FormView .m');
+            var orgHeight = p.find('.fm-editor').outerHeight(), maxHeight = p.outerHeight() - p.find('.fh').outerHeight(); //alert(orgHeight + " : " + maxHeight)
+
+            if ($(this).attr('aria-expanded') == 'false') {
+                $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
+                p.find('.fm-editor').css('height', maxHeight + 'px'); p.find('.ff, .fb, .fm, .fm-lines, .fm-file').hide();
+            } else {
+                $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
+                p.find('.fm-editor').css('height', ''); p.find('.ff, .fb, .fm, .fm-lines, .fm-file').show();
+            }
+        });
+    }
+}());
+</script>
 }
 
 <div class="" id="__FormView">
@@ -44,6 +82,7 @@
             </div>
             <div>
                 <div class="btn-group">
+                    <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.EditorExpand" data-zf-menu="toggleEditor" aria-expanded="false"><i class="fe-arrow-up"></i></button>
                     <button class="btn btn-default" onclick="_zw.mu.preview();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave"><i class="fe-save"></i></button>
                     <button class="btn btn-default" onclick="_zw.mu.preview();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Print"><i class="fe-printer"></i></button>
                     <button class="btn btn-default" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>

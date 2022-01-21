@@ -113,9 +113,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
             ViewBag.R.lv["count"] = StringHelper.SafeString(Bc.CommonUtils.GetLvCookie("ea").ToString(), "20");
             
             ViewBag.R.lv["basesort"] = ViewBag.CurBox[5];
-            ViewBag.R.lv["sort"] = ViewBag.CurBox[5];
-            ViewBag.R.lv["sortdir"] = StringHelper.SafeString(ViewBag.R.lv["sortdir"].ToString(), "DESC");
-
+            //ViewBag.R.lv["sort"] = ViewBag.CurBox[5];
+            //ViewBag.R.lv["sortdir"] = StringHelper.SafeString(ViewBag.R.lv["sortdir"].ToString(), "DESC");
 
             int iState = 0;
             string sLocation = ViewBag.CurBox[2].IndexOf('_') >= 0 ? "" : ViewBag.CurBox[2];
@@ -207,7 +206,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                     sPos = "300";
                     jPost["lv"]["basesort"] = ViewBag.CurBox[5];
-                    if (jPost["lv"]["sort"].ToString() == "") jPost["lv"]["sort"] = jPost["lv"]["basesort"];
+                    //if (jPost["lv"]["sort"].ToString() == "") jPost["lv"]["sort"] = jPost["lv"]["basesort"];
+                    //if (jPost["lv"]["sortdir"].ToString() == "") jPost["lv"]["sortdir"] = "DESC";
 
                     sPos = "400";
                     int iState = 0;

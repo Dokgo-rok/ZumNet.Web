@@ -11,6 +11,9 @@
 	font-size: 1px
 }
 
+/* 폰트 */
+
+
 /* 공통 */
 .m .fh table, .m .fb table, .m .fm table, .m .fm-lines table {
 	border-collapse: collapse;
@@ -27,8 +30,10 @@
 .m .ft td, .m .ft-sub td, .m .txaRead, .m .txaRead_Center, .m .txaRead_Right {
 	padding: .125rem;
 }
-.m .fm span {
+.m span {
 	display: inline-block;
+}
+.m .fm span {
 	font-size: 14px
 }
 .m a:hover {
@@ -126,6 +131,13 @@
 }
 
 /* 버튼 */
+.m .fm-button {
+	text-align: right;
+	padding-right: 2px;
+}
+.m .fm-button .btn {
+	margin-left: 4px;
+}
 
 /* 공통,메인,하위 */
 .m .ft td, .m .ft-sub td, .m .ft-sub .ft-sub-sub td {
@@ -135,7 +147,7 @@
 	text-align: center;
 	background-color: #eeeeee
 }
-.m .ft label, .m .ft-sub label, .m .ft-sub .ft-sub-sub label {
+.m .fm label, .m .ft label, .m .ft-sub label, .m .ft-sub .ft-sub-sub label {
 	margin-bottom: 0;
 	margin-left: 1.15rem
 }
@@ -156,7 +168,6 @@
 	vertical-align: bottom;
 	padding: 0 0 3px 10px
 }
-
 
 /* 각종 필드 정의 - txt : input, txa : textarea */
 .m .txtText {

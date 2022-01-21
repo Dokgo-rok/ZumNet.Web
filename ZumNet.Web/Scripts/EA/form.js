@@ -11,31 +11,92 @@ $(function () {
         window.moveTo(sw / 2 - w / 2, 10); window.resizeTo(w, sh - 20);
     }
 
-    if ($('#__DextUpload').length > 0) {
-        DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
-
-        DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
-        new Dext5Upload(_zw.T.uploader.id);
-
-        $('.btn[data-zf-menu="toggleUploader"]').click(function () {
-            
-        });
+    _zw.form = {
+        "addUser": function (sub) {
+            var p = $('#' + sub), ihdr = parseInt(p.attr('header'));
+            alert(ihdr)
+        },
+        "removeUser": function (sub) {
+            var p = $('#' + sub), ihdr = parseInt(p.attr('header'));
+            alert(ihdr)
+        },
+        "addRow": function (sub) {
+            var p = $('#' + sub), ihdr = parseInt(p.attr('header')), iCnt = 0, tgtRow = null, newRow = null;
+            p.find('tr.sub_table_row').each(function (idx, e) {
+                //console.log(idx + " : " + e.rowIndex)
+                if ($(this).find('input:checkbox[name="ROWSEQ"]').prop('checked')) {
+                    iCnt++; if (iCnt == 1) tgtRow = $(this);
+                }
+                if (iCnt == 0) tgtRow = $(this);
+            });
+            //if (iCnt == 0) tgtRow = p.find('tr.sub_table_row:last-child');
+            if (iCnt < 2) {
+                newRow = tgtRow.clone(); _zw.form.resetField(newRow); tgtRow.after(newRow);
+                _zw.form.orderRow(p);
+            }
+        },
+        "removeRow": function (sub) {
+            var p = $('#' + sub), ihdr = parseInt(p.attr('header')), iCnt = 0;
+            if (p.find('tr.sub_table_row').length > 1) {
+                $(p.find('tr.sub_table_row').get().reverse()).each(function () {
+                    if ($(this).find('input:checkbox[name="ROWSEQ"]').prop('checked')) {
+                        $(this).remove(); iCnt++;
+                    }
+                });
+                if (iCnt == 0) p.find('tr.sub_table_row:last-child').remove();
+                _zw.form.orderRow(p);
+                if (_zw.formEx.autoCalc) _zw.formEx.autoCalc(p);
+            }
+        },
+        "copyRow": function (sub) {
+            var p = $('#' + sub), ihdr = parseInt(p.attr('header')), iCnt = 0, tgtRow = null, newRow = null;
+            p.find('tr.sub_table_row').each(function (idx, e) {
+                if ($(this).find('input:checkbox[name="ROWSEQ"]').prop('checked')) {
+                    iCnt++; if (iCnt == 1) tgtRow = $(this);
+                }
+                if (iCnt == 0) tgtRow = $(this);
+            });
+            if (iCnt < 2) {
+                newRow = tgtRow.clone(); tgtRow.after(newRow);
+                _zw.form.orderRow(p);
+                if (_zw.formEx.autoCalc) _zw.formEx.autoCalc(p);
+            }
+        },
+        "orderRow": function (p) {
+            p.find('tr.sub_table_row input:checkbox[name="ROWSEQ"]').each(function (idx, el) {
+                $(this).val(idx + 1);
+            });
+        },
+        "resetField": function (el) {
+            el.find('input:text, input:hidden').val('');
+            el.find('input:checkbox, input:radio').prop('checked', false);
+            el.find('select').attr('selectIndex', 0);
+        },
+        "checkYN": function (ckb, el, fld) {
+            $(':checkbox[name="' + ckb + '"]').each(function (idx, e) {
+                if (el != e) { if (e.checked) e.checked = false; }
+            });
+            if (fld) {
+                $('input[name="' + fld + '"]').val(fld != '' && el.checked ? el.value : '');
+            }
+            if (_zw.formEx.checkEvent) _zw.formEx.checkEvent(ckb, el, fld);
+        },
+        "checkTableYN": function (ckb, el, fld) {
+            var p = el.parentNode, vlu = '';
+            do { p = p.parentNode; } while (p.tagName.toLowerCase() != 'td');
+            $(p).find('span :checkbox[name="' + ckb + '"]').each(function (idx, e) {
+                if (el != e) { if (e.checked) e.checked = false; }
+            });
+            if (fld) {
+                $(p).find('input:hidden[name="' + fld + '"]').val(fld != '' && el.checked ? el.value : '');
+            }
+            if (_zw.formEx.checkEvent) _zw.formEx.checkEvent(ckb, el, fld);
+        },
     }
 
-    if ($('#__DextEditor').length > 0) {
-        _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
-        $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
-
-        //DEXT5.config.ToSaveFilePathURL = "@sUploadPath";
-
-        DEXT5.config.EditorHolder = "__DextEditor";
-        //DEXT5.config.FocusInitObjId = "txtSubject";
-
-        new Dext5editor(_zw.T.editor.id);
-
-        $('.btn[data-zf-menu="toggleEditor"]').click(function () {
-
-        });
+    //양식별로 선언(예:DRAFT.js)
+    _zw.formEx = {
+        //checkEvent(ckb, el, fld), autoCalc(p)
     }
 });
 
