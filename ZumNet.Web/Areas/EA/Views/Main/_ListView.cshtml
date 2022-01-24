@@ -14,6 +14,7 @@
     {
         string sRead = "";
         string strId = "";
+        string strOption = "";
         string sTitle = "";
 
         if (ViewBag.CurBox[2] == "te")
@@ -42,6 +43,8 @@
             sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
             strId = "_" + row["WnID"].ToString();
             sTitle = row["WnDisplay"].ToString();
+            strOption = String.Format(" app=\"{0}^{1}^{2}\" preapp=\"{3}^{4}^{5}^{6}\"", row["AppAlias"].ToString(), row["AppID"].ToString(), row["AppMID"].ToString()
+                                                , row["PreAppAlias"].ToString(), row["PreAppID"].ToString(), row["PreMID"].ToString(), row["PrePIID"].ToString());
         }
         else
         {
@@ -55,7 +58,7 @@
             sTitle = "[" + Resources.Global.Untitled + "]";
         }
 
-        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)" id="@strId">
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)" id="@strId"@strOption>
             <div class="wd-8 wd-lg-4 wd-xl-3 message-checkbox">
                 <label class="custom-control custom-checkbox" data-toggle="tooltip" data-placement="right" title="@Resources.Global.Select">
                     <input type="checkbox" class="custom-control-input">
@@ -75,15 +78,22 @@
                 </div>
             }
             <div class="wd-92 flex-fill text-truncate d-flex align-items-center">
-                @if (ViewBag.CurBox[2] != "do" && row["Priority"].ToString() == "H")
+                @if (ViewBag.CurBox[2] == "do")
                 {
-                    <i class="fas fa-exclamation text-pink text-small mr-1"></i>
+                    <a class="text-truncate" href="javascript:void(0)" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm('app');">@sTitle</a>
                 }
-                @if (ViewBag.CurBox[2] != "do" && row["Secret"].ToString() == "Y")
-                {
-                    <i class="fas fa-unlock-alt text-secondary text-small mr-1"></i>
+                else
+                { 
+                    if (row["Priority"].ToString() == "H")
+                    {
+                        <i class="fas fa-exclamation text-pink text-small mr-1"></i>
+                    }
+                    if (row["Secret"].ToString() == "Y")
+                    {
+                        <i class="fas fa-unlock-alt text-secondary text-small mr-1"></i>
+                    }
+                    <a class="text-truncate" href="javascript:void(0)" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm();">@sTitle</a>
                 }
-                <a class="text-truncate" href="javascript:void(0)" onclick="_zw.fn.openEAForm();">@sTitle</a>
             </div>
 
             <div class="w-100 d-sm-none py-0"></div>
@@ -176,7 +186,7 @@
                         <span class="">@row["RequesterDept"]</span>
                     </div>
                     <div class="wd-25 wd-lg-20 wd-xl-20 text-truncate t-sm text-sm-center pr-2">
-                        <span class="">@row["PreAppDN"]</span>
+                        <a class="text-truncate" href="javascript:void(0)" title="@Server.HtmlEncode(row["PreAppDN"].ToString())" onclick="_zw.fn.openEAForm('preapp');">@row["PreAppDN"]</a>
                     </div>
                     <div class="text-right flex-fill text-truncate pr-1">
                         <span class="d-none d-sm-block">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ViewDate"].ToString())</span>

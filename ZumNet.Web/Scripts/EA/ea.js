@@ -71,7 +71,7 @@ $(function () {
     _zw.fn.viewCount('ea', 'base2', '', 'N');
 
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery(true); //console.log(postData); return;
+        var postData = _zw.fn.getLvQuery(true); //console.log(postData);
         var url = '/EA/Main/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
@@ -96,12 +96,40 @@ $(function () {
                     $('#__ListMenuSearch').html(v[3]);
                     $('#__ListPage').html(v[4]);
 
+                    $('.z-lv-menu .btn[data-zv-menu], .z-lv-search .btn[data-zv-menu]').click(function () {
+                        var mn = $(this).attr('data-zv-menu');
+                        if (mn != '') _zw.mu[mn]();
+                    });
+
+                    $('.z-lv-search input.search-text').keyup(function (e) {
+                        if (e.which == 13) _zw.mu.search();
+                    });
+
                     $('.pagination li a.page-link').click(function () {
                         _zw.mu.search($(this).attr('data-for'));
                     });
 
                     $('.z-lv-cnt select').change(function () {
                         _zw.fn.setLvCnt($(this).val());
+                    });
+
+                    $('.z-lv-hdr a[data-val]').click(function () {
+                        var t = $(this); _zw.V.lv.sort = t.attr('data-val');
+                        $('.z-lv-hdr a[data-val]').each(function () {
+                            if ($(this).attr('data-val') == _zw.V.lv.sort) {
+                                var c = t.find('i');
+                                if (c.hasClass('fe-arrow-up')) {
+                                    c.removeClass('fe-arrow-up').addClass('fe-arrow-down'); _zw.V.lv.sortdir = 'DESC';
+                                } else {
+                                    c.removeClass('fe-arrow-down').addClass('fe-arrow-up'); _zw.V.lv.sortdir = 'ASC';
+                                }
+                            } else {
+                                $(this).find('i').removeClass();
+                            }
+                        });
+                        //console.log('::' + JSON.stringify(_zw.V))
+                        _zw.V.lv.tgt = _zw.V.fdid;
+                        _zw.fn.loadList();
                     });
 
                 } else bootbox.alert(res);
@@ -150,12 +178,11 @@ $(function () {
             $(this).find('i').removeClass();
         });
 
-        var sCnt = _zw.ut.getCookie('eaLvCount');
-        sCnt = $('.z-lv-page select').val();
+        var sCnt = _zw.ut.getCookie('eaLvCount') || $('.z-lv-page select').val();
 
         _zw.V.lv.tgt = tgt;
         _zw.V.lv.page = '1';
-        _zw.V.lv.count = sCnt == '' ? '20' : sCnt;
+        _zw.V.lv.count = sCnt == undefined || sCnt == '' ? '20' : sCnt;
         _zw.V.lv.sort = '';
         _zw.V.lv.sortdir = '';
         _zw.V.lv.search = '';

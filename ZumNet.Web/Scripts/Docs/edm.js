@@ -95,12 +95,11 @@ $(function () {
             $(this).find('i').removeClass();
         });
 
-        var sCnt = _zw.ut.getCookie('docLvCount');
-        sCnt = $('.z-lv-page select').val();
+        var sCnt = _zw.ut.getCookie('docLvCount') || $('.z-lv-page select').val();
 
         _zw.V.lv.tgt = tgt;
         _zw.V.lv.page = '1';
-        _zw.V.lv.count = sCnt == '' ? '20' : sCnt;
+        _zw.V.lv.count = sCnt == undefined || sCnt == '' ? '20' : sCnt;
         _zw.V.lv.sort = 'SeqID';
         _zw.V.lv.sortdir = 'DESC';
         _zw.V.lv.search = '';

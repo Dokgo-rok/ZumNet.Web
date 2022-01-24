@@ -245,7 +245,7 @@ $(function () {
                 $(this).find('i').removeClass();
             }
         });
-
+        //console.log('::' + JSON.stringify(_zw.V))
         _zw.V.lv.tgt = _zw.V.fdid;
         _zw.fn.loadList();
     });
@@ -745,7 +745,7 @@ $(function () {
         "setLvCnt": function (cnt) {
             var cookieName = '';
             if (_zw.V.ctalias == 'ea') cookieName = 'eaLvCount';
-            else if (_zw.V.ctalias == 'doc') cookieName = 'docLvCount';
+            else if (_zw.V.ctalias == 'doc' || _zw.V.ctalias == 'knowledge') cookieName = 'docLvCount';
             else cookieName = 'bbsLvCount';
 
             _zw.V.lv.count = cnt;
@@ -898,13 +898,29 @@ $(function () {
             var url = '/EA/Form?qi=' + _zw.base64.encode('{M:"new",fi:"' + formId + '",xf:"' + xfAlias + '"}');
             _zw.ut.openWnd(url, "eaform", 800, 600, "resize");
         },
-        "openEAForm": function () {
+        "openEAForm": function (opt) {
             var el = event.target, p = el.parentNode.parentNode, vId = p.id.substr(1).split('.'); //console.log(vId)
             var xfAlias = _zw.V.xfalias == '' ? 'ea' : _zw.V.xfalias;
-            var qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",wi:"' + vId[2] + '",xf:"' + xfAlias + '"}'; console.log(qi)
+            var qi = '', eaWndNm = '';
+
+            if (_zw.V.opnode != '') {
+                if (_zw.V.opnode.substr(0, 2) == 'do') {
+
+                } else if (_zw.V.opnode.substr(0, 2) == 'te') {
+                    qi = '{M:"edit",mi:"' + vId[0] + '",xf:"' + xfAlias + '"}'; eaWndNm = 'eaform';
+                } else if (_zw.V.opnode.substr(0, 2) == 'dl' || _zw.V.opnode.substr(0, 2) == 'cf') {
+                    qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",cab:"' + vId[2] + '",xf:"' + xfAlias + '"}'; eaWndNm = '';
+                } else if (_zw.V.opnode.substr(0, 2) == 'wt') {
+                    qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",svc:"' + vId[2] + '",xf:"' + xfAlias + '"}'; eaWndNm = '';
+                } else {
+                    qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",wi:"' + (vId[2] && vId[2] != undefined ? vId[2] : '') + '",xf:"' + xfAlias + '"}'; //console.log(qi)
+                }
+            } else {
+                qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",wi:"' + (vId[2] && vId[2] != undefined ? vId[2] : '') + '",xf:"' + xfAlias + '"}';
+            }
 
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
-            _zw.ut.openWnd(url, "", 800, 600, "resize");
+            _zw.ut.openWnd(url, eaWndNm, 800, 600, "resize");
         },
         "input": function (e, p) {
             if (e) {

@@ -10,8 +10,8 @@
         if (ViewBag.CurBox[2] == "ep" || ViewBag.CurBox[2] == "av" || ViewBag.CurBox[2] == "go")
         {
             <div class="input-group mr-1 z-lv-date">
-                <input type="text" class="form-control wd-lg-60 wd-xl-60" placeholder="@Resources.Global.DocName">
-                <input type="text" class="form-control wd-lg-40 wd-xl-40" placeholder="@Resources.Global.Writer">
+                <input type="text" class="form-control wd-lg-60 wd-xl-60" data-val="DocName" placeholder="@Resources.Global.DocName">
+                <input type="text" class="form-control wd-lg-40 wd-xl-40" data-val="Creator" placeholder="@Resources.Global.Writer">
             </div>
         }
         else
@@ -28,8 +28,41 @@
         <div class="input-group z-lv-search">
             <select class="custom-select">
                 <option value="">@Resources.Global.Select...</option>
-                <option value="">@Resources.Global.Title</option>
-                <option value="">@Resources.Global.Writer</option>
+                @if (ViewBag.CurBox[2] == "ep" || ViewBag.CurBox[2] == "av" || ViewBag.CurBox[2] == "go")
+                {
+                    <option value="MsgType">@Resources.Global.Division</option>
+                    <option value="PIName">@Resources.Global.Title</option>
+                    <option value="CreatorDept">@Resources.Global.WriteDept</option>
+                    <option value="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]</option>
+                }
+                else if (ViewBag.CurBox[2] == "do")
+                {
+                    <option value="WnDisplay">@Resources.Global.Title</option>
+                }
+                else if (ViewBag.CurBox[2] == "te")
+                {
+                    <option value="DocName">@Resources.Global.DocName</option>
+                    <option value="Subject">@Resources.Global.Title</option>
+                    <option value="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]</option>
+                }
+                else if (ViewBag.CurBox[2] == "wd")
+                {
+                    <option value="DocName">@Resources.Global.DocName</option>
+                    <option value="PIName">@Resources.Global.Title</option>
+                    <option value="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]</option>
+                }
+                else
+                {
+                    if (ViewBag.CurBox[2] != "dl" && ViewBag.CurBox[2] != "cf")
+                    {
+                        <option value="MsgType">@Resources.Global.Division</option>
+                    }
+                    <option value="DocName">@Resources.Global.DocName</option>
+                    <option value="PIName">@Resources.Global.Title</option>
+                    <option value="Creator">@Resources.Global.Writer</option>
+                    <option value="CreatorDept">@Resources.Global.WriteDept</option>
+                    <option value="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]</option>
+                }
             </select>
             <input type="text" class="form-control search-text" placeholder="@Resources.Global.Search" value="@ViewBag.R.lv.searchtext">
             <span class="input-group-append">
