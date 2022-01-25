@@ -317,7 +317,7 @@ $(function () {
     });    
 
     //근무 시간 조회
-    if (_zw.V.current && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
+    if (_zw.V.current && _zw.V.current != undefined && _zw.V.current.ws != undefined && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
         _zw.fn.getTotalWorkTime();
     }
 
@@ -901,17 +901,32 @@ $(function () {
         "openEAForm": function (opt) {
             var el = event.target, p = el.parentNode.parentNode, vId = p.id.substr(1).split('.'); //console.log(vId)
             var xfAlias = _zw.V.xfalias == '' ? 'ea' : _zw.V.xfalias;
-            var qi = '', eaWndNm = '';
+            var qi = '', eaWndNm = '', app;
 
             if (_zw.V.opnode != '') {
                 if (_zw.V.opnode.substr(0, 2) == 'do') {
+                    if (opt == 'app') {
+                        app = p.getAttribute("app").split('^');
+                        if (app[0] == 'ea') {
+                            qi = '{M:"new",fi:"' + app[1] + '",wn:"' + p.id.substr(1) + '",xf:"' + xfAlias + '"}';
+
+                        } else if (app[0] == 'tooling' || app[0] == 'ecnplan') {
+                            qi = '{M:"edit",xf:"' + app[0] + '",fi:"' + app[1] + '",mi:"' + app[2] + '",wn:"' + p.id.substr(1) + '"}'; eaWndNm = 'noteaform';
+                        }
+
+                    } else if (opt == 'preapp') {
+                        app = p.getAttribute("preapp").split('^');
+                        if (app[0] == 'ea') {
+                            qi = '{M:"read",mi:"' + app[2] + '",oi:"' + app[3] + '"}';
+                        }
+                    }
 
                 } else if (_zw.V.opnode.substr(0, 2) == 'te') {
                     qi = '{M:"edit",mi:"' + vId[0] + '",xf:"' + xfAlias + '"}'; eaWndNm = 'eaform';
                 } else if (_zw.V.opnode.substr(0, 2) == 'dl' || _zw.V.opnode.substr(0, 2) == 'cf') {
-                    qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",cab:"' + vId[2] + '",xf:"' + xfAlias + '"}'; eaWndNm = '';
+                    qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",cab:"' + vId[2] + '",xf:"' + xfAlias + '"}';
                 } else if (_zw.V.opnode.substr(0, 2) == 'wt') {
-                    qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",svc:"' + vId[2] + '",xf:"' + xfAlias + '"}'; eaWndNm = '';
+                    qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",svc:"' + vId[2] + '",xf:"' + xfAlias + '"}';
                 } else {
                     qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",wi:"' + (vId[2] && vId[2] != undefined ? vId[2] : '') + '",xf:"' + xfAlias + '"}'; //console.log(qi)
                 }

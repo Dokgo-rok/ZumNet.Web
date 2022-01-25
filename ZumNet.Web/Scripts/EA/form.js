@@ -1,6 +1,20 @@
 ﻿//전자결재 메인, 리스트뷰
 
 $(function () {
+
+    if (_zw.V.mode == "read") {
+        $.ajax({
+            type: "POST",
+            url: "/Form/ViewCount",
+            data: '{xf:"' + _zw.V.xfalias + '",mi:"' + _zw.V.appid + '",actor:"' + _zw.V.appid + '",fdid:"' + _zw.V.fdid + '",wi:"' + _zw.V.wid + '",wn:"' + _zw.V.wnid + '"}',
+            success: function (res) {
+                if (res != "OK") bootbox.alert(res);
+            },
+            beforeSend: function () {//pace.js 충돌
+            }
+        });
+    }
+
     var sw = window.screen.availWidth, sh = window.screen.availHeight, w = $('#__FormView .m').outerWidth() + 100;
     //console.log(sw + " : " + sh + " : " + fw)
     if (sw < 860) {
@@ -10,6 +24,8 @@ $(function () {
     } else {
         window.moveTo(sw / 2 - w / 2, 10); window.resizeTo(w, sh - 20);
     }
+
+    //console.log(':::::' + JSON.stringify(_zw.V))
 
     _zw.form = {
         "addUser": function (sub) {
@@ -92,6 +108,9 @@ $(function () {
             }
             if (_zw.formEx.checkEvent) _zw.formEx.checkEvent(ckb, el, fld);
         },
+        "view": function () {
+            
+        }
     }
 
     //양식별로 선언(예:DRAFT.js)

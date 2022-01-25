@@ -2805,6 +2805,7 @@
     <Content Include="External\dext5upload\plugin\nexacro\17\metainfo\KOR\dext5upload.nexacro.meta.info" />
     <Content Include="Areas\EA\Views\Main\NewDocument.cshtml" />
     <Content Include="Areas\EA\Views\Form\Index.cshtml" />
+    <Content Include="Content\Json\jform_ea.json" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

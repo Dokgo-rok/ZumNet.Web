@@ -257,7 +257,7 @@ namespace ZumNet.Web.Bc
 					oCurrentInfo.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();
 
 					strMsg = "XML 값 할당 - 공통정보";
-					oDocInfo.SelectSingleNode("createdate").InnerXml = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+					oDocInfo.SelectSingleNode("createdate").InnerXml = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 					oDocInfo.SelectSingleNode("docname").InnerText = xfDef.DocName;
 
 					if (vEdmInfo != null)
@@ -393,6 +393,7 @@ namespace ZumNet.Web.Bc
                     string formPath = HttpContext.Current.Server.MapPath(Framework.Configuration.Config.Read("EAFormFolder") + "/" + HttpContext.Current.Session["CompanyCode"].ToString() + "/" + xfDef.XslName);
 
                     svcRt.ResultDataDetail["DocName"] = xfDef.DocName;
+                    svcRt.ResultDataDetail["XForm"] = FormHandler.BindEAFormToJson(xfDef, xForm.DocumentElement.SelectSingleNode("//ph_xform_ea"));
                     svcRt.ResultDataString = FileHelper.ConvertXmlToHtml(xForm.OuterXml, formPath);
 				}
 				catch (Exception ex)
@@ -989,6 +990,7 @@ namespace ZumNet.Web.Bc
                     string formPath = HttpContext.Current.Server.MapPath(Framework.Configuration.Config.Read("EAFormFolder") + "/" + HttpContext.Current.Session["CompanyCode"].ToString() + "/" + xfDef.XslName);
 
                     svcRt.ResultDataDetail["DocName"] = xfDef.DocName;
+                    svcRt.ResultDataDetail["XForm"] = FormHandler.BindEAFormToJson(xfDef, xForm.DocumentElement.SelectSingleNode("//ph_xform_ea"));
                     svcRt.ResultDataString = FileHelper.ConvertXmlToHtml(xForm.OuterXml, formPath);
                 }
                 catch (Exception ex)
@@ -1063,6 +1065,513 @@ namespace ZumNet.Web.Bc
                 svcRt.ResultMessage = "해당 하는 양식이 존재 하지 않습니다!";
             }
             return svcRt;
+        }
+        #endregion
+
+        #region [인쇄 양식 불러오기]
+        public ServiceResult LoadPrintForm()
+        {
+            ServiceResult svcRt = new ServiceResult();
+
+            return svcRt;
+        }
+        #endregion
+
+        #region [재사용 양식 불러오기]
+        public ServiceResult LoadReuseForm(string mode, string formID, string oID, string workItemID, string msgID
+                            , string posID, string bizRole, string actRole, string externalKey1, string externalKey2
+                            , string tmsInfo, string workNotice, string xfAlias, string tp)
+        {
+            ServiceResult svcRt = new ServiceResult();
+
+            XFormDefinition xfDef = null;
+            XFormInstance xfInst = null;
+
+            EApprovalDac eaDac = null;
+            ProcessDac procDac = null;
+            WorkList wkList = null;
+            EApproval eaBiz = null;
+
+            DataSet dsForm = null;
+            DataRow rowCorp = null;
+            DataTable dtOptionInfo = null;
+
+            string[] vEdmInfo = null;
+            string strSecurity = "G";//기본 부서 권한
+            string strDocLevel = "";
+            string strKeepYear = "";
+            string strMsgType = ""; //2012-05-09 크레신에서 추가 : 양식별 msgtype 설정
+            string strSchemaInfo = "";  //2011-10-24 추가
+
+            string strCurrentPartID = "";
+
+            string strMsg = "양식 기본 정보 가져오기";
+            try
+            {
+                eaDac = new EApprovalDac(this.ConnectionString);
+                procDac = new ProcessDac(this.ConnectionString);
+                wkList = new WorkList();
+                eaBiz = new EApproval();
+
+                //2014-02-27 열람권한체크 추가
+                if (!eaBiz.CheckAppAcl(xfAlias, Convert.ToInt32(msgID), Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(HttpContext.Current.Session["DeptID"]))) throw new Exception("열람 권한이 없습니다!");
+
+                strMsg = "양식 공통 데이타 가져오기";
+                xfInst = eaDac.SelectXFMainEntity(xfAlias, Convert.ToInt32(msgID));
+
+                if (xfInst == null) throw new Exception("해당하는 양식이 존재 하지 않습니다!");
+
+                strMsg = "양식 기본 정보 가져오기";
+                xfDef = eaDac.GetEAFormData(Convert.ToInt32(HttpContext.Current.Session["DNID"]), xfInst.FormID);
+
+                strMsg = "양식 메인 테이블 데이타 가져오기";
+                dsForm = eaDac.SelectFormData(this._formDB, Convert.ToInt32(msgID), xfDef.MainTable, xfDef.Version, xfDef.SubTableCount);
+
+                strMsg = "사업장 정보 가져오기";
+                rowCorp = eaDac.RetrieveCorpInfo(Convert.ToInt32(HttpContext.Current.Session["OPGroupID"]));
+
+                strMsg = "재기안자가 양식 옵션 정보 가져오기";//2010-09-10 크레신 => 2010-12-26 읽기 양식에서 가져오기로 변경
+                dtOptionInfo = eaDac.GetFormOptionInfo(Convert.ToInt32(HttpContext.Current.Session["DNID"]), xfDef.MainTable.Replace("FORM_", ""));
+
+                strMsg = "스키마 정보";
+                strSchemaInfo = wkList.GetSchemaInfo(xfDef.ProcessID, null, "");   //2011-10-24 추가
+
+                //선도소프트에서 적용
+                if (xfDef.Reserved2 != "")
+                {
+                    vEdmInfo = xfDef.Reserved2.Split(';');
+                    strMsgType = vEdmInfo[0];   //2012-05-09 추가
+                    strSecurity = vEdmInfo[1];
+                    strKeepYear = vEdmInfo[2];
+                    strDocLevel = vEdmInfo[3];
+                }
+                //ResponseText(xfDef.Reserved2); return;
+
+                //재사용 문서는 첨부파일, 이관정보, 관련문서, 결재선 등은 사용 안한다.
+            }
+            catch (Exception ex)
+            {
+                strMsg += Environment.NewLine + ex.Message;
+                ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, strMsg);
+
+                svcRt.ResultCode = -1;
+                svcRt.ResultMessage = strMsg;
+
+                return svcRt;
+            }
+
+            if (xfInst != null)
+            {
+                XmlDocument xForm = null;
+                XmlNode oConfig = null;
+                XmlNode oBizInfo = null;
+                XmlNode oCategoryInfo = null;
+                XmlNode oCreator = null;
+                XmlNode oCurrentInfo = null;    //2011-11-30
+                XmlNode oDocInfo = null;
+                XmlNode oFormInfo = null;
+                XmlNode oOptionInfo = null;
+                XmlNode oSchemaInfo = null; //2011-10-24
+
+                XmlDocument xSubTables = null;
+                XmlNode oSubTable = null;
+
+                try
+                {
+                    strMsg = "XML 객체 생성";
+
+                    xForm = new XmlDocument();
+                    xForm.Load(HttpContext.Current.Server.MapPath(Framework.Configuration.Config.Read("EAFormSchemaPath")));
+
+                    oConfig = xForm.DocumentElement.SelectSingleNode("//config");
+                    oBizInfo = xForm.DocumentElement.SelectSingleNode("//bizinfo");
+                    oCategoryInfo = xForm.DocumentElement.SelectSingleNode("//categoryinfo");
+                    oDocInfo = xForm.DocumentElement.SelectSingleNode("//docinfo");
+                    oCreator = xForm.DocumentElement.SelectSingleNode("//creatorinfo");
+                    oCurrentInfo = xForm.DocumentElement.SelectSingleNode("//currentinfo"); //2011-11-30
+                    oFormInfo = xForm.DocumentElement.SelectSingleNode("//forminfo");
+                    oOptionInfo = xForm.DocumentElement.SelectSingleNode("//optioninfo");
+                    oSchemaInfo = xForm.DocumentElement.SelectSingleNode("//schemainfo");   //2011-10-24
+
+                    strMsg = "XML 값 할당 - 설정정보";
+                    oConfig.Attributes["mode"].Value = "edit";
+                    oConfig.Attributes["root"].Value = "";
+                    oConfig.Attributes["js"].Value = xfDef.JsName;
+                    oConfig.Attributes["css"].Value = xfDef.CssName;
+                    oConfig.Attributes["html"].Value = xfDef.HtmlFile;
+                    oConfig.Attributes["partid"].Value = strCurrentPartID;
+                    oConfig.Attributes["bizrole"].Value = bizRole;
+                    oConfig.Attributes["actrole"].Value = actRole;
+                    oConfig.Attributes["wid"].Value = workItemID; //2012-02-13 추가 (workitemid가 있는 경우)
+                    oConfig.Attributes["companycode"].Value = HttpContext.Current.Session["CompanyCode"].ToString();
+                    oConfig.Attributes["web"].Value = Framework.Configuration.Config.Read("FrontName");  //2010-07-06
+                    oConfig.InnerXml = "<![CDATA[var json={" + ProcessStateChart.JsonParse() + "}]]>";
+
+                    strMsg = "XML 값 할당 - 키정보";
+                    oBizInfo.Attributes["dnid"].Value = HttpContext.Current.Session["DNID"].ToString();
+                    oBizInfo.Attributes["processid"].Value = "";
+                    oBizInfo.Attributes["formid"].Value = xfDef.FormID;
+                    oBizInfo.Attributes["ver"].Value = xfDef.Version.ToString();
+
+                    strMsg = "XML 값 할당 - 작성자";
+                    oCreator.SelectSingleNode("name").InnerXml = "<![CDATA[" + HttpContext.Current.Session["URName"].ToString() + "]]>";
+                    oCreator.SelectSingleNode("empno").InnerXml = HttpContext.Current.Session["empid"].ToString();
+                    oCreator.SelectSingleNode("grade").InnerXml = HttpContext.Current.Session["GRADE1"].ToString();
+                    //oCreator.SelectSingleNode("phone").InnerXml = Session["URName"].ToString();
+                    oCreator.SelectSingleNode("department").InnerXml = "<![CDATA[" + HttpContext.Current.Session["DeptName"].ToString() + "]]>";
+                    oCreator.Attributes["uid"].Value = HttpContext.Current.Session["URID"].ToString();
+                    oCreator.Attributes["account"].Value = HttpContext.Current.Session["LogonID"].ToString();
+                    oCreator.Attributes["deptid"].Value = HttpContext.Current.Session["DeptID"].ToString();
+                    oCreator.Attributes["deptcode"].Value = HttpContext.Current.Session["DeptAlias"].ToString();
+                    oCreator.SelectSingleNode("belong").InnerXml = HttpContext.Current.Session["Belong"].ToString();//2010-12-20 추가, 사이트별로 최상위 조직 또는 법인명을 담기 위해
+                    oCreator.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();//2011-05-03 추가, 입사일
+
+                    if (rowCorp != null)
+                    {
+                        strMsg = "XML 값 할당 - 사업장";
+                        oCreator.InnerXml += String.Format("<corp><domain>{0}</domain><corpcd>{1}</corpcd><corpname>{2}</corpname><addr>{3}</addr><ceo>{4}</ceo><phone>{5}</phone><homepi>{6}</homepi><logo>{7}</logo><logolarge>{8}</logolarge></corp>"
+                                    , rowCorp["Domain"].ToString(), rowCorp["CompanyCode"].ToString(), rowCorp["CompanyName"].ToString(), rowCorp["Address"].ToString(), rowCorp["CEO"].ToString()
+                                    , rowCorp["RepresentPhone"].ToString(), rowCorp["HomePage"].ToString(), rowCorp["Logo_Small"].ToString(), rowCorp["Logo"].ToString());
+                    }
+
+                    strMsg = "XML 값 할당 - 현로그온사용자";
+                    oCurrentInfo.SelectSingleNode("name").InnerXml = "<![CDATA[" + HttpContext.Current.Session["URName"].ToString() + "]]>";
+                    oCurrentInfo.SelectSingleNode("empno").InnerXml = HttpContext.Current.Session["empid"].ToString();
+                    oCurrentInfo.SelectSingleNode("grade").InnerXml = HttpContext.Current.Session["GRADE1"].ToString();
+                    //oCurrentInfo.SelectSingleNode("phone").InnerXml = Session["URName"].ToString();
+                    oCurrentInfo.SelectSingleNode("department").InnerXml = "<![CDATA[" + HttpContext.Current.Session["DeptName"].ToString() + "]]>";
+                    oCurrentInfo.Attributes["uid"].Value = HttpContext.Current.Session["URID"].ToString();
+                    oCurrentInfo.Attributes["account"].Value = HttpContext.Current.Session["LogonID"].ToString();
+                    oCurrentInfo.Attributes["deptid"].Value = HttpContext.Current.Session["DeptID"].ToString();
+                    oCurrentInfo.Attributes["deptcode"].Value = HttpContext.Current.Session["DeptAlias"].ToString();
+                    oCurrentInfo.SelectSingleNode("belong").InnerXml = "<![CDATA[" + HttpContext.Current.Session["Belong"].ToString() + "]]>";
+                    oCurrentInfo.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();
+
+                    strMsg = "XML 값 할당 - 공통정보";
+                    oDocInfo.SelectSingleNode("createdate").InnerXml = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                    oDocInfo.SelectSingleNode("docname").InnerText = xfDef.DocName;
+                    oDocInfo.SelectSingleNode("subject").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.Subject);
+
+                    if (vEdmInfo != null)
+                    {
+                        strMsg = "이관정보";
+                        if (vEdmInfo[1] != "" && vEdmInfo[1] != "0" && vEdmInfo[2] != "" && vEdmInfo[2] != "0")
+                        {
+                            DataRow drDocInfo = eaDac.RetrieveDocData(Convert.ToInt16(HttpContext.Current.Session["DNID"]), Convert.ToInt32(vEdmInfo[3]), Convert.ToInt32(vEdmInfo[2]));
+                            if (drDocInfo != null)
+                            {
+                                oDocInfo.SelectSingleNode("doclevel").InnerXml = drDocInfo["DocLevel"].ToString();
+                                oDocInfo.SelectSingleNode("keepyear").InnerXml = drDocInfo["KeepYear"].ToString();
+                            }
+                            drDocInfo = null;
+                        }
+
+                        string strTransferXml = WorkListHelper.ConvertTransferInfoToXml(vEdmInfo[4]);
+                        if (strTransferXml != "") oCategoryInfo.InnerXml = strTransferXml;
+                        //ResponseText(oCategoryInfo.InnerXml); return;
+                    }
+
+                    strMsg = "XML 값 할당 - 양식정보";
+                    if ((xfDef.SubTableCount > 0) && (xfDef.SubTableDef != String.Empty))
+                    {
+                        xSubTables = new XmlDocument();
+                        xSubTables.LoadXml(xfDef.SubTableDef);
+                    }
+
+                    strMsg = "XML 값 할당 - 옵션정보";
+                    if (oOptionInfo != null && dtOptionInfo != null)
+                    {
+                        string strOption = "";
+                        if (dtOptionInfo != null)
+                        {
+                            strOption = WorkListHelper.ConvertOptionInfoToXml(dtOptionInfo);
+                        }
+                        if (strOption != "") oOptionInfo.InnerXml = strOption;
+                    }
+
+                    DataTable dt = null;
+                    StringBuilder sbTable = new StringBuilder();
+                    StringBuilder sbSubTables = new StringBuilder();
+                    sbTable.Append("<maintable>");
+
+                    for (int x = 0; x < dsForm.Tables.Count; x++)
+                    {
+                        dt = dsForm.Tables[x];
+                        if (x == 0)
+                        {
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                foreach (DataColumn col in dt.Columns)
+                                {
+                                    if ((col.ColumnName != "MessageID") && (row[col.ColumnName].ToString() != ""))
+                                    {
+                                        sbTable.AppendFormat("<{0}><![CDATA[{1}]]></{0}>", col.ColumnName, row[col.ColumnName].ToString());
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (x == 1) sbSubTables.Append("<subtables>");
+                            sbSubTables.AppendFormat("<subtable{0}>", x.ToString());
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                sbSubTables.Append("<row>");
+                                foreach (DataColumn col in dt.Columns)
+                                {
+                                    if ((col.ColumnName != "MessageID") && (row[col.ColumnName].ToString() != ""))
+                                    {
+                                        sbSubTables.AppendFormat("<{0}><![CDATA[{1}]]></{0}>", col.ColumnName, row[col.ColumnName].ToString());
+                                    }
+                                }
+                                sbSubTables.Append("</row>");
+                            }
+
+                            oSubTable = xSubTables.DocumentElement.SelectSingleNode("subtable" + x.ToString());
+                            if (oSubTable != null)
+                            {
+                                for (int y = dt.Rows.Count + 1; y <= Convert.ToInt32(oSubTable.Attributes["cnt"].Value); y++)
+                                {
+                                    sbSubTables.AppendFormat("<row><ROWSEQ>{0}</ROWSEQ></row>", y.ToString());
+                                }
+                            }
+
+                            sbSubTables.AppendFormat("</subtable{0}>", x.ToString());
+                            if (x == dsForm.Tables.Count - 1) sbSubTables.Append("</subtables>");
+                        }
+                    }
+
+                    sbTable.Append("</maintable>");
+                    if (sbTable != null) oFormInfo.InnerXml = sbTable.ToString();
+                    if (sbSubTables != null) oFormInfo.InnerXml += sbSubTables.ToString();
+                    sbTable = null;
+                    sbSubTables = null;
+
+                    if (oSchemaInfo != null && strSchemaInfo != "")
+                    {
+                        strMsg = "스키마정보 구성";
+                        oSchemaInfo.InnerXml = strSchemaInfo;
+                    }
+
+                    strMsg = "HTML 변환";
+                    string formPath = HttpContext.Current.Server.MapPath(Framework.Configuration.Config.Read("EAFormFolder") + "/" + HttpContext.Current.Session["CompanyCode"].ToString() + "/" + xfDef.XslName);
+
+                    svcRt.ResultDataDetail["DocName"] = xfDef.DocName;
+                    svcRt.ResultDataDetail["XForm"] = FormHandler.BindEAFormToJson(xfDef, xForm.DocumentElement.SelectSingleNode("//ph_xform_ea"));
+                    svcRt.ResultDataString = FileHelper.ConvertXmlToHtml(xForm.OuterXml, formPath);
+
+                }
+                catch (Exception ex)
+                {
+                    strMsg += Environment.NewLine + ex;
+
+                    svcRt.ResultCode = -1;
+                    svcRt.ResultMessage = strMsg;
+                }
+                finally
+                {
+                    if (eaDac != null)
+                    {
+                        eaDac.Dispose();
+                        eaDac = null;
+                    }
+
+                    if (procDac != null)
+                    {
+                        procDac.Dispose();
+                        procDac = null;
+                    }
+
+                    if (wkList != null)
+                    {
+                        wkList.Dispose();
+                        wkList = null;
+                    }
+
+                    if (eaBiz != null)
+                    {
+                        eaBiz.Dispose();
+                        eaBiz = null;
+                    }
+
+                    xfDef = null;
+                    xfInst = null;
+
+                    if (dsForm != null) { dsForm.Dispose(); dsForm = null; }
+                    if (dtOptionInfo != null) { dtOptionInfo.Dispose(); dtOptionInfo = null; }
+
+                    xForm = null;
+                    oConfig = null;
+                    oBizInfo = null;
+                    oDocInfo = null;
+                    oCreator = null;
+                    oCurrentInfo = null;
+                    oFormInfo = null;
+                    oOptionInfo = null;
+                    oSchemaInfo = null;
+
+                    xSubTables = null;
+                    oSubTable = null;
+                    rowCorp = null;
+                }
+            }
+            else
+            {
+                strMsg = " 해당 하는 양식이 존재 하지 않습니다!";
+            }
+
+            return svcRt;
+        }
+        #endregion
+
+        #region [결재이외의 양식(예:금형대장) 불러오기]
+        public ServiceResult LoadBFForm(string mode, string xfAlias, string formID, string msgID, string workNotice)
+        {
+            ServiceResult svcRt = new ServiceResult();
+
+            EApprovalDac eaDac = null;
+            ProcessDac procDac = null;
+
+            DataSet dsForm = null;
+            DataSet dsFile = null;
+            DataTable dtOption = null;
+            DataRow rowWorkNotice = null;   //2013-05-10 추가
+
+            string strRelatedId = "";   //2013-05-09 추가 : 관련 결재id, pdm id
+            string strAclType = "";     //2013-05-10 추가
+            int iOId = 0;
+
+            StringBuilder sbXml = new StringBuilder();
+            string strXslPath = "";
+            string strMsg = "";
+
+            XmlDocument xForm = null;
+
+            try
+            {
+                eaDac = new EApprovalDac(this.ConnectionString);
+                procDac = new ProcessDac(this.ConnectionString);
+
+                if (msgID != "" && msgID != "0")
+                {
+                    strMsg = "양식 데이타 가져오기";
+                    dsForm = eaDac.SelectFormDataNotEA(msgID, xfAlias, formID);
+                    //ResponseText(_msgID + " : " + _xfAlias + " : " + _formID); return;
+
+                    if (dsForm == null || dsForm.Tables.Count == 0)
+                    {
+                        throw new Exception("해당하는 양식이 존재 하지 않습니다!");
+                    }
+
+                    if (xfAlias == "tooling")
+                    {
+                        iOId = Convert.ToInt32(dsForm.Tables[0].Rows[0]["fiid"]);
+                        strRelatedId = dsForm.Tables[0].Rows[0]["DOC_OID"].ToString();
+                    }
+                    else if (xfAlias == "ecnplan")
+                    {
+                        //2015-07-08 추가
+                        iOId = Convert.ToInt32(dsForm.Tables[0].Rows[0]["ECNID"]);
+                        strRelatedId = dsForm.Tables[0].Rows[0]["MessageID"].ToString();
+                    }
+                    dsFile = eaDac.SelectAttachFile(Convert.ToInt32(HttpContext.Current.Session["DNID"]), xfAlias, iOId);
+                }
+
+                strMsg = "양식 옵션 정보";
+                dtOption = eaDac.GetFormOptionInfo(Convert.ToInt32(HttpContext.Current.Session["DNID"]), formID);
+
+                if (workNotice != "" && workNotice != "0")
+                {
+                    rowWorkNotice = procDac.SelectWorkItemNotice(long.Parse(workNotice));
+                }
+
+                if (xfAlias == "tooling" && iOId > 0)
+                {
+                    //권한 설정 ==> 2014-07-28 수정 권한을 모두에게 부여
+                    strAclType = "B";
+                    //if (Session["Admin"].ToString() == "Y") strAclType = "A";
+                    //else if (Session["URID"].ToString() == dsForm.Tables[0].Rows[0]["CREATORID"].ToString()
+                    //    || (rowWorkNotice != null && Session["LogonID"].ToString() == rowWorkNotice["PartCode"].ToString())) strAclType = "B";
+                    //else if (Session["URID"].ToString() == dsForm.Tables[0].Rows[0]["CHARGE_USER_ID"].ToString()) strAclType = "C";
+                    //else strAclType = "";
+                }
+
+                strMsg = "기본정보 구성";
+                sbXml.AppendFormat("<ph_xform><config mode=\"{0}\" web=\"{1}\" root=\"{2}\" company=\"{3}\" oid=\"{4}\" relid=\"{5}\" acl=\"{6}\" msgid=\"{7}\" formid=\"{8}\" xfalias=\"{9}\" wnid=\"{10}\"></config>"
+                            , mode, Framework.Configuration.Config.Read("FrontName"), "", HttpContext.Current.Session["CompanyCode"].ToString()
+                            , iOId.ToString(), strRelatedId, strAclType, msgID, formID, xfAlias, workNotice);
+                sbXml.AppendFormat("<current uid=\"{0}\" account=\"{1}\" deptid=\"{2}\" deptcode=\"{3}\" date=\"{4}\">"
+                            , HttpContext.Current.Session["URID"].ToString(), HttpContext.Current.Session["LogonID"].ToString()
+                            , HttpContext.Current.Session["DeptID"].ToString(), HttpContext.Current.Session["DeptAlias"].ToString(), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                sbXml.AppendFormat("<name>{0}</name><depart>{1}</depart><belong>{2}</belong></current>"
+                            , HttpContext.Current.Session["URName"].ToString(), HttpContext.Current.Session["DeptName"].ToString(), HttpContext.Current.Session["Belong"].ToString());
+
+                strMsg = "양식정보 구성";
+                sbXml.Append("<forminfo>");
+                sbXml.Append(ComposeFormData(dsForm));
+                sbXml.Append("</forminfo>");
+
+                strMsg = "양식 옵션 구성";
+                sbXml.Append("<optioninfo>");
+                if (dtOption != null) sbXml.Append(WorkListHelper.ConvertOptionInfoToXml(dtOption));
+                sbXml.Append("</optioninfo>");
+
+                strMsg = "첨부파일 구성";
+                sbXml.Append("<fileinfo>");
+                if (dsFile != null) sbXml.Append(WorkListHelper.ConvertFileInfoToXml(dsFile.Tables[0]));
+                sbXml.Append("</fileinfo>");
+
+                sbXml.Append("</ph_xform>");
+
+                strMsg = "HTML 변환";
+                //strXslPath = Server.MapPath("/" + Application["rootFolderName"].ToString() + "/EA/Forms/HTML/REGISTER_TOOLING.xsl");
+                if (xfAlias == "tooling")
+                {
+                    strXslPath = HttpContext.Current.Server.MapPath(Framework.Configuration.Config.Read("EAFormHtmlPath") + "/REGISTER_TOOLING.xsl");
+                    //strReturn = Utility.ConvertXmlToHtml(sbXml.ToString(), strXslPath);
+                }
+                else if (xfAlias == "ecnplan")
+                {
+                    strXslPath = HttpContext.Current.Server.MapPath(Framework.Configuration.Config.Read("EAFormHtmlPath") + "/REGISTER_ECNPLAN.xsl");
+                }
+
+                xForm = new XmlDocument();
+                xForm.LoadXml(sbXml.ToString());
+
+                svcRt.ResultDataDetail["DocName"] = "";
+                svcRt.ResultDataDetail["XForm"] = FormHandler.BindNotEAFormToJson(xForm.DocumentElement.SelectSingleNode("//ph_xform"));
+                svcRt.ResultDataString = FileHelper.ConvertXmlToHtml(xForm.OuterXml, strXslPath);
+            }
+            catch (Exception ex)
+            {
+                strMsg += Environment.NewLine + ex;
+
+                svcRt.ResultCode = -1;
+                svcRt.ResultMessage = strMsg;
+            }
+            finally
+            {
+                //if (cn != null) { cn.Close(); cn.Dispose(); }
+                if (dsForm != null) { dsForm.Dispose(); dsForm = null; }
+                if (dsFile != null) { dsFile.Dispose(); dsFile = null; }
+                if (dtOption != null) { dtOption.Dispose(); dtOption = null; }
+                rowWorkNotice = null;
+
+                sbXml = null;
+                xForm = null;
+            }
+
+            return svcRt;
+        }
+
+        /// <summary>
+        /// 인쇄 보기
+        /// </summary>
+        /// <param name="postData"></param>
+        private void LoadBFPrintForm()
+        {
+            
         }
         #endregion
 

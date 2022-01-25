@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,6 +22,7 @@ namespace ZumNet.Web.Bc
     /// </summary>
     public static class FormHandler
     {
+        #region [양식 JSON 변환 : 게시판, 문서관리, 지식관리]
         /// <summary>
         /// Form Data Binding
         /// </summary>
@@ -49,7 +51,7 @@ namespace ZumNet.Web.Bc
             if (ctrl.ViewBag.R.xfalias == "bbs" || ctrl.ViewBag.R.xfalias == "notice" || ctrl.ViewBag.R.xfalias == "file") sJsonPath = "~/Content/Json/jform_bbs.json";
             else if (ctrl.ViewBag.R.xfalias == "doc") sJsonPath = "~/Content/Json/jform_doc.json";
             else if (ctrl.ViewBag.R.xfalias == "knowledge") sJsonPath = "~/Content/Json/jform_knowledge.json";
-            else if (ctrl.ViewBag.R.xfalias == "ea") sJsonPath = "~/Content/Json/jform_ea.json";
+            //else if (ctrl.ViewBag.R.xfalias == "ea") sJsonPath = "~/Content/Json/jform_ea.json";
             else sJsonPath = "~/Content/Json/jform_bbs.json"; //xfalias='' 인 경우 일반게시 또는 공지사항으로 적용
 
             try
@@ -248,5 +250,545 @@ namespace ZumNet.Web.Bc
 
             return strReturn;
         }
+        #endregion
+
+        #region [결재 양식 JSON 변환]
+        /// <summary>
+        /// 결재양식 XML => JSON 변환
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="xfDef"></param>
+        /// <param name="formData"></param>
+        /// <returns></returns>
+        public static JObject BindEAFormToJson(Framework.Entities.Flow.XFormDefinition xfDef, XmlNode formData)
+        {
+            JObject jV = null;
+
+            XmlNode oConfig = null;
+            XmlNode oBizInfo = null;
+            XmlNode oDocInfo = null;
+            XmlNode oCategoryInfo = null;
+            XmlNode oCreator = null;
+            XmlNode oCurrentInfo = null;
+            XmlNode oFormInfo = null;
+            XmlNode oFileInfo = null;
+            XmlNode oLinkedDoc = null;
+            XmlNode oProcessInfo = null;
+            XmlNode oOptionInfo = null;
+            XmlNode oSchemaInfo = null;
+
+            XmlNode oNode = null;
+
+            string sPos = "";
+            decimal dSum = 0;
+
+            try
+            {
+                sPos = "100";
+                oConfig = formData.SelectSingleNode("config");
+                oBizInfo = formData.SelectSingleNode("bizinfo");
+                oDocInfo = formData.SelectSingleNode("docinfo");
+                oCategoryInfo = formData.SelectSingleNode("categoryinfo");
+                oCreator = formData.SelectSingleNode("creatorinfo");
+                oCurrentInfo = formData.SelectSingleNode("currentinfo");
+                oFormInfo = formData.SelectSingleNode("forminfo");
+                oFileInfo = formData.SelectSingleNode("fileinfo");
+                oLinkedDoc = formData.SelectSingleNode("linkeddocinfo");
+                oProcessInfo = formData.SelectSingleNode("processinfo");
+                oOptionInfo = formData.SelectSingleNode("optioninfo");
+                oSchemaInfo = formData.SelectSingleNode("schemainfo");
+
+                sPos = "200";
+                using (StreamReader reader = File.OpenText(HttpContext.Current.Server.MapPath("~/Content/Json/jform_ea.json")))
+                {
+                    jV = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+                }
+
+                sPos = "300";
+                jV["mode"] = oConfig.Attributes["mode"].Value;
+                jV["submode"] = oConfig.Attributes["submode"].Value;
+                jV["root"] = oConfig.Attributes["root"].Value;
+                jV["companycode"] = oConfig.Attributes["companycode"].Value;
+                jV["web"] = oConfig.Attributes["web"].Value;
+
+                jV["dnid"] = HttpContext.Current.Session["DNID"].ToString();
+                jV["partid"] = oConfig.Attributes["partid"].Value;
+                jV["biz"] = oConfig.Attributes["bizrole"].Value;
+                jV["act"] = oConfig.Attributes["actrole"].Value;
+                jV["wid"] = oConfig.Attributes["wid"].Value;
+                //jV["wnid"] = "";
+
+                jV["parent"] = oBizInfo.Attributes["parent_oid"].Value;
+                jV["oid"] = oBizInfo.Attributes["oid"].Value;
+                jV["appid"] = oBizInfo.Attributes["msgid"].Value;
+                jV["inherited"] = oBizInfo.Attributes["inherited"].Value;
+                jV["priority"] = oBizInfo.Attributes["priority"].Value;
+                jV["secret"] = oBizInfo.Attributes["secret"].Value;
+                jV["docstatus"] = oBizInfo.Attributes["docstatus"].Value;
+                jV["tms"] = oBizInfo.Attributes["tms"].Value;
+                jV["prevwork"] = oBizInfo.Attributes["prevwork"].Value;
+                jV["nextwork"] = oBizInfo.Attributes["nextwork"].Value;
+                jV["piname"] = oBizInfo.SelectSingleNode("name").InnerText;
+                jV["showline"] = oConfig.Attributes["showline"].Value;
+                jV["boundary"] = CommonUtils.BOUNDARY();
+
+                sPos = "400";
+                jV["def"]["formid"] = xfDef.FormID;
+                jV["def"]["processid"] = xfDef.ProcessID.ToString();
+                jV["def"]["ver"] = xfDef.Version.ToString();
+                jV["def"]["maintable"] = xfDef.MainTable;
+                jV["def"]["subtablecount"] = xfDef.SubTableCount;
+                jV["def"]["iscommon"] = xfDef.IsCommon;
+                jV["def"]["usage"] = xfDef.Usage;
+                jV["def"]["webeditor"] = xfDef.WebEditor;
+                jV["def"]["css"] = xfDef.CssName;
+                jV["def"]["js"] = xfDef.JsName;
+                jV["def"]["html"] = xfDef.HtmlFile;
+                jV["def"]["naming"] = xfDef.ProcessNameString;
+                jV["def"]["validation"] = xfDef.Validation;
+                jV["def"]["rsvd1"] = xfDef.Reserved1;
+
+                sPos = "410";
+                jV["doc"]["docname"] = oDocInfo.SelectSingleNode("docname").InnerText;
+                jV["doc"]["msgtype"] = oDocInfo.SelectSingleNode("msgtype").InnerText;
+                jV["doc"]["docnumber"] = oDocInfo.SelectSingleNode("docnumber").InnerText;
+                jV["doc"]["doclevel"] = oDocInfo.SelectSingleNode("doclevel").InnerText;
+                jV["doc"]["keepyear"] = oDocInfo.SelectSingleNode("keepyear").InnerText;
+                jV["doc"]["subject"] = oDocInfo.SelectSingleNode("subject").InnerText;
+                jV["doc"]["credate"] = oDocInfo.SelectSingleNode("createdate").InnerText;
+                jV["doc"]["pubdate"] = oDocInfo.SelectSingleNode("publishdate").InnerText;
+                jV["doc"]["expdate"] = oDocInfo.SelectSingleNode("expireddate").InnerText;
+               
+                //jV["doc"]["cmntcount"] = oDocInfo.SelectSingleNode("reserved2").InnerText;
+                //jV["doc"]["viewcount"] = oDocInfo.SelectSingleNode("reserved2").InnerText;
+                //jV["doc"]["evalcount"] = oDocInfo.SelectSingleNode("reserved2").InnerText;
+                //jV["doc"]["linkmsg"] = oDocInfo.SelectSingleNode("reserved2").InnerText;
+                //jV["doc"]["transfer"] = oDocInfo.SelectSingleNode("reserved2").InnerText;
+                //jV["doc"]["logging"] = oDocInfo.SelectSingleNode("reserved2").InnerText;
+                jV["doc"]["key1"] = oDocInfo.SelectSingleNode("externalkey1").InnerText;
+                jV["doc"]["key2"] = oDocInfo.SelectSingleNode("externalkey2").InnerText;
+                jV["doc"]["rsvd1"] = oDocInfo.SelectSingleNode("reserved1").InnerText;
+                jV["doc"]["rsvd2"] = oDocInfo.SelectSingleNode("reserved2").InnerText;
+
+                sPos = "420";
+                jV["creator"]["urid"] = oCreator.Attributes["uid"].Value;
+                jV["creator"]["urcn"] = oCreator.Attributes["account"].Value;
+                jV["creator"]["deptid"] = oCreator.Attributes["deptid"].Value;
+                jV["creator"]["deptcd"] = oCreator.Attributes["deptcode"].Value;
+                jV["creator"]["user"] = oCreator.SelectSingleNode("name").InnerText;
+                jV["creator"]["dept"] = oCreator.SelectSingleNode("department").InnerText;
+                jV["creator"]["empno"] = oCreator.SelectSingleNode("empno").InnerText;
+                jV["creator"]["grade"] = oCreator.SelectSingleNode("grade").InnerText;
+                jV["creator"]["phone"] = oCreator.SelectSingleNode("phone").InnerText;
+                jV["creator"]["belong"] = oCreator.SelectSingleNode("belong").InnerText;
+                jV["creator"]["indate"] = oCreator.SelectSingleNode("indate").InnerText;
+
+                sPos = "430";
+                jV["current"]["urid"] = oCurrentInfo.Attributes["uid"].Value;
+                jV["current"]["urcn"] = oCurrentInfo.Attributes["account"].Value;
+                jV["current"]["deptid"] = oCurrentInfo.Attributes["deptid"].Value;
+                jV["current"]["deptcd"] = oCurrentInfo.Attributes["deptcode"].Value;
+                jV["current"]["user"] = oCurrentInfo.SelectSingleNode("name").InnerText;
+                jV["current"]["dept"] = oCurrentInfo.SelectSingleNode("department").InnerText;
+                jV["current"]["empno"] = oCurrentInfo.SelectSingleNode("empno").InnerText;
+                jV["current"]["grade"] = oCurrentInfo.SelectSingleNode("grade").InnerText;
+                jV["current"]["phone"] = oCurrentInfo.SelectSingleNode("phone").InnerText;
+                jV["current"]["belong"] = oCurrentInfo.SelectSingleNode("belong").InnerText;
+                jV["current"]["indate"] = oCurrentInfo.SelectSingleNode("indate").InnerText;
+                jV["current"]["date"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                sPos = "500";
+                oNode = oFormInfo.SelectSingleNode("maintable");
+                if (oNode != null && oNode.HasChildNodes)
+                {
+                    JObject jData = new JObject();
+                    foreach(XmlNode node in oNode.ChildNodes)
+                    {
+                        jData[node.Name] = node.InnerText;
+                    }
+                    jV["form"]["maintable"] = jData;
+                }
+
+                sPos = "510";
+                oNode = oFormInfo.SelectSingleNode("subtables");
+                if (oNode != null && oNode.HasChildNodes)
+                {
+                    int iSub = 0;
+                    JObject jSub = new JObject();
+                    foreach (XmlNode sub in oNode.ChildNodes)
+                    {
+                        iSub++;
+                        JArray jSub2 = new JArray();
+                        foreach (XmlNode sub2 in sub.SelectNodes("row"))
+                        {
+                            JObject jData = new JObject();
+                            foreach (XmlNode node in sub2.ChildNodes)
+                            {
+                                jData[node.Name] = node.InnerText;
+                            }
+                            jSub2.Add(jData);
+                        }
+
+                        jSub["subtable" + iSub.ToString()] = jSub2;
+                    }
+                    jV["form"]["subtables"] = jSub;
+                }
+
+                sPos = "600";
+                oNode = oProcessInfo.SelectSingleNode("signline/lines");
+                if (oNode != null && oNode.HasChildNodes)
+                {
+                    JArray jSub = new JArray();
+                    foreach (XmlNode sub in oNode.ChildNodes)
+                    {
+                        JObject jData = new JObject();
+                        foreach (XmlAttribute attr in sub.Attributes)
+                        {
+                            jData[attr.Name] = attr.Value;
+                        }
+
+                        foreach (XmlNode node in sub.ChildNodes)
+                        {
+                            jData[node.Name] = node.InnerText;
+                        }
+                        jSub.Add(jData);
+                    }
+                    jV["process"]["signline"] = jSub;
+                }
+
+                sPos = "610";
+                oNode = oProcessInfo.SelectSingleNode("attributes");
+                if (oNode != null && oNode.HasChildNodes)
+                {
+                    JArray jSub = new JArray();
+                    foreach (XmlNode sub in oNode.ChildNodes)
+                    {
+                        JObject jData = new JObject();
+                        foreach (XmlAttribute attr in sub.Attributes)
+                        {
+                            jData[attr.Name] = attr.Value;
+                        }
+
+                        foreach (XmlNode node in sub.ChildNodes)
+                        {
+                            jData[node.Name] = node.InnerText;
+                        }
+                        jSub.Add(jData);
+                    }
+                    jV["process"]["attributes"] = jSub;
+                }
+
+                sPos = "620";
+                if (oSchemaInfo != null && oSchemaInfo.HasChildNodes)
+                {
+                    JArray jSub = new JArray();
+                    foreach (XmlNode sub in oSchemaInfo.ChildNodes)
+                    {
+                        JObject jData = new JObject();
+                        foreach (XmlAttribute attr in sub.Attributes)
+                        {
+                            jData[attr.Name] = attr.Value;
+                        }
+
+                        foreach (XmlNode node in sub.ChildNodes)
+                        {
+                            if (node.Name.IndexOf("cdata-section") >= 0) jData["name"] = node.InnerText;
+                            else jData[node.Name] = node.InnerText;
+                        }
+                        jSub.Add(jData);
+                    }
+                    jV["schema"] = jSub;
+                }
+
+                sPos = "700";
+                if (oFileInfo != null && oFileInfo.HasChildNodes)
+                {
+                    dSum = 0;
+                    JArray jSub = new JArray();
+                    foreach (XmlNode sub in oFileInfo.ChildNodes)
+                    {
+                        dSum += Convert.ToDecimal(sub.Attributes["size"].Value);
+                        JObject jData = new JObject();
+                        foreach (XmlAttribute attr in sub.Attributes)
+                        {
+                            jData[attr.Name] = attr.Value;
+                        }
+
+                        foreach (XmlNode node in sub.ChildNodes)
+                        {
+                            jData[node.Name] = node.InnerText;
+                        }
+                        jSub.Add(jData);
+                    }
+                    jV["attachlist"] = jSub;
+                    jV["doc"]["attachcount"] = oFileInfo.ChildNodes.Count;
+                    jV["doc"]["attachsize"] = CommonUtils.StrFileSize(dSum.ToString());
+                }
+                else
+                {
+                    jV["doc"]["attachcount"] = "0";
+                    jV["doc"]["attachsize"] = "";
+                }
+
+                sPos = "710";
+                if (oCategoryInfo != null && oCategoryInfo.HasChildNodes)
+                {
+                    JArray jSub = new JArray();
+                    foreach (XmlNode sub in oCategoryInfo.ChildNodes)
+                    {
+                        JObject jData = new JObject();
+                        foreach (XmlAttribute attr in sub.Attributes)
+                        {
+                            jData[attr.Name] = attr.Value;
+                        }
+
+                        foreach (XmlNode node in sub.ChildNodes)
+                        {
+                            jData[node.Name] = node.InnerText;
+                        }
+                        jSub.Add(jData);
+                    }
+                    jV["category"] = jSub;
+                }
+
+                sPos = "720";
+                if (oLinkedDoc != null && oLinkedDoc.HasChildNodes)
+                {
+                    JArray jSub = new JArray();
+                    foreach (XmlNode sub in oLinkedDoc.ChildNodes)
+                    {
+                        JObject jData = new JObject();
+                        foreach (XmlAttribute attr in sub.Attributes)
+                        {
+                            jData[attr.Name] = attr.Value;
+                        }
+
+                        foreach (XmlNode node in sub.ChildNodes)
+                        {
+                            jData[node.Name] = node.InnerText;
+                        }
+                        jSub.Add(jData);
+                    }
+                    jV["linkeddoc"] = jSub;
+                }
+
+                sPos = "800";
+                if (oOptionInfo != null && oOptionInfo.HasChildNodes)
+                {
+                    string[] vNodeName = { "foption", "foption1", "foption2", "foption3" };
+                    JArray jSub = new JArray();
+                    foreach(string nodeName in vNodeName)
+                    {
+                        foreach (XmlNode sub in oOptionInfo.SelectNodes(nodeName))
+                        {
+                            JObject jData = new JObject();
+                            foreach (XmlAttribute attr in sub.Attributes)
+                            {
+                                jData[attr.Name] = attr.Value;
+                            }
+
+                            foreach (XmlNode node in sub.ChildNodes)
+                            {
+                                jData[node.Name] = node.InnerText;
+                            }
+                            jSub.Add(jData);
+                        }
+                    }
+                    jV["option"] = jSub;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Source = "[" + sPos + "] " + ex.Source;
+                Framework.Exception.ExceptionManager.ThrowException(ex, System.Reflection.MethodInfo.GetCurrentMethod(), "", "");
+            }
+            finally
+            {
+                oConfig = null;
+                oBizInfo = null;
+                oDocInfo = null;
+                oCategoryInfo = null;
+                oCreator = null;
+                oCurrentInfo = null;
+                oFormInfo = null;
+                oFileInfo = null;
+                oLinkedDoc = null;
+                oProcessInfo = null;
+                oOptionInfo = null;
+                oSchemaInfo = null;
+
+                oNode = null;
+            }
+
+            return jV;
+        }
+        #endregion
+
+        #region [금형, ECN 양식 JSON 변환]
+        /// <summary>
+        /// 금형, ECN 양식 XML => JSON 변환
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="xfDef"></param>
+        /// <param name="formData"></param>
+        /// <returns></returns>
+        public static JObject BindNotEAFormToJson(XmlNode formData)
+        {
+            JObject jV = null;
+
+            XmlNode oConfig = null;
+            XmlNode oCurrentInfo = null;
+            XmlNode oFormInfo = null;
+            XmlNode oFileInfo = null;
+            XmlNode oOptionInfo = null;
+            
+            XmlNode oNode = null;
+
+            string sPos = "";
+            decimal dSum = 0;
+
+            try
+            {
+                sPos = "100";
+                oConfig = formData.SelectSingleNode("config");
+                oCurrentInfo = formData.SelectSingleNode("current");
+                oFormInfo = formData.SelectSingleNode("forminfo");
+                oFileInfo = formData.SelectSingleNode("fileinfo");
+                oOptionInfo = formData.SelectSingleNode("optioninfo");
+
+                sPos = "200";
+                jV = JObject.Parse("{\"current\":{},\"form\":{}}");
+
+                sPos = "300";
+                jV["mode"] = oConfig.Attributes["mode"].Value;
+                jV["web"] = oConfig.Attributes["web"].Value;
+                jV["root"] = oConfig.Attributes["root"].Value;
+                jV["companycode"] = oConfig.Attributes["company"].Value;
+                jV["dnid"] = HttpContext.Current.Session["DNID"].ToString();
+                jV["oid"] = oConfig.Attributes["oid"].Value;
+                jV["relid"] = oConfig.Attributes["relid"].Value;
+                jV["appid"] = oConfig.Attributes["msgid"].Value;
+                jV["formid"] = oConfig.Attributes["formid"].Value;
+                jV["xfalias"] = oConfig.Attributes["xfalias"].Value;
+                jV["wnid"] = oConfig.Attributes["wnid"].Value;
+                jV["acl"] = oConfig.Attributes["acl"].Value;
+                
+                sPos = "400";
+                jV["current"]["urid"] = oCurrentInfo.Attributes["uid"].Value;
+                jV["current"]["urcn"] = oCurrentInfo.Attributes["account"].Value;
+                jV["current"]["deptid"] = oCurrentInfo.Attributes["deptid"].Value;
+                jV["current"]["deptcd"] = oCurrentInfo.Attributes["deptcode"].Value;
+                jV["current"]["user"] = oCurrentInfo.SelectSingleNode("name").InnerText;
+                jV["current"]["dept"] = oCurrentInfo.SelectSingleNode("depart").InnerText;
+                jV["current"]["belong"] = oCurrentInfo.SelectSingleNode("belong").InnerText;
+                jV["current"]["date"] = oCurrentInfo.Attributes["date"].Value;
+
+                sPos = "500";
+                oNode = oFormInfo.SelectSingleNode("maintable");
+                if (oNode != null && oNode.HasChildNodes)
+                {
+                    JObject jData = new JObject();
+                    foreach (XmlNode node in oNode.ChildNodes)
+                    {
+                        jData[node.Name] = node.InnerText;
+                    }
+                    jV["form"]["maintable"] = jData;
+                }
+
+                sPos = "510";
+                oNode = oFormInfo.SelectSingleNode("subtables");
+                if (oNode != null && oNode.HasChildNodes)
+                {
+                    int iSub = 0;
+                    JObject jSub = new JObject();
+                    foreach (XmlNode sub in oNode.ChildNodes)
+                    {
+                        iSub++;
+                        JArray jSub2 = new JArray();
+                        foreach (XmlNode sub2 in sub.SelectNodes("row"))
+                        {
+                            JObject jData = new JObject();
+                            foreach (XmlNode node in sub2.ChildNodes)
+                            {
+                                jData[node.Name] = node.InnerText;
+                            }
+                            jSub2.Add(jData);
+                        }
+
+                        jSub["subtable" + iSub.ToString()] = jSub2;
+                    }
+                    jV["form"]["subtables"] = jSub;
+                }
+
+                sPos = "600";
+                if (oFileInfo != null && oFileInfo.HasChildNodes)
+                {
+                    dSum = 0;
+                    JArray jSub = new JArray();
+                    foreach (XmlNode sub in oFileInfo.ChildNodes)
+                    {
+                        dSum += Convert.ToDecimal(sub.Attributes["size"].Value);
+                        JObject jData = new JObject();
+                        foreach (XmlAttribute attr in sub.Attributes)
+                        {
+                            jData[attr.Name] = attr.Value;
+                        }
+
+                        foreach (XmlNode node in sub.ChildNodes)
+                        {
+                            jData[node.Name] = node.InnerText;
+                        }
+                        jSub.Add(jData);
+                    }
+                    jV["attachlist"] = jSub;
+                    jV["attachcount"] = oFileInfo.ChildNodes.Count;
+                    jV["attachsize"] = CommonUtils.StrFileSize(dSum.ToString());
+                }
+                else
+                {
+                    jV["attachcount"] = "0";
+                    jV["attachsize"] = "";
+                }
+
+                sPos = "800";
+                if (oOptionInfo != null && oOptionInfo.HasChildNodes)
+                {
+                    JArray jSub = new JArray();
+                    foreach (XmlNode sub in oOptionInfo.ChildNodes)
+                    {
+                        JObject jData = new JObject();
+                        foreach (XmlAttribute attr in sub.Attributes)
+                        {
+                            jData[attr.Name] = attr.Value;
+                        }
+
+                        foreach (XmlNode node in sub.ChildNodes)
+                        {
+                            jData[node.Name] = node.InnerText;
+                        }
+                        jSub.Add(jData);
+                    }
+                    jV["option"] = jSub;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Source = "[" + sPos + "] " + ex.Source;
+                Framework.Exception.ExceptionManager.ThrowException(ex, System.Reflection.MethodInfo.GetCurrentMethod(), "", "");
+            }
+            finally
+            {
+                oConfig = null;
+                oCurrentInfo = null;
+                oFormInfo = null;
+                oFileInfo = null;
+                oOptionInfo = null;
+
+                oNode = null;
+            }
+
+            return jV;
+        }
+        #endregion
     }
 }

@@ -1,4 +1,4 @@
-﻿
+﻿@using Newtonsoft.Json;
 @{
     Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
 
@@ -9,14 +9,18 @@
     HtmlAgilityPack.HtmlNode bodyNode = doc.DocumentNode.SelectSingleNode("//body");
     HtmlAgilityPack.HtmlNode styleNode = doc.DocumentNode.SelectSingleNode("//style");
 
+    //_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.JForm))}()
 }
 
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
     @Styles.Render("~/Content/Forms/xform.2.0_debug.css")
-    <style type="text/css">
-        @Html.Raw(styleNode.InnerHtml)
-    </style>
+<style type="text/css">
+        @if (styleNode != null)
+        {
+            @Html.Raw(styleNode.InnerHtml)
+        }
+</style>
 }
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
@@ -31,6 +35,8 @@
 
 <script type="text/javascript">
 (function () {
+    _zw.V = @Html.Raw(ViewBag.JForm);
+
     if ($('#__DextUpload').length > 0) {
         DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
 

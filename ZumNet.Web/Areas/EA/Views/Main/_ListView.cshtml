@@ -43,7 +43,7 @@
             sRead = (row["Read"].ToString() == "N") ? " font-weight-bold" : "";
             strId = "_" + row["WnID"].ToString();
             sTitle = row["WnDisplay"].ToString();
-            strOption = String.Format(" app=\"{0}^{1}^{2}\" preapp=\"{3}^{4}^{5}^{6}\"", row["AppAlias"].ToString(), row["AppID"].ToString(), row["AppMID"].ToString()
+            strOption = String.Format(" app={0}^{1}^{2} preapp={3}^{4}^{5}^{6}", row["AppAlias"].ToString(), row["AppID"].ToString(), row["AppMID"].ToString()
                                                 , row["PreAppAlias"].ToString(), row["PreAppID"].ToString(), row["PreMID"].ToString(), row["PrePIID"].ToString());
         }
         else
