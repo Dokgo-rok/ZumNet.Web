@@ -17,7 +17,7 @@
                 string sRead = row["Read"].ToString() == "N" ? " font-weight-bold" : "";
                 string strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["WorkItemID"].ToString();
 
-                <div class="@(iCnt < ViewBag.EA_INBOX.Rows.Count - 1 ? "mb-2" : "")@sRead" id="@strId">
+                <div class="z-lv-row@(iCnt < ViewBag.EA_INBOX.Rows.Count - 1 ? " mb-2" : "")@sRead" id="@strId">
                     <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ReceivedDate"].ToString())</div>
                     <div class="text-truncate">
                         @if (row["Priority"].ToString() == "H")

@@ -899,7 +899,9 @@ $(function () {
             _zw.ut.openWnd(url, "eaform", 800, 600, "resize");
         },
         "openEAForm": function (opt) {
-            var el = event.target, p = el.parentNode.parentNode, vId = p.id.substr(1).split('.'); //console.log(vId)
+            var el = event.target, p = el.parentNode; do { p = p.parentNode; } while (!$(p).hasClass('z-lv-row'));
+            var vId = p.id.substr(1).split('.'); //console.log(vId)
+
             var xfAlias = _zw.V.xfalias == '' ? 'ea' : _zw.V.xfalias;
             var qi = '', eaWndNm = '', app;
 
@@ -917,7 +919,7 @@ $(function () {
                     } else if (opt == 'preapp') {
                         app = p.getAttribute("preapp").split('^');
                         if (app[0] == 'ea') {
-                            qi = '{M:"read",mi:"' + app[2] + '",oi:"' + app[3] + '"}';
+                            qi = '{M:"read",mi:"' + app[2] + '",oi:"' + app[3] + '",xf:"' + xfAlias + '"}';
                         }
                     }
 
