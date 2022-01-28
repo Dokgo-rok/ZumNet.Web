@@ -42,13 +42,15 @@ namespace ZumNet.Web.Controllers
             string result = auth.AuthenticateUser(model.LoginId, model.Password);
             if (result == "OK")
             {
-                string sEncrypt = ZumNet.Framework.Util.SecurityHelper.AESEncryp(model.Password);
+                string sEncrypt = ZumNet.Framework.Util.SecurityHelper.AESEncrypt(model.Password);
                 result = auth.SessionStart(model.LoginId, sEncrypt);
             }
 
             if (result == "OK" || result == "PWC")
             {
                 FormsAuthentication.SetAuthCookie(model.LoginId, false); //세션값이 정상 생성되면 인증권한을 준다.
+
+                //Request.ServerVariables["AUTH_PASSWORD"] = model.Password; //저장 안됨
 
                 return RedirectToAction("AddCheck", "Portal", new { Qi = (result == "PWC" ? result : ""), returnUrl }); //세션 생성 후 추가 작업
             }

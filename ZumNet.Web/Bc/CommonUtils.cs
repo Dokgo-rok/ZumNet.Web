@@ -345,7 +345,7 @@ namespace ZumNet.Web.Bc
         /// <returns></returns>
         public static string CheckDateTime(string date, string format, string exDate)
         {
-            string strReturn = "";
+            string strReturn = exDate;
 
             if (date != null)
             {
@@ -356,9 +356,8 @@ namespace ZumNet.Web.Bc
                         DateTime d = Convert.ToDateTime(date);
                         if (d != null) if (DateTime.Compare(d, Convert.ToDateTime("1900-01-01")) > 0 && DateTime.Compare(d, Convert.ToDateTime("2999-01-01")) < 0) strReturn = d.ToString(format);
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        strReturn = exDate;
                     }
                 }
             }
@@ -1487,7 +1486,7 @@ namespace ZumNet.Web.Bc
                 else
                 {
                     //에러페이지
-                    strReturn = svcRt.ResultMessage;
+                    return svcRt.ResultMessage;
                 }
             }
 

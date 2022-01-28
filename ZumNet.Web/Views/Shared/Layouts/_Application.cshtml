@@ -58,84 +58,6 @@
     <div class="page-loader"><div class="bg-info"></div></div>
     @RenderBody()
 
-    <!-- Modal WorkStatus -->
-    <div class="modal fade" id="popWorkStatus" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content" style="border-radius: .5rem">
-                <div class="modal-header d-flex justify-content-between align-items-center px-4 py-2">
-                    <h5 class="mb-0">@Resources.Global.WorkCond</h5>
-                    <div class="font-weight-bold text-big py-1" id="lblClock">@DateTime.Now.ToString("HH:mm:ss")</div>
-                </div>
-                <div class="modal-body pb-2">
-                    <div class="row d-flex">
-                        @if (ViewBag.R.current["intime"] == "")
-                        {
-                            <div class="col-6 flex-fill text-center">
-                                <h5 class="text-windows mb-2"><i class="mdi mdi-clock-time-nine-outline"></i><span class="ml-1"> @Resources.Global.PlanWorktTime</span></h5>
-                                <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
-                                <h5 class="mb-1 text-secondary">09:00:00</h5>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-6 flex-fill text-center">
-                                <h5 class="text-windows mb-2"><i class="mdi mdi-clock-time-nine-outline"></i><span class="ml-1"> @Resources.Global.WorktTime</span></h5>
-                                <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
-                                <h5 class="mb-1 text-secondary">@ViewBag.R.current["intime"]</h5>
-                            </div>
-                        }
-
-                        @if (ViewBag.R.current["outtime"] == "")
-                        {
-                            <div class="col-6 flex-fill text-center" style="border-left: 2px solid #e2e2e2">
-                                <h5 class="mb-2" style="color: rgb(255, 117, 16)"><i class="mdi mdi-clock-time-five-outline"></i><span class="ml-1"> @Resources.Global.PlanLeaveTime</span></h5>
-                                <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
-                                <h5 class="mb-1 text-secondary">18:00:00</h5>
-                            </div> 
-                        }
-                        else
-                        {
-                            <div class="col-6 flex-fill text-center" style="border-left: 2px solid #e2e2e2">
-                                <h5 class="mb-2" style="color: rgb(255, 117, 16)"><i class="mdi mdi-clock-time-five-outline"></i><span class="ml-1"> @Resources.Global.LeaveTime</span></h5>
-                                <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
-                                <h5 class="mb-1 text-secondary">@ViewBag.R.current["outtime"]</h5>
-                            </div>
-                        }
-                    </div>
-
-                    <hr class="border mx-1 ">
-
-                    <div class="col-12 mt-3 mb-0">
-                        <div class="custom-controls-stacked ml-5 pl-4 pl-md-5">
-                            <label class="custom-control custom-radio h5">
-                                <input name="custom-radio-3" type="radio" class="custom-control-input" checked>
-                                <span class="custom-control-label ml-1">@Resources.Global.InWork</span>
-                            </label>
-                            <label class="custom-control custom-radio h5">
-                                <input name="custom-radio-3" type="radio" class="custom-control-input">
-                                <span class="custom-control-label ml-1">@Resources.Global.InRest</span>
-                            </label>
-                            <label class="custom-control custom-radio h5">
-                                <input name="custom-radio-3" type="radio" class="custom-control-input">
-                                <span class="custom-control-label ml-1">@Resources.Global.InOut</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer d-block">
-                    <div class="d-flex px-2 my-2">
-                        <button type="button" class="flex-fill btn btn-outline-success btn-fill mr-2" onclick="_zw.mu.saveWorkStatus();">@Resources.Global.Save</button>
-                        <button type="button" class="flex-fill btn btn-primary mr-2" onclick="_zw.fn.newEAForm('근태');">@Resources.Global.ComposeForm</button>
-                        <button type="button" class="flex-fill btn btn-default" data-dismiss="modal">@Resources.Global.Close</button>
-                    </div>
-                    <div class="text-center px-2 my-2">
-                        <button class="btn btn-outline-windows btn-block font-weight-bold" onclick="_zw.mu.offwork();">@Resources.Global.OffWork</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Modal Form -->
     <div class="modal fade" id="popForm" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="modal-title" aria-hidden="true" data-width="700">
         <div class="modal-dialog modal-dialog-scrollable">
@@ -172,6 +94,8 @@
         </div>
     </div>
     <div class="modal fade" id="popBlank" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false"></div>
+    <!-- Modal WorkStatus -->
+    <div class="modal fade" id="popWorkStatus" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false"></div>
     <!-- Modal Loader -->
     <div class="modal modal-ajaxloader" id="ajaxLoader" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
@@ -215,6 +139,7 @@
     @Scripts.Render("~/bundle/vendor/js/perfect-scrollbar/perfect-scrollbar")
 
     <!-- Application javascripts -->
+    @Scripts.Render("~/bundle/Vendor/js/moment/moment")
     @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
     @Scripts.Render("~/bundle/js/site")
 

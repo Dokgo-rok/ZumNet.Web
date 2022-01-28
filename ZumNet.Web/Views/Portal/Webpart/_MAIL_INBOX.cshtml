@@ -1,20 +1,31 @@
-﻿@using System.IO;
+﻿@using System.Reflection;
 @using System.Xml;
 @using PhsFEMailEWS.ExchangeWebServices;
 
 @{
     string sRt = "";
+    string sHtml = "";
     string sMailXml = GetMailList(out sRt);
 
     //Response.Write(sError);
 
     if (sRt == "OK")
     {
-        sRt = ZumNet.Framework.Web.HtmlHandler.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
-        //sRt = ZumNet.Framework.Util.FileHelper.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
-    }
+        try
+        {
+            sHtml = ZumNet.Framework.Web.HtmlHandler.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
+            //sRt = ZumNet.Framework.Util.FileHelper.ConvertXmlToHtml(sMailXml, Server.MapPath("~/Views/Portal/Webpart/Html/PortalMailList.xsl"));
+        }
+        catch (Exception ex)
+        {
+            sRt = ex.Message;
+        }
 
-    //Response.Write(SendMail()); // SendMailSimple() ERROR: HTTP 상태 403: Forbidden(으)로 인해 요청하지 못했습니다.
+    }
+    //Response.Write(SendMail());
+    //sRt = "SendMailSimple() ERROR: HTTP 상태 403: Forbidden(으)로 인해 요청하지 못했습니다.";
+    //Request.ServerVariables["AUTH_PASSWORD"] = "123423534657";
+    //Response.Write(Session["LogonPwd"].ToString() + "===" + ZumNet.Framework.Util.SecurityHelper.AESDecrypt(Session["LogonPwd"].ToString())); //
 }
 
 @functions {
@@ -39,7 +50,7 @@
 
             string sRt = oMailWrite.SendMailSimple(sUserID, sPassword, sDomainName, sMailServer, sFrom, sTo, sSubject, sBody, "", out errMsg);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             errMsg += " => " + ex.Message;
         }
@@ -60,10 +71,10 @@
 
         try
         {
-            string sDomainName = "cresyn.com";
-            string sUserID = "byrlee";
-            string sPassword = "P@ssw0rd";
-            string sEWSUrl = @"https://mail.cresyn.com/EWS/exchange.asmx";
+            string sDomainName = ZumNet.Framework.Configuration.Config.Read("DomainName"); //"cresyn.com";
+            string sUserID = "byrlee"; //Session["LogonID"].ToString()
+            string sPassword = "P@ssw0rd"; //Session["LogonPwd"].ToString()
+            string sEWSUrl = ZumNet.Framework.Configuration.Config.Read("MailEWS"); //@"https://mail.cresyn.com/EWS/exchange.asmx";
 
             esb = PhsFEMailEWS.CommonManager.GetExchangeServiceBinding(sUserID, sPassword, sDomainName, sEWSUrl, "ko");
             oMailList = new PhsFEMailEWS.MailListManager();
@@ -82,14 +93,22 @@
         return sRt;
     }
 }
-<div class="z-webpart card">
-    <div class="card-header with-elements">
-        <div class="card-header-title"><i class="fe-mail align-middle mr-1"></i>받은편지함</div>
-        <div class="card-header-elements ml-auto">
-            <a href="javascript:void(0)" class="badge badge-pill badge-primary px-1 pt-1"><i class="fe-plus"></i></a>
+
+<div class="z-webpart card" id="_MAIL_INBOX">
+    @if (sRt != "OK")
+    {
+        @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(sRt), "Portal", "MailBox"))
+    }
+    else
+    {
+        <div class="card-header with-elements">
+            <div class="card-header-title"><i class="fe-mail align-middle mr-1"></i>받은편지함</div>
+            <div class="card-header-elements ml-auto">
+                <a href="javascript:void(0)" class="badge badge-pill badge-primary px-1 pt-1" onclick="_zw.ut.openWnd('@ZumNet.Framework.Configuration.Config.Read("MailOWA")', 'owaWin')"><i class="fe-plus"></i></a>
+            </div>
         </div>
-    </div>
-    <div class="card-body">
-        @Html.Raw(sRt)
-    </div>
+        <div class="card-body" data-owa="@ZumNet.Framework.Configuration.Config.Read("MailOWA")">
+            @Html.Raw(sHtml)
+        </div>
+    }
 </div>

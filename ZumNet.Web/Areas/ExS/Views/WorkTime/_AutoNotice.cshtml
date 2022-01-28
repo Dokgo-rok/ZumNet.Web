@@ -1,0 +1,50 @@
+﻿@using ZumNet.Web.Bc;
+@{
+}
+<div class="modal-dialog modal-sm" style="width: 300px">
+    <div class="modal-content bg-white" style="border-radius: 1rem">
+        <div class="modal-header d-flex justify-content-center align-items-center px-2 py-3">
+            <h5 class="mb-0">::: 근무상태 자동 변경 안내 :::</h5>
+        </div>
+        <div class="modal-body pt-3 pb-0 px-2">
+            <div class="row d-flex">
+                <div class="col-6 flex-fill text-center">
+                    <h5 class="text-windows mb-2"><i class="mdi mdi-clock-time-nine-outline"></i><span class="ml-1"> 팝업시각</span></h5>
+                    <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
+                    <h4 class="mb-1" id="lblPopupTime">@CommonUtils.CheckDateTime(ViewBag.PopTime, "HH:mm:ss", DateTime.Now.ToString("HH:mm:ss"))</h4>
+                </div>
+
+                <div class="col-6 flex-fill text-center" style="border-left: 2px solid #e2e2e2">
+                    <h5 class="mb-2" style="color: rgb(255, 117, 16)"><i class="mdi mdi-clock-time-five-outline"></i><span class="ml-1"> 현재시각</span></h5>
+                    <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
+                    <h4 class="mb-1 text-secondary" id="lblClock">@DateTime.Now.ToString("HH:mm:ss")</h4>
+                </div>
+            </div>
+
+            <hr class="border mx-1 ">
+
+            <div class="col-12 mt-3 mb-0 h5 font-weight-normal" style="line-height: 1.5rem">
+                <div data-for="step1">
+                    <p>* 근무 확인 안내입니다.</p>
+                    <p>5분 내에 "근무중" 버튼을 클릭하지 않으면 "휴식중"으로 자동 전환됩니다.</p>
+                    <h1 class="text-center text-danger"><span id="lblTimer"></span></h1>
+                </div>
+                <div class="mx-2" data-for="step2">
+                    <p>근무 인증이 되지 않아 근무상태가 <span style="color: rgb(255, 117, 16)">"휴식중"</span>으로 자동 변경 되었습니다.</p>
+                    <p class="text-center" style="color: rgb(255, 117, 16)">변경시각 : <span id="lblChangeTime"></span></p>
+                    <p>근무상태를 <span class="text-windows">"근무중"</span>”으로 변경하시겠습니까?</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer d-block">
+            <div class="d-flex text-center px-2 my-2" data-for="step2">
+                <button type="button" class="flex-fill btn btn-success text-big mr-2" onclick="_zw.mu.saveAutoNotice();">예</button>
+                <button type="button" class="flex-fill btn btn-default text-big" data-dismiss="modal">아니오</button>
+            </div>
+            <div class="text-center px-2 my-2" data-for="step1">
+                <button class="btn btn-outline-windows btn-block text-big font-weight-bold" onclick="_zw.mu.saveAutoNotice();">근무중</button>
+            </div>
+        </div>
+    </div>
+</div>

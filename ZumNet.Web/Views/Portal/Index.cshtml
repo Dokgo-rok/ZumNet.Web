@@ -1,10 +1,23 @@
 ﻿@using System;
 @using System.Data;
 @using System.Text;
+@using System.Threading;
 @using Newtonsoft.Json;
 
-@{ ViewBag.Title = Resources.Global.Cresyn + " " + Resources.Global.Groupware; }
 @{
+    ViewBag.Title = Resources.Global.Cresyn + " " + Resources.Global.Groupware;
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+
+    ViewBag.ChartUse = "Y";
+    using (ZumNet.DAL.ExternalDac.PQmDac pb = new ZumNet.DAL.ExternalDac.PQmDac())
+    {
+        //KPI 지표현황_입고기준
+        //ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", DateTime.Now.ToString("yyyy-MM-dd"), "0", 0);
+        ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", "2021-01-01", "0", 0);
+    }
+
     StringBuilder sbChart = new StringBuilder();
 
     if (ViewBag.KPI_A != null)
@@ -20,8 +33,6 @@
             sbChart.Append(RenderChartItem(ViewBag.KPI_A.Tables[0], ViewBag.KPI_A.Tables[1], ViewBag.KPI_A.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
         }
     }
-
-    //Response.Write("--------------------------------------------------" + JsonConvert.SerializeObject(ViewBag.R));
 }
 
 @functions {
@@ -166,7 +177,20 @@
         return sb.ToString();
     }
 }
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/Content/portal.css")
+}
 @section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/Scripts/Controls/portal.js")
+
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
     @if (ViewBag.ChartUse == "Y")
     {
         <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
@@ -176,24 +200,34 @@
         <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
         <script type="text/javascript">@Html.Raw(sbChart.ToString())</script>
     }
-
-
 }
 <div class="">
     <div class="row">
-        <div class="col-12 col-sm-6 mb-3">
+        <div class="d-none d-sm-block col-12 col-lg-6 mb-3 px-2">
+            @Html.Partial("Webpart/_IMG_MAIN")
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3 mb-3 px-2">
+            @Html.Partial("Webpart/_EA_COUNT")
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3 mb-3 px-2">
+            @Html.Partial("Webpart/_CALENDAR_COMPANY")
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-sm-6 mb-3 px-2">
             @Html.Partial("Webpart/_MAIL_INBOX")
         </div>
-        <div class="col-12 col-sm-6 mb-3">
+        <div class="col-12 col-sm-6 mb-3 px-2">
             @Html.Partial("Webpart/_EA_INBOX")
         </div>
     </div>
 
     <div class="row">
-        <div class="col-12 col-sm-6 mb-3">
+        <div class="col-12 col-sm-6 mb-3 px-2">
             @Html.Partial("Webpart/_RECENT_NOTICE")
         </div>
-        <div class="col-12 col-sm-6 mb-3">
+        <div class="col-12 col-sm-6 mb-3 px-2">
             @Html.Partial("Webpart/_RECENT_BOARD")
         </div>
     </div>

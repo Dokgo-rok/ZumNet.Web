@@ -165,11 +165,13 @@ $(function () {
                     success: function (res) {
                         if (res == "OK") window.location.reload();
                         else bootbox.alert(res);
-                    }
+                    },
+                    beforeSend: function () { } //로딩 X
                 });
                 break;
             case "workstatus": //근무상태
-                $('#popWorkStatus').modal('show');
+                //_zw.fn.autoWorkStatus();
+                _zw.fn.openWorkStatus();
                 break;
             case "phonenum": //전화번호 찾기
                 bootbox.alert('준비중!');
@@ -316,19 +318,23 @@ $(function () {
         }).modal();
     });    
 
-    //근무 시간 조회
-    if (_zw.V.current && _zw.V.current != undefined && _zw.V.current.ws != undefined && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
-        _zw.fn.getTotalWorkTime();
-    }
+    //메인창에서만 실행!!!!!
+    if ($('#layout-navbar').length > 0) {
+        //근무 시간 조회, 근무 상태 자동 알림
+        if (_zw.V.current && _zw.V.current != undefined && _zw.V.current.ws != undefined && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
+            _zw.fn.getTotalWorkTime(); _zw.fn.autoWorkStatus();
+            //console.log('timer => getTotalWorkTime + autoWorkStatus')
+        }
 
-    //Browser Resize
-    $(window).resize(function () {
-        //console.log('resize : ' + $(this).height())
-        //if ($('#__DextEditor').length > 0) {//editor position
-        //    _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8;
-        //    $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
-        //}
-    });
+        //Browser Resize
+        $(window).resize(function () {
+            //console.log('resize : ' + $(this).height())
+            //if ($('#__DextEditor').length > 0) {//editor position
+            //    _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8;
+            //    $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+            //}
+        });
+    }
 });
 
 $(function () {
@@ -381,7 +387,7 @@ $(function () {
 
     _zw.V = {}; //사용할 변수, 데이터
 
-    _zw.T = {   //사용할 템플릿
+    _zw.T = {   //사용할 템플릿, 값
         "tree": {
             core: {
                 check_callback: true,
@@ -401,8 +407,7 @@ $(function () {
                         return '{ct:"' + _zw.V.ct + '",selected:"' + node.id + '",seltype:"' + selType + '",lvl:"' + lvl + '",open:"' + openNode + '",acl:"' + acl + '"}'
                     },
                     dataType: 'json',
-                    beforeSend: function () {
-                    },
+                    beforeSend: function () { } //로딩 X
                 }
             },
             plugins: ["types", "wholerow"],
@@ -430,6 +435,15 @@ $(function () {
             "id": "dext5upload",
             "df": "\u000B", //파일구분자
             "da": "\u000C" //속성구분자
+        },
+        "worktime": {
+            "STD_HOUR": [8, 19],//기준 시각
+            "STD_MIN": 15,      //시작 분
+            "STD_ITV": 20,      //간격(분)
+            "STD_LIMIT": 5,     //타이머(분)
+            "STD_TIME": "",     //상태유지 타이머 기준시각
+            "CUR_TIME": "",     //현시각
+            "POP_TIME": ""      //팝업시각
         }
     };
 
@@ -619,10 +633,70 @@ $(function () {
             _zw.ut.openWnd(url, "preview", 800, 600, "resize");
         },
         "saveWorkStatus": function () {
-            alert(1)
+            var n = $('#popWorkStatus input:radio[name="rdoWorkStatus"]:checked');
+            if (n.val() != _zw.V.current["ws"]) {
+                bootbox.confirm("근무상태를 변경하시겠습니까?", function (rt) {
+                    if (rt) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/ExS/WorkTime/StatusEvent",
+                            data: '{ss:"' + n.val() + '"}',
+                            success: function (res) {
+                                if (res.substr(0, 2) == "OK") {
+                                    if (res.substr(2) != '') {
+                                        $('.sidenav-header a[data-navmenu="workstatus"] span:last-child').html(res.substr(2));
+                                    }
+                                    _zw.V.current["ws"] = n.val(); $('#popWorkStatus').modal('hide');
+                                } else bootbox.alert(res);
+                            }
+                        });
+                    }
+                });
+            }
+        },
+        "saveAutoNotice": function (opt) {
+            var ss = opt && opt == 'auto' ? 'B' : 'N';
+            $.ajax({
+                type: "POST",
+                url: "/ExS/WorkTime/StatusEvent",
+                data: '{ss:"' + ss + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        var p = $('#popWorkStatus');
+                        if (opt == 'auto') {
+                            p.find('#lblChangeTime').html(moment().format('HH:mm:ss'));
+                            p.find('div[data-for="step1"]').addClass('d-none');
+                            p.find('div[data-for="step2"]').removeClass('d-none')
+                            p.find('.modal-footer div[data-for="step2"]').addClass('d-flex');
+                        }
+                        if (res.substr(2) != '') {
+                            $('.sidenav-header a[data-navmenu="workstatus"] span:last-child').html(res.substr(2));
+                        }
+                        _zw.V.current["ws"] = ss;
+                        if (opt != 'auto') p.modal('hide');
+
+                    } else {
+                        if (opt != 'auto') bootbox.alert(res);
+                    }
+                },
+                beforeSend: function () { } //로딩 X
+            });
         },
         "offwork": function () {
-            alert(2)
+            bootbox.confirm("퇴근 처리 하시겠습니까?", function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/ExS/WorkTime/StatusEvent",
+                        data: '{ss:"Z",off:"Y"}',
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                window.location.href = "/Account/Logout";
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
         }
     };
 
@@ -638,7 +712,8 @@ $(function () {
                 data: '{xf:"' + _zw.V.xfalias + '",fdid:"' + _zw.V.fdid + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '"}',
                 success: function (res) {
                     if (res != "OK") console.log(res);
-                }
+                },
+                beforeSend: function () { } //로딩 X
             });
         },
         "getTotalWorkTime": function () {
@@ -651,23 +726,22 @@ $(function () {
                         var v = res.substr(2).split('^'), txt = '';
                         var nH = 0, tH = 0, rH = 0, eH = 0;
 
-                        $('#__CalcWorkTime span').each(function (idx, e) {
+                        $('#__CalcWorkTime span[data-for]').each(function (idx, e) {
                             //console.log(idx + ' : ' + $(this).text());
                             if (idx == 0) {
-                                temp = v[idx + 1].split(';'); txt = temp[0] + "시간 " + temp[1] + "분";
+                                temp = v[idx + 1].split(';'); txt = temp[0] + "h " + temp[1] + "m";
                                 nH = _zw.ut.floor(parseFloat(parseInt(temp[0]) * 60 + parseInt(temp[1])) / 60, 1);
 
                             } else if (idx == 1) {
                                 if (v[5].indexOf('.') >= 0) {
-                                    temp = v[5].split('.'); txt = (temp[0] == '' ? "0" : temp[0]) + "시간 " + (parseFloat("0." + temp[1]) * 60).toFixed(0) + "분";
-                                } else txt = (v[5] == '' ? "0" : v[5]) + "시간 0분";
+                                    temp = v[5].split('.'); txt = (temp[0] == '' ? "0" : temp[0]) + "h " + (parseFloat("0." + temp[1]) * 60).toFixed(0) + "m";
+                                } else txt = (v[5] == '' ? "0" : v[5]) + "h 0m";
                                 
                             } else if (idx == 2) {
-                                temp = v[2].split(';'); txt = temp[0] + "시간 " + temp[1] + "분";
+                                temp = v[2].split(';'); txt = temp[0] + "h " + temp[1] + "m";
                                 tH = _zw.ut.floor(parseFloat(parseInt(temp[0]) * 60 + parseInt(temp[1])) / 60, 1);
                             }
-
-                            $(this).html(txt)
+                            $(this).html(txt);
                         });
 
                         rH = _zw.ut.floor(parseFloat(v[3]), 1);
@@ -677,10 +751,104 @@ $(function () {
 
                     } else console.log(res);
                 },
-                beforeSend: function () { //로딩 X
-                }
+                beforeSend: function () { } //로딩 X
             });
             var t = setTimeout(_zw.fn.getTotalWorkTime, 600000); //10분
+        },
+        "autoWorkStatus": function () {
+            _zw.T.worktime["CUR_TIME"] = moment();
+            var y = _zw.T.worktime["CUR_TIME"].year();
+            var M = _zw.T.worktime["CUR_TIME"].month()
+            var d = _zw.T.worktime["CUR_TIME"].date()
+            var h = _zw.T.worktime["CUR_TIME"].hour();
+            var m = _zw.T.worktime["CUR_TIME"].minute();
+            var s = _zw.T.worktime["CUR_TIME"].second();
+
+            //console.log(y + " : " + M + " : " + d + " : " + h + " : " + m + " : " + s);
+            var bOpen = _zw.fn.checkTimeInterval(h, m, s); //bOpen = true;
+            if (_zw.V.current["ws"] == 'N' && bOpen) {
+                _zw.T.worktime["STD_TIME"] = moment([y, M, d, h, m + _zw.T.worktime["STD_LIMIT"], s]);
+                _zw.T.worktime["POP_TIME"] = _zw.T.worktime["CUR_TIME"];
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ExS/WorkTime/AutoNotice",
+                    data: '{ws:"' + _zw.V.current.ws + '",poptime:"' + _zw.T.worktime["POP_TIME"] + '"}',
+                    success: function (res) {
+                        if (res.substr(0, 2) == "OK") {
+                            var p = $('#popWorkStatus');
+                            p.html(res.substr(2)).addClass('modal-fill-in');
+
+                            p.find('div[data-for="step2"]').removeClass('d-flex').addClass('d-none');
+                            p.find('#lblTimer').html(_zw.ut.zero(_zw.T.worktime["STD_LIMIT"]) + ' : 00');
+
+                            //시계
+                            var _clock = setInterval(function () {
+                                p.find('#lblClock').html(moment().format('HH:mm:ss'));
+                            }, 1000);
+
+                            //타이머
+                            var leftTime = _zw.T.worktime["STD_TIME"].unix() - _zw.T.worktime["CUR_TIME"].unix();
+                            var duration = moment.duration(leftTime, 'seconds'); //console.log('1 => ' + duration + " : " + leftTime)
+                            var _timer = setInterval(function () {
+                                if (duration.asSeconds() <= 1 || _zw.T.worktime["CUR_TIME"].unix() >= _zw.T.worktime["STD_TIME"].unix()) {
+                                    clearInterval(_timer);
+                                    _zw.mu.saveAutoNotice('auto');
+                                } else {
+                                    duration = moment.duration(duration.asSeconds() - 1, 'seconds');
+                                    p.find('#lblTimer').html(_zw.ut.zero(duration.minutes()) + ' : ' + _zw.ut.zero(duration.seconds()));
+                                }
+                            }, 1000);
+
+                            p.on('hide.bs.modal', function () {
+                                clearTimeout(_clock); p.html('').removeClass('modal-fill-in');
+                            }).modal();
+
+                        } else bootbox.alert(res);
+                    },
+                    beforeSend: function () { } //로딩 X
+                });
+            }
+            var t = setTimeout(_zw.fn.autoWorkStatus, 1000);
+        },
+        "checkTimeInterval": function (h, m, s) {
+            //return ((h == _zw.T.worktime["STD_HOUR"][0] || h == _zw.T.worktime["STD_HOUR"][1]) && (m + _zw.T.worktime["STD_MIN"]) % _zw.T.worktime["STD_ITV"] == 10 && s == 0) ? true : false;
+            //return ((h == _zw.T.worktime["STD_HOUR"][0] || h == _zw.T.worktime["STD_HOUR"][1]) && (m == 15 || m == 35 || m == 55) && s == 0) ? true : false;
+
+            //return ((m == 5 || m == 15 || m == 25 || m == 35 || m == 45 || m == 55) && s >= 0 && s < 1) ? true : false;
+            //return ((m % 10 == 0) && s >= 0 && s < 1) ? true : false; //테스트용
+		    return ((h == _zw.T.worktime["STD_HOUR"][0]) && (m == 10 || m == 30) && s >= 0 && s < 1) ? true : false;
+        },
+        "openWorkStatus": function () {
+            $.ajax({
+                type: "POST",
+                url: "/ExS/WorkTime/StatusWnd",
+                data: '{ws:"' + _zw.V.current.ws + '",intime:"' + _zw.V.current.intime + '",outtime:"' + _zw.V.current.outtime + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        var p = $('#popWorkStatus');
+                        p.html(res.substr(2));
+
+                        p.find('input:radio[name="rdoWorkStatus"]').click(function () {
+                            p.find('input:radio[name="rdoWorkStatus"]').each(function () {
+                                if ($(this).prop('checked')) $(this).parent().removeClass('text-light font-weight-light');
+                                else $(this).parent().addClass('text-light font-weight-light');
+                            });
+                        });
+
+                        //시계
+                        var _clock = setInterval(function () {
+                            $('#lblClock').html(moment().format('HH:mm:ss'));
+                        }, 1000);
+
+                        p.on('hide.bs.modal', function () {
+                            clearInterval(_clock); p.html('');
+                        }).modal();
+
+                    } else bootbox.alert(res);
+                },
+                beforeSend: function () { } //로딩 X
+            });
         },
         "progBar": function (real, ex) {
             if (real == '' || isNaN(real)) return false;
@@ -710,6 +878,34 @@ $(function () {
 
             if (barLen > 100) barLen = 100;
             $('.progress-bar[data-for="extrahour"]').css('width', barLen + '%');
+        },
+        "getEACount": function (pos, xf, loc, ar, admin) {
+            $.ajax({
+                type: "POST",
+                url: '/EA/Main/Count',
+                data: xf + ',' + loc + ',' + ar + ',' + _zw.V.current.urid + ',' + _zw.V.current.deptid + ',' + admin,
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        var c1 = String.fromCharCode(12);
+                        var c2 = String.fromCharCode(11);
+
+                        var vLoc = res.substr(2).split(c2);
+                        for (var i in vLoc) {
+                            var vCnt = vLoc[i].split(c1);
+                            var tgt = pos == 'webpart' ? $('#_EA_COUNT [data-box="node.' + vCnt[0] + '"]') : $('#__LeftMenu li[data-box="node.' + vCnt[0] + '"]');
+                            //console.log(i + ' : ' + vCnt + ' : ' + tgt.length)
+                            if (tgt.length > 0) {
+                                if (vCnt[1].indexOf('/') < 0) tgt.find('.z-lm-cnt').html('(' + vCnt[1] + ')');
+                                else tgt.find('.z-lm-cnt').html('(<span class="text-danger">' + vCnt[1].split('/')[0] + '</span>/' + vCnt[1].split('/')[1] + ')');
+                            }
+                        }
+
+                    } else console.log(res);
+                },
+                beforeSend: function () { //로딩 X
+                }
+            });
+            //var t = setTimeout("_zw.fn.getEACount('', '" + xf + "', '" + loc + "', '" + ar + "', '" + admin + "')", 60000);
         },
         "getAppQuery": function (tgt) {
             var j = {};
@@ -863,7 +1059,7 @@ $(function () {
                 }
             });
 
-            var v = jFormList.find(
+            var v = jFormList.find( //배열 검색
                 function (e) {
                     if (e.fid === formId) {
                         return true;
@@ -999,6 +1195,10 @@ $(function () {
             var iSub = (c == '') ? 0 : parseFloat(_zw.ut.empty(c)); if (n == '') n = 0;
             if (arguments.length > 2) { for (var i = 2; i < arguments.length; i++) { iSub = (parseFloat(iSub) - parseFloat(_zw.ut.empty(arguments[i]))).toFixed(n); } }
             return iSub;
+        },
+        "zero": function (num) {
+            if (num < 10) { num = "0" + num; }
+            return num;
         },
         "maskInput": function (e) {
             var v = $(e).attr('data-inputmask').split(';'); //alert(v)
@@ -1350,5 +1550,3 @@ $(function () {
         }
     }
 }());
-
-

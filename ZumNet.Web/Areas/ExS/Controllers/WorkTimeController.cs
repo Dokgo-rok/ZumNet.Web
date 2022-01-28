@@ -7,6 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 
 using Newtonsoft.Json.Linq;
+
+using ZumNet.Framework.Util;
 using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
 
@@ -250,6 +252,59 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         }
 
         /// <summary>
+        /// 근무상태창 열기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string StatusWnd()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0 || jPost["ws"].ToString() == "") return "필수값 누락!";
+                if (jPost["ws"].ToString() == "N/A") return "근무관리 해당 없음!";
+
+                ViewBag.WorkStatus = jPost["ws"].ToString();
+                ViewBag.InTime = jPost["intime"].ToString();
+                ViewBag.OutTime = jPost["outtime"].ToString();
+
+                rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_StatusWnd", ViewBag);
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 근무상태 자동알림창 열기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string AutoNotice()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0 || jPost["ws"].ToString() == "") return "필수값 누락!";
+                if (jPost["ws"].ToString() == "N/A") return "근무관리 해당 없음!";
+
+                ViewBag.WorkStatus = jPost["ws"].ToString();
+                ViewBag.PopTime = jPost["poptime"].ToString();
+                //ViewBag.StdTime = jPost["stdtime"].ToString();
+                //ViewBag.AscTime = jPost["asctime"].ToString();
+
+                rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_AutoNotice", ViewBag);
+            }
+            return rt;
+        }
+
+        /// <summary>
         /// 근무상태 이벤트 설정
         /// </summary>
         /// <returns></returns>
@@ -268,19 +323,28 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     return "필수값 누락!";
                 }
 
+                bool bOff = StringHelper.SafeString(jPost["off"]) == "Y" ? true : false;
+
                 string sUA = CommonUtils.UserAgent(Request.ServerVariables["HTTP_USER_AGENT"]);
+                string sWorkStatusText = "";
 
                 ZumNet.Framework.Core.ServiceResult svcRt = null;
                 
                 using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
                 {
-                    svcRt = wtBiz.CreateWorkTimeStatus(Convert.ToInt32(Session["URID"]), DateTime.Now.ToString("yyyy-MM-dd")
-                                                    , jPost["ss"].ToString(), Request.ServerVariables["REMOTE_HOST"], sUA);
+                    svcRt = wtBiz.SetWorkTimeStatus(Convert.ToInt32(Session["URID"]), DateTime.Now.ToString("yyyy-MM-dd")
+                                                , jPost["ss"].ToString(), Request.ServerVariables["REMOTE_HOST"], sUA, bOff);
                 }
 
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
-                    strView = "OK";
+                    if (jPost["ss"].ToString() == "N") sWorkStatusText = Resources.Global.InWork;
+                    else if (jPost["ss"].ToString() == "B") sWorkStatusText = Resources.Global.InRest;
+                    else if (jPost["ss"].ToString() == "O") sWorkStatusText = Resources.Global.InOut;
+                    else if (jPost["ss"].ToString() == "T") sWorkStatusText = Resources.Global.InBiz;
+                    else if (jPost["ss"].ToString() == "E") sWorkStatusText = Resources.Global.InTraining;
+
+                    strView = "OK" + sWorkStatusText;
                 }
                 else
                 {

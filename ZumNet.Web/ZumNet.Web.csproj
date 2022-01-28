@@ -362,6 +362,7 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="Content\portal.css" />
     <Content Include="Content\Forms\CRESYN\FORM_ACCOUNTSVISITREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_ADDCONTACTREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_ADVMONEYREQ_V1.xsl" />
@@ -2004,6 +2005,7 @@
     <Content Include="External\dext5upload\plugin\nexacro\17\DEXT5Upload.ico" />
     <Content Include="External\dext5upload\plugin\nexacro\17\dext5upload.nexacro.html" />
     <Content Include="External\dext5upload\plugin\nexacro\17\dext5upload.nexacro17.js" />
+    <Content Include="Scripts\Controls\portal.js" />
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
@@ -2806,6 +2808,8 @@
     <Content Include="Areas\EA\Views\Main\NewDocument.cshtml" />
     <Content Include="Areas\EA\Views\Form\Index.cshtml" />
     <Content Include="Content\Json\jform_ea.json" />
+    <Content Include="Areas\ExS\Views\WorkTime\_AutoNotice.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_StatusWnd.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -2867,7 +2871,6 @@
     <Content Include="Views\Portal\Webpart\_ERP_KPI.cshtml" />
     <Content Include="Views\Portal\Webpart\_RECENT_NOTICE.cshtml" />
     <Content Include="Views\Portal\Webpart\_RECENT_BOARD.cshtml" />
-    <Content Include="Views\Portal\Webpart\_ERP_KPI_s.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
     <Content Include="Views\Common\_ListCount.cshtml" />
     <Content Include="Views\Common\_ListPagination.cshtml" />
@@ -2889,6 +2892,10 @@
     <Content Include="Views\Board\_Write.cshtml" />
     <Content Include="Views\Board\Modal.cshtml" />
     <Content Include="Views\Shared\_ErrorPopup.cshtml" />
+    <Content Include="Views\Portal\Webpart\_EA_COUNT.cshtml" />
+    <Content Include="Views\Portal\Webpart\_IMG_MAIN.cshtml" />
+    <Content Include="Views\Portal\Webpart\_CALENDAR_COMPANY.cshtml" />
+    <Content Include="Views\Shared\_ErrorInline.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

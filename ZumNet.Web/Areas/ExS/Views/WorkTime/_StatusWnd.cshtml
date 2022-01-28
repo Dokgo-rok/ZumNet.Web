@@ -1,0 +1,77 @@
+﻿@{
+}
+<div class="modal-dialog modal-sm">
+    <div class="modal-content" style="border-radius: .5rem">
+        <div class="modal-header d-flex justify-content-between align-items-center px-4 py-2">
+            <h5 class="mb-0">@Resources.Global.WorkCond</h5>
+            <div class="font-weight-bold text-big py-1" id="lblClock">@DateTime.Now.ToString("HH:mm:ss")</div>
+        </div>
+        <div class="modal-body pb-2">
+            <div class="row d-flex">
+                @if (ViewBag.InTime == "")
+                {
+                    <div class="col-6 flex-fill text-center">
+                        <h5 class="text-windows mb-2"><i class="mdi mdi-clock-time-nine-outline"></i><span class="ml-1"> @Resources.Global.PlanWorktTime</span></h5>
+                        <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
+                        <h4 class="mb-1 text-secondary">09:00:00</h4>
+                    </div> 
+                }
+                else
+                {
+                    <div class="col-6 flex-fill text-center">
+                        <h5 class="text-windows mb-2"><i class="mdi mdi-clock-time-nine-outline"></i><span class="ml-1"> @Resources.Global.WorktTime</span></h5>
+                        <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
+                        <h4 class="mb-1 text-secondary">@ViewBag.InTime</h4>
+                    </div>
+                }
+
+                @if (ViewBag.OutTime == "")
+                {
+                    <div class="col-6 flex-fill text-center" style="border-left: 2px solid #e2e2e2">
+                        <h5 class="mb-2" style="color: rgb(255, 117, 16)"><i class="mdi mdi-clock-time-five-outline"></i><span class="ml-1"> @Resources.Global.PlanLeaveTime</span></h5>
+                        <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
+                        <h4 class="mb-1 text-secondary">18:00:00</h4>
+                    </div> 
+                }
+                else
+                {
+                    <div class="col-6 flex-fill text-center" style="border-left: 2px solid #e2e2e2">
+                        <h5 class="mb-2" style="color: rgb(255, 117, 16)"><i class="mdi mdi-clock-time-five-outline"></i><span class="ml-1"> @Resources.Global.LeaveTime</span></h5>
+                        <p class="text-muted text-big mb-2">@DateTime.Now.ToShortDateString()</p>
+                        <h4 class="mb-1 text-secondary">@ViewBag.OutTime</h4>
+                    </div>
+                }
+            </div>
+
+            <hr class="border mx-1 ">
+
+            <div class="col-12 mt-3 mb-0">
+                <div class="custom-controls-stacked ml-5 pl-4 pl-md-5">
+                    <div class="custom-control custom-radio h4 mb-3@(ViewBag.WorkStatus == "N" ? "" : " text-light font-weight-light")">
+                        <input type="radio" id="rdoWorkStatus01" name="rdoWorkStatus" class="custom-control-input" value="N" @(ViewBag.WorkStatus == "N" ? " checked" : "")>
+                        <label class="custom-control-label ml-1" for="rdoWorkStatus01">@Resources.Global.InWork</label>
+                    </div>
+                    <div class="custom-control custom-radio h4 mb-3@(ViewBag.WorkStatus == "B" ? "" : " text-light font-weight-light")">
+                        <input type="radio" id="rdoWorkStatus02" name="rdoWorkStatus" class="custom-control-input" value="B" @(ViewBag.WorkStatus == "B" ? " checked" : "")>
+                        <label class="custom-control-label ml-1" for="rdoWorkStatus02">@Resources.Global.InRest</label>
+                    </div>
+                    <div class="custom-control custom-radio h4 mb-2@(ViewBag.WorkStatus == "O" ? "" : " text-light font-weight-light")">
+                        <input type="radio" id="rdoWorkStatus03" name="rdoWorkStatus" class="custom-control-input" value="O" @(ViewBag.WorkStatus == "O" ? " checked" : "")>
+                        <label class="custom-control-label ml-1" for="rdoWorkStatus03">@Resources.Global.InOut</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer d-block">
+            <div class="d-flex px-2 my-2">
+                <button type="button" class="flex-fill btn btn-outline-success btn-fill text-big mr-2" onclick="_zw.mu.saveWorkStatus();">@Resources.Global.Save</button>
+                <button type="button" class="flex-fill btn btn-primary text-big mr-2" onclick="_zw.fn.newEAForm('근태');">@Resources.Global.ComposeForm</button>
+                <button type="button" class="flex-fill btn btn-default text-big" data-dismiss="modal">@Resources.Global.Close</button>
+            </div>
+            <div class="text-center px-2 my-2">
+                <button class="btn btn-outline-windows btn-block text-big font-weight-bold" onclick="_zw.mu.offwork();">@Resources.Global.OffWork</button>
+            </div>
+        </div>
+    </div>
+</div>

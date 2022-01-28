@@ -93,6 +93,8 @@ namespace ZumNet.Web.Bc
             HttpContext.Current.Session["CompanyCode"] = Framework.Configuration.Config.Read("CompanyCode");
             HttpContext.Current.Session["Company"] = Framework.Configuration.Config.Read("Company");
 
+            //HttpContext.Current.Request.ServerVariables["AUTH_PASSWORD"] = password; //저장 안됨
+
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
             using (CommonBiz comBiz = new CommonBiz())
@@ -111,6 +113,8 @@ namespace ZumNet.Web.Bc
 
                         if (dr["PerLogon"].ToString() == "Y")
                         {
+                            HttpContext.Current.Session["LogonPwd"] = password; //비번(암호화됨) 저장
+
                             // MemberModel 객체 생성하여 세션에 저장
                             //MemberModel model = new MemberModel(svcRt.ResultDataTable);
                             //HttpContext.Current.Session.Add("UserInfo", model);

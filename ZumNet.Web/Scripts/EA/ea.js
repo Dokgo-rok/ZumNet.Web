@@ -38,37 +38,8 @@ $(function () {
     $('#__NewMessage').click(function () {
         _zw.ut.hideRightBar(); _zw.fn.newEAForm();
     });
-    
-    _zw.fn.viewCount = function (xf, loc, ar, admin) {
-        $.ajax({
-            type: "POST",
-            url: '/EA/Main/Count',
-            data: xf + ',' + loc + ',' + ar + ',' + _zw.V.current.urid + ',' + _zw.V.current.deptid + ',' + admin,
-            success: function (res) {
-                if (res.substr(0, 2) == "OK") {
-                    var c1 = String.fromCharCode(12);
-                    var c2 = String.fromCharCode(11);
 
-                    var vLoc = res.substr(2).split(c2);
-                    for (var i in vLoc) {
-                        var vCnt = vLoc[i].split(c1);
-                        var tgt = $('li[data-box="node.' + vCnt[0] + '"]');
-                        //console.log(i + ' : ' + vCnt + ' : ' + tgt.length)
-                        if (tgt.length > 0) {
-                            if (vCnt[1].indexOf('/') < 0) tgt.find('.z-lm-cnt').html('(' + vCnt[1] + ')');
-                            else tgt.find('.z-lm-cnt').html('(<span class="text-danger">' + vCnt[1].split('/')[0] + '</span>/' + vCnt[1].split('/')[1] + ')');
-                        }
-                    }
-
-                } else console.log(res);
-            },
-            beforeSend: function () { //로딩 X
-            }
-        });
-        //var t = setTimeout("_zw.fn.viewCount('" + xf + "', '" + loc + "', '" + ar + "', '" + admin + "')", 60000);
-    }
-
-    _zw.fn.viewCount('ea', 'base2', '', 'N');
+    _zw.fn.getEACount('', 'ea', 'base2', '', 'N');
 
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true); //console.log(postData);

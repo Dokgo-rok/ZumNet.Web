@@ -27,60 +27,67 @@ namespace ZumNet.Web.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
-            ZumNet.Framework.Core.ServiceResult svcRt = null;
+            //ZumNet.Framework.Core.ServiceResult svcRt = null;
 
-            using (ZumNet.BSL.FlowBiz.WorkList wList = new BSL.FlowBiz.WorkList())
-            {
-                //결재함
-                svcRt = wList.ViewProcessWorkList("av", Convert.ToInt32(Session["DNID"]), "ea", string.Empty, "", Session["URID"].ToString(), 1, 5, "", "ReceivedDate", "DESC", "", "", "", "", Convert.ToInt32(Session["URID"]));
-                if (svcRt != null && svcRt.ResultCode == 0)
-                {
-                    ViewBag.EA_INBOX = svcRt.ResultDataTable;
-                }
-                else
-                {
-                    rt = svcRt.ResultMessage;
-                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-                }
-                rt = null;
-            }
+            //담당 체크 및 문서함 정보
+            //rt = Bc.CtrlHandler.EAInit(this, true, "");
+            //if (rt != "")
+            //{
+            //    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            //}
 
-            using (BoardBiz bb = new BoardBiz())
-            {
-                //공지사항 : RECENT_NOTICE
-                svcRt = bb.GetPortalRecentlyMessageListOfCT(103, 1, 5, "CreateDate", "DESC", "", "", "", "", "notice", Convert.ToInt32(Session["URID"]));
-                if (svcRt != null && svcRt.ResultCode == 0)
-                {
-                    ViewBag.RECENT_NOTICE = svcRt.ResultDataTable;
-                }
-                else
-                {
-                    rt = svcRt.ResultMessage;
-                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-                }
-                rt = null;
+            //using (ZumNet.BSL.FlowBiz.WorkList wList = new BSL.FlowBiz.WorkList())
+            //{
+            //    //결재함
+            //    svcRt = wList.ViewProcessWorkList("av", Convert.ToInt32(Session["DNID"]), "ea", string.Empty, "", Session["URID"].ToString(), 1, 5, "", "ReceivedDate", "DESC", "", "", "", "", Convert.ToInt32(Session["URID"]));
+            //    if (svcRt != null && svcRt.ResultCode == 0)
+            //    {
+            //        ViewBag.EA_INBOX = svcRt.ResultDataTable;
+            //    }
+            //    else
+            //    {
+            //        rt = svcRt.ResultMessage;
+            //        return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            //    }
+            //    rt = null;
+            //}
 
-                //게시판 : RECENT_BOARD
-                svcRt = bb.GetPortalRecentlyMessageListOfCT(103, 1, 5, "CreateDate", "DESC", "", "", "", "", "bbs", Convert.ToInt32(Session["URID"]));
-                if (svcRt != null && svcRt.ResultCode == 0)
-                {
-                    ViewBag.RECENT_BOARD = svcRt.ResultDataTable;
-                }
-                else
-                {
-                    rt = svcRt.ResultMessage;
-                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-                }
-                rt = null;
-            }
+            //using (BoardBiz bb = new BoardBiz())
+            //{
+            //    //공지사항 : RECENT_NOTICE
+            //    svcRt = bb.GetPortalRecentlyMessageListOfCT(103, 1, 5, "CreateDate", "DESC", "", "", "", "", "notice", Convert.ToInt32(Session["URID"]));
+            //    if (svcRt != null && svcRt.ResultCode == 0)
+            //    {
+            //        ViewBag.RECENT_NOTICE = svcRt.ResultDataTable;
+            //    }
+            //    else
+            //    {
+            //        rt = svcRt.ResultMessage;
+            //        return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            //    }
+            //    rt = null;
 
-            ViewBag.ChartUse = "Y";
-            using (ZumNet.DAL.ExternalDac.PQmDac pb = new DAL.ExternalDac.PQmDac())
-            {
-                //KPI 지표현황_입고기준
-                //ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", DateTime.Now.ToString("yyyy-MM-dd"), "0", 0);
-                ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", "2021-01-01", "0", 0);
-            }
+            //    //게시판 : RECENT_BOARD
+            //    svcRt = bb.GetPortalRecentlyMessageListOfCT(103, 1, 5, "CreateDate", "DESC", "", "", "", "", "bbs", Convert.ToInt32(Session["URID"]));
+            //    if (svcRt != null && svcRt.ResultCode == 0)
+            //    {
+            //        ViewBag.RECENT_BOARD = svcRt.ResultDataTable;
+            //    }
+            //    else
+            //    {
+            //        rt = svcRt.ResultMessage;
+            //        return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            //    }
+            //    rt = null;
+            //}
+
+            //ViewBag.ChartUse = "Y";
+            //using (ZumNet.DAL.ExternalDac.PQmDac pb = new DAL.ExternalDac.PQmDac())
+            //{
+            //    //KPI 지표현황_입고기준
+            //    //ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", DateTime.Now.ToString("yyyy-MM-dd"), "0", 0);
+            //    ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", "2021-01-01", "0", 0);
+            //}
 
             //if (svcRt != null && svcRt.ResultCode == 0)
             //{
@@ -98,8 +105,9 @@ namespace ZumNet.Web.Controllers
             return View();
         }
 
+        #region [세션생성 이후 추가 확인 작업]
         /// <summary>
-        /// 세션생성 이후 추가 확인 작업 - 출근 체크 및 비밀번호 변경
+        /// 출근 체크 및 비밀번호 변경
         /// </summary>
         /// <param name="Qi"></param>
         /// <param name="returnUrl"></param>
@@ -194,7 +202,7 @@ namespace ZumNet.Web.Controllers
                     //2021-11-24 출근하기 로그인으로 대체
                     if (dicStatus["WorkStatus"] == "A")
                     {
-                        svcRt = wtBiz.CreateWorkTimeStatus(Convert.ToInt32(Session["URID"]), DateTime.Now.ToString("yyyy-MM-dd")
+                        svcRt = wtBiz.SetWorkTimeStatus(Convert.ToInt32(Session["URID"]), DateTime.Now.ToString("yyyy-MM-dd")
                                                     , dicStatus["WorkStatus"].ToString(), Request.ServerVariables["REMOTE_ADDR"], sUA);
                     }
                     wtBiz.Dispose();
@@ -223,7 +231,13 @@ namespace ZumNet.Web.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(ex, this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
         }
+        #endregion
 
+        #region [기타 + 유틸함수]
+        /// <summary>
+        /// SSO
+        /// </summary>
+        /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
         public ActionResult SSOerp()
@@ -277,5 +291,6 @@ namespace ZumNet.Web.Controllers
             }
             return RedirectToAction("Index", "Portal");
         }
+        #endregion
     }
 }

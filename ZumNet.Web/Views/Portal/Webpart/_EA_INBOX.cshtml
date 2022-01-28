@@ -1,36 +1,57 @@
-﻿@using System.Data;
+﻿@using System;
+@using System.Data;
+@using System.Web.Mvc;
 
-<div class="z-webpart card">
-    <div class="card-header with-elements">
-        <div class="card-header-title"><i class="fe-edit mr-1"></i>결재함</div>
-        <div class="card-header-elements ml-auto">
-            <a href="javascript:void(0)" class="badge badge-pill badge-primary px-1 pt-1"><i class="fe-plus"></i></a>
+@{
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+    using (ZumNet.BSL.FlowBiz.WorkList wList = new ZumNet.BSL.FlowBiz.WorkList())
+    {
+        //결재함
+        svcRt = wList.ViewProcessWorkList("av", Convert.ToInt32(Session["DNID"]), "ea", string.Empty, "", Session["URID"].ToString(), 1, 5, "", "ReceivedDate", "DESC", "", "", "", "", Convert.ToInt32(Session["URID"]));
+    }
+
+    string sDel = "/";
+    string[] vBox = { "u", "node.av", "av", "", "av" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxToApprove, Resources.Global.Date_Receive, "Y", "Y" };
+}
+<div class="z-webpart card" id="_EA_INBOX">
+    @if (svcRt == null || svcRt.ResultCode != 0)
+    {
+        @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Portal", "결재함"))
+    }
+    else
+    {
+        <div class="card-header with-elements">
+            <div class="card-header-title"><i class="fe-edit mr-1"></i>결재함</div>
+            <div class="card-header-elements ml-auto">
+                <a href="javascript:void(0)" class="badge badge-pill badge-primary px-1 pt-1" title="@vBox[6]" data-box="@vBox[1]" data-location="@vBox[4]"><i class="fe-plus"></i></a>
+            </div>
         </div>
-    </div>
-    <div class="card-body">
-        @if (ViewBag.EA_INBOX != null && ViewBag.EA_INBOX.Rows.Count > 0)
-        {
-            int iCnt = 0;
-
-            foreach (DataRow row in ViewBag.EA_INBOX.Rows)
+        <div class="card-body">
+            @if (svcRt.ResultDataTable != null && svcRt.ResultDataTable.Rows.Count > 0)
             {
-                string sRead = row["Read"].ToString() == "N" ? " font-weight-bold" : "";
-                string strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["WorkItemID"].ToString();
+                int iCnt = 0;
 
-                <div class="z-lv-row@(iCnt < ViewBag.EA_INBOX.Rows.Count - 1 ? " mb-2" : "")@sRead" id="@strId">
-                    <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ReceivedDate"].ToString())</div>
-                    <div class="text-truncate">
-                        @if (row["Priority"].ToString() == "H")
-                        {
-                            <i class="fe-info text-danger"></i>
-                        }
-                        
-                        <a class="text-truncate" href="javascript:void(0)" onclick="_zw.fn.openEAForm();">@row["PIName"].ToString()</a>
+                foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                {
+                    string sRead = row["Read"].ToString() == "N" ? " font-weight-bold" : "";
+                    string strId = "_" + row["MessageID"].ToString() + "." + row["OID"].ToString() + "." + row["WorkItemID"].ToString();
+
+                    <div class="z-lv-row@(iCnt < svcRt.ResultDataTable.Rows.Count - 1 ? " mb-2" : "")@sRead" id="@strId">
+                        <div class="float-right text-secondary">@ZumNet.Web.Bc.CommonUtils.LvDate(row["ReceivedDate"].ToString())</div>
+                        <div class="text-truncate">
+                            @if (row["Priority"].ToString() == "H")
+                            {
+                                <i class="fe-info text-danger"></i>
+                            }
+
+                            <a class="text-truncate" href="javascript:void(0)" onclick="_zw.fn.openEAForm();">@row["PIName"].ToString()</a>
+                        </div>
                     </div>
-                </div>
 
-                iCnt++;
+                    iCnt++;
+                }
             }
-        }
-    </div>
+        </div>
+    }
 </div>

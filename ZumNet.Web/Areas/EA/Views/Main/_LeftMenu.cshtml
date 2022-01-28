@@ -98,8 +98,8 @@
                         if (ViewBag.Box[i, 0] == "d")
                         {
                             if ((ViewBag.Box[i, 1] == "node.as" && ViewBag.FormCharger)
-                                                || (ViewBag.Box[i, 1] == "node.__r" && (ViewBag.RcvManager || ViewBag.R.current["operator"].ToString() == "Y"))
-                                                || ViewBag.Box[i, 1] != "node.as" || ViewBag.Box[i, 1] != "node.__r")
+                                || (ViewBag.Box[i, 1] == "node.__r" && (ViewBag.RcvManager || ViewBag.R.current["operator"].ToString() == "Y"))
+                                || ViewBag.Box[i, 1] != "node.as" || ViewBag.Box[i, 1] != "node.__r")
                             {
                                 <li class="sidenav-item@(ViewBag.Box[i, 9] == "Y" ? " font-weight-bold" : "")@(ViewBag.R["opnode"] == ViewBag.Box[i, 4] ? " active" : "")" data-box="@ViewBag.Box[i, 1]" data-location="@ViewBag.Box[i, 4]">
                                     <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.Box[i, 6]">
