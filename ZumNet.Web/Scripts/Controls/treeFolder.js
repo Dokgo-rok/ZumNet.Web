@@ -311,12 +311,33 @@ $(function () {
             } else if (n.li_attr.objecttype == 'L') { //링크
                 if (n.a_attr.url.indexOf('http://') >= 0 || n.a_attr.url.indexOf('https://') >= 0) {
                     window.location.href = n.a_attr.url;
+                } else if (n.a_attr.url.toLowerCase().indexOf('extensionservice/pqm') >= 0) { //PQm
+                    var vPath = n.a_attr.url.split('/');
+                    var ft = vPath[vPath.length - 1].split('.')[0].toUpperCase(); //alert(ft)
+
+                    if (_zw.V.current.page.toLowerCase() == '/exs/pqm') {
+                        _zw.V.ot = n.li_attr.objecttype;
+                        _zw.V.alias = n.li_attr.alias;
+                        _zw.V.xfalias = n.li_attr.xfalias;
+                        _zw.V.fdid = vId[vId.length - 1];
+                        _zw.V.current.acl = n.li_attr.acl;
+                        _zw.V.opnode = n.id;
+                        _zw.V.ft = ft;
+                        _zw.V.ttl = ttl;
+
+                        _zw.fn.initLv(_zw.V.current.urid);
+                        _zw.fn.loadList();
+                    } else {
+                        encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + ft + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                        window.location.href = '/ExS/PQm?qi=' + encQi;
+                    }
+
                 } else {
                     //alert(n.li_attr.alias + " : " + n.a_attr.url)
                     if (n.li_attr.alias == "ea.form.select") {
                         bootbox.alert('준비중!');
                     } else if (n.li_attr.alias == "ea.form.report") {
-                        console.log(ttl);
+                        //console.log(ttl);
                         if (_zw.V.current.page.toLowerCase() == '/report') {
                             _zw.V.ot = n.li_attr.objecttype;
                             _zw.V.alias = n.li_attr.alias;

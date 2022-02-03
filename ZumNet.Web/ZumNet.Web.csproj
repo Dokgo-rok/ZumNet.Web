@@ -264,9 +264,6 @@
     <Reference Include="ZumNet.BSL.ServiceBiz">
       <HintPath>..\..\Library\BSL\bin\Debug\ZumNet.BSL.ServiceBiz.dll</HintPath>
     </Reference>
-    <Reference Include="ZumNet.DAL.ExternalDac">
-      <HintPath>..\..\Library\DAL\bin\Debug\ZumNet.DAL.ExternalDac.dll</HintPath>
-    </Reference>
     <Reference Include="ZumNet.DAL.FlowDac">
       <HintPath>..\..\Library\DAL\bin\Debug\ZumNet.DAL.FlowDac.dll</HintPath>
     </Reference>
@@ -2009,6 +2006,7 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
+    <Content Include="Scripts\ExS\pqm.js" />
     <Content Include="Scripts\ExS\worktime.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\Report\report.js" />
@@ -2026,6 +2024,7 @@
     <Content Include="Temp\ph_up_BaseUpdateURDetail1Info.sql" />
     <Content Include="Temp\ph_up_BaseUpdateURDetail2Info.sql" />
     <Content Include="Temp\ph_up_BFChangeProcessActivityStep.sql" />
+    <Content Include="Vendor\libs\chartjs\chartjs-plugin-labels.min.js" />
     <Content Include="Views\Portal\Webpart\Html\PortalMailList.xsl" />
     <Content Include="Content\site.css" />
     <Content Include="External\FusionChartsXT\js\fusioncharts.charts.js" />
@@ -2810,6 +2809,8 @@
     <Content Include="Content\Json\jform_ea.json" />
     <Content Include="Areas\ExS\Views\WorkTime\_AutoNotice.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_StatusWnd.cshtml" />
+    <Content Include="Areas\ExS\Views\PQm\_INVKPI.cshtml" />
+    <Content Include="Areas\ExS\Views\PQm\_ListMenu.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -2896,6 +2897,7 @@
     <Content Include="Views\Portal\Webpart\_IMG_MAIN.cshtml" />
     <Content Include="Views\Portal\Webpart\_CALENDAR_COMPANY.cshtml" />
     <Content Include="Views\Shared\_ErrorInline.cshtml" />
+    <Content Include="Views\Portal\Webpart\_ERP_KPI_S.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

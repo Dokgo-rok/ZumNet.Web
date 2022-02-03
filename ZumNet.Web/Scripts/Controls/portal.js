@@ -46,5 +46,19 @@
         window.location.href = '/Board/List?qi=' + _zw.base64.encode(qi);
     });
 
+    $('#_EKP_KPI .card-header-elements a').click(function (e) {
+        e.preventDefault();
+
+        var qi = '{ct:"292",ctalias:"improvement",fdid:14396,ot:"L",alias:"",xfalias:"",ttl:"",opnode:"0.0.14396",ft:"INVKPI"}'
+        window.location.href = '/ExS/PQm?qi=' + _zw.base64.encode(qi);
+    });
+
+    $('#_EKP_KPI_S .card-header-elements a').click(function (e) {
+        e.preventDefault();
+
+        var qi = '{ct:"292",ctalias:"improvement",fdid:14423,ot:"L",alias:"",xfalias:"",ttl:"",opnode:"0.0.14423",ft:"INVKPI_S"}'
+        window.location.href = '/ExS/PQm?qi=' + _zw.base64.encode(qi);
+    });
+
     _zw.fn.getEACount('webpart', 'ea', 'base2', '', 'N');
 });

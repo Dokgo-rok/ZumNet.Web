@@ -9,18 +9,22 @@
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
-
     ViewBag.ChartUse = "Y";
-    using (ZumNet.DAL.ExternalDac.PQmDac pb = new ZumNet.DAL.ExternalDac.PQmDac())
+
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+    ZumNet.Framework.Core.ServiceResult svcRt2 = null;
+
+    using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new ZumNet.BSL.InterfaceBiz.PQmBiz())
     {
         //KPI 지표현황_입고기준
         //ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", DateTime.Now.ToString("yyyy-MM-dd"), "0", 0);
-        ViewBag.KPI_A = pb.Get_INV_NEW_KPI("C", "2021-01-01", "0", 0);
+        svcRt = pqmBiz.Get_INV_NEW_KPI("C", "2021-01-01", "0", 0);
+        svcRt2 = pqmBiz.Get_INV_NEW_KPI_S("C", "2021-01-01", "0", 0);
     }
 
     StringBuilder sbChart = new StringBuilder();
 
-    if (ViewBag.KPI_A != null)
+    if (svcRt != null && svcRt.ResultCode == 0)
     {
         string[] vInv = "과입고율(%)^KPIB^%^^%;선입고일(일)^KPIC^일^^일;과입고금액(만불)^KPID^만불^$^;자동발주율(%)^KPIA^%^^%".Split(';');
         int iStart = 0;
@@ -30,13 +34,32 @@
         {
             string[] v = vInv[i].Split('^');
 
-            sbChart.Append(RenderChartItem(ViewBag.KPI_A.Tables[0], ViewBag.KPI_A.Tables[1], ViewBag.KPI_A.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
+            //sbChart.Append(RenderFusionChartItem(ViewBag.KPI_A.Tables[0], ViewBag.KPI_A.Tables[1], ViewBag.KPI_A.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
+            sbChart.Append(RenderChartItem(svcRt.ResultDataSet.Tables[0], svcRt.ResultDataSet.Tables[1], svcRt.ResultDataSet.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
+        }
+    }
+    else
+    {
+        //ViewBag.Error = 
+    }
+
+    if (svcRt2 != null && svcRt2.ResultCode == 0)
+    {
+        string[] vInv = "과보유율(%)^KPIE^%^^%;과보유금액(만불)^KPIG^만불^$^".Split(';');
+        int iStart = 0;
+        int iInterval = 1;
+
+        for (int i = iStart; i < vInv.Length; i = i + iInterval)
+        {
+            string[] v = vInv[i].Split('^');
+
+            sbChart.Append(RenderChartItem(svcRt2.ResultDataSet.Tables[0], svcRt2.ResultDataSet.Tables[1], svcRt2.ResultDataSet.Tables[2], (i + 5).ToString(), v[1], v[0], "", "", ""));
         }
     }
 }
 
 @functions {
-    private string RenderChartItem(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
+    private string RenderFusionChartItem(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
     {
         DataRow dr = null;
         DataRow dr2 = null;
@@ -176,6 +199,135 @@
 
         return sb.ToString();
     }
+
+    private string RenderChartItem(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
+    {
+        DataRow dr = null;
+        DataRow dr2 = null;
+        DataRow[] rowList = null;
+        double dTotal = 0;    //과입고금액 주차별 총합
+        int iCL = (inv == "KPIA") ? 1 : 0;    //19-04-08 CL 자동발주율 일시 막기 위함
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("var chartJS{0} = new Chart(document.getElementById('chart-container{0}').getContext('2d'),", no);
+        sb.Append("{");
+        sb.Append("type: \"bar\",");
+        sb.Append("data: {");
+        sb.Append("labels: [");
+        for (int i = 0; i < dtCorp.Rows.Count - iCL; i++)
+        {
+            dr = dtCorp.Rows[i];
+            sb.AppendFormat("\"{0}\"", dr["CORP"].ToString());
+
+            if (i <= dtCorp.Rows.Count - 1 - iCL - 1) sb.Append(",");
+
+            if (inv == "KPID" && i == dtCorp.Rows.Count - 1)
+            {
+                sb.AppendFormat(",\"{0}\"", "TOTAL");
+            }
+        }
+        dr = null;
+        sb.Append("],"); //labels
+
+        sb.Append("datasets: [");
+
+        for (int i = 0; i < dtPeriod.Rows.Count; i++)
+        {
+            dTotal = 0;
+            dr = dtPeriod.Rows[i];
+            sb.Append("{");
+            sb.AppendFormat("label: \"{0}주차\",", dr["IWEEK"].ToString());
+            sb.Append("data: [");
+
+            for (int j = 0; j < dtCorp.Rows.Count - iCL; j++)
+            {
+                dr2 = dtCorp.Rows[j];
+                rowList = dtData.Select("CORP='" + dr2["CORP"].ToString() + "' AND IYEAR='" + dr["IYEAR"].ToString() + "' AND IWEEK='" + dr["IWEEK"].ToString() + "'");
+
+                if (rowList != null && rowList.Length > 0)
+                {
+                    sb.AppendFormat("\"{0}\"", Convert.ToDouble(rowList[0][inv]).ToString());
+                    if (inv == "KPID") dTotal += Convert.ToDouble(rowList[0][inv]);
+                }
+                else
+                {
+                    sb.Append("\"0\"");
+                    if (inv == "KPID") dTotal += 0;
+                }
+
+                if (j <= dtCorp.Rows.Count - 1 - iCL - 1) sb.Append(",");
+            }
+            if (inv == "KPID") sb.AppendFormat(",\"{0}\"", dTotal.ToString());
+            sb.Append("],");
+
+            sb.Append("borderWidth: 1,");
+            if (i == 0)
+            {
+                sb.Append("backgroundColor: 'rgba(76, 175, 80, 0.3)',");
+                sb.Append("borderColor: '#4caf50'");
+            }
+            else if (i == 1)
+            {
+                sb.Append("backgroundColor: 'rgba(0, 150, 136, 0.3)',");
+                sb.Append("borderColor: '#009688'");
+            }
+            else
+            {
+                sb.Append("backgroundColor: 'rgba(103, 58, 183, 0.3)',");
+                sb.Append("borderColor: '#673ab7'");
+            }
+
+            if (i == dtPeriod.Rows.Count - 1) sb.Append("}");
+            else sb.Append("},");
+        }
+        dr = null;
+
+        sb.Append("]"); //dataset
+        sb.Append("},"); //data
+
+        sb.Append("\"options\": {");
+        sb.Append("responsive: true,");
+        sb.Append("maintainAspectRatio: false,");
+        sb.Append("title: {");
+        sb.Append("display: true,");
+        sb.AppendFormat("text: \"{0}\",", invText);
+        //sb.Append("padding: 0,");
+        sb.AppendFormat("padding: {0},", Convert.ToInt32(no) == 3 || Convert.ToInt32(no) == 4 ? "10" : "0");
+        sb.Append("lineHeight: 2,");
+        sb.Append("fontSize: 12,");
+        sb.Append("fontColor: 'rgba(24,28,33,0.9)'");
+        sb.Append("},");
+        //sb.Append("layout: {");
+        //sb.Append("padding: {");
+        //sb.Append("left: 0,");
+        //sb.Append("right: 0,");
+        //sb.Append("top: 0,");
+        //sb.Append("bottom: 0");
+        //sb.Append("}");
+        //sb.Append("},");
+        sb.Append("legend: {");
+        sb.Append("position: 'bottom',");
+        sb.Append("labels: {");
+        //sb.Append("fontSize: 10");
+        sb.Append("boxWidth: 20,");
+        sb.Append("padding: 6");
+        sb.Append("}");
+        sb.Append("},");
+        sb.Append("plugins: {");
+        sb.Append("labels: {");
+        sb.Append("render: 'value'");
+        //sb.Append("fontSize: 10");
+        sb.Append("}");
+        sb.Append("}");
+        sb.Append("}"); //options
+        sb.Append("});");
+
+        dr = null;
+        dr2 = null;
+        rowList = null;
+
+        return sb.ToString();
+    }
 }
 
 @section Styles {
@@ -184,22 +336,22 @@
 }
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
-    @Scripts.Render("~/Scripts/Controls/portal.js")
+    @Scripts.Render("~/bundle/vendor/js/chartjs/chartjs")
 
+    <script src="/vendor/libs/chartjs/chartjs-plugin-labels.min.js" charset="utf-8"></script>
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
-        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="utf-8"></script>
     }
 
-    @if (ViewBag.ChartUse == "Y")
-    {
-        <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
+    @Scripts.Render("~/Scripts/Controls/portal.js")
+
+    @*<script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
         <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>
-        <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.charts.js"></script>
+        <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.charts.js"></script>*@
 
-        <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
-        <script type="text/javascript">@Html.Raw(sbChart.ToString())</script>
-    }
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+    <script type="text/javascript">(function () { Chart.defaults.global.defaultFontSize = 10; @Html.Raw(sbChart.ToString())}());</script>
 }
 <div class="">
     <div class="row">
@@ -232,5 +384,33 @@
         </div>
     </div>
 
-    @Html.Partial("Webpart/_ERP_KPI")
+    @if (svcRt == null || svcRt.ResultCode != 0)
+    {
+        <div class="row">
+            <div class="col-12 mb-3">
+                <div class="z-webpart card">
+                    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Portal", "결재함"))
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @Html.Partial("Webpart/_ERP_KPI")
+    }
+
+    @if (svcRt2 == null || svcRt2.ResultCode != 0)
+    {
+        <div class="row">
+            <div class="col-12 mb-3">
+                <div class="z-webpart card">
+                    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt2.ResultMessage), "Portal", "결재함"))
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @Html.Partial("Webpart/_ERP_KPI_S")
+    }
 </div>

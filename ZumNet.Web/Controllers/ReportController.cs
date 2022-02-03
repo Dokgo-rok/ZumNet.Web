@@ -38,7 +38,7 @@ namespace ZumNet.Web.Controllers
             string formTable = ViewBag.R.ft.ToString();
 
             ViewBag.R.lv["page"] = "1";
-            ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("docLvCount").ToString();
+            ViewBag.R.lv["count"] = Bc.CommonUtils.GetLvCookie("doc").ToString();
 
             //초기 설정
             rt = Bc.CtrlHandler.ReportInit(this, iCategoryId, iFolderId, Request["qi"].ToString());
