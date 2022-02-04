@@ -447,6 +447,9 @@ $(function () {
         }
     };
 
+    _zw.C = []; //사용되는 차트 배열
+    _zw.G = null; //사용되는 그리드
+
     //메뉴
     _zw.mu = {
         "refresh": function () {

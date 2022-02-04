@@ -359,6 +359,7 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="Content\pqm.css" />
     <Content Include="Content\portal.css" />
     <Content Include="Content\Forms\CRESYN\FORM_ACCOUNTSVISITREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_ADDCONTACTREQ_V1.xsl" />
@@ -2811,6 +2812,7 @@
     <Content Include="Areas\ExS\Views\WorkTime\_StatusWnd.cshtml" />
     <Content Include="Areas\ExS\Views\PQm\_INVKPI.cshtml" />
     <Content Include="Areas\ExS\Views\PQm\_ListMenu.cshtml" />
+    <Content Include="Areas\ExS\Views\PQm\_INVKPI_S.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

@@ -61,24 +61,26 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                 }
             }
 
+            ViewBag.R["lv"]["start"] = StringHelper.SafeString(ViewBag.R["lv"]["start"].ToString(), DateTime.Now.ToString("yyyy-MM-dd"));
             if (formTable == "INVKPI")
             {
                 using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new BSL.InterfaceBiz.PQmBiz())
                 {
-                    svcRt = pqmBiz.Get_INV_NEW_KPI("A", "2021-01-01", "0", 0);
+                    svcRt = pqmBiz.Get_INV_NEW_KPI("A", ViewBag.R["lv"]["start"].ToString(), "0", 0);
                 }
             }
             else if (formTable == "INVKPI_S")
             {
                 using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new BSL.InterfaceBiz.PQmBiz())
                 {
-                    svcRt = pqmBiz.Get_INV_NEW_KPI_S("A", "2021-01-01", "0", 0);
+                    svcRt = pqmBiz.Get_INV_NEW_KPI_S("A", ViewBag.R["lv"]["start"].ToString(), "0", 0);
                 }
             }
 
             if (svcRt != null && svcRt.ResultCode == 0)
             {
                 ViewBag.BoardList = svcRt.ResultDataSet;
+                ViewBag.Mode = "";
             }
             else
             {
@@ -110,6 +112,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     int iCategoryId = Convert.ToInt32(jPost["ct"]);
                     int iFolderId = Convert.ToInt32(jPost["fdid"]);
                     string formTable = jPost["ft"].ToString();
+                    jPost["lv"]["start"] = StringHelper.SafeString(jPost["lv"]["start"].ToString(), DateTime.Now.ToString("yyyy-MM-dd"));
 
                     //초기 설정
                     sPos = "300";
@@ -124,7 +127,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                         sPos = "400";
                         using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new BSL.InterfaceBiz.PQmBiz())
                         {
-                            svcRt = pqmBiz.Get_INV_NEW_KPI("A", "2021-01-01", "0", 0);
+                            svcRt = pqmBiz.Get_INV_NEW_KPI("A", jPost["lv"]["start"].ToString(), "0", 0);
                         }
                     }
                     else if (formTable == "INVKPI_S")
@@ -132,7 +135,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                         sPos = "410";
                         using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new BSL.InterfaceBiz.PQmBiz())
                         {
-                            svcRt = pqmBiz.Get_INV_NEW_KPI_S("A", "2021-01-01", "0", 0);
+                            svcRt = pqmBiz.Get_INV_NEW_KPI_S("A", jPost["lv"]["start"].ToString(), "0", 0);
                         }
                     }
 
@@ -140,19 +143,11 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     {
                         sPos = "510";
                         ViewBag.BoardList = svcRt.ResultDataSet;
+                        ViewBag.Mode = "ajax";
 
-                        //sPos = "520";
-                        //string sPatialView = "_" + formTable;
-                        //if (!System.IO.File.Exists(Server.MapPath("~/Views/Report/" + sPatialView + ".cshtml")))
-                        //{
-                        //    sPatialView = "_ListCommon";
-                        //}
+                        sPos = "520";
 
-                        //rt = "OK" + RazorViewToString.RenderRazorViewToString(this, sPatialView, ViewBag)
-                        //        + jPost["lv"]["boundary"].ToString()
-                        //        + RazorViewToString.RenderRazorViewToString(this, "_ListMenu", ViewBag)
-                        //        + jPost["lv"]["boundary"].ToString()
-                        //        + RazorViewToString.RenderRazorViewToString(this, "_ListPagination", ViewBag);
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_" + formTable, ViewBag);
                     }
                     else
                     {
@@ -167,6 +162,66 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             }
 
             return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string KpiTable()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0)
+                    {
+                        return "전송 데이터 누락!";
+                    }
+                    else if (StringHelper.SafeString(jPost["ft"]) == "" || StringHelper.SafeString(jPost["year"]) == "" || StringHelper.SafeString(jPost["week"]) == "")
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    if (jPost["ft"].ToString() == "INVKPI")
+                    {
+                        using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new BSL.InterfaceBiz.PQmBiz())
+                        {
+                            svcRt = pqmBiz.Get_INV_NEW_KPI("T", DateTime.Now.ToString("yyyy-MM-dd"), jPost["year"].ToString(), StringHelper.SafeInt(jPost["week"]));
+                        }
+                    }
+                    else if (jPost["ft"].ToString() == "INVKPI_S")
+                    {
+                        using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new BSL.InterfaceBiz.PQmBiz())
+                        {
+                            svcRt = pqmBiz.Get_INV_NEW_KPI_S("T", DateTime.Now.ToString("yyyy-MM-dd"), jPost["year"].ToString(), StringHelper.SafeInt(jPost["week"]));
+                        }
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.BoardList = svcRt.ResultDataSet;
+                        ViewBag.Mode = "table";
+
+                        strView = "OK" + RazorViewToString.RenderRazorViewToString(this, "_" + jPost["ft"].ToString(), ViewBag);
+                    }
+                    else
+                    {
+                        strView = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    strView = ex.Message;
+                }
+            }
+
+            return strView;
         }
     }
 }

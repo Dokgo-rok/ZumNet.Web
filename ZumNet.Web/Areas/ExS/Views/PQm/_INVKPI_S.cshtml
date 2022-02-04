@@ -9,7 +9,7 @@
     {
         if (ViewBag.BoardList != null && ViewBag.BoardList.Tables.Count > 0)
         {
-            string[] vInv = "과입고율(%)^KPIB^%^^%;선입고일(일)^KPIC^일^^일;과입고금액(만불)^KPID^만불^$^;자동발주율(%)^KPIA^%^^%".Split(';');
+            string[] vInv = "과보유율(%)^KPIE^%^^%;과보유금액(만불)^KPIG^만불^$^".Split(';');
 
             sbChart.Append("[");
             for (int i = 0; i < vInv.Length; i++)
@@ -17,7 +17,7 @@
                 string[] v = vInv[i].Split('^');
 
                 sbChart.AppendFormat("{0}", i > 0 ? "," : "");
-                sbChart.Append(RenderChartItem(ViewBag.BoardList.Tables[0], ViewBag.BoardList.Tables[1], ViewBag.BoardList.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
+                sbChart.Append(RenderChartItem_S(ViewBag.BoardList.Tables[0], ViewBag.BoardList.Tables[1], ViewBag.BoardList.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
             }
             sbChart.Append("]");
 
@@ -79,9 +79,8 @@
             {
                 sb.Append("<table class=\"table table-bordered\">");
                 sb.Append("<colgroup>");
-                sb.Append("<col width=\"4.6%\" /><col width=\"17.2%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" />");
-                sb.Append("<col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" />");
-                sb.Append("<col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" /><col width=\"4.6%\" />");
+                sb.Append("<col width=\"6.5%\" /><col width=\"22%\" /><col width=\"6.5%\" /><col width=\"6.5%\" /><col width=\"6.5%\" /><col width=\"6.5%\" /><col width=\"6.5%\" />");
+                sb.Append("<col width=\"6.5%\" /><col width=\"6.5%\" /><col width=\"6.5%\" /><col width=\"6.5%\" /><col width=\"6.5%\" /><col width=\"6.5%\" />");
                 sb.Append("</colgroup>");
                 sb.Append("<thead>");
                 sb.Append("<tr>");
@@ -89,21 +88,19 @@
                 sb.Append("<th rowspan=\"2\" class=\"bb-bold br-bold\">Description</th>");
                 foreach (DataRow dr in dtCorp.Rows)
                 {
-                    if (dr["CORP"].ToString() != "VW") //2020-11-06 CL->VW
+                    if (dr["CORP"].ToString() != "CL")
                     {
-                        sb.AppendFormat("<th colspan=\"4\" class=\"table-warning br-bold\">{0}</th>", dr["CORP"].ToString());
+                        sb.AppendFormat("<th colspan=\"2\" class=\"table-warning br-bold\">{0}</th>", dr["CORP"].ToString());
                     }
                 }
-                sb.Append("<th rowspan=\"2\" class=\"bb-bold\">총과입고<br />금액</th>");
+                sb.Append("<th rowspan=\"2\" class=\"bb-bold\">총과보유<br />금액</th>");
                 sb.Append("</tr>");
 
                 sb.Append("<tr>");
-                for (int i = 0; i < dtCorp.Rows.Count - 1; i++)
+                for (int i = 0; i < dtCorp.Rows.Count; i++)
                 {
-                    sb.Append("<th class=\"bb-bold\">과입고율</th>");
-                    sb.Append("<th class=\"bb-bold\">선입고일</th>");
-                    sb.Append("<th class=\"bb-bold\">과입고금액</th>");
-                    sb.Append("<th class=\"bb-bold br-bold\">자동발주율</th>");
+                    sb.Append("<th class=\"bb-bold\">과보유율</th>");
+                    sb.Append("<th class=\"bb-bold br-bold\">과보유금액</th>");
                 }
                 sb.Append("</tr>");
                 sb.Append("</thead>");
@@ -119,22 +116,18 @@
                 sb.Append("<td colspan=\"2\" class=\"br-bold\">총 합계</td>");
                 foreach (DataRow dr in dtCorp.Rows)
                 {
-                    if (dr["CORP"].ToString() != "VW") //2020-11-06 CL->VW
+                    if (dr["CORP"].ToString() != "CL") //2020-11-06 CL->VW
                     {
                         rowList = dtInvWeek.Select("CORP='" + dr["CORP"].ToString() + "'");
                         if (rowList != null && rowList.Length > 0)
                         {
-                            sb.AppendFormat("<td>{0}</td>", rowList[0]["KPIB"].ToString());
-                            sb.AppendFormat("<td>{0}</td>", rowList[0]["KPIC"].ToString());
-                            sb.AppendFormat("<td>{0}</td>", rowList[0]["KPID"].ToString());
-                            sb.AppendFormat("<td class=\"br-bold\">{0}</td>", rowList[0]["KPIA"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", rowList[0]["KPIE"].ToString());
+                            sb.AppendFormat("<td class=\"br-bold\">{0}</td>", rowList[0]["KPIG"].ToString());
 
-                            dTotal += Convert.ToDouble(rowList[0]["KPID"]);
+                            dTotal += Convert.ToDouble(rowList[0]["KPIG"]);
                         }
                         else
                         {
-                            sb.Append("<td>&nbsp;</td>");
-                            sb.Append("<td>&nbsp;</td>");
                             sb.Append("<td>&nbsp;</td>");
                             sb.Append("<td class=\"br-bold\">&nbsp;</td>");
                             dTotal += 0;
@@ -156,23 +149,19 @@
 
                     foreach (DataRow r in dtCorp.Rows)
                     {
-                        if (r["CORP"].ToString() != "VW") //2020-11-06 CL->VW
+                        if (r["CORP"].ToString() != "CL")
                         {
                             rowList = dtInvKpi.Select("INVCAT='" + dr["INVCAT"].ToString() + "' AND CORP='" + r["CORP"].ToString() + "'");
 
                             if (rowList != null && rowList.Length > 0)
                             {
-                                sb.AppendFormat("<td>{0}</td>", rowList[0]["KPIB"].ToString());
-                                sb.AppendFormat("<td>{0}</td>", rowList[0]["KPIC"].ToString());
-                                sb.AppendFormat("<td>{0}</td>", rowList[0]["KPID"].ToString());
-                                sb.AppendFormat("<td class=\"br-bold\">{0}</td>", rowList[0]["KPIA"].ToString());
+                                sb.AppendFormat("<td>{0}</td>", rowList[0]["KPIE"].ToString());
+                                sb.AppendFormat("<td class=\"br-bold\">{0}</td>", rowList[0]["KPIG"].ToString());
 
-                                dTotal += Convert.ToDouble(rowList[0]["KPID"]);
+                                dTotal += Convert.ToDouble(rowList[0]["KPIG"]);
                             }
                             else
                             {
-                                sb.Append("<td>&nbsp;</td>");
-                                sb.Append("<td>&nbsp;</td>");
                                 sb.Append("<td>&nbsp;</td>");
                                 sb.Append("<td class=\"br-bold\">&nbsp;</td>");
                                 dTotal += 0;
@@ -194,7 +183,7 @@
 
     }
 
-    private string RenderChartItem(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
+    private string RenderChartItem_S(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
     {
         DataRow dr = null;
         DataRow dr2 = null;
@@ -212,7 +201,7 @@
 
             if (i <= dtCorp.Rows.Count - 1 - iCL - 1) sb.Append(",");
 
-            if (inv == "KPID" && i == dtCorp.Rows.Count - 1)
+            if (inv == "KPIG" && i == dtCorp.Rows.Count - 1)
             {
                 sb.AppendFormat(",\"{0}\"", "TOTAL");
             }
@@ -238,17 +227,17 @@
                 if (rowList != null && rowList.Length > 0)
                 {
                     sb.AppendFormat("\"{0}\"", Convert.ToDouble(rowList[0][inv]).ToString());
-                    if (inv == "KPID") dTotal += Convert.ToDouble(rowList[0][inv]);
+                    if (inv == "KPIG") dTotal += Convert.ToDouble(rowList[0][inv]);
                 }
                 else
                 {
                     sb.Append("\"0\"");
-                    if (inv == "KPID") dTotal += 0;
+                    if (inv == "KPIG") dTotal += 0;
                 }
 
                 if (j <= dtCorp.Rows.Count - 1 - iCL - 1) sb.Append(",");
             }
-            if (inv == "KPID") sb.AppendFormat(",\"{0}\"", dTotal.ToString());
+            if (inv == "KPIG") sb.AppendFormat(",\"{0}\"", dTotal.ToString());
             sb.Append("],");
 
             sb.Append("\"borderWidth\": 1,");
@@ -322,23 +311,6 @@ else
                 <div class="z-webpart card">
                     <div class="card-body px-3 py-2">
                         <canvas class="fchart" id="chart-container2"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12 col-sm-6 mb-3">
-                <div class="z-webpart card">
-                    <div class="card-body px-3 py-2">
-                        <canvas class="fchart" id="chart-container3"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 mb-3">
-                <div class="z-webpart card">
-                    <div class="card-body px-3 py-2">
-                        <canvas class="fchart" id="chart-container4"></canvas>
                     </div>
                 </div>
             </div>

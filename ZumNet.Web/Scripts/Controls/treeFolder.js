@@ -315,7 +315,7 @@ $(function () {
                     var vPath = n.a_attr.url.split('/');
                     var ft = vPath[vPath.length - 1].split('.')[0].toUpperCase(); //alert(ft)
 
-                    if (_zw.V.current.page.toLowerCase() == '/exs/pqm') {
+                    if (_zw.V.current.page.toLowerCase() == '/exs/pqm__') {
                         _zw.V.ot = n.li_attr.objecttype;
                         _zw.V.alias = n.li_attr.alias;
                         _zw.V.xfalias = n.li_attr.xfalias;

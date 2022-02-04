@@ -5,25 +5,342 @@
 
 @{
     ViewBag.Title = ViewBag.R["ttl"];
-
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
     string sPatialView = "_" + ViewBag.R.ft.ToString();
     string sListScroll = " z-list-scroll";
 
-}
+    StringBuilder sbChart = new StringBuilder();
+    ViewBag.PeriodText = "";
+    int iCnt = 0;
 
+    if (ViewBag.BoardList != null && ViewBag.BoardList.Tables.Count > 0)
+    {
+        if (ViewBag.R.ft == "INVKPI")
+        {
+            string[] vInv = "과입고율(%)^KPIB^%^^%;선입고일(일)^KPIC^일^^일;과입고금액(만불)^KPID^만불^$^;자동발주율(%)^KPIA^%^^%".Split(';');
+
+            for (int i = 0; i < vInv.Length; i++)
+            {
+                string[] v = vInv[i].Split('^');
+
+                sbChart.Append(RenderChartItem(ViewBag.BoardList.Tables[0], ViewBag.BoardList.Tables[1], ViewBag.BoardList.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
+            }
+        }
+        else if (ViewBag.R.ft == "INVKPI_S")
+        {
+            string[] vInv = "과보유율(%)^KPIE^%^^%;과보유금액(만불)^KPIG^만불^$^".Split(';');
+
+            for (int i = 0; i < vInv.Length; i++)
+            {
+                string[] v = vInv[i].Split('^');
+
+                sbChart.Append(RenderChartItem_S(ViewBag.BoardList.Tables[0], ViewBag.BoardList.Tables[1], ViewBag.BoardList.Tables[2], (i + 1).ToString(), v[1], v[0], "", "", ""));
+            }
+        }
+
+        iCnt = ViewBag.BoardList.Tables[1].Rows.Count;
+        if (iCnt > 0)
+        {
+            ViewBag.PeriodText = "<i class=\"fe-chevron-right\"></i> " + ZumNet.Framework.Util.DateHelper.CheckDateTime(ViewBag.BoardList.Tables[1].Rows[0]["FDATE"].ToString(), "yy-MM-dd", "") + " ~ " + ZumNet.Framework.Util.DateHelper.CheckDateTime(ViewBag.BoardList.Tables[1].Rows[iCnt - 1]["TDATE"].ToString(), "yy-MM-dd", "");
+        }
+    }
+    else
+    {
+        //ViewBag.Error =
+    }
+
+}
+@functions {
+    private string RenderChartItem(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
+    {
+        DataRow dr = null;
+        DataRow dr2 = null;
+        DataRow[] rowList = null;
+        double dTotal = 0;    //과입고금액 주차별 총합
+        int iCL = (inv == "KPIA") ? 1 : 0;    //19-04-08 CL 자동발주율 일시 막기 위함
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("_zw.C[{0}] = new Chart($('#chart-container{1}'),", Convert.ToInt32(no) - 1, no);
+        sb.Append("{");
+        sb.Append("type: \"bar\",");
+        sb.Append("data: {");
+        sb.Append("labels: [");
+        for (int i = 0; i < dtCorp.Rows.Count - iCL; i++)
+        {
+            dr = dtCorp.Rows[i];
+            sb.AppendFormat("\"{0}\"", dr["CORP"].ToString());
+
+            if (i <= dtCorp.Rows.Count - 1 - iCL - 1) sb.Append(",");
+
+            if (inv == "KPID" && i == dtCorp.Rows.Count - 1)
+            {
+                sb.AppendFormat(",\"{0}\"", "TOTAL");
+            }
+        }
+        dr = null;
+        sb.Append("],"); //labels
+
+        sb.Append("datasets: [");
+
+        for (int i = 0; i < dtPeriod.Rows.Count; i++)
+        {
+            dTotal = 0;
+            dr = dtPeriod.Rows[i];
+            sb.Append("{");
+            sb.AppendFormat("label: \"{0}주차\",", dr["IWEEK"].ToString());
+            sb.Append("data: [");
+
+            for (int j = 0; j < dtCorp.Rows.Count - iCL; j++)
+            {
+                dr2 = dtCorp.Rows[j];
+                rowList = dtData.Select("CORP='" + dr2["CORP"].ToString() + "' AND IYEAR='" + dr["IYEAR"].ToString() + "' AND IWEEK='" + dr["IWEEK"].ToString() + "'");
+
+                if (rowList != null && rowList.Length > 0)
+                {
+                    sb.AppendFormat("\"{0}\"", Convert.ToDouble(rowList[0][inv]).ToString());
+                    if (inv == "KPID") dTotal += Convert.ToDouble(rowList[0][inv]);
+                }
+                else
+                {
+                    sb.Append("\"0\"");
+                    if (inv == "KPID") dTotal += 0;
+                }
+
+                if (j <= dtCorp.Rows.Count - 1 - iCL - 1) sb.Append(",");
+            }
+            if (inv == "KPID") sb.AppendFormat(",\"{0}\"", dTotal.ToString());
+            sb.Append("],");
+
+            sb.Append("borderWidth: 1,");
+            if (i == 0)
+            {
+                sb.Append("backgroundColor: 'rgba(76, 175, 80, 0.3)',");
+                sb.Append("borderColor: '#4caf50'");
+            }
+            else if (i == 1)
+            {
+                sb.Append("backgroundColor: 'rgba(0, 150, 136, 0.3)',");
+                sb.Append("borderColor: '#009688'");
+            }
+            else
+            {
+                sb.Append("backgroundColor: 'rgba(103, 58, 183, 0.3)',");
+                sb.Append("borderColor: '#673ab7'");
+            }
+
+            if (i == dtPeriod.Rows.Count - 1) sb.Append("}");
+            else sb.Append("},");
+        }
+        dr = null;
+
+        sb.Append("]"); //dataset
+        sb.Append("},"); //data
+
+        sb.Append("options: {");
+        sb.Append("responsive: true,");
+        sb.Append("maintainAspectRatio: false,");
+        sb.Append("title: {");
+        sb.Append("display: true,");
+        sb.AppendFormat("text: \"{0}\",", invText);
+        sb.Append("padding: 0,");
+        //sb.AppendFormat("padding: {0},", Convert.ToInt32(no) == 3 || Convert.ToInt32(no) == 4 ? "10" : "0");
+        sb.Append("lineHeight: 2,");
+        sb.Append("fontSize: 12,");
+        sb.Append("fontColor: 'rgba(24,28,33,1)'");
+        sb.Append("},");
+        //sb.Append("layout: {");
+        //sb.Append("padding: {");
+        //sb.Append("left: 0,");
+        //sb.Append("right: 0,");
+        //sb.Append("top: 0,");
+        //sb.Append("bottom: 0");
+        //sb.Append("}");
+        //sb.Append("},");
+        //sb.Append("scales: {");
+        //sb.Append("y: {");
+        //sb.Append("grid: {");
+        //sb.Append("offset: true");
+        //sb.Append("}");
+        //sb.Append("}");
+        //sb.Append("},");
+        sb.Append("legend: {");
+        sb.Append("position: 'bottom',");
+        sb.Append("labels: {");
+        //sb.Append("fontColor: 'rgba(24,28,33,1)',");
+        //sb.Append("fontSize: 10,");
+        sb.Append("boxWidth: 20,");
+        sb.Append("padding: 6");
+        sb.Append("}");
+        sb.Append("},");
+        sb.Append("plugins: {");
+        sb.Append("labels: {");
+        sb.Append("render: 'value'");
+        //sb.Append("fontSize: 10");
+        sb.Append("}");
+        sb.Append("}");
+        sb.Append("}"); //options
+        sb.Append("});");
+
+        dr = null;
+        dr2 = null;
+        rowList = null;
+
+        return sb.ToString();
+    }
+
+    private string RenderChartItem_S(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
+    {
+        DataRow dr = null;
+        DataRow dr2 = null;
+        DataRow[] rowList = null;
+        double dTotal = 0;    //과입고금액 주차별 총합
+        int iCL = (inv == "KPIA") ? 1 : 0;    //19-04-08 CL 자동발주율 일시 막기 위함
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("_zw.C[{0}] = new Chart($('#chart-container{1}'),", Convert.ToInt32(no) - 1, no);
+        sb.Append("{");
+        sb.Append("type: \"bar\",");
+        sb.Append("data: {");
+        sb.Append("labels: [");
+        for (int i = 0; i < dtCorp.Rows.Count - iCL; i++)
+        {
+            dr = dtCorp.Rows[i];
+            sb.AppendFormat("\"{0}\"", dr["CORP"].ToString());
+
+            if (i <= dtCorp.Rows.Count - 1 - iCL - 1) sb.Append(",");
+
+            if (inv == "KPIG" && i == dtCorp.Rows.Count - 1)
+            {
+                sb.AppendFormat(",\"{0}\"", "TOTAL");
+            }
+        }
+        dr = null;
+        sb.Append("],"); //labels
+
+        sb.Append("datasets: [");
+
+        for (int i = 0; i < dtPeriod.Rows.Count; i++)
+        {
+            dTotal = 0;
+            dr = dtPeriod.Rows[i];
+            sb.Append("{");
+            sb.AppendFormat("label: \"{0}주차\",", dr["IWEEK"].ToString());
+            sb.Append("data: [");
+
+            for (int j = 0; j < dtCorp.Rows.Count - iCL; j++)
+            {
+                dr2 = dtCorp.Rows[j];
+                rowList = dtData.Select("CORP='" + dr2["CORP"].ToString() + "' AND IYEAR='" + dr["IYEAR"].ToString() + "' AND IWEEK='" + dr["IWEEK"].ToString() + "'");
+
+                if (rowList != null && rowList.Length > 0)
+                {
+                    sb.AppendFormat("\"{0}\"", Convert.ToDouble(rowList[0][inv]).ToString());
+                    if (inv == "KPIG") dTotal += Convert.ToDouble(rowList[0][inv]);
+                }
+                else
+                {
+                    sb.Append("\"0\"");
+                    if (inv == "KPIG") dTotal += 0;
+                }
+
+                if (j <= dtCorp.Rows.Count - 1 - iCL - 1) sb.Append(",");
+            }
+            if (inv == "KPIG") sb.AppendFormat(",\"{0}\"", dTotal.ToString());
+            sb.Append("],");
+
+            sb.Append("borderWidth: 1,");
+            if (i == 0)
+            {
+                sb.Append("backgroundColor: 'rgba(76, 175, 80, 0.3)',");
+                sb.Append("borderColor: '#4caf50'");
+            }
+            else if (i == 1)
+            {
+                sb.Append("backgroundColor: 'rgba(0, 150, 136, 0.3)',");
+                sb.Append("borderColor: '#009688'");
+            }
+            else
+            {
+                sb.Append("backgroundColor: 'rgba(103, 58, 183, 0.3)',");
+                sb.Append("borderColor: '#673ab7'");
+            }
+
+            if (i == dtPeriod.Rows.Count - 1) sb.Append("}");
+            else sb.Append("},");
+        }
+        dr = null;
+
+        sb.Append("]"); //dataset
+        sb.Append("},"); //data
+
+        sb.Append("options: {");
+        sb.Append("responsive: true,");
+        sb.Append("maintainAspectRatio: false,");
+        sb.Append("title: {");
+        sb.Append("display: true,");
+        sb.AppendFormat("text: \"{0}\",", invText);
+        sb.Append("padding: 0,");
+        //sb.AppendFormat("padding: {0},", Convert.ToInt32(no) == 3 || Convert.ToInt32(no) == 4 ? "10" : "0");
+        sb.Append("lineHeight: 2,");
+        sb.Append("fontSize: 12,");
+        sb.Append("fontColor: 'rgba(24,28,33,1)'");
+        sb.Append("},");
+        //sb.Append("layout: {");
+        //sb.Append("padding: {");
+        //sb.Append("left: 0,");
+        //sb.Append("right: 0,");
+        //sb.Append("top: 0,");
+        //sb.Append("bottom: 0");
+        //sb.Append("}");
+        //sb.Append("},");
+        //sb.Append("scales: {");
+        //sb.Append("y: {");
+        //sb.Append("grid: {");
+        //sb.Append("offset: true");
+        //sb.Append("}");
+        //sb.Append("}");
+        //sb.Append("},");
+        sb.Append("legend: {");
+        sb.Append("position: 'bottom',");
+        sb.Append("labels: {");
+        //sb.Append("fontColor: 'rgba(24,28,33,1)',");
+        //sb.Append("fontSize: 10,");
+        sb.Append("boxWidth: 20,");
+        sb.Append("padding: 6");
+        sb.Append("}");
+        sb.Append("},");
+        sb.Append("plugins: {");
+        sb.Append("labels: {");
+        sb.Append("render: 'value'");
+        //sb.Append("fontSize: 10");
+        sb.Append("}");
+        sb.Append("}");
+        sb.Append("}"); //options
+        sb.Append("});");
+
+        dr = null;
+        dr2 = null;
+        rowList = null;
+
+        return sb.ToString();
+    }
+}
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
     @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
     @Styles.Render("~/bundle/vendor/css/pages/messages")
+
+    @Styles.Render("~/Content/pqm.css")
 }
 
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/chartjs/chartjs")
 
+    <script src="/vendor/libs/chartjs/chartjs-plugin-labels.min.js" charset="utf-8"></script>
     @Scripts.Render("~/Scripts/ExS/pqm.js")
 
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
@@ -31,6 +348,7 @@
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
     }
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+    <script type="text/javascript">(function () { Chart.defaults.global.defaultFontSize = 10; Chart.defaults.global.defaultFontColor = 'black'; @Html.Raw(sbChart.ToString())}());</script>
 }
 
 <!--
