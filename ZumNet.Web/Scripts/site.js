@@ -137,7 +137,7 @@ $(function () {
     $('.sidenav-item[data-navmenu], .sidenav-header .sidenav-link[data-navmenu], .navbar-nav .nav-link[data-navmenu], .navbar-nav .dropdown-item[data-navmenu], #layout-navbar-rightbar .dropdown-item[data-navmenu], #layout-navbar-rightbar a[data-navmenu]').on('click', function () {
         switch ($(this).attr('data-navmenu')) {
             case "mail":
-                _zw.ut.openWnd("https://email.cresyn.com/owa ", "owaWim");
+                _zw.ut.openWnd("https://mail.cresyn.com/owa ", "owaWim");
                 break;
             case "erp":
                 _zw.ut.openWnd("/Portal/SSOerp", "erpWin");
