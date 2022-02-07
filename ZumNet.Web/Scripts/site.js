@@ -882,6 +882,20 @@ $(function () {
             if (barLen > 100) barLen = 100;
             $('.progress-bar[data-for="extrahour"]').css('width', barLen + '%');
         },
+        "viewUserSimpleInfo": function (urId) {
+            $.ajax({
+                type: "POST",
+                url: "/Organ/PersonSimpleInfo/" + urId,
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        $('#popBlank').html(res.substr(2));
+                        $('#popBlank').modal('show');
+
+                    } else bootbox.alert(res);
+                },
+                beforeSend: function () { } //로딩 X
+            });
+        },
         "getEACount": function (pos, xf, loc, ar, admin) {
             $.ajax({
                 type: "POST",
@@ -1093,7 +1107,7 @@ $(function () {
         },
         "openNewEAForm": function (formId) {
             if (formId == '') return false;
-            var xfAlias = _zw.V.xfalias == '' ? 'ea' : _zw.V.xfalias;
+            var xfAlias = 'ea'; //_zw.V.xfalias == '' ? 'ea' : _zw.V.xfalias;
             var url = '/EA/Form?qi=' + _zw.base64.encode('{M:"new",fi:"' + formId + '",xf:"' + xfAlias + '"}');
             _zw.ut.openWnd(url, "eaform", 800, 600, "resize");
         },

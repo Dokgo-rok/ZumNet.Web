@@ -29,7 +29,7 @@
     {
         <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="card mb-4">
-                <div class="card-body p-3">
+                <div class="card-body px-2 py-3">
                     @*<div class="contacts-dropdown btn-group">
                             <button type="button" class="btn btn-sm btn-default icon-btn borderless rounded-pill md-btn-flat dropdown-toggle hide-arrow" data-toggle="dropdown">
                                 <i class="fas fa-ellipsis-h"></i>
@@ -43,7 +43,7 @@
                         @Html.Raw(GetOrgUserImage(row["LogonID"].ToString()))
                         <div class="contact-content-about">
                             <h5 class="contact-content-name mb-1">
-                                <a href="javascript:void(0)" class="text-body">@row["DisplayName"]</a>
+                                <a href="javascript:void(0)" class="text-body" onclick="_zw.fn.viewUserSimpleInfo(@row["UserID"])">@row["DisplayName"]</a>
                                 <span class="text-secondary h6 ml-1">@row["Grade1"]</span>
                             </h5>
                             <div class="contact-content-user text-muted mb-2">

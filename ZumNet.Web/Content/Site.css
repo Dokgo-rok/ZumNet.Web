@@ -299,7 +299,7 @@
     margin: 0 auto;
     text-align: center;
 }
-.contacts-col-view .contact-content-img {
+.contact-content .contact-content-img {
     margin-bottom: 1.25rem;
     max-width: 6.5rem;
     height: 7.5rem;

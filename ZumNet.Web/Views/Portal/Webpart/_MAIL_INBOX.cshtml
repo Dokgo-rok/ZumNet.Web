@@ -72,8 +72,8 @@
         try
         {
             string sDomainName = ZumNet.Framework.Configuration.Config.Read("DomainName"); //"cresyn.com";
-            string sUserID = "byrlee"; //Session["LogonID"].ToString()
-            string sPassword = "P@ssw0rd"; //Session["LogonPwd"].ToString()
+            string sUserID = HttpContext.Current.Session["LogonID"].ToString();
+            string sPassword = ZumNet.Framework.Util.SecurityHelper.AESDecrypt(HttpContext.Current.Session["LogonPwd"].ToString());
             string sEWSUrl = ZumNet.Framework.Configuration.Config.Read("MailEWS"); //@"https://mail.cresyn.com/EWS/exchange.asmx";
 
             esb = PhsFEMailEWS.CommonManager.GetExchangeServiceBinding(sUserID, sPassword, sDomainName, sEWSUrl, "ko");

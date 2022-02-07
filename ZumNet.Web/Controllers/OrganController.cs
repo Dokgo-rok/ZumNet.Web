@@ -110,5 +110,39 @@ namespace ZumNet.Web.Controllers
             }
             return strView;
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string PersonSimpleInfo(int id)
+        {
+            string strView = "";
+            if (Request.IsAjaxRequest())
+            {
+                if (id == 0)
+                {
+                    return "필수값 누락!";
+                }
+
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+                using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+                {
+                    svcRt = op.GetUserPersonalInfo(id);
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.PersonInfo = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+                    strView = "OK" + RazorViewToString.RenderRazorViewToString(this, "_PersonSimpleInfo", ViewBag.MemberList);
+                }
+                else
+                {
+                    //에러페이지
+                    strView = svcRt.ResultMessage;
+                }
+            }
+            return strView;
+        }
     }
 }

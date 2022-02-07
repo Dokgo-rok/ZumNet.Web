@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Linq;
+using System.DirectoryServices;
+using System.Reflection;
 using System.Web;
 using System.Web.Security;
 
 using ZumNet.BSL.ServiceBiz;
+using ZumNet.Framework.Exception;
 
 namespace ZumNet.Web.Bc
 {
@@ -23,44 +25,20 @@ namespace ZumNet.Web.Bc
         public string AuthenticateUser(string loginId, string password)
         {
             string strReturn = "";
-            string strPassword = "";
+            string sAuthType = Framework.Configuration.Config.Read("AuthType");
 
-            ZumNet.Framework.Core.ServiceResult svcRt = null;
-
-            using (OfficePortalBiz opBiz = new OfficePortalBiz())
+            if (sAuthType == "DB")
             {
-                svcRt = opBiz.GetUserPassword(loginId);
+                strReturn = AuthenticateUserDB(loginId, password);
             }
-
-            if (svcRt != null && svcRt.ResultCode == 0)
+            else if (sAuthType == "AD")
             {
-                strPassword = svcRt.ResultDataDetail["password"].ToString();
+                strReturn = AuthenticateUserAD(loginId, password);
+                if (strReturn == "NOAD" || strReturn == "FAIL") strReturn = "FAIL"; //보안상 계정이 없거나 비밀번호가 틀린 경우를 구분하면 안됨!!
             }
             else
             {
-                //에러페이지
-                return svcRt.ResultMessage;
-            }
-
-            //보안상 계정이 없거나 비밀번호가 틀린 경우를 구분하면 안됨!!
-            if (strPassword == "" || strPassword == "NO USER")
-            {
-                strReturn = "FAIL";  //"NOUSER";
-            }
-            else
-            {
-                //strPassword = SecurityHelper.SetDecrypt(strPassword);
-                //strPassword = SecurityHelper.AESDecryp(strPassword);
-
-                if (strPassword == password)
-                {
-                    strReturn = "OK";
-                }
-                else
-                {
-                    strReturn = "FAIL";
-                }
-                strReturn = "OK";
+                strReturn = "SYSDOWN";
             }
 
             return strReturn;
@@ -444,5 +422,134 @@ namespace ZumNet.Web.Bc
                 //}
             }
         }
+
+        #region [DB 인증 관련]
+        /// <summary>
+        /// DB 인증 처리
+        /// </summary>
+        /// <param name="loginId"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        private string AuthenticateUserDB(string loginId, string password)
+        {
+            string strReturn = "";
+            string strPassword = "";
+            string strPasswordDecrypt = "";
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            using (OfficePortalBiz opBiz = new OfficePortalBiz())
+            {
+                svcRt = opBiz.GetUserPassword(loginId);
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                strPassword = svcRt.ResultDataDetail["password"].ToString();
+            }
+            else
+            {
+                //에러페이지
+                return svcRt.ResultMessage;
+            }
+
+            //보안상 계정이 없거나 비밀번호가 틀린 경우를 구분하면 안됨!!
+            if (strPassword == "" || strPassword == "NOUSER")
+            {
+                strReturn = "FAIL";  //"NOUSER";
+            }
+            else
+            {
+                try
+                {
+                    strPasswordDecrypt = Framework.Util.SecurityHelper.AESDecrypt(strPassword);
+                }
+                catch
+                {
+                    strPasswordDecrypt = Framework.Util.SecurityHelper.SetDecrypt(strPassword); //이전 방식
+                }
+
+                if (strPasswordDecrypt == "")
+                {
+                    strReturn = "FAIL_DECRYPT"; //DB 저장 암호 복호화 실패
+                }
+                else if (strPasswordDecrypt == password)
+                {
+                    strReturn = "OK";
+                }
+                else
+                {
+                    strReturn = "FAIL";
+                }
+                //strReturn = "OK";
+            }
+
+            return strReturn;
+        }
+        #endregion
+
+        #region [Active Directory 인증 관련]
+        /// <summary>
+        /// AD 인증 처리
+        /// </summary>
+        /// <param name="loginId"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        private string AuthenticateUserAD(string loginId, string password)
+        {
+            DirectoryEntry dirEntry = null;
+            DirectorySearcher dirSrc = null;
+            DirectoryEntry entUser = null;
+
+            string strReturn = "";
+            string sPos = "";
+
+            try
+            {
+                sPos = "100";
+                string sLdapPath = "LDAP://" + Framework.Configuration.Config.Read("DomainName");
+                string sAuthUser = Framework.Configuration.Config.Read("SysAdmin");
+                string sAuthUserPwd = Framework.Util.SecurityHelper.AESDecrypt(Framework.Configuration.ConfigINI.GetValue(Framework.Configuration.Sections.SECTION_ROOT, Framework.Configuration.Property.INIKEY_ROOT_SA1));
+
+                sPos = "200";
+                dirEntry = new DirectoryEntry(sLdapPath, sAuthUser, sAuthUserPwd, System.DirectoryServices.AuthenticationTypes.Secure);
+                dirSrc = new DirectorySearcher(dirEntry);
+                dirSrc.Filter = "(&(objectCategory=person)(objectClass=user)(sAMAccountName=" + loginId + "))";
+
+                sPos = "300";
+                SearchResult srcRt = dirSrc.FindOne();
+                if (srcRt != null)
+                {
+                    sPos = "400";
+                    entUser = new DirectoryEntry(srcRt.Path, loginId, password, System.DirectoryServices.AuthenticationTypes.Secure);
+                    try
+                    {
+                        strReturn = (entUser.NativeObject != null) ? "OK" : "FAIL"; //AD 비밀번호 틀림
+                    }
+                    catch
+                    {
+                        strReturn = "FAIL"; //사용자 이름 또는 암호가 올바르지 않습니다.
+                    }
+                }
+                else
+                {
+                    strReturn = "NOAD";  //AD 사용자 없음
+                }
+            }
+            catch(Exception ex)
+            {
+                ex.Source = "[" + sPos + "] " + ex.Source;
+                ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, MethodBase.GetCurrentMethod().Name);
+            }
+            finally
+            {
+                if (dirEntry != null) { dirEntry.Close(); dirEntry.Dispose(); }
+                if (entUser != null) { entUser.Close(); entUser.Dispose(); }
+                if (dirSrc != null) { dirSrc.Dispose(); }
+            }
+
+            return strReturn;
+        }
+        #endregion
     }
 }

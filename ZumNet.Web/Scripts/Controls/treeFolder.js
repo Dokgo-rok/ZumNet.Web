@@ -335,7 +335,8 @@ $(function () {
                 } else {
                     //alert(n.li_attr.alias + " : " + n.a_attr.url)
                     if (n.li_attr.alias == "ea.form.select") {
-                        bootbox.alert('준비중!');
+                        _zw.fn.openNewEAForm(n.a_attr.url);
+
                     } else if (n.li_attr.alias == "ea.form.report") {
                         //console.log(ttl);
                         if (_zw.V.current.page.toLowerCase() == '/report') {

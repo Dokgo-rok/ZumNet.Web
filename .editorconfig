@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# IDE0001: 이름 단순화
+dotnet_diagnostic.IDE0001.severity = none
