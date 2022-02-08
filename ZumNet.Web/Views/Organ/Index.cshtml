@@ -3,7 +3,7 @@
 @using Newtonsoft.Json;
 
 @{
-    ViewBag.Title = Resources.Global.OrganChart;
+    ViewBag.Title = ViewBag.SiteMap != null && ViewBag.SiteMap != "" ? ViewBag.SiteMap.ToString().Replace(">", "/") : Resources.Global.OrganChart;
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
     //string sIconType = "";
@@ -86,12 +86,81 @@
         });
 
         $('#__OrgSearch .btn-outline-success').click(function () {
-            $('#__OrgSearch [data-for]').each(function () {
-                alert($(this).attr('data-for'))
-            });
+            _zw.fn.initLv('');
+            _zw.fn.loadList();
 
             return false;
         });
+
+        _zw.fn.bindCtrl = function () {
+            $('.pagination li a.page-link').click(function () {
+                _zw.V.lv.page = $(this).attr('data-for');
+                _zw.fn.loadList();
+            });
+
+            $('.z-lv-cnt select').change(function () {
+                _zw.V.lv.count = $(this).val();
+                _zw.V.lv.page = 1;
+                _zw.ut.setCookie('orgLvCount', $(this).val(), 365);
+                _zw.fn.loadList();
+            });
+        }
+
+        _zw.fn.loadList = function () {
+            var qi = _zw.fn.getLvQuery();
+
+            $.ajax({
+                type: "POST",
+                url: "?qi=",
+                data: JSON.stringify(qi),
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {console.log(res)
+                        var v = res.substr(2).split(_zw.V.lv.boundary);
+
+                        $('#__OrgList').html(v[0]);
+                        $('#__ListCount').html(v[1]);
+                        $('#__ListPage').html(v[2]);
+
+                        _zw.fn.bindCtrl();
+
+                    } else alert(res);
+                },
+                beforeSend: function () {//jstree ajax event와 충돌하는 듯....pace.js가 이벤트 종료가 안됨!!
+                    //$('#ajaxLoader').modal('show');
+                }
+            });
+        }
+
+        _zw.fn.getLvQuery = function () {
+            var j = {};
+            j["M"] = _zw.V.mode;
+            j["opnode"] = _zw.V.opnode;
+            j["tgt"] = _zw.V.lv.tgt;
+            j["page"] = _zw.V.lv.page;
+            j["count"] = _zw.V.lv.count;
+            j["boundary"] = _zw.V.lv.boundary;
+
+            if ($('#orgsearch').hasClass('active')) {//검색창 활성화 여부
+                $('#__OrgSearch [data-for]').each(function () {
+                    j[$(this).attr('data-for')] = $(this).val();
+                });
+            }
+
+            return j;
+        }
+
+        _zw.fn.initLv = function (tgt) {
+            var sCnt = _zw.ut.getCookie('orgLvCount') || $('.z-lv-page select').val();
+
+            _zw.V.mode = '';
+            _zw.V.lv.tgt = tgt;
+            _zw.V.opnode = tgt == '' || tgt == '0' ? '' : '7777.' + tgt;
+            _zw.V.lv.page = '1';
+            _zw.V.lv.count = sCnt == undefined || sCnt == '' ? '20' : sCnt;
+        }
+
+        _zw.fn.bindCtrl();
+
     }());
 </script>
 }
@@ -128,25 +197,25 @@
                     <div class="form-group row">
                         <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.PersonName</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="@Resources.Global.PersonName" data-for="UserName">
+                            <input type="text" class="form-control" placeholder="@Resources.Global.PersonName" data-for="ur">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.ID</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="@Resources.Global.ID" data-for="LogonID">
+                            <input type="text" class="form-control" placeholder="@Resources.Global.ID" data-for="urcn">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.Department</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" placeholder="@Resources.Global.Department" data-for="DeptName">
+                            <input type="text" class="form-control" placeholder="@Resources.Global.Department" data-for="dept">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.Jikwi</label>
                         <div class="col-sm-8">
-                            <select class="custom-select" data-for="GradeCode1">
+                            <select class="custom-select" data-for="grade">
                                 <option>@Resources.Global.Select</option>
                                 @foreach (DataRow row in ViewBag.GradeCode)
                                 {
@@ -169,7 +238,7 @@
     <div class="d-flex flex-column w-100">
         <!-- Header -->
         <div class="flex-grow-0">
-            <div class="d-flex justify-content-between container-p-x py-3 py-md-4 m-0">
+            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
                 <div class="d-flex align-items-center font-weight-bold text-truncate">
                     <div class="h5 mb-0">
                         <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
@@ -179,10 +248,22 @@
                         <i class="mdi mdi-account-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
                     </div>
                 </div>
-                <div class="d-flex align-items-center z-lv-menu">
-                    @*<button class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zv-menu="exportExcel"><i class="fe-download"></i> 엑셀</button>*@
-                    <a href="javascript:void(0)" class="text-success" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zv-menu="exportExcel"><i class="fe-download"></i> 엑셀</a>
+                <div class="d-flex align-items-center z-lv-page" id="__ListCount">
+                    @Html.Partial("~/Views/Common/_ListCount.cshtml")
                 </div>
+                
+            </div>
+
+            <hr class="border-light m-0 d-none">
+
+            <div class="d-flex align-items-center container-p-x" style="padding-bottom: .6rem !important">
+                <div class="d-none d-sm-flex align-items-center z-lv-menu pl-1 pt-2">
+                    <a href="javascript:void(0)" class="text-success" data-toggle="tooltip" data-placement="bottom" title="엑셀내려받기" data-zv-menu="exportExcel"><i class="fe-download"></i> 엑셀</a>
+                </div>
+                <div class="px-1 flex-grow-1"></div>
+                <ul class="pagination pagination-sm justify-content-center mb-0" id="__ListPage">
+                    @Html.Partial("~/Views/Common/_ListPagination.cshtml")
+                </ul>
             </div>
         </div>
         <!-- / Header -->

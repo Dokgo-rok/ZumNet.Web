@@ -959,6 +959,7 @@ $(function () {
             var cookieName = '';
             if (_zw.V.ctalias == 'ea') cookieName = 'eaLvCount';
             else if (_zw.V.ctalias == 'doc' || _zw.V.ctalias == 'knowledge') cookieName = 'docLvCount';
+            else if (_zw.V.ctalias == 'orgmap') cookieName = 'orgLvCount';
             else cookieName = 'bbsLvCount';
 
             _zw.V.lv.count = cnt;

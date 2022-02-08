@@ -21,30 +21,24 @@ $(function () {
             //    });
             //});
         })
-        .on('changed.jstree', function (e, data) {
-            if (data.selected.length == 1) {
-                var vPath = $("#__OrgTree").jstree("get_path", data.selected[0]);
-                $('.z-ttl span').html(vPath.join(' / '));
+        .on('changed.jstree', function (e, d) {
+            if (d.selected.length == 1) {
+                var n = d.instance.get_node(d.selected[0]);
 
-                var n = data.instance.get_node(data.selected[0]);
+                if ('7777.' + n.id == _zw.V.opnode) return false; //'7777.' => 부서명 Navigation에 사용
+                
                 if (n.li_attr.hasmember) {
-                    $.ajax({
-                        type: "POST",
-                        url: "?qi=",
-                        data: '{page:1,count:50,tgt:"' + n.id + '"}',
-                        success: function (res) {
-                            if (res.substr(0, 2) == "OK") $('#__OrgList').html(res.substr(2));
-                            else alert(res);
-                        },
-                        beforeSend: function () {//jstree ajax event와 충돌하는 듯....pace.js가 이벤트 종료가 안됨!!
-                            //$('#ajaxLoader').modal('show');
-                        }
-                    });
+                    var vPath = $("#__OrgTree").jstree("get_path", d.selected[0]);
+
+                    _zw.V.ttl = vPath.join(' / ');
+                    window.document.title = _zw.V.ttl;
+                    $('.z-ttl span').html(_zw.V.ttl);
+
+                    _zw.fn.initLv(n.id);
+                    _zw.V.mode = n.li_attr.level == 0 && n.li_attr.gralias == 'Z1000' ? 'all' : '';
+                    _zw.fn.loadList();
                 }
             }
         });
     }
-    
-
-
 });

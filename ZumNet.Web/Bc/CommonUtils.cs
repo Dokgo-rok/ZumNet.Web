@@ -880,6 +880,7 @@ namespace ZumNet.Web.Bc
                 string sName = "";
                 if (category.ToLower() == "ea") sName = "eaLvCount";
                 else if (category.ToLower() == "doc") sName = "docLvCount";
+                else if (category.ToLower() == "orgmap") sName = "orgLvCount";
                 else sName = "bbsLvCount";
 
                 HttpCookie ck = HttpContext.Current.Request.Cookies[sName];
@@ -906,6 +907,7 @@ namespace ZumNet.Web.Bc
             string sName = "";
             if (category.ToLower() == "ea") sName = "eaLvCount";
             else if (category.ToLower() == "doc") sName = "docLvCount";
+            else if (category.ToLower() == "orgmap") sName = "orgLvCount";
             else sName = "bbsLvCount";
 
             HttpCookie ck = HttpContext.Current.Request.Cookies[sName];
