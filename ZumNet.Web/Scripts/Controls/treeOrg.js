@@ -35,7 +35,7 @@ $(function () {
                     $('.z-ttl span').html(_zw.V.ttl);
 
                     _zw.fn.initLv(n.id);
-                    _zw.V.mode = n.li_attr.level == 0 && n.li_attr.gralias == 'Z1000' ? 'all' : '';
+                    _zw.V.mode = n.li_attr.level == 0 && n.li_attr.gralias == 'Z1000' ? 'all' : ''; //크레신 클릭
                     _zw.fn.loadList();
                 }
             }
