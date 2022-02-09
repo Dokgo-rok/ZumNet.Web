@@ -466,7 +466,12 @@ namespace ZumNet.Web.Bc
                 }
                 catch
                 {
-                    strPasswordDecrypt = Framework.Util.SecurityHelper.SetDecrypt(strPassword); //이전 방식
+                    try
+                    {
+                        //strPasswordDecrypt = Framework.Util.SecurityHelper.SetDecrypt(strPassword); //이전 방식
+                        strPasswordDecrypt = ZumNet.Web.Bc.CommonUtils.SetDecrypt(strPassword); //구 버전(Phs.Framework.Security 사용)
+                    }
+                    catch { strPasswordDecrypt = ""; }
                 }
 
                 if (strPasswordDecrypt == "")

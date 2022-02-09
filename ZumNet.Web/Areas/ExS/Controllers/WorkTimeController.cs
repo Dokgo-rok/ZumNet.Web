@@ -16,6 +16,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
 {
     public class WorkTimeController : Controller
     {
+        #region [메뉴별 목록]
         [SessionExpireFilter]
         [Authorize]
         public ActionResult Index(string Qi)
@@ -233,6 +234,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                             ViewBag.Member = svcRt.ResultDataDetail["Member"];
                         }
                         ViewBag.BoardList = svcRt.ResultDataSet;
+                        ViewBag.Mode = ViewBag.R.mode.ToString();
 
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_" + ViewBag.R.ft.ToString(), ViewBag);
                     }
@@ -251,6 +253,369 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             return rt;
         }
 
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string PersonStatus()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0 || jPost["tgt"].ToString() == "" || jPost["vd"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wt = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        svcRt = wt.GetWorkTimeDaily("P", Convert.ToInt32(jPost["tgt"]), jPost["vd"].ToString(), "", "", "", "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.BoardList = svcRt.ResultDataSet;
+                        ViewBag.Mode = jPost["M"].ToString();
+                        ViewBag.Month = Convert.ToDateTime(jPost["vd"]).Month.ToString();
+                        ViewBag.ViewPerson = jPost["dn"].ToString();
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_PersonStatus", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
+
+        #region [근무계획]
+        /// <summary>
+        /// 근무계획 저장, 승인요청
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string SavePlan()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    string sStatus = "";
+
+                    if (jPost == null || jPost.Count == 0 || jPost["mode"].ToString() == "") return "필수값 누락!";
+
+                    if (jPost["mode"].ToString() == "request") sStatus = "1";
+                    else sStatus = "0";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        svcRt = wtBiz.InsertWorkTimePlan(Convert.ToInt32(Session["URID"]), Session["URName"].ToString(), Convert.ToInt32(Session["DeptID"])
+                                                , Session["DeptName"].ToString(), Session["Grade1"].ToString(), sStatus, (JArray)jPost["sub"]);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 근무계획 저장, 승인요청
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DoPlan()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    //string sStatus = "";
+
+                    if (jPost == null || jPost.Count == 0 || jPost["mode"].ToString() == "") return "필수값 누락!";
+
+                    //if (jPost["mode"].ToString() == "confirm") sStatus = "1";
+                    //else sStatus = "8";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        svcRt = wtBiz.SetWorkTimePlan(Convert.ToInt32(Session["URID"]), Session["URName"].ToString(), Convert.ToInt32(Session["DeptID"])
+                                                    , Session["DeptName"].ToString(), Session["Grade1"].ToString(), (JArray)jPost["sub"]);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
+
+        #region [근무기록]
+        /// <summary>
+        /// 근무상태 팝업
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventView()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0 || jPost["ur"].ToString() == "" || jPost["wd"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        svcRt = wtBiz.CheckWorkTimeStatus("V", Convert.ToInt32(jPost["ur"]), jPost["wd"].ToString(), 0, "", "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.WorkEvent = svcRt.ResultDataSet;
+                        ViewBag.JPost = jPost;
+                        ViewBag.Error = "";
+                    }
+                    else
+                    {
+                        //에러페이지
+                        ViewBag.Error = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = ex.Message;
+                }
+
+                rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_EventView", ViewBag);
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 근무조정요청 팝업
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventRequest()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0 || jPost["ur"].ToString() == "" || jPost["wd"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        svcRt = wtBiz.CheckWorkTimeStatus("R", Convert.ToInt32(jPost["ur"]), jPost["wd"].ToString(), StringHelper.SafeInt(jPost["req"]), "", "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.WorkEvent = svcRt.ResultDataSet;
+                        ViewBag.JPost = jPost;
+                        ViewBag.Error = "";
+                    }
+                    else
+                    {
+                        ViewBag.Error = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = ex.Message;
+                }
+
+                rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_EventRequest", ViewBag);
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 근무조정 신청
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string SendRequest()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0 || jPost["userid"].ToString() == "" || jPost["subject"].ToString() == "") return "필수값 누락!";
+                    if (jPost["sub"] == null) return "조정 항목 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        svcRt = wtBiz.InsertWorkTimeRequest(Convert.ToInt32(jPost["userid"]), jPost["workdate"].ToString()
+                                            , jPost["subject"].ToString(), jPost["reason"].ToString(), (JArray)jPost["sub"]);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 근무조정 신청 승인 처리
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DoRequest()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    string sStatus = "";
+
+                    if (jPost == null || jPost.Count == 0 || jPost["step"].ToString() == "" || jPost["ss"].ToString() == "" || StringHelper.SafeInt(jPost["reqid"]) == 0) return "필수값 누락!";
+
+                    if (jPost["ss"].ToString() == "reject") sStatus = "8";
+                    //else if (jPost["ss"].ToString() == "approval") sStatus = "7";
+                    else sStatus = "7";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                    {
+                        svcRt = wtBiz.SetWorkTimeRequest(jPost["step"].ToString(), StringHelper.SafeInt(jPost["reqid"]), StringHelper.SafeInt(jPost["apvid"])
+                                        , jPost["apvdn"].ToString(), StringHelper.SafeInt(jPost["apvdeptid"]), jPost["apvdept"].ToString()
+                                        , jPost["apvgrade"].ToString(), sStatus, jPost["apvcmnt"].ToString(), (JArray)jPost["sub"]);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 조정신청 갯수 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string RequestCount()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+                if (jPost == null || jPost.Count == 0 || jPost["ur"].ToString() == "" || jPost["chief"].ToString() == "" || jPost["mo"].ToString() == "")
+                {
+                    return "필수값 누락!";
+                }
+
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                {
+                    svcRt = wtBiz.GetWorkTimeRequestCount(Convert.ToInt32(jPost["ur"]), jPost["chief"].ToString(), jPost["mo"].ToString());
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    rt = "OK" + svcRt.ResultDataString;
+                }
+                else
+                {
+                    //에러페이지
+                    rt = svcRt.ResultMessage;
+                }
+            }
+
+            return rt;
+        }
+        #endregion
+
+        #region [근무상태 팝업, 자동알림]
         /// <summary>
         /// 근무상태창 열기
         /// </summary>
@@ -354,7 +719,9 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             }
             return strView;
         }
+        #endregion
 
+        #region [근무시간 계산]
         /// <summary>
         /// 근무시간 계산
         /// </summary>
@@ -487,46 +854,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             }
             return rt;
         }
-
-        /// <summary>
-        /// 조정신청 갯수 가져오기
-        /// </summary>
-        /// <returns></returns>
-        [SessionExpireFilter]
-        [HttpPost]
-        [Authorize]
-        public string RequestCount()
-        {
-            string rt = "";
-
-            if (Request.IsAjaxRequest())
-            {
-                JObject jPost = CommonUtils.PostDataToJson();
-                if (jPost == null || jPost.Count == 0 || jPost["ur"].ToString() == "" || jPost["chief"].ToString() == "" || jPost["mo"].ToString() == "")
-                {
-                    return "필수값 누락!";
-                }
-
-                ZumNet.Framework.Core.ServiceResult svcRt = null;
-
-                using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
-                {
-                    svcRt = wtBiz.GetWorkTimeRequestCount(Convert.ToInt32(jPost["ur"]), jPost["chief"].ToString(), jPost["mo"].ToString());
-                }
-
-                if (svcRt != null && svcRt.ResultCode == 0)
-                {
-                    rt = "OK" + svcRt.ResultDataString;
-                }
-                else
-                {
-                    //에러페이지
-                    rt = svcRt.ResultMessage;
-                }
-            }
-
-            return rt;
-        }
+        #endregion
 
         #region [유틸 함수]
         /// <summary>

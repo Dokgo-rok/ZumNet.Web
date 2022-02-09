@@ -853,6 +853,20 @@ $(function () {
                 beforeSend: function () { } //로딩 X
             });
         },
+        "viewWorkEvent": function (ur, d) {
+            $.ajax({
+                type: "POST",
+                url: "/ExS/WorkTime/EventView",
+                data: '{ur:"' + ur + '",wd:"' + d + '",page:"' + _zw.V.ft.toLowerCase() + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') {
+                        var p = $('#popBlank');
+                        p.html(res.substr(2)).css('width', $(this).attr('data-width') + "px");
+                        p.modal();
+                    }
+                }
+            });
+        },
         "progBar": function (real, ex) {
             if (real == '' || isNaN(real)) return false;
 
@@ -1153,9 +1167,21 @@ $(function () {
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, eaWndNm, 800, 600, "resize");
         },
+        "openEAFormSimple": function (mi) {
+            var qi = '{M:"read",mi:"' + mi + '",oi:"",wi:"",xf:"ea"}';
+            var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+            _zw.ut.openWnd(url, '', 800, 600, "resize");
+        },
         "input": function (e, p) {
             if (e) {
-                if (!$(e).prop('readonly') && !$(e).prop('disabled')) _zw.ut.maskInput(e);
+                if ($(e).prop('tagName').toUpperCase() == 'INPUT') {
+                    if (!$(e).prop('readonly') && !$(e).prop('disabled')) _zw.ut.maskInput(e);
+                } else {
+                    e.find('input[data-inputmask]').each(function () {
+                        if (!$(this).prop('readonly') && !$(this).prop('disabled')) _zw.ut.maskInput($(this)[0]);
+                    });
+                }
+                
             } else {
                 if (p && p.length > 0) {
                     p.each(function () {
@@ -1219,7 +1245,7 @@ $(function () {
             return num;
         },
         "maskInput": function (e) {
-            var v = $(e).attr('data-inputmask').split(';'); //alert(v)
+            var v = $(e).attr('data-inputmask').split(';');
             if (v[0] == "number" || v[0] == "percent") {
                 vanillaTextMask.maskInput({
                     inputElement: e,

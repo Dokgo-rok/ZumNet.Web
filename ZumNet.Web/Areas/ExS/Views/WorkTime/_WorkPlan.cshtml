@@ -19,7 +19,7 @@
         //WorkDate, HolidayType, SecomInTime, SecomOutTime, SecomDinnerTime, InTime, OutTime, Intype, OutType
         //BizTrip, Leave, OutWork, OutLcm, HolidayWork, TotalWork, RealWork, NightWork, State, LastModified
 
-        string[,] arr = { { "", "<input type='checkbox' id='chkHeader' onClick='checkAll(this)' hidefocus />", "4%", "center", "", "" }
+        string[,] arr = { { "", "<input type='checkbox' id='chkHeader' hidefocus />", "4%", "center", "", "" }
                         , { "PlanDate", "일자", "12%", "center", "", "" }, { "WDay", "요일", "5%", "center", "", "" }, { "__HOLIYDAY__", "공휴일", "7%", "center", "", "" }
                         , { "PlanInTime", "출근계획", "12%", "center", "", "" }, { "PlanOutTime", "퇴근계획", "12%", "center", "", "" }//, { "PlanType", "구분", "10%", "center", "", "" }
                         , { "Reason", "사유", "20%", "center", "", "" }, { "Status", "상태", "12%", "center", "", "" }, { "__ETC__", "비고", "16%", "center", "", "" }
@@ -46,7 +46,7 @@
             {
                 if (_columnConfig[i, 5].ToString() == "Y")
                 {
-                    strValue = String.Format("<a href=\"javascript:\" onclick=\"sort(event);\">{0}</a>", _columnConfig[i, 1].ToString());
+                    strValue = String.Format("<a href=\"javascript:\" onclick=\"\">{0}</a>", _columnConfig[i, 1].ToString());
                 }
                 else
                 {
@@ -66,7 +66,7 @@
     private string ViewList(string mode, DataSet data, DataRowCollection hDay)
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append("<table class=\"table table-hover table-sm\">");
+        sb.Append("<table class=\"table table-hover table-sm\" style=\"min-width: 800px\">");
         sb.Append(RenderColumnHeader());
 
         sb.Append("<tbody>");

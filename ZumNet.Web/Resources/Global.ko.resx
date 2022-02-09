@@ -139,7 +139,7 @@
     <value>계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.</value>
   </data>
   <data name="Auth_Fail" xml:space="preserve">
-    <value>아이디나 암호가 틀렸거나 잘못된 경로로 접근했습니다.</value>
+    <value>사용자 계정 또는 암호가 올바르지 않습니다.</value>
   </data>
   <data name="Auth_Fault" xml:space="preserve">
     <value>잘못된 로그인 시도입니다.</value>

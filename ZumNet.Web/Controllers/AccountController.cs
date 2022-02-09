@@ -57,7 +57,7 @@ namespace ZumNet.Web.Controllers
             else
             {
                 if (result == "NOUSER") strDesc = Resources.Global.Auth_NoUser; //"사용자 정보가 없습니다.";
-                else if (result == "FAIL") strDesc = Resources.Global.Auth_Fail; //"아이디나 암호가 틀렸거나 잘못된 경로로 접근했습니다.";
+                else if (result == "FAIL") strDesc = Resources.Global.Auth_Fail; //"사용자 이름 또는 암호가 올바르지 않습니다.";
                 else if (result == "SYSDOWN") strDesc = Resources.Global.Auth_SysDown; //"서비스가 정지 되었습니다. 관리자에게 문의하세요";
                 else if (result == "NOACT") strDesc = Resources.Global.Auth_UseStop; //"사용이 일시 정지 되었습니다. 관리자에게 문의하세요.";
                 else if (result == "DBLACCOUNT") strDesc = Resources.Global.Auth_DoubleAccount; //"계정이 하나 이상 존재 합니다. 관리자에게 문의 바랍니다.";

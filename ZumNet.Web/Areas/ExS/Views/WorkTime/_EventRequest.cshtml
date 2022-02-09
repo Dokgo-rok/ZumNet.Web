@@ -1,0 +1,554 @@
+﻿@using System.Data;
+@using System.Text;
+
+@using ZumNet.Framework.Entities.WorkTime;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+
+@{
+}
+@functions{
+    private string ViewList()
+    {
+        DataSet ds = null;
+        DataRow rowDaily = null;
+        DataRow rowReq = null;
+        DataRow rowReqHsty = null;
+        DataRowCollection colReq = null;
+        WorkEvent we = null;
+        WorkEventList weList = null;
+
+        DateTime dt = Convert.ToDateTime(ViewBag.JPost["wd"]);
+        int iReqID = StringHelper.SafeInt(ViewBag.JPost["req"]);
+
+        string strValue = "";
+        string strStep = ""; //신청(N), 팀장처리(D), 인사부서처리(A), 완료전조회(V), 완료조회(C)
+        bool strCkReq = false; //신청 항목
+        bool strCkApv = false; //승인 항목
+
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"modal-header\">");
+        sb.AppendFormat("<h4 class=\"modal-title\">{0}월 {1}일 근무기록 조정 신청 현황</h4>", dt.Month.ToString(), dt.Day.ToString());
+        sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>");
+        sb.Append("</div>"); //header
+        sb.Append("<div class=\"modal-body\">");
+
+        try
+        {
+            weList = new WorkEventList();
+
+            if (ViewBag.WorkEvent != null)
+            {
+                rowDaily = ViewBag.WorkEvent.Tables[0].Rows[0];
+                if (ViewBag.WorkEvent.Tables.Count > 1)
+                {
+                    foreach (DataRow dr in ViewBag.WorkEvent.Tables[1].Rows)
+                    {
+                        WorkEvent w = new WorkEvent();
+                        w.SetEntities(Convert.ToInt32(dr["OID"]), dr["WorkStatus"].ToString(), dr["EventTime"].ToString()); //RegID -> OID 사용
+                        weList.Add(w);
+                    }
+                }
+                if (ViewBag.WorkEvent.Tables.Count > 2) rowReq = ViewBag.WorkEvent.Tables[2].Rows[0];
+                if (ViewBag.WorkEvent.Tables.Count > 3) colReq = ViewBag.WorkEvent.Tables[3].Rows;
+            }
+
+            if (iReqID > 0)
+            {
+                if (ViewBag.JPost["chief"].ToString() == "Y" && ViewBag.JPost["page"].ToString() == "memberrequest"
+                    && rowReq["State"].ToString() == "0"
+                    && (rowReq["FApvState"].ToString() == "0" || rowReq["FApvState"].ToString() == "1")) strStep = "D";
+
+                else if (ViewBag.JPost["mo"].ToString() == "Y" && ViewBag.JPost["page"].ToString() == "requestmgr"
+                    && rowReq["State"].ToString() == "0"
+                    && (rowReq["FApvState"].ToString() == "6" || rowReq["FApvState"].ToString() == "7")
+                    && (rowReq["SApvState"].ToString() == "0" || rowReq["SApvState"].ToString() == "1")) strStep = "A";
+
+                else if (rowReq["State"].ToString() != "0"
+                   && (rowReq["FApvState"].ToString() == "6" || rowReq["FApvState"].ToString() == "7")
+                   && (rowReq["SApvState"].ToString() == "6" || rowReq["SApvState"].ToString() == "7")) strStep = "C"; //승인 완료
+
+                else strStep = "V";
+            }
+            else
+            {
+                if (ViewBag.JPost["ur"].ToString() == Session["URID"].ToString()) strStep = "N";
+            }
+
+            sb.AppendFormat("<div class=\"text-big mb-1\">&nbsp;<i class=\"far fa-hand-point-right mr-2\"></i>{0}</div>", "신청자 정보");
+            sb.Append("<table class=\"table table-bordered table-sm text-center\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr><th class=\"table-active\" style=\"width:20%\">신청자</th>");
+            sb.AppendFormat("<td style=\"width:30%\">{0}</td>", rowDaily["UserDN"].ToString());
+            sb.Append("<th class=\"table-active\" style=\"width:20%\">신청일</th>");
+            sb.AppendFormat("<td>{0}</td></tr>", (iReqID > 0) ? CommonUtils.CheckDateTime(rowReq["CreateDate"].ToString()) : DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+            sb.Append("<tr><th class=\"table-active\">근무인정시간</th>");
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.StrTimeSpan(rowDaily["RealWork"].ToString()));
+            sb.Append("<th class=\"table-active\">관련문서</th>");
+
+            if (rowDaily["BizTrip"].ToString() != "") strValue += ", " + StrWork("B", rowDaily["BizTrip"].ToString(), "");
+            if (rowDaily["Leave"].ToString() != "") strValue += ", " + StrWork("L", rowDaily["Leave"].ToString(), "");
+            if (rowDaily["OutWork"].ToString() != "") strValue += ", " + StrWork("O", rowDaily["OutWork"].ToString(), "");
+            if (rowDaily["OutLcm"].ToString() != "") strValue += ", " + StrWork("E", rowDaily["OutLcm"].ToString(), "");
+            if (rowDaily["HolidayWork"].ToString() != "") strValue += ", " + StrWork("H", rowDaily["HolidayWork"].ToString(), "");
+            if (Convert.ToInt32(rowDaily["WorkLimited"]) > 0) strValue += ", " + StrWork("근무제한", ";" + rowDaily["WorkLimited"].ToString(), "");
+
+            if (strValue.Length > 0) strValue = strValue.Substring(2);
+            sb.AppendFormat("<td>{0}</td></tr>", strValue);
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+
+            sb.AppendFormat("<div class=\"text-big mt-3 mb-1\">&nbsp;<i class=\"far fa-hand-point-right mr-2\"></i>{0}</div>", "조정 항목 선택");
+            sb.Append("<table class=\"table table-bordered table-sm text-center\" id=\"_SubTable\">");
+            sb.Append("<thead class=\"thead-light\"><tr><th>선택</th><th>구분</th><th>기존시각</th><th>세콤시각</th><th>처리</th><th>변경</th></tr></thead>");
+            sb.Append("<tbody>");
+
+            //출근 관련
+            we = weList.Find("A");
+            if (strStep == "N")
+            {
+                //요청
+                sb.Append("<tr>");
+                sb.Append("<td style=\"width:10%\">");
+                sb.AppendFormat("<input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"statusid\" value=\"{0}\" />", (we != null) ? we.RegID.ToString() : "0");
+                sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"workstatus\" value=\"{0}\" />", (we != null) ? we.WorkStatus : "A");
+                //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"eventtime\" value=\"{0}\" />", (we != null) ? we.EventTime.ToString() : "");
+                sb.Append("</td>");
+                sb.AppendFormat("<th style=\"width:20%\">{0}</th>", "출근");
+                sb.AppendFormat("<td style=\"width:20%\">{0}</td>", (we != null) ? CommonUtils.StrHHmmss(we.EventTime.ToString()) : "");
+                sb.AppendFormat("<td style=\"width:20%\">{0}</td>", rowDaily["SecomInTime"].ToString() != "" ? CommonUtils.StrHHmmss(rowDaily["SecomInTime"].ToString()) : "");
+                sb.Append("<td style=\"width:10%\"><input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"reset\" value=\"0\" disabled /></td>");
+                sb.AppendFormat("<td>{0}</td>", "");
+                sb.Append("</tr>");
+            }
+            else
+            {
+                //조회 및 승인 처리
+                foreach (DataRow r in colReq)
+                {
+                    if (r["WorkStatus"].ToString() == "A")
+                    {
+                        rowReqHsty = r;
+                        strCkReq = true;
+                        if (r["ResetStatus"].ToString() == "A") strCkApv = true;
+                        break;
+                    }
+                }
+
+                sb.Append("<tr>");
+                sb.Append("<td style=\"width:8%\">");
+                sb.AppendFormat("<input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"statusid\" value=\"{0}\" disabled{1} />", (we != null) ? we.RegID.ToString() : "0", (strCkReq) ? " checked" : "");
+                sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"workstatus\" value=\"{0}\" />", (we != null) ? we.WorkStatus : "A");
+                sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"seq\" value=\"{0}\" />", (rowReqHsty != null) ? rowReqHsty["Seq"].ToString() : "0");
+                //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"eventtime\" value=\"{0}\" />", (we != null) ? we.EventTime.ToString() : "");
+                sb.Append("</td>");
+                sb.AppendFormat("<th style=\"width:15%\">{0}</th>", "출근");
+
+                strValue = "";
+                if (strStep == "C")
+                {
+                    if (rowReqHsty != null) strValue = rowReqHsty["EventTime"].ToString();
+                    else if (we != null) strValue = we.EventTime.ToString();
+                }
+                else
+                {
+                    if (we != null) strValue = we.EventTime.ToString();
+                }
+                sb.AppendFormat("<td style=\"width:18%\">{0}</td>", (strValue != "") ? CommonUtils.StrHHmmss(strValue) : "");
+                sb.AppendFormat("<td style=\"width:17%\">{0}</td>", rowDaily["SecomInTime"].ToString() != "" ? CommonUtils.StrHHmmss(rowDaily["SecomInTime"].ToString()) : "");
+                sb.AppendFormat("<td style=\"width:8%\"><input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"reset\" value=\"{0}\"{1}{2} /></td>", (rowReqHsty != null) ? rowReqHsty["ResetStatus"].ToString() : "0", (strStep == "A" && strCkReq) ? "" : " disabled", (strCkApv) ? " checked" : "");
+                if (strStep == "A")
+                {
+                    sb.AppendFormat("<td>{0}</td>", (rowReqHsty != null && rowReqHsty["ResetTime"].ToString() != "") ? CommonUtils.StrHHmmss(rowReqHsty["ResetTime"].ToString()) : "");
+                }
+                else
+                {
+                    sb.AppendFormat("<td>{0}</td>", (rowReqHsty != null && rowReqHsty["ResetTime"].ToString() != "") ? CommonUtils.StrHHmmss(rowReqHsty["ResetTime"].ToString()) : "");
+                }
+                sb.Append("</tr>");
+
+                rowReqHsty = null;
+                strCkReq = false;
+                strCkApv = false;
+            }
+
+            //퇴근 관련
+            strValue = (we != null) ? we.EventTime.ToString() : "";
+            we = null;
+            we = weList.Last("Z", strValue);
+
+            if (strStep == "N")
+            {
+                sb.Append("<tr>");
+                sb.Append("<td>");
+                sb.AppendFormat("<input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"statusid\" value=\"{0}\" />", (we != null) ? we.RegID.ToString() : "0");
+                sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"workstatus\" value=\"{0}\" />", (we != null) ? we.WorkStatus : "Z");
+                //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"eventtime\" value=\"{0}\" />", (we != null) ? we.EventTime.ToString() : "");
+                sb.Append("</td>");
+                sb.AppendFormat("<th>{0}</th>", "퇴근");
+                sb.AppendFormat("<td>{0}</td>", (we != null) ? CommonUtils.StrHHmmss(we.EventTime.ToString()) : "");
+                sb.AppendFormat("<td>{0}</td>", rowDaily["SecomOutTime"].ToString() != "" ? CommonUtils.StrHHmmss(rowDaily["SecomOutTime"].ToString()) : "");
+                sb.Append("<td><input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"reset\" value=\"0\" disabled /></td>");
+                sb.AppendFormat("<td>{0}</td>", "");
+                sb.Append("</tr>");
+            }
+            else
+            {
+                //조회 및 승인 처리
+                foreach (DataRow r in colReq)
+                {
+                    if (r["WorkStatus"].ToString() == "Z")
+                    {
+                        rowReqHsty = r;
+                        strCkReq = true;
+                        if (r["ResetStatus"].ToString() == "Z") strCkApv = true;
+                        break;
+                    }
+                }
+
+                sb.Append("<tr>");
+                sb.Append("<td>");
+                sb.AppendFormat("<input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"statusid\" value=\"{0}\" disabled{1} />", (we != null) ? we.RegID.ToString() : "0", (strCkReq) ? " checked" : "");
+                sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"workstatus\" value=\"{0}\" />", (we != null) ? we.WorkStatus : "Z");
+                sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"seq\" value=\"{0}\" />", (rowReqHsty != null) ? rowReqHsty["Seq"].ToString() : "0");
+                //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"eventtime\" value=\"{0}\" />", (we != null) ? we.EventTime.ToString() : "");
+                sb.Append("</td>");
+                sb.AppendFormat("<th>{0}</th>", "퇴근");
+
+                strValue = "";
+                if (strStep == "C")
+                {
+                    if (rowReqHsty != null) strValue = rowReqHsty["EventTime"].ToString();
+                    else if (we != null) strValue = we.EventTime.ToString();
+                }
+                else
+                {
+                    if (we != null) strValue = we.EventTime.ToString();
+                }
+                sb.AppendFormat("<td>{0}</td>", (strValue != "") ? CommonUtils.StrHHmmss(strValue) : "");
+                sb.AppendFormat("<td>{0}</td>", rowDaily["SecomOutTime"].ToString() != "" ? CommonUtils.StrHHmmss(rowDaily["SecomOutTime"].ToString()) : "");
+                sb.AppendFormat("<td><input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"reset\" value=\"{0}\"{1}{2} /></td>", (rowReqHsty != null) ? rowReqHsty["ResetStatus"].ToString() : "0", (strStep == "A" && strCkReq) ? "" : " disabled", (strCkApv) ? " checked" : "");
+                if (strStep == "A")
+                {
+                    sb.AppendFormat("<td>{0}</td>", (rowReqHsty != null && rowReqHsty["ResetTime"].ToString() != "") ? CommonUtils.StrHHmmss(rowReqHsty["ResetTime"].ToString()) : "");
+                }
+                else
+                {
+                    sb.AppendFormat("<td>{0}</td>", (rowReqHsty != null && rowReqHsty["ResetTime"].ToString() != "") ? CommonUtils.StrHHmmss(rowReqHsty["ResetTime"].ToString()) : "");
+                }
+                sb.Append("</tr>");
+
+                rowReqHsty = null;
+                strCkReq = false;
+                strCkApv = false;
+            }
+
+            //근무 미인증 관련
+            foreach (WorkEvent e in weList)
+            {
+                if (DateTime.Compare(e.EventTime, Convert.ToDateTime(rowDaily["WorkDate"].ToString() + " 08:00:00")) >= 0
+                    || DateTime.Compare(e.EventTime, Convert.ToDateTime(rowDaily["WorkDate"].ToString() + " 09:00:00")) <= 0)
+                {
+                    if (strStep == "N")
+                    {
+                        if (e.WorkStatus == "B")
+                        {
+                            sb.Append("<tr>");
+                            sb.Append("<td>");
+                            sb.AppendFormat("<input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"statusid\" value=\"{0}\" />", e.RegID.ToString());
+                            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"workstatus\" value=\"{0}\" />", e.WorkStatus);
+                            //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"eventtime\" value=\"{0}\" />", e.EventTime.ToString());
+                            sb.Append("</td>");
+                            sb.AppendFormat("<th>{0}</th>", "미인증");
+                            sb.AppendFormat("<td>{0}</td>", CommonUtils.StrHHmmss(e.EventTime.ToString()));
+                            sb.AppendFormat("<td>{0}</td>", "");
+                            sb.Append("<td><input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"reset\" value=\"0\" disabled /></td>");
+                            sb.AppendFormat("<td>{0}</td>", "");
+                            sb.Append("</tr>");
+                        }
+                    }
+                    else
+                    {
+                        bool bHsty = false;
+                        if (strStep == "C")
+                        {
+                            foreach (DataRow r in colReq)
+                            {
+                                if (r["WorkStatus"].ToString() == "B" && r["RegID"].ToString() == e.RegID.ToString())
+                                {
+                                    bHsty = true; break;
+                                }
+                            }
+                        }
+
+                        if (e.WorkStatus == "B" || bHsty)
+                        {
+                            //조회 및 승인 처리
+                            foreach (DataRow r in colReq)
+                            {
+                                if (r["RegID"].ToString() == e.RegID.ToString())
+                                {
+                                    rowReqHsty = r;
+                                    strCkReq = true;
+                                    if (r["ResetStatus"].ToString() == "N") strCkApv = true;
+                                    break;
+                                }
+                            }
+
+                            sb.Append("<tr>");
+                            sb.Append("<td>");
+                            sb.AppendFormat("<input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"statusid\" value=\"{0}\" disabled{1} />", e.RegID.ToString(), (strCkReq) ? " checked" : "");
+                            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"workstatus\" value=\"{0}\" />", (bHsty) ? rowReqHsty["WorkStatus"].ToString() : e.WorkStatus);
+                            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"seq\" value=\"{0}\" />", (rowReqHsty != null) ? rowReqHsty["Seq"].ToString() : "0");
+                            //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"eventtime\" value=\"{0}\" />", e.EventTime.ToString());
+                            sb.Append("</td>");
+                            sb.AppendFormat("<th>{0}</th>", "미인증");
+                            sb.AppendFormat("<td>{0}</td>", CommonUtils.StrHHmmss(e.EventTime.ToString()));
+                            sb.AppendFormat("<td>{0}</td>", "");
+                            sb.AppendFormat("<td><input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"reset\" value=\"{0}\"{1}{2} /></td>", (rowReqHsty != null) ? rowReqHsty["ResetStatus"].ToString() : "0", (strStep == "A" && strCkReq) ? "" : " disabled", (strCkApv) ? " checked" : "");
+                            if (strStep == "A") sb.AppendFormat("<td>{0}</td>", (rowReqHsty != null && rowReqHsty["ResetTime"].ToString() != "") ? CommonUtils.StrHHmmss(rowReqHsty["ResetTime"].ToString()) : "");
+                            else if (strStep == "C") sb.AppendFormat("<td>{0}</td>", (bHsty) ? "인증" : "");
+                            else sb.AppendFormat("<td>{0}</td>", (rowReqHsty != null && rowReqHsty["ResetTime"].ToString() != "") ? CommonUtils.StrHHmmss(rowReqHsty["ResetTime"].ToString()) : "");
+
+                            sb.Append("</tr>");
+                        }
+
+                        rowReqHsty = null;
+                        strCkReq = false;
+                        strCkApv = false;
+                    }
+                }
+            }
+
+            //결재문서 재처리
+            if (colReq != null)
+            {
+                foreach (DataRow r in colReq)
+                {
+                    if (r["WorkStatus"].ToString() == "X")
+                    {
+                        rowReqHsty = r;
+                        strCkReq = true;
+                        if (r["ResetStatus"].ToString() == "X") strCkApv = true;
+                        break;
+                    }
+                }
+            }
+            sb.Append("<tr>");
+            sb.Append("<td>");
+            sb.AppendFormat("<input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"statusid\" value=\"0\"{0}{1} />", (strStep == "N") ? "" : " disabled", (strCkReq) ? " checked" : "");
+            sb.Append("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"workstatus\" value=\"X\" />");
+            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"seq\" value=\"{0}\" />", (rowReqHsty != null) ? rowReqHsty["Seq"].ToString() : "0");
+            //sb.Append("<input type=\"hidden\" data-zf-ftype=\"sub\" data-zf-field=\"eventtime\" value=\"\" />");
+            sb.Append("</td>");
+            sb.AppendFormat("<th colspan=\"3\" style=\"text-align: left; padding-left: 41px\">{0}</th>", "결재문서 재처리");
+            if (iReqID == 0)
+            {
+                sb.Append("<td><input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"reset\" value=\"0\" disabled /></td>");
+            }
+            else
+            {
+                sb.AppendFormat("<td><input type=\"checkbox\" name=\"ckbRow\" data-zf-ftype=\"sub\" data-zf-field=\"reset\" value=\"{0}\"{1}{2} /></td>", (rowReqHsty != null) ? rowReqHsty["ResetStatus"].ToString() : "0", (strStep == "A" && strCkReq) ? "" : " disabled", (strCkApv) ? " checked" : "");
+            }
+            sb.AppendFormat("<td>{0}</td>", (strStep == "C" && rowReqHsty != null) ? "승인" : "");
+            sb.Append("</tr>");
+
+            rowReqHsty = null;
+            strCkReq = false;
+            strCkApv = false;
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+
+            //사유
+            sb.AppendFormat("<div class=\"text-big mt-3 mb-1\">&nbsp;<i class=\"far fa-hand-point-right mr-2\"></i>{0}</div>", "조정 사유");
+            sb.Append("<div class=\"\">");
+            if (strStep == "N") sb.Append("<textarea class=\"form-control\" data-zf-ftype=\"main\" data-zf-field=\"reason\"></textarea>");
+            else sb.AppendFormat("<p class=\"form-control\" style=\"height:auto\">{0}</p>", rowReq["Reason"].ToString());
+            sb.Append("</div>");
+
+            //승인 정보
+            if (iReqID > 0)
+            {
+                sb.AppendFormat("<div class=\"text-big mt-3 mb-1\">&nbsp;<i class=\"far fa-hand-point-right mr-2\"></i>{0}</div>", "승인");
+                sb.Append("<table class=\"table table-bordered table-sm text-center mb-0\" id=\"_ApvTable\">");
+                sb.Append("<thead class=\"thead-light\"><tr><th style=\"width: 70px\">단계</th><th style=\"width: 80px\">상태</th><th style=\"width: 110px\">수신시각</th><th style=\"width: 110px\">처리시각</th><th>의견</th>");
+                //if (strStep == "D" || strStep == "A") sb.Append("<th style=\"width: 70px\"></th>");
+                sb.Append("</tr></thead>");
+                sb.Append("<tbody>");
+                sb.Append("<tr><th>팀장</th>");
+                sb.AppendFormat("<td>{0}</td>", ReqStatus(rowReq["FApvState"].ToString()));
+                sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(rowReq["FApvReceived"].ToString()));
+                sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(rowReq["FApvComp"].ToString()));
+                if (strStep == "D")
+                {
+                    sb.AppendFormat("<td><textarea class=\"form-control\" data-zf-ftype=\"main\" data-zf-field=\"apvcmnt\">{0}</textarea></td>", rowReq["FApvCmnt"].ToString());
+                    //sb.Append("<td>");
+                    //sb.Append("<button type=\"button\" class=\"btn btn-success btn-sm\" data-zf-menu=\"approval\">승인</button>");
+                    //sb.Append("<button type=\"button\" class=\"btn btn-default btn-sm\" data-zf-menu=\"reject\">반려</button>");
+                    //sb.Append("</td>");
+                }
+                else
+                {
+                    sb.AppendFormat("<td>{0}</td>", rowReq["FApvCmnt"].ToString());
+                    //if (strStep == "S") sb.Append("<td></td>");
+                }
+                sb.Append("</tr>");
+
+                sb.Append("<tr><th>인사</th>");
+                sb.AppendFormat("<td>{0}</td>", ReqStatus(rowReq["SApvState"].ToString()));
+                sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(rowReq["SApvReceived"].ToString()));
+                sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(rowReq["SApvComp"].ToString()));
+                if (strStep == "A")
+                {
+                    sb.AppendFormat("<td><textarea class=\"form-control\" data-zf-ftype=\"main\" data-zf-field=\"apvcmnt\">{0}</textarea></td>", rowReq["SApvCmnt"].ToString());
+                    //sb.Append("<td>");
+                    //sb.Append("<button type=\"button\" class=\"btn btn-success\" data-zf-menu=\"approval\">승인</button>");
+                    //sb.Append("<button type=\"button\" class=\"btn btn-default\" data-zf-menu=\"reject\">반려</button>");
+                    //sb.Append("</td>");
+                }
+                else
+                {
+                    sb.AppendFormat("<td>{0}</td>", rowReq["SApvCmnt"].ToString());
+                    //if (strStep == "D") sb.Append("<td></td>");
+                }
+                sb.Append("</tr>");
+                sb.Append("</tbody>");
+                sb.Append("</table>");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            sb.Append("<p>오류발생!</p>");
+            sb.AppendFormat("<p>{0}</p>", ex);
+        }
+
+        sb.Append("</div>"); //body
+
+        sb.Append("<div class=\"modal-footer d-flex justify-content-center\">");
+        //요청 버튼
+        //sb.Append("<div class=\"text-center py-15\">");
+
+        sb.AppendFormat("<input type=\"hidden\" data-zf-role=\"step\" value=\"{0}\" />", strStep);
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"main\" data-zf-field=\"userid\" value=\"{0}\" />", ViewBag.JPost["ur"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"main\" data-zf-field=\"workdate\" value=\"{0}\" />", ViewBag.JPost["wd"].ToString());
+
+        if (strStep == "N")
+        {
+            sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">취소</button>&nbsp;");
+            sb.Append("<button type=\"button\" class=\"btn btn-success\" data-zf-menu=\"send\">요청</button>");
+        }
+        else if (strStep == "D" || strStep == "A")
+        {
+            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"main\" data-zf-field=\"reqid\" value=\"{0}\" />", iReqID.ToString());
+            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"main\" data-zf-field=\"apvid\" value=\"{0}\" />", Session["URID"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"main\" data-zf-field=\"apvdn\" value=\"{0}\" />", Session["URName"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"main\" data-zf-field=\"apvdeptid\" value=\"{0}\" />", Session["DeptID"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"main\" data-zf-field=\"apvdept\" value=\"{0}\" />", Session["DeptName"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"main\" data-zf-field=\"apvgrade\" value=\"{0}\" />", Session["GRADE1"].ToString());
+
+            sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">취소</button>&nbsp;");
+            sb.Append("<button type=\"button\" class=\"btn btn-danger\" data-zf-menu=\"reject\">미승인</button>&nbsp;");
+            sb.Append("<button type=\"button\" class=\"btn btn-success\" data-zf-menu=\"approval\">승인</button>");
+        }
+        else
+        {
+            sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">닫기</button>");
+        }
+        //sb.Append("</div>");
+        sb.Append("</div>"); //footer
+
+        we = null;
+        weList = null;
+        rowDaily = null;
+        rowReq = null;
+        rowReqHsty = null;
+
+        return sb.ToString();
+    }
+
+    private string StrWork(string type, string code, string day)
+    {
+        string sRt = "";
+
+        if (type == "L") sRt = StrLeave(code);
+        else if (type == "B") sRt = "출장";
+        else if (type == "E") sRt = "교육";
+        else if (type == "O") sRt = "외근";
+        else if (type == "H") sRt = "휴일근무";
+        else sRt = type;
+
+        if (day != "") sRt += "(" + day + ")";
+
+        if (code.IndexOf(';') != -1)
+        {
+            sRt = String.Format("<a class=\"\" href=\"javascript:\" onclick=\"_zw.fn.openEAForm('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
+        }
+        return sRt;
+    }
+
+    private string StrLeave(string code)
+    {
+        string[] vCode = code.Split(';');
+        string sPrefix = vCode[0].Substring(0, 1);
+
+        string sRt = "";
+        switch (sPrefix)
+        {
+            case "A":
+                sRt = "공가";
+                break;
+            case "B":
+                sRt = "연차";
+                break;
+            case "C":
+                if (vCode[0].Substring(1, 1) == "A") sRt = "오전반차" + vCode[0].Substring(2, 1);
+                else if (vCode[0].Substring(1, 1) == "P") sRt = "오후반차" + vCode[0].Substring(2, 1);
+                else sRt = "반차";
+                break;
+            case "D":
+                if (vCode[0].Substring(1) == "A1") sRt = "오전1/4차";
+                else if (vCode[0].Substring(1) == "P1") sRt = "오후1/4차";
+                else sRt = "1/4차";
+                break;
+            case "E":
+                sRt = "보건휴가";
+                break;
+            case "F":
+                sRt = "결근";
+                break;
+            case "G":
+                sRt = "기타";
+                break;
+        }
+        return sRt;
+    }
+
+    /// <summary>
+    /// 조정신청 승인 상태
+    /// </summary>
+    /// <param name="ss"></param>
+    /// <returns></returns>
+    private string ReqStatus(string ss)
+    {
+        if (ss == "7") return "승인";
+        else if (ss == "6") return "부분승인";
+        else if (ss == "8") return "미승인";
+        else if (ss == "1") return "처리대기";
+        else return "없음";
+    }
+}
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        @if (ViewBag.Error != "")
+        {
+            <p>오류발생!</p>
+            <p>ViewBag.Error</p>
+        }
+        else
+        {
+            @Html.Raw(ViewList())
+        }
+    </div>
+</div>

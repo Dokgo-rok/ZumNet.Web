@@ -1,11 +1,11 @@
-﻿@using System.Data;
-@using System.Text;
+﻿@using System.Threading;
 @using Newtonsoft.Json;
 
 @{
     ViewBag.Title = ViewBag.R["ttl"]; //"게시판";
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 }
 
 @section Styles {
@@ -15,8 +15,15 @@
 }
 
 @section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
 
     @Scripts.Render("~/Scripts/EA/ea.js")
+
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
 }
 
@@ -30,7 +37,6 @@
     <!-- sidebox -->
     @Html.Partial("_LeftMenu")
     <!-- / sidebox -->
-
     <!-- content -->
     <div class="d-flex flex-column w-100">
         <!-- Header -->

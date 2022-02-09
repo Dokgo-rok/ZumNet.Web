@@ -5,23 +5,27 @@
 @if (Session["UseWorkTime"].ToString() == "Y")
 {
     <div id="__CalcWorkTime" class="mt-0 mb-2 mx-3 border rounded" style="_background-color: rgba(24,28,33,0.01) !important">
-        <a href="/ExS/WorkTime" class="btn w-100 p-2">
-            <div class="d-flex justify-content-between mb-1">
-                <div class="text-facebook">@Resources.Global.WorkToday</div>
+        <a href="javascript:void(0)" class="btn px-2 pt-1 pb-0 w-100 z-lnk-navy_n" onclick="_zw.fn.viewWorkEvent('@ViewBag.R.current["urid"]', '@ViewBag.R.current["workdate"]');">
+            <div class="d-flex justify-content-between">
+                <div class="font-weight-bold">@Resources.Global.WorkToday</div>
                 <div class="text-primary">
                     <span class="fas fa-clock mr-1"></span>
                     <span data-for="today">0h 0m</span>
                 </div>
             </div>
-            <div class="d-flex justify-content-between mb-1">
-                <div class="text-facebook">@Resources.Global.WorkWeekAvg</div>
+        </a>
+        <a href="/ExS/WorkTime" class="btn px-2 py-0 w-100 z-lnk-navy_n">
+            <div class="d-flex justify-content-between">
+                <div class="">@Resources.Global.WorkWeekAvg</div>
                 <div class="text-primary">
                     <span class="fas fa-clock mr-1"></span>
                     <span data-for="week">0h 0m</span>
                 </div>
             </div>
+            </a>
+        <a href="/ExS/WorkTime" class="btn px-2 pt-0 pb-1 w-100 z-lnk-navy_n">
             <div class="d-flex justify-content-between">
-                <div class="text-facebook">@Resources.Global.WorkMonthTotal</div>
+                <div class="">@Resources.Global.WorkMonthTotal</div>
                 <div class="text-primary">
                     <span class="fas fa-clock mr-1"></span>
                     <span data-for="month">0h 0m</span>

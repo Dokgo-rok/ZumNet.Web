@@ -45,7 +45,7 @@
 
         foreach (DataRow row in colMember)
         {
-            sb.AppendFormat("<th><input type='checkbox' id='chkHeader' onClick='checkAll(this)' hidefocus data-for=\"{0}\" /></th>", row["UserID"].ToString());
+            sb.AppendFormat("<th><input type='checkbox' id='chkHeader' hidefocus data-for=\"{0}\" /></th>", row["UserID"].ToString());
             sb.AppendFormat("<th>{0}</th>", "출퇴근계획");
             sb.AppendFormat("<th>{0}</th>", "상태");
         }

@@ -419,6 +419,12 @@
         text-decoration: underline;
     }
 
+a.z-lnk-navy_n {
+    color: #337ab7;
+}
+    a.z-lnk-navy_n:focus, a.z-lnk-navy_n:hover {
+        color: #23527c;
+    }
 
 .z-select {
     height: 28px;

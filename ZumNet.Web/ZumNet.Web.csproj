@@ -162,6 +162,9 @@
     <Reference Include="Phs.FEMail.EWS">
       <HintPath>..\..\Library\Other\Phs.FEMail.EWS.dll</HintPath>
     </Reference>
+    <Reference Include="Phs.Framework.Security">
+      <HintPath>..\..\Library\Other\Phs.Framework.Security.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -2817,6 +2820,8 @@
     <Content Include="..\.editorconfig">
       <Link>.editorconfig</Link>
     </Content>
+    <Content Include="Areas\ExS\Views\WorkTime\_EventView.cshtml" />
+    <Content Include="Areas\ExS\Views\WorkTime\_EventRequest.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

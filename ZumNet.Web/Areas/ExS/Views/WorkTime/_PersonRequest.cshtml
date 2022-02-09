@@ -44,7 +44,7 @@
             {
                 if (_columnConfig[i, 5].ToString() == "Y")
                 {
-                    strValue = String.Format("<a href=\"javascript:\" onclick=\"sort(event);\">{0}</a>", _columnConfig[i, 1].ToString());
+                    strValue = String.Format("<a href=\"javascript:\" onclick=\"\">{0}</a>", _columnConfig[i, 1].ToString());
                 }
                 else
                 {
@@ -94,7 +94,7 @@
                     else if (strID == "ReqSubject")
                     {
                         strValue = row[strID].ToString();
-                        strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_WTM.fn.reqEvent(null, ['{0}', '{1}', '{2}']);\" title=\"{3}\">{4}</a>"
+                        strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.reqEvent(null, ['{0}', '{1}', '{2}']);\" title=\"{3}\">{4}</a>"
                                 , row["UserID"].ToString(), row["WorkDate"].ToString(), row["ReqID"].ToString(), Server.HtmlEncode(strValue), strValue);
                     }
                     else if (strID == "State")

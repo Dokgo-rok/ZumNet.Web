@@ -1,0 +1,83 @@
+﻿@using System.Data;
+@{
+    DateTime dtPost = Convert.ToDateTime(ViewBag.JPost["wd"]);
+}
+@functions{
+    private string GetWorkStatusText(string ws)
+    {
+        if (ws == "A") return "출근";
+        else if (ws == "Z") return "퇴근";
+        else if (ws == "N") return "근무";
+        else if (ws == "B") return "휴식";
+        else if (ws == "O") return "외근";
+        else if (ws == "T") return "출장";
+        else if (ws == "E") return "교육";
+        else if (ws == "D") return "파견";
+        else return "기타";
+    }
+} 
+<div class="modal-dialog modal-sm">
+    <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header">
+            <h4 class="modal-title">@(dtPost.Month)월 @(dtPost.Day)일 근무기록</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body text-center p-0">
+            @if (ViewBag.Error != "")
+            {
+                <p>오류발생!</p>
+                <p>ViewBag.Error</p>
+            }
+            else
+            {
+                if (ViewBag.WorkEvent != null && ViewBag.WorkEvent.Tables.Count > 0 && ViewBag.WorkEvent.Tables[0].Rows.Count > 0)
+                {
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr class=""><th>구분</th><th>시각</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (DataRow row in ViewBag.WorkEvent.Tables[0].Rows)
+                        {
+                            <tr>
+                                <th>@GetWorkStatusText(row["WorkStatus"].ToString())</th>
+                                <td>@ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["EventTime"].ToString())</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                }
+                else
+                {
+                    <p class="">근무기록이 없습니다!</p>
+                }
+            }
+        </div>
+
+        <div class="modal-footer">
+            <div class="flex-fill" data-for="zf-addinfo">
+                @if (ViewBag.Error == "")
+                {
+                    if (ViewBag.WorkEvent != null && ViewBag.WorkEvent.Tables.Count > 1 && ViewBag.WorkEvent.Tables[1].Rows.Count > 0)
+                    {
+                        <button type="button" class="btn btn-success" data-val="@(ViewBag.JPost["ur"].ToString() + ";" + ViewBag.JPost["wd"].ToString() + ";" + ViewBag.WorkEvent.Tables[1].Rows[0]["ReqID"].ToString())">조정요청내역</button>
+                    }
+                    else if (ViewBag.JPost["ur"].ToString() == Session["URID"].ToString() && ViewBag.JPost["wd"].ToString() != DateTime.Now.ToString("yyyy-MM-dd"))
+                    {
+                        <button type="button" class="btn btn-success" data-val="@(ViewBag.JPost["ur"].ToString() + ";" + ViewBag.JPost["wd"].ToString() + ";")">조정요청</button>
+                    }
+
+                    if (ViewBag.JPost["page"].ToString() == "statusmgr")
+                    {
+                        <button type="button" class="btn btn-info" onclick="_zw.fn.openNewEAForm('AD4A2699A47346FEABB67982A03A7C20')">휴가신청</button>
+                    }
+                }
+            </div>
+            <div class="">
+                <button type="button" class="flex-fill btn btn-default" data-dismiss="modal">@Resources.Global.Close</button>
+            </div>
+        </div>
+    </div>
+</div>

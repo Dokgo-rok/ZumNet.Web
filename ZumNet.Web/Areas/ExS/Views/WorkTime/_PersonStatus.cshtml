@@ -4,7 +4,7 @@
 @using Newtonsoft.Json;
 
 @{
-    ConfigColumn(ViewBag.R.mode.ToString());
+    ConfigColumn(ViewBag.Mode);
 
 }
 
@@ -162,8 +162,8 @@
         DataRow dr = null;
 
         StringBuilder sb = new StringBuilder();
-        if (mode == "modal_mod") sb.Append("<table class=\"table table-hover table-bordered table-sm\">");
-        else sb.Append("<table class=\"table table-hover table-bordered table-sm\">");
+        if (mode == "modal_mod") sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 800px\">");
+        else sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 800px\">");
         sb.Append(RenderColumnHeader(mode, htSumHour));
 
 
@@ -341,7 +341,8 @@
         else
         {
             sb.Append("<tr>");
-            sb.AppendFormat("<th colspan=\"{0}\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
+            if (mode == "modal" || mode == "modal_mod") sb.AppendFormat("<th colspan=\"{0}\">{1}</th>", _columnConfig.GetLength(0), "근무기록이 없습니다!");
+            else sb.AppendFormat("<th colspan=\"{0}\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
             sb.Append("</tr>");
         }
         sb.Append("</tbody>");
@@ -381,7 +382,7 @@
 
         if (code.IndexOf(';') != -1)
         {
-            sRt = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
+            sRt = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
         }
         return sRt;
     }
@@ -424,5 +425,27 @@
     }
     #endregion
 }
+@if (ViewBag.Mode == "modal" || ViewBag.Mode == "modal_mod")
+{
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content bg-white z-list">
+            <div class="modal-header">
+                <h4 class="modal-title">@(ViewBag.Month)월 @(ViewBag.ViewPerson) 근무현황</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body z-list-body">
+                @Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList))
+            </div>
 
-@Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Global.Close</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList))
+}
