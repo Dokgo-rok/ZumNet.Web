@@ -109,7 +109,7 @@
 
                             string[] temp = row["HolidayWork"].ToString().Substring(2).Split(';');
 
-                            sCol_day += String.Format("<a class=\"btn btn-success btn-sm\" style=\"padding: 3px 5px; margin: 1px 4px 1px 0\" href=\"javascript:\" onclick=\"viewInfo('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, '{8} {10}');\">{9} {10}</a>"
+                            sCol_day += String.Format("<button class=\"btn btn-success btn-sm\" style=\"padding: 3px 5px; margin: 1px 4px 1px 0\" onclick=\"_zw.fn.viewWorkInfo('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, '{8} {10}');\">{9} {10}</button>"
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["InTime"].ToString())
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["OutTime"].ToString())
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["SecomInTime"].ToString())
@@ -158,7 +158,7 @@
                                     else if (Convert.ToDateTime(row["InTime"]).Hour < 10) { iN_pay_22 += 0; iN_22++; }
                                 }
 
-                                sCol_day += String.Format("<a class=\"btn btn-warning btn-sm\" style=\"padding: 3px 5px; margin: 1px 4px 1px 0\" href=\"javascript:\" onclick=\"viewInfo('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, '{8} {10}');\">{9} {10}</a>"
+                                sCol_day += String.Format("<button class=\"btn btn-warning btn-sm\" style=\"padding: 3px 5px; margin: 1px 4px 1px 0\" onclick=\"_zw.fn.viewWorkInfo('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, '{8} {10}');\">{9} {10}</button>"
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["InTime"].ToString())
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["OutTime"].ToString())
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["SecomInTime"].ToString())

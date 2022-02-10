@@ -157,137 +157,174 @@ $(function () {
                 p.modal();
             }
         });
+    }
+        
+    _zw.fn.viewWorkInfo = function (t1, t2, t3, t4, p1, p2, msg, h, d) {
+        var el = event.target ? event.target : event.srcElement;
 
-        _zw.fn.sendReq = function(m, p) {//alert(m); return;
-            var j = {}, s = [], iCnt = 0, ttl = '';
+        var s = '<div class="modal-dialog">'
+            + '<div class="modal-content bg-white z-list" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">'
+            + '<div class="modal-header">'
+            + '<h4 class="modal-title">' + $(el).parent().prev().text() + ' ' + d + ' 현황</h4>'
+            + '<button type="button" class="close" data-dismiss="modal"><span>×</span></button>'
+            + '</div>'
+            + '<div class="modal-body">'
 
-            if (m == 'send') {
-                $('#_SubTable tbody tr input[data-zf-field="statusid"]').each(function () {
-                    if ($(this).prop('checked')) { iCnt++; return false; }
-                });
+            + '<table class="table table-hover table-bordered text-center mb-0">'
+            + '<thead><tr class="">'
+            + '<th style="width: 40%">구분</th><th style="width: 30%">시작</th><th style="width: 30%">종료</th>'
+            + '</tr></thead>'
 
-                if (iCnt < 1) { bootbox.alert("조정 항목은 하나 이상 선택하십시오!"); return; }
-                if ($('[data-zf-field="reason"]').val().trim() == '') { bootbox.alert("조정 사유를 입력 하십시오!"); return; }
+            + '<tbody>'
+            + '<tr><th>EKP 출퇴근</th><td>' + t1 + '</td><td>' + t2 + '</td>'
+            + '<tr><th>세콤 출퇴근</th><td>' + t3 + '</td><td>' + t4 + '</td>'
+            + '<tr><th>계획 시간</th><td>' + p1 + '</td><td>' + p2 + '</td>'
+            + '<tr><th>근무시간</th><td colspan="2">' + h + ' 시간</td>'
+            + '<tr><td colspan="3"><a href="javascript:" class="z-lnk-navy" onclick="_zw.fn.openEAFormSimple(' + msg + ')">관련결재문서</a></td>'
 
-                p.find('[data-zf-ftype="main"]').each(function () {
-                    j[$(this).attr('data-zf-field')] = $(this).val();
-                });
+            + '</tbody>'
 
-                $('#_SubTable tbody tr').each(function () {
-                    var ck = $(this).find('[data-zf-field="statusid"]');
-                    if (ck.prop('checked')) {
-                        ttl += (ttl == '' ? '' : ', ') + $(this).find('th').text();
-                        var t = {};
-                        $(this).find('[data-zf-ftype="sub"]').each(function () {
-                            t[$(this).attr('data-zf-field')] = $(this).val();
-                        });
-                        s.push(t);
-                    }
-                });
-                j["subject"] = ttl + ' 조정 요청';
-                j["sub"] = s;
+            + '</table>'
 
-                bootbox.confirm("선택한 항목으로 조정 요청하시겠습니까?", function (rt) {
-                    if (rt) {
-                        $.ajax({
-                            type: "POST",
-                            url: "/ExS/WorkTime/SendRequest",
-                            data: JSON.stringify(j),
-                            success: function (res) {
-                                if (res == 'OK') {
-                                    bootbox.alert("요청 처리 성공!", function () {
-                                        //이후 처리
-                                        encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"근무조정 신청현황",fd:"PersonRequest"}');
-                                        window.location.href = '/ExS/WorkTime?qi=' + encQi;
-                                    });
-                                    
-                                } else bootbox.alert(res);
-                            }
-                        });
-                    }
-                });
-            } else {
-                //p.find("button[data-dismiss='modal']").click(); $('input[name="rdoSearch"]')[m == 'approval' ? 1 : 2].click(); return
-                var role = p.find('input[data-zf-role="step"]').val(), msg = '';
-                //var fld = role == 'D' ? 'fapvcmnt' : 'sapvcmnt';
+            + '</div>'
+            + '<div class="modal-footer">'
+            + '<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>'
+            + '</div>'
+            + '</div>'
+            + '</div>'
 
-                if (m == 'reject') {
-                    msg = '미승인';
-
-                    if (p.find('[data-zf-ftype="main"][data-zf-field="apvcmnt"]').val().trim() == '') { bootbox.alert("미승인 사유를 입력 하십시오!"); return; }
-
-                } else {
-                    msg = '승인';
-
-                    if (role == 'A') {
-                        $('#_SubTable tbody tr input[data-zf-field="statusid"]').each(function () {
-                            var ws = $(this).parent().find('input[data-zf-field="workstatus"]');
-                            if ($(this).prop('checked')) {
-                                var c = $(this).parent().parent().find('input[data-zf-field="reset"]');
-                                if (c.prop('checked')) {
-                                    if (ws.val() == 'A' || ws.val() == 'Z') {
-                                        var fBox = c.parent().next().find('input').first(), lBox = c.parent().next().find('input').last();
-                                        if ($.trim(fBox.val()) == '') { bootbox.alert("날짜를 입력 하십시오!", function () { fBox.focus(); }); iCnt = 99; return false; }
-                                        else if ($.trim(lBox.val()) == '') { bootbox.alert("시간을 입력 하십시오!", function () { lBox.focus(); }); iCnt = 99; return false; }
-                                    }
-                                    iCnt++; return false;
-                                }
-                            }
-                        });
-                        if (iCnt == 99) return;
-                        if (iCnt < 1) { bootbox.alert("승인 항목을 하나 이상 선택하십시오!"); return; }
-
-                        $('#_SubTable tbody tr').each(function () {
-                            var ck = $(this).find('[data-zf-field="statusid"]');
-                            var ck2 = $(this).find('[data-zf-field="reset"]');
-                            var ws = $(this).find('[data-zf-field="workstatus"]');
-
-                            if (ck.prop('checked') && ck2.prop('checked')) {
-                                var t = {};
-                                t['resettime'] = $(this).find('[data-inputmask]').length > 0 ? $(this).find('[data-inputmask]').first().val() + ' ' + $(this).find('[data-inputmask]').last().val() : '';
-                                $(this).find('[data-zf-ftype="sub"]').each(function () {
-                                    if ($(this).attr('data-zf-field') == 'reset') {
-                                        t['reset'] = ws.val() == 'B' ? 'N' : ws.val();
-                                    } else t[$(this).attr('data-zf-field')] = $(this).val();
-                                });
-                                s.push(t);
-                            }
-                        });
-                        j["sub"] = s;
-                    }
-                }
-
-                p.find('[data-zf-ftype="main"]').each(function () {
-                    j[$(this).attr('data-zf-field')] = $(this).val();
-                });
-
-                j["step"] = role;
-                j["ss"] = m;
-
-                bootbox.confirm("[" + msg + "] 처리 하시겠습니까?", function (rt) {
-                    if (rt) {
-                        $.ajax({
-                            type: "POST",
-                            url: "/ExS/WorkTime/DoRequest",
-                            data: JSON.stringify(j),
-                            success: function (res) {
-                                if (res == 'OK') {
-                                    bootbox.alert(msg + " 처리 성공!", function () {
-                                        //이후 처리
-                                        p.find("button[data-dismiss='modal']").click();
-                                        $('input[name="rdoSearch"]')[m == 'approval' ? 1 : 2].click();
-                                        _zw.fn.reqCnt(); _zw.fn.goSearch();
-                                    });
-
-                                } else bootbox.alert(res);
-                            }
-                        });
-                    }
-                });
-            }
-        }
+        $('#popLayer').html(s).modal('show');
     }
 
+    _zw.fn.sendReq = function (m, p) {//alert(m); return;
+        var j = {}, s = [], iCnt = 0, ttl = '';
+
+        if (m == 'send') {
+            $('#_SubTable tbody tr input[data-zf-field="statusid"]').each(function () {
+                if ($(this).prop('checked')) { iCnt++; return false; }
+            });
+
+            if (iCnt < 1) { bootbox.alert("조정 항목은 하나 이상 선택하십시오!"); return; }
+            if ($('[data-zf-field="reason"]').val().trim() == '') { bootbox.alert("조정 사유를 입력 하십시오!"); return; }
+
+            p.find('[data-zf-ftype="main"]').each(function () {
+                j[$(this).attr('data-zf-field')] = $(this).val();
+            });
+
+            $('#_SubTable tbody tr').each(function () {
+                var ck = $(this).find('[data-zf-field="statusid"]');
+                if (ck.prop('checked')) {
+                    ttl += (ttl == '' ? '' : ', ') + $(this).find('th').text();
+                    var t = {};
+                    $(this).find('[data-zf-ftype="sub"]').each(function () {
+                        t[$(this).attr('data-zf-field')] = $(this).val();
+                    });
+                    s.push(t);
+                }
+            });
+            j["subject"] = ttl + ' 조정 요청';
+            j["sub"] = s;
+
+            bootbox.confirm("선택한 항목으로 조정 요청하시겠습니까?", function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/ExS/WorkTime/SendRequest",
+                        data: JSON.stringify(j),
+                        success: function (res) {
+                            if (res == 'OK') {
+                                bootbox.alert("요청 처리 성공!", function () {
+                                    //이후 처리
+                                    encQi = _zw.base64.encode('{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"근무조정 신청현황",fd:"PersonRequest"}');
+                                    window.location.href = '/ExS/WorkTime?qi=' + encQi;
+                                });
+                                    
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
+        } else {
+            //p.find("button[data-dismiss='modal']").click(); $('input[name="rdoSearch"]')[m == 'approval' ? 1 : 2].click(); return
+            var role = p.find('input[data-zf-role="step"]').val(), msg = '';
+            //var fld = role == 'D' ? 'fapvcmnt' : 'sapvcmnt';
+
+            if (m == 'reject') {
+                msg = '미승인';
+
+                if (p.find('[data-zf-ftype="main"][data-zf-field="apvcmnt"]').val().trim() == '') { bootbox.alert("미승인 사유를 입력 하십시오!"); return; }
+
+            } else {
+                msg = '승인';
+
+                if (role == 'A') {
+                    $('#_SubTable tbody tr input[data-zf-field="statusid"]').each(function () {
+                        var ws = $(this).parent().find('input[data-zf-field="workstatus"]');
+                        if ($(this).prop('checked')) {
+                            var c = $(this).parent().parent().find('input[data-zf-field="reset"]');
+                            if (c.prop('checked')) {
+                                if (ws.val() == 'A' || ws.val() == 'Z') {
+                                    var fBox = c.parent().next().find('input').first(), lBox = c.parent().next().find('input').last();
+                                    if ($.trim(fBox.val()) == '') { bootbox.alert("날짜를 입력 하십시오!", function () { fBox.focus(); }); iCnt = 99; return false; }
+                                    else if ($.trim(lBox.val()) == '') { bootbox.alert("시간을 입력 하십시오!", function () { lBox.focus(); }); iCnt = 99; return false; }
+                                }
+                                iCnt++; return false;
+                            }
+                        }
+                    });
+                    if (iCnt == 99) return;
+                    if (iCnt < 1) { bootbox.alert("승인 항목을 하나 이상 선택하십시오!"); return; }
+
+                    $('#_SubTable tbody tr').each(function () {
+                        var ck = $(this).find('[data-zf-field="statusid"]');
+                        var ck2 = $(this).find('[data-zf-field="reset"]');
+                        var ws = $(this).find('[data-zf-field="workstatus"]');
+
+                        if (ck.prop('checked') && ck2.prop('checked')) {
+                            var t = {};
+                            t['resettime'] = $(this).find('[data-inputmask]').length > 0 ? $(this).find('[data-inputmask]').first().val() + ' ' + $(this).find('[data-inputmask]').last().val() : '';
+                            $(this).find('[data-zf-ftype="sub"]').each(function () {
+                                if ($(this).attr('data-zf-field') == 'reset') {
+                                    t['reset'] = ws.val() == 'B' ? 'N' : ws.val();
+                                } else t[$(this).attr('data-zf-field')] = $(this).val();
+                            });
+                            s.push(t);
+                        }
+                    });
+                    j["sub"] = s;
+                }
+            }
+
+            p.find('[data-zf-ftype="main"]').each(function () {
+                j[$(this).attr('data-zf-field')] = $(this).val();
+            });
+
+            j["step"] = role;
+            j["ss"] = m;
+
+            bootbox.confirm("[" + msg + "] 처리 하시겠습니까?", function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/ExS/WorkTime/DoRequest",
+                        data: JSON.stringify(j),
+                        success: function (res) {
+                            if (res == 'OK') {
+                                bootbox.alert(msg + " 처리 성공!", function () {
+                                    //이후 처리
+                                    p.find("button[data-dismiss='modal']").click();
+                                    $('input[name="rdoSearch"]')[m == 'approval' ? 1 : 2].click();
+                                    _zw.fn.reqCnt(); _zw.fn.goSearch();
+                                });
+
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
+        }
+    }
+    
     _zw.fn.setPlan = function (mn) {
         var v = [];
         if (mn == "save" || mn == "request") {
@@ -354,7 +391,35 @@ $(function () {
         });
     }
 
-    _zw.fn.reqCnt();
+    _zw.fn.setCode = function () {
+        var el = event.target, p = el.parentNode; do { p = p.parentNode; } while ($(p).prop('tagName') != 'TR');
+        var k3 = '', i1 = '', i2 = '', i3 = '', i4 = '', i5 = '';
+        
+        $(p).find("[data-zf-field]").each(function () {
+            switch ($(this).attr('data-zf-field')) {
+                case 'k3': k3 = $(this).attr('data-val'); break;
+                case 'item1': i1 = $(this).val(); break;
+                case 'item2': i2 = $(this).val(); break;
+                case 'item3': i3 = $(this).val(); break;
+            }
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/Common/SetCode",
+            data: '{k1:"system",k2:"worktime",k3:"' + k3 + '",item1:"' + i1 + '",item2:"' + i2 + '",item3:"' + i3 + '",item4:"' + i4 + '",item5:"' + i5 + '"}',
+            success: function (res) {
+                if (res == "OK") bootbox.alert("저장")
+                else bootbox.alert(res);
+            }
+        })
+    }
+
+    _zw.fn.sort = function (col) {
+        var el = event.target ? event.target : event.srcElement;
+        var dir = $(el).find('i').hasClass('fe-arrow-up') ? 'DESC' : 'ASC';
+        _zw.fn.goSearch(col, dir);
+    }
     
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
@@ -367,13 +432,19 @@ $(function () {
                 if (res.substr(0, 2) == "OK") {
 
                     $('#__ListView').html(res.substr(2));
+                    if (_zw.V.ft == 'WorkTimeMgr') _zw.fn.input($('#__ListView'));
 
                 } else bootbox.alert(res);
             }
         });
     }
-    _zw.fn.goSearch = function () {
+
+    _zw.fn.goSearch = function (sort, dir) {
         _zw.fn.initLv(_zw.V.current.urid);
+
+        sort = sort || ''; dir = dir || '';
+        _zw.V.lv.sort = sort;
+        _zw.V.lv.sortdir = dir;
 
         if (_zw.V.ft == 'PersonRequest' || _zw.V.ft == 'MemberRequest' || _zw.V.ft == 'RequestMgr') {
             _zw.V.lv.start = $('#_SearchYear').val(); _zw.V.opnode = $('input[name="rdoSearch"]:checked').val();
@@ -443,5 +514,7 @@ $(function () {
         _zw.V.lv.basesort = '';
     }
 
-    
+    if (_zw.V.ft == 'WorkTimeMgr') _zw.fn.input($('#__ListView'));
+
+    _zw.fn.reqCnt();
 });

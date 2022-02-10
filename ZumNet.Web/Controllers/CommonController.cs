@@ -369,5 +369,51 @@ namespace ZumNet.Web.Controllers
         {
             return View();
         }
+
+        #region [CODE_DESCRIPTION 테이블 관련]
+        /// <summary>
+        /// 코드 추가, 변경
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string SetCode()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    return "전송 데이터 누락!";
+                }
+                else if (StringHelper.SafeString(jPost["k1"]) == "" || StringHelper.SafeString(jPost["k2"]) == "" || StringHelper.SafeString(jPost["k3"]) == "" || StringHelper.SafeString(jPost["item1"]) == "")
+                {
+                    return "필수값 누락!";
+                }
+
+                string sMode = "";
+
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.SelectCodeDescription(jPost["k1"].ToString(), jPost["k2"].ToString(), jPost["k3"].ToString());
+                    sMode = (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0) ? "U" : "I";
+
+                    svcRt = cb.HandleCodeDescription(sMode, jPost["k1"].ToString(), jPost["k2"].ToString(), jPost["k3"].ToString()
+                                    , jPost["item1"].ToString(), StringHelper.SafeString(jPost["item2"]), StringHelper.SafeString(jPost["item3"])
+                                    , StringHelper.SafeString(jPost["item4"]), StringHelper.SafeString(jPost["item5"]));
+                }
+
+                if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                else strView = "OK";
+            }
+
+            return strView;
+        }
+        #endregion
     }
 }

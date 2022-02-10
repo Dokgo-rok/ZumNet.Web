@@ -58,7 +58,7 @@
             //sb.Append("<col style=\"width:12px\" />");
             sb.Append("</colgroup>");
 
-            sb.Append("<thead><tr class=\"primary\">");
+            sb.Append("<thead><tr class=\"\">");
             if (mode == "modal_mod")
             {
                 for (int i = 0; i <= 5; i++)
@@ -78,24 +78,17 @@
 
                 for (int i = 6; i < _columnConfig.GetLength(0); i++)
                 {
-                    if (i <= 7)
-                    {
-                        sb.AppendFormat("<th>{0}</th>", _columnConfig[i, 1].ToString());
-                    }
-                    else if (i > 10)
-                    {
-                        sb.AppendFormat("<th rowspan=\"2\">{0}</th>", _columnConfig[i, 1].ToString());
-                    }
+                    if (i <= 7) sb.AppendFormat("<th>{0}</th>", _columnConfig[i, 1].ToString());
+                    else if (i > 10) sb.AppendFormat("<th rowspan=\"2\">{0}</th>", _columnConfig[i, 1].ToString());
+                }    
 
-                    sb.Append("</tr><tr class=\"table-success\">");
-                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["work"].ToString() == "" ? "0" : sum["work"].ToString());
-                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["regular"].ToString() == "" ? "0" : sum["regular"].ToString());
-                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["extra2"].ToString() == "" ? "0" : sum["extra2"].ToString());
-                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["extra"].ToString() == "" ? "0" : sum["extra"].ToString());
-                    sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["except"].ToString() == "" ? "0" : sum["except"].ToString());
-                    //sb.AppendFormat("<th>{0}h</th>", sum["total"].ToString() == "" ? "0" : sum["total"].ToString());
-
-                }
+                sb.Append("</tr><tr class=\"table-success\">");
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["work"].ToString() == "" ? "0" : sum["work"].ToString());
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["regular"].ToString() == "" ? "0" : sum["regular"].ToString());
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["extra2"].ToString() == "" ? "0" : sum["extra2"].ToString());
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["extra"].ToString() == "" ? "0" : sum["extra"].ToString());
+                sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["except"].ToString() == "" ? "0" : sum["except"].ToString());
+                //sb.AppendFormat("<th>{0}h</th>", sum["total"].ToString() == "" ? "0" : sum["total"].ToString());
             }
             else
             {
@@ -262,7 +255,7 @@
                 strClass = (row["HolidayType"].ToString() == "N") ? "" : "table-active";
                 if (bExcept)
                 {
-                    strClass = (strClass == "") ? "danger" : " danger";
+                    strClass = (strClass == "") ? "table-danger" : " table-danger";
                 }
                 sb.AppendFormat("<tr class=\"{0}\">", strClass);
 

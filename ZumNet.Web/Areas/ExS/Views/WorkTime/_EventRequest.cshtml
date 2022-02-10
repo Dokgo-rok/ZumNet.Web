@@ -483,7 +483,7 @@
 
         if (code.IndexOf(';') != -1)
         {
-            sRt = String.Format("<a class=\"\" href=\"javascript:\" onclick=\"_zw.fn.openEAForm('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
+            sRt = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
         }
         return sRt;
     }
@@ -540,7 +540,7 @@
     }
 }
 <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+    <div class="modal-content bg-white z-list" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
         @if (ViewBag.Error != "")
         {
             <p>오류발생!</p>

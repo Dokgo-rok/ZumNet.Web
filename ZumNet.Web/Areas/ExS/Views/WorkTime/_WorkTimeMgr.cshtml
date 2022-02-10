@@ -13,7 +13,7 @@
     {
         StringBuilder sb = new StringBuilder();
         sb.Append("<table class=\"table table-hover table-sm\">");
-        sb.Append("<thead><tr class=\"warning\">");
+        sb.Append("<thead><tr class=\"table-warning\">");
         sb.Append("<th class=\"text-center\" style=\"width: 15%\">월</th>");
         sb.Append("<th class=\"text-center\" style=\"width: 22%\">최소 근무 시간</th>");
         sb.Append("<th class=\"text-center\" style=\"width: 22%\">최대 근무 시간</th>");
@@ -51,10 +51,10 @@
             }
 
             sb.AppendFormat("<tr>");
-            sb.AppendFormat("<td data-value=\"{0}\" data-zf-field=\"k3\">{1}</td>", viewDate + sMon, i.ToString() + "월");
-            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item1\" data-zf-inputmask=\"{1}\" /></td>", sMinHour, "number;3;2");
-            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item2\" data-zf-inputmask=\"{1}\" /></td>", sMaxHour, "number;3;2");
-            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item3\" data-zf-inputmask=\"{1}\" /></td>", sExtraHour, "number;3;2");
+            sb.AppendFormat("<td data-val=\"{0}\" data-zf-field=\"k3\">{1}</td>", viewDate + sMon, i.ToString() + "월");
+            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item1\" data-inputmask=\"{1}\" /></td>", sMinHour, "number;3;2");
+            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item2\" data-inputmask=\"{1}\" /></td>", sMaxHour, "number;3;2");
+            sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item3\" data-inputmask=\"{1}\" /></td>", sExtraHour, "number;3;2");
             sb.Append("<td class=\"tbl-btn-cell\"><button type=\"button\" class=\"btn btn-success\" title=\"저장\" onclick=\"_zw.fn.setCode();\"><i class=\"fas fa-check\"></i></button></td>");
             sb.AppendFormat("</tr>");
         }

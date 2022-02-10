@@ -133,22 +133,22 @@
         _tableWidth = 1430;
 
         sb.Append("<thead><tr>");
-        sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "순번");
+        sb.AppendFormat("<th rowspan=\"2\" class=\"text-truncate\">{0}</th>", "순번");
         //sb.AppendFormat("<th rowspan=\"2\" class=\"sortable\">{0}</th>", "부서");
         //sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "직급");
         //sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "성명");
 
-        sBlind = (sortCol == "GroupName") ? "" : "blind ";
-        sSortIcon = (sortType == "" || sortType == "ASC") ? "glyphicon-arrow-up" : "glyphicon-arrow-down";
-        sb.AppendFormat("<th rowspan=\"2\" class=\"sortable\"><ins><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></ins></a></th>", "GroupName", "부서", sBlind, sSortIcon);
+        sBlind = (sortCol == "GroupName") ? "" : " d-none";
+        sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
+        sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><ins><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></ins></a></th>", "GroupName", "부서", sSortIcon, sBlind);
 
-        sBlind = (sortCol == "Code1") ? "" : "blind ";
-        sSortIcon = (sortType == "" || sortType == "DESC") ? "glyphicon-arrow-down" : "glyphicon-arrow-up";
-        sb.AppendFormat("<th rowspan=\"2\" class=\"sortable\"><ins><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></ins></a></th>", "Code1", "직급", sBlind, sSortIcon);
+        sBlind = (sortCol == "Code1") ? "" : " d-none";
+        sSortIcon = (sortType == "" || sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+        sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><ins><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></ins></a></th>", "Code1", "직급", sSortIcon, sBlind);
 
-        sBlind = (sortCol == "DisplayName") ? "" : "blind ";
-        sSortIcon = (sortType == "" || sortType == "ASC") ? "glyphicon-arrow-up" : "glyphicon-arrow-down";
-        sb.AppendFormat("<th rowspan=\"2\" class=\"sortable\"><ins><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></ins></a></th>", "DisplayName", "성명", sBlind, sSortIcon);
+        sBlind = (sortCol == "DisplayName") ? "" : " d-none";
+        sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
+        sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><ins><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></ins></a></th>", "DisplayName", "성명", sSortIcon, sBlind);
         sb.AppendFormat("<th colspan=\"9\">{0}{1} <span class=\"text-info\">( 최소 : {2}, 최대 : {3}, 잔업가능 : {4} )</span></th>"
                 , Convert.ToDateTime(viewDate).Month.ToString(), "월", _weekHourInfo["min"].ToString(), _weekHourInfo["max"].ToString(), _weekHourInfo["extra"].ToString());
         sb.AppendFormat("<th rowspan=\"2\">{0}</th>", "이상<br />근무일");
@@ -156,19 +156,19 @@
 
         sb.Append("</tr><tr>");
 
-        sb.AppendFormat("<th class=\"table-success\">{0}</th>", "주 평균");
+        sb.AppendFormat("<th class=\"table-success text-truncate\">{0}</th>", "주 평균");
         //sb.AppendFormat("<th class=\"info\">{0}</th>", "월 누적");
 
-        sBlind = (sortCol == "MonthTotal") ? "" : "blind ";
-        sSortIcon = (sortType == "" || sortType == "DESC") ? "glyphicon-arrow-down" : "glyphicon-arrow-up";
-        sb.AppendFormat("<th class=\"table-info sortable\"><ins><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></ins></th>", "MonthTotal", "월 누적", sBlind, sSortIcon);
-        sb.AppendFormat("<th class=\"table-warning\">{0}</th>", "잔업 누적");
-        sb.AppendFormat("<th>{0}</th>", "1주차");
-        sb.AppendFormat("<th>{0}</th>", "2주차");
-        sb.AppendFormat("<th>{0}</th>", "3주차");
-        sb.AppendFormat("<th>{0}</th>", "4주차");
-        sb.AppendFormat("<th>{0}</th>", "5주차");
-        sb.AppendFormat("<th>{0}</th>", "6주차");
+        sBlind = (sortCol == "MonthTotal") ? "" : " d-none";
+        sSortIcon = (sortType == "" || sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+        sb.AppendFormat("<th class=\"table-info sortable text-truncate\"><ins><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></ins></th>", "MonthTotal", "월 누적", sSortIcon, sBlind);
+        sb.AppendFormat("<th class=\"table-warning text-truncate\">{0}</th>", "잔업 누적");
+        sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", "1주차");
+        sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", "2주차");
+        sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", "3주차");
+        sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", "4주차");
+        sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", "5주차");
+        sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", "6주차");
 
         sb.Append("</tr></thead>");
         return sb.ToString();
@@ -186,7 +186,7 @@
         string strHeader = RenderColumnHeader(viewDate, sortCol, sortType);
 
         StringBuilder sb = new StringBuilder();
-        sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 800px\">");
+        sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 860px\">");
         //sb.AppendFormat("<table class=\"table table-bordered table-condensed\" style=\"width:{0}px; max-width:{0}px\">", _tableWidth.ToString());
         sb.Append(strHeader);
 
@@ -514,7 +514,7 @@
 
         if (code.IndexOf(';') != -1)
         {
-            sRt = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
+            sRt = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"{1}\">{1}</a>", code.Split(';')[1], sRt);
         }
         return sRt;
     }
