@@ -1357,6 +1357,14 @@ $(function () {
             if ($('.messages-wrapper, .messages-card').hasClass('messages-sidebox-open')) $('.z-mobile-navbar button.close').click();
             if ($('#layout-navbar-rightbar').hasClass('show')) $('#layout-navbar-rightbar').modal('hide');
         },
+        "expandWnd": function (el) {
+            var tgt = $('[aria-controls="vw-full-fill"]');
+            if (tgt.hasClass('modal')) {
+                tgt.removeClass('modal'); $(el).find('i').removeClass('fa-compress').addClass('fa-expand');
+            } else {
+                tgt.addClass('modal'); $(el).find('i').removeClass('fa-expand').addClass('fa-compress');
+            }
+        },
         "ajaxLoader": function (b) {
             b ? $('#ajaxLoader').modal('show') : $('#ajaxLoader').modal('hide');
 

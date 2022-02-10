@@ -836,6 +836,7 @@
     <Content Include="Content\Forms\XFormScript.xsl" />
     <Content Include="Content\Forms\xform.2.0_debug.css" />
     <Content Include="Content\Forms\xform_debug.css" />
+    <Content Include="Content\mc.css" />
     <Content Include="Content\worktime.css" />
     <Content Include="Content\ea.css" />
     <Content Include="Content\auth.css" />
@@ -2011,6 +2012,7 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
+    <Content Include="Scripts\ExS\mc.js" />
     <Content Include="Scripts\ExS\pqm.js" />
     <Content Include="Scripts\ExS\worktime.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
@@ -2822,6 +2824,9 @@
     </Content>
     <Content Include="Areas\ExS\Views\WorkTime\_EventView.cshtml" />
     <Content Include="Areas\ExS\Views\WorkTime\_EventRequest.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_LeftMenu.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_ListCount.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_CostList.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

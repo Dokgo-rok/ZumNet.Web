@@ -1,7 +1,161 @@
-﻿
+﻿@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
 @{
     ViewBag.Title = ViewBag.R["ttl"];
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    string sPatialView = "_" + ViewBag.R.ft.ToString();
+    string sListScroll = " z-list-scroll";
+
+    //Response.Write("--" + ViewBag.CodeTable["ce.center"].ToString());
+    //Response.End();
+
+}
+@functions{
+    private string RenderDDDate()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        //법인
+        sb.Append("<div class=\"input-group justify-content-end\">");
+        sb.Append("<select class=\"custom-select\" id=\"_Target\">");
+        int iCnt = 0;
+        foreach (object[] o in ViewBag.CodeTable["ce.center"])
+        {
+            if (o[7].ToString() != "N")
+            {
+                //if (iCnt == 0) Master.TargetCenter = Convert.ToInt32(o[6]);
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[6].ToString(), o[3].ToString());
+                iCnt++;
+            }
+        }
+        sb.Append("</select>");
+
+        //고객
+        sb.Append("<select class=\"custom-select\" id=\"_Cond1\">");
+        sb.Append("<option value=\"\">고객</option>");
+        foreach (object[] o in ViewBag.CodeTable["mc.buyer"])
+        {
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[3].ToString(), o[3].ToString());
+        }
+        sb.Append("</select>");
+
+        //품목
+        sb.Append("<select class=\"custom-select\" id=\"_Cond2\">");
+        sb.Append("<option value=\"\">품목</option>");
+        foreach (object[] o in ViewBag.CodeTable["mc.item"])
+        {
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[3].ToString(), o[3].ToString());
+        }
+        sb.Append("</select>");
+
+        sb.Append("<select class=\"custom-select\" id=\"_SearchYear\">");
+        sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(DateTime.Now.Year, 2010));
+        sb.Append("</select>");
+
+
+        sb.Append("<select class=\"custom-select\" id=\"_SearchMonth\">");
+        sb.Append(ZumNet.Web.Bc.CommonUtils.OptionMonth(DateTime.Now.Month));
+        sb.Append("</select>");
+
+        sb.Append("<div class=\"input-group-text\" style=\"border: 0\">");
+        sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
+        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"\" checked>");
+        sb.Append("<span class=\"custom-control-label\">전체</span>");
+        sb.Append("</label>");
+        sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
+        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"S\">");
+        sb.Append("<span class=\"custom-control-label\">표준有</span>");
+        sb.Append("</label>");
+        sb.Append("<label class=\"custom-control custom-radio m-0 mr-0\" for=\"rdo03\">");
+        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo03\" value=\"R\">");
+        sb.Append("<span class=\"custom-control-label\">실적有</span>");
+        sb.Append("</label>");
+        sb.Append("</div>");
+
+        sb.Append("<input type=\"text\" class=\"form-control search-text\" placeholder=\"모델\" style=\"max-width: 150px\">");
+        sb.Append("<div class=\"input-group-append\">");
+        sb.Append("<button class=\"btn btn-primary\" data-zf-menu=\"search\"><i class=\"fe-search\"></i></button>");
+        sb.Append("</div>");
+
+        sb.Append("</div>");
+        return sb.ToString();
+    }
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @Styles.Render("~/Content/mc.css")
 }
 
-<h2>Index</h2>
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
 
+    @Scripts.Render("~/Scripts/ExS/mc.js")
+
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    @Html.Partial("_LeftMenu")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100 bg-white" aria-controls="vw-full-fill">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
+                <div class="d-flex align-items-center font-weight-bold">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
+
+                    <div class="h5 mb-0 z-ttl">
+                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center z-lv-menu">
+                    <button class="btn icon-btn btn-outline-success m-0 btn-sm" onclick="_zw.ut.expandWnd(this);"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-grow-0" style="border-top: 2px solid #eee">
+            <div class="d-flex justify-content-between px-3 my-2">
+                <div class="z-list-page d-flex align-items-center" id="__ListCount">
+                    @Html.Partial("_ListCount")
+                </div>
+                <div class="flex-fill z-lv-cond d-flex">
+                    @Html.Raw(RenderDDDate())
+                </div>
+            </div>
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="px-3@(sListScroll)">
+                <div class="z-list">
+                    <div class="z-list-head"></div>
+                    <div class="z-list-body" id="__ListView">
+
+                    </div>
+                </div>
+                <div id="__ListPage"></div>
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+
+</div><!-- / .messages-wrapper -->

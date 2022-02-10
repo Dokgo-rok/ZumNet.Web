@@ -1,0 +1,83 @@
+﻿@using System.Data;
+@using ZumNet.Framework.Util;
+
+@{
+    string currentPage = ViewBag.R.ft.ToString();
+
+    string[,] vBox = {
+        //page, title, bold, count
+        { "CostList", "모델별원가 목록", "Y", "" }, { "StdTime", "모델별 공수", "Y", "" },
+        { "ExcelList", "개발원가견적 엑셀 목록", "", "" },{ "StdPay", "실적원가율", "Y", "" }, { "CodeMgr", "코드관리", "", "" }
+    };
+
+    //Response.Write("======" + currentPage);
+}
+
+@functions {
+    private string GetQueryString(string page, string ttl)
+    {
+        //return "?qi=" + Server.UrlEncode("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
+    }
+}
+
+<div class="messages-sidebox messages-scroll bg-body border-right">
+    <div class="z-mobile-navbar"></div>
+
+    <div class="pt-1 px-3">
+        <div class="media align-items-center px-1">
+            <div class="media-body">
+            </div>
+            <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
+        </div>
+    </div>
+
+    @Html.Partial("~/Views/Common/_WorkTime.cshtml")
+
+    <!-- sidebox tree -->
+    <div id="__LeftMenu" class="sidenav-vertical z-lm">
+        <ul class="sidenav-inner">
+
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "M")) //마킹권한
+            {
+                <li class="sidenav-item@(currentPage == "" || currentPage.ToLower().IndexOf(vBox[0, 0].ToLower()) != -1 ? " active" : "")">
+                    <a href="@GetQueryString(vBox[0, 0], vBox[0, 1])" class="sidenav-link@(vBox[0, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[0, 1])">
+                        <i class="fe-list sidenav-icon"></i><span>@Html.Raw(vBox[0, 1])</span>
+                    </a>
+                </li>
+            }
+
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W")) //작성권한
+            {
+                <li class="sidenav-item@(currentPage.ToLower().IndexOf(vBox[1, 0].ToLower()) != -1 ? " active" : "")">
+                    <a href="@GetQueryString(vBox[1, 0], vBox[1, 1])" class="sidenav-link@(vBox[1, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[1, 1])">
+                        <i class="fe-clock sidenav-icon"></i><span>@Html.Raw(vBox[1, 1])</span>
+                    </a>
+                </li>
+            }
+  
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S")) //보안권한
+            {
+                <li class="sidenav-item open">
+                    <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fe-check-square sidenav-icon"></i><span>기준정보</span></a>
+
+                    <ul class="sidenav-menu my-0">
+                        @for (int i = 2; i < vBox.GetLength(0); i++)
+                        {
+                            <li class="sidenav-item@(currentPage.ToLower().IndexOf(vBox[i, 0].ToLower()) != -1 ? " active" : "")">
+                                <a href="@GetQueryString(vBox[i, 0], vBox[i, 1])" class="sidenav-link@(vBox[i, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
+                                    <span>@Html.Raw(vBox[i, 1])</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+    <!-- / sidebox tree -->
+</div>
+
+
+
+

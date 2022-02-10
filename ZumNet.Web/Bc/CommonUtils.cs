@@ -1689,6 +1689,119 @@ namespace ZumNet.Web.Bc
         }
 
         /// <summary>
+        /// 모델별원가, 개발원가견적 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="ctId"></param>
+        /// <param name="ctAlias"></param>
+        /// <returns></returns>
+        public static string CostInit(this Controller ctrl, int ctId, string ctAlias)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            //메뉴 권한체크 (objecttype='' 이면 폴더권한 체크 X)
+            if (HttpContext.Current.Session["Admin"].ToString() == "Y")
+            {
+                ctrl.ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]), 0, "", "0");
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            if (ctAlias == "CE")
+            {
+                string[,] codeConfig = {
+                            { "ce", "domestic", "내수 구분" },
+                            { "ce", "class", "부문 구분" },
+                            { "ce", "buyer", "BUYER 분류" },
+                            { "ce", "item", "품목 분류" },
+                            { "ce", "center", "생산지 분류" }, 
+                            //{ "ce", "distcost", "수출물류비" }, //2020-10-19 삭제
+                            { "ce", "xcls", "견적표 작성 구분" }, //2020-10-19 추가
+                            { "ce", "costpc", "가공비항목" },
+                            { "ce", "costsga", "기타 원가 구성" }
+                };
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.SelectCodeDescription(codeConfig);
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.CodeConfig = codeConfig;
+                    ctrl.ViewBag.CodeTable = svcRt.ResultDataDetail;
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+            else if (ctAlias == "MC")
+            {
+                string[,] codeConfig = {
+                            { "ce", "center", "생산지 분류" }, 
+                            { "mc", "buyer", "BUYER 분류" },
+                            { "mc", "item", "품목 분류" }
+
+                };
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.SelectCodeDescription(codeConfig);
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.CodeConfig = codeConfig;
+                    ctrl.ViewBag.CodeTable = svcRt.ResultDataDetail;
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            if (strReturn == "")
+            {
+                using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                {
+                    svcRt = cost.GetMenuAcl(ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]));
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.R.current["chief"] = svcRt.ResultDataString.Substring(0, 1);
+                    ctrl.ViewBag.R.current["acl"] = svcRt.ResultDataString.Substring(1);
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
         /// 대장, 집계 초기 설정
         /// </summary>
         /// <param name="ctrl"></param>

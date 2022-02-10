@@ -1,0 +1,44 @@
+﻿/*******************************************************************************/
+/* 모델별원가 */
+
+/* left menu ---------------> */
+.sidenav-vertical.z-lm, .sidenav-vertical.z-lm .sidenav-inner > .sidenav-item {
+    width: 100%;
+}
+.z-lm .sidenav-menu {
+    padding-top: .325rem;
+    padding-bottom: .325rem;
+}
+.z-lm .sidenav-item .sidenav-link, .z-lm .sidenav-menu .sidenav-item .sidenav-link {
+    padding-top: .325rem;
+    padding-bottom: .325rem;
+}
+.z-lm .sidenav-menu .sidenav-item .sidenav-link {
+    padding-left: 3.05rem;
+}
+.z-lm .sidenav-menu .sidenav-menu .sidenav-item .sidenav-link {
+    padding-left: 4.55rem;
+}
+.z-lm .sidenav-icon, .z-lm .sidenav-menu .sidenav-icon {
+    width: 1.23rem;
+    margin-right: .25rem;
+}
+.z-lm .sidenav-item.active > .sidenav-link:not(.sidenav-toggle) {
+    background: rgba(191, 191, 191, 0.2) !important;
+}
+
+.z-lm .sidenav-item.open:not(.sidenav-item-closing) > .sidenav-toggle, .z-lm .sidenav-item.active > .sidenav-link {
+    
+}
+.z-lm .sidenav-item .z-lm-cnt {
+    margin-left: .25rem;
+    font-weight: 600;
+    color: #344fe9;
+}
+.z-lm .sidenav-link.sidenav-toggle {
+    /*color: #245580;*/
+    color: rgba(24,28,33,0.7);
+}
+/* left menu <--------------- */
+
+
