@@ -218,7 +218,7 @@ $(function () {
         if (e.which == 13) _zw.mu.search();
     });
 
-    $('.pagination li a.page-link').click(function () {
+    $('#__ListViewPage li a.page-link').click(function () {//.pagination => #__ListViewPage (리스트뷰 경우 적용)
         _zw.mu.search($(this).attr('data-for'));
     });
 
@@ -974,6 +974,7 @@ $(function () {
             if (_zw.V.ctalias == 'ea') cookieName = 'eaLvCount';
             else if (_zw.V.ctalias == 'doc' || _zw.V.ctalias == 'knowledge') cookieName = 'docLvCount';
             else if (_zw.V.ctalias == 'orgmap') cookieName = 'orgLvCount';
+            else if (_zw.V.ctalias == 'MC' || _zw.V.ctalias == 'CE') cookieName = 'costLvCount';
             else cookieName = 'bbsLvCount';
 
             _zw.V.lv.count = cnt;
@@ -1364,6 +1365,10 @@ $(function () {
             } else {
                 tgt.addClass('modal'); $(el).find('i').removeClass('fa-expand').addClass('fa-compress');
             }
+        },
+        "eventBtn": function () {//버튼 클릭시 버튼요소 반환
+            var el = $(event.target); if (el.prop('tagName') == 'I') el = el.parent();
+            return el;
         },
         "ajaxLoader": function (b) {
             b ? $('#ajaxLoader').modal('show') : $('#ajaxLoader').modal('hide');

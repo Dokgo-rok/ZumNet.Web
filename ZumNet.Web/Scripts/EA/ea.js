@@ -65,7 +65,7 @@ $(function () {
                     $('#__ListView').html(v[1]);
                     $('#__ListCount').html(v[2]);
                     $('#__ListMenuSearch').html(v[3]);
-                    $('#__ListPage').html(v[4]);
+                    $('#__ListViewPage').html(v[4]);
 
                     $('.z-lv-menu .btn[data-zv-menu], .z-lv-search .btn[data-zv-menu]').click(function () {
                         var mn = $(this).attr('data-zv-menu');

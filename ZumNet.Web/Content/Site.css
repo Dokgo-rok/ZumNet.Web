@@ -492,6 +492,12 @@ a.z-lnk-navy_n {
     line-height: 1.5;
     border-radius: 0.25rem;
 }
+.zf-btn-xs {
+    padding: .125rem .15rem .135rem; /*.15rem .175rem .125rem;*/
+    font-size: .5625rem; /*.625rem;*/
+    line-height: 1;
+    border-radius: 0.175rem;
+}
 .zf-editor {
     background-color: white;
     z-index: 1;

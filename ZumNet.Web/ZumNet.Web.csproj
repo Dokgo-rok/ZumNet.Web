@@ -2827,6 +2827,9 @@
     <Content Include="Areas\ExS\Views\MC\_LeftMenu.cshtml" />
     <Content Include="Areas\ExS\Views\MC\_ListCount.cshtml" />
     <Content Include="Areas\ExS\Views\MC\_CostList.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_StdTime.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_ListItem.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_StdTimeDay.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

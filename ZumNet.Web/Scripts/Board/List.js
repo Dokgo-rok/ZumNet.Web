@@ -106,7 +106,7 @@ $(function () {
                     $('#__ListView').html(v[0]);
                     $('#__ListCount').html(v[1]);
                     $('#__ListMenu').html(v[2]);
-                    $('#__ListPage').html(v[3]);
+                    $('#__ListViewPage').html(v[3]);
 
                     $('.pagination li a.page-link').click(function () {
                         _zw.mu.search($(this).attr('data-for'));

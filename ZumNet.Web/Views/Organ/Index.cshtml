@@ -93,7 +93,7 @@
         });
 
         _zw.fn.bindCtrl = function () {
-            $('.pagination li a.page-link').click(function () {
+            $('#__ListViewPage li a.page-link').click(function () {
                 _zw.V.lv.page = $(this).attr('data-for');
                 _zw.fn.loadList();
             });
@@ -114,12 +114,12 @@
                 url: "?qi=",
                 data: JSON.stringify(qi),
                 success: function (res) {
-                    if (res.substr(0, 2) == "OK") {console.log(res)
+                    if (res.substr(0, 2) == "OK") {//console.log(res)
                         var v = res.substr(2).split(_zw.V.lv.boundary);
 
                         $('#__OrgList').html(v[0]);
                         $('#__ListCount').html(v[1]);
-                        $('#__ListPage').html(v[2]);
+                        $('#__ListViewPage').html(v[2]);
 
                         _zw.fn.bindCtrl();
 
@@ -261,7 +261,7 @@
                     <a href="javascript:void(0)" class="text-success" data-toggle="tooltip" data-placement="bottom" title="엑셀내려받기" data-zv-menu="exportExcel"><i class="fe-download"></i> 엑셀</a>
                 </div>
                 <div class="px-1 flex-grow-1"></div>
-                <ul class="pagination pagination-sm justify-content-center mb-0" id="__ListPage">
+                <ul class="pagination pagination-sm justify-content-center mb-0" id="__ListViewPage">
                     @Html.Partial("~/Views/Common/_ListPagination.cshtml")
                 </ul>
             </div>

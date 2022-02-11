@@ -38,7 +38,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             string formTable = ViewBag.R.ft.ToString();
 
             //초기 설정
-            rt = Bc.CtrlHandler.ReportInit(this, iCategoryId, iFolderId, Request["qi"].ToString());
+            rt = Bc.CtrlHandler.ReportInit(this, iCategoryId, iFolderId);
             if (rt != "")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -116,7 +116,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
 
                     //초기 설정
                     sPos = "300";
-                    rt = Bc.CtrlHandler.ReportInit(this, iCategoryId, iFolderId, Request["qi"].ToString());
+                    rt = Bc.CtrlHandler.ReportInit(this, iCategoryId, iFolderId);
                     if (rt != "")
                     {
                         return "[" + sPos + "] " + rt;

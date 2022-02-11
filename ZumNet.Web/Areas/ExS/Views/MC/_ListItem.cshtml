@@ -1,0 +1,215 @@
+﻿@using System.Data;
+@using System.Text;
+@{
+    int _level = ZumNet.Framework.Util.StringHelper.SafeInt(ViewBag.JPost["lvl"], 1);
+}
+@functions{
+    private string ViewList(string mode, DataSet ds, int iLevel)
+    {
+        StringBuilder sb = new StringBuilder();
+        decimal dSum = 0;
+        decimal dSum2 = 0;
+        decimal dSum3 = 0;
+
+        try
+        {
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                DateTime dt = new DateTime(Convert.ToInt32(ViewBag.JPost["vd"].ToString().Substring(0, 4)), Convert.ToInt32(ViewBag.JPost["vd"].ToString().Substring(4, 2)), 1);
+
+                string sPrefex = "";
+
+                if (iLevel == 1)
+                {
+                    sb.Append("<div class=\"modal-dialog modal-lg modal-dialog-scrollable\">");
+                    sb.Append("<div class=\"modal-content\" data-for=\"external\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)\">");
+                    sb.Append("<div class=\"modal-header\">");
+
+                    if (ViewBag.JPost["cmd"].ToString() == "S")
+                    {
+                        sb.AppendFormat("<h4 class=\"modal-title\">[{0}] {1}월 표준 재료비 구성 <span class=\"text-danger h5\"> (수입경비, 재고비용 제외)</span></h4>", ViewBag.JPost["model"].ToString(), dt.Month.ToString());
+                    }
+                    else if (ViewBag.JPost["cmd"].ToString() == "R")
+                    {
+                        if (ViewBag.JPost["fld"].ToString() == "MTRCOST")
+                            sb.AppendFormat("<h4 class=\"modal-title\">[{0}] {1}월 실적 재료비 구성 <span class=\"text-danger h5\"></span></h4>", ViewBag.JPost["model"].ToString(), dt.Month.ToString());
+                        else if (ViewBag.JPost["fld"].ToString() == "PCCOST")
+                            sb.AppendFormat("<h4 class=\"modal-title\">[{0}] {1}월 실적 가공비 구성 <span class=\"text-danger h5\"></span></h4>", ViewBag.JPost["model"].ToString(), dt.Month.ToString());
+                    }
+
+                    sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>");
+                    sb.AppendFormat("<input type=\"hidden\" value=\"{0}^{1}^{2}^{3}^{4}\" />", ViewBag.JPost["cmd"].ToString(), Convert.ToInt32(ViewBag.JPost["tgt"])
+                                                                                    , ViewBag.JPost["vd"].ToString(), ViewBag.JPost["fld"].ToString(), ViewBag.JPost["model"].ToString()); //post data
+                    sb.Append("</div>"); //header
+                    sb.Append("<div class=\"modal-body z-list-body\">");
+
+                    sb.Append("<table class=\"table table-hover table-bordered table-sm text-center mb-0\">");
+                }
+                else
+                {
+                    //sb.Append("<table class=\"table table-hover table-bordered table-condensed\" style=\"border-left: 0; border-right: 0; border-bottom: 0; border-top: 0;\">");
+                }
+
+
+                if (ViewBag.JPost["cmd"].ToString() == "S")
+                {
+                    if (ViewBag.JPost["fld"].ToString() == "MTRCOST")
+                    {
+                        if (iLevel == 1)
+                        {
+                            sb.Append("<thead><tr class=\"table-success\"><th style=\"width: 25%\">품목코드</th><th style=\"width: 40%\">품목명칭</th><th style=\"width: 15%\">금액</th><th style=\"width: 20%\">BPA</th></thead>");
+                            sb.Append("<tbody>");
+                        }
+
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td class=\"text-left\">{0}</td>", row["COMPONENT_ITEM_CODE"].ToString());
+                            sb.AppendFormat("<td class=\"text-left\">{0}</td>", row["DESCRIPTION"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["USD_PRICE"].ToString(), 4));
+                            sb.AppendFormat("<td>{0}</td>", row["BPA_PO_NUM"].ToString());
+                            sb.Append("</tr>");
+
+                            dSum += row["USD_PRICE"].ToString() == "" ? 0 : Convert.ToDecimal(ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["USD_PRICE"].ToString(), 4));
+                        }
+                        if (iLevel == 1) sb.Append("</tbody>");
+                    }
+                }
+                else if (ViewBag.JPost["cmd"].ToString() == "R")
+                {
+                    if (ViewBag.JPost["fld"].ToString() == "MTRCOST")
+                    {
+                        if (iLevel == 1)
+                        {
+                            sb.Append("<thead><tr class=\"table-success\"><th style=\"width: 65%\">품목코드</th><th style=\"width: 15%\">소요량</th><th style=\"width: 20%\">원재료비</th></thead>");
+                            sb.Append("<tbody>");
+                        }
+
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            if (row["품목코드"].ToString() != ViewBag.JPost["item"].ToString() && row["구분"].ToString() == "SUB" && row["하위구분"].ToString() == "PL")
+                            {
+                                if (iLevel > 1) sPrefex = String.Format("<span style=\"width: {0}px; display: inline-block;\">&nbsp;</span>", ((iLevel - 1) * 18).ToString());
+                                sPrefex += String.Format("<button type=\"button\" class=\"btn btn-facebook zf-btn-xs mr-1\" aria-expanded=\"false\" value=\"{0}\" onclick=\"_zw.fn.viewListItemChild()\"><i class=\"fas fa-plus\"></i></button>", row["품목코드"].ToString());
+                            }
+                            else
+                            {
+                                sPrefex = String.Format("<span style=\"width: {0}px; display: inline-block;\">&nbsp;</span>", (iLevel * 18).ToString());
+                            }
+
+                            sb.AppendFormat("<tr lvl=\"{0}\">", iLevel.ToString());
+                            sb.AppendFormat("<td style=\"width: 65%\" class=\"text-left\">{0}{1}</td>", sPrefex, row["품목코드"].ToString());
+                            //sb.AppendFormat("<td>{0}</td>", iLevel.ToString());
+                            sb.AppendFormat("<td style=\"width: 15%\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtCurrency(row["소요량"].ToString(), 4));
+                            sb.AppendFormat("<td style=\"width: 20%\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["원재료비"].ToString(), 4));
+                            sb.Append("</tr>");
+
+                            dSum += row["원재료비"].ToString() == "" ? 0 : Convert.ToDecimal(ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["원재료비"].ToString(), 4));
+                            sPrefex = "";
+                        }
+                        if (iLevel == 1) sb.Append("</tbody>");
+                    }
+                    else if (ViewBag.JPost["fld"].ToString() == "PCCOST")
+                    {
+                        if (iLevel == 1)
+                        {
+                            sb.Append("<thead><tr class=\"table-success\"><th style=\"width: 52%; vertical-align: middle\">품목코드</th><th style=\"width: 12%; vertical-align: middle\">소요량</th><th style=\"width: 12%; vertical-align: middle\">직접<br />노무비</th><th style=\"width: 12%\">간접<br />변동비</th><th style=\"width: 12%; vertical-align: middle\">외주비</th></thead>");
+                            sb.Append("<tbody>");
+                        }
+
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            if (row["품목코드"].ToString() != ViewBag.JPost["item"].ToString() && row["구분"].ToString() == "SUB")// && row["하위구분"].ToString() == "PL")
+                            {
+                                if (iLevel > 1) sPrefex = String.Format("<span style=\"width: {0}px; display: inline-block;\">&nbsp;</span>", ((iLevel - 1) * 18).ToString());
+                                sPrefex += String.Format("<button type=\"button\" class=\"btn btn-facebook zf-btn-xs mr-1\" aria-expanded=\"false\" value=\"{0}\" onclick=\"_zw.fn.viewListItemChild()\"><i class=\"fas fa-plus\"></i></button>", row["품목코드"].ToString());
+                            }
+                            else
+                            {
+                                sPrefex = String.Format("<span style=\"width: {0}px; display: inline-block;\">&nbsp;</span>", (iLevel * 18).ToString());
+                            }
+
+                            sb.AppendFormat("<tr lvl=\"{0}\">", iLevel.ToString());
+                            sb.AppendFormat("<td style=\"width: 52%\" class=\"text-left\">{0}{1}</td>", sPrefex, row["품목코드"].ToString());
+                            sb.AppendFormat("<td style=\"width: 12%\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtCurrency(row["소요량"].ToString(), 4));
+                            sb.AppendFormat("<td style=\"width: 12%\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["직접노무비"].ToString(), 4));
+                            sb.AppendFormat("<td style=\"width: 12%\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["간접변동비"].ToString(), 4));
+                            sb.AppendFormat("<td style=\"width: 12%\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["외주비"].ToString(), 4));
+                            sb.Append("</tr>");
+
+                            dSum += row["직접노무비"].ToString() == "" ? 0 : Convert.ToDecimal(ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["직접노무비"].ToString(), 6));
+                            dSum2 += row["간접변동비"].ToString() == "" ? 0 : Convert.ToDecimal(ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["간접변동비"].ToString(), 6));
+                            dSum3 += row["외주비"].ToString() == "" ? 0 : Convert.ToDecimal(ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["외주비"].ToString(), 6));
+                            sPrefex = "";
+                        }
+                        if (iLevel == 1) sb.Append("</tbody>");
+                    }
+                }
+
+                if (iLevel == 1)
+                {
+                    sb.Append("<tfoot>");
+                    sb.Append("<tr class=\"table-warning\">");
+                    if (ViewBag.JPost["cmd"].ToString() == "S")
+                    {
+                        sb.Append("<th colspan=\"2\">합</th>");
+                        sb.AppendFormat("<th>{0}</th>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(dSum.ToString(), 4));
+                        sb.Append("<th>&nbsp;</th>");
+                    }
+                    else if (ViewBag.JPost["cmd"].ToString() == "R")
+                    {
+                        if (ViewBag.JPost["fld"].ToString() == "MTRCOST")
+                        {
+                            sb.Append("<th colspan=\"2\">합</th>");
+                            sb.AppendFormat("<th>{0}</th>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(dSum.ToString(), 4));
+                        }
+                        else if (ViewBag.JPost["fld"].ToString() == "PCCOST")
+                        {
+                            sb.Append("<th>합</th>");
+                            sb.AppendFormat("<th>{0}</th>", ZumNet.Web.Bc.CommonUtils.CvtNumeric((dSum + dSum2 + dSum3).ToString(), 4));
+                            sb.AppendFormat("<th>{0}</th>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(dSum.ToString(), 4));
+                            sb.AppendFormat("<th>{0}</th>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(dSum2.ToString(), 4));
+                            sb.AppendFormat("<th>{0}</th>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(dSum3.ToString(), 4));
+                        }
+                    }
+                    sb.Append("</tr>");
+                    sb.Append("</tfoot>");
+                    sb.Append("</table>");
+
+                    sb.Append("</div>"); //body
+                    sb.Append("<div class=\"modal-footer d-flex justify-content-between\">");
+                    sb.Append("<div>");
+                    sb.Append("<button type=\"button\" class=\"btn btn-success mr-2\" data-btn=\"excel\"><i class=\"fe-download\"></i> 엑셀</button>");
+                    sb.Append("<button type=\"button\" class=\"btn btn-facebook icon-btn mr-2\" data-btn=\"unfold\"><i class=\"fas fa-expand-alt\"></i></button>");
+                    sb.Append("<button type=\"button\" class=\"btn btn-default icon-btn\" data-btn=\"fold\"><i class=\"fas fa-compress-alt\"></i></button>");
+                    sb.Append("</div><div>");
+                    sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">닫기</button>");
+                    sb.Append("</div>"); //footer
+                    sb.Append("</div>"); //content
+                    sb.Append("</div>");
+                }
+                else
+                {
+                    //sb.Append("</table>");
+                }
+            }
+            else
+            {
+                if (iLevel > 1) return "NE<span style=\"width: 18px; display: inline-block;\">&nbsp;</span>";
+                else return Resources.Global.NoItemShow;
+            }
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+        finally
+        {
+            ds = null;
+        }
+
+        return sb.ToString();
+    }
+}
+
+@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, _level))

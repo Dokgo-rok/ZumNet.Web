@@ -2,6 +2,30 @@
 @using System.Threading;
 @using Newtonsoft.Json;
 @{
+    if (ViewBag.R["ttl"].ToString() == "")
+    {
+        if (ViewBag.R.ft.ToString() == "StdTime")
+        {
+            ViewBag.R["ttl"] = "모델별 공수";
+        }
+        else if (ViewBag.R.ft.ToString() == "ExcelList")
+        {
+            ViewBag.R["ttl"] = "개발원가견적 엑셀 목록";
+        }
+        else if (ViewBag.R.ft.ToString() == "StdPay")
+        {
+            ViewBag.R["ttl"] = "실적원가율";
+        }
+        else if (ViewBag.R.ft.ToString() == "CodeMgr")
+        {
+            ViewBag.R["ttl"] = "코드관리";
+        }
+        else
+        {
+            ViewBag.R["ttl"] = "모델별원가 목록";
+        }
+    }
+
     ViewBag.Title = ViewBag.R["ttl"];
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
@@ -15,71 +39,125 @@
 
 }
 @functions{
-    private string RenderDDDate()
+    int _stdYear = 0;
+    int _stdMonth = 0;
+
+    private string RenderDDDate(string formTable)
     {
+        _stdYear = Convert.ToInt32(ViewBag.R.lv.start.ToString().Substring(0, 4));
+        _stdMonth = Convert.ToInt32(ViewBag.R.lv.start.ToString().Substring(4, 2));
+
+        string sSelected = "";
+
         StringBuilder sb = new StringBuilder();
 
-        //법인
         sb.Append("<div class=\"input-group justify-content-end\">");
-        sb.Append("<select class=\"custom-select\" id=\"_Target\">");
-        int iCnt = 0;
-        foreach (object[] o in ViewBag.CodeTable["ce.center"])
+
+        if (formTable == "CostList")
         {
-            if (o[7].ToString() != "N")
+            #region [모델별원가목록]
+            //법인
+            sb.Append("<select class=\"custom-select\" id=\"_Target\">");
+            int iCnt = 0;
+            foreach (object[] o in ViewBag.CodeTable["ce.center"])
             {
-                //if (iCnt == 0) Master.TargetCenter = Convert.ToInt32(o[6]);
-                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[6].ToString(), o[3].ToString());
-                iCnt++;
+                if (o[7].ToString() != "N")
+                {
+                    sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["tgt"]) == o[6].ToString() ? " selected" : "";
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[6].ToString(), o[3].ToString(), sSelected);
+                    iCnt++;
+                }
             }
-        }
-        sb.Append("</select>");
+            sb.Append("</select>");
 
-        //고객
-        sb.Append("<select class=\"custom-select\" id=\"_Cond1\">");
-        sb.Append("<option value=\"\">고객</option>");
-        foreach (object[] o in ViewBag.CodeTable["mc.buyer"])
+            //고객
+            sb.Append("<select class=\"custom-select\" id=\"_Cond1\">");
+            sb.Append("<option value=\"\">고객</option>");
+            foreach (object[] o in ViewBag.CodeTable["mc.buyer"])
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == o[3].ToString() ? " selected" : "";
+                //Response.Write("---" + ViewBag.R.lv["cd1"].ToString() + "==" + o[3].ToString() + "==" + sSelected + "<br />");
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[3].ToString(), o[3].ToString(), sSelected);
+            }
+            sb.Append("</select>");
+
+            //품목
+            sb.Append("<select class=\"custom-select\" id=\"_Cond2\">");
+            sb.Append("<option value=\"\">품목</option>");
+            foreach (object[] o in ViewBag.CodeTable["mc.item"])
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd2"]) == o[3].ToString() ? " selected" : "";
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[3].ToString(), o[3].ToString(), sSelected);
+            }
+            sb.Append("</select>");
+
+            sb.Append("<select class=\"custom-select\" id=\"_SearchYear\">");
+            sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(_stdYear, 2010));
+            sb.Append("</select>");
+
+
+            sb.Append("<select class=\"custom-select\" id=\"_SearchMonth\">");
+            sb.Append(ZumNet.Web.Bc.CommonUtils.OptionMonth(_stdMonth));
+            sb.Append("</select>");
+
+            sb.Append("<div class=\"input-group-text\" style=\"border: 0\">");
+
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd3"]) == "" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">전체</span>");
+            sb.Append("</label>");
+
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd3"]) == "S" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"S\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">표준有</span>");
+            sb.Append("</label>");
+
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd3"]) == "R" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-0\" for=\"rdo03\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo03\" value=\"R\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">실적有</span>");
+            sb.Append("</label>");
+            sb.Append("</div>");
+
+            sb.AppendFormat("<input type=\"text\" class=\"form-control search-text\" placeholder=\"모델\" style=\"max-width: 150px\" value=\"{0}\">", ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+            #endregion
+        }
+        else if (formTable == "StdTime")
         {
-            sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[3].ToString(), o[3].ToString());
+            #region [모델별공수]
+            sb.Append("<select class=\"custom-select\" id=\"_Target\">");
+            int iCnt = 0;
+            foreach (object[] o in ViewBag.CodeTable["ce.center"])
+            {
+                if (o[7].ToString() != "N")
+                {
+                    sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["tgt"]) == o[6].ToString() ? " selected" : "";
+                    //Response.Write("---" + ViewBag.R.lv["tgt"].ToString() + "==" + o[6].ToString() + "==" + sSelected + "<br />");
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[6].ToString(), o[3].ToString(), sSelected);
+                    iCnt++;
+                }
+            }
+            sb.Append("</select>");
+
+            sb.Append("<select class=\"custom-select\" id=\"_SearchYear\">");
+            sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(_stdYear, 2010));
+            sb.Append("</select>");
+
+            sb.Append("<select class=\"custom-select\" id=\"_SearchMonth\">");
+            sb.Append(ZumNet.Web.Bc.CommonUtils.OptionMonth(_stdMonth));
+            sb.Append("</select>");
+
+            sb.AppendFormat("<input type=\"text\" class=\"form-control search-text\" placeholder=\"모델\" style=\"max-width: 150px\" value=\"{0}\">", ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+            #endregion
         }
-        sb.Append("</select>");
-
-        //품목
-        sb.Append("<select class=\"custom-select\" id=\"_Cond2\">");
-        sb.Append("<option value=\"\">품목</option>");
-        foreach (object[] o in ViewBag.CodeTable["mc.item"])
-        {
-            sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[3].ToString(), o[3].ToString());
-        }
-        sb.Append("</select>");
-
-        sb.Append("<select class=\"custom-select\" id=\"_SearchYear\">");
-        sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(DateTime.Now.Year, 2010));
-        sb.Append("</select>");
-
-
-        sb.Append("<select class=\"custom-select\" id=\"_SearchMonth\">");
-        sb.Append(ZumNet.Web.Bc.CommonUtils.OptionMonth(DateTime.Now.Month));
-        sb.Append("</select>");
-
-        sb.Append("<div class=\"input-group-text\" style=\"border: 0\">");
-        sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
-        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"\" checked>");
-        sb.Append("<span class=\"custom-control-label\">전체</span>");
-        sb.Append("</label>");
-        sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
-        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"S\">");
-        sb.Append("<span class=\"custom-control-label\">표준有</span>");
-        sb.Append("</label>");
-        sb.Append("<label class=\"custom-control custom-radio m-0 mr-0\" for=\"rdo03\">");
-        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo03\" value=\"R\">");
-        sb.Append("<span class=\"custom-control-label\">실적有</span>");
-        sb.Append("</label>");
-        sb.Append("</div>");
-
-        sb.Append("<input type=\"text\" class=\"form-control search-text\" placeholder=\"모델\" style=\"max-width: 150px\">");
-        sb.Append("<div class=\"input-group-append\">");
-        sb.Append("<button class=\"btn btn-primary\" data-zf-menu=\"search\"><i class=\"fe-search\"></i></button>");
-        sb.Append("</div>");
 
         sb.Append("</div>");
         return sb.ToString();
@@ -126,7 +204,8 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center z-lv-menu">
-                    <button class="btn icon-btn btn-outline-success m-0 btn-sm" onclick="_zw.ut.expandWnd(this);"><i class="fas fa-expand"></i></button>
+                    <a class="text-success mr-3" href="javascript:void();"><i class="fe-download"></i> 엑셀</a>
+                    <button class="btn icon-btn btn-outline-secondary m-0 btn-sm" onclick="_zw.ut.expandWnd(this);"><i class="fas fa-expand"></i></button>
                 </div>
             </div>
         </div>
@@ -137,7 +216,7 @@
                     @Html.Partial("_ListCount")
                 </div>
                 <div class="flex-fill z-lv-cond d-flex">
-                    @Html.Raw(RenderDDDate())
+                    @Html.Raw(RenderDDDate(ViewBag.R.ft.ToString()))
                 </div>
             </div>
         </div>
@@ -148,14 +227,35 @@
             <div class="px-3@(sListScroll)">
                 <div class="z-list">
                     <div class="z-list-head"></div>
-                    <div class="z-list-body" id="__ListView">
-
+                    <div class="z-list-body" id="__List">
+                        @Html.Partial(sPatialView)
                     </div>
                 </div>
-                <div id="__ListPage"></div>
+                <ul class="pagination pagination-sm justify-content-center" id="__ListPage">
+                    @Html.Partial("~/Views/Common/_ListPagination.cshtml")
+                </ul>
             </div>
         </div>
     </div>
     <!-- / content -->
 
+    @if (ViewBag.R.ft.ToString() == "CostList")
+    {
+        <form id="_HiddenForm" action="" method="post" class="d-none">
+            <input id="hhdTitle" name="hhdTitle" class="d-none" />
+            <textarea id="hhdTable" name="hhdTable" class="d-none"></textarea>
+        </form>
+    }
+    else if (ViewBag.R.ft.ToString() == "StdTime")
+    {
+        <div class="d-none" id="_HIddenForm">
+            <div class="p-first" style="padding-left: 4px; font-size: 14px; font-weight: 700">모델별에 반영할 실적원가율을 하기와 같이 변경하고저 하니 검토 후 승인 부탁드립니다.</div><br />
+            <div class="p-second" style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 적용시점 : </div><br />
+            <div style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 산출기준</div><br />
+            <div style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 모델별 실적원가율</div><br />
+            <div class="p-html" style="font-size: 14px"></div>
+            <div style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 기타</div><br />
+        </div>
+        <textarea id="_HIddenFormData" class="d-none"></textarea>
+    }
 </div><!-- / .messages-wrapper -->

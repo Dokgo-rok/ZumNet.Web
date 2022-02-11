@@ -7,6 +7,7 @@
 @{
     ConfigColumn(ViewBag.Mode);
 
+    //Response.Write("-----------------------------" + ViewBag.BoardList.Tables[0].Rows.Count.ToString());
 }
 
 @functions {
@@ -14,19 +15,19 @@
     private void ConfigColumn(string mode)
     {
         //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
-        string[,] arr = { { "MODELCODE", "MODEL", "6%", "left", "", "" }, { "XCLS", "구분", "5%", "", "", "" }
-                        , { "MTRCOST", "금액", "4%", "right", "", "" }, { "MTRCOSTRT", "비율", "4%", "right", "", "" } //재료비
-                        , { "PCCOST", "금액", "4%", "right", "", "" }, { "PCCOSTRT", "비율", "4%", "right", "", "" } //가공비
-                        , { "SPLEX", "금액", "4%", "right", "", "" }, { "SPLEXRT", "비율", "4%", "right", "", "" } //소모품비
-                        , { "VARCOST", "금액", "4%", "right", "", "" }, { "VARCOSTRT", "비율", "4%", "right", "", "" } //변동원가
-                        , { "FIXCOST", "금액", "4%", "right", "", "" }, { "FIXCOSTRT", "비율", "4%", "right", "", "" } //고정원가
-                        , { "PRODCOST", "금액", "4%", "right", "", "" }, { "PRODCOSTRT", "비율", "4%", "right", "", "" } //제조원가
-                        , { "SGACOST", "금액", "4%", "right", "", "" }, { "SGACOSTRT", "비율", "4%", "right", "", "" } //판관비
-                        , { "TOTALCOST", "금액", "4%", "right", "", "" }, { "TOTALCOSTRT", "비율", "4%", "right", "", "" } //총원가
-                        , { "SALEPRICE", "금액", "5%", "right", "", "" } //판매가
-                        , { "OPPROFIT", "금액", "4%", "right", "", "" }, { "OPPROFITRT", "비율", "4%", "right", "", "" } //영업이익
-                        , { "CTBPROFIT", "금액", "4%", "right", "", "" }, { "CTBPROFITRT", "비율", "4%", "right", "", "" } //공헌이익
-                        , { "STDTIME", "금액", "4%", "right", "", "" } //공수            
+        string[,] arr = { { "MODELCODE", "MODEL", "12.6%", "left", "", "" }, { "XCLS", "구분", "3.8", "", "", "" }
+                        , { "MTRCOST", "금액", "3.8", "right", "", "" }, { "MTRCOSTRT", "비율", "3.8", "right", "", "" } //재료비
+                        , { "PCCOST", "금액", "3.8", "right", "", "" }, { "PCCOSTRT", "비율", "3.8", "right", "", "" } //가공비
+                        , { "SPLEX", "금액", "3.8", "right", "", "" }, { "SPLEXRT", "비율", "3.8", "right", "", "" } //소모품비
+                        , { "VARCOST", "금액", "3.8", "right", "", "" }, { "VARCOSTRT", "비율", "3.8", "right", "", "" } //변동원가
+                        , { "FIXCOST", "금액", "3.8", "right", "", "" }, { "FIXCOSTRT", "비율", "3.8", "right", "", "" } //고정원가
+                        , { "PRODCOST", "금액", "3.8", "right", "", "" }, { "PRODCOSTRT", "비율", "3.8", "right", "", "" } //제조원가
+                        , { "SGACOST", "금액", "3.8", "right", "", "" }, { "SGACOSTRT", "비율", "3.8", "right", "", "" } //판관비
+                        , { "TOTALCOST", "금액", "3.8", "right", "", "" }, { "TOTALCOSTRT", "비율", "3.8", "right", "", "" } //총원가
+                        , { "SALEPRICE", "금액", "3.8", "right", "", "" } //판매가
+                        , { "OPPROFIT", "금액", "3.8", "right", "", "" }, { "OPPROFITRT", "비율", "3.8", "right", "", "" } //영업이익
+                        , { "CTBPROFIT", "금액", "3.8", "right", "", "" }, { "CTBPROFITRT", "비율", "3.8", "right", "", "" } //공헌이익
+                        , { "STDTIME", "금액", "3.8", "right", "", "" } //공수            
                     };
         this._columnConfig = arr;
         //Master.BaseSort = "MODELCODE";
@@ -48,64 +49,64 @@
             }
             sb.Append("</colgroup>");
 
-            sb.Append("<thead><tr class=\"success\">");
+            sb.Append("<thead><tr class=\"table-success\">");
 
             sBlind = (sortCol == _columnConfig[0, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[0, 0].ToString(), _columnConfig[0, 1].ToString(), sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[0, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[0, 0].ToString(), _columnConfig[0, 1].ToString(), sSortIcon, sBlind);
 
             sb.AppendFormat("<th rowspan=\"2\">{1}</th>", _columnConfig[1, 0].ToString(), _columnConfig[1, 1].ToString());
 
             sBlind = (sortCol == _columnConfig[2, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[2, 0].ToString(), "재료비", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[2, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[2, 0].ToString(), "재료비", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[4, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[4, 0].ToString(), "가공비", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[4, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[4, 0].ToString(), "가공비", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[6, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[6, 0].ToString(), "소모품비", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[6, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[6, 0].ToString(), "소모품비", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[8, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[8, 0].ToString(), "변동원가", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[8, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[8, 0].ToString(), "변동원가", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[10, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[10, 0].ToString(), "고정원가", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[10, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[10, 0].ToString(), "고정원가", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[12, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[12, 0].ToString(), "제조원가", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[12, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[12, 0].ToString(), "제조원가", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[14, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[14, 0].ToString(), "판관비", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[14, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[14, 0].ToString(), "판관비", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[16, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[16, 0].ToString(), "총원가", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[16, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[16, 0].ToString(), "총원가", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[18, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[18, 0].ToString(), "판매가", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[18, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[18, 0].ToString(), "판매가", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[19, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[19, 0].ToString(), "영업이익", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[19, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[19, 0].ToString(), "영업이익", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[21, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[21, 0].ToString(), "공헌이익", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[21, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[21, 0].ToString(), "공헌이익", sSortIcon, sBlind);
 
             sBlind = (sortCol == _columnConfig[23, 0].ToString()) ? "" : " d-none";
-            sSortIcon = (sortType == "" || sortType == "ASC") ? "fe-arrow-up" : "fe-arrow-down";
-            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable\"><a href=\"javascript:\" onclick=\"_ZF.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}glyphicon {3}\"></i></a></th>", _columnConfig[23, 0].ToString(), "공수", sBlind, sSortIcon);
+            sSortIcon = (sortCol == _columnConfig[23, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[23, 0].ToString(), "공수", sSortIcon, sBlind);
             sb.Append("</tr>");
 
-            sb.Append("<tr class=\"success\">");
+            sb.Append("<tr class=\"table-success\">");
             for (int i = 2; i < _columnConfig.GetLength(0) - 1; i++)
             {
                 //if (_columnConfig[i, 5].ToString() == "Y")
@@ -116,7 +117,7 @@
                 //{
                 //    strValue = _columnConfig[i, 1].ToString();
                 //}
-                if (i != 18) sb.AppendFormat("<th>{0}</th>", _columnConfig[i, 1].ToString());
+                if (i != 18) sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", _columnConfig[i, 1].ToString());
             }
             sb.Append("</tr></thead>");
             return sb.ToString();
@@ -176,7 +177,7 @@
     private string ViewList(string mode, DataSet data, string sortCol, string sortType)
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append("<table class=\"table table-hover table-bordered table-condensed\" style=\"min-width: 1000px\">");
+        sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 1000px\">");
         if (mode == "xls") sb.Append(RenderExcelColumnHeader());
         else sb.Append(RenderColumnHeader(mode, sortCol, sortType));
 
@@ -209,7 +210,7 @@
                     else if (r["XCLS"].ToString() == "S") htLoop[1] = r;
                     else if (r["XCLS"].ToString() == "R") htLoop[2] = r;
 
-                    if (r["BUYER"].ToString() != "" && r["ITEMCLS"].ToString() != "") strDesc = String.Format("<span class=\"text-warning\">({0} / {1})</span>", r["BUYER"].ToString(), r["ITEMCLS"].ToString());
+                    if (r["BUYER"].ToString() != "" && r["ITEMCLS"].ToString() != "") strDesc = String.Format("<span style=\"color: #8a6d3b\">({0} / {1})</span>", r["BUYER"].ToString(), r["ITEMCLS"].ToString());
                 }
 
                 //if (drStd != null) Response.Write(iSeq.ToString() + " : " + drStd["SALEPRICE"].ToString());
@@ -219,9 +220,9 @@
                     dr = (DataRow)htLoop[x];
                     sb.Append("<tr class=\"inner-dot\">");
 
-                    if (x == 0) sb.AppendFormat("<th rowspan=\"4\" style=\"text-align: center\">{0}<br />{1}</th><td>개발</td>", row["MODELCODE"].ToString(), strDesc);
-                    else if (x == 1) sb.Append("<td style=\"text-align: center\">표준</td>");
-                    else if (x == 2) sb.Append("<td style=\"text-align: center\">실적</td>");
+                    if (x == 0) sb.AppendFormat("<th rowspan=\"4\" class=\"text-center text-truncate\">{0}<br />{1}</th><td>개발</td>", row["MODELCODE"].ToString(), strDesc);
+                    else if (x == 1) sb.Append("<td class=\"text-center\">표준</td>");
+                    else if (x == 2) sb.Append("<td class=\"text-center\">실적</td>");
 
                     for (int i = 2; i < _columnConfig.GetLength(0); i++)
                     {
@@ -246,7 +247,7 @@
                                     if (strID == "MTRCOST" || strID == "PCCOST")
                                     {
                                         //표준원가 재료비, 가공비 / 실적원가 재료비, 가공비
-                                        strValue = String.Format("<a href=\"javascript:\" onclick=\"_ZF.fn.viewListItem('{0}', '{1}', '{2}', 1, '{2}')\">{3}</a>", x == 1 ? "S" : "R", strID, dr["MODELCODE"].ToString(), strValue);
+                                        strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.viewListItem('{0}', '{1}', '{2}', 1, '{2}')\">{3}</a>", x == 1 ? "S" : "R", strID, dr["MODELCODE"].ToString(), strValue);
                                     }
                                 }
                             }
@@ -269,7 +270,7 @@
 
 
                 //차이 계산
-                sb.Append("<tr class=\"warning inner-bold\">");
+                sb.Append("<tr class=\"table-warning inner-bold\">");
                 if (mode == "xls") sb.Append("<td class=\"xls_warning\" style=\"text-align: center\">차이</td>");
                 else sb.Append("<td>차이</td>");
 
@@ -348,7 +349,7 @@
         else
         {
             sb.Append("<tr>");
-            sb.AppendFormat("<th colspan=\"{0}\" class=\"py-15\">{1}</th>", _columnConfig.GetLength(0), "해당 목록이 없습니다!");
+            sb.AppendFormat("<th colspan=\"{0}\" class=\"py-15\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
             sb.Append("</tr>");
         }
         sb.Append("</tbody>");

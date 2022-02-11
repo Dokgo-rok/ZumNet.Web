@@ -885,6 +885,7 @@ namespace ZumNet.Web.Bc
                 if (category.ToLower() == "ea") sName = "eaLvCount";
                 else if (category.ToLower() == "doc") sName = "docLvCount";
                 else if (category.ToLower() == "orgmap") sName = "orgLvCount";
+                else if (category.ToLower() == "cost") sName = "costLvCount"; //모델별원가, 개발원가
                 else sName = "bbsLvCount";
 
                 HttpCookie ck = HttpContext.Current.Request.Cookies[sName];
@@ -912,11 +913,13 @@ namespace ZumNet.Web.Bc
             if (category.ToLower() == "ea") sName = "eaLvCount";
             else if (category.ToLower() == "doc") sName = "docLvCount";
             else if (category.ToLower() == "orgmap") sName = "orgLvCount";
+            else if (category.ToLower() == "cost") sName = "costLvCount"; //모델별원가, 개발원가
             else sName = "bbsLvCount";
 
             HttpCookie ck = HttpContext.Current.Request.Cookies[sName];
 
-            return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, 20) : 20;
+            if (category.ToLower() == "cost") return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, 7) : 7;
+            else return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, 20) : 20;
         }
         #endregion
 
@@ -1300,6 +1303,20 @@ namespace ZumNet.Web.Bc
                 jV["lv"]["basesort"] = StringHelper.SafeString(jReq["basesort"]);
                 jV["lv"]["boundary"] = CommonUtils.BOUNDARY();
 
+                //추가 리스트뷰 검색 조건 담기
+                jV["lv"]["cd1"] = StringHelper.SafeString(jReq["cd1"]);
+                jV["lv"]["cd2"] = StringHelper.SafeString(jReq["cd2"]);
+                jV["lv"]["cd3"] = StringHelper.SafeString(jReq["cd3"]);
+                jV["lv"]["cd4"] = StringHelper.SafeString(jReq["cd4"]);
+                jV["lv"]["cd5"] = StringHelper.SafeString(jReq["cd5"]);
+                jV["lv"]["cd6"] = StringHelper.SafeString(jReq["cd6"]);
+                jV["lv"]["cd7"] = StringHelper.SafeString(jReq["cd7"]);
+                jV["lv"]["cd8"] = StringHelper.SafeString(jReq["cd8"]);
+                jV["lv"]["cd9"] = StringHelper.SafeString(jReq["cd9"]);
+                jV["lv"]["cd10"] = StringHelper.SafeString(jReq["cd10"]);
+                jV["lv"]["cd11"] = StringHelper.SafeString(jReq["cd11"]);
+                jV["lv"]["cd12"] = StringHelper.SafeString(jReq["cd12"]);
+
                 ctrl.ViewBag.R = jV;
             }
             catch (Exception ex)
@@ -1428,6 +1445,20 @@ namespace ZumNet.Web.Bc
                         jV["lv"]["end"] = StringHelper.SafeString(jReq["end"]);
                         jV["lv"]["basesort"] = StringHelper.SafeString(jReq["basesort"]);
                         jV["lv"]["boundary"] = StringHelper.SafeString(jReq["boundary"]);
+
+                        //추가 리스트뷰 검색 조건 담기
+                        jV["lv"]["cd1"] = StringHelper.SafeString(jReq["cd1"]);
+                        jV["lv"]["cd2"] = StringHelper.SafeString(jReq["cd2"]);
+                        jV["lv"]["cd3"] = StringHelper.SafeString(jReq["cd3"]);
+                        jV["lv"]["cd4"] = StringHelper.SafeString(jReq["cd4"]);
+                        jV["lv"]["cd5"] = StringHelper.SafeString(jReq["cd5"]);
+                        jV["lv"]["cd6"] = StringHelper.SafeString(jReq["cd6"]);
+                        jV["lv"]["cd7"] = StringHelper.SafeString(jReq["cd7"]);
+                        jV["lv"]["cd8"] = StringHelper.SafeString(jReq["cd8"]);
+                        jV["lv"]["cd9"] = StringHelper.SafeString(jReq["cd9"]);
+                        jV["lv"]["cd10"] = StringHelper.SafeString(jReq["cd10"]);
+                        jV["lv"]["cd11"] = StringHelper.SafeString(jReq["cd11"]);
+                        jV["lv"]["cd12"] = StringHelper.SafeString(jReq["cd12"]);
 
                         ctrl.ViewBag.R = jV;
 
@@ -1723,6 +1754,27 @@ namespace ZumNet.Web.Bc
                 }
             }
 
+            //부서장, 사용 권한
+            if (strReturn == "")
+            {
+                using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                {
+                    svcRt = cost.GetMenuAcl(ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]));
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.R.current["chief"] = svcRt.ResultDataString.Substring(0, 1);
+                    ctrl.ViewBag.R.current["acl"] = svcRt.ResultDataString.Substring(1);
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            //코드정보 설정
             if (ctAlias == "CE")
             {
                 string[,] codeConfig = {
@@ -1779,25 +1831,6 @@ namespace ZumNet.Web.Bc
                 }
             }
 
-            if (strReturn == "")
-            {
-                using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
-                {
-                    svcRt = cost.GetMenuAcl(ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]));
-                }
-
-                if (svcRt != null && svcRt.ResultCode == 0)
-                {
-                    ctrl.ViewBag.R.current["chief"] = svcRt.ResultDataString.Substring(0, 1);
-                    ctrl.ViewBag.R.current["acl"] = svcRt.ResultDataString.Substring(1);
-                }
-                else
-                {
-                    //에러페이지
-                    strReturn = svcRt.ResultMessage;
-                }
-            }
-
             return strReturn;
         }
 
@@ -1807,9 +1840,8 @@ namespace ZumNet.Web.Bc
         /// <param name="ctrl"></param>
         /// <param name="ctId"></param>
         /// <param name="fdId"></param>
-        /// <param name="qi"></param>
         /// <returns></returns>
-        public static string ReportInit(this Controller ctrl, int ctId, int fdId, string qi)
+        public static string ReportInit(this Controller ctrl, int ctId, int fdId)
         {
             string strReturn = "";
             ZumNet.Framework.Core.ServiceResult svcRt = null;
@@ -1853,24 +1885,25 @@ namespace ZumNet.Web.Bc
                 }
             }
 
-            if (strReturn == "" && qi != "")
-            {
-                //JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(qi));
-                JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(qi));
+            //22-02-11 아래코드 RequestInit, AjaxInit으로 옮김
+            //if (strReturn == "" && qi != "")
+            //{
+            //    //JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(qi));
+            //    JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(qi));
 
-                ctrl.ViewBag.R.lv.Add("cd1", StringHelper.SafeString(jReq["cd1"]));
-                ctrl.ViewBag.R.lv.Add("cd2", StringHelper.SafeString(jReq["cd2"]));
-                ctrl.ViewBag.R.lv.Add("cd3", StringHelper.SafeString(jReq["cd3"]));
-                ctrl.ViewBag.R.lv.Add("cd4", StringHelper.SafeString(jReq["cd4"]));
-                ctrl.ViewBag.R.lv.Add("cd5", StringHelper.SafeString(jReq["cd5"]));
-                ctrl.ViewBag.R.lv.Add("cd6", StringHelper.SafeString(jReq["cd6"]));
-                ctrl.ViewBag.R.lv.Add("cd7", StringHelper.SafeString(jReq["cd7"]));
-                ctrl.ViewBag.R.lv.Add("cd8", StringHelper.SafeString(jReq["cd8"]));
-                ctrl.ViewBag.R.lv.Add("cd9", StringHelper.SafeString(jReq["cd9"]));
-                ctrl.ViewBag.R.lv.Add("cd10", StringHelper.SafeString(jReq["cd10"]));
-                ctrl.ViewBag.R.lv.Add("cd11", StringHelper.SafeString(jReq["cd11"]));
-                ctrl.ViewBag.R.lv.Add("cd12", StringHelper.SafeString(jReq["cd12"]));
-            }
+            //    ctrl.ViewBag.R.lv.Add("cd1", StringHelper.SafeString(jReq["cd1"]));
+            //    ctrl.ViewBag.R.lv.Add("cd2", StringHelper.SafeString(jReq["cd2"]));
+            //    ctrl.ViewBag.R.lv.Add("cd3", StringHelper.SafeString(jReq["cd3"]));
+            //    ctrl.ViewBag.R.lv.Add("cd4", StringHelper.SafeString(jReq["cd4"]));
+            //    ctrl.ViewBag.R.lv.Add("cd5", StringHelper.SafeString(jReq["cd5"]));
+            //    ctrl.ViewBag.R.lv.Add("cd6", StringHelper.SafeString(jReq["cd6"]));
+            //    ctrl.ViewBag.R.lv.Add("cd7", StringHelper.SafeString(jReq["cd7"]));
+            //    ctrl.ViewBag.R.lv.Add("cd8", StringHelper.SafeString(jReq["cd8"]));
+            //    ctrl.ViewBag.R.lv.Add("cd9", StringHelper.SafeString(jReq["cd9"]));
+            //    ctrl.ViewBag.R.lv.Add("cd10", StringHelper.SafeString(jReq["cd10"]));
+            //    ctrl.ViewBag.R.lv.Add("cd11", StringHelper.SafeString(jReq["cd11"]));
+            //    ctrl.ViewBag.R.lv.Add("cd12", StringHelper.SafeString(jReq["cd12"]));
+            //}
 
             return strReturn;
         }

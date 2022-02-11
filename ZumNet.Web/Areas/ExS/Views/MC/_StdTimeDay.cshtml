@@ -1,0 +1,97 @@
+﻿
+@using System.Data;
+@using System.Text;
+@{
+
+}
+@functions{
+    private string ViewList(string mode, DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        string strValue = "";
+
+        decimal dStd = 0;
+        decimal dReal = 0;
+
+        try
+        {
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                DateTime dt = new DateTime(Convert.ToInt32(ViewBag.JPost["vd"].ToString().Substring(0, 4)), Convert.ToInt32(ViewBag.JPost["vd"].ToString().Substring(4, 2)), Convert.ToInt32(ViewBag.JPost["vd"].ToString().Substring(6, 2)));
+
+                sb.Append("<div class=\"modal-dialog modal-dialog-scrollable\">");
+                sb.Append("<div class=\"modal-content\" data-for=\"external\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)\">");
+                sb.Append("<div class=\"modal-header\">");
+                sb.AppendFormat("<h4 class=\"modal-title\">{0}월 {1}일 공수 현황</h4>", dt.Month.ToString(), dt.Day.ToString());
+                sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>");
+                sb.Append("</div>"); //header
+
+                sb.Append("<div class=\"modal-body z-list-body\">");
+                sb.Append("<table class=\"table table-hover table-bordered table-sm mb-0\">");
+                sb.Append("<thead><tr class=\"table-success\"><th>품목코드</th><th>품목명칭</th><th>기준공수</th><th>실적공수</th><th>차이</th></thead>");
+                sb.Append("<tbody>");
+
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td class=\"text-left\">{0}</td>", row["COMPONENT_ITEM_CODE"].ToString());
+                    sb.AppendFormat("<td class=\"text-left\">{0}</td>", row["DESCRIPTION"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["STANDARD_TIME"].ToString()));
+                    sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(row["MAN_HOUR"].ToString()));
+
+                    strValue = ZumNet.Web.Bc.CommonUtils.StrMinus(row["STANDARD_TIME"].ToString(), row["MAN_HOUR"].ToString(), 2);
+                    if (strValue != "" && strValue.IndexOf('-') >= 0) strValue = "<strong class=\"text-danger\">(" + strValue.Replace("-", "") + ")</strong>";
+
+                    sb.AppendFormat("<td>{0}</td>", strValue);
+                    sb.Append("</tr>");
+
+                    strValue = "";
+
+                    dStd += row["STANDARD_TIME"].ToString() == "" ? 0 : Convert.ToDecimal(row["STANDARD_TIME"]);
+                    dReal += row["MAN_HOUR"].ToString() == "" ? 0 : Convert.ToDecimal(row["MAN_HOUR"]);
+                }
+
+                sb.Append("</tbody>");
+                sb.Append("<tfoot>");
+                sb.Append("<tr class=\"table-warning\">");
+                sb.Append("<th colspan=\"2\">합</th>");
+                sb.AppendFormat("<th>{0}</th>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(dStd.ToString()));
+                sb.AppendFormat("<th>{0}</th>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(dReal.ToString()));
+
+                strValue = ZumNet.Web.Bc.CommonUtils.StrMinus(dReal.ToString(), dStd.ToString(), 2);
+                if (strValue != "" && strValue.IndexOf('-') >= 0) strValue = "<strong class=\"text-danger\">(" + strValue.Replace("-", "") + ")</strong>";
+
+                sb.AppendFormat("<th>{0}</th>", strValue);
+
+                sb.Append("</tr>");
+                sb.Append("</tfoot>");
+                sb.Append("</table>");
+
+                sb.Append("</div>"); //body
+                sb.Append("<div class=\"modal-footer row\">");
+                sb.Append("<div class=\"col-lg-6 text-left\">");
+                sb.Append("</div><div class=\"col-lg-6 text-right\">");
+                sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">닫기</button>");
+                sb.Append("</div>"); //footer
+                sb.Append("</div>"); //content
+                sb.Append("</div>");
+            }
+            else
+            {
+                return Resources.Global.NoItemShow;
+            }
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+        finally
+        {
+            ds = null;
+        }
+
+        return sb.ToString();
+    }
+}
+
+@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList))

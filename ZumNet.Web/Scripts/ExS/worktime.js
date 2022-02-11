@@ -18,14 +18,14 @@ $(function () {
         if (e.which == 13) _zw.fn.goSearch();
     });
 
-    $('#__ListView thead input:checkbox').click(function () {
+    $('#__List thead input:checkbox').click(function () {
         var b = $(this).prop('checked'), df = $(this).attr('data-for');
         if (df && df != '') {
-            $('#__ListView tbody input:checkbox[data-for="' + df + '"]').each(function () {
+            $('#__List tbody input:checkbox[data-for="' + df + '"]').each(function () {
                 if (!$(this).prop('disabled'))  $(this).prop('checked', b);
             });
         } else {
-            $('#__ListView tbody input:checkbox').each(function () {
+            $('#__List tbody input:checkbox').each(function () {
                 if (!$(this).prop('disabled'))  $(this).prop('checked', b);
             });
         }
@@ -35,7 +35,7 @@ $(function () {
         e.preventDefault();
 
         var v = $(this).attr("data-val"); //console.log(v)
-        $('#__ListView table .z-select[data-zf-field="' + $(this).parent().parent().attr("data-for") + '"]').each(function () {
+        $('#__List table .z-select[data-zf-field="' + $(this).parent().parent().attr("data-for") + '"]').each(function () {
             if ($(this).parent().parent().find('input[name="ckbRow"]').prop('checked')) {
                 $(this).val(v);
                 $(this).parent().prev().prev().find('input[data-zf-field="' + $(this).attr("data-zf-field") + '"]').val($(this).val());
@@ -44,7 +44,7 @@ $(function () {
         });
     });
 
-    $('#__ListView table .z-select[data-zf-field]').change(function () {
+    $('#__List table .z-select[data-zf-field]').change(function () {
         $(this).parent().prev().prev().find('input[data-zf-field="' + $(this).attr("data-zf-field") + '"]').val($(this).val());
         //console.log($(this).val() + " : " + $(this).attr("data-zf-field") + " : " + $(this).parent().prev().prev().find('input[data-zf-field="' + $(this).attr("data-zf-field") + '"]').val());
     });
@@ -328,7 +328,7 @@ $(function () {
     _zw.fn.setPlan = function (mn) {
         var v = [];
         if (mn == "save" || mn == "request") {
-            $('#__ListView tbody input[name="ckbRow"]:checked').each(function () {
+            $('#__List tbody input[name="ckbRow"]:checked').each(function () {
                 var p = $(this).parent().parent();
                 var s = {};
                 p.find("[data-zf-field]").each(function () {
@@ -338,10 +338,10 @@ $(function () {
                 v.push(s);
             });
         } else if (mn == "send") {
-            $('#__ListView thead th[data-for]').each(function () {
+            $('#__List thead th[data-for]').each(function () {
                 var tgtId = $(this).attr('data-for');
                 var tgt = [];
-                $('#__ListView tbody input[name="ckbRow"][data-for="' + tgtId + '"]').each(function () {
+                $('#__List tbody input[name="ckbRow"][data-for="' + tgtId + '"]').each(function () {
                     if ($(this).prop('checked')) {
                         var s = {};
                         $(this).parent().find("[data-zf-field]").each(function () {
@@ -431,8 +431,8 @@ $(function () {
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
 
-                    $('#__ListView').html(res.substr(2));
-                    if (_zw.V.ft == 'WorkTimeMgr') _zw.fn.input($('#__ListView'));
+                    $('#__List').html(res.substr(2));
+                    if (_zw.V.ft == 'WorkTimeMgr') _zw.fn.input($('#__List'));
 
                 } else bootbox.alert(res);
             }
@@ -462,7 +462,7 @@ $(function () {
                 _zw.V.lv.search = 'O'; //성명+부서
                 _zw.V.lv.searchtext = e.val();
             }
-            _zw.V.lv.start = $('#_SearchYear').val() + "-" + ($('#_SearchMonth').val().length == 1 ? "0" : "") + $('#_SearchMonth').val() + "-01"; //alert(vd)
+            _zw.V.lv.start = $('#_SearchYear').val() + "-" + _zw.ut.zero($('#_SearchMonth').val()) + "-01"; //alert(vd)
         }
         
         _zw.fn.loadList();
@@ -514,7 +514,7 @@ $(function () {
         _zw.V.lv.basesort = '';
     }
 
-    if (_zw.V.ft == 'WorkTimeMgr') _zw.fn.input($('#__ListView'));
+    if (_zw.V.ft == 'WorkTimeMgr') _zw.fn.input($('#__List'));
 
     _zw.fn.reqCnt();
 });
