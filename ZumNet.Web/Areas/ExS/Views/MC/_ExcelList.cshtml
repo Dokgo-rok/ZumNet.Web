@@ -1,0 +1,193 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+
+@using Newtonsoft.Json;
+
+@{
+    ConfigColumn(ViewBag.Mode);
+
+    //Response.Write("-----------------------------" + ViewBag.BoardList.Tables[0].Rows.Count.ToString());
+}
+
+@functions {
+    string[,] _columnConfig = null;
+    private void ConfigColumn(string mode)
+    {
+        //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
+        string[,] arr = { { "MODELCODE", "MODEL", "12.6%", "left", "", "" }, { "PERIODNM", "구분", "3.8%", "", "", "" }
+                        , { "MTRCOST", "금액", "3.8%", "right", "", "" }, { "MTRCOSTRT", "비율", "3.8%", "right", "", "" } //재료비
+                        , { "PCCOST", "금액", "3.8%", "right", "", "" }, { "PCCOSTRT", "비율", "3.8%", "right", "", "" } //가공비
+                        , { "SPLEX", "금액", "3.8%", "right", "", "" }, { "SPLEXRT", "비율", "3.8%", "right", "", "" } //소모품비
+                        , { "VARCOST", "금액", "3.8%", "right", "", "" }, { "VARCOSTRT", "비율", "3.8%", "right", "", "" } //변동원가
+                        , { "FIXCOST", "금액", "3.8%", "right", "", "" }, { "FIXCOSTRT", "비율", "3.8%", "right", "", "" } //고정원가
+                        , { "PRODCOST", "금액", "3.8%", "right", "", "" }, { "PRODCOSTRT", "비율", "3.8%", "right", "", "" } //제조원가
+                        , { "SGACOST", "금액", "3.8%", "right", "", "" }, { "SGACOSTRT", "비율", "3.8%", "right", "", "" } //판관비
+                        , { "TOTALCOST", "금액", "3.8%", "right", "", "" }, { "TOTALCOSTRT", "비율", "3.8%", "right", "", "" } //총원가
+                        , { "SALEPRICE", "금액", "3.8%", "right", "", "" } //판매가
+                        , { "OPPROFIT", "금액", "3.8%", "right", "", "" }, { "OPPROFITRT", "비율", "3.8%", "right", "", "" } //영업이익
+                        , { "CTBPROFIT", "금액", "3.8%", "right", "", "" }, { "CTBPROFITRT", "비율", "3.8%", "right", "", "" } //공헌이익
+                        , { "STDTIME", "금액", "3.8%", "right", "", "" } //공수            
+        
+                    };
+        this._columnConfig = arr;
+        //Master.BaseSort = "MODELCODE";
+    }
+
+    private string RenderColumnHeader(string mode, string sortCol, string sortType)
+    {
+        if (_columnConfig != null)
+        {
+            string sBlind = " d-none";
+            string sSortIcon = "";
+
+            string strValue = "";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead><tr class=\"table-success\">");
+
+            sBlind = (sortCol == _columnConfig[0, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[0, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[0, 0].ToString(), _columnConfig[0, 1].ToString(), sSortIcon, sBlind);
+
+            sb.AppendFormat("<th rowspan=\"2\">{1}</th>", _columnConfig[1, 0].ToString(), _columnConfig[1, 1].ToString());
+
+            sBlind = (sortCol == _columnConfig[2, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[2, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[2, 0].ToString(), "재료비", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[4, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[4, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[4, 0].ToString(), "가공비", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[6, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[6, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[6, 0].ToString(), "소모품비", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[8, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[8, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[8, 0].ToString(), "변동원가", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[10, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[10, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[10, 0].ToString(), "고정원가", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[12, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[12, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[12, 0].ToString(), "제조원가", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[14, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[14, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[14, 0].ToString(), "판관비", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[16, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[16, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[16, 0].ToString(), "총원가", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[18, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[18, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[18, 0].ToString(), "판매가", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[19, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[19, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[19, 0].ToString(), "영업이익", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[21, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[21, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th colspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[21, 0].ToString(), "공헌이익", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[23, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[22, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[23, 0].ToString(), "공수", sSortIcon, sBlind);
+            sb.Append("</tr>");
+
+            sb.Append("<tr class=\"table-success\">");
+            for (int i = 2; i < _columnConfig.GetLength(0) - 1; i++)
+            {
+                //if (_columnConfig[i, 5].ToString() == "Y")
+                //{
+                //    strValue = String.Format("<a href=\"javascript:\" onclick=\"sort(event);\">{0}</a>", _columnConfig[i, 1].ToString());
+                //}
+                //else
+                //{
+                //    strValue = _columnConfig[i, 1].ToString();
+                //}
+                if (i != 18) sb.AppendFormat("<th>{0}</th>", _columnConfig[i, 1].ToString());
+            }
+            sb.Append("</tr></thead>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string ViewList(string mode, DataSet data, string sortCol, string sortType)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 1000px\">");
+        sb.Append(RenderColumnHeader(mode, sortCol, sortType));
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strClass = "";
+            int iSeq = 1;
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                sb.Append("<tr class=\"inner-dot\">");
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+                    strClass = (strID == "SALEPRICE") ? " class=\"text-primary\"" : "";
+
+
+                    if (strID != "MODELCODE" && strID != "PERIODNM")
+                    {
+                        if (strID.Substring(strID.Length - 2) == "RT") strValue = ZumNet.Web.Bc.CommonUtils.StrPercent(ZumNet.Web.Bc.CommonUtils.CvtPercent(row[strID].ToString(), "1", 4), 1, "");
+                        else
+                        {
+                            strValue = ZumNet.Web.Bc.CommonUtils.CvtNumeric(row[strID].ToString(), 4, "");
+                        }
+
+                        if (strValue != "" && strValue.IndexOf('-') >= 0) strValue = "<strong class=\"text-danger\">(" + strValue.Replace("-", "") + ")</strong>";
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString();
+                    }
+
+                    if (_columnConfig[i, 3].ToString() != "") sb.AppendFormat("<td{0} style=\"text-align: {1}\">{2}</td>", strClass, _columnConfig[i, 3].ToString(), strValue);
+                    else sb.AppendFormat("<td{0}>{1}</td>", strClass, strValue);
+                }
+
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"{0}\" class=\"py-15\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+
+        return sb.ToString();
+    }
+}
+
+@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))

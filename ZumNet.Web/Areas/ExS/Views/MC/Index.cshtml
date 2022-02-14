@@ -1,4 +1,5 @@
-﻿@using System.Text;
+﻿@using System.Data;
+@using System.Text;
 @using System.Threading;
 @using Newtonsoft.Json;
 @{
@@ -15,6 +16,10 @@
         else if (ViewBag.R.ft.ToString() == "StdPay")
         {
             ViewBag.R["ttl"] = "실적원가율";
+        }
+        else if (ViewBag.R.ft.ToString() == "StdPayDetail")
+        {
+            ViewBag.R["ttl"] = "생산지별 실적율";
         }
         else if (ViewBag.R.ft.ToString() == "CodeMgr")
         {
@@ -41,6 +46,70 @@
 @functions{
     int _stdYear = 0;
     int _stdMonth = 0;
+
+    private string GetQueryString(string m, string page, string ttl, string appId)
+    {
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\",appid:\"" + appId + "\"}");
+    }
+
+    private string RenderMenu(string formTable, DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        //sb.Append("<ul class=\"nav justify-content-end\">");
+
+        if (formTable == "CostList" || formTable == "StdTime")
+        {
+            sb.AppendFormat("<a class=\"z-lnk-navy-n mr-3\" href=\"javascript:void();\"><i class=\"fas fa-cloud-download-alt\" title=\"{0}\"></i> {1}</a>", "엑셀 내보내기", "엑셀");
+            sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" onclick=\"_zw.ut.expandWnd(this);\"><i class=\"fas fa-expand\"></i></button>");
+        }
+        else if (formTable == "ExcelList")
+        {
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+            {
+                sb.AppendFormat("<a class=\"z-lnk-navy-n\" href=\"javascript:void();\" title=\"{0}\" data-zf-menu=\"importExcel\"><i class=\"fas fa-cloud-upload-alt\"></i> {1}</a>", "엑셀 가져오기", "엑셀가져오기");
+            }
+        }
+        else if (formTable == "StdPay")
+        {
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+            {
+                sb.AppendFormat("<a class=\"z-lnk-navy-n\" href=\"/ExS/MC/StdPayDetail\" title=\"{0}\"><i class=\"fas fa-edit\"></i> {1}</a>", "실적율 작성하기", "실적율작성");
+            }
+        }
+        else if (formTable == "StdPayDetail")
+        {
+            DataRow row = ds.Tables[0].Rows[0];
+
+            sb.AppendFormat("<li class=\"nav-item\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-backward\"></i> {2}</a></li>", GetQueryString("", "StdPay", "", ""), "되돌아가기", "목록");
+
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S"))
+            {
+                if (ViewBag.Mode == "new" || ViewBag.Mode == "reuse" || ViewBag.Mode == "edit")
+                {
+                    sb.AppendFormat("<li class=\"nav-item\"><a href=\"javascript:\" class=\"z-lnk-navy-n ml-3\" title=\"{0}\" data-zf-menu=\"saveStd\"><i class=\"fas fa-check\"></i> 저장</a></li>", "실적율 저장하기");
+                    //if (Master.Mode == "edit") sb.AppendFormat("<li><a href=\"javascript:\" class=\"nav-link text-info\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"glyphicon glyphicon-send\"></i> 결재요청</a></li>", "결재요청하기");
+                }
+                else
+                {
+                    if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
+                    {
+                        sb.AppendFormat("<li class=\"nav-item\"><a href=\"{0}\" class=\"z-lnk-navy-n ml-3\" title=\"{1}\"><i class=\"far fa-edit\"></i> {2}</a></li>", GetQueryString("edit", ViewBag.R.ft.ToString(), "", ViewBag.R.appid.ToString()), "실적율 편집하기", "편집");
+                        sb.AppendFormat("<li class=\"nav-item\"><a href=\"javascript:\" class=\"z-lnk-navy-n ml-3\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
+                    }
+                    if (row["STATE"].ToString() == "7") sb.AppendFormat("<li class=\"nav-item\"><a href=\"{0}\" class=\"z-lnk-navy-n ml-3\" title=\"{1}\"><i class=\"fas fa-edit\"></i> {2}</a></li>", GetQueryString("new", ViewBag.R.ft.ToString(), "", ""), "실적율 작성하기", "실적율작성");
+                    else if (row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item\"><a href=\"{0}\" class=\"text-danger ml-3\" title=\"{1}\"><i class=\"fas fa-copy\"></i> {2}</a></li>", GetQueryString("reuse", ViewBag.R.ft.ToString(), "", ViewBag.R.appid.ToString()), "실적율 재사용하기", "실적율재사용");
+                }
+                if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
+                {
+                    sb.AppendFormat("<li class=\"nav-item\"><a href=\"javascript:\" class=\"z-lnk-navy-n ml-3\" title=\"{0}\" data-zf-menu=\"deleteStd\"><i class=\"fas fa-times\"></i> {1}</a></li>", "삭제하기", "삭제");
+                    //sb.AppendFormat("<li><a href=\"javascript:\" class=\"nav-link text-info\" title=\"{0}\" data-zf-menu=\"changeState\"><i class=\"glyphicon glyphicon-fast-forward\"></i> 완료처리</a></li>", "완료 처리하기");
+                }
+            }
+            if (ViewBag.Mode != "new" && ViewBag.Mode != "reuse" && ViewBag.Mode != "edit") if (row["LNKEA"].ToString() != "" && row["LNKEA"].ToString() != "0") sb.AppendFormat("<li class=\"nav-item\"><a href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" class=\"z-lnk-navy-n ml-3\" title=\"{1}\"><i class=\"fas fa-tag\"></i> {1}</a></li>", row["LNKEA"].ToString(), "관련문서");
+        }
+        //sb.Append("</ul>");
+        return sb.ToString();
+    }
 
     private string RenderDDDate(string formTable)
     {
@@ -158,6 +227,28 @@
             sb.Append("</div>");
             #endregion
         }
+        else if (formTable == "ExcelList")
+        {
+            #region [개발원가견적 엑샐 목록]
+            sb.Append("<select class=\"custom-select\" id=\"_Target\">");
+            int iCnt = 0;
+            foreach (object[] o in ViewBag.CodeTable["ce.center"])
+            {
+                if (o[7].ToString() != "N")
+                {
+                    sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["tgt"]) == o[6].ToString() ? " selected" : "";
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[6].ToString(), o[3].ToString(), sSelected);
+                    iCnt++;
+                }
+            }
+            sb.Append("</select>");
+
+            sb.AppendFormat("<input type=\"text\" class=\"form-control search-text\" placeholder=\"모델\" style=\"max-width: 150px\" value=\"{0}\">", ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+            #endregion
+        }
 
         sb.Append("</div>");
         return sb.ToString();
@@ -177,6 +268,52 @@
     @Scripts.Render("~/Scripts/ExS/mc.js")
 
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+
+    @if (ViewBag.R.ft.ToString() == "CodeMgr")
+    {
+        <script type="text/javascript">
+            $(function () {
+                $('.card[data-zf-code]').each(function () {
+                    var $this = $(this), cd = $this.attr('data-zf-code'), tp = $this.find('.zf-sp-template');
+
+                    $this.find('button[data-btn="add"]').on('click', function () {
+                        $this.find('table tbody').append(tp.html());
+
+                        var row = $this.find('table tbody tr').last();
+                        row.find('button[data-btn="del"]').on('click', function () {
+                            _zw.fn.setCode('delete', $this, cd, row);
+                        });
+                        row.find('button[data-btn="save"]').on('click', function () {
+                            _zw.fn.setCode('save', $this, cd, row);
+                        });
+                    });
+
+                    $this.find('button[data-btn="del"]').on('click', function () {
+                        _zw.fn.setCode('delete', $this, cd, $(this).parent().parent().parent());
+                    });
+
+                    $this.find('button[data-btn="save"]').on('click', function () {
+                        _zw.fn.setCode('save', $this, cd, $(this).parent().parent().parent());
+                    });
+                });
+
+            });
+        </script>
+
+    }
+    else if (ViewBag.R.ft.ToString() == "StdPayDetail")
+    {
+        <script type="text/javascript">
+            $(function () {
+
+                $('.card[data-zf-code] .card-header input:checkbox').click(function () {
+                    $(this).parent().parent().prev().attr('data-toggle', $(this).prop('checked') ? 'collapse' : '');
+                });
+
+                if (_zw.V.mode == 'new' || _zw.V.mode == 'reuse' || _zw.V.mode == 'edit') _zw.fn.input();
+            });
+        </script>
+    }
 }
 
 <!--
@@ -199,26 +336,29 @@
                         <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
                     </div>
 
-                    <div class="h5 mb-0 z-ttl">
+                    <div class="h5 mb-0 z-ttl text-truncate">
                         <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
                     </div>
                 </div>
-                <div class="d-flex align-items-center z-lv-menu">
-                    <a class="text-success mr-3" href="javascript:void();"><i class="fe-download"></i> 엑셀</a>
-                    <button class="btn icon-btn btn-outline-secondary m-0 btn-sm" onclick="_zw.ut.expandWnd(this);"><i class="fas fa-expand"></i></button>
-                </div>
+                <ul class="nav d-flex align-items-center justify-content-end z-lv-menu">
+                    @Html.Raw(RenderMenu(ViewBag.R.ft.ToString(), ViewBag.BoardList))
+                </ul>
             </div>
         </div>
 
         <div class="flex-grow-0" style="border-top: 2px solid #eee">
-            <div class="d-flex justify-content-between px-3 my-2">
-                <div class="z-list-page d-flex align-items-center" id="__ListCount">
-                    @Html.Partial("_ListCount")
+            @if (ViewBag.R.ft.ToString() == "CostList" || ViewBag.R.ft.ToString() == "StdTime" || ViewBag.R.ft.ToString() == "ExcelList")
+            {
+                <div class="d-flex justify-content-between px-3 my-2">
+                    <div class="z-list-page d-flex align-items-center" id="__ListCount">
+                        @Html.Partial("_ListCount")
+                    </div>
+                    <div class="flex-fill z-lv-cond d-flex">
+                        @Html.Raw(RenderDDDate(ViewBag.R.ft.ToString()))
+                    </div>
                 </div>
-                <div class="flex-fill z-lv-cond d-flex">
-                    @Html.Raw(RenderDDDate(ViewBag.R.ft.ToString()))
-                </div>
-            </div>
+            }
+
         </div>
         <!-- / Header -->
 
@@ -231,9 +371,12 @@
                         @Html.Partial(sPatialView)
                     </div>
                 </div>
-                <ul class="pagination pagination-sm justify-content-center" id="__ListPage">
-                    @Html.Partial("~/Views/Common/_ListPagination.cshtml")
-                </ul>
+                @if (ViewBag.R.ft.ToString() == "CostList" || ViewBag.R.ft.ToString() == "StdTime")
+                {
+                    <ul class="pagination pagination-sm justify-content-center" id="__ListPage">
+                        @Html.Partial("~/Views/Common/_ListPagination.cshtml")
+                    </ul>
+                }
             </div>
         </div>
     </div>

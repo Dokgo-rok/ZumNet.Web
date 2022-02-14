@@ -57,3 +57,93 @@
 .z-list-body .table tr.inner-dot th, .z-list-body .table tr.inner-bold td {
     border-bottom: 2px solid #dedede !important;
 }
+
+/* grid -----> */
+.z-grid {
+    width: 100%;
+    max-width: 100%;
+}
+
+.z-grid-bordered {
+    border: 1px solid #666;
+}
+
+.z-grid > tbody > tr.info > td, .z-grid > tbody > tr.info > th, .z-grid > tbody > tr > td.info, .z-grid > tbody > tr > th.info, .z-grid > tfoot > tr.info > td, .z-grid > tfoot > tr.info > th, .z-grid > tfoot > tr > td.info, .z-grid > tfoot > tr > th.info, .z-grid > thead > tr.info > td, .z-grid > thead > tr.info > th, .z-grid > thead > tr > td.info, .z-grid > thead > tr > th.info {
+    background-color: #d9edf7;
+}
+
+.z-grid > tbody > tr.warning > td, .z-grid > tbody > tr.warning > th, .z-grid > tbody > tr > td.warning, .z-grid > tbody > tr > th.warning, .z-grid > tfoot > tr.warning > td, .z-grid > tfoot > tr.warning > th, .z-grid > tfoot > tr > td.warning, .z-grid > tfoot > tr > th.warning, .z-grid > thead > tr.warning > td, .z-grid > thead > tr.warning > th, .z-grid > thead > tr > td.warning, .z-grid > thead > tr > th.warning {
+    background-color: #fcf8e3;
+}
+
+.z-grid > tbody > tr > td, .z-grid > tbody > tr > th, .z-grid > tfoot > tr > td, .z-grid > tfoot > tr > th, .z-grid > thead > tr > td, .z-grid > thead > tr > th {
+    vertical-align: middle;
+    padding: 2px;
+    line-height: 1.4285;
+    height: 24px
+}
+
+.z-grid-bordered > tbody > tr > td, .z-grid-bordered > tbody > tr > th, .z-grid-bordered > tfoot > tr > td, .z-grid-bordered > tfoot > tr > th, .z-grid-bordered > thead > tr > td, .z-grid-bordered > thead > tr > th {
+    border: 1px solid #999;
+}
+
+.z-grid > thead > tr > td, .z-grid > thead > tr > th {
+    text-align: center
+}
+
+.z-grid .cell-input, .z-grid .cell-select {
+}
+
+    .z-grid .cell-input input, .z-grid .cell-read input, .z-grid .cell-select select {
+        height: 100%;
+        width: 100%;
+        border: 0
+    }
+
+    .z-grid .cell-input input {
+        background-color: #eee
+    }
+
+.tui-grid-header-area .tui-grid-cell-header {
+    color: #666;
+    white-space: normal;
+    padding: 2px;
+    background-color: #d9edf7;
+    border: 1px solid #999
+}
+
+.tui-grid-body-area .tui-grid-cell {
+    color: #444;
+    white-space: normal
+}
+
+    .tui-grid-body-area .tui-grid-cell .tui-grid-cell-content {
+        padding: 4px 4px 0 4px;
+    }
+
+.tui-grid-header-area .tui-grid-cell-header, .tui-grid-body-area .tui-grid-cell {
+    font-size: 12px
+}
+
+.tui-grid-container input, .tui-grid-container p, .tui-grid-container textarea {
+    font-size: 12px;
+}
+
+.tui-select-box-input, .tui-select-box-item, .tui-select-box-item-group-label {
+    padding: 0 4px;
+    height: 22px;
+    font-size: 12px;
+}
+
+.tui-select-box-item, .tui-select-box-item-group-label, .tui-select-box-placeholder {
+    line-height: 22px;
+}
+
+.tui-grid-table .tui-grid-cell-row-header {
+    border-color: #bbb
+}
+
+.tui-grid-row-header-checkbox {
+    padding: 5px 0 0 0;
+}
+/* grid <----- */

@@ -10,6 +10,11 @@ $(function () {
         });
     });
 
+    $('a[data-zf-menu], button[data-zf-menu]').click(function () {
+        var mn = $(this).attr('data-zf-menu');
+        if (mn != '') _zw.mu[mn]($(this));
+    });
+
     $('[data-zv-menu="search"]').click(function () {
         _zw.fn.goSearch();
     });
@@ -21,6 +26,152 @@ $(function () {
     $('.pagination li a.page-link').click(function () {
         _zw.fn.goSearch($(this).attr('data-for'));
     });
+
+    _zw.mu.exportExcel = function () {
+        var d = $('#_SearchYear').val() + ($('#_SearchMonth').val().length < 2 ? '0' + $('#_SearchMonth').val() : $('#_SearchMonth').val());
+        var data = "tgt=" + $('#_Target').val() + "&tgtnm=" + escape($('#_Target').children('option:selected').text()) + "&vd=" + d + "&sch=&page=&sortcol=&dir=";
+
+        $('#hhdSearch').val(data);
+        aspnetForm.action = "?M=xls";
+        aspnetForm.submit();
+    }
+
+    _zw.mu.importExcel = function () {
+        //var url = "/" + _ZF.V.root + "/EA/External/FileImport.aspx?M=MC_SUMMARY&cd=ce";
+        //_zw.ut.openWnd(url, "fileImport", 400, 100, "fix")
+    }
+
+    _zw.mu.saveStd = function (t) {
+        var pos = t ? t.attr('data-zf-menu').toLowerCase() : '';
+        var ckValid = true;
+        if (pos != 'savetemp') ckValid = _zw.fn.validate();
+
+        if (ckValid) {
+            var d = {};
+
+            $('[data-zf-field]').each(function () {
+                d[$(this).attr('data-zf-field').toLowerCase()] = $(this).val();
+            });
+
+            if (_zw.V.ft.toLowerCase() == "stdpaydetail") {
+                var v = [];
+                $('.card[data-zf-code]').each(function () {
+                    if ($(this).find('input:checkbox').prop('checked')) {
+                        $(this).find('.z-grid tbody > tr').each(function () {
+                            var s = {}, bSave = false;
+
+                            $(this).find('input[data-column]').each(function () {
+                                if ($(this).attr('data-column') != 'CORP' && $(this).attr('data-column') != 'BUYER' && $(this).attr('data-column') != 'ITEMCLS'
+                                    && $(this).attr('data-column') != 'ROWSEQ' && $(this).attr('data-column') != 'CURRENCY') {
+
+                                    if ($(this).val().replace('%', '') != '') { bSave = true; return false; }
+                                }
+                            });
+
+                            if (bSave) {
+                                $(this).find('input[data-column]').each(function () {
+                                    //console.log($(this).attr('data-column') + " : " + $(this).val());
+                                    s[$(this).attr('data-column').toLowerCase()] = $(this).val().replace('%', '');
+
+                                });
+                                v.push(s);
+                            }
+                        });
+                    }
+                });
+
+                d["sub"] = v;
+            }
+
+            var msg = pos == 'savetemp' ? '임시저장 하시겠습니까?' : '저장 하시겠습니까?';
+
+            d["M"] = _zw.V.mode == 'add' ? 'new' : _zw.V.mode; //== 'new' && (_ZF.V.appid == '' || _ZF.V.appid == '0') ? "new" : "edit";
+            d["appid"] = _zw.V.appid;
+            d["ft"] = _zw.V.ft;
+            d["istemp"] = pos == 'savetemp' ? 'Y' : 'N';
+
+            //console.log(d["subtable"]); return;
+
+            bootbox.confirm(msg, function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/ExS/MC/SaveStdPay",
+                        data: JSON.stringify(d),
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                bootbox.alert("저장했습니다!", function () { _zw.fn.viewStdPay(res.substr(2)); });
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    _zw.mu.deleteStd = function (t) {
+        if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
+
+        bootbox.confirm("삭제 하시겠습니까?", function (rt) {
+        if (rt) {
+            $.ajax({
+                type: "POST",
+                url: "/ExS/MC/SetStdPay",
+                data: '{M:"D",appid:"' + _zw.V.appid + '",ft:"' + _zw.V.ft + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        bootbox.alert(res.substr(2), function () { _zw.fn.viewMCPage('StdPay') });
+                    } else bootbox.alert(res);
+                }
+            });
+            }
+        });
+    }
+
+    _zw.mu.reqApproval = function (t) {
+        var ft = '', tp = '', sj = '', k1 = '', k2 = '';
+
+        if (!window.confirm("결재요청 하시겠습니까?\n\r\n\r처리 중 화면을 새로고침 하지 마십시오!")) return false;
+
+        _ZF.util.ajaxLoader(true, '양식 준비중 입니다');
+
+        if (_ZF.V.curPage == 'stdpay') {
+            ft = 'DRAFT'; tp = 'CE'; k1 = 'MCSTDPAY'; k2 = _ZF.V.appid;
+            var dt = new Date($('input[data-zf-field="STDDT"]').val());
+            sj = dt.getFullYear() + "년 모델별 실적원가율 " + $('[data-zf-field="XCLS"]').val() + "의 건";
+
+            var s = '';
+            $('.panel[data-zf-code]').each(function () {
+                if ($(this).find('input:checkbox').prop('checked')) {
+                    var c = $(this).find('.panel-heading').next().clone();
+                    var t = c.find('.z-grid');
+                    t.removeClass('z-grid z-grid-bordered').attr({ 'cellpadding': '4px', 'cellspacing': '0', 'border': '0' }).css({ 'font-size': '13px', 'width': '1040px', 'border-top': '2px solid #666', 'border-left': '2px solid #666', 'border-right': '1px solid #666', 'border-bottom': '1px solid #666', 'text-align': 'center' });
+                    t.find('colgroup').remove();
+
+                    t.find('thead th').css('background-color', '#dff0d8');
+                    t.find('th, td').removeClass('cell-read cell-input').css({ 'width': '80px', 'border-right': '1px solid #666', 'border-bottom': '1px solid #666' });
+                    t.find('input:text').each(function () {
+                        //$(this).parent().html($(this).val() == '' ? '&nbsp;' : $(this).val());
+                        if ($(this).val() == '' || parseFloat($(this).val().replace('%', '')) == 0) $(this).parent().html('&nbsp;');
+                        else $(this).parent().html($(this).val());
+                    });
+                    s += '<div style="margin-bottom: 20px"><div style="padding-left: 8px; margin-bottom: 6px; font-weight: 700">- ' + $(this).find('.panel-heading strong').text() + '</div><div>' + c.html() + '</div></div>';
+                }
+            });
+
+            $('#_HIddenForm .p-first').html(dt.getFullYear() + "년 " + $('#_HIddenForm .p-first').html());
+            $('#_HIddenForm .p-second').html($('#_HIddenForm .p-second').html() + dt.getFullYear() + "년 " + (dt.getMonth() + 1) + "월부터 적용")
+
+            $('#_HIddenForm .p-html').html(s);
+            $('#_HIddenFormData').val($('#_HIddenForm').html());
+        }
+
+        //_ZF.util.ajaxLoader(false);
+
+        var x = "840", y = window.screen.height;
+        var url = "/" + _ZF.V.root + "/EA/Forms/XFormMain.aspx?M=new&tp=" + tp + "&ft=" + ft + "&k1=" + k1 + "&k2=" + k2 + "&sj=" + escape(sj);
+        _ZF.util.openWnd(url, "", x, y, "resize");
+    }
 
     _zw.fn.viewListItem = function (f, fld, model, t, sub) {
         var j = '', url = ''
@@ -183,6 +334,68 @@ $(function () {
                 }
             }
         }
+    }
+
+    _zw.fn.viewMCPage = function (page) {
+        var qi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"' + page + '"}';
+        window.location.href = '/ExS/MC?qi=' + _zw.base64.encode(qi);
+    }
+
+    _zw.fn.viewStdPay = function (id) {
+        var page = 'StdPayDetail';
+        var qi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"' + page + '",appid:"' + id + '"}';
+        window.location.href = '/ExS/MC?qi=' + _zw.base64.encode(qi);
+    }
+
+    _zw.fn.setCode = function (m, p, cd, row) {
+        var v = cd.split('.'), k3 = '', i1 = '', i2 = '', i3 = '', i4 = '', i5 = '';
+        if (m == 'save') m = row.find('input[data-zf-field="k3"]').prop('readonly') === true ? "U" : "I";
+        else if (m == 'delete') m = 'D';
+
+        row.find('input[data-zf-field]').each(function () {
+            switch ($(this).attr('data-zf-field')) {
+                case 'k3': k3 = $(this).val(); break;
+                case 'item1': i1 = $(this).val(); break;
+                case 'item2': i2 = $(this).val(); break;
+                case 'item3': i3 = $(this).val(); break;
+                case 'item4': i4 = $(this).val(); break;
+                case 'item5': i5 = $(this).val(); break;
+            }
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/ExS/MC/SetCode",
+            data: '{M:"' + m + '",k1:"' + v[0] + '",k2:"' + v[1] + '",k3:"' + k3 + '",item1:"' + i1 + '",item2:"' + i2 + '",item3:"' + i3 + '",item4:"' + i4 + '",item5:"' + i5 + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    p.find('table').remove(); p.append(res.substr(2));
+                    p.find('table tbody button[data-btn="del"]').on('click', function () {
+                        _zw.fn.setCode('delete', p, cd, $(this).parent().parent().parent());
+                    });
+                    p.find('table tbody button[data-btn="save"]').on('click', function () {
+                        _zw.fn.setCode('save', p, cd, $(this).parent().parent().parent());
+                    });
+                } else bootbox.alert(res);
+            }
+        })
+    }
+
+    _zw.fn.validate = function (pos) {
+        var m, s;
+
+        if (_zw.V.ft.toLowerCase() == "stdpaydetail") {
+            m = ["STDDT;적용시점", "XCLS;구분"];
+
+            for (var i in m) {
+                var v = m[i].split(';');
+                var f = $('[data-zf-field="' + v[0] + '"]');
+                if (f.val() == '') {
+                    bootbox.alert("필수항목[" + v[1] + "] 입력 누락!", function () { f.focus(); }); return false;
+                }
+            }
+        }
+        return true;
     }
 
     _zw.fn.sort = function (col) {

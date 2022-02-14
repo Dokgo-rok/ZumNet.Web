@@ -395,13 +395,16 @@ namespace ZumNet.Web.Controllers
                     return "필수값 누락!";
                 }
 
-                string sMode = "";
+                string sMode = StringHelper.SafeString(jPost["M"]); //I : insert, U : update, D : delete
 
                 ZumNet.Framework.Core.ServiceResult svcRt = null;
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.SelectCodeDescription(jPost["k1"].ToString(), jPost["k2"].ToString(), jPost["k3"].ToString());
-                    sMode = (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0) ? "U" : "I";
+                    if (sMode == "")
+                    {
+                        svcRt = cb.SelectCodeDescription(jPost["k1"].ToString(), jPost["k2"].ToString(), jPost["k3"].ToString());
+                        sMode = (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0) ? "U" : "I";
+                    }
 
                     svcRt = cb.HandleCodeDescription(sMode, jPost["k1"].ToString(), jPost["k2"].ToString(), jPost["k3"].ToString()
                                     , jPost["item1"].ToString(), StringHelper.SafeString(jPost["item2"]), StringHelper.SafeString(jPost["item3"])

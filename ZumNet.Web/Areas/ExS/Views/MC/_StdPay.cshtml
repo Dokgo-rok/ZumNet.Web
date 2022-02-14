@@ -1,0 +1,70 @@
+﻿@using System.Data;
+@using System.Text;
+
+@functions{
+    private string ListStdPay(DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"pt-4 pb-3\">");
+        sb.Append("<table class=\"table table-striped\">");
+        sb.Append("<thead>");
+        sb.Append("<tr>");
+        sb.AppendFormat("<th>{0}</th>", "기준월");
+        sb.AppendFormat("<th>{0}</th>", "구분");
+        sb.AppendFormat("<th>{0}</th>", "작성부서");
+        sb.AppendFormat("<th>{0}</th>", "작성자");
+        sb.AppendFormat("<th>{0}</th>", "작성일자");
+        sb.AppendFormat("<th>{0}</th>", "완료일자");
+        sb.AppendFormat("<th>{0}</th>", "");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                DateTime sd = Convert.ToDateTime(row["STDDT"]);
+                sb.Append("<tr>");
+                sb.AppendFormat("<td><a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewStdPay('{0}');\" title=\"{1}\">{1}</a></td>", row["REGID"].ToString(), sd.ToString("yy년 MM월"));
+                if (row["STATE"].ToString() == "7") sb.AppendFormat("<td>{0}</td>", row["XCLS"].ToString());
+                else
+                {
+                    if (row["STATE"].ToString() == "0") sb.AppendFormat("<td>{0}</td>", "작성");
+                    else if (row["STATE"].ToString() == "1") sb.AppendFormat("<td>{0}</td>", "결재중");
+                    else if (row["STATE"].ToString() == "8") sb.AppendFormat("<td>{0}</td>", "반려");
+                    else if (row["STATE"].ToString() == "6") sb.AppendFormat("<td>{0}</td>", "취소");
+                }
+                //sb.AppendFormat("<td>{0}</td>", row["XCLS"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["CRDPT"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["CRNM"].ToString());
+                sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CRDT"].ToString(), "yy-MM-dd", ""));
+                sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["COMPDT"].ToString(), "yy-MM-dd", ""));
+                sb.Append("<td>");
+                if (row["LNKEA"].ToString() != "" && row["LNKEA"].ToString() != "0")
+                {
+                    sb.AppendFormat("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"{1}\"><i class=\"fas fa-tag\"></i></a>", row["LNKEA"].ToString(), "관련문서");
+                }
+                //sb.AppendFormat("<a class=\"ml-2\" href=\"javascript:\" onclick=\"_ZF.fn.view('viewstdpayrate', '{0}');\" title=\"{1}\"><i class=\"glyphicon glyphicon-hand-right\"></i></a>", row["REGID"].ToString(), "실적율보기");
+                sb.Append("</td>");
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"7\">{0}</th>", "등록된 실적율이 없습니다!");
+            sb.Append("</tr>");
+
+            //ltrNavbar.Text = String.Format("<li><a href=\"{0}.aspx?M=new\" class=\"nav-link text-info\" title=\"{1}\"><i class=\"glyphicon glyphicon-edit\"></i> 실적율작성</a></li>", Master.CurrentPage, "실적율 작성하기");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>");
+
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        return sb.ToString();
+    }
+}
+
+@Html.Raw(ListStdPay(ViewBag.BoardList))

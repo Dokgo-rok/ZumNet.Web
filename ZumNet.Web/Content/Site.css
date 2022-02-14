@@ -420,10 +420,10 @@
         text-decoration: underline;
     }
 
-a.z-lnk-navy_n {
+a.z-lnk-navy-n {
     color: #337ab7;
 }
-    a.z-lnk-navy_n:focus, a.z-lnk-navy_n:hover {
+    a.z-lnk-navy_n:focus, a.z-lnk-navy-n:hover {
         color: #23527c;
     }
 

@@ -2830,6 +2830,10 @@
     <Content Include="Areas\ExS\Views\MC\_StdTime.cshtml" />
     <Content Include="Areas\ExS\Views\MC\_ListItem.cshtml" />
     <Content Include="Areas\ExS\Views\MC\_StdTimeDay.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_CodeMgr.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_StdPay.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_StdPayDetail.cshtml" />
+    <Content Include="Areas\ExS\Views\MC\_ExcelList.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
