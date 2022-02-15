@@ -33,7 +33,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             }
 
             int iCategoryId = StringHelper.SafeInt(ViewBag.R.ct.Value);
-            ViewBag.R["ft"] = StringHelper.SafeString(ViewBag.R.ft.ToString(), "CostList"); //기존 페이지 설정
+            ViewBag.R["ft"] = StringHelper.SafeString(ViewBag.R.ft.ToString(), "CostList"); //기본 페이지 설정
             string formTable = ViewBag.R.ft.ToString();
 
             //권한, 설정 가져오기
@@ -125,8 +125,6 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
                 }
             }
-
-            ViewBag.Mode = ViewBag.R.mode.ToString();
 
             return View();
         }

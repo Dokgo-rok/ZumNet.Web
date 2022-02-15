@@ -1,0 +1,105 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+
+@using Newtonsoft.Json;
+
+@{
+    ConfigColumn(ViewBag.Mode);
+}
+
+@functions {
+    string[,] _columnConfig = null;
+
+    private void ConfigColumn(string mode)
+    {
+    }
+
+    private string RenderColumnHeader(string mode, string sortCol, string sortType)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<colgroup>");
+        sb.Append("<col style=\"width:6%\"/><col style=\"width:7%\"/><col style=\"width:11%\"/>");
+        sb.Append("<col style=\"width:3.5%\"/><col style=\"width:3.5%\"/><col style=\"width:6%\"/><col style=\"width:3.5%\"/><col style=\"width:3.5%\"/>");
+        sb.Append("<col style=\"width:3.5%\"/><col style=\"width:3.5%\"/><col style=\"width:6%\"/><col style=\"width:3.5%\"/><col style=\"width:3.5%\"/>");
+        sb.Append("<col style=\"width:3.5%\"/><col style=\"width:3.5%\"/><col style=\"width:6%\"/><col style=\"width:3.5%\"/><col style=\"width:3.5%\"/>");
+        sb.Append("<col style=\"width:3.5%\"/><col style=\"width:3.5%\"/><col style=\"width:6%\"/><col style=\"width:3.5%\"/><col style=\"width:3.5%\"/>");
+        sb.Append("<col style=\"width:6%\"/>");
+        sb.Append("</colgroup>");
+
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"\">");
+        sb.Append("<td rowspan=\"3\">이수자</td><td rowspan=\"3\">직급</td><td rowspan=\"3\">부서</td><td colspan=\"10\">사내</td><td colspan=\"10\">사외</td><td rowspan=\"3\">총계</td>");
+        sb.Append("</tr>");
+
+        sb.Append("<tr class=\"\">");
+        sb.Append("<td colspan=\"5\">집합</td><td colspan=\"5\">사이버</td>");
+        sb.Append("<td colspan=\"5\">집합</td><td colspan=\"5\">사이버</td>");
+        sb.Append("</tr>");
+
+        sb.Append("<tr class=\"table-success\">");
+        sb.Append("<td>어학</td><td>직무</td><td>절차서</td><td>법정이수</td><td>공통</td>");
+        sb.Append("<td>어학</td><td>직무</td><td>절차서</td><td>법정이수</td><td>공통</td>");
+        sb.Append("<td>어학</td><td>직무</td><td>직무별</td><td>법정이수</td><td>공통</td>");
+        sb.Append("<td>어학</td><td>직무</td><td>직무별</td><td>법정이수</td><td>공통</td>");
+        //sb.AppendFormat("<tr><td>{0}</td>", row[col.ColumnName].ToString()); //  각테이블 첫번째 컬럼시작 
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+
+        return sb.ToString();
+    }
+
+    private string RenderExcelColumnHeader()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<colgroup><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:6%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/>");
+        sb.Append("<col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/>");
+        sb.Append("<col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/>");
+        sb.Append("<col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/><col style=\"width:4%\"/> <colgroup>");
+
+        sb.Append("<tr class=\"col-header\" ><td rowspan=\"3\">이수자</td><td rowspan=\"3\">직급</td><td rowspan=\"3\">부서</td><td colspan=\"10\">사내</td><td colspan=\"10\">사외</td><td rowspan='3'>총계</td></tr>");
+        sb.Append("<tr class=\"col-header\" ><td colspan=\"5\">집합</td><td colspan=\"5\">사이버</td>");
+        sb.Append("<td colspan=\"5\">집합</td><td colspan=\"5\">사이버</td></tr>");
+        sb.Append("<tr class=\"col-header\"><td>어학</td><td>직무</td><td>절차서</td><td>법정이수</td><td>공통</td>");
+        sb.Append("<td>어학</td><td>직무</td><td>절차서</td><td>법정이수</td><td>공통</td>");
+        sb.Append("<td>어학</td><td>직무</td><td>직무별</td><td>법정이수</td><td>공통</td>");
+        sb.Append("<td>어학</td><td>직무</td><td>직무별</td><td>법정이수</td><td>공통</td></tr>");
+        //sb.AppendFormat("<tr><td>{0}</td>", row[col.ColumnName].ToString()); //  각테이블 첫번째 컬럼시작 
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data, string sortCol, string sortType, string formTable)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 800px\">");
+        if (mode == "xls") sb.Append(RenderExcelColumnHeader());
+        else sb.Append(RenderColumnHeader(mode, sortCol, sortType));
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                sb.Append("<tr>");
+                foreach (DataColumn col in row.Table.Columns)
+                {
+                    sb.AppendFormat("<td>{0}</td>", row[col.ColumnName].ToString());
+                }
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"{0}\" class=\"py-15\">{1}</th>", "24", Resources.Global.NoItemShow);
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+        return sb.ToString();
+    }
+}
+
+@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), ViewBag.R.ft.ToString()))

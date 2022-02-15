@@ -1,0 +1,31 @@
+﻿@{
+    int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+    int totalCount = ZumNet.Framework.Util.StringHelper.SafeInt(ViewBag.R.lv.total.Value);
+    int pageCount = ZumNet.Framework.Util.StringHelper.SafeInt(ViewBag.R.lv.count.Value);
+    if (pageCount == 0)
+    {
+        pageCount = 1;
+    }
+    int pageIndex = ZumNet.Framework.Util.StringHelper.SafeInt(ViewBag.R.lv.page.Value);
+    int totalPage = totalCount / pageCount;
+
+    if (totalCount % pageCount > 0) { totalPage++; }
+    if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+    //string sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+    string sPage = String.Format("{0} {1} {2}", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count);
+}
+
+<div class="z-lv-total mr-1">
+    <i class="fe-chevron-right"></i> @sPage
+</div>
+@*<div class="input-group z-lv-cnt d-none d-xl-block">
+    <select class="custom-select"@(ViewBag.R.ft.ToString() == "CostList" ? " disabled" : "")>
+        <option value="7" @(pageCount == 7 ? " selected" : "")>7</option>
+        <option value="10" @(pageCount == 10 ? " selected" : "")>10</option>
+        <option value="20" @(pageCount == 20 ? " selected" : "")>20</option>
+        <option value="30" @(pageCount == 30 ? " selected" : "")>30</option>
+    </select>
+</div>*@
+
+

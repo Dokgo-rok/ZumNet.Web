@@ -301,6 +301,19 @@ $(function () {
                             encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                             window.location.href = '/Report?qi=' + encQi;
                         }
+                    } else if (n.a_attr.url.toLowerCase().indexOf('extensionservice/lcm') >= 0) { //Lcm
+                        var vUrl = n.a_attr.url.split('/');
+                        var pageLcm = vUrl[vUrl.length - 1].split('.')[0].toUpperCase(), ft = ''; //alert("page => " + pageLcm)
+
+                        if (pageLcm == 'LCM_120') ft = 'LCM_COURSE';            //교육과정관리
+                        else if (pageLcm == 'LCM_130') ft = 'LCM_INSTRUCTOR';   //사내교육강사현황
+                        else if (pageLcm == 'LCM_200') ft = 'LCM_MAIN';         //개인신청현황
+                        else if (pageLcm == 'LCM_300') ft = 'LCM_ADMIN';        //교육진행현황
+                        else if (pageLcm == 'LCM_310') ft = 'LCM_EDUPOINT';     //결과집계현황 
+
+                        if (ft == '') return false;
+                        encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + ft + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                        window.location.href = '/ExS/Lcm?qi=' + encQi;
 
                     } else {
                         //encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
@@ -312,8 +325,8 @@ $(function () {
                 if (n.a_attr.url.indexOf('http://') >= 0 || n.a_attr.url.indexOf('https://') >= 0) {
                     window.location.href = n.a_attr.url;
                 } else if (n.a_attr.url.toLowerCase().indexOf('extensionservice/pqm') >= 0) { //PQm
-                    var vPath = n.a_attr.url.split('/');
-                    var ft = vPath[vPath.length - 1].split('.')[0].toUpperCase(); //alert(ft)
+                    var vUrl = n.a_attr.url.split('/');
+                    var ft = vUrl[vUrl.length - 1].split('.')[0].toUpperCase(); //alert(ft)
 
                     if (_zw.V.current.page.toLowerCase() == '/exs/pqm__') {
                         _zw.V.ot = n.li_attr.objecttype;

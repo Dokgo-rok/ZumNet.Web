@@ -1,0 +1,12 @@
+﻿/*******************************************************************************/
+/* 교육관리 */
+
+.z-list-body tbody tr td {
+    /*white-space: nowrap;*/
+    /*padding: 0.25rem;*/
+}
+
+.z-list-body .table .table-success, .z-list-body .table .table-success > th, .z-list-body .table .table-success > td,
+.z-list-body .table .table-warning, .z-list-body .table .table-warning > th, .z-list-body .table .table-warning > td {
+    border-color: #e8e8e9 !important;
+}

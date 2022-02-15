@@ -1,0 +1,274 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+
+@using Newtonsoft.Json;
+
+@{
+    ConfigColumn(ViewBag.Mode);
+
+    //Response.Write("--" + ((string[,])ViewData["ColumnConfig"]).GetLength(0));
+}
+
+@functions {
+    string[,] _columnConfig = null;
+
+    private void ConfigColumn(string mode)
+    {
+        if (mode == "PD")
+        {
+            string[,] arr = { { "rownum", "NO", "3%", "", "", "" }, { "ApplDept", "부서", "9%", "", "", "Y" }, { "ApplDN", "성명", "5%", "", "", "Y" }
+                            , { "CreateDate", "신청일자", "9%", "", "", "Y" }, { "ClsDN3", "교육<br />유형", "5%", "", "", "Y" }
+                            , { "CourseDN", "과정명", "13%", "left", "Y", "Y" }, { "ClsDN1", "사내<br />외", "4%", "", "", "" }, { "ClsDN2", "교육<br />방식", "5%", "", "", "" }
+                            , { "ClsDN4", "교육<br />분야", "9%", "", "Y", "Y" }, { "_INST_", "교육기관<br /> / 강사", "10%", "left", "Y", "" }, { "FromDate", "시작일", "5%", "", "", "Y" }
+                            , { "ToDate", "종료일", "5%", "", "", "Y" }, { "ReqIFState", "신청<br />상태", "4%", "", "", "" }, { "__REQ__", "변경<br />취소", "4%", "", "", "" }
+                            , { "RepoIFState", "보고<br />상태", "4%", "", "", "" }, { "__REPO__", "보고<br />작성", "4%", "", "", "" }};
+            this._columnConfig = arr;
+        }
+        else
+        {
+            string[,] arr = { { "rownum", "NO", "3%", "", "", "" }, { "CreateDate", "신청일자", "10%", "", "", "Y" }, { "ClsDN3", "교육<br />유형", "6%", "", "", "Y" }
+                            , { "CourseDN", "과정명", "18%", "left", "Y", "Y" }, { "ClsDN1", "사내외", "5%", "", "", "" }, { "ClsDN2", "교육<br />방식", "6%", "", "", "" }
+                            , { "ClsDN4", "교육<br />분야", "9%", "", "Y", "Y" }, { "_INST_", "교육기관<br /> / 강사", "11%", "left", "Y", "" }, { "FromDate", "시작일", "6%", "", "", "Y" }
+                            , { "ToDate", "종료일", "6%", "", "", "Y" }, { "ReqIFState", "신청<br />상태", "5%", "", "", "" }, { "__REQ__", "변경<br />취소", "5%", "", "", "" }
+                            , { "RepoIFState", "보고<br />상태", "5%", "", "", "" }, { "__REPO__", "보고<br />작성", "5%", "", "", "" }};
+            this._columnConfig = arr;
+        }
+    }
+
+    private string RenderColumnHeader(string mode, string sortCol, string sortType)
+    {
+        if (_columnConfig != null)
+        {
+            string sBlind = " d-none";
+            string sSortIcon = "";
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead><tr class=\"table-success\">");
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 5].ToString() == "Y")
+                {
+                    sBlind = (sortCol == _columnConfig[i, 0].ToString()) ? "" : " d-none";
+                    sSortIcon = (sortCol == _columnConfig[i, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+
+                    sb.AppendFormat("<th class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), sSortIcon, sBlind);
+                }
+                else
+                {
+                    sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", _columnConfig[i, 1].ToString());
+                }
+            }
+            sb.Append("</tr></thead>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string RenderExcelColumnHeader()
+    {
+        if (_columnConfig != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead><tr class=\"success\">");
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<th class=\"xls_th\">{0}</th>", _columnConfig[i, 1].ToString());
+            }
+            sb.Append("</tr></thead>");
+
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string ViewList(string mode, DataSet data, string sortCol, string sortType, string formTable)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 1000px\">");
+        if (mode == "xls") sb.Append(RenderExcelColumnHeader());
+        else sb.Append(RenderColumnHeader(mode, sortCol, sortType));
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strPreVal = "";
+            string strPreVal2 = "";
+            string strForm1 = ""; //2019-06-26 신청서 양식
+            string strForm2 = ""; //2019-06-26 보고서 양식
+
+            int iRow = 1;
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                sb.AppendFormat("<tr class=\"\" id=\"_{0}\" csid=\"{1}\">", row["LcmID"].ToString(), row["CourseID"].ToString());
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+                    //strStyle = (mode != "xls" && i == _columnConfig.GetLength(0) - 1) ? "border-right:0" : "";
+
+                    if (row["ClsCD1"].ToString() == "A10")
+                    {
+                        strForm1 = "FORM_EDUREQUESTIN";
+                        strForm2 = "FORM_EDUREPORTA";
+                    }
+                    else
+                    {
+                        strForm1 = "FORM_EDUREQUEST";
+                        strForm2 = "FORM_EDUREPORTB";
+                    }
+
+                    if (strID == "FromDate" || strID == "ToDate")
+                    {
+                        strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row[strID].ToString(), "MM-dd", "");
+                    }
+                    else if (strID == "CreateDate" || strID == "CompleteDate" || strID == "DeleteDate")
+                    {
+                        strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row[strID].ToString());
+                    }
+                    else if (strID == "CourseDN")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strValue != "")
+                        {
+                            strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewLcmInfo('LI', '{1}');\" title=\"{0}\">{0}</a>", strValue, formTable);
+                        }
+                    }
+                    else if (strID == "ReqIFState") //신청상태
+                    {
+                        strValue = LcmState(row[strID].ToString(), row["IsCancel"].ToString());
+                        if (strValue != "-")
+                        {
+                            if (row[strID].ToString() == "N")
+                            {
+                                //strValue = String.Format("<a href=\"javascript:\" onclick=\"showRegisterData(this, 'RI', 'LCM_MAIN');\" title=\"{0}\">{0}</a>", strValue);
+                            }
+                            else
+                            {
+                                strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"\">{1}</a>", row["ReqApvID"].ToString(), strValue);
+                            }
+                        }
+                    }
+                    else if (strID == "RepoIFState") //결과보고상태
+                    {
+                        strValue = LcmState(row[strID].ToString(), "");
+                        if (strValue != "-")
+                        {
+                            if (row[strID].ToString() == "N")
+                            {
+                                //strValue = String.Format("<a href=\"javascript:\" onclick=\"showRegisterData(this, 'PI', 'LCM_MAIN');\" title=\"{0}\">{0}</a>", strValue);
+                            }
+                            else
+                            {
+                                strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"\">{1}</a>", row["RepoApvID"].ToString(), strValue);
+                            }
+                        }
+                    }
+                    else if (strID == "__REQ__")
+                    {
+                        if (row["IsCancel"].ToString() != "Y" && (row["ReqIFState"].ToString() == "N" || row["ReqIFState"].ToString() == "Y")
+                            && (row["RepoIFState"].ToString() == "-" || row["RepoIFState"].ToString() == "C" || row["RepoIFState"].ToString() == "R"))
+                        {
+                            strValue = "작성"; //변경,취소 작성
+                            strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openNewEAForm('', ['{3}','{0}','{1}']);\" title=\"{2}\">{2}</a>", row["LcmID"].ToString(), formTable, strValue, strForm1);
+                        }
+                        else
+                        {
+                            strValue = "-";
+                        }
+                    }
+                    else if (strID == "__REPO__")
+                    {
+                        if (row["IsCancel"].ToString() != "Y" && DateTime.Compare(Convert.ToDateTime(row["ToDate"]), DateTime.Now) <= 0 && (row["ReqIFState"].ToString() == "N" || row["ReqIFState"].ToString() == "Y")
+                            && (row["RepoIFState"].ToString() == "-" || row["RepoIFState"].ToString() == "C" || row["RepoIFState"].ToString() == "R"))
+                        {
+                            strValue = "작성"; //보고서 작성
+                            strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openNewEAForm('', ['{3}','{0}','{1}']);\" title=\"{2}\">{2}</a>", row["LcmID"].ToString(), formTable, strValue, strForm2);
+                        }
+                        else
+                        {
+                            strValue = "-";
+                        }
+                    }
+                    else if (strID == "_INST_") //교육기관, 강사
+                    {
+                        if (row["ClsCD1"].ToString() == "A20") strValue = row["InstDN"].ToString();
+                        else strValue = row["InstructorInfo1"].ToString() + ". " + row["InstructorInfo2"].ToString() + ". " + row["Instructor"].ToString();
+                    }
+                    else if (strID == "ApplDept")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strPreVal == strValue) strValue = "";
+                        strPreVal = row["ApplDept"].ToString();
+                    }
+                    else if (strID == "ApplDN")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strPreVal2 == strValue) strValue = "";
+                        strPreVal2 = row["ApplDN"].ToString();
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString();
+                    }
+
+                    if (_columnConfig[i, 3].ToString() == "") sb.AppendFormat("<td class=\"text-truncate\">{0}</td>", strValue);
+                    else sb.AppendFormat("<td class=\"text-truncate text-{0}\">{1}</td>", _columnConfig[i, 3].ToString(), strValue);
+                    strValue = "";
+                }
+                sb.Append("</tr>");
+                iRow++;
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"{0}\" class=\"py-15\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+        return sb.ToString();
+    }
+
+    private string LcmState(string state, string cancel)
+    {
+        if (cancel == "Y") return "취소";
+        else
+        {
+            if (state == "N") return "일반등록";
+            else if (state == "Y") return "완료";
+            else if (state == "I") return "처리중";
+            else if (state == "C") return "회수";
+            else if (state == "R") return "반려";
+            else return "-";
+        }
+    }
+}
+
+@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), ViewBag.R.ft.ToString()))

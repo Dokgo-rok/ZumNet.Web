@@ -1064,7 +1064,8 @@ $(function () {
                         });
 
                         p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
-                            _zw.fn.openNewEAForm(p.find('.z-lv-newform .tab-pane.active a.list-group-item.active').attr('data-val')); p.modal('hide');
+                            var formId = p.find('.z-lv-newform .tab-pane.active a.list-group-item.active').attr('data-val');
+                            if (formId) { _zw.fn.openNewEAForm(formId); p.modal('hide'); }
                         });
                         p.find('.z-lv-newform a.list-group-item').on('dblclick', function () {
                             _zw.fn.openNewEAForm($(this).attr('data-val')); p.modal('hide');
@@ -1121,10 +1122,19 @@ $(function () {
                 }
             });
         },
-        "openNewEAForm": function (formId) {
-            if (formId == '') return false;
-            var xfAlias = 'ea'; //_zw.V.xfalias == '' ? 'ea' : _zw.V.xfalias;
-            var url = '/EA/Form?qi=' + _zw.base64.encode('{M:"new",fi:"' + formId + '",xf:"' + xfAlias + '"}');
+        "openNewEAForm": function (formId, tp) {
+            if (formId == '' && tp == null) return false;
+
+            var qi = {};
+            qi['M'] = 'new'; qi['xf'] = 'ea';
+
+            if (formId != '') {
+                qi['fi'] = formId;
+            } else if (tp && tp.length > 0) {
+                qi['fi'] = ''; qi['ft'] = tp[0]; qi['k1'] = tp[1]; qi['Tp'] = tp[2];
+            }
+            console.log(qi)
+            var url = '/EA/Form?qi=' + _zw.base64.encode(JSON.stringify(qi));
             _zw.ut.openWnd(url, "eaform", 800, 600, "resize");
         },
         "openEAForm": function (opt) {
@@ -1358,12 +1368,20 @@ $(function () {
             if ($('.messages-wrapper, .messages-card').hasClass('messages-sidebox-open')) $('.z-mobile-navbar button.close').click();
             if ($('#layout-navbar-rightbar').hasClass('show')) $('#layout-navbar-rightbar').modal('hide');
         },
-        "expandWnd": function (el) {
-            var tgt = $('[aria-controls="vw-full-fill"]');
-            if (tgt.hasClass('modal')) {
-                tgt.removeClass('modal'); $(el).find('i').removeClass('fa-compress').addClass('fa-expand');
-            } else {
-                tgt.addClass('modal'); $(el).find('i').removeClass('fa-expand').addClass('fa-compress');
+        "ctrls": function () {
+            var el = _zw.ut.eventBtn(), ctrl = el.attr('aria-controls');
+            if (ctrl != '') {
+                var tgt = $('[data-controls="' + ctrl + '"]');
+
+                if (ctrl == 'vw-full-fill') {
+                    if (tgt.hasClass('modal')) {
+                        tgt.removeClass('modal'); $(el).find('i').removeClass('fa-compress').addClass('fa-expand');
+                    } else {
+                        tgt.addClass('modal'); $(el).find('i').removeClass('fa-expand').addClass('fa-compress');
+                    }
+                } else if (ctrl == 'vw-search-cond') {
+                    tgt.toggleClass('d-none');
+                }
             }
         },
         "eventBtn": function () {//버튼 클릭시 버튼요소 반환

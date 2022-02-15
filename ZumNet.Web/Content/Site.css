@@ -279,15 +279,15 @@
         border-bottom-left-radius: .25rem !important;
     }
     .z-ttl {
-        padding-top: .5rem;
-        padding-bottom: .5rem;
+        padding-top: .35rem;
+        padding-bottom: .375rem;
     }
 }
 
 @media (max-width: 576px) {
     .z-ttl {
-        padding-top: .5rem;
-        padding-bottom: .5rem;
+        padding-top: .35rem;
+        padding-bottom: .375rem;
     }
     .z-lv-page {
         display: none !important;

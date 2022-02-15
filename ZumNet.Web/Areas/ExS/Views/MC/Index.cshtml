@@ -60,7 +60,7 @@
         if (formTable == "CostList" || formTable == "StdTime")
         {
             sb.AppendFormat("<a class=\"z-lnk-navy-n mr-3\" href=\"javascript:void();\"><i class=\"fas fa-cloud-download-alt\" title=\"{0}\"></i> {1}</a>", "엑셀 내보내기", "엑셀");
-            sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" onclick=\"_zw.ut.expandWnd(this);\"><i class=\"fas fa-expand\"></i></button>");
+            sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
         }
         else if (formTable == "ExcelList")
         {
@@ -327,7 +327,7 @@
     @Html.Partial("_LeftMenu")
     <!-- / sidebox -->
     <!-- content -->
-    <div class="d-flex flex-column w-100 bg-white" aria-controls="vw-full-fill">
+    <div class="d-flex flex-column w-100 bg-white" data-controls="vw-full-fill">
         <!-- Header -->
         <div class="flex-grow-0">
             <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
@@ -336,7 +336,7 @@
                         <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
                     </div>
 
-                    <div class="h5 mb-0 z-ttl text-truncate">
+                    <div class="h5 mb-0 z-ttl py-0 text-truncate">
                         <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
                     </div>
                 </div>

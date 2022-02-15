@@ -1,7 +1,412 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
 @{
     ViewBag.Title = ViewBag.R["ttl"];
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    string sPatialView = "_" + ViewBag.R.ft.ToString();
+    string sListScroll = " z-list-scroll";
+
+    ViewBag.Error = "";
+    if (!File.Exists(Server.MapPath("~/Areas/ExS/Views/Lcm/" + sPatialView + ".cshtml")))
+    {
+        ViewBag.Error = "조건에 해당되는 화면 누락";
+    }
+
+    if (ViewBag.Error == "")
+    {
+        //검색필드 정의
+        ConfigColumn(ViewBag.Mode, ViewBag.R.ft.ToString());
+    }
+
+    //Response.Write(Server.MapPath("~/Areas/ExS/Views/Lcm/" + sPatialView + ".cshtml") + "--" + ViewBag.Error);
+    //Response.End();
+
+}
+@functions{
+    string[,] _columnConfig = null; //검색필드용
+
+    private void ConfigColumn(string mode, string formTable)
+    {
+        //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
+        if (formTable == "LCM_MAIN")
+        {
+            string[,] arr = { { "CourseDN", "과정명", "", "", "Y", "Y" }, { "ClsDN4", "교육<br />분야", "", "", "Y", "Y" }, { "_INST_", "교육기관<br /> / 강사", "", "", "Y", "Y" } };
+            this._columnConfig = arr;
+        }
+        else if (formTable == "LCM_COURSE")
+        {
+            string[,] arr = { { "CourseDN", "과정명", "", "", "Y", "Y" }, { "ClsDN4", "분야", "", "", "Y", "Y" }, { "InstDN", "교육기관", "", "", "Y", "Y" }, { "Place", "교육장소", "", "", "Y", "Y" }, { "Instructor", "강사", "", "", "Y", "Y" } };
+            this._columnConfig = arr;
+        }
+        else if (formTable == "LCM_ADMIN")
+        {
+            string[,] arr = { { "CourseDN", "과정명", "", "", "Y", "Y" }, { "ClsDN4", "교육<br />분야", "", "", "Y", "Y" }, { "_INST_", "교육기관<br /> / 강사", "", "", "Y", "Y" } };
+            this._columnConfig = arr;
+        }
+        else if (formTable == "LCM_INSTRUCTOR")
+        {
+            string[,] arr = { { "ApplDN", "강사명", "", "", "Y", "Y" }, { "ApplDept", "부서", "", "", "Y", "Y" } };
+            this._columnConfig = arr;
+        }
+        else if (formTable == "LCM_EDUPOINT")
+        {
+            
+        }
+    }
+
+    private string GetQueryString(string m, string page, string ttl, string appId)
+    {
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\",appid:\"" + appId + "\"}");
+    }
+
+    private string RenderMenu(string formTable)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        //sb.AppendFormat("<button class=\"btn icon-btn btn-outline-info m-0 mr-2 btn-sm\" title=\"{0}\" onclick=\"_zw.mu.refresh();\"><i class=\"fe-refresh-cw\"></i></button>", Resources.Global.Refresh);
+        sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
+
+        return sb.ToString();
+    }
+
+    private string RenderDDDate(string formTable)
+    {
+        string sSelected = "";
+
+        StringBuilder sb = new StringBuilder();
+
+        if (formTable == "LCM_INSTRUCTOR")
+        {
+            //강의년도
+            sb.Append("<div class=\"input-group\">");
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "강의년도");
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Cond1\">");
+            sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(2013, DateTime.Now.AddYears(1).Year, ZumNet.Framework.Util.StringHelper.SafeInt(ViewBag.R.lv["cd1"])));
+            sb.Append("</select>");
+
+            //승인상태
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "승인상태");
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Cond\">");
+            sb.Append("<option value=\"\">전체</option>");
+            sb.Append("<option value=\"Y\">승인</option>");
+            sb.Append("<option value=\"I\">검토중</option>");
+            sb.Append("<option value=\"N\">취소</option>");
+            sb.Append("</select>");
+
+            sb.Append("<div class=\"d-block d-sm-none w-100 my-1\"></div>");
+
+            //검색
+            sb.Append("<select class=\"custom-select\" id=\"_Search\">");
+            //sb.AppendFormat("<option value=\"\">{0}</option>", Resources.Global.Search);
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 4].ToString() == "Y")
+                    sb.AppendFormat("<option value=\"{0}\">{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString());
+            }
+            sb.Append("</select>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" style=\"max-width: 150px\" value=\"{0}\">", ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+        }
+        else if (formTable == "LCM_EDUPOINT")
+        {
+            //교육년도
+            sb.Append("<div class=\"input-group\">");
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "교육년도");
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Cond1\">");
+            sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(2013, DateTime.Now.AddYears(1).Year, ZumNet.Framework.Util.StringHelper.SafeInt(ViewBag.R.lv["cd1"])));
+            sb.Append("</select>");
+
+            //조회대상
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "조회대상");
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Target\">");
+            sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", "RA", "전체", ViewBag.Mode == "" || ViewBag.Mode == "RA" ? " selected" : "");
+            sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", "RD", "부서", ViewBag.Mode == "RD" ? " selected" : "");
+            sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", "RP", "사용자", ViewBag.Mode == "RP" ? " selected" : "");
+            sb.Append("</select>");
+            //조직도
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" style=\"max-width: 150px\" value=\"{0}\">", ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+        }
+        else
+        {
+            //교육년도
+            sb.Append("<div class=\"input-group\">");
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "교육년도");
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Cond1\">");
+            sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(2013, DateTime.Now.AddYears(1).Year, ZumNet.Framework.Util.StringHelper.SafeInt(ViewBag.R.lv["cd1"])));
+            sb.Append("</select>");
+
+            if (formTable == "LCM_MAIN")
+            {
+                //조회대상
+                sb.Append("<div class=\"input-group-prepend\">");
+                sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "조회대상");
+                sb.Append("</div>");
+                sb.Append("<select class=\"custom-select\" id=\"_Target\">");
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", "PR", "개인", ViewBag.Mode == "" || ViewBag.Mode == "PR" ? " selected" : "");
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", "PD", "소속부서", ViewBag.Mode == "PD" ? " selected" : "");
+                sb.Append("</select>");
+            }
+            else if (formTable == "LCM_ADMIN")
+            {
+                //조회대상
+                sb.Append("<div class=\"input-group-prepend\">");
+                sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "조회대상");
+                sb.Append("</div>");
+                sb.Append("<select class=\"custom-select\" id=\"_Target\">");
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", "RA", "전체", ViewBag.Mode == "" || ViewBag.Mode == "RA" ? " selected" : "");
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", "RD", "부서", ViewBag.Mode == "RD" ? " selected" : "");
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", "RP", "사용자", ViewBag.Mode == "RP" ? " selected" : "");
+                sb.Append("</select>");
+            }
+
+            sb.Append("<div class=\"d-block d-sm-none w-100 my-1\"></div>");
+
+            //검색
+            sb.Append("<select class=\"custom-select\" id=\"_Search\">");
+            //sb.AppendFormat("<option value=\"\">{0}</option>", Resources.Global.Search);
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 4].ToString() == "Y")
+                    sb.AppendFormat("<option value=\"{0}\">{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString());
+            }
+            sb.Append("</select>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" style=\"max-width: 150px\" value=\"{0}\">", ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+            sb.Append("<div class=\"input-group-append\">"); //d-none d-sm-flex
+            sb.Append("<button class=\"btn btn-default\" aria-controls=\"vw-search-cond\" onclick=\"_zw.ut.ctrls();\" title=\"상세\"><i class=\"fas fa-angle-down\"></i></button>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            //상세 검색
+            sb.Append("<div class=\"d-none mt-2 p-2 border\" data-controls=\"vw-search-cond\">");
+            sb.Append("<div class=\"input-group\">");
+
+            //사내외
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[0, 2]);
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Cond2\">");
+            sb.Append("<option value=\"\">전체</option>");
+            foreach (object[] o in ViewBag.CodeTable["lcm.class_a"])
+            {
+                if (o[7].ToString() != "N")
+                {
+                    sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd2"]) == o[2].ToString() ? " selected" : "";
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[2].ToString(), o[3].ToString(), sSelected);
+                }
+            }
+            sb.Append("</select>");
+
+            //교육방식
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[1, 2]);
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Cond3\">");
+            sb.Append("<option value=\"\">전체</option>");
+            foreach (object[] o in ViewBag.CodeTable["lcm.class_b"])
+            {
+                if (o[7].ToString() != "N")
+                {
+                    sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd3"]) == o[2].ToString() ? " selected" : "";
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[2].ToString(), o[3].ToString(), sSelected);
+                }
+            }
+            sb.Append("</select>");
+
+            sb.Append("<div class=\"d-block d-sm-none w-100 my-1\"></div>");
+
+            //교육유형
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[2, 2]);
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Cond4\">");
+            sb.Append("<option value=\"\">전체</option>");
+            foreach (object[] o in ViewBag.CodeTable["lcm.class_c"])
+            {
+                if (o[7].ToString() != "N")
+                {
+                    sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd4"]) == o[2].ToString() ? " selected" : "";
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[2].ToString(), o[3].ToString(), sSelected);
+                }
+            }
+            sb.Append("</select>");
+
+            //교육분야
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[3, 2]);
+            sb.Append("</div>");
+            sb.Append("<select class=\"custom-select\" id=\"_Cond5\">");
+            sb.Append("<option value=\"\">전체</option>");
+            foreach (object[] o in ViewBag.CodeTable["lcm.class_d"])
+            {
+                if (o[7].ToString() != "N")
+                {
+                    sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd5"]) == o[3].ToString() ? " selected" : "";
+                    sb.AppendFormat("<option value=\"{0}\"{1}>{0}</option>", o[3].ToString(), sSelected); //코드값이 아닌 텍스트
+                }
+            }
+            sb.Append("</select>");
+            sb.Append("</div>");
+
+
+            sb.Append("<div class=\"datepicker input-group input-daterange mt-2\">");
+            if (formTable == "LCM_ADMIN")
+            {
+                //신청상태
+                sb.Append("<div class=\"input-group-prepend\">");
+                sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "신청상태");
+                sb.Append("</div>");
+                sb.Append("<select class=\"custom-select\" id=\"_Cond6\">");
+                sb.Append("<option value=\"\">전체</option>");
+                sb.Append("<option value=\"Y\">완료</option>");
+                sb.Append("<option value=\"I\">진행중</option>");
+                sb.Append("<option value=\"R\">반려</option>");
+                sb.Append("<option value=\"C\">회수/취소</option>");
+                sb.Append("<option value=\"-\">없음</option>");
+                sb.Append("</select>");
+
+                //보고상태
+                sb.Append("<div class=\"input-group-prepend\">");
+                sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", "보고상태");
+                sb.Append("</div>");
+                sb.Append("<select class=\"custom-select\" id=\"_Cond7\">");
+                sb.Append("<option value=\"\">전체</option>");
+                sb.Append("<option value=\"Y\">완료</option>");
+                sb.Append("<option value=\"I\">진행중</option>");
+                sb.Append("<option value=\"R\">반려</option>");
+                sb.Append("<option value=\"C\">회수/취소</option>");
+                sb.Append("<option value=\"-\">없음</option>");
+                sb.Append("</select>");
+            }
+
+            //교육일자
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light\">{0}</span>", "교육일자");
+            sb.Append("</div>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\" style=\"max-width: 100px\">", ViewBag.R.lv.start);
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.Append("<span class=\"input-group-text\">~</span>");
+            sb.Append("</div>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control end-date\" value=\"{0}\" style=\"max-width: 100px\">", ViewBag.R.lv.end);
+            sb.Append("</div>");
+
+            sb.Append("</div>");
+        }
+
+        return sb.ToString();
+    }
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @Styles.Render("~/Content/lcm.css")
 }
 
-<h2>Index</h2>
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
 
+    @Scripts.Render("~/Scripts/ExS/lcm.js")
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100 bg-white" data-controls="vw-full-fill">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
+                <div class="d-flex align-items-center font-weight-bold">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
+
+                    <div class="h5 mb-0 z-ttl py-0 text-truncate">
+                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
+                </div>
+                <div class="nav d-flex align-items-center justify-content-end">
+                    @if (ViewBag.Error == "")
+                    {
+                        <div class="z-list-page mr-2" id="__ListCount">
+                            @Html.Partial("_ListCount")
+                        </div>
+                        @Html.Raw(RenderMenu(ViewBag.R.ft.ToString()))
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-grow-0" style="border-top: 2px solid #eee">
+            <div class="d-flex align-items-center px-3 my-2">
+                @if (ViewBag.Error == "")
+                {
+                    <div class="z-lv-cond w-100">
+                        @Html.Raw(RenderDDDate(ViewBag.R.ft.ToString()))
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            @if (ViewBag.Error != "")
+            {
+                @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(ViewBag.Error), "ExS/Lcm", "교육관리"))
+            }
+            else
+            {
+                <div class="px-3@(sListScroll)">
+                    <div class="z-list">
+                        <div class="z-list-head"></div>
+                        <div class="z-list-body" id="__List">
+                            @Html.Partial(sPatialView, ViewData["ColumnConfig"])
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- / content -->
+</div><!-- / .messages-wrapper -->

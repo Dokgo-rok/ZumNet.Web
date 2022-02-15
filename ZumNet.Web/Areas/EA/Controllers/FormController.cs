@@ -42,8 +42,27 @@ namespace ZumNet.Web.Areas.EA.Controllers
             rt = "";
             if (jReq["M"].ToString() == "") rt = "필수 항목[Mode] 누락";
             else if (StringHelper.SafeString(jReq["xf"]) == "") rt = "필수 항목[xfalias] 누락";
-            else if (jReq["M"].ToString() == "new" && jReq["fi"].ToString() == "") rt = "필수 항목[FormID] 누락";
             else if ((jReq["M"].ToString() == "read" || jReq["M"].ToString() == "edit" || jReq["M"].ToString() == "html") && StringHelper.SafeInt(jReq["mi"]) == 0) rt = "필수 항목[MessageID] 누락";
+            //else if (jReq["M"].ToString() == "new" && jReq["fi"].ToString() == "") rt = "필수 항목[FormID] 누락";
+            else if (jReq["M"].ToString() == "new")
+            {
+                if (jReq["fi"].ToString() == "")
+                {
+                    if (StringHelper.SafeString(jReq["Tp"]) != "" && StringHelper.SafeString(jReq["ft"]) != "" && StringHelper.SafeString(jReq["k1"]) != "")
+                    {
+                        //외부에서 오는 경우(임시 처리)
+                        using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new DAL.FlowDac.EApprovalDac())
+                        {
+                            ZumNet.Framework.Entities.Flow.XFormDefinition xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), "", jReq["ft"].ToString());
+                            jReq["fi"] = xfDef.FormID; xfDef = null;
+                        }
+                    }
+                    else
+                    {
+                        rt = "필수 항목[FormID] 누락";
+                    }
+                }
+            }
 
             if (rt != "")
             {
@@ -63,7 +82,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             svcRt = fmMgr.LoadNewServerForm(jReq["M"].ToString(), jReq["fi"].ToString(), StringHelper.SafeString(jReq["oi"]), StringHelper.SafeString(jReq["wi"])
                                         , StringHelper.SafeString(jReq["mi"]), StringHelper.SafeString(jReq["pi"]), StringHelper.SafeString(jReq["biz"]), StringHelper.SafeString(jReq["act"])
                                         , StringHelper.SafeString(jReq["k1"]), StringHelper.SafeString(jReq["k2"]), StringHelper.SafeString(jReq["Ba"])
-                                        , StringHelper.SafeString(jReq["wn"]), StringHelper.SafeString(xfAlias), StringHelper.SafeString(jReq["tp"]));
+                                        , StringHelper.SafeString(jReq["wn"]), StringHelper.SafeString(xfAlias), StringHelper.SafeString(jReq["Tp"]));
                             break;
 
                         case "read":
@@ -71,7 +90,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             svcRt = fmMgr.LoadServerForm(jReq["M"].ToString(), StringHelper.SafeString(jReq["fi"]), StringHelper.SafeString(jReq["oi"]), StringHelper.SafeString(jReq["wi"])
                                         , StringHelper.SafeString(jReq["mi"]), StringHelper.SafeString(jReq["pi"]), StringHelper.SafeString(jReq["biz"]), StringHelper.SafeString(jReq["act"])
                                         , StringHelper.SafeString(jReq["k1"]), StringHelper.SafeString(jReq["k2"]), StringHelper.SafeString(jReq["Ba"])
-                                        , StringHelper.SafeString(jReq["wn"]), StringHelper.SafeString(xfAlias), StringHelper.SafeString(jReq["tp"]));
+                                        , StringHelper.SafeString(jReq["wn"]), StringHelper.SafeString(xfAlias), StringHelper.SafeString(jReq["Tp"]));
                             break;
 
                         case "print":

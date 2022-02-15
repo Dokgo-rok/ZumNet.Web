@@ -363,6 +363,7 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="Content\lcm.css" />
     <Content Include="Content\pqm.css" />
     <Content Include="Content\portal.css" />
     <Content Include="Content\Forms\CRESYN\FORM_ACCOUNTSVISITREPORT_V1.xsl" />
@@ -2012,6 +2013,7 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
+    <Content Include="Scripts\ExS\lcm.js" />
     <Content Include="Scripts\ExS\mc.js" />
     <Content Include="Scripts\ExS\pqm.js" />
     <Content Include="Scripts\ExS\worktime.js" />
@@ -2834,6 +2836,12 @@
     <Content Include="Areas\ExS\Views\MC\_StdPay.cshtml" />
     <Content Include="Areas\ExS\Views\MC\_StdPayDetail.cshtml" />
     <Content Include="Areas\ExS\Views\MC\_ExcelList.cshtml" />
+    <Content Include="Areas\ExS\Views\Lcm\_LCM_MAIN.cshtml" />
+    <Content Include="Areas\ExS\Views\Lcm\_ListCount.cshtml" />
+    <Content Include="Areas\ExS\Views\Lcm\_LCM_COURSE.cshtml" />
+    <Content Include="Areas\ExS\Views\Lcm\_LCM_ADMIN.cshtml" />
+    <Content Include="Areas\ExS\Views\Lcm\_LCM_INSTRUCTOR.cshtml" />
+    <Content Include="Areas\ExS\Views\Lcm\_LCM_EDUPOINT.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

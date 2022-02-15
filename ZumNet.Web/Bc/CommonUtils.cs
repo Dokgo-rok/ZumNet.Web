@@ -87,14 +87,33 @@ namespace ZumNet.Web.Bc
         /// <summary>
         /// 년도 구성
         /// </summary>
-        /// <param name="st"></param>
+        /// <param name="curYear"></param>
+        /// <param name="sy"></param>
         /// <returns></returns>
-        public static string OptionYear(int curYear, int st)
+        public static string OptionYear(int curYear, int sy)
         {
             string strReturn = "";
-            for (int i = curYear; i >= st; i--)
+            for (int i = curYear; i >= sy; i--)
             {
                 if (i == curYear) strReturn += String.Format("<option value=\"{0}\" selected=\"selected\">{0}년</option>", i.ToString());
+                else strReturn += String.Format("<option value=\"{0}\">{0}년</option>", i.ToString());
+            }
+            return strReturn;
+        }
+
+        /// <summary>
+        /// 년도 구성
+        /// </summary>
+        /// <param name="start">시작년도</param>
+        /// <param name="end">종료년도</param>
+        /// <param name="current">선택년도</param>
+        /// <returns></returns>
+        public static string OptionYear(int start, int end, int current)
+        {
+            string strReturn = "";
+            for (int i = end; i >= start; i--)
+            {
+                if (i == current) strReturn += String.Format("<option value=\"{0}\" selected=\"selected\">{0}년</option>", i.ToString());
                 else strReturn += String.Format("<option value=\"{0}\">{0}년</option>", i.ToString());
             }
             return strReturn;
@@ -750,7 +769,7 @@ namespace ZumNet.Web.Bc
                 case "bmp":
                 case "jpg":
                 case "gif":
-                    rt = "far fa-file-image text-secondary";
+                    rt = "far fa-file-image text-twitter";
                     break;
 
                 case "avi":
@@ -759,7 +778,7 @@ namespace ZumNet.Web.Bc
                 case "mp4":
                 case "mpg":
                 case "wmv":
-                    rt = "far fa-file-video text-secondary";
+                    rt = "far fa-file-video text-facebook";
                     break;
 
                 case "mp3":
@@ -1904,6 +1923,147 @@ namespace ZumNet.Web.Bc
             //    ctrl.ViewBag.R.lv.Add("cd11", StringHelper.SafeString(jReq["cd11"]));
             //    ctrl.ViewBag.R.lv.Add("cd12", StringHelper.SafeString(jReq["cd12"]));
             //}
+
+            return strReturn;
+        }
+
+        /// <summary>
+        /// 교육관리 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <returns></returns>
+        public static string LcmInit(this Controller ctrl)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            ctrl.ViewBag.R["ct"] = StringHelper.SafeString(ctrl.ViewBag.R.ct.ToString(), "118");
+            ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
+            ctrl.ViewBag.R["ft"] = StringHelper.SafeString(ctrl.ViewBag.R.ft.ToString(), "LCM_MAIN"); //기본 페이지 설정
+
+            if (Convert.ToInt32(ctrl.ViewBag.R.fdid.Value) == 0 && ctrl.ViewBag.R["opnode"].ToString() != "")
+            {
+                if (ctrl.ViewBag.R["opnode"].ToString().IndexOf(".") >= 0)
+                {
+                    string[] v = ctrl.ViewBag.R["opnode"].ToString().Split('.');
+                    ctrl.ViewBag.R["fdid"] = v[v.Length - 1];
+                }
+                else
+                {
+                    ctrl.ViewBag.R["fdid"] = ctrl.ViewBag.R["opnode"].ToString();
+                }
+            }
+
+            //권한체크
+            if (HttpContext.Current.Session["Admin"].ToString() == "Y")
+            {
+                ctrl.ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), Convert.ToInt32(ctrl.ViewBag.R.ct.Value)
+                                    , Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(ctrl.ViewBag.R.fdid.Value), "O", "0");
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                    ctrl.ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            if (strReturn == "")
+            {
+                //SiteMap
+                if (Convert.ToInt32(ctrl.ViewBag.R.fdid.Value) > 0)
+                {
+                    //Title이 빈값인 경우(Ajax로 불러온 경우 ttl=''로 설정, 이후 로그아웃 되어 returnUrl로 넘어 왔을 때)
+                    strReturn = SiteMap(ctrl, Convert.ToInt32(ctrl.ViewBag.R.ct.Value), Convert.ToInt32(ctrl.ViewBag.R.fdid.Value), ctrl.ViewBag.R["opnode"].ToString());
+                }
+            }
+
+            if (strReturn == "")
+            {
+                //코드정보 설정
+                string[,] codeConfig = {
+                        { "lcm", "class_a", "사내외" },
+                        { "lcm", "class_b", "교육방식" },
+                        { "lcm", "class_c", "교육유형" },
+                        { "lcm", "class_d", "교육분야" }
+
+                };
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.SelectCodeDescription(codeConfig);
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.CodeConfig = codeConfig;
+                    ctrl.ViewBag.CodeTable = svcRt.ResultDataDetail;
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+            
+            if (strReturn == "")
+            {
+                //리스트뷰
+                ctrl.ViewBag.R.lv["page"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["page"].ToString(), "1");
+                ctrl.ViewBag.R.lv["count"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["count"].ToString(), "50"); //StringHelper.SafeString(Bc.CommonUtils.GetLvCookie("cost").ToString(), "20");
+                ctrl.ViewBag.R.lv["cd1"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["cd1"].ToString(), DateTime.Now.Year.ToString()); //기본 교육년도
+
+                //페이지별 초기 설정
+                try
+                {
+                    string formTable = ctrl.ViewBag.R.ft.ToString();
+                    if (formTable == "LCM_COURSE") //교육과정관리
+                    {
+                        ctrl.ViewBag.R["mode"] = StringHelper.SafeString(ctrl.ViewBag.R["mode"].ToString(), "dn");
+                        ctrl.ViewBag.R.lv["tgt"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["tgt"].ToString(), "0");
+                        ctrl.ViewBag.R.lv["basesort"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["basesort"].ToString(), "FromDate");
+                    }
+                    else if (formTable == "LCM_INSTRUCTOR") //사내교육강사현황
+                    {
+                        ctrl.ViewBag.R["mode"] = StringHelper.SafeString(ctrl.ViewBag.R["mode"].ToString(), "dn");
+                        ctrl.ViewBag.R.lv["tgt"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["tgt"].ToString(), "0");
+                        ctrl.ViewBag.R.lv["basesort"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["basesort"].ToString(), "ApplDN");
+                    }
+                    else if (formTable == "LCM_MAIN") //개인신청현황
+                    {
+                        ctrl.ViewBag.R["mode"] = StringHelper.SafeString(ctrl.ViewBag.R["mode"].ToString(), "PR");
+                        ctrl.ViewBag.R.lv["tgt"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["tgt"].ToString(), HttpContext.Current.Session["URID"].ToString());
+                        ctrl.ViewBag.R.lv["basesort"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["basesort"].ToString(), "CreateDate");
+                    }
+                    else if (formTable == "LCM_ADMIN") //교육진행현황
+                    {
+                        ctrl.ViewBag.R["mode"] = StringHelper.SafeString(ctrl.ViewBag.R["mode"].ToString(), "RA");
+                        ctrl.ViewBag.R.lv["tgt"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["tgt"].ToString(), HttpContext.Current.Session["URID"].ToString());
+                        ctrl.ViewBag.R.lv["basesort"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["basesort"].ToString(), "CreateDate");
+                    }
+                    else if (formTable == "LCM_EDUPOINT") //결과집계현황 
+                    {
+                        ctrl.ViewBag.R["mode"] = StringHelper.SafeString(ctrl.ViewBag.R["mode"].ToString(), "RA");
+                        ctrl.ViewBag.R.lv["tgt"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["tgt"].ToString(), HttpContext.Current.Session["URID"].ToString());
+                        ctrl.ViewBag.R.lv["basesort"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["basesort"].ToString(), "");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    strReturn = ex.Message;
+                }
+            }
 
             return strReturn;
         }
