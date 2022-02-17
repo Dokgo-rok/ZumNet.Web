@@ -363,6 +363,7 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="Content\todo.css" />
     <Content Include="Content\lcm.css" />
     <Content Include="Content\pqm.css" />
     <Content Include="Content\portal.css" />
@@ -2009,6 +2010,7 @@
     <Content Include="External\dext5upload\plugin\nexacro\17\DEXT5Upload.ico" />
     <Content Include="External\dext5upload\plugin\nexacro\17\dext5upload.nexacro.html" />
     <Content Include="External\dext5upload\plugin\nexacro\17\dext5upload.nexacro17.js" />
+    <Content Include="images\icons\calendar_imgs.png" />
     <Content Include="Scripts\Controls\portal.js" />
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
@@ -2019,6 +2021,7 @@
     <Content Include="Scripts\ExS\worktime.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\Report\report.js" />
+    <Content Include="Scripts\TnC\todo.js" />
     <Content Include="Temp\admin.ph_up_BaseGradeCodeHandler.sql" />
     <Content Include="Temp\admin.ph_up_BFGetEAFormList.sql" />
     <Content Include="Temp\admin.ph_up_BFHandleEAFormBasicManagement.sql" />
@@ -2842,6 +2845,10 @@
     <Content Include="Areas\ExS\Views\Lcm\_LCM_ADMIN.cshtml" />
     <Content Include="Areas\ExS\Views\Lcm\_LCM_INSTRUCTOR.cshtml" />
     <Content Include="Areas\ExS\Views\Lcm\_LCM_EDUPOINT.cshtml" />
+    <Content Include="Areas\TnC\Views\ToDo\_LeftMenu.cshtml" />
+    <Content Include="Areas\TnC\Views\ToDo\_Week.cshtml" />
+    <Content Include="Areas\TnC\Views\ToDo\_Month.cshtml" />
+    <Content Include="Areas\TnC\Views\ToDo\_ListHead.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

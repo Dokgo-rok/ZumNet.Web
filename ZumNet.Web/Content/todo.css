@@ -1,0 +1,105 @@
+﻿/*******************************************************************************/
+/* 업무일지 */
+
+/* left menu */
+.sidenav-vertical.z-lm, .sidenav-vertical.z-lm .sidenav-inner > .sidenav-item {
+    width: 100%;
+}
+
+.z-lm .sidenav-menu {
+    padding-top: 0;
+    padding-bottom: .325rem;
+}
+
+    .z-lm .sidenav-item .sidenav-link, .z-lm .sidenav-menu .sidenav-item .sidenav-link {
+        padding-top: .225rem;
+        padding-bottom: .225rem;
+    }
+
+    .z-lm .sidenav-menu .sidenav-item .sidenav-link {
+        padding-left: 3.05rem;
+    }
+
+    .z-lm .sidenav-menu .sidenav-menu .sidenav-item .sidenav-link {
+        padding-left: 4.55rem;
+    }
+
+    .z-lm .sidenav-icon, .z-lm .sidenav-menu .sidenav-icon {
+        width: 1.23rem;
+        margin-right: .25rem;
+    }
+
+.z-lm .sidenav-item.active > .sidenav-link:not(.sidenav-toggle) {
+    background: rgba(191, 191, 191, 0.2) !important;
+}
+
+.z-lm .sidenav-item.open:not(.sidenav-item-closing) > .sidenav-toggle, .z-lm .sidenav-item.active > .sidenav-link {
+}
+
+.z-lm .sidenav-item .z-lm-cnt {
+    margin-left: .25rem;
+    font-weight: 600;
+    color: #344fe9;
+}
+
+.z-lm .sidenav-link.sidenav-toggle {
+    /*color: #245580;*/
+    color: rgba(24,28,33,0.7);
+}
+
+
+/* head, menu button */
+.z-lv-menu .btn {
+    line-height: 22px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.z-list-head .nav-tabs .nav-link {
+    padding-top: .325rem;
+    padding-bottom: .25rem;
+}
+.z-list-head .nav-tabs .nav-link.active {
+    border-color: rgba(24,28,33,0.1);
+    border-bottom-color: #ffffff;
+}
+
+
+/* calendar week */
+.zc-week {
+    height: 100%;
+    border: 1px solid rgba(24,28,33,0.1);
+    /*border-top-width: 2px;
+    border-bottom-width: 2px;*/
+}
+    .zc-week .zc-week-left {
+        border-right: 0;
+    }
+    .zc-week .zc-week-day {
+        box-shadow: 0 0 0;
+        border-radius: 0;
+        border: 0;
+        min-height: 12rem;
+    }
+    .zc-week .zc-week-day.weekend {
+        min-height: 6rem;
+    }
+        .zc-week .zc-week-day .card-header {
+            padding: 0 .725rem;
+            margin-bottom: 0;
+            background-color: transparent;
+            border-bottom: 1px solid rgba(24,28,33,0.1);
+            border-top: 1px solid rgba(24,28,33,0.1);
+            border-radius: 0;
+            background-color: rgba(223,138,50,0.05);
+            font-weight: bold;
+        }
+        .zc-week .zc-week-day .card-body {
+            padding: 0.125rem .725rem;
+            /*text-decoration: line-through*/
+        }
+@media (min-width: 576px) {
+    .zc-week .zc-week-left {
+        border-right: 1px solid rgba(24,28,33,0.2);
+    }
+}

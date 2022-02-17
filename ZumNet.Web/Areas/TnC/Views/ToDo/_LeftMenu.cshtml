@@ -1,0 +1,171 @@
+﻿@using System.Data;
+@using System.Text;
+@{
+    //내업무일지
+    //Type A : 소속부서 및 부서원 일지
+    //Type A : 담당부서 및 부서원 일지
+    //Type B : 담당부서원 일지
+    //Type C : 조회부서 일지
+
+    //Response.Write("A :" + ViewBag.MenuInfo["TypeA"].ToString() + ", B :" + ViewBag.MenuInfo["TypeB"].ToString() + ", C :" + ViewBag.MenuInfo["TypeC"].ToString());
+}
+
+@functions {
+    private string GetQueryString(string page, string ttl)
+    {
+        //return "?qi=" + Server.UrlEncode("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
+    }
+
+    private string RenderList(string type, string grId, DataTable data, DataTable opt)
+    {
+        DataRow[] drSearch = null;
+        StringBuilder sb = new StringBuilder();
+
+        if (data != null && data.Rows.Count > 0)
+        {
+            if (type == "A")
+            {
+                drSearch = data.Select("Type='A' AND GR_ID=" + grId);
+                if (drSearch.Length > 0)
+                {
+                    sb.Append("<ul class=\"sidenav-menu my-0\">");
+                    foreach (DataRow dr in drSearch)
+                    {
+                        sb.Append(RenderSubList(dr));
+                    }
+                    sb.Append("</ul>");
+                }
+            }
+            else if (type == "A-2")
+            {
+                if (opt != null && opt.Rows.Count > 0)
+                {
+                    foreach(DataRow row in opt.Rows)
+                    {
+                        sb.Append("<li class=\"sidenav-item mt-1 open\">");
+                        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"sidenav-link font-weight-bold sidenav-toggle\" title=\"{0} 업무 일지 요약\">", row["GroupName"].ToString());
+                        sb.AppendFormat("<i class=\"fas fa-user-friends sidenav-icon\"></i><span>{0}</span>", row["GroupName"].ToString());
+                        sb.Append("</a>");
+
+                        drSearch = data.Select("Type='A' AND GR_ID=" + row["GR_ID"].ToString());
+                        if (drSearch.Length > 0)
+                        {
+                            sb.Append("<ul class=\"sidenav-menu my-0\">");
+                            foreach (DataRow dr in drSearch)
+                            {
+                                sb.Append(RenderSubList(dr));
+                            }
+                            sb.Append("</ul>");
+                        }
+                        sb.Append("</li>");
+                    }
+                }
+            }
+            else if (type == "B")
+            {
+                sb.Append("<ul class=\"sidenav-menu my-0\">");
+                foreach (DataRow dr in data.Rows)
+                {
+                    sb.Append(RenderSubList(dr));
+                }
+                sb.Append("</ul>");
+            }
+            else if (type == "C")
+            {
+                foreach (DataRow dr in data.Rows)
+                {
+                    sb.Append("<li class=\"sidenav-item mt-1\">");
+                    sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"sidenav-link font-weight-bold\" title=\"{0} 업무일지 요약\">", dr["GroupName"].ToString());
+                    sb.AppendFormat("<i class=\"fe-users sidenav-icon\"></i><span>{0}</span>", dr["GroupName"].ToString());
+                    sb.Append("</a>");
+                }
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private string RenderSubList(DataRow row)
+    {
+        StringBuilder sb = new StringBuilder();
+        if (row["UserID"].ToString() != Session["URID"].ToString())
+        {
+            sb.Append("<li class=\"sidenav-item\">");
+            sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"sidenav-link\" title=\"{0} 업무일지 보기\" data-for=\"UR.{1}\">", row["DisplayName"].ToString(), row["UserID"].ToString());
+            sb.Append("<i class=\"fas fa-user-edit text-twitter mr-1\"></i>");
+            sb.AppendFormat("<span>{0}</span><span class=\"ml-2 text-dark\">{1}</span><span class=\"z-lm-cnt\"></span>", row["Grade1"].ToString(), row["DisplayName"].ToString());
+            sb.Append("</a>");
+            sb.Append("</li>");
+        }
+        return sb.ToString();
+    }
+}
+
+<div class="messages-sidebox messages-scroll bg-body border-right">
+    <div class="z-mobile-navbar"></div>
+
+    <div class="py-3 px-4">
+        <div class="media align-items-center">
+            <div class="media-body">
+                <a id="__NewMessage" href="javascript:void(0)" class="btn btn-linkedin rounded-pill btn-block" onclick="_zw.mu.writeMsg();"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeTask</a>
+            </div>
+            <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
+        </div>
+        <div class="row mt-3">
+            <div class="col-6 text-center px-0">
+                <a class="" href="/TnC/ToDo/Report"><i class="fas fa-chalkboard"></i> 집계현황</a>
+            </div>
+            <div class="col-6 text-center px-0">
+                <a class="" href="/TnC/ToDo/Report"><i class="fas fa-calendar-week"></i> 주간계획</a>
+            </div>
+        </div>
+    </div>
+
+    @Html.Partial("~/Views/Common/_WorkTime.cshtml")
+
+    <!-- sidebox tree -->
+    <div id="__LeftMenu" class="sidenav-vertical z-lm">
+        <ul class="sidenav-inner">
+            <li class="sidenav-item@(ViewBag.R["opnode"] == "UR." + Session["URID"].ToString() ? " active" : "")">
+                <a href="javascript:void(0)" class="sidenav-link font-weight-bold" title="내 업무일지 보기" data-for="UR.@Session["URID"]">
+                    <i class="far fa-calendar-check sidenav-icon"></i><span>내 업무일지</span><span class="z-lm-cnt"></span>
+                </a>
+            </li>
+            @if (ViewBag.MenuInfo["Type"].ToString() == "Y")
+            {
+                if (ViewBag.MenuInfo["TypeA"].ToString() != "") //A형
+                {
+                    <li class="sidenav-item mt-1 open">
+                        <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle" title="부서원 업무일지 요약">
+                            <i class="fas fa-user-friends text-primary sidenav-icon"></i><span>부서원</span>
+                        </a>
+                        @Html.Raw(RenderList("A", Session["DeptID"].ToString(), ViewBag.MenuInfo["List_A"], null))
+                    </li>
+
+                    @Html.Raw(RenderList("A-2", "", ViewBag.MenuInfo["List_A"], ViewBag.MenuInfo["Group_A"]))
+                }
+                
+                if (ViewBag.MenuInfo["TypeB"].ToString() != "") //B형 담당부서원
+                {
+                    <li class="sidenav-item mt-1 open">
+                        <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle" title="담당부서원 업무일지 요약">
+                            <i class="fe-users sidenav-icon"></i><span>담당부서원</span>
+                        </a>
+                        @Html.Raw(RenderList("B", "", ViewBag.MenuInfo["List_B"], null))
+                    </li>
+                }
+                
+                if (ViewBag.MenuInfo["TypeC"].ToString() != "") //C형 조회부서
+                {
+                    @Html.Raw(RenderList("C", "", ViewBag.MenuInfo["List_C"], null))
+                }
+            }
+        </ul>
+    </div>
+    <!-- / sidebox tree -->
+</div>
+
+
+
+

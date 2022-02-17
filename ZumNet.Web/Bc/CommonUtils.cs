@@ -1109,6 +1109,7 @@ namespace ZumNet.Web.Bc
     /// </summary>
     public static class CtrlHandler
     {
+        #region [전체 새로고침 되는 페이지 초기 데이터 설정]
         /// <summary>
         /// 전체 새로고침 되는 페이지 초기 데이터 설정
         /// </summary>
@@ -1154,7 +1155,9 @@ namespace ZumNet.Web.Bc
 
             return strReturn;
         }
+        #endregion
 
+        #region [쿼리스트링 할당]
         /// <summary>
         /// 쿼리스트링 ViewBag 할당
         /// </summary>
@@ -1163,7 +1166,7 @@ namespace ZumNet.Web.Bc
         public static string RequestInit(this Controller ctrl, string workStatus)
         {
             string strReturn = "";
-            
+
             JObject jReq;
             JObject jV; //Response Data
 
@@ -1495,7 +1498,9 @@ namespace ZumNet.Web.Bc
             }
             return strReturn;
         }
+        #endregion
 
+        #region [조직도, 사이트맵]
         /// <summary>
         /// 조직도 트리구조 반환
         /// </summary>
@@ -1570,6 +1575,60 @@ namespace ZumNet.Web.Bc
         }
 
         /// <summary>
+        /// 폴더 사이트맵 경로 가져오기
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="ctId"></param>
+        /// <param name="fdId"></param>
+        /// <param name="openNode"></param>
+        /// <returns></returns>
+        public static string SiteMap(this Controller ctrl, int ctId, int fdId, string openNode)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            try
+            {
+                if (openNode == "" || openNode.IndexOf('.') < 0) openNode = "0.0." + fdId.ToString(); //folderid만 넘어오는 경우
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetSiteMapNavigation(Convert.ToInt32(HttpContext.Current.Session["DNID"]), ctId, openNode);
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    string sSitePath = "";
+                    string sFolderTitle = "";
+                    string[] vSiteMap = svcRt.ResultDataString.Split(new char[] { '' });
+                    for (int i = 0; i < vSiteMap.Length; i++)
+                    {
+                        string[] s = vSiteMap[i].Split(new char[] { '' });
+                        sSitePath += (sSitePath == "") ? s[1] : " > " + s[1];
+
+                        if (i > 0) sFolderTitle += (sFolderTitle == "") ? s[1] : " / " + s[1];
+                    }
+
+                    ctrl.ViewBag.SiteMap = sSitePath;
+                    ctrl.ViewBag.R.ttl = sFolderTitle;
+                }
+                else
+                {
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                strReturn = ex.Message;
+            }
+
+            return strReturn;
+        }
+
+        #endregion
+
+        #region [메뉴별 초기 설정]
+        /// <summary>
         /// 결재 초기 설정
         /// </summary>
         /// <param name="ctrl"></param>
@@ -1604,7 +1663,7 @@ namespace ZumNet.Web.Bc
 
             try
             {
-                string sDel = "/";                
+                string sDel = "/";
                 string[,] vBox = {
                     //type, node, location, actrole, query, basesort, 문서함명, basesort명, count여부, bold여부
                     { "u", "node.do", "do", "", "do" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReqDate", Resources.EA.BoxToDo, Resources.Global.Date_Request, "Y", "Y" },
@@ -1620,7 +1679,7 @@ namespace ZumNet.Web.Bc
                     { "u", "node.re", "re", "", "re" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "ReceivedDate", Resources.EA.BoxReference, Resources.Global.Date_Receive, "Y", "" },
                     { "u", "node.wd", "wd", "", "wd" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "PIEnd", Resources.EA.BoxWithdraw, Resources.Global.Date_Withdraw, "", "" },
                     { "u", "node.te", "te", "", "te" + sDel + "" + sDel + HttpContext.Current.Session["URID"].ToString(), "CreateDate", Resources.EA.BoxSaved, Resources.Global.Date_Created, "", "" },
-                
+
                     { "d", "node.as", "as", "__r", "as" + sDel + "__r" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "__r", "ReceivedDate", Resources.EA.BoxAssigned, Resources.Global.Date_Receipt, "Y", "Y" },
                     { "d", "node.__r", "__r", "__r", "__r" + sDel + "__r" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "__r", "ReceivedDate", Resources.EA.BoxReceived, Resources.Global.Date_Receipt, "Y", "Y" },
                     { "d", "node._s", "_s", "_s", "_s" + sDel + "_s" + sDel + HttpContext.Current.Session["DeptID"].ToString() + "_s", "CompletedDate", Resources.EA.BoxSent, Resources.Global.Date_Send, "", "" },
@@ -1642,9 +1701,9 @@ namespace ZumNet.Web.Bc
                 {
                     if (vQuery[0] == vBox[i, 2] && vQuery[1] == vBox[i, 3]) //location, actrole
                     {
-                        for(int j = 0; j < vCurrentBox.Length; j++)
+                        for (int j = 0; j < vCurrentBox.Length; j++)
                         {
-                            vCurrentBox[j] = vBox.GetValue(i, j).ToString(); 
+                            vCurrentBox[j] = vBox.GetValue(i, j).ToString();
                         }
                         break;
                     }
@@ -1654,7 +1713,7 @@ namespace ZumNet.Web.Bc
                 ctrl.ViewBag.CurBox = vCurrentBox;
                 ctrl.ViewBag.PartID = vQuery[2];
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 strReturn = ex.Message;
             }
@@ -1827,7 +1886,7 @@ namespace ZumNet.Web.Bc
             else if (ctAlias == "MC")
             {
                 string[,] codeConfig = {
-                            { "ce", "center", "생산지 분류" }, 
+                            { "ce", "center", "생산지 분류" },
                             { "mc", "buyer", "BUYER 분류" },
                             { "mc", "item", "품목 분류" }
 
@@ -2016,7 +2075,7 @@ namespace ZumNet.Web.Bc
                     strReturn = svcRt.ResultMessage;
                 }
             }
-            
+
             if (strReturn == "")
             {
                 //리스트뷰
@@ -2059,7 +2118,7 @@ namespace ZumNet.Web.Bc
                         ctrl.ViewBag.R.lv["basesort"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["basesort"].ToString(), "");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     strReturn = ex.Message;
                 }
@@ -2069,55 +2128,67 @@ namespace ZumNet.Web.Bc
         }
 
         /// <summary>
-        /// 폴더 사이트맵 경로 가져오기
+        /// 업무일지 초기 설정
         /// </summary>
         /// <param name="ctrl"></param>
-        /// <param name="ctId"></param>
-        /// <param name="fdId"></param>
-        /// <param name="openNode"></param>
+        /// <param name="menuInfo"></param>
         /// <returns></returns>
-        public static string SiteMap(this Controller ctrl, int ctId, int fdId, string openNode)
+        public static string ToDoInit(this Controller ctrl, bool menuInfo)
         {
             string strReturn = "";
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
-            try
-            {
-                if (openNode == "" || openNode.IndexOf('.') < 0) openNode = "0.0." + fdId.ToString(); //folderid만 넘어오는 경우
+            ctrl.ViewBag.R["ct"] = StringHelper.SafeString(ctrl.ViewBag.R.ct.ToString(), "111"); //ctalias=schedule 크레신에서 업무일정을 일지로 사용
+            ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
+            ctrl.ViewBag.R["xfalias"] = StringHelper.SafeString(ctrl.ViewBag.R.xfalias.ToString(), "schedule");
+            ctrl.ViewBag.R["opnode"] = StringHelper.SafeString(ctrl.ViewBag.R.opnode.ToString(), "UR." + HttpContext.Current.Session["URID"].ToString());
 
+            //권한체크
+            if (HttpContext.Current.Session["Admin"].ToString() == "Y")
+            {
+                ctrl.ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.GetSiteMapNavigation(Convert.ToInt32(HttpContext.Current.Session["DNID"]), ctId, openNode);
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), Convert.ToInt32(ctrl.ViewBag.R.ct.Value)
+                                    , Convert.ToInt32(HttpContext.Current.Session["URID"]), 0, "O", "0");
                 }
 
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
-                    string sSitePath = "";
-                    string sFolderTitle = "";
-                    string[] vSiteMap = svcRt.ResultDataString.Split(new char[] { '' });
-                    for (int i = 0; i < vSiteMap.Length; i++)
-                    {
-                        string[] s = vSiteMap[i].Split(new char[] { '' });
-                        sSitePath += (sSitePath == "") ? s[1] : " > " + s[1];
-
-                        if (i > 0) sFolderTitle += (sFolderTitle == "") ? s[1] : " / " + s[1];
-                    }
-
-                    ctrl.ViewBag.SiteMap = sSitePath;
-                    ctrl.ViewBag.R.ttl = sFolderTitle;
+                    ctrl.ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
                 }
                 else
                 {
+                    //에러페이지
                     strReturn = svcRt.ResultMessage;
                 }
             }
-            catch (Exception ex)
+
+            if (strReturn == "" && menuInfo)
             {
-                strReturn = ex.Message;
+                //메뉴 부서원 목록 설정
+                using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                {
+                    svcRt = todo.GetToDoMenuList(Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(HttpContext.Current.Session["DeptID"]));
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.MenuInfo = svcRt.ResultDataDetail;
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
             }
 
             return strReturn;
         }
-    }
+        #endregion
+    }  
     #endregion
 }

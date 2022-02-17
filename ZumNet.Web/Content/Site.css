@@ -198,6 +198,58 @@
     top: .15rem;
 }
 
+/* 배경이미지 사용 아이콘 : 보류 */
+.z-bg-icon {
+    background-image: url(/images/icons/calendar_imgs.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+    .z-bg-icon.important {
+        background-position: -275px -100px;
+        width: 15px;
+        height: 15px;
+    }
+    .z-bg-icon.square {
+        background-position: -200px -241px;
+        width: 16px;
+        height: 16px;
+    }
+    .z-bg-icon.square-mark {
+        background-position: -180px -241px;
+        width: 16px;
+        height: 16px;
+    }
+    .z-bg-icon.check-dim {
+        background-position: -233px -88px;
+        width: 17px;
+        height: 17px;
+    }
+    .z-bg-icon.check {
+        background-position: -42px -220px;
+        width: 17px;
+        height: 17px;
+    }
+    .z-bg-icon.check-rsvd {
+        background-position: -182px -8px;
+        width: 17px;
+        height: 17px;
+    }
+    .z-bg-icon.check-confirm {
+        background-position: -182px -43px;
+        width: 17px;
+        height: 17px;
+    }
+    .z-bg-icon.comment {
+        background-position: -19px -280px;
+        width: 15px;
+        height: 15px;
+    }
+    .z-bg-icon.comment-mark {
+        background-position: -57px -280px;
+        width: 15px;
+        height: 15px;
+    }
+
 /* bbs, kms, edm, ea listview ---------------> */
 .pagination-sm .page-link, .pagination-sm > li > a:not(.page-link) {
     padding-top: .375rem;
