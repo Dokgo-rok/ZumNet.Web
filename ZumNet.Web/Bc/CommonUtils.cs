@@ -2139,9 +2139,12 @@ namespace ZumNet.Web.Bc
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
             ctrl.ViewBag.R["ct"] = StringHelper.SafeString(ctrl.ViewBag.R.ct.ToString(), "111"); //ctalias=schedule 크레신에서 업무일정을 일지로 사용
-            ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
+            //ctrl.ViewBag.R["fdid"] = StringHelper.SafeInt(ctrl.ViewBag.R.fdid, Convert.ToInt32(HttpContext.Current.Session["URID"])); //조회 대상
+            ctrl.ViewBag.R["fdid"] = StringHelper.SafeInt(ctrl.ViewBag.R.fdid) == 0 ? HttpContext.Current.Session["URID"].ToString() : ctrl.ViewBag.R.fdid.ToString(); //조회 대상
+            ctrl.ViewBag.R["ot"] = StringHelper.SafeString(ctrl.ViewBag.R.ot.ToString(), "UR"); //대상 구분
             ctrl.ViewBag.R["xfalias"] = StringHelper.SafeString(ctrl.ViewBag.R.xfalias.ToString(), "schedule");
-            ctrl.ViewBag.R["opnode"] = StringHelper.SafeString(ctrl.ViewBag.R.opnode.ToString(), "UR." + HttpContext.Current.Session["URID"].ToString());
+            ctrl.ViewBag.R["opnode"] = StringHelper.SafeString(ctrl.ViewBag.R.opnode.ToString(), "UR." + HttpContext.Current.Session["URID"].ToString()); //메뉴 위치 구별
+            ctrl.ViewBag.R.lv["tgt"] = StringHelper.SafeString(ctrl.ViewBag.R.lv.tgt.ToString(), DateTime.Now.ToString("yyyy-MM-dd")); //조회 희망 일자
 
             //권한체크
             if (HttpContext.Current.Session["Admin"].ToString() == "Y")
@@ -2167,6 +2170,20 @@ namespace ZumNet.Web.Bc
                 }
             }
 
+            //관리자 권한
+            //if (ctrl.ViewBag.R.current["operator"].ToString() == "Y")
+            //{ 
+            //    ctrl.ViewBag.R.current["acl"] = "SFDERVSDEMWRV";
+            //    ctrl.ViewBag.R.current["appacl"] = "A"; 
+            //}
+
+            //현 사용자 권한
+            if (ctrl.ViewBag.R["ot"].ToString() == "UR" && ctrl.ViewBag.R["fdid"].ToString() == HttpContext.Current.Session["URID"].ToString())
+            {
+                ctrl.ViewBag.R.current["acl"] = "SFDERVSDEMWRV";
+                ctrl.ViewBag.R.current["appacl"] = "A";
+            }
+
             if (strReturn == "" && menuInfo)
             {
                 //메뉴 부서원 목록 설정
@@ -2184,6 +2201,32 @@ namespace ZumNet.Web.Bc
                     //에러페이지
                     strReturn = svcRt.ResultMessage;
                 }
+            }
+
+            if (strReturn == "")
+            {
+                DateTime dtTraget = Convert.ToDateTime(ctrl.ViewBag.R.lv["tgt"]);
+                for(int i = 0; i < 7; i++)
+                {
+                    if (dtTraget.AddDays(-i).DayOfWeek == System.DayOfWeek.Monday)
+                    {
+                        ctrl.ViewBag.Monday = dtTraget.AddDays(-i); //해당 주의 첫 월요일 날짜 반환
+                    }
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.Append("{");
+                //상태 : 표기, 아이콘, 색상
+                sb.Append("s_0:[\"시작전\",\"far fa-check-square fs-16\",\"text-light\"],");
+                sb.Append("s_1:[\"진행중\",\"fas fa-check-square fs-16\",\"text-warning\"],");
+                sb.Append("s_4:[\"지연\",\"fas fa-check-square fs-16\",\"text-danger\"],");
+                sb.Append("s_7:[\"완료\",\"fas fa-check-square fs-16\",\"text-success\"],");
+                
+                sb.Append("cs_0:[\"미확인\",\"far fa-check-square fs-16\",\"text-light\"],");
+                sb.Append("cs_1:[\"확인\",\"fas fa-check-square fs-16\",\"\"],");
+                sb.Append("cs_4:[\"보류\",\"fas fa-exclamation-triangle fs-16\",\"text-secondary\"],");
+                sb.Append("cs_7:[\"완료\",\"fas fa-check-square fs-16\",\"text-success\"]");
+                sb.Append("}");
+                ctrl.ViewBag.State = JObject.Parse(sb.ToString());
             }
 
             return strReturn;

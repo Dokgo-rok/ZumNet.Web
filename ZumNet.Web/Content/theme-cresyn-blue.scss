@@ -8,10 +8,20 @@ $body-bg: #f5f6f8;
 
 body {
     background: $body-bg;
+    color: rgba(24,28,33,0.9);
 }
 
 .bg-body {
     background: $body-bg !important;
+}
+
+//기존 변경
+a {
+    color: rgba(24,28,33,1);
+}
+
+a:hover {
+    /*color: rgba(45,53,63,1);*/
 }
 
 @include appwork-common-theme($primary-color);
@@ -62,7 +72,17 @@ body {
 .text-small {
     font-size: $small-font-size !important;
 }
+.text-decoration-none {
+    text-decoration: none !important;
+}
 
+.text-decoration-underline {
+    text-decoration: underline !important;
+}
+
+.text-decoration-line-through {
+    text-decoration: line-through !important;
+}
 .d-grid {
     display: -ms-grid !important;
     display: grid !important;

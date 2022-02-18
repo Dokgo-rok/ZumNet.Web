@@ -3,7 +3,7 @@
 @using System.Threading;
 @using Newtonsoft.Json;
 @{
-    ViewBag.Title = ViewBag.R["ttl"];
+    ViewBag.Title = "업무일지 - " + (ViewBag.R.fdid.ToString() == Session["URID"].ToString() ? Session["URName"].ToString() : ViewBag.R["ttl"]);
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
@@ -13,6 +13,29 @@
     //Response.Write(Server.MapPath("~/Areas/ExS/Views/Lcm/" + sPatialView + ".cshtml") + "--" + ViewBag.Error);
     //Response.End();
 
+    //ViewBag.State["s_0"][0] = "시작전";
+    //ViewBag.State["s_0"][1] = "<i class=\"far fa-check-square fs-16 text-light\"></i> ";
+
+    //ViewBag.State["s_1"][0] = "진행중";
+    //ViewBag.State["s_1"][1] = "<i class=\"fas fa-check-square fs-16 text-warning\"></i> ";
+
+    //ViewBag.State["s_4"][0] = "지연";
+    //ViewBag.State["s_4"][1] = "<i class=\"fas fa-check-square fs-16 text-success\"></i> ";
+
+    //ViewBag.State["s_7"][0] = "완료";
+    //ViewBag.State["s_7"][1] = "<i class=\"fas fa-check-square fs-16 text-danger\"></i> ";
+
+    //ViewBag.State["cs_0"][0] = "미확인";
+    //ViewBag.State["cs_0"][1] = "<i class=\"far fa-check-square fs-16 text-light\"></i> ";
+
+    //ViewBag.State["cs_1"][0] = "확인";
+    //ViewBag.State["cs_1"][1] = "<i class=\"fas fa-check-square fs-16\"></i> ";
+
+    //ViewBag.State["cs_4"][0] = "보류";
+    //ViewBag.State["cs_4"][1] = "<i class=\"fas fa-exclamation-triangle fs-16 text-secondary\"></i> ";
+
+    //ViewBag.State["cs_7"][0] = "완료";
+    //ViewBag.State["cs_7"][1] = "<i class=\"fas fa-check-square fs-16 text-success\"></i> ";
 }
 @functions{
 
@@ -64,6 +87,7 @@
                 </div>
                 <div class="nav d-flex align-items-center justify-content-end z-lv-menu">
 
+                    <button class="btn btn-outline-purple btn-sm mr-2"><i class="fe-calendar"></i> 주간일지</button>
                     <button class="btn btn-outline-secondary btn-sm mr-2"><i class="fe-printer"></i> 인쇄</button>
                     <button class="btn btn-outline-success btn-sm mr-2"><i class="fas fa-file-excel"></i> 보고서</button>
 

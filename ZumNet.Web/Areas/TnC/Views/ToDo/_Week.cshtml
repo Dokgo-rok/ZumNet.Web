@@ -1,19 +1,287 @@
-﻿<div class="zc-week">
-    <div class="row m-0 p-0">
+﻿@using System;
+@using System.Data;
+@using System.Text;
+
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+
+@using ZumNet.Web.Bc;
+@{
+    
+
+}
+@functions{
+    private string ViewList(DataSet data, string acl, DateTime monDay, JObject state)
+    {
+        StringBuilder sbMon = new StringBuilder();
+        StringBuilder sbTue = new StringBuilder();
+        StringBuilder sbWed = new StringBuilder();
+        StringBuilder sbThu = new StringBuilder();
+        StringBuilder sbFri = new StringBuilder();
+        StringBuilder sbSat = new StringBuilder();
+        StringBuilder sbSun = new StringBuilder();
+
+        string sMonHour = "";
+        string sTueHour = "";
+        string sWedHour = "";
+        string sThuHour = "";
+        string sFriHour = "";
+        string sSatHour = "";
+        string sSunHour = "";
+
+        const short cUnit = 30; //1, 5, 10, 15, 30 단위만 허용한다
+        const short cLen = 24 * 60 / cUnit;
+
+        short[,] bWeek = new short[7, cLen];
+        short cFrom = 0;
+        short cTo = 0;
+
+        foreach (DataRow row in data.Tables[0].Rows)
+        {
+            string strList = String.Format("<li class=\"position-relative w-100 my-1\" id=\"task.{0}\" data-from=\"{1}\" data-repeat=\"{2}\">{3}</li>"
+                                        , row["MessageID"].ToString(), row["RepeatType"].ToString(), row["PeriodFrom"].ToString(), RenderEvent(row, acl, state));
+
+            cFrom = (short)(Convert.ToInt16(row["StartTime"].ToString().Split(':')[0]) * 2 + Convert.ToInt16(row["StartTime"].ToString().Split(':')[1]) / cUnit);
+            cTo = (short)(Convert.ToInt16(row["Term"]) / cUnit);
+
+            DayOfWeek dayOfWeek = Convert.ToDateTime(row["PeriodFrom"]).DayOfWeek; //sunday = 0
+            for (short i = cFrom; i < cFrom + cTo; i++) bWeek[Convert.ToInt16(dayOfWeek), i] = 1;
+
+            switch (dayOfWeek)
+            {
+                case System.DayOfWeek.Monday:
+                    sbMon.Append(strList);
+                    break;
+                case System.DayOfWeek.Tuesday:
+                    sbTue.Append(strList);
+                    break;
+                case System.DayOfWeek.Wednesday:
+                    sbWed.Append(strList);
+                    break;
+                case System.DayOfWeek.Thursday:
+                    sbThu.Append(strList);
+                    break;
+                case System.DayOfWeek.Friday:
+                    sbFri.Append(strList);
+                    break;
+                case System.DayOfWeek.Saturday:
+                    sbSat.Append(strList);
+                    break;
+                case System.DayOfWeek.Sunday:
+                    sbSun.Append(strList);
+                    break;
+            }
+            cFrom = 0;
+            cTo = 0;
+        }
+
+        int iMon = 0;
+        int iTue = 0;
+        int iWed = 0;
+        int iThu = 0;
+        int iFri = 0;
+        int iSat = 0;
+        int iSun = 0;
+
+        for (short i = 0; i < cLen; i++)
+        {
+            if (bWeek[0, i] == 1) iSun++;
+            if (bWeek[1, i] == 1) iMon++;
+            if (bWeek[2, i] == 1) iTue++;
+            if (bWeek[3, i] == 1) iWed++;
+            if (bWeek[4, i] == 1) iThu++;
+            if (bWeek[5, i] == 1) iFri++;
+            if (bWeek[6, i] == 1) iSat++;
+        }
+
+        if (iMon > 0) sMonHour = CommonUtils.CvtMinToHour((iMon * cUnit).ToString()) + "h";
+        if (iTue > 0) sTueHour = CommonUtils.CvtMinToHour((iTue * cUnit).ToString()) + "h";
+        if (iWed > 0) sWedHour = CommonUtils.CvtMinToHour((iWed * cUnit).ToString()) + "h";
+        if (iThu > 0) sThuHour = CommonUtils.CvtMinToHour((iThu * cUnit).ToString()) + "h";
+        if (iFri > 0) sFriHour = CommonUtils.CvtMinToHour((iFri * cUnit).ToString()) + "h";
+        if (iSat > 0) sSatHour = CommonUtils.CvtMinToHour((iSat * cUnit).ToString()) + "h";
+        if (iSun > 0) sSunHour = CommonUtils.CvtMinToHour((iSun * cUnit).ToString()) + "h";
+
+        StringBuilder sbReturn = new StringBuilder();
+        sbReturn.Append("<div class=\"row m-0 p-0\">");
+        sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
+        sbReturn.Append(RenderWeek(monDay, acl, sMonHour, sbMon.ToString(), ""));
+        sbReturn.Append("</div>");
+        sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
+        sbReturn.Append(RenderWeek(monDay.AddDays(1), acl, sTueHour, sbTue.ToString(), ""));
+        sbReturn.Append("</div>");
+        sbReturn.Append("</div>");
+
+        sbReturn.Append("<div class=\"row m-0 p-0\">");
+        sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
+        sbReturn.Append(RenderWeek(monDay.AddDays(2), acl, sWedHour, sbWed.ToString(), ""));
+        sbReturn.Append("</div>");
+        sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
+        sbReturn.Append(RenderWeek(monDay.AddDays(3), acl, sThuHour, sbThu.ToString(), ""));
+        sbReturn.Append("</div>");
+        sbReturn.Append("</div>");
+
+        sbReturn.Append("<div class=\"row m-0 p-0\">");
+        sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
+        sbReturn.Append(RenderWeek(monDay.AddDays(4), acl, sFriHour, sbFri.ToString(), ""));
+        sbReturn.Append("</div>");
+        sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
+        sbReturn.Append(RenderWeek(monDay.AddDays(5), acl, sSatHour, sbSat.ToString(), "Y"));
+        sbReturn.Append(RenderWeek(monDay.AddDays(6), acl, sSunHour, sbSun.ToString(), "Y"));
+        sbReturn.Append("</div>");
+        sbReturn.Append("</div>");
+
+        return sbReturn.ToString();
+
+    }
+
+    private string RenderWeek(DateTime d, string acl, string hour, string data, string weekend)
+    {
+        int iLeft = 121;
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("<div class=\"card zc-week-day{0}\">", weekend == "Y" ? " weekend" : "");
+        sb.Append("<div class=\"card-header with-elements\">");
+        sb.Append("<div class=\"card-header-elements mr-auto text-danger\">");
+        sb.AppendFormat("<span class=\"text-right\" style=\"width: 30px; margin-left: {0}px\">{1}</span>", iLeft.ToString(), hour);
+        sb.Append("</div>");
+        sb.Append("<div class=\"card-header-title py-1\">");
+        if (acl == "A") sb.Append("<a href=\"\" class=\"text-info mr-2\"><i class=\"fas fa-pencil-alt\"></i></a>");
+        sb.AppendFormat("<span>{0}/{1} {2}</span>", d.Month.ToString(), d.Day.ToString(), d.ToString("dddd"));
+        sb.Append("</div>");
+        sb.Append("</div>"); //card-header
+        sb.Append("<div class=\"card-body\">");
+        sb.AppendFormat("<ul class=\"nav\">{0}</ul>", data);
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+
+    private string RenderEvent(DataRow dr, string acl, JObject state)
+    {
+        int iDelay = 0;
+
+        if (Convert.ToInt16(dr["State"]) != 7 && Convert.ToInt16(dr["State"]) != 1)
+        {
+            if (DateTime.Compare(Convert.ToDateTime(dr["PeriodFrom"]), Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))) < 0) iDelay = 4;
+            else iDelay = 0;
+        }
+        else iDelay = Convert.ToInt16(dr["State"]);
+
+        StringBuilder sb = new StringBuilder();
+        //sb.AppendFormat("<li class=\"position-relative w-100 my-1\" id=\"task.{0}\" data-from=\"{1}\" data-repeat=\"{2}\">", dr["MessageID"].ToString(), dr["RepeatType"].ToString(), dr["PeriodFrom"].ToString());
+        sb.Append("<div class=\"d-flex\">");
+        sb.Append("<div class=\"d-flex align-items-center\">");
+
+        if (acl == "A")
+        {
+            //중요도
+            sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} mr-1\" title=\"중요도\" onclick=\"_zw.fn.changeState('priority','{1}','{2}')\">"
+                , dr["Priority"].ToString() == "H" ? "text-success" : "text-light", dr["Priority"].ToString().Trim(), dr["Priority"].ToString() == "H" ? "" : "H");
+            sb.AppendFormat("<span class=\"d-none\">중요</span><i class=\"{0} fa-star fs-16\"></i>", dr["Priority"].ToString() == "H" ? "fas" : "far");
+            sb.Append("</a>");
+
+            //완료
+            sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} mr-1\" title=\"완료\" onclick=\"_zw.fn.changeState('state','{1}','{2}')\">"
+                , dr["State"].ToString() == "7" ? "text-indigo" : "text-light", dr["State"].ToString(), dr["State"].ToString() == "7" ? "0" : "7");
+            sb.AppendFormat("<span class=\"d-none\">완료</span><i class=\"{0} fs-16\"></i>", dr["State"].ToString() == "7" ? "fas fa-check-square" : "far fa-square");
+            sb.Append("</a>");
+        }
+        else
+        {
+            sb.AppendFormat("<span class=\"mr-1\"><span class=\"d-none\">중요</span><i class=\"{0} fa-star fs-16\"></i></span>", dr["Priority"].ToString() == "H" ? "fas text-success" : "far text-light");
+
+            sb.AppendFormat("<span class=\"mr-1\"><span class=\"d-none\">완료</span><i class=\"{0} fs-16\"></i></span>", dr["State"].ToString() == "7" ? "fas fa-check-square text-indigo" : "far fa-square text-light");
+        }
+
+        sb.Append("<span class=\"mr-2\" style=\"margin-bottom: 1px\">");
+        sb.AppendFormat("<span class=\"mr-1\">{0} ~ {1}</span><span class=\"d-inline-block text-danger font-weight-bold text-right\" style=\"width: 28px\">{2}h</span>", dr["StartTime"].ToString(), dr["EndTime"].ToString(), CommonUtils.CvtMinToHour(dr["Term"].ToString()));
+        sb.Append("</span>"); //시간
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"text-truncate d-none d-md-flex\">");
+        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent('{1}','',{2})\">{3}</a>"
+            , dr["State"].ToString() == "7" ? " text-decoration-line-through" : "", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString(), dr["Subject"].ToString());
+        sb.Append("</div>"); //이벤트명
+
+        sb.Append("<div class=\"d-flex align-items-center\" style=\"position: absolute; right: 0\">");
+        if (acl == "A")
+        {
+            //지연, 완료 상태
+            sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"btn {0} btn-sm mr-1\" title=\"{3}\" onclick=\"_zw.fn.changeState('state','{1}','{2}')\">"
+            , StateBtn(iDelay), iDelay.ToString(), (iDelay != 7 && iDelay != 1 ? "1" : (iDelay == 7 ? "0" : "7")), state["s_" + iDelay.ToString()][0].ToString());
+            sb.AppendFormat("<span class=\"d-none\">{0}</span>{0}", state["s_" + iDelay.ToString()][0].ToString());
+            sb.Append("</a>");
+        }
+        else
+        {
+            sb.AppendFormat("<span class=\"btn {0} btn-sm mr-1\"><span class=\"d-none\">{1}</span>{1}</span>", StateBtn(iDelay), state["s_" + iDelay.ToString()][0].ToString());
+        }
+
+        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} mr-1\" title=\"의견\" onclick=\"_zw.fn.viewEvent('{1}','',{2})\"><span class=\"d-none\">의견</span><i class=\"fas fa-comment-dots fs-16\"></i></a>"
+            , Convert.ToInt32(dr["CommentCount"]) > 0 ? "text-third" : "text-light", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString());
+
+
+        if (acl == "M")
+        {
+            //부서장 확인 상태
+            sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} mr-1\" title=\"{3}\" onclick=\"_zw.fn.changeConfirm('cstate','{1}','{2}')\">"
+                , state["cs_" + dr["CState"].ToString().Trim()][2].ToString(), dr["CState"].ToString().Trim(), NextState(Convert.ToInt32(dr["CState"])), state["cs_" + dr["CState"].ToString().Trim()][0].ToString());
+            sb.AppendFormat("<span class=\"d-none\">부서장확인</span><i class=\"{0}\"></i>", state["cs_" + dr["CState"].ToString().Trim()][1].ToString());
+            sb.Append("</a>");
+        }
+        else
+        {
+            sb.AppendFormat("<span><span class=\"d-none\">부서장확인</span><i class=\"{0} {1}\"></i></span>", state["cs_" + dr["CState"].ToString().Trim()][1].ToString(), state["cs_" + dr["CState"].ToString().Trim()][2].ToString());
+        }
+
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"z-week-event text-truncate d-block d-md-none ml-3\">");
+        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent('{1}','',{2})\">{3}</a>"
+            , dr["State"].ToString() == "7" ? " text-decoration-line-through" : "", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString(), dr["Subject"].ToString());
+        sb.Append("</div>"); //이벤트명
+        //sb.Append("</li>");
+
+        return sb.ToString();
+    }
+
+    private string StateBtn(int s)
+    {
+        if (s == 4) return "btn-danger";
+        else if (s == 7) return "btn-success";
+        else if (s == 1) return "btn-purple";
+        else return "btn-outline-purple";
+    }
+
+    private string NextState(int s)
+    {
+        if (s == 4) return "0";
+        else if (s == 7) return "4";
+        else if (s == 1) return "7";
+        else return "1";
+    }
+}
+
+<div class="zc-week">
+    @Html.Raw(ViewList(ViewBag.BoardList, ViewBag.R.current.appacl.ToString(), ViewBag.Monday, ViewBag.State))
+    @*<div class="row m-0 p-0">
         <div class="zc-week-left col-12 col-sm-6 px-0">
             <div class="card zc-week-day">
                 <div class="card-header with-elements">
                     <div class="card-header-elements mr-auto text-danger">
-                        <span>2h</span>
+                        <span style="margin-left: 127px">@sMonHour</span>
                     </div>
-                    <div class="card-header-title">2/14 월요일</div>
+                    <div class="card-header-title">@(ViewBag.Monday.Month)/@(ViewBag.Monday.Day) @ViewBag.Monday.ToString("dddd")</div>
                 </div>
                 <div class="card-body">
                     <ul class="nav">
                         <li class="position-relative w-100 my-1" id=task.62397 data-from="2022-02-14" data-repeat="2">
                             <div class="d-flex">
                                 <div class="d-flex align-items-center">
-                                    <a href="javascript:void(0)" class="text-light mr-1" title="중요도"><span class="d-none">중요도</span><i class="far fa-star fs-16"></i></a>
+                                    <a href="javascript:void(0)" class="text-success mr-1" title="중요도"><span class="d-none">중요도</span><i class="fas fa-star fs-16"></i></a>
                                     <a href="javascript:void(0)" class="text-light mr-1" title="완료"><span class="d-none">완료</span><i class="far fa-square fs-16"></i></a>
                                     <span class="mr-2" style="margin-bottom: 1px">
                                         <span class="mr-1">11:30 ~ 12:30</span>
@@ -22,7 +290,7 @@
                                 </div>
 
                                 <div class="text-truncate d-none d-md-flex">
-                                    <a href="javascript:void(0)" class="" title="취업규칙 개정">취업규칙 개정</a>
+                                    <a href="javascript:void(0)" class="z-lnk-navy-n" title="취업규칙 개정">취업규칙 개정</a>
                                 </div>
 
                                 <div class="d-flex align-items-center" style="position: absolute; right: 0">
@@ -66,15 +334,31 @@
             </div>
         </div>
         <div class="zc-week-right col-12 col-sm-6 px-0">
+            @Html.Raw(RenderWeek(ViewBag.Monday, ViewBag.R.current.appcl, sTueHour, sbTue))
+        </div>
+    </div>
+    <div class="row m-0 p-0">
+        <div class="zc-week-left col-12 col-sm-6 px-0">
             <div class="card zc-week-day">
                 <div class="card-header with-elements">
                     <div class="card-header-elements mr-auto text-danger">
-                        <span>2h</span>
+                        <span style="margin-left: 127px">@sWedHour</span>
                     </div>
-                    <div class="card-header-title">2/14 월요일</div>
+                    <div class="card-header-title">@(ViewBag.Monday.AddDays(2).Month)/@(ViewBag.Monday.AddDays(2).Day) @ViewBag.Monday.AddDays(2).ToString("dddd")</div>
                 </div>
                 <div class="card-body">
-                    <div class="zc-week-event">dasfasdf</div>
+                </div>
+            </div>
+        </div>
+        <div class="zc-week-right col-12 col-sm-6 px-0">
+            <div class="card zc-week-day">
+                <div class="card-header with-elements">
+                    <div class="card-header-elements mr-auto text-danger">
+                        <span style="margin-left: 127px">@sThuHour</span>
+                    </div>
+                    <div class="card-header-title">@(ViewBag.Monday.AddDays(3).Month)/@(ViewBag.Monday.AddDays(3).Day) @ViewBag.Monday.AddDays(3).ToString("dddd")</div>
+                </div>
+                <div class="card-body">
                 </div>
             </div>
         </div>
@@ -84,44 +368,11 @@
             <div class="card zc-week-day">
                 <div class="card-header with-elements">
                     <div class="card-header-elements mr-auto text-danger">
-                        <span>2h</span>
+                        <span style="margin-left: 127px">@sFriHour</span>
                     </div>
-                    <div class="card-header-title">2/14 월요일</div>
+                    <div class="card-header-title">@(ViewBag.Monday.AddDays(4).Month)/@(ViewBag.Monday.AddDays(4).Day) @ViewBag.Monday.AddDays(4).ToString("dddd")</div>
                 </div>
                 <div class="card-body">
-                    <div class="zc-week-event">dasfasdf</div>
-                </div>
-            </div>
-        </div>
-        <div class="zc-week-right col-12 col-sm-6 px-0">
-            <div class="card zc-week-day">
-                <div class="card-header with-elements">
-                    <div class="card-header-elements mr-auto text-danger">
-                        <span>2h</span>
-                    </div>
-                    <div class="card-header-title">2/14 월요일</div>
-                </div>
-                <div class="card-body">
-                    <div class="zc-week-event">dasfasdf</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row m-0 p-0">
-        <div class="zc-week-left col-12 col-sm-6 px-0">
-            <div class="card zc-week-day">
-                <div class="card-header with-elements">
-                    <div class="card-header-elements mr-auto text-danger">
-                        <span>2h</span>
-                    </div>
-                    <div class="card-header-title">2/14 월요일</div>
-                </div>
-                <div class="card-body">
-                    <div class="zc-week-event">dasfasdf</div>
-                    <div class="zc-week-event">dasfasdf</div>
-                    <div class="zc-week-event">dasfasdf</div>
-                    <div class="zc-week-event">dasfasdf</div>
-                 
                 </div>
             </div>
         </div>
@@ -129,25 +380,23 @@
             <div class="card zc-week-day weekend">
                 <div class="card-header with-elements">
                     <div class="card-header-elements mr-auto text-danger">
-                        <span>2h</span>
+                        <span style="margin-left: 127px">@sSatHour</span>
                     </div>
-                    <div class="card-header-title">2/14 토요일</div>
+                    <div class="card-header-title">@(ViewBag.Monday.AddDays(5).Month)/@(ViewBag.Monday.AddDays(5).Day) @ViewBag.Monday.AddDays(5).ToString("dddd")</div>
                 </div>
                 <div class="card-body">
-                    <div class="zc-week-event">dasfasdf</div>
                 </div>
             </div>
             <div class="card zc-week-day weekend">
                 <div class="card-header with-elements">
                     <div class="card-header-elements mr-auto text-danger">
-                        <span>2h</span>
+                        <span style="margin-left: 127px">@sSunHour</span>
                     </div>
-                    <div class="card-header-title">2/14 일요일</div>
+                    <div class="card-header-title">@(ViewBag.Monday.AddDays(6).Month)/@(ViewBag.Monday.AddDays(6).Day) @ViewBag.Monday.AddDays(6).ToString("dddd")</div>
                 </div>
                 <div class="card-body">
-                    <div class="zc-week-event">dasfasdf</div>
                 </div>
             </div>
         </div>
-    </div>
+    </div>*@
 </div>

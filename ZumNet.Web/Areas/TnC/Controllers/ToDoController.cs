@@ -14,10 +14,11 @@ namespace ZumNet.Web.Areas.TnC.Controllers
 {
     public class ToDoController : Controller
     {
+        #region [주간, 월간 일지]
         // GET: TnC/ToDo
         [SessionExpireFilter]
         [Authorize]
-        public ActionResult Index()
+        public ActionResult Index(string Qi)
         {
             string rt = Bc.CtrlHandler.PageInit(this, false);
             if (rt != "")
@@ -31,18 +32,136 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
-            //권한, 초기 설정 가져오기
+            //초기 설정 가져오기
             rt = Bc.CtrlHandler.ToDoInit(this, true);
             if (rt != "")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+            ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz();
+            int iTarget = Convert.ToInt32(ViewBag.R.fdid);
+
+            //권한 설정 - 모든권한(자신, 관리자), 조회/댓글(조회권한자), 확인자(부서장)
+            if (ViewBag.R.current["appacl"].ToString() != "A")
+            {
+                svcRt = todo.GetToDoAclOfTarget(Convert.ToInt32(Session["URID"]), Convert.ToInt32(Session["DeptID"]), iTarget);
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    if (svcRt.ResultDataString == "M")
+                    {
+                        ViewBag.R.current["acl"] = "____RV___M_RV";
+                        ViewBag.R.current["appacl"] = svcRt.ResultDataString;
+                    }
+                    else if (svcRt.ResultDataString == "V")
+                    {
+                        ViewBag.R.current["acl"] = "____RV_____RV";
+                        ViewBag.R.current["appacl"] = svcRt.ResultDataString;
+                    }
+                    else
+                    {
+                        rt = Resources.Global.Auth_NoPermission;
+                        todo.Dispose();
+                        return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                    }
+                }
+                else
+                {
+                    rt = svcRt == null ? "권한 요청 실패" : svcRt.ResultMessage;
+                    todo.Dispose();
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+
             //첫 화면 데이터 가져오기
             ViewBag.R["ft"] = StringHelper.SafeString(ViewBag.R.ft.ToString(), "Week"); //기본 주간보기
+            string cmd = ViewBag.R["ft"].ToString() == "Month" ? "M" : "W";
+            svcRt = todo.GetToDoList(ViewBag.R.mode.ToString(), ViewBag.R.ot.ToString(), iTarget, 99, cmd, ViewBag.R.lv["tgt"].ToString(), "", "");
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ViewBag.BoardList = svcRt.ResultDataSet;
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
 
             return View();
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Index()
+        {
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
+            if (rt == "")
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
+
+                    sPos = "200";
+                    rt = Resources.Global.Auth_InvalidPath;
+                    if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0") return "[" + sPos + "] " + rt;
+
+                    //초기 설정 가져오기
+                    sPos = "300";
+                    rt = Bc.CtrlHandler.ToDoInit(this, false);
+                    if (rt != "") return "[" + sPos + "] " + rt;
+
+                    sPos = "400";
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    int iTarget = Convert.ToInt32(jPost["fdid"]);
+                    string formTable = jPost["ft"].ToString();
+                    string cmd = formTable == "Month" ? "M" : "W";
+
+                    if (formTable == "Week" || formTable == "Month")
+                    {
+                        sPos = "500";
+                        using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                        {
+                            svcRt = todo.GetToDoList(jPost["mode"].ToString(), jPost["ot"].ToString(), iTarget, 99, cmd, jPost["lv"]["tgt"].ToString(), "", "");
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            sPos = "510";
+                            ViewBag.BoardList = svcRt.ResultDataSet;
+
+                            string sDesc = (ViewBag.Monday.Year == DateTime.Now.Year ? "" : ViewBag.Monday.Year.ToString() + "년 ") + ViewBag.Monday.Month.ToString() + "월";
+                            if (formTable == "Week") sDesc += " " + ViewBag.Monday.Day.ToString() + " ~ " + ViewBag.Monday.AddDays(6).Day.ToString();
+
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_" + formTable, ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + sDesc;
+                        }
+                        else
+                        {
+                            rt = svcRt == null ? "조건에 해당되는 화면 누락" : svcRt.ResultMessage;
+                        }
+                    }
+                    else
+                    {
+                        rt = "조건에 해당되는 화면 누락";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+
+            return rt;
+        }
+        #endregion
 
         #region [기타]
         [SessionExpireFilter]
