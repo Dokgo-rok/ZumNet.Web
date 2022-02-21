@@ -79,8 +79,10 @@ namespace ZumNet.Web.Areas.TnC.Controllers
             ViewBag.R["ft"] = StringHelper.SafeString(ViewBag.R.ft.ToString(), "Week"); //기본 주간보기
             string cmd = ViewBag.R["ft"].ToString() == "Month" ? "M" : "W";
             svcRt = todo.GetToDoList(ViewBag.R.mode.ToString(), ViewBag.R.ot.ToString(), iTarget, 99, cmd, ViewBag.R.lv["tgt"].ToString(), "", "");
+            
             if (svcRt != null && svcRt.ResultCode == 0)
             {
+                ViewBag.Mode = "";
                 ViewBag.BoardList = svcRt.ResultDataSet;
             }
             else
@@ -134,10 +136,21 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                         if (svcRt != null && svcRt.ResultCode == 0)
                         {
                             sPos = "510";
+                            ViewBag.Mode = "ajax";
                             ViewBag.BoardList = svcRt.ResultDataSet;
 
-                            string sDesc = (ViewBag.Monday.Year == DateTime.Now.Year ? "" : ViewBag.Monday.Year.ToString() + "년 ") + ViewBag.Monday.Month.ToString() + "월";
-                            if (formTable == "Week") sDesc += " " + ViewBag.Monday.Day.ToString() + " ~ " + ViewBag.Monday.AddDays(6).Day.ToString();
+                            string sDesc = "";
+                            if (formTable == "Week")
+                            {
+                                sDesc = (ViewBag.Monday.Year == DateTime.Now.Year ? "" : ViewBag.Monday.Year.ToString() + "년 ") + ViewBag.Monday.Month.ToString() + "월"
+                                    + " " + ViewBag.Monday.Day.ToString() + " ~ " + (ViewBag.Monday.Month == ViewBag.Monday.AddDays(6).Month ? "" : ViewBag.Monday.AddDays(6).Month.ToString() + "월 ")
+                                    + ViewBag.Monday.AddDays(6).Day.ToString();
+                            }
+                            else if (formTable == "Month")
+                            {
+                                DateTime dtTraget = Convert.ToDateTime(ViewBag.R.lv["tgt"]);
+                                sDesc = (dtTraget.Year == DateTime.Now.Year ? "" : dtTraget.Year.ToString() + "년 ") + dtTraget.Month.ToString() + "월";
+                            }
 
                             rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_" + formTable, ViewBag)
                                 + jPost["lv"]["boundary"].ToString()

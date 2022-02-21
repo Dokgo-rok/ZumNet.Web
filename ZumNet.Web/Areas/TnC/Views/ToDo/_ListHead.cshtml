@@ -1,9 +1,16 @@
 ﻿@using System;
 @{ 
-    string sDesc = (ViewBag.Monday.Year == DateTime.Now.Year ? "" : ViewBag.Monday.Year.ToString() + "년 ") + ViewBag.Monday.Month.ToString() + "월";
+    string sDesc = "";
     if (ViewBag.R.ft.ToString() == "Week")
     {
-        sDesc += " " + ViewBag.Monday.Day.ToString() + " ~ " + ViewBag.Monday.AddDays(6).Day.ToString();
+        sDesc = (ViewBag.Monday.Year == DateTime.Now.Year ? "" : ViewBag.Monday.Year.ToString() + "년 ") + ViewBag.Monday.Month.ToString() + "월"
+                + " " + ViewBag.Monday.Day.ToString() + " ~ " + (ViewBag.Monday.Month == ViewBag.Monday.AddDays(6).Month ? "" : ViewBag.Monday.AddDays(6).Month.ToString() + "월 ")
+                + ViewBag.Monday.AddDays(6).Day.ToString();
+    }
+    else if (ViewBag.R.ft.ToString() == "Month")
+    {
+        DateTime dtTraget = Convert.ToDateTime(ViewBag.R.lv["tgt"]);
+        sDesc = (dtTraget.Year == DateTime.Now.Year ? "" : dtTraget.Year.ToString() + "년 ") + dtTraget.Month.ToString() + "월";
     }
 }
 @functions{

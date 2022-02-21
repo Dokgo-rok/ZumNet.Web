@@ -42,16 +42,14 @@
 }
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/fullcalendar/fullcalendar")
     @Styles.Render("~/bundle/vendor/css/pages/messages")
     @Styles.Render("~/Content/todo.css")
 }
 
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
-    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
-    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
-    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
-
+    @Scripts.Render("~/bundle/vendor/js/fullcalendar/fullcalendar")
     @Scripts.Render("~/Scripts/TnC/todo.js")
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
@@ -67,7 +65,7 @@
 -->
 <!-- `.messages-wrapper` fills all available space of container -->
 <div class="messages-wrapper">
-        
+
     <!-- sidebox -->
     @Html.Partial("_LeftMenu")
     <!-- / sidebox -->
@@ -100,23 +98,24 @@
 
         <div class="flex-grow-0" style="border-top: 2px solid #eee">
             <div class="d-flex align-items-center px-3 my-2">
-                
+
+            </div>
+        </div>
+
+        <div class="flex-grow-0 px-3">
+            <div class="z-list-head">
+                @Html.Partial("_ListHead")
             </div>
         </div>
         <!-- / Header -->
 
-        <div class="flex-grow-1 position-relative">
+        <div class="flex-grow-1 position-relative px-3" style="overflow: auto !important">
             <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
-            <div class="px-3">
-                <div class="z-list">
-                    <div class="z-list-head">
-                        @Html.Partial("_ListHead")
-                    </div>
-                    <div class="z-list-body" id="__List">
-                        @Html.Partial(sPatialView)
-                    </div>
+            <div class="z-list">
+                <div class="z-list-body" id="__List">
+                    @Html.Partial(sPatialView)
                 </div>
-            </div>
+            </div>            
         </div>
     </div>
     <!-- / content -->

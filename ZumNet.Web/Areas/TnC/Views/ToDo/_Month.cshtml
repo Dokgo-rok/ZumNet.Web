@@ -1,1 +1,279 @@
-﻿
+﻿@using System;
+@using System.Collections;
+@using System.Data;
+@using System.Drawing;
+@using System.Text;
+@using System.Web.UI.WebControls;
+
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+
+@using ZumNet.Web.Bc;
+@{
+    //DateTime dtTraget = Convert.ToDateTime(ViewBag.R.lv["tgt"]);
+
+    InitCalendar(Convert.ToDateTime(ViewBag.R.lv["tgt"]));
+    SetCalendar(ViewBag.BoardList);
+
+}
+@functions{
+    Calendar _monthCal = new Calendar();
+    private Object[,] _arrSchedule = new Object[13, 32];
+    private DataRowCollection _colSchType = null;
+
+    private string RenderCalendar()
+    {
+        StringWriter sw = new StringWriter();
+        HtmlTextWriter w = new HtmlTextWriter(sw);
+
+        _monthCal.RenderControl(w);
+
+        return sw.ToString();
+    }
+
+    private void InitCalendar(DateTime curDate)
+    {
+        _monthCal.TodaysDate = curDate;
+        _monthCal.CssClass = "zc-calendar table table-bordered";
+        _monthCal.Width = Unit.Percentage(100);
+        _monthCal.BorderWidth = Unit.Pixel(0);
+        _monthCal.CellPadding = 0;
+        _monthCal.CellSpacing = 0;
+
+        _monthCal.ShowTitle = false;
+        _monthCal.ShowDayHeader = true;
+        _monthCal.ShowGridLines = true;
+
+        _monthCal.DayHeaderStyle.CssClass = "zc-header";
+        _monthCal.DayNameFormat = DayNameFormat.Short;
+        //_monthCal.DayStyle.CssClass = "zc-day";
+        //_monthCal.OtherMonthDayStyle.CssClass = "zc-day-other";
+        _monthCal.Visible = true;
+
+        _monthCal.DayRender += new DayRenderEventHandler(this.MonthCalendar_DayRender);
+    }
+
+    private void SetCalendar(DataSet data)
+    {
+        ArrayList _refArrList = null;
+        String _arrObj = "";
+
+        foreach (DataRow row in data.Tables[0].Rows)
+        {
+            DateTime _dateOfData = new DateTime();
+            _dateOfData = Convert.ToDateTime(row["PeriodFrom"]);
+
+            Panel _pnlData = new Panel();
+
+            if (row["DisplayCond"].ToString() == "N")
+                _pnlData.CssClass = "zc-day-event";
+            else
+            {
+                string[] _arrDisplayCond = row["DisplayCond"].ToString().Split(new char[] { '_' });
+
+                if (_arrDisplayCond[1] == "1")
+                    _pnlData.CssClass = "zc-day-event zc-event-start";
+                else if (_arrDisplayCond[1] == "2")
+                    _pnlData.CssClass = "zc-day-event";
+                else
+                    _pnlData.CssClass = "zc-day-event zc-event-end";
+            }
+
+            Label lblData = lblData = new Label();
+            if (row["AttType"].ToString() == "R") // 공유, 참여, 자원
+            {
+                lblData.Text = "<span style='background-color:"
+                + GetScheduleType(row["schType"].ToString())
+                            + ";width:10px;'>&nbsp;</span>&nbsp;<font style='color:#0000FF;font-weight:bold'>" + row["subject"].ToString() + "</font>";
+            }
+            else
+            {
+                if (row["schType"].ToString() == "tk")
+                {
+                    //2018-07-16 할일
+                    string strState = "";
+                    if (Convert.ToInt16(row["State"]) == 7) strState = " s3";
+                    else if (Convert.ToInt16(row["State"]) == 1) strState = " s2";
+                    else
+                    {
+                        if (DateTime.Compare(Convert.ToDateTime(row["PeriodFrom"]), Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))) < 0) strState = " s4";
+                        else strState = " s1";
+                    }
+
+                    lblData.Text = String.Format("<a class=\"inp_txt\" href=\"javascript:\" onclick=\"viewToDo('{3}','',{1})\" title=\"{2}\"><span class=\"ico-state{0}\"></span>{2}</a>", strState, row["MessageID"].ToString(), row["subject"].ToString(), row["PeriodFrom"].ToString());
+
+                }
+                else
+                {
+                    lblData.Text = "<span style='background-color:" + GetScheduleType(row["schType"].ToString()) + ";width:17px;height:17px;margin-right:2px'>&nbsp;</span>&nbsp;" + row["subject"].ToString();
+                }
+            }
+
+            _pnlData.Attributes.Add("id", "data:" + row["DisplayCond"].ToString());
+            _pnlData.Attributes.Add("data-start", row["StartTime"].ToString()); //시간계산용
+            _pnlData.Attributes.Add("data-term", row["Term"].ToString()); //시간계산용
+
+            if (row["DisplayCond"].ToString().IndexOf("_1") >= 0 && row["DisplayCond"].ToString() != "N")
+            {
+                _arrObj = _arrObj + "data:" + row["DisplayCond"].ToString() + "@";
+            }
+            string attEvent = "fnSchemePop(0, 0, 180, 130, \"{0}\", \"{1}\", \"{2}\", \"{3}\", \"{4}\", \"{5}\", \"{6}\", \"{7}\", \"{8}\");";
+            attEvent = string.Format(attEvent, Server.HtmlEncode(row["Subject"].ToString()), row["Location"].ToString(), row["orgPeriodFrom"].ToString(), row["orgStartTime"].ToString(),
+                            row["orgPeriodTo"].ToString(), row["orgEndTime"].ToString(), row["DisplayName"].ToString(), row["Repeat"].ToString(), row["schType"].ToString());
+
+            lblData.Attributes.Add("onMouseOver", attEvent);
+            lblData.CssClass = "span_Data";
+
+            if (row["schType"].ToString() != "tk")
+            {
+                _pnlData.Attributes.Add("onClick", "Scheme_View(\"" + "" + "\", \"" + "" + "\", \"" + "" + "\", " + row["MessageID"].ToString() + ", \"" + row["orgPeriodFrom"].ToString() + "\",\"" + row["AttType"].ToString() + "\",\"" + row["Shared"].ToString() + "\");");
+            }
+            _pnlData.Controls.Add(lblData);
+
+            object _obj = _arrSchedule[_dateOfData.Month, _dateOfData.Day];
+            if (_obj is ArrayList)
+            {
+            }
+            else
+            {
+                ArrayList _tmparr = new ArrayList();
+                _arrSchedule[_dateOfData.Month, _dateOfData.Day] = _tmparr;
+            }
+
+            _refArrList = (ArrayList)_arrSchedule[_dateOfData.Month, _dateOfData.Day];
+            _refArrList.Add(_pnlData);
+        }
+    }
+
+    private void MonthCalendar_DayRender(object sender, DayRenderEventArgs e)
+    {
+        string strLunar = "";   // 음력
+        string strLunarFont;    // 음력 글자속성
+
+        CalendarDay cellDay = e.Day;
+        TableCell cell = e.Cell;
+        cell.Controls.Clear();
+
+        LunisolarDate lunDate = LunisolarDate.ConvertFromSolarDate(e.Day.Date);
+
+        int lunarDay = lunDate.Day;
+        int lunarMonth = lunDate.Month;
+
+        if (lunarDay == 1 || (lunarDay % 5 == 0))
+        {
+            if (lunDate.LeapMonth)
+            {
+                strLunar = "(" + "윤" + " " + lunarMonth.ToString() + "." + lunarDay.ToString() + ")";
+            }
+            else
+            {
+                strLunar = "(" + lunarMonth.ToString() + "." + lunarDay.ToString() + ")";
+            }
+        }
+
+        string sCellCss = "zc-day";
+
+        if (cellDay.IsOtherMonth) sCellCss += " zc-day-other";
+        else if (cellDay.Date.ToShortDateString() == DateTime.Now.ToShortDateString()) sCellCss += " zc-day-today";
+
+        cell.Width = cellDay.Date.DayOfWeek == DayOfWeek.Sunday || cellDay.Date.DayOfWeek == DayOfWeek.Saturday ? Unit.Percentage(12.5) : Unit.Percentage(15);
+        cell.CssClass = sCellCss + " zc-day-" + cellDay.Date.DayOfWeek.ToString().Substring(0, 3).ToLower();
+
+        Panel alignTag = new Panel();
+        alignTag.CssClass = "zc-day-top";
+
+        string szCellDay = cellDay.Date.ToString("yyyy-MM-dd");
+
+        Label lblDay = new Label();
+        lblDay.Text = "&nbsp;" + cellDay.Date.Day.ToString() + "&nbsp;";
+        //lblDay.Attributes.Add("onClick", "Scheme_Day(\"" + _objectType + "\", \"" + _objectID + "\", \"" + _xfAlias + "\", \"" + szCellDay + "\");");
+        alignTag.Controls.Add(lblDay);
+
+        //if (_todoAcl == "A")
+        //{
+        //    System.Web.UI.WebControls.Image imgWrite = new System.Web.UI.WebControls.Image();
+
+        //    //imgWrite.ImageUrl = "/" + Application["rootFolderName"].ToString() + "/PortalService/Theme/" + Session["ThemePath"].ToString() + "/ICon/ico_pen.gif";
+        //    imgWrite.Style.Add("cursor", "hand");
+        //    imgWrite.Attributes.Add("onclick", "viewToDo(\"" + szCellDay + "\",'',0);");
+        //    alignTag.Controls.Add(imgWrite);
+        //}
+        cell.Controls.Add(alignTag);
+
+        Label lblLunar = new Label();
+        lblLunar.Text = "&nbsp;" + strLunar.ToString() + "&nbsp;";
+        lblLunar.Style.Add("cursor", "default");
+        alignTag.Controls.Add(lblLunar);
+
+        //2018-07-30 중복시간 계산
+        const short cUnit = 30; //1, 5, 10, 15, 30 단위만 허용한다
+        const short cLen = 24 * 60 / cUnit;
+        short[] bWeek = new short[cLen];
+        short cFrom = 0;
+        short cTo = 0;
+        short cCnt = 0;
+
+        //Data를 Cell에 넣어주는 부분
+        object _DataOfDate = (ArrayList)_arrSchedule[cellDay.Date.Month, cellDay.Date.Day];
+        if (_DataOfDate is ArrayList)
+        {
+            ArrayList _refArrList = (ArrayList)_DataOfDate;
+            int i = 0;
+
+            foreach (object s in _refArrList)
+            {
+                if (s is Panel)
+                {
+                    Panel _refPanel = (Panel)s;
+                    _refPanel.Attributes.Add("PositionTop", (17 * i).ToString());
+                    i = i + 1;
+                    cell.Controls.Add(_refPanel);
+
+                    //2018-07-30 시간계산 추가
+                    cFrom = (short)(Convert.ToInt16(_refPanel.Attributes["data-start"].ToString().Split(':')[0]) * 2 + Convert.ToInt16(_refPanel.Attributes["data-start"].ToString().Split(':')[1]) / cUnit);
+                    cTo = (short)(Convert.ToInt16(_refPanel.Attributes["data-term"]) / cUnit);
+
+                    //Response.Write("aaa : " + cFrom.ToString() + " : " + cTo.ToString());
+
+                    for (short k = cFrom; k < cFrom + cTo; k++) bWeek[k] = 1;
+                    cFrom = 0;
+                    cTo = 0;
+                }
+                else
+                {
+                    Response.Write(s.ToString());
+                }
+            }
+
+            for (short x = 0; x < cLen; x++) { if (bWeek[x] == 1) cCnt++; }
+
+            if (cCnt > 0)
+            {
+                Label lblTotal = new Label();
+                lblTotal.CssClass = "ttl";
+                lblTotal.Text = CommonUtils.CvtMinToHour((cCnt * cUnit).ToString()) + "h";
+                alignTag.Controls.Add(lblTotal);
+            }
+        }
+    }
+
+    private string GetScheduleType(string type)
+    {
+        string strReturn = "";
+        foreach (DataRow row in _colSchType)
+        {
+            if (row["SchType"].ToString() == type)
+            {
+                strReturn = row["Color"].ToString();
+                break;
+            }
+        }
+        return strReturn;
+    }
+}
+
+<div class="zc-month">
+    @*<div id="__fcView"></div>*@
+    @Html.Raw(RenderCalendar())
+
+</div>

@@ -20,8 +20,78 @@
 
             _zw.fn.loadList();
         }
-        
-    })
+    });
+
+    _zw.fn.renderFullCalendar = function (initDate, eventList) {
+        _zw.Fc = new Calendar($('#__fcView')[0], {
+            locale: $('#current_culture').val(),
+            height: '100%',
+            plugins: [
+                calendarPlugins.bootstrap,
+                calendarPlugins.dayGrid,
+                calendarPlugins.timeGrid,
+                calendarPlugins.interaction
+            ],
+
+            //themeSystem: 'cosmo', //'bootstrap',
+
+            headerToolbar: false,
+
+            initialDate: initDate,
+            //selectable: true,
+            nowIndicator: true, // Show "now" indicator
+            businessHours: {
+                dow: [1, 2, 3, 4, 5], // Monday - Friday
+                start: '9:00',
+                end: '18:00',
+            },
+            editable: true,
+            //dayMaxEventRows: true, // allow "more" link when too many events
+            events: eventList,
+
+            //views: {
+            //    dayGrid: {
+            //        dayMaxEventRows: 5
+            //    }
+            //},
+
+            dayCellContent: function (arg, createElement) {
+                //console.log(arg)
+                //arg.date, arg.dayNumberText
+                //return createElement('div', { 'class': 'text-danger' }, arg.dayNumberText);
+                //return '<div class="d-flex"><div class="flex-grow-1 text-info">2h</div><div><span class="">(1.5)</span><span>' + arg.date.getDate() + '</span></div></div>';
+                //var d = $('<div class="d-flex justify-content-between"><div class="text-info">2h</div><div><span class="">(1.5)</span><span>' + arg.date.getDate() + '</span></div></div>');
+                //return { domNodes: d };
+                return arg.date.getDate(); // fc-daygrid-day-number
+            },
+
+            select: function (selectionData) {
+                alert(selectionData);
+            },
+
+            dateClick: function (info) {
+                alert(info)
+            },
+
+            eventClick: function (calEvent) {
+                bootbox.alert('Event: ' + calEvent.event.title);
+            }
+        });
+
+        _zw.Fc.render();
+    }
+
+    _zw.fn.fcDateClick = function (info) { console.log(info)
+        alert('fcDateClick');
+    }
+
+    _zw.fn.fcEventClick = function (calEvent) { console.log(calEvent)
+        alert('Event: ' + calEvent.event.title);
+    }
+
+    _zw.fn.viewEvent = function (dt, hm, mi) {
+        alert(dt + " : " + hm + " : " + mi)
+    }
 
     _zw.fn.getToDoCount = function (tgt, mode, dt) {
         if (tgt == '') {
@@ -40,7 +110,7 @@
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
                     if (res.substr(2) != '') {
-                        console.log(res.substr(2))
+                        //console.log(res.substr(2))
                         var j = JSON.parse(res.substr(2));
                         for (var i = 0; i < j.length; i++) {
                             for (key in j[i]) {
@@ -68,10 +138,6 @@
         var mi = el.id.split('.')[1];
     }
 
-    _zw.fn.viewEvent = function (dt, hm, mi) {
-        alert(dt + " : " + hm + " : " + mi)
-    }
-
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true); //console.log(postData)
         var url = '?qi=' + _zw.base64.encode(postData);
@@ -84,8 +150,16 @@
                     history.pushState(null, null, url);
 
                     var v = res.substr(2).split(_zw.V.lv.boundary); //console.log(JSON.parse(JSON.stringify($.trim(v[0]))))
-                    $('#__List').html(v[0]);
                     $('.z-list-head [data-for="DateDesc"]').html(v[1]);
+
+                    if ($('.zc-month').length > 0) {
+                        //_zw.fn.renderFullCalendar(_zw.V.lv.tgt);
+                        _zw.Fc.render(_zw.V.lv.tgt);
+                        
+                    } else {
+                        $('#__List').html(v[0]);
+                        
+                    }
 
                 } else bootbox.alert(res);
             }
@@ -123,4 +197,19 @@
     }
 
     _zw.fn.getToDoCount('', 'W', '');
+
+    if ($('.zc-month').length > 0) {
+        //var list = [
+        //    { title: 'All Day Event', start: '2022-02-11' },
+        //    {
+        //        groupId: 999,
+        //        title: 'Repeating Event',
+        //        start: '2022-02-18 16:00:00',
+        //        end: '2022-02-18 21:30:00'
+        //    }
+        //]
+        //_zw.Fc.setEvents(list);
+        //console.log(_zw.Fc.getEvents());
+        //_zw.Fc.render(_zw.V.lv.tgt); //_zw.fn.renderFullCalendar(_zw.V.lv.tgt);
+    }
 });

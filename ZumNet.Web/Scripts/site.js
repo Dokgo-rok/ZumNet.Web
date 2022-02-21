@@ -385,7 +385,7 @@ $(function () {
         _zw = root._zw = {};
     }
 
-    _zw.V = {}; //사용할 변수, 데이터
+    _zw.V = {};     //사용할 변수, 데이터
 
     _zw.T = {   //사용할 템플릿, 값
         "tree": {
@@ -447,8 +447,87 @@ $(function () {
         }
     };
 
-    _zw.C = []; //사용되는 차트 배열
-    _zw.G = null; //사용되는 그리드
+    _zw.C = [];     //사용되는 차트 배열
+    _zw.G = null;   //사용되는 그리드
+    _zw.Fc = {      //Full Calendar
+        _inst: null,
+        _events: [],
+        "setEvents": function (list) {
+            this._events = list;
+        },
+        "getEvents": function () {
+            return this._events;
+        },
+        "render": function (initDate) {
+            this._inst = new Calendar($('#__fcView')[0], {
+                locale: $('#current_culture').val(),
+                height: '100%',
+                plugins: [
+                    calendarPlugins.bootstrap,
+                    calendarPlugins.dayGrid,
+                    calendarPlugins.timeGrid,
+                    calendarPlugins.interaction
+                ],
+
+                //themeSystem: 'cosmo', //'bootstrap',
+
+                headerToolbar: false,
+
+                initialDate: initDate,
+                //selectable: true,
+                nowIndicator: true, // Show "now" indicator
+                businessHours: {
+                    dow: [1, 2, 3, 4, 5], // Monday - Friday
+                    start: '9:00',
+                    end: '18:00',
+                },
+                editable: true,
+                //dayMaxEventRows: true, // allow "more" link when too many events
+                events: this._events,
+
+                //views: {
+                //    dayGridMonth: {
+                //        dayMaxEventRows: 5,
+                //    }
+                //},
+
+                dayCellContent: function (arg, createElement) {
+                    //console.log(arg)
+                    //arg.date, arg.dayNumberText
+                    //return createElement('div', { 'class': 'text-danger' }, arg.dayNumberText);
+                    //return '<div class="d-flex"><div class="flex-grow-1 text-info">2h</div><div><span class="">(1.5)</span><span>' + arg.date.getDate() + '</span></div></div>';
+                    //var d = $('<div class="d-flex justify-content-between"><div class="text-info">2h</div><div><span class="">(1.5)</span><span>' + arg.date.getDate() + '</span></div></div>');
+                    //return { domNodes: d };
+                    return arg.date.getDate(); // fc-daygrid-day-number
+                },
+                
+                eventContent: function (arg, eventElement) {
+                    console.log(arg.event)
+                    //var d = $('<div class="d-flex justify-content-between"><div class="text-info">2h</div><div><span class="">(1.5)</span><span>' + arg.event.title + '</span></div></div>');
+                    //return { domNodes: d };
+                },
+
+                select: function (arg) {
+                    console.log(arg);
+                },
+
+                dateClick: function (arg) {
+                    console.log(arg.event)
+                    if (_zw.fn.fcDateClick) _zw.fn.fcDateClick(arg);
+                },
+
+                eventClick: function (arg) {
+                    console.log(arg.event.title + " : " + arg.event.start + " : " + arg.event.end)
+                    //if (_zw.fn.fcEventClick) _zw.fn.fcEventClick(calEvent);
+                }
+            });
+
+            this._inst.render();
+        },
+        "updateSize": function () {
+            if (this._inst) this._inst.updateSize();
+        }
+    };  
 
     //메뉴
     _zw.mu = {
@@ -1379,6 +1458,7 @@ $(function () {
                     } else {
                         tgt.addClass('modal'); $(el).find('i').removeClass('fa-expand').addClass('fa-compress');
                     }
+                    if (_zw.Fc) _zw.Fc.updateSize();
                 } else if (ctrl == 'vw-search-cond') {
                     tgt.toggleClass('d-none');
                 }
