@@ -1,4 +1,25 @@
-﻿@{
+﻿@functions {
+    private string GetUserImage(string logonId)
+    {
+        string imagepath = Server.MapPath("~/Storage/cresyn/PersonPhoto/" + logonId + ".jpg");
+        string imageFormat = "image/jpg";
+        string imageOpacity = "";
+
+        if (!File.Exists(imagepath))
+        {
+            imagepath = Server.MapPath("~/images/plugins/user.png");
+            imageFormat = "image/png";
+            imageOpacity = " opacity-50";
+        }
+        FileStream fs = new FileStream(imagepath, FileMode.Open);
+        byte[] byData = new byte[fs.Length];
+        fs.Read(byData, 0, byData.Length);
+        fs.Close();
+
+        var base64 = Convert.ToBase64String(byData);
+
+        return String.Format("<img src=\"data:{0};base64,{1}\" alt=\"User Image\" class=\"mr-3 rounded-circle{2}\"  style=\"height:32px\" alt=\"user\">", imageFormat, base64, imageOpacity);
+    }
 }
 <div class="container-p-x my-3">
     <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.R.app["cmntcount"]</span></h6>
@@ -9,7 +30,7 @@
                 foreach (var j in ViewBag.R.app["cmntlist"])
                 {
                     <div class="media" data-for="comment_@j["seqid"]">
-                        <img src="~/images/users/sjaekim.jpg" class="mr-3 rounded-circle" style="height:32px" alt="user" />
+                        @Html.Raw(GetUserImage(j["creurcn"].ToString()))
                         <div class="media-body">
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex">

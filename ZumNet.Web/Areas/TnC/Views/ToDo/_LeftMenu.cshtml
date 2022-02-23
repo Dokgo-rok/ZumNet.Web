@@ -108,13 +108,16 @@
     <div class="py-3 px-4">
         <div class="media align-items-center">
             <div class="media-body">
-                <a id="__NewMessage" href="javascript:void(0)" class="btn btn-linkedin rounded-pill btn-block" onclick="_zw.mu.writeMsg();"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeLog</a>
+                <a id="__NewMessage" href="javascript:void(0)" class="btn btn-linkedin rounded-pill btn-block" onclick="_zw.fn.viewEvent('@ViewBag.R.current.date', '', 0);"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeLog</a>
             </div>
             <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
         </div>
         <div class="row mt-3">
             <div class="col-6 text-center px-0">
-                <a class="" href="/TnC/ToDo/Report"><i class="fas fa-chalkboard"></i> 집계현황</a>
+                @if (ViewBag.R.current["operator"].ToString() == "Y")
+                {
+                    <a class="" href="/TnC/ToDo/Report"><i class="fas fa-chalkboard"></i> 집계현황</a>
+                }
             </div>
             <div class="col-6 text-center px-0">
                 <a class="" href="/TnC/ToDo/Report"><i class="fe-calendar fs-14"></i> 주간계획</a>

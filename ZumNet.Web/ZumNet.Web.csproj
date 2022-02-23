@@ -2849,6 +2849,7 @@
     <Content Include="Areas\TnC\Views\ToDo\_Week.cshtml" />
     <Content Include="Areas\TnC\Views\ToDo\_Month.cshtml" />
     <Content Include="Areas\TnC\Views\ToDo\_ListHead.cshtml" />
+    <Content Include="Areas\TnC\Views\ToDo\_EventView.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

@@ -41,17 +41,24 @@
         <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="next"><i class="fas fa-arrow-right"></i></button>
     </div>
 
-    <ul class="nav d-flex justify-content-end col-8 col-sm-4 px-0 text-truncate">
-        <li class="nav-item mr-2"><i class="@ViewBag.State["cs_0"][1] @ViewBag.State["cs_0"][2]"></i> @ViewBag.State["cs_0"][0]</li>
-        <li class="nav-item mr-2"><i class="@ViewBag.State["cs_1"][1] @ViewBag.State["cs_1"][2]"></i> @ViewBag.State["cs_1"][0]</li>
-        <li class="nav-item mr-2"><i class="@ViewBag.State["cs_7"][1] @ViewBag.State["cs_7"][2]"></i> @ViewBag.State["cs_7"][0]</li>
-        <li class="nav-item mr-2"><i class="@ViewBag.State["cs_4"][1] @ViewBag.State["cs_4"][2]"></i> @ViewBag.State["cs_4"][0]</li>
-    </ul>
+    @if (ViewBag.R.ft.ToString() == "Week")
+    {
+        <ul class="nav d-flex justify-content-end col-8 col-sm-4 px-0 text-truncate">
+            <li class="nav-item mr-2"><i class="@ViewBag.State["cs_0"][1] @ViewBag.State["cs_0"][2]"></i> @ViewBag.State["cs_0"][0]</li>
+            <li class="nav-item mr-2"><i class="@ViewBag.State["cs_1"][1] @ViewBag.State["cs_1"][2]"></i> @ViewBag.State["cs_1"][0]</li>
+            <li class="nav-item mr-2"><i class="@ViewBag.State["cs_7"][1] @ViewBag.State["cs_7"][2]"></i> @ViewBag.State["cs_7"][0]</li>
+            <li class="nav-item mr-2"><i class="@ViewBag.State["cs_4"][1] @ViewBag.State["cs_4"][2]"></i> @ViewBag.State["cs_4"][0]</li>
+        </ul>
+    }
+    else if (ViewBag.R.ft.ToString() == "Month")
+    {
+        <ul class="nav d-flex justify-content-end col-8 col-sm-4 px-0 text-truncate">
+            <li class="nav-item mr-2"><i class="@ViewBag.State["s_0"][1] @ViewBag.State["s_0"][2]"></i> @ViewBag.State["s_0"][0]</li>
+            <li class="nav-item mr-2"><i class="@ViewBag.State["s_1"][1] @ViewBag.State["s_1"][2]"></i> @ViewBag.State["s_1"][0]</li>
+            <li class="nav-item mr-2"><i class="@ViewBag.State["s_7"][1] @ViewBag.State["s_7"][2]"></i> @ViewBag.State["s_7"][0]</li>
+            <li class="nav-item mr-2"><i class="@ViewBag.State["s_4"][1] @ViewBag.State["s_4"][2]"></i> @ViewBag.State["s_4"][0]</li>
+        </ul>
+    }
 
-    @*<ul class="nav d-flex justify-content-end col-8 col-sm-4 px-0 text-truncate">
-            <li class="nav-item mr-2"><i class="far fa-check-square fs-16 text-light"></i> 시작전</li>
-            <li class="nav-item mr-2"><i class="fas fa-check-square fs-16 text-warning"></i> 진행중</li>
-            <li class="nav-item mr-2"><i class="fas fa-check-square fs-16 text-success"></i> 완료</li>
-            <li class="nav-item mr-2"><i class="fas fa-check-square fs-16 text-danger"></i> 지연</li>
-        </ul>*@
+
 </div>

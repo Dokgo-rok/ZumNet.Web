@@ -3,11 +3,7 @@
 $(function () {
 
     _zw.fn.bindCtrl = function () {
-        $('.datepicker').datepicker({
-            autoclose: true,
-            //format: "yyyy-mm-dd",
-            language: $('#current_culture').val()
-        });
+        _zw.ut.picker('date');
 
         $('[data-zv-menu="search"]').click(function () {
             _zw.fn.goSearch();

@@ -88,10 +88,10 @@
             padding: 0 .725rem;
             margin-bottom: 0;
             background-color: transparent;
-            border-bottom: 1px solid rgba(24,28,33,0.1);
-            border-top: 1px solid rgba(24,28,33,0.1);
+            border-bottom: 1px solid #dcdcdc;
+            border-top: 1px solid #dcdcdc;
             border-radius: 0;
-            background-color: rgba(64,132,255,0.1); /*rgba(223,138,50,0.1);*/
+            background-color: #f8f8f8; /* rgba(64,132,255,0.1); rgba(223,138,50,0.1);*/
             font-weight: bold;
         }
         .zc-week .zc-week-day .card-body {
@@ -116,15 +116,20 @@
     width: 100%;
     height: 100%;
     border: 0;
+    border-top: 2px solid #dcdcdc !important;
+    border-bottom: 1px solid #dcdcdc !important;
 }
     .zc-calendar th, .zc-calendar td {
-        padding: 0
+        padding: 0;
+        border: 1px solid rgba(24,28,33,0.1);
     }
     .zc-calendar .zc-toolbar {
     }
     .zc-calendar .zc-header {
         position: relative;
         height: 3.4%;
+        background-color: #f8f8f8; /*rgba(64,132,255,0.1); rgba(223,138,50,0.1);*/
+        padding: .2rem .5rem .1rem;
     }
     .zc-calendar .zc-day {
         position: relative;
@@ -132,30 +137,57 @@
         vertical-align: top !important;
     }
         .zc-calendar .zc-day.zc-day-today {
+            background-color: rgba(10, 235, 152, 0.05);
         }
         .zc-calendar .zc-day.zc-day-other {
+            opacity: 0.5;
         }
         .zc-calendar .zc-day.zc-day-sun {
+            background: rgba(215, 215, 215, 0.1);
         }
         .zc-calendar .zc-day.zc-day-sat {
+            background: rgba(215, 215, 215, 0.1);
         }
-    .zc-calendar .zc-day-top {
-        display: flex;
-        flex-direction: row-reverse;
-    }
+        .zc-calendar .zc-day.zc-day-sun .zc-day-number {
+            color: #ec4a3b;
+        }
+        .zc-calendar .zc-day.zc-day-sat .zc-day-number {
+            color: #6c9df9;
+        }
+        .zc-calendar .zc-day-top {
+            display: flex;
+            /*flex-direction: row-reverse;*/
+            align-items: center !important;
+            justify-content: space-between;
+            padding: .125rem .2rem;
+        }
+            .zc-calendar .zc-day-top .zc-day-number {
+                font-weight: bold;
+            }
+            .zc-calendar .zc-day-top a, .zc-calendar .zc-day-top span {
+                /*overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;*/
+                display: inline-flex;
+            }
     .zc-calendar .zc-day-event {
         display: flex;
         justify-content: start;
+        align-items: center !important;
+        padding: .125rem;
     }
+        .zc-calendar .zc-day-event a{
+            text-align: left;
+        }
 
 /* full-calendar month */
 .zc-month {
-    position: absolute;
+    /*position: absolute;
     top: 0;
     left: 1rem;
     right: 1rem;
     bottom: .5rem;
-    /*height: 100%;*/
+    height: 100%;*/
 }
 .fc .fc-toolbar.fc-header-toolbar {
     /* margin-bottom: 1.5em; */

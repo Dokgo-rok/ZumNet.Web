@@ -190,24 +190,28 @@ $(function () {
     });
 
     //ListView Menu
-    if ($('.datepicker').length > 0) {
-        $('.datepicker').datepicker({
-            autoclose: true,
-            //format: "yyyy-mm-dd",
-            language: $('#current_culture').val()
-        });
-    }
+    _zw.ut.picker('date');
 
-    $('.bootstrap-maxlength').each(function () {
-        $(this).maxlength({
-            alwaysShow: true,
-            warningClass: 'text-muted',
-            limitReachedClass: 'text-danger',
-            validate: true,
-            placement: 'top-right-inside',
-            threshold: +this.getAttribute('maxlength')
-        });
-    });
+    _zw.ut.maxLength();
+
+    //if ($('.datepicker').length > 0) {
+    //    $('.datepicker').datepicker({
+    //        autoclose: true,
+    //        //format: "yyyy-mm-dd",
+    //        language: $('#current_culture').val()
+    //    });
+    //}
+
+    //$('.bootstrap-maxlength').each(function () {
+    //    $(this).maxlength({
+    //        alwaysShow: true,
+    //        warningClass: 'text-muted',
+    //        limitReachedClass: 'text-danger',
+    //        validate: true,
+    //        placement: 'top-right-inside',
+    //        threshold: +this.getAttribute('maxlength')
+    //    });
+    //});
 
     $('.z-lv-menu .btn[data-zv-menu], .z-lv-search .btn[data-zv-menu]').click(function () {
         var mn = $(this).attr('data-zv-menu');
@@ -527,7 +531,7 @@ $(function () {
         "updateSize": function () {
             if (this._inst) this._inst.updateSize();
         }
-    };  
+    }; 
 
     //메뉴
     _zw.mu = {
@@ -1334,6 +1338,29 @@ $(function () {
             if (num < 10) { num = "0" + num; }
             return num;
         },
+        "picker": function (kind) {
+            if (kind == 'date') {
+                if ($('.datepicker').length > 0) {
+                    $('.datepicker').datepicker({
+                        autoclose: true,
+                        //format: "yyyy-mm-dd",
+                        language: $('#current_culture').val()
+                    });
+                }
+            }
+        },
+        "maxLength": function () {
+            $('.bootstrap-maxlength').each(function () {
+                $(this).maxlength({
+                    alwaysShow: true,
+                    warningClass: 'text-muted',
+                    limitReachedClass: 'text-danger',
+                    validate: true,
+                    placement: 'top-right-inside',
+                    threshold: +this.getAttribute('maxlength')
+                });
+            });
+        },
         "maskInput": function (e) {
             var v = $(e).attr('data-inputmask').split(';');
             if (v[0] == "number" || v[0] == "percent") {
@@ -1345,7 +1372,7 @@ $(function () {
                         integerLimit: parseInt(v[1]),
                         allowDecimal: parseInt(v[2]) > 0 ? true : false,
                         decimalLimit: parseInt(v[2]) > 0 ? parseInt(v[2]) : 0,
-                        allowNegative: v[3] == '-' ? true : false
+                        allowNegative: v[3] && v[3] == '-' ? true : false
                     })
                 });
             } else if (v[0] == "date" || v[0] == "time") {
@@ -1483,6 +1510,82 @@ $(function () {
             //    bootbox.hideAll();
             //}
         }               
+    };
+
+    //Calendar (일정,일지,자원 관련 공통 함수)
+    _zw.cdr = {
+        "showRepeat": function (p, from, st, et) { // p => modal wnd, fromdate, starttime, endtime
+            var el = p.find('#cbRepeatType'), ckRptEnd = p.find('input[name="ckbRepeatEnd"]'), rptEnd = p.find('#txtRepeatEnd');
+
+            el.on('change', function () {
+                p.find('#sPerDay input, #sPerWeek input').val(1);
+                
+                //alert(p.find('#' + from).val() + " : " + p.find('#' + st).val());
+
+                if ($(this).val() == 1) {
+                    _zw.cdr.initRepeattDay(p, 0);
+
+                    ckRptEnd.prop('checked', false); rptEnd.val(moment(p.find('#' + from).val()).add(1, 'M').format('YYYY-MM-DD')).prop('disabled', false);
+                    
+
+                    p.find('#sPerDay').removeClass('d-none').addClass('d-flex');
+                    p.find('#sPerWeek').removeClass('d-flex').addClass('d-none');
+                    p.find('[data-for="rpt-day"]').addClass('d-none');
+
+                } else if ($(this).val() == 2) {
+                    _zw.cdr.initRepeattDay(p, 1);
+
+                    ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
+
+                    p.find('#sPerDay').removeClass('d-flex').addClass('d-none');
+                    p.find('#sPerWeek').removeClass('d-none').addClass('d-flex');
+                    p.find('[data-for="rpt-day"]').addClass('d-none');
+
+                } else if ($(this).val() == 3) {
+                    _zw.cdr.initRepeattDay(p, 3, moment(p.find('#' + from).val()).day());
+
+                    ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
+
+                    p.find('#sPerDay').removeClass('d-flex').addClass('d-none');
+                    p.find('#sPerWeek').removeClass('d-none').addClass('d-flex');
+                    p.find('[data-for="rpt-day"]').removeClass('d-none');
+                }
+            });
+
+            ckRptEnd.on('click', function () {
+                if ($(this).prop('checked')) {
+                    rptEnd.val('').prop('disabled', true);
+                } else {
+                    rptEnd.val(moment(p.find('#' + from).val()).add(1, 'M').format('YYYY-MM-DD')).prop('disabled', false);
+                }
+            });
+
+            p.find('#sPerDay a[data-val], #sPerWeek a[data-val]').click(function () {
+                $(this).parent().find('input').val($(this).attr('data-val'));
+            });
+
+            el.val(3); el.change(); _zw.fn.input(p);
+
+            p.find('[data-for="rpt-rule"], [data-for="rpt-day"], [data-for="rpt-end"]').removeClass('d-none');
+        },
+        "closeRepeat": function (p) {
+            p.find('[data-for="rpt-rule"], [data-for="rpt-day"], [data-for="rpt-end"]').addClass('d-none');
+        },
+        "initRepeattDay": function (p, m, n) {
+            p.find('[data-for="rpt-day"] input[name="ckbDay"]').each(function (i, e) {
+                if (m == 0) {
+                    e.checked = false;
+                } else if (m == 1) {//평일
+                    e.checked = i > 0 && i < $(this).length - 1 ? true :false;
+                } else if (m == 2) {//주말
+                    e.checked = i > 0 && i < $(this).length - 1 ? false : true;
+                } else {
+                    e.checked = i == n - 1 ? true : false;
+                }
+            });
+        },
+        "getRepeat": function () {
+        }
     };
 
     //Base64 Encode, Decode

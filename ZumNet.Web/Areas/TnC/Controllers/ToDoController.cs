@@ -176,6 +176,56 @@ namespace ZumNet.Web.Areas.TnC.Controllers
         }
         #endregion
 
+        #region [이벤트(일지)]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventView()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["M"].ToString() == "" || jPost["dt"].ToString() == "") return "필수값 누락!";
+
+                    int iMessageId = StringHelper.SafeInt(jPost["mi"]);
+                    if (jPost["M"].ToString() == "new")
+                    {
+                        ViewBag.JPost = jPost;
+                    }
+                    else
+                    {
+                        ZumNet.Framework.Core.ServiceResult svcRt = null;
+                        using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                        {
+                            svcRt = todo.GetToDoView("", Convert.ToInt32(Session["DNID"]), iMessageId, jPost["dt"].ToString());
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            ViewBag.WorkEvent = svcRt.ResultDataSet;
+                            ViewBag.JPost = jPost;
+                        }
+                        else
+                        {
+                            //에러페이지
+                            rt = svcRt.ResultMessage;
+                        }
+                    }
+
+                    if (rt == "") rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_EventView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
+
         #region [기타]
         [SessionExpireFilter]
         [HttpPost]

@@ -186,6 +186,7 @@ namespace ZumNet.Web.Bc
                             jTemp["xfalias"] = dr["XFAlias"].ToString();
                             jTemp["seqid"] = dr["SeqID"].ToString();
                             jTemp["creurid"] = dr["CreatorID"].ToString();
+                            jTemp["creurcn"] = dr["CreatorCN"].ToString();
                             jTemp["creur"] = dr["Creator"].ToString();
                             jTemp["credate"] = dr["CreateDate"].ToString();
                             jTemp["comment"] = dr["Comment"].ToString();

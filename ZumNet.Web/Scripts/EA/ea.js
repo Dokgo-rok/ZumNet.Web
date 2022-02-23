@@ -84,13 +84,7 @@ $(function () {
                         _zw.fn.setLvCnt($(this).val());
                     });
 
-                    if ($('.datepicker').length > 0) {
-                        $('.datepicker').datepicker({
-                            autoclose: true,
-                            //format: "yyyy-mm-dd",
-                            language: $('#current_culture').val()
-                        });
-                    }
+                    _zw.ut.picker('date');
 
                     $('.z-lv-hdr a[data-val]').click(function () {
                         var t = $(this); _zw.V.lv.sort = t.attr('data-val');

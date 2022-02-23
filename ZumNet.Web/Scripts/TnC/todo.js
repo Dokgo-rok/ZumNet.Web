@@ -89,8 +89,35 @@
         alert('Event: ' + calEvent.event.title);
     }
 
-    _zw.fn.viewEvent = function (dt, hm, mi) {
-        alert(dt + " : " + hm + " : " + mi)
+    _zw.fn.viewEvent = function (dt, hm, mi) { //alert(dt + " : " + hm + " : " + mi)
+        var mode = mi != null && mi != '' && mi > 0 ? 'view' : 'new';
+        $.ajax({
+            type: "POST",
+            url: "/TnC/ToDo/EventView",
+            data: '{M:"' + mode + '",dt:"' + dt + '",hm:"' + hm + '",mi:"' + mi + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == 'OK') {
+                    var p = $('#popForm');
+                    p.html(res.substr(2));
+
+                    if (mode != 'view') {
+                        _zw.ut.picker('date'); _zw.ut.maxLength();
+
+                        p.find('input[name="ckbRepeat"]').click(function () {
+                            if ($(this).prop('checked')) {
+                                _zw.cdr.showRepeat(p, 'txtStart', 'cbStart', 'cbEnd');
+                            } else {
+                                _zw.cdr.closeRepeat(p);
+                            }
+                        });
+                    } else {
+
+                    }
+
+                    p.modal();
+                }
+            }
+        });
     }
 
     _zw.fn.getToDoCount = function (tgt, mode, dt) {
@@ -154,8 +181,9 @@
 
                     if ($('.zc-month').length > 0) {
                         //_zw.fn.renderFullCalendar(_zw.V.lv.tgt);
-                        _zw.Fc.render(_zw.V.lv.tgt);
-                        
+                        //_zw.Fc.render(_zw.V.lv.tgt);
+                        $('#__List').html(v[0]);
+
                     } else {
                         $('#__List').html(v[0]);
                         
@@ -179,7 +207,7 @@
         j["appacl"] = _zw.V.current.appacl;
         j["opnode"] = _zw.V.opnode;
         j["ft"] = _zw.V.ft;
-        //j["ttl"] = _zw.V.ttl;
+        j["ttl"] = _zw.V.ttl;
 
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;

@@ -1,0 +1,526 @@
+﻿@using System.Data;
+@using System.Text;
+@using ZumNet.Web.Bc;
+@{
+
+}
+@functions{
+    private string RenderNewEvent(string startDate, DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"modal-content bg-white\" style=\"box-shadow: 0px 5px 15px rgba(0,0,0,0.5)\">");
+        sb.Append("<div class=\"modal-header\">");
+        sb.AppendFormat("<h4 class=\"modal-title\">{0}</h4>", Resources.Global.ComposeLog);
+        sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">");
+        sb.Append("<span aria-hidden=\"true\">×</span>");
+        sb.Append("</button>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"modal-body py-3\" style=\"max-width: 31rem\">");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"txtSubject\" class=\"col-sm-2 col-form-label font-weight-normal\">내용</label>");
+        sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+        sb.Append("<label class=\"custom-control custom-checkbox m-0 mr-2\">");
+        sb.Append("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbPrioriy\" id=\"ckb01\">");
+        sb.Append("<span class=\"custom-control-label\">중요</span>");
+        sb.Append("</label>");
+        sb.Append("<input type=\"text\" class=\"form-control\" id=\"txtSubject\">");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"txtStart\" class=\"col-sm-2 col-form-label font-weight-normal\">일정</label>");
+        sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker mr-sm-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 115px \">", startDate);
+        sb.Append("<select class=\"custom-select mr-sm-2\" id=\"cbStart\">");
+        sb.Append(CommonUtils.OptionTime(DateTime.Now.Hour, DateTime.Now.Minute));
+        sb.Append("</select>");
+        sb.Append("<select class=\"custom-select mr-1 mr-sm-2\" id=\"cbEnd\">");
+        sb.Append(CommonUtils.OptionTime(DateTime.Now.Hour + 1, DateTime.Now.Minute));
+        sb.Append("</select>");
+        sb.Append("<label class=\"custom-control custom-checkbox m-0\">");
+        sb.Append("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbRepeat\" id=\"ckb02\">");
+        sb.Append("<span class=\"custom-control-label\">반복</span>");
+        sb.Append("</label>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append(RenderRepeat(null));
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"rdoState\" class=\"col-sm-2 col-form-label font-weight-normal\">진행상태</label>");
+        sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+        sb.Append("<label class=\"custom-control custom-radio m-0 mr-3\">");
+        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoState\" id=\"rdo01\" checked>");
+        sb.Append("<span class=\"custom-control-label\">시작전</span>");
+        sb.Append("</label>");
+        sb.Append("<label class=\"custom-control custom-radio m-0 mr-3\">");
+        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoState\" id=\"rdo02\">");
+        sb.Append("<span class=\"custom-control-label\">진행중</span>");
+        sb.Append("</label>");
+        sb.Append("<label class=\"custom-control custom-radio m-0 mr-3\">");
+        sb.Append("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoState\" id=\"rdo03\">");
+        sb.Append("<span class=\"custom-control-label\">완료</span>");
+        sb.Append("</label>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"rdoState\" class=\"col-sm-2 col-form-label font-weight-normal\">파일</label>");
+        sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+        sb.Append("<div class=\"custom-file\">");
+        sb.Append("<input type=\"file\" class=\"custom-file-input\" id=\"customFile\">");
+        sb.Append("<label class=\"custom-file-label\" for=\"customFile\">이미지 / 문서 첨부</label>");
+        sb.Append("</div>");
+        sb.Append("<div class=\"ml-2 mr-sm-5\">");
+        sb.Append("<button class=\"btn btn-outline-info btn-18 rounded-circle\" data-toggle=\"popover\" data-placement=\"bottom\" data-original-title=\"첨부 가능한 파일 형식은 다음과 같습니다\"><i class=\"fas fa-question fs-11\"></i></button>");
+        sb.Append("<div class=\"d-none\" data-help=\"file\">");
+        sb.Append("<div>");
+        sb.Append("<div class=\"row\">");
+        sb.Append("<div class=\"col-3 font-weight-bold\">* 이미지</div>");
+        sb.Append("<div class=\"col-9\">JPEG, JPG, GIF, PNG</div>");
+        sb.Append("</div>");
+        sb.Append("<div class=\"row\">");
+        sb.Append("<div class=\"col-3 font-weight-bold\">* 문서</div>");
+        sb.Append("<div class=\"col-9\">PPT, PPTX, XLS, XLSX, DOC, DOCX, PDF, HWP, TXT</div>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group mb-0\">");
+        sb.Append("<textarea class=\"form-control bootstrap-maxlength\" id=\"txtBody\" rows=\"4\" maxlength=\"1000\"></textarea>");
+        sb.Append("</div>");
+        sb.Append("</div>"); //modal-body
+
+        sb.Append("<div class=\"modal-footer justify-content-center\">");
+        sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-secondary px-3\" onclick=\"_zw.fn.saveEvent()\">{0}</button>", Resources.Global.Save);
+        sb.AppendFormat("<button type=\"button\" class=\"btn btn-default px-3\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+
+    private string RenderViewEvent(string startDate, DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"modal-content bg-white\" style=\"box-shadow: 0px 5px 15px rgba(0,0,0,0.5)\">");
+        sb.Append("<div class=\"modal-header\">");
+        sb.AppendFormat("<h4 class=\"modal-title\">{0}</h4>", "일지조회");
+        sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">");
+        sb.Append("<span aria-hidden=\"true\">×</span>");
+        sb.Append("</button>");
+        sb.Append("</div>");
+
+        if (ds != null && ds.Tables.Count > 0)
+        {
+            sb.Append("<div class=\"modal-body py-3\" style=\"max-width: 31rem\">");
+
+            DataRow drMain = ds.Tables[0].Rows[0];
+            DataTable dtFile = ds.Tables[1];    //첨부
+            DataTable dtCmnt = ds.Tables[2];    //댓글
+
+            bool bEditable = false;
+            if (Session["URID"].ToString() == drMain["CreatorID"].ToString())
+            {
+                bEditable = true;
+            }
+
+            sb.Append("<div class=\"form-group row mb-2\">");
+            sb.Append("<label for=\"txtSubject\" class=\"col-sm-2 col-form-label font-weight-normal\">내용</label>");
+            sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+            sb.AppendFormat("<span class=\"mr-1\"><span class=\"d-none\">중요</span><i class=\"{0} fa-star fs-16\"></i></span>", drMain["Priority"].ToString() == "H" ? "fas text-success" : "far text-light");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" id=\"txtSubject\" value=\"{0}\" readonly>", drMain["Subject"].ToString());
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"form-group row mb-2\">");
+            sb.Append("<label for=\"txtStart\" class=\"col-sm-2 col-form-label font-weight-normal\">일정</label>");
+            sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 100px \" readonly>", drMain["PeriodFrom"].ToString());
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"cbStart\" value=\"{0}\" style=\"max-width: 70px \" readonly>", drMain["StartTime"].ToString());
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"cbEnd\" value=\"{0}\" style=\"max-width: 70px \" readonly>", drMain["EndTime"].ToString());
+            sb.Append("<label class=\"custom-control custom-checkbox m-0\">");
+            sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbRepeat\" id=\"ckb02\" disabled>", (drMain["RepeatType"].ToString() != "0") ? " checked=\"checked\"" : "");
+            sb.Append("<span class=\"custom-control-label\">반복</span>");
+            sb.Append("</label>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            //반복설명
+            if (drMain["RepeatType"].ToString() != "0")
+            {
+                sb.Append("<div class=\"form-group row mb-2\">");
+                sb.Append("<label for=\"\" class=\"col-sm-2 col-form-label font-weight-normal\"></label>");
+                sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+                sb.Append(GetRepeatDesc(drMain));
+                sb.Append("</div>");
+                sb.Append("</div>");
+            }
+
+            sb.Append("<div class=\"form-group row mb-2\">");
+            sb.Append("<label for=\"rdoState\" class=\"col-sm-2 col-form-label font-weight-normal\">진행상태</label>");
+            sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-3\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoState\" id=\"rdo01\"{0} disabled>", (Convert.ToInt32(drMain["State"]) == 0) ? " checked=\"checked\"" : "");
+            sb.Append("<span class=\"custom-control-label\">시작전</span>");
+            sb.Append("</label>");
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-3\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoState\" id=\"rdo02\"{0} disabled>", (Convert.ToInt32(drMain["State"]) == 1) ? " checked=\"checked\"" : "");
+            sb.Append("<span class=\"custom-control-label\">진행중</span>");
+            sb.Append("</label>");
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-3\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoState\" id=\"rdo03\"{0} disabled>", (Convert.ToInt32(drMain["State"]) == 7) ? " checked=\"checked\"" : "");
+            sb.Append("<span class=\"custom-control-label\">완료</span>");
+            sb.Append("</label>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            //첨부파일
+            if (drMain["HasAttachFile"].ToString() != "0")
+            {
+
+            }
+
+            sb.Append("<div class=\"form-group mb-2\">");
+            sb.AppendFormat("<textarea class=\"form-control bootstrap-maxlength bg-white\" id=\"txtBody\" rows=\"4\" maxlength=\"1000\" readonly>{0}</textarea>", drMain["Body"].ToString());
+            sb.Append("</div>");
+
+
+            sb.Append("<div class=\"form-group row mb-2\">");
+            sb.Append("<label for=\"\" class=\"col-sm-2 col-form-label font-weight-normal\">작성</label>");
+            sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+            sb.AppendFormat("<span class=\"mr-3\">{0}</span><span>{1}</span>", drMain["Creator"].ToString(), Convert.ToDateTime(drMain["CreateDate"]).ToString("yy-MM-dd HH:mm"));
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"d-flex justify-content-center py-2 border border-left-0 border-right-0\">");
+            if (bEditable && Convert.ToInt32(drMain["CommentCount"]) == 0)
+            {
+                if (drMain["RepeatType"].ToString() == "0") sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-danger mx-1 px-3\" onclick=\"_zw.fn.deleteEvent('{0}');\">{1}</button>", drMain["MessageID"].ToString(), "일지삭제");
+                else sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-danger mx-1 px-3\" onclick=\"_zw.fn.deleteEvent('{0}', '{1}');\">{2}</button>", drMain["MessageID"].ToString(), startDate, "일지삭제");
+            }
+            if (bEditable)
+            {
+                if (drMain["RepeatType"].ToString() == "0") sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-secondary mx-1 px-3\" onclick=\"_zw.fn.editEvent('{0}', '{1}');\">{2}</button>", drMain["MessageID"].ToString(), startDate, Resources.Global.Modify);
+                else sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-secondary mx-1 px-3\" onclick=\"_zw.fn.editEvent('{0}', '{1}');\">{2}</button>", drMain["MessageID"].ToString(), startDate, Resources.Global.Modify);
+
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default mx-1 px-3\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+            }
+            else
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default mx-1 px-3\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            }
+            sb.Append("</div>"); //button
+
+            sb.Append("<div class=\"form-group my-2\">");
+            sb.Append("<label for=\"\" class=\"col-form-label\">의견</label>");
+
+            if (dtCmnt.Rows.Count > 0)
+            {
+                sb.Append("<div class=\"\"><ul class=\"nav\">");
+                foreach (DataRow row in dtCmnt.Rows)
+                {
+                    sb.Append(RenderCommentLst(row));
+                }
+                sb.Append("</ul></div>"); //ly_cmnt_lst
+            }
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"form-group row mb-0\">");
+            sb.Append("<div class=\"col-10\"><textarea id=\"txtComment\" class=\"form-control bootstrap-maxlength\" maxlength=\"1000\"></textarea></div>");
+            sb.AppendFormat("<div class=\"col-2 d-flex flex-column justify-content-center\"><button type=\"button\" class=\"btn btn-outline-secondary\">등록</button></div>", drMain["MessageID"].ToString());
+            //sb.Append("</div>");
+
+
+            sb.Append("</div>");
+            sb.Append("</div>"); //modal-body
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body\" style=\"max-width: 31rem\">");
+            sb.AppendFormat("<div class=\"text-center my-5\">{0}</div>", Resources.Global.NoItemShow);
+            sb.Append("</div>");
+            sb.Append("<div class=\"modal-footer justify-content-center\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default px-3\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+
+    private string RenderRepeat(DataRow dr)
+    {
+        string sRType = "0";
+        string sInterval = "1"; //기본 1
+        string sConDay = "";
+        string sREnd = "";
+
+        if (dr != null)
+        {
+            sRType = dr["RepeatType"].ToString().Trim();
+            sInterval = dr["Interval"].ToString().Trim();
+            sConDay = dr["Con_Day"].ToString().Trim();
+            sREnd = dr["RepeatEnd"].ToString().Trim();
+
+            if (sRType == "2" && sConDay != "xooooox") sRType = "3";
+        }
+        if (sConDay == "") sConDay = "xxxxxxx";
+
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"form-group row mb-2 d-none\" data-for=\"rpt-rule\">");
+        sb.Append("<label for=\"cbRepeatType\" class=\"col-sm-2 col-form-label font-weight-normal\">반복주기</label>");
+        sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+        sb.Append("<select class=\"custom-select mr-2\" id=\"cbRepeatType\" style=\"max-width:115px\">"); //반복종류
+        sb.AppendFormat("<option value=\"1\"{0}>매일</option>", (sRType == "1") ? " selected" : "");
+        sb.AppendFormat("<option value=\"2\"{0}>매주 월-금</option>", (sRType == "2") ? " selected" : "");
+        sb.AppendFormat("<option value=\"3\"{0}>매주</option>", (sRType == "3") ? " selected" : "");
+        sb.Append("</select>");
+        sb.Append("<div class=\"d-flex align-items-center\" id=\"sPerDay\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"\" maxlength=\"2\" value=\"{0}\" style=\"max-width: 40px\" data-inputmask=\"number;1;\"><label class=\"mb-0 ml-1\">일마다</label>", sInterval); //매일
+        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"2\">2일</a><a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"3\">3일</a>");
+        sb.Append("</div>");
+        sb.Append("<div class=\"d-none align-items-center\" id=\"sPerWeek\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"\" maxlength=\"2\" value=\"{0}\" style=\"max-width: 40px\" data-inputmask=\"number;1;\"><label class=\"mb-0 ml-1\">주마다</label>", sInterval); //매일
+        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"2\">2주</a><a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"3\">3주</a>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+        sb.Append("</div>"); //pRRule -> rpt-rule
+
+        sb.Append("<div class=\"form-group row mb-2 d-none\" data-for=\"rpt-day\">");
+        sb.Append("<label for=\"\" class=\"col-sm-2 col-form-label font-weight-normal\"></label>");
+        sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0\" for=\"ckb031\"><input class=\"custom-control-input\" id=\"ckb031\" name=\"ckbDay\" type=\"checkbox\" value=\"sun\"{0} /><span class=\"custom-control-label\">월</span></label>", (sConDay.Substring(0, 1) == "o") ? " checked" : "");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb032\"><input class=\"custom-control-input\" id=\"ckb032\" name=\"ckbDay\" type=\"checkbox\" value=\"mon\"{0} /><span class=\"custom-control-label\">화</span></label>", (sConDay.Substring(1, 1) == "o") ? " checked" : "");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb033\"><input class=\"custom-control-input\" id=\"ckb033\" name=\"ckbDay\" type=\"checkbox\" value=\"tue\"{0} /><span class=\"custom-control-label\">수</span></label>", (sConDay.Substring(2, 1) == "o") ? " checked" : "");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb034\"><input class=\"custom-control-input\" id=\"ckb034\" name=\"ckbDay\" type=\"checkbox\" value=\"wed\"{0} /><span class=\"custom-control-label\">목</span></label>", (sConDay.Substring(3, 1) == "o") ? " checked" : "");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb035\"><input class=\"custom-control-input\" id=\"ckb035\" name=\"ckbDay\" type=\"checkbox\" value=\"thu\"{0} /><span class=\"custom-control-label\">금</span></label>", (sConDay.Substring(4, 1) == "o") ? " checked" : "");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb036\"><input class=\"custom-control-input\" id=\"ckb036\" name=\"ckbDay\" type=\"checkbox\" value=\"fri\"{0} /><span class=\"custom-control-label\">토</span></label>", (sConDay.Substring(5, 1) == "o") ? " checked" : "");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb037\"><input class=\"custom-control-input\" id=\"ckb037\" name=\"ckbDay\" type=\"checkbox\" value=\"sat\"{0} /><span class=\"custom-control-label\">일</span></label>", (sConDay.Substring(6, 1) == "o") ? " checked" : "");
+        sb.Append("</div>");
+        sb.Append("</div>"); //pRRule -> rpt-day
+
+        sb.Append("<div class=\"form-group row mb-2 d-none\" data-for=\"rpt-end\">");
+        sb.Append("<label for=\"txtRepeatEnd\" class=\"col-sm-2 col-form-label font-weight-normal\">반복기간</label>");
+        sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+        sb.AppendFormat("<input class=\"form-control datepicker\" id=\"txtRepeatEnd\" value=\"{0}\" type=\"text\"{1} style=\"max-width: 115px\"><label class=\"mb-0 ml-1\">까지</label>", sREnd, (sREnd == "") ? " _disabled" : "");
+        sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
+        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbRepeatEnd\" id=\"ckb04\"{0}>", (sREnd == "") ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">무한반복</span>");
+        sb.Append("</label>");
+        sb.Append("</div>");
+
+        if (dr != null)
+        {
+            //원 반복값
+            sb.AppendFormat("<input type=\"hidden\" data-column=\"RepeatType\" value=\"{0}\" />", (sRType == "3") ? "2" : sRType);
+            sb.AppendFormat("<input type=\"hidden\" data-column=\"Interval\" value=\"{0}\" />", sInterval);
+            sb.AppendFormat("<input type=\"hidden\" data-column=\"ConDay\" value=\"{0}\" />", sConDay);
+            sb.AppendFormat("<input type=\"hidden\" data-column=\"RepeatEnd\" value=\"{0}\" />", sREnd);
+            sb.AppendFormat("<input type=\"hidden\" data-column=\"PeriodFrom\" value=\"{0}\" />", dr["PeriodFrom"].ToString().Trim());
+            sb.AppendFormat("<input type=\"hidden\" data-column=\"StartTime\" value=\"{0}\" />", dr["StartTime"].ToString().Trim());
+            sb.AppendFormat("<input type=\"hidden\" data-column=\"EndTime\" value=\"{0}\" />", dr["EndTime"].ToString().Trim());
+        }
+        else
+        {
+            sb.Append("<input type=\"hidden\" data-column=\"RepeatType\" value=\"0\" />");
+            sb.Append("<input type=\"hidden\" data-column=\"Interval\" value=\"\" />");
+            sb.Append("<input type=\"hidden\" data-column=\"ConDay\" value=\"\" />");
+            sb.Append("<input type=\"hidden\" data-column=\"RepeatEnd\" value=\"\" />");
+            sb.Append("<input type=\"hidden\" data-column=\"PeriodFrom\" value=\"\" />");
+            sb.Append("<input type=\"hidden\" data-column=\"StartTime\" value=\"\" />");
+            sb.Append("<input type=\"hidden\" data-column=\"EndTime\" value=\"\" />");
+        }
+        sb.Append("</div>"); //pREnd -> rpt-end
+
+        return sb.ToString();
+    }
+
+    private string GetRepeatDesc(DataRow dr)
+    {
+        string sStart = dr["PeriodFrom"].ToString().Replace("-", ".") + "부터";
+        if (dr["RepeatEnd"].ToString().Trim() != "") sStart += "&nbsp;" + dr["RepeatEnd"].ToString().Replace("-", ".");
+
+        string sInterval = (dr["Interval"].ToString().Trim() == "1") ? "매" : dr["Interval"].ToString();
+        string sType = "";
+        if (dr["RepeatType"].ToString() == "1")
+        {
+            sType = "일마다";
+        }
+        else if (dr["RepeatType"].ToString() == "2")
+        {
+            sType = "주마다";
+        }
+
+        //xxxoxxx
+        string sDay = (dr["Con_Day"].ToString().Substring(0, 1) == "o") ? "일" : "";
+        if (dr["Con_Day"].ToString().Substring(1, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "월";
+        }
+        if (dr["Con_Day"].ToString().Substring(2, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "화";
+        }
+        if (dr["Con_Day"].ToString().Substring(3, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "수";
+        }
+        if (dr["Con_Day"].ToString().Substring(4, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "목";
+        }
+        if (dr["Con_Day"].ToString().Substring(5, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "금";
+        }
+        if (dr["Con_Day"].ToString().Substring(6, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "토";
+        }
+        if (sDay.Length == 1) sDay += "요일";
+
+        return sStart + "&nbsp;&nbsp;|&nbsp;&nbsp;" + sInterval + sType + "&nbsp;" + sDay;
+    }
+
+    private string RenderCommentLst(DataRow row)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("<li class=\"w-100 mt-2\" id=\"_cmnt_{0}_{1}\">", row["MessageID"].ToString(), row["SeqID"].ToString());
+        sb.Append("<div class=\"d-flex justify-content-between\">");
+        sb.Append("<div class=\"d-flex align-items-center\">");
+        sb.AppendFormat("<span class=\"fas fa-comment-dots fs-16 text-third\"></span><span class=\"font-weight-bold ml-2\">{0}</span><span class=\"ml-3 text-muted\">{1}</span>"
+                                    , row["Creator"].ToString(), Convert.ToDateTime(row["CreateDate"]).ToString("yy-MM-dd HH:mm"));
+        sb.Append("</div>");
+
+
+        if (row["CreatorID"].ToString() == Session["URID"].ToString())
+        {
+            sb.Append("<div class=\"\">");
+            sb.AppendFormat("<a href=\"javascript:\" class=\"text-pink mr-2\" onclick=\"showEdit(this, {0}, {1}); return false;\">수정</a><a href=\"javascript:\" class=\"text-pink mr-2\" onclick=\"delCmnt({0}, {1}); return false;\">삭제</a>"
+                            , row["MessageID"].ToString(), row["SeqID"].ToString());
+            sb.Append("</div>");
+        }
+        sb.AppendFormat("</div>");
+
+        sb.AppendFormat("<div class=\"pb-2 my-2 border border-top-0 border-left-0 border-right-0\"><div class=\"ml-3\">{0}</div>", CommonUtils.ReplaceReply(row["Comment"].ToString()));
+
+        if (row["CreatorID"].ToString() == Session["URID"].ToString())
+        {
+            sb.Append("<div class=\"form-group row mb-0 d-none\">");
+            sb.AppendFormat("<div class=\"col-10\"><textarea id=\"txtComment\" class=\"form-control bootstrap-maxlength\" maxlength=\"1000\">{0}</textarea></div>", row["Comment"].ToString());
+            sb.Append("<div class=\"col-2 d-flex flex-column justify-content-center\"><button type=\"button\" class=\"btn btn-outline-secondary btn-sm mb-1\">수정</button><button type=\"button\" class=\"btn btn-default btn-sm\">취소</button></div>");
+            sb.Append("</div>");
+        }
+        sb.Append("</div></li>");
+        return sb.ToString();
+    }
+}
+<div class="modal-dialog modal-dialog-scrollable" style="max-width: 31rem">
+    @if (ViewBag.JPost["M"].ToString() == "new")
+    {
+        @Html.Raw(RenderNewEvent(ViewBag.JPost["dt"].ToString(), ViewBag.WorkEvent))
+    }
+    else if (ViewBag.JPost["M"].ToString() == "view")
+    {
+        @Html.Raw(RenderViewEvent(ViewBag.JPost["dt"].ToString(), ViewBag.WorkEvent))
+    }
+    
+    @*<div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header">
+            <h4 class="modal-title">@Resources.Global.ComposeLog</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group row">
+                <label for="txtSubject" class="col-sm-2 col-form-label font-weight-normal">내용</label>
+                <div class="col-sm-10 input-group align-items-center">
+                    <label class="custom-control custom-checkbox m-0 mr-2">
+                        <input type="checkbox" class="custom-control-input" name="ckbPrioriy" id="ckb01">
+                        <span class="custom-control-label">중요</span>
+                    </label>
+                    <input type="text" class="form-control" id="txtSubject">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="txtStart" class="col-sm-2 col-form-label font-weight-normal">일정</label>
+                <div class="col-sm-10 input-group align-items-center">
+                    <input type="text" class="form-control datepicker mr-sm-2" id="txtStart" value="@ViewBag.JPost["dt"]" style="max-width: 115px ">
+                    <select class="custom-select mr-sm-2" id="cbStart">
+                        @Html.Raw(CommonUtils.OptionTime(DateTime.Now.Hour, DateTime.Now.Minute))
+                    </select>
+                    <select class="custom-select mr-1 mr-sm-2" id="cbEnd">
+                        @Html.Raw(CommonUtils.OptionTime(DateTime.Now.Hour + 1, DateTime.Now.Minute))
+                    </select>
+                    <label class="custom-control custom-checkbox m-0">
+                        <input type="checkbox" class="custom-control-input" name="ckbRepeat" id="ckb02">
+                        <span class="custom-control-label">반복</span>
+                    </label>
+                </div>
+            </div>
+            @Html.Raw(RenderRepeat(null))
+
+            <div class="form-group row">
+                <label for="rdoState" class="col-sm-2 col-form-label font-weight-normal">진행상태</label>
+                <div class="col-sm-10 input-group align-items-center">
+                    <label class="custom-control custom-radio m-0 mr-3">
+                        <input type="radio" class="custom-control-input" name="rdoState" id="rdo01" checked>
+                        <span class="custom-control-label">시작전</span>
+                    </label>
+                    <label class="custom-control custom-radio m-0 mr-3">
+                        <input type="radio" class="custom-control-input" name="rdoState" id="rdo02">
+                        <span class="custom-control-label">진행중</span>
+                    </label>
+                    <label class="custom-control custom-radio m-0 mr-3">
+                        <input type="radio" class="custom-control-input" name="rdoState" id="rdo03">
+                        <span class="custom-control-label">완료</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="rdoState" class="col-sm-2 col-form-label font-weight-normal">파일</label>
+                <div class="col-sm-10 input-group align-items-center">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="customFile">
+                        <label class="custom-file-label" for="customFile">이미지 / 문서 첨부</label>
+                    </div>
+                    <div class="ml-2 mr-sm-5">
+                        <button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다"><i class="fas fa-question fs-11"></i></button>
+                        <div class="d-none" data-help="file">
+                            <div>
+                                <div class="row">
+                                    <div class="col-3 font-weight-bold">* 이미지</div>
+                                    <div class="col-9">JPEG, JPG, GIF, PNG</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3 font-weight-bold">* 문서</div>
+                                    <div class="col-9">PPT, PPTX, XLS, XLSX, DOC, DOCX, PDF, HWP, TXT</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-0">
+                <textarea class="form-control bootstrap-maxlength" id="txtBody" rows="5" maxlength="1000"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-outline-secondary px-3 font-weight-bold" onclick="_zw.fn.saveEvent()">@Resources.Global.Save</button>
+            <button type="button" class="btn btn-default px-3" data-dismiss="modal">@Resources.Global.Cancel</button>
+        </div>
+    </div>*@
+</div>

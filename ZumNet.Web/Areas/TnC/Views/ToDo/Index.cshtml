@@ -42,14 +42,17 @@
 }
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
-    @Styles.Render("~/bundle/vendor/css/fullcalendar/fullcalendar")
+    @*@Styles.Render("~/bundle/vendor/css/fullcalendar/fullcalendar")*@
     @Styles.Render("~/bundle/vendor/css/pages/messages")
     @Styles.Render("~/Content/todo.css")
 }
 
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
-    @Scripts.Render("~/bundle/vendor/js/fullcalendar/fullcalendar")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
+    @*@Scripts.Render("~/bundle/vendor/js/fullcalendar/fullcalendar")*@
     @Scripts.Render("~/Scripts/TnC/todo.js")
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
@@ -85,12 +88,12 @@
                 </div>
                 <div class="nav d-flex align-items-center justify-content-end z-lv-menu">
 
-                    <button class="btn btn-outline-purple btn-sm mr-2"><i class="fe-calendar"></i> 주간일지</button>
-                    <button class="btn btn-outline-secondary btn-sm mr-2"><i class="fe-printer"></i> 인쇄</button>
-                    <button class="btn btn-outline-success btn-sm mr-2"><i class="fas fa-file-excel"></i> 보고서</button>
+                    <button class="btn btn-outline-purple btn-sm mr-2"><i class="fe-calendar"></i><span class="d-none d-sm-inline-block ml-1">주간일지</span></button>
+                    <button class="btn btn-outline-secondary btn-sm mr-2"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">인쇄</span></button>
+                    <button class="btn btn-outline-success btn-sm mr-2"><i class="fas fa-file-excel"></i><span class="d-none d-sm-inline-block ml-1">보고서</span></button>
 
                     @*<a class="z-lnk-navy-n mr-3" href="javascript:void();"><i class="fe-printer" title="인쇄"></i> 인쇄</a>
-                    <a class="text-success mr-3" href="javascript:void();"><i class="far fa-file-excel" title="보고서"></i> 보고서</a>*@
+                        <a class="text-success mr-3" href="javascript:void();"><i class="far fa-file-excel" title="보고서"></i> 보고서</a>*@
                     <button class="btn icon-btn btn-outline-secondary m-0 btn-sm" aria-controls="vw-full-fill" onclick="_zw.ut.ctrls();"><i class="fas fa-expand"></i></button>
                 </div>
             </div>
@@ -115,7 +118,7 @@
                 <div class="z-list-body" id="__List">
                     @Html.Partial(sPatialView)
                 </div>
-            </div>            
+            </div>
         </div>
     </div>
     <!-- / content -->
