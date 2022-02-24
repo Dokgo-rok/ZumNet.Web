@@ -199,7 +199,7 @@
         sb.Append("</div>");
 
         sb.Append("<div class=\"text-truncate d-none d-md-flex\">");
-        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent('{1}','',{2})\">{3}</a>"
+        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2})\">{3}</a>"
             , dr["State"].ToString() == "7" ? " text-decoration-line-through" : "", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString(), dr["Subject"].ToString());
         sb.Append("</div>"); //이벤트명
 
@@ -217,7 +217,7 @@
             sb.AppendFormat("<span class=\"btn {0} btn-sm mr-1\"><span class=\"d-none\">{1}</span>{1}</span>", StateBtn(iDelay), state["s_" + iDelay.ToString()][0].ToString());
         }
 
-        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} mr-1\" title=\"의견\" onclick=\"_zw.fn.viewEvent('{1}','',{2})\"><span class=\"d-none\">의견</span><i class=\"fas fa-comment-dots fs-16\"></i></a>"
+        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} mr-1\" title=\"의견\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2})\"><span class=\"d-none\">의견</span><i class=\"fas fa-comment-dots fs-16\"></i></a>"
             , Convert.ToInt32(dr["CommentCount"]) > 0 ? "text-third" : "text-light", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString());
 
 
@@ -238,7 +238,7 @@
         sb.Append("</div>");
 
         sb.Append("<div class=\"z-week-event text-truncate d-block d-md-none ml-3\">");
-        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent('{1}','',{2})\">{3}</a>"
+        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2})\">{3}</a>"
             , dr["State"].ToString() == "7" ? " text-decoration-line-through" : "", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString(), dr["Subject"].ToString());
         sb.Append("</div>"); //이벤트명
         //sb.Append("</li>");

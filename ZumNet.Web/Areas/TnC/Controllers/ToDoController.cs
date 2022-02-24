@@ -224,6 +224,79 @@ namespace ZumNet.Web.Areas.TnC.Controllers
             }
             return rt;
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventSave()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["mode"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                    {
+                        svcRt = todo.SaveToDo(Convert.ToInt32(Session["URID"]), Session["DeptName"].ToString(),  Convert.ToInt32(Session["DeptID"]), jPost);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK" + "저장했습니다!";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventDelete()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || StringHelper.SafeInt(jPost["mi"]) == 0) return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                    {
+                        svcRt = todo.DeleteToDo("U", "", 0, Convert.ToInt32(jPost["mi"]), Convert.ToInt32(Session["URID"]), jPost["opt"].ToString(), jPost["dt"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultDataString == "N") rt = "해당 일지는 삭제할 수 없는 상태입니다!";
+                        else rt = "OK" + "삭제했습니다!";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
         #endregion
 
         #region [기타]

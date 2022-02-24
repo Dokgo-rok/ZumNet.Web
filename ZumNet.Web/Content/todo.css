@@ -174,10 +174,13 @@
         display: flex;
         justify-content: start;
         align-items: center !important;
-        padding: .125rem;
+        padding: 0 .125rem .0625rem;
     }
         .zc-calendar .zc-day-event a{
             text-align: left;
+        }
+        .zc-calendar .zc-day-event i {
+            margin-top: 1px;
         }
 
 /* full-calendar month */

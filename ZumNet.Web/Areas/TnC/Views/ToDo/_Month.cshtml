@@ -92,15 +92,21 @@
                 else sCssClass = "zc-day-event zc-event-end";
             }
 
-            sb.AppendFormat("<div class=\"{0} justify-content-center justify-content-sm-start\" data-dpcond=\"{1}\" data-start=\"{2}\" data-term=\"{3}\">", sCssClass, sDpCond, row["StartTime"].ToString(), row["Term"].ToString());
-            sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.fn.viewEvent('{1}','',{2});\"><i class=\"{3} {4}\"></i></a>"
-                            , "btn icon-btn btn-sm d-flex d-sm-none", row["PeriodFrom"].ToString(), row["MessageID"].ToString(), state["s_" + sState][1], state["s_" + sState][2]);
-            sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.fn.viewEvent('{1}','',{2});\"><i class=\"{3} {4} mr-1\"></i>{5}</a>"
-                            , "d-none d-sm-flex", row["PeriodFrom"].ToString(), row["MessageID"].ToString(), state["s_" + sState][1], state["s_" + sState][2], row["subject"].ToString());
-
-            //string attEvent = "fnSchemePop(0, 0, 180, 130, \"{0}\", \"{1}\", \"{2}\", \"{3}\", \"{4}\", \"{5}\", \"{6}\", \"{7}\", \"{8}\");";
-            //attEvent = string.Format(attEvent, Server.HtmlEncode(row["Subject"].ToString()), row["Location"].ToString(), row["orgPeriodFrom"].ToString(), row["orgStartTime"].ToString(),
-            //                row["orgPeriodTo"].ToString(), row["orgEndTime"].ToString(), row["DisplayName"].ToString(), row["Repeat"].ToString(), row["schType"].ToString());
+            sb.AppendFormat("<div class=\"{0} justify-content-center justify-content-sm-start\" data-dpcond=\"{1}\" data-start=\"{2}\" data-term=\"{3}\">"
+                        , sCssClass, sDpCond, row["StartTime"].ToString(), row["Term"].ToString());
+            //sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2});\"><i class=\"{3} {4}\"></i></a>"
+            //                , "btn  d-flex d-sm-none", row["PeriodFrom"].ToString(), row["MessageID"].ToString(), state["s_" + sState][1], state["s_" + sState][2]);
+            sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2});\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
+                            , "d-flex", row["PeriodFrom"].ToString(), row["MessageID"].ToString());
+            sb.AppendFormat("<i class=\"{0} {1} mr-1\"></i><span class=\"d-none d-sm-inline-block\">{2}</span>"
+                            , state["s_" + sState][1], state["s_" + sState][2], row["subject"].ToString());
+            sb.Append("</a>");
+            sb.Append("<div class=\"d-none\" data-help=\"event\">");
+            sb.Append("<div class=\"tooltip-inner\">");
+            sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span><i class=\"fas fa-redo-alt ml-2\"></i></div>", row["StartTime"].ToString(), row["EndTime"].ToString());
+            sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());
+            sb.Append("</div>");
+            sb.Append("</div>");
 
             sb.Append("</div>");
 

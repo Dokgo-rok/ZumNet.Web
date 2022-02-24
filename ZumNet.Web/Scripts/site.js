@@ -132,7 +132,7 @@ $(function () {
     $('.modal:not(.modal-ajaxloader)').draggable({ handle: ".modal-header" });
 
     $('[data-toggle="popover"]').popover();
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"][title!=""]').tooltip();
 
     $('.sidenav-item[data-navmenu], .sidenav-header .sidenav-link[data-navmenu], .navbar-nav .nav-link[data-navmenu], .navbar-nav .dropdown-item[data-navmenu], #layout-navbar-rightbar .dropdown-item[data-navmenu], #layout-navbar-rightbar a[data-navmenu]').on('click', function () {
         switch ($(this).attr('data-navmenu')) {
@@ -1514,38 +1514,37 @@ $(function () {
 
     //Calendar (일정,일지,자원 관련 공통 함수)
     _zw.cdr = {
-        "showRepeat": function (p, from, st, et) { // p => modal wnd, fromdate, starttime, endtime
+        "showRepeat": function (p, m, from, st, et) { // p => modal wnd, fromdate, starttime, endtime
             var el = p.find('#cbRepeatType'), ckRptEnd = p.find('input[name="ckbRepeatEnd"]'), rptEnd = p.find('#txtRepeatEnd');
 
             el.on('change', function () {
                 p.find('#sPerDay input, #sPerWeek input').val(1);
                 
-                //alert(p.find('#' + from).val() + " : " + p.find('#' + st).val());
+                //alert($(this).val() + " : " + p.find('#' + from).val() + " : " + p.find('#' + st).val());
 
                 if ($(this).val() == 1) {
-                    _zw.cdr.initRepeattDay(p, 0);
-
-                    ckRptEnd.prop('checked', false); rptEnd.val(moment(p.find('#' + from).val()).add(1, 'M').format('YYYY-MM-DD')).prop('disabled', false);
-                    
-
+                    if (m == 'init') {
+                        _zw.cdr.initRepeattDay(p, 0);
+                        ckRptEnd.prop('checked', false); rptEnd.val(moment(p.find('#' + from).val()).add(1, 'M').format('YYYY-MM-DD')).prop('disabled', false);
+                    }
                     p.find('#sPerDay').removeClass('d-none').addClass('d-flex');
                     p.find('#sPerWeek').removeClass('d-flex').addClass('d-none');
                     p.find('[data-for="rpt-day"]').addClass('d-none');
 
                 } else if ($(this).val() == 2) {
-                    _zw.cdr.initRepeattDay(p, 1);
-
-                    ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
-
+                    if (m == 'init') {
+                        _zw.cdr.initRepeattDay(p, 1);
+                        ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
+                    }
                     p.find('#sPerDay').removeClass('d-flex').addClass('d-none');
                     p.find('#sPerWeek').removeClass('d-none').addClass('d-flex');
                     p.find('[data-for="rpt-day"]').addClass('d-none');
 
                 } else if ($(this).val() == 3) {
-                    _zw.cdr.initRepeattDay(p, 3, moment(p.find('#' + from).val()).day());
-
-                    ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
-
+                    if (m == 'init') {
+                        _zw.cdr.initRepeattDay(p, 3, moment(p.find('#' + from).val()).day());
+                        ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
+                    }
                     p.find('#sPerDay').removeClass('d-flex').addClass('d-none');
                     p.find('#sPerWeek').removeClass('d-none').addClass('d-flex');
                     p.find('[data-for="rpt-day"]').removeClass('d-none');
@@ -1564,9 +1563,11 @@ $(function () {
                 $(this).parent().find('input').val($(this).attr('data-val'));
             });
 
-            el.val(3); el.change(); _zw.fn.input(p);
+            if (m == 'init') el.val(3);
+            el.change();
+            _zw.fn.input(p);
 
-            p.find('[data-for="rpt-rule"], [data-for="rpt-day"], [data-for="rpt-end"]').removeClass('d-none');
+            p.find('[data-for="rpt-rule"], [data-for="rpt-end"]').removeClass('d-none');
         },
         "closeRepeat": function (p) {
             p.find('[data-for="rpt-rule"], [data-for="rpt-day"], [data-for="rpt-end"]').addClass('d-none');
@@ -1584,7 +1585,29 @@ $(function () {
                 }
             });
         },
-        "getRepeat": function () {
+        "getRepeat": function (p) { // p => modal wnd
+            if (p.find('input[name="ckbRepeat"]').prop('checked')) {
+                var sRType = p.find('#cbRepeatType').val(), sRInterval = 0, sRWeekDay = "";
+                if (sRType == 1) {
+                    sRInterval = p.find("#sPerDay input").val();
+                } else {
+                    sRInterval = p.find("#sPerWeek input").val();
+                    p.find('[data-for="rpt-day"] input[name="ckbDay"]').each(function (i, e) {
+                        sRWeekDay += e.checked ? "o" : "x"; // xoxxxxx
+                    });
+                    if (sRWeekDay.indexOf('o') == -1) return 'CHECK';
+                }
+                if (sRType == 3) sRType = 2;
+
+                if (!$('input[name="ckbRepeatEnd"]').prop('checked')) {
+                    if (!moment($('#txtRepeatEnd').val()).isValid()) return 'INVALID';
+                    if (moment($('#txtRepeatEnd').val() + ' 00:00:00').diff(moment($('#txtStart').val() + ' 00:00:00')) <= 0) return 'END';
+                }
+                return sRType + "|" + sRInterval + "|" + sRWeekDay + "|" + $("#txtRepeatEnd").val();
+
+            } else {
+                return '0|||';
+            }
         }
     };
 
