@@ -2231,6 +2231,31 @@ namespace ZumNet.Web.Bc
 
             return strReturn;
         }
+
+        /// <summary>
+        /// 업무일지 초기 설정 중 일부 가져올 때
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <returns></returns>
+        public static string ToDoInit(this Controller ctrl)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("{");
+            //상태 : 표기, 아이콘, 색상
+            sb.Append("s_0:[\"시작전\",\"far fa-check-square fs-16\",\"text-light\"],");
+            sb.Append("s_1:[\"진행중\",\"fas fa-check-square fs-16\",\"text-warning\"],");
+            sb.Append("s_4:[\"지연\",\"fas fa-check-square fs-16\",\"text-danger\"],");
+            sb.Append("s_7:[\"완료\",\"fas fa-check-square fs-16\",\"text-success\"],");
+
+            sb.Append("cs_0:[\"미확인\",\"far fa-check-square fs-16\",\"text-light\"],");
+            sb.Append("cs_1:[\"확인\",\"fas fa-check-square fs-16\",\"\"],");
+            sb.Append("cs_4:[\"보류\",\"fas fa-exclamation-triangle fs-16\",\"text-secondary\"],");
+            sb.Append("cs_7:[\"완료\",\"fas fa-check-square fs-16\",\"text-success\"]");
+            sb.Append("}");
+            ctrl.ViewBag.State = JObject.Parse(sb.ToString());
+
+            return "";
+        }
         #endregion
     }  
     #endregion

@@ -86,6 +86,9 @@
         });
 
         $('#__OrgSearch .btn-outline-success').click(function () {
+
+            $('.z-ttl').find('span').html('검색 결과');
+
             _zw.fn.initLv('');
             _zw.fn.loadList();
 
@@ -116,7 +119,7 @@
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {//console.log(res)
                         var v = res.substr(2).split(_zw.V.lv.boundary);
-
+                        
                         $('#__OrgList').html(v[0]);
                         $('#__ListCount').html(v[1]);
                         $('#__ListViewPage').html(v[2]);
@@ -216,7 +219,7 @@
                         <label class="col-form-label col-sm-4 text-truncate">@Resources.Global.Jikwi</label>
                         <div class="col-sm-8">
                             <select class="custom-select" data-for="grade">
-                                <option>@Resources.Global.Select</option>
+                                <option value="">@Resources.Global.Select</option>
                                 @foreach (DataRow row in ViewBag.GradeCode)
                                 {
                                     <option value="@row["Code"]">@row["CodeName"]</option>

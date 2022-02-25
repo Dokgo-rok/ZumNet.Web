@@ -37,7 +37,7 @@
         foreach (DataRow row in data.Tables[0].Rows)
         {
             string strList = String.Format("<li class=\"position-relative w-100 my-1\" id=\"task.{0}\" data-from=\"{1}\" data-repeat=\"{2}\">{3}</li>"
-                                        , row["MessageID"].ToString(), row["RepeatType"].ToString(), row["PeriodFrom"].ToString(), RenderEvent(row, acl, state));
+                                        , row["MessageID"].ToString(), row["PeriodFrom"].ToString(), row["RepeatType"].ToString(), RenderEvent(row, acl, state));
 
             cFrom = (short)(Convert.ToInt16(row["StartTime"].ToString().Split(':')[0]) * 2 + Convert.ToInt16(row["StartTime"].ToString().Split(':')[1]) / cUnit);
             cTo = (short)(Convert.ToInt16(row["Term"]) / cUnit);
@@ -144,7 +144,7 @@
         sb.AppendFormat("<span class=\"text-right\" style=\"width: 30px; margin-left: {0}px\">{1}</span>", iLeft.ToString(), hour);
         sb.Append("</div>");
         sb.Append("<div class=\"card-header-title py-1\">");
-        if (acl == "A") sb.Append("<a href=\"\" class=\"text-info mr-2\"><i class=\"fas fa-pencil-alt\"></i></a>");
+        if (acl == "A") sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info mr-2\" onclick=\"_zw.fn.viewEvent(null, '{0}', '', 0);\"><i class=\"fas fa-pencil-alt\"></i></a>", d.ToString("yyyy-MM-dd"));
         sb.AppendFormat("<span>{0}/{1} {2}</span>", d.Month.ToString(), d.Day.ToString(), d.ToString("dddd"));
         sb.Append("</div>");
         sb.Append("</div>"); //card-header
@@ -241,7 +241,7 @@
         sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2})\">{3}</a>"
             , dr["State"].ToString() == "7" ? " text-decoration-line-through" : "", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString(), dr["Subject"].ToString());
         sb.Append("</div>"); //이벤트명
-        //sb.Append("</li>");
+                             //sb.Append("</li>");
 
         return sb.ToString();
     }
@@ -263,138 +263,146 @@
     }
 }
 
+@if (ViewBag.Mode == "BAR")
+{
+    @Html.Raw(RenderEvent(ViewBag.WorkEvent, ViewBag.JPost["acl"].ToString(), ViewBag.State))
+}
+else
+{
 <div class="zc-week">
     @Html.Raw(ViewList(ViewBag.BoardList, ViewBag.R.current.appacl.ToString(), ViewBag.Monday, ViewBag.State))
     @*<div class="row m-0 p-0">
-        <div class="zc-week-left col-12 col-sm-6 px-0">
-            <div class="card zc-week-day">
-                <div class="card-header with-elements">
-                    <div class="card-header-elements mr-auto text-danger">
-                        <span style="margin-left: 127px">@sMonHour</span>
+            <div class="zc-week-left col-12 col-sm-6 px-0">
+                <div class="card zc-week-day">
+                    <div class="card-header with-elements">
+                        <div class="card-header-elements mr-auto text-danger">
+                            <span style="margin-left: 127px">@sMonHour</span>
+                        </div>
+                        <div class="card-header-title">@(ViewBag.Monday.Month)/@(ViewBag.Monday.Day) @ViewBag.Monday.ToString("dddd")</div>
                     </div>
-                    <div class="card-header-title">@(ViewBag.Monday.Month)/@(ViewBag.Monday.Day) @ViewBag.Monday.ToString("dddd")</div>
-                </div>
-                <div class="card-body">
-                    <ul class="nav">
-                        <li class="position-relative w-100 my-1" id=task.62397 data-from="2022-02-14" data-repeat="2">
-                            <div class="d-flex">
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:void(0)" class="text-success mr-1" title="중요도"><span class="d-none">중요도</span><i class="fas fa-star fs-16"></i></a>
-                                    <a href="javascript:void(0)" class="text-light mr-1" title="완료"><span class="d-none">완료</span><i class="far fa-square fs-16"></i></a>
-                                    <span class="mr-2" style="margin-bottom: 1px">
-                                        <span class="mr-1">11:30 ~ 12:30</span>
-                                        <span class="text-danger font-weight-bold">1h</span>
-                                    </span>
-                                </div>
+                    <div class="card-body">
+                        <ul class="nav">
+                            <li class="position-relative w-100 my-1" id=task.62397 data-from="2022-02-14" data-repeat="2">
+                                <div class="d-flex">
+                                    <div class="d-flex align-items-center">
+                                        <a href="javascript:void(0)" class="text-success mr-1" title="중요도"><span class="d-none">중요도</span><i class="fas fa-star fs-16"></i></a>
+                                        <a href="javascript:void(0)" class="text-light mr-1" title="완료"><span class="d-none">완료</span><i class="far fa-square fs-16"></i></a>
+                                        <span class="mr-2" style="margin-bottom: 1px">
+                                            <span class="mr-1">11:30 ~ 12:30</span>
+                                            <span class="text-danger font-weight-bold">1h</span>
+                                        </span>
+                                    </div>
 
-                                <div class="text-truncate d-none d-md-flex">
-                                    <a href="javascript:void(0)" class="z-lnk-navy-n" title="취업규칙 개정">취업규칙 개정</a>
-                                </div>
+                                    <div class="text-truncate d-none d-md-flex">
+                                        <a href="javascript:void(0)" class="z-lnk-navy-n" title="취업규칙 개정">취업규칙 개정</a>
+                                    </div>
 
-                                <div class="d-flex align-items-center" style="position: absolute; right: 0">
-                                    <a href="javascript:void(0)" class="btn btn-success btn-sm mr-1" title="지연"><span class="d-none">완료</span>완료</a>
-                                    <a href="javascript:void(0)" class="text-third mr-1" title="의견"><span class="d-none">의견</span><i class="fas fa-comment-dots fs-16"></i></a>
-                                    <a href="javascript:void(0)" class="text-light" title="지연"><span class="d-none">부서장확인</span><i class="far fa-check-square fs-16"></i></a>
+                                    <div class="d-flex align-items-center" style="position: absolute; right: 0">
+                                        <a href="javascript:void(0)" class="btn btn-success btn-sm mr-1" title="지연"><span class="d-none">완료</span>완료</a>
+                                        <a href="javascript:void(0)" class="text-third mr-1" title="의견"><span class="d-none">의견</span><i class="fas fa-comment-dots fs-16"></i></a>
+                                        <a href="javascript:void(0)" class="text-light" title="지연"><span class="d-none">부서장확인</span><i class="far fa-check-square fs-16"></i></a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="z-week-event text-truncate d-block d-md-none ml-3">
-                                <a href="javascript:void(0)" class="" title="취업규칙 개정">취업규칙 개정</a>
-                            </div>
-                        </li>
-
-                        <li class="position-relative w-100 my-1" id=task.62397 data-from="2022-02-14" data-repeat="2">
-                            <div class="d-flex">
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:void(0)" class="text-light mr-1" title="중요도"><span class="d-none">중요도</span><i class="far fa-star fs-16"></i></a>
-                                    <a href="javascript:void(0)" class="text-light mr-1" title="완료"><span class="d-none">완료</span><i class="far fa-square fs-16"></i></a>
-                                    <span class="mr-2" style="margin-bottom: 1px">
-                                        <span class="mr-1">11:30 ~ 12:30</span>
-                                        <span class="text-danger font-weight-bold">1h</span>
-                                    </span>
-                                </div>
-
-                                <div class="text-truncate d-none d-md-flex">
+                                <div class="z-week-event text-truncate d-block d-md-none ml-3">
                                     <a href="javascript:void(0)" class="" title="취업규칙 개정">취업규칙 개정</a>
                                 </div>
+                            </li>
 
-                                <div class="d-flex align-items-center" style="position: absolute; right: 0">
-                                    <a href="javascript:void(0)" class="btn btn-success btn-sm mr-1" title="지연"><span class="d-none">완료</span>완료</a>
-                                    <a href="javascript:void(0)" class="text-third mr-1" title="의견"><span class="d-none">의견</span><i class="fas fa-comment-dots fs-16"></i></a>
-                                    <a href="javascript:void(0)" class="text-light" title="지연"><span class="d-none">부서장확인</span><i class="far fa-check-square fs-16"></i></a>
+                            <li class="position-relative w-100 my-1" id=task.62397 data-from="2022-02-14" data-repeat="2">
+                                <div class="d-flex">
+                                    <div class="d-flex align-items-center">
+                                        <a href="javascript:void(0)" class="text-light mr-1" title="중요도"><span class="d-none">중요도</span><i class="far fa-star fs-16"></i></a>
+                                        <a href="javascript:void(0)" class="text-light mr-1" title="완료"><span class="d-none">완료</span><i class="far fa-square fs-16"></i></a>
+                                        <span class="mr-2" style="margin-bottom: 1px">
+                                            <span class="mr-1">11:30 ~ 12:30</span>
+                                            <span class="text-danger font-weight-bold">1h</span>
+                                        </span>
+                                    </div>
+
+                                    <div class="text-truncate d-none d-md-flex">
+                                        <a href="javascript:void(0)" class="" title="취업규칙 개정">취업규칙 개정</a>
+                                    </div>
+
+                                    <div class="d-flex align-items-center" style="position: absolute; right: 0">
+                                        <a href="javascript:void(0)" class="btn btn-success btn-sm mr-1" title="지연"><span class="d-none">완료</span>완료</a>
+                                        <a href="javascript:void(0)" class="text-third mr-1" title="의견"><span class="d-none">의견</span><i class="fas fa-comment-dots fs-16"></i></a>
+                                        <a href="javascript:void(0)" class="text-light" title="지연"><span class="d-none">부서장확인</span><i class="far fa-check-square fs-16"></i></a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="z-week-event text-truncate d-block d-md-none ml-3">
-                                <a href="javascript:void(0)" class="" title="취업규칙 개정">취업규칙 개정</a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="zc-week-right col-12 col-sm-6 px-0">
-            @Html.Raw(RenderWeek(ViewBag.Monday, ViewBag.R.current.appcl, sTueHour, sbTue))
-        </div>
-    </div>
-    <div class="row m-0 p-0">
-        <div class="zc-week-left col-12 col-sm-6 px-0">
-            <div class="card zc-week-day">
-                <div class="card-header with-elements">
-                    <div class="card-header-elements mr-auto text-danger">
-                        <span style="margin-left: 127px">@sWedHour</span>
+                                <div class="z-week-event text-truncate d-block d-md-none ml-3">
+                                    <a href="javascript:void(0)" class="" title="취업규칙 개정">취업규칙 개정</a>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="card-header-title">@(ViewBag.Monday.AddDays(2).Month)/@(ViewBag.Monday.AddDays(2).Day) @ViewBag.Monday.AddDays(2).ToString("dddd")</div>
                 </div>
-                <div class="card-body">
+            </div>
+            <div class="zc-week-right col-12 col-sm-6 px-0">
+                @Html.Raw(RenderWeek(ViewBag.Monday, ViewBag.R.current.appcl, sTueHour, sbTue))
+            </div>
+        </div>
+        <div class="row m-0 p-0">
+            <div class="zc-week-left col-12 col-sm-6 px-0">
+                <div class="card zc-week-day">
+                    <div class="card-header with-elements">
+                        <div class="card-header-elements mr-auto text-danger">
+                            <span style="margin-left: 127px">@sWedHour</span>
+                        </div>
+                        <div class="card-header-title">@(ViewBag.Monday.AddDays(2).Month)/@(ViewBag.Monday.AddDays(2).Day) @ViewBag.Monday.AddDays(2).ToString("dddd")</div>
+                    </div>
+                    <div class="card-body">
+                    </div>
+                </div>
+            </div>
+            <div class="zc-week-right col-12 col-sm-6 px-0">
+                <div class="card zc-week-day">
+                    <div class="card-header with-elements">
+                        <div class="card-header-elements mr-auto text-danger">
+                            <span style="margin-left: 127px">@sThuHour</span>
+                        </div>
+                        <div class="card-header-title">@(ViewBag.Monday.AddDays(3).Month)/@(ViewBag.Monday.AddDays(3).Day) @ViewBag.Monday.AddDays(3).ToString("dddd")</div>
+                    </div>
+                    <div class="card-body">
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="zc-week-right col-12 col-sm-6 px-0">
-            <div class="card zc-week-day">
-                <div class="card-header with-elements">
-                    <div class="card-header-elements mr-auto text-danger">
-                        <span style="margin-left: 127px">@sThuHour</span>
+        <div class="row m-0 p-0">
+            <div class="zc-week-left col-12 col-sm-6 px-0">
+                <div class="card zc-week-day">
+                    <div class="card-header with-elements">
+                        <div class="card-header-elements mr-auto text-danger">
+                            <span style="margin-left: 127px">@sFriHour</span>
+                        </div>
+                        <div class="card-header-title">@(ViewBag.Monday.AddDays(4).Month)/@(ViewBag.Monday.AddDays(4).Day) @ViewBag.Monday.AddDays(4).ToString("dddd")</div>
                     </div>
-                    <div class="card-header-title">@(ViewBag.Monday.AddDays(3).Month)/@(ViewBag.Monday.AddDays(3).Day) @ViewBag.Monday.AddDays(3).ToString("dddd")</div>
-                </div>
-                <div class="card-body">
+                    <div class="card-body">
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row m-0 p-0">
-        <div class="zc-week-left col-12 col-sm-6 px-0">
-            <div class="card zc-week-day">
-                <div class="card-header with-elements">
-                    <div class="card-header-elements mr-auto text-danger">
-                        <span style="margin-left: 127px">@sFriHour</span>
+            <div class="zc-week-right col-12 col-sm-6 px-0">
+                <div class="card zc-week-day weekend">
+                    <div class="card-header with-elements">
+                        <div class="card-header-elements mr-auto text-danger">
+                            <span style="margin-left: 127px">@sSatHour</span>
+                        </div>
+                        <div class="card-header-title">@(ViewBag.Monday.AddDays(5).Month)/@(ViewBag.Monday.AddDays(5).Day) @ViewBag.Monday.AddDays(5).ToString("dddd")</div>
                     </div>
-                    <div class="card-header-title">@(ViewBag.Monday.AddDays(4).Month)/@(ViewBag.Monday.AddDays(4).Day) @ViewBag.Monday.AddDays(4).ToString("dddd")</div>
+                    <div class="card-body">
+                    </div>
                 </div>
-                <div class="card-body">
+                <div class="card zc-week-day weekend">
+                    <div class="card-header with-elements">
+                        <div class="card-header-elements mr-auto text-danger">
+                            <span style="margin-left: 127px">@sSunHour</span>
+                        </div>
+                        <div class="card-header-title">@(ViewBag.Monday.AddDays(6).Month)/@(ViewBag.Monday.AddDays(6).Day) @ViewBag.Monday.AddDays(6).ToString("dddd")</div>
+                    </div>
+                    <div class="card-body">
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="zc-week-right col-12 col-sm-6 px-0">
-            <div class="card zc-week-day weekend">
-                <div class="card-header with-elements">
-                    <div class="card-header-elements mr-auto text-danger">
-                        <span style="margin-left: 127px">@sSatHour</span>
-                    </div>
-                    <div class="card-header-title">@(ViewBag.Monday.AddDays(5).Month)/@(ViewBag.Monday.AddDays(5).Day) @ViewBag.Monday.AddDays(5).ToString("dddd")</div>
-                </div>
-                <div class="card-body">
-                </div>
-            </div>
-            <div class="card zc-week-day weekend">
-                <div class="card-header with-elements">
-                    <div class="card-header-elements mr-auto text-danger">
-                        <span style="margin-left: 127px">@sSunHour</span>
-                    </div>
-                    <div class="card-header-title">@(ViewBag.Monday.AddDays(6).Month)/@(ViewBag.Monday.AddDays(6).Day) @ViewBag.Monday.AddDays(6).ToString("dddd")</div>
-                </div>
-                <div class="card-body">
-                </div>
-            </div>
-        </div>
-    </div>*@
+        </div>*@
 </div>
+}
+

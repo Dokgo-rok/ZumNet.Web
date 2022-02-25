@@ -29,7 +29,7 @@
 
 <div class="modal-dialog modal-sm">
     <div class="modal-content bg-white">
-        <div class="modal-header border-success">
+        <div class="modal-header border">
             <h6 class="modal-title">사용자 세부 정보</h6>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -49,48 +49,48 @@
                     }
                 </div>
             </div>
-            <div class="border border-success">
+            <div class="border border">
                 <table class="table table-bordered table-sm mb-0">
                     <tr>
-                        <th class="table-success text-nowrap">@Resources.Global.Name</th>
+                        <th class="table-secondary text-nowrap">@Resources.Global.Name</th>
                         <td class="">@ViewBag.PersonInfo["UserName"]</td>
                     </tr>
                     <tr>
-                        <th class="table-success text-nowrap">@Resources.Global.Department</th>
+                        <th class="table-secondary text-nowrap">@Resources.Global.Department</th>
                         <td class="">@ViewBag.PersonInfo["TeamName"]</td>
                     </tr>
                     <tr>
-                        <th class="table-success text-nowrap">@Resources.Global.Jikwi</th>
+                        <th class="table-secondary text-nowrap">@Resources.Global.Jikwi</th>
                         <td class="">@ViewBag.PersonInfo["Position"]</td>
                     </tr>
                     <tr>
-                        <th class="table-success text-nowrap">담당업무</th>
+                        <th class="table-secondary text-nowrap">담당업무</th>
                         <td class="">@ViewBag.PersonInfo["BusinessMain"]</td>
                     </tr>
                     <tr>
-                        <th class="table-success text-nowrap">핸드폰</th>
+                        <th class="table-secondary text-nowrap">핸드폰</th>
                         <td class="">@ViewBag.PersonInfo["Mobile"]</td>
                     </tr>
                     <tr>
-                        <th class="table-success text-nowrap">Mail</th>
+                        <th class="table-secondary text-nowrap">Mail</th>
                         <td class="">@ViewBag.PersonInfo["MainMail"]</td>
                     </tr>
                     <tr>
-                        <th class="table-success text-nowrap">연락처</th>
+                        <th class="table-secondary text-nowrap">연락처</th>
                         <td class="">@ViewBag.PersonInfo["InterPhone"]</td>
                     </tr>
                     @if (ViewBag.PersonInfo["LogonID"].ToString() == "sjaekim")
                     {
                         <tr>
-                            <th class="table-success text-nowrap">생년월일</th>
+                            <th class="table-secondary text-nowrap">생년월일</th>
                             <td class="">@ViewBag.PersonInfo["Birthday"]</td>
                         </tr>
                         <tr>
-                            <th class="table-success text-nowrap">입사일</th>
+                            <th class="table-secondary text-nowrap">입사일</th>
                             <td class="">@ViewBag.PersonInfo["Indate"]</td>
                         </tr>
                         <tr>
-                            <th class="table-success text-nowrap">최종학교</th>
+                            <th class="table-secondary text-nowrap">최종학교</th>
                             <td class="">@ViewBag.PersonInfo["SecondBusiness5"]</td>
                         </tr>
                     }

@@ -103,7 +103,9 @@
             sb.Append("</a>");
             sb.Append("<div class=\"d-none\" data-help=\"event\">");
             sb.Append("<div class=\"tooltip-inner\">");
-            sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span><i class=\"fas fa-redo-alt ml-2\"></i></div>", row["StartTime"].ToString(), row["EndTime"].ToString());
+            sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
+            if (row["RepeatType"].ToString() != "0") sb.Append("<i class=\"fas fa-redo-alt ml-2\"></i>");
+            sb.Append("</div>");
             sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());
             sb.Append("</div>");
             sb.Append("</div>");
@@ -144,7 +146,7 @@
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("<div class=\"zc-day-top\">");
         sb.AppendFormat("<span class=\"d-flex align-items-center\"><a javascript:void(0) class=\"zc-day-number\">{0}</a>", cellDay.Date.Day.ToString()); //click to day-view
-        if (_todoAcl == "A") sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"ml-1\" onclick=\"_zw.fn.viewEvnet(\"{0}\",\"\",0)\"><i class=\"fas fa-pencil-alt text-info fs-10 d-none d-sm-flex\"></i></a>", sCellDay);
+        if (_todoAcl == "A") sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"ml-1\" onclick=\"_zw.fn.viewEvent(null,'{0}','',0)\"><i class=\"fas fa-pencil-alt text-info fs-10 d-none d-sm-flex\"></i></a>", sCellDay);
         sb.Append("</span>");
 
         string sKey = cellDay.Date.Month.ToString() + "/" + cellDay.Date.Day.ToString();

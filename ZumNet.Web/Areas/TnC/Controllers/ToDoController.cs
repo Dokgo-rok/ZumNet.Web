@@ -228,6 +228,63 @@ namespace ZumNet.Web.Areas.TnC.Controllers
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
+        public string EventBar()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || StringHelper.SafeInt(jPost["mi"]) == 0 || jPost["dt"].ToString() == "") return "필수값 누락!";
+
+                    //초기 설정 가져오기
+                    rt = Bc.CtrlHandler.ToDoInit(this);
+
+                    int iMessageId = StringHelper.SafeInt(jPost["mi"]);
+                    string sLocation = jPost["page"] != null && jPost["page"].ToString() != "" ? jPost["page"].ToString().ToLower() : "";
+                    string sPartialView = "";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                    {
+                        svcRt = todo.GetToDoView("", Convert.ToInt32(Session["DNID"]), iMessageId, jPost["dt"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                        {
+                            ViewBag.Mode = "BAR";
+                            ViewBag.WorkEvent = svcRt.ResultDataSet.Tables[0].Rows[0];
+                            ViewBag.JPost = jPost;
+
+                            if (sLocation == "" || sLocation == "week") sPartialView = "_Week";
+
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, sPartialView, ViewBag);
+                        }
+                        else
+                        {
+                            rt = "OK"; //빈값
+                        }
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
         public string EventSave()
         {
             string rt = "";
@@ -284,6 +341,42 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                     {
                         if (svcRt.ResultDataString == "N") rt = "해당 일지는 삭제할 수 없는 상태입니다!";
                         else rt = "OK" + "삭제했습니다!";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventState()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || StringHelper.SafeInt(jPost["mi"]) == 0) return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                    {
+                        svcRt = todo.ChangeToDoState(Convert.ToInt32(jPost["mi"]), jPost["rpt"].ToString(), jPost["from"].ToString(), Convert.ToInt32(Session["URID"]), jPost["fld"].ToString(), jPost["vlu"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
                     }
                     else
                     {

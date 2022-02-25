@@ -7,7 +7,7 @@
         });
     });
 
-    $('.z-lv-menu .btn[data-zv-menu], .z-list-head .btn[data-zv-menu]').click(function () {
+    $('.z-list-head .btn[data-zv-menu]').click(function () { //.z-lv-menu .btn[data-zv-menu]
         var mn = $(this).attr("data-zv-menu");
         if (mn == 'prev' || mn == 'next') {
             var tgt = '';
@@ -319,15 +319,64 @@
     _zw.fn.changeState = function (fld, cur, next) {
         if (_zw.V.current.appacl != 'A') return false;
         var el = event.target; do { el = el.parentNode; } while (el.tagName != 'LI');
-
         var mi = el.id.split('.')[1];
+
+        //console.log('{mi:"' + mi + '",rpt:"' + el.getAttribute("data-repeat") + '",from:"' + el.getAttribute("data-from") + '",fld:"' + fld + '",vlu:"' + next + '"}'); return
+
+        $.ajax({
+            type: "POST",
+            url: '/TnC/ToDo/EventState',
+            data: '{mi:"' + mi + '",rpt:"' + el.getAttribute("data-repeat") + '",from:"' + el.getAttribute("data-from") + '",fld:"' + fld + '",vlu:"' + next + '"}',
+            success: function (res) {
+                if (res == "OK") {
+                    if (fld == 'priority' && el.getAttribute("data-repeat") != '0') {
+                        _zw.fn.loadList();
+                    } else {
+                        _zw.fn.getEventBar(el, mi, el.getAttribute("data-from"));
+                    }
+                } else bootbox.alert(res);
+            },
+            beforeSend: function () { } //로딩 X
+        });
     }
 
     _zw.fn.changeConfirm = function (fld, cur, next) {
         if (_zw.V.current.appacl != 'M') return false;
         var el = event.target; do { el = el.parentNode; } while (el.tagName != 'LI');
-
         var mi = el.id.split('.')[1];
+
+        //console.log('{mi:"' + mi + '",rpt:"' + el.getAttribute("data-repeat") + '",from:"' + el.getAttribute("data-from") + '",fld:"' + fld + '",vlu:"' + next + '"}'); return
+
+        $.ajax({
+            type: "POST",
+            url: '/TnC/ToDo/EventState',
+            data: '{mi:"' + mi + '",rpt:"' + el.getAttribute("data-repeat") + '",from:"' + el.getAttribute("data-from") + '",fld:"' + fld + '",vlu:"' + next + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    _zw.fn.getEventBar(el, mi, el.getAttribute("data-from"));
+                    if (next.toString() == '7' || next.toString() == '4') _zw.fn.getToDoCount(_zw.V.ot + '.' + _zw.V.fdid.toString(), 'W', '');
+
+                } else bootbox.alert(res);
+            },
+            beforeSend: function () { } //로딩 X
+        });
+    }
+
+    _zw.fn.getEventBar = function (p, mi, d) {
+        if (p) {
+            $.ajax({
+                type: "POST",
+                url: '/TnC/ToDo/EventBar',
+                data: '{mi:"' + mi + '",dt:"' + d + '",acl:"' + _zw.V.current.appacl + '",page:"' + _zw.V.ft + '"}',
+                async: false,
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        if (res == "OK") { _zw.fn.loadList(); } else { $(p).html(res.substr(2)); }
+                    } else bootbox.alert(res);
+                },
+                beforeSend: function () { } //로딩 X
+            });
+        } else { _zw.fn.loadList(); }
     }
 
     _zw.fn.loadList = function () {

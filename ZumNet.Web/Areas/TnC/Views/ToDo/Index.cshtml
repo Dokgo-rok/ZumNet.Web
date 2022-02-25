@@ -87,7 +87,10 @@
                     </div>
                 </div>
                 <div class="nav d-flex align-items-center justify-content-end z-lv-menu">
-
+                    @if (ViewBag.R.current["appacl"].ToString() == "A")
+                    {
+                        <button class="btn btn-outline-purple btn-sm mr-2" onclick="_zw.fn.viewEvent(null, '@ViewBag.R.lv.tgt', '', 0);"><i class="fas fa-plus"></i><span class="d-none d-sm-inline-block ml-1">일지쓰기</span></button>
+                    }
                     <button class="btn btn-outline-purple btn-sm mr-2"><i class="fe-calendar"></i><span class="d-none d-sm-inline-block ml-1">주간일지</span></button>
                     <button class="btn btn-outline-secondary btn-sm mr-2"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">인쇄</span></button>
                     <button class="btn btn-outline-success btn-sm mr-2"><i class="fas fa-file-excel"></i><span class="d-none d-sm-inline-block ml-1">보고서</span></button>
