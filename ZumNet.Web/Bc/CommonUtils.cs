@@ -2256,6 +2256,44 @@ namespace ZumNet.Web.Bc
 
             return "";
         }
+
+        public static string BookingInit(this Controller ctrl)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            ctrl.ViewBag.R["ct"] = StringHelper.SafeString(ctrl.ViewBag.R.ct.ToString(), "112");
+            ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
+
+            int iCategoryId = Convert.ToInt32(ctrl.ViewBag.R.ct.Value);
+            int iFolderId = Convert.ToInt32(ctrl.ViewBag.R.fdid.Value);
+
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+            {
+                //권한체크
+                if (HttpContext.Current.Session["Admin"].ToString() == "Y")
+                {
+                    ctrl.ViewBag.R.current["operator"] = "Y";
+                }
+                else
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), iCategoryId, Convert.ToInt32(HttpContext.Current.Session["URID"]), iFolderId, "O", "0");
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ctrl.ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                        if (iFolderId > 0) ctrl.ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                    }
+                    else
+                    {
+                        //에러페이지
+                        strReturn = svcRt.ResultMessage;
+                    }
+                }
+            }
+
+            return strReturn;
+        }
         #endregion
     }  
     #endregion

@@ -2021,6 +2021,7 @@
     <Content Include="Scripts\ExS\worktime.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\Report\report.js" />
+    <Content Include="Scripts\TnC\booking.js" />
     <Content Include="Scripts\TnC\todo.js" />
     <Content Include="Temp\admin.ph_up_BaseGradeCodeHandler.sql" />
     <Content Include="Temp\admin.ph_up_BFGetEAFormList.sql" />
@@ -2850,6 +2851,7 @@
     <Content Include="Areas\TnC\Views\ToDo\_Month.cshtml" />
     <Content Include="Areas\TnC\Views\ToDo\_ListHead.cshtml" />
     <Content Include="Areas\TnC\Views\ToDo\_EventView.cshtml" />
+    <Content Include="Areas\TnC\Views\Booking\_ResourceSchedule.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

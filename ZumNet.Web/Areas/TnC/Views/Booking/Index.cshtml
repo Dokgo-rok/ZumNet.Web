@@ -1,7 +1,260 @@
-﻿
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
 @{
+
+
     ViewBag.Title = ViewBag.R["ttl"];
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+    string sPatialView = "_" + ViewBag.R.ft.ToString();
+    string sListScroll = " z-list-scroll";
+}
+@functions{
+    private string GetRepeatDesc(DataRow dr)
+    {
+        string sStart = dr["PeriodFrom"].ToString().Replace("-", ".") + "부터";
+        if (dr["RepeatEnd"].ToString().Trim() != "") sStart += "&nbsp;" + dr["RepeatEnd"].ToString().Replace("-", ".");
+
+        string sInterval = (dr["Interval"].ToString().Trim() == "1") ? "매" : dr["Interval"].ToString();
+        string sType = "";
+        if (dr["RepeatType"].ToString() == "1")
+        {
+            sType = "일마다";
+        }
+        else if (dr["RepeatType"].ToString() == "2")
+        {
+            sType = "주마다";
+        }
+
+        //xxxoxxx
+        string sDay = (dr["Con_Day"].ToString().Substring(0, 1) == "o") ? "일" : "";
+        if (dr["Con_Day"].ToString().Substring(1, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "월";
+        }
+        if (dr["Con_Day"].ToString().Substring(2, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "화";
+        }
+        if (dr["Con_Day"].ToString().Substring(3, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "수";
+        }
+        if (dr["Con_Day"].ToString().Substring(4, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "목";
+        }
+        if (dr["Con_Day"].ToString().Substring(5, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "금";
+        }
+        if (dr["Con_Day"].ToString().Substring(6, 1) == "o")
+        {
+            if (sDay != "") sDay += ",";
+            sDay += "토";
+        }
+        if (sDay.Length == 1) sDay += "요일";
+
+        return sStart + "&nbsp;&nbsp;|&nbsp;&nbsp;" + sInterval + sType + "&nbsp;" + sDay;
+    }
+
+    private string GetReqState(string inUse, string state)
+    {
+        if (inUse == "N") return "선점제";
+        else
+        {
+            switch (state.Trim())
+            {
+                case "0": return "신청중";
+                case "7": return "승인";
+                case "8": return "거부";
+                default: return "신청중";
+            }
+        }
+    }
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @Styles.Render("~/Content/todo.css")
 }
 
-<h2>Index</h2>
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/Scripts/TnC/booking.js")
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
 
+    <script type="text/javascript">
+        (function () {
+            _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
+            _zw.cdr.res = @Html.Raw(JsonConvert.SerializeObject(ViewBag.ResList));
+        }());
+    </script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex align-items-center font-weight-bold container-p-x py-3 py-md-4 m-0">
+                <div class="h5 mb-0">
+                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                </div>
+
+                <div class="h5 font-weight-bold mb-0 z-ttl">
+                    <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                </div>
+            </div>
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="messages-content flex-grow-0">
+                <div id="__CtDashboard" class="container-p-x">
+                    <div class="z-lv-item mb-4">
+                        <div class="font-weight-bold">
+                            <i class="fe-calendar"></i> &nbsp;<span>이 주의 예약 현황</span>
+                        </div>
+                        <div class="mt-2">
+                            @if (ViewBag.BoardList.Rows.Count > 0)
+                            {
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>예약시작</th>
+                                            <th>예약종료</th>
+                                            <th>자원명</th>
+                                            <th>제목</th>
+                                            <th>신청일</th>
+                                            <th class="d-none d-sm-table-cell">상태</th>
+                                            <th class="d-none d-sm-table-cell">확인</th>
+                                            <th class="d-none d-sm-table-cell">반복</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (DataRow row in ViewBag.BoardList.Rows)
+                                        {
+                                            if (row["State"].ToString() != "99")
+                                            {
+                                            <tr>
+                                                <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["PeriodFrom"].ToString(), "MM-dd HH:mm", "")</td>
+                                                <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["PeriodTo"].ToString(), "MM-dd HH:mm", "")</td>
+                                                <td>@row["Participant"].ToString()</td>
+                                                <td><a href="javascript:void" class="z-lnk-navy-n" onclick="_zw.fn.viewEvent(null, '@row["ObjectType"].ToString()', '@row["ParticipantID"].ToString()', '@row["PeriodFrom"].ToString()', '@row["MessageID"].ToString()');">@row["Subject"].ToString()</a></td>
+                                                <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CreateDate"].ToString(), "MM-dd HH:mm", "")</td>
+                                                <td class="d-none d-sm-table-cell">@GetReqState(row["InUse"].ToString(), row["State"].ToString())</td>
+                                                <td class="d-none d-sm-table-cell">@(row["Confirmed"].ToString() == "Y" ? "확인" : "미확인")</td>
+                                                <td class="d-none d-sm-table-cell">
+                                                    @if (row["RepeatType"].ToString() == "0")
+                                                    {
+                                                        <span>없음</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="javascript:void();" class="z-lnk-navy-n" data-toggle="tooltip" data-placement="bottom" title="@GetRepeatDesc(row)">반복</a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="w-100 text-center text-secondary pt-3">@Resources.Global.NoItemShow</div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="z-lv-item">
+                        <div class="row">
+                            <div class="col-sm-3 d-flex align-items-center font-weight-bold">
+                                <i class="fe-airplay"></i> &nbsp;<span>자원 검색</span>
+                            </div>
+                            <div class="col-sm-9 d-flex justify-content-end">
+                                <div class="btn-group btn-group-sm" role="group" aria-label="My request">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text py-1 px-2" id="">자신</div>
+                                    </div>
+                                    <button class="btn btn-third">신청</button>
+                                    <button class="btn btn-success">승인</button>
+                                    <button class="btn btn-secondary">거부</button>
+                                </div>
+                                <div class="btn-group btn-group-sm ml-2" role="group" aria-label="Others request">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text py-1 px-2" id="">타인</div>
+                                    </div>
+                                    <button class="btn btn-danger">신청</button>
+                                    <button class="btn btn-warning">승인</button>
+                                    <button class="btn btn-purple">거부</button>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group col-sm-4 mb-0">
+                                        <select id="ddlResClass" class="custom-select">
+                                            <option value="" selected>자원 분류</option>
+                                            @foreach (DataRow row in ViewBag.ResClass)
+                                            {
+                                                if (row["Deleted"].ToString() == "N")
+                                                {
+                                                    <option value="@row["NodeID"]">@row["DisplayName"]</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-4 mb-0">
+                                        <select id="ddlResList" class="custom-select">
+                                            <option value="" selected>자원 분류를 선택하세요..</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group col-sm-4 mb-0">
+                                        <span class="input-group-preend bg-light">
+                                            <span class="input-group-text bg-light">일자</span>
+                                        </span>
+                                        <input type="text" class="form-control datepicker start-date" value="@ViewBag.R.current.date" />
+                                        <span class="input-group-append">
+                                            <button class="btn btn-secondary" type="button" data-toggle="tooltip" data-placement="bottom" title="검색" data-zv-menu="search"><i class="fe-search"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="mt-2" id="__ResSchedule">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+
+</div><!-- / .messages-wrapper -->
