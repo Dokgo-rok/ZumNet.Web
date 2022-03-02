@@ -363,6 +363,7 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="Content\booking.css" />
     <Content Include="Content\todo.css" />
     <Content Include="Content\lcm.css" />
     <Content Include="Content\pqm.css" />
@@ -2852,6 +2853,9 @@
     <Content Include="Areas\TnC\Views\ToDo\_ListHead.cshtml" />
     <Content Include="Areas\TnC\Views\ToDo\_EventView.cshtml" />
     <Content Include="Areas\TnC\Views\Booking\_ResourceSchedule.cshtml" />
+    <Content Include="Areas\TnC\Views\Booking\List.cshtml" />
+    <Content Include="Areas\TnC\Views\Booking\_MyList.cshtml" />
+    <Content Include="Areas\TnC\Views\Booking\_List.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

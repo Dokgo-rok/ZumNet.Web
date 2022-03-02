@@ -1,0 +1,127 @@
+﻿@using System.Data;
+@using System.Text;
+@{
+}
+@functions{
+    private string GetRepeatDesc(string repeatType, string repeat)
+    {
+        string[] vRpt = repeat.Split(';'); //RepeatEnd, RepeatCount, IntervalType, Interval, Con_Day, Con_Week, Con_Date
+
+        //xxxoxxx
+        string sDay = "";
+        string sSeq = "";
+        if (vRpt[4] != "")
+        {
+            sDay = (vRpt[4].Substring(0, 1) == "o") ? "일" : "";
+            if (vRpt[4].Substring(1, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "월";
+            }
+            if (vRpt[4].Substring(2, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "화";
+            }
+            if (vRpt[4].Substring(3, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "수";
+            }
+            if (vRpt[4].Substring(4, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "목";
+            }
+            if (vRpt[4].Substring(5, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "금";
+            }
+            if (vRpt[4].Substring(6, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "토";
+            }
+            if (sDay.Length == 1) sDay += "요일";
+        }
+
+        if (vRpt[5] != "" && vRpt[5] != "0")
+        {
+            string[] vSeq = { "첫째", "둘째", "셋쩨", "넷째", "다섯째", "여섯째", "일곱째", "여덟째", "마지막" };
+            sSeq = vSeq[Convert.ToInt32(vRpt[5]) - 1];
+        }
+
+        if (repeatType == "1") return vRpt[2] == "A" ? "매 " + vRpt[3] + "일마다" : "매일(평일)";
+        else if (repeatType == "2") return "매 " + vRpt[3] + "주마다 " + sDay + "에";
+        else if (repeatType == "3") return "매 " + vRpt[3] + "월마다 " + (vRpt[2] == "A" ? vRpt[6] + "일에" : sSeq + " " + sDay + "에");
+        else if (repeatType == "4") return "매년 " + vRpt[3] + "월 " + (vRpt[2] == "A" ? vRpt[6] + "일에" : sSeq + " " + sDay + "에");
+        else return "";
+    }
+
+    private string GetReqState(string inUse, string state)
+    {
+        if (inUse == "N") return "선점제";
+        else
+        {
+            switch (state.Trim())
+            {
+                case "0": return "신청중";
+                case "7": return "승인";
+                case "8": return "거부";
+                default: return "신청중";
+            }
+        }
+    }
+}
+
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th>예약시작</th>
+            <th>예약종료</th>
+            <th class="col-3">자원명</th>
+            <th class="col-3">제목</th>
+            <th>신청자</th>
+            <th class="d-none d-sm-table-cell">신청일</th>
+            <th class="d-none d-sm-table-cell">상태</th>
+            <th class="d-none d-sm-table-cell">반복</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.BoardList != null && ViewBag.BoardList.Rows.Count > 0)
+        {
+            foreach (DataRow row in ViewBag.BoardList.Rows)
+            {
+                if (row["State"].ToString() != "99")
+                {
+                    <tr>
+                        <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["PeriodFrom"].ToString(), "MM-dd HH:mm", "")</td>
+                        <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["PeriodTo"].ToString(), "MM-dd HH:mm", "")</td>
+                        <td>@row["Participant"].ToString()</td>
+                        <td><a href="javascript:void" class="z-lnk-navy-n" onclick="_zw.mu.readEvent(null, '@row["ObjectType"].ToString()', '@row["ParticipantID"].ToString()', '@row["PeriodFrom"].ToString()', '@row["MessageID"].ToString()');">@row["Subject"].ToString()</a></td>
+                        <td>@row["Creator"].ToString()</td>
+                        <td class="d-none d-sm-table-cell">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CreateDate"].ToString(), "MM-dd HH:mm", "")</td>
+                        <td class="d-none d-sm-table-cell">@GetReqState(row["InUse"].ToString(), row["State"].ToString())</td>
+                        <td class="d-none d-sm-table-cell">
+                            @if (row["RepeatType"].ToString() == "0")
+                            {
+                                <span>없음</span>
+                            }
+                            else
+                            {
+                                <a href="javascript:void();" class="z-lnk-navy-n" data-toggle="tooltip" data-placement="bottom" title="@GetRepeatDesc(row["RepeatType"].ToString(), row["Repeat"].ToString())">반복</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        }
+        else
+        {
+            <tr>
+                <td class="w-100 text-center text-secondary py-3" colspan="8">@Resources.Global.NoItemShow</td>
+            </tr>
+        }
+    </tbody>
+</table>

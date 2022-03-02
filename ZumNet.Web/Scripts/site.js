@@ -651,6 +651,27 @@ $(function () {
 
             }
         },
+        "readEvent": function (pm, ot, partId, dt, mi, opt) { //alert(dt + " : " + hm + " : " + mi)
+            var mode = mi != null && mi != '' && mi > 0 ? 'view' : 'new';
+            if (pm && mode == 'view') mode = 'edit';
+
+            dt = dt || ''; opt = opt || '';
+
+            $.ajax({
+                type: "POST",
+                url: "/TnC/Booking/EventView",
+                data: '{M:"' + mode + '",ct:"' + _zw.V.ct + '",ot:"' + ot + '",partid:"' + partId + '",dt:"' + dt + '",mi:"' + mi + '",opt:"' + opt + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') {
+                        var p = $('#popForm');
+                        p.html(res.substr(2));
+
+
+                        p.modal();
+                    }
+                }
+            });
+        },
         "setComment": function (seq) {
             var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
             var txt = p.find('[data-column="Comment"]');

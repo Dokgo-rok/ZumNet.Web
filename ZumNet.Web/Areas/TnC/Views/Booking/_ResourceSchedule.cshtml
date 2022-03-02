@@ -15,38 +15,113 @@
     {
         StringBuilder sb = new StringBuilder();
         ZumNet.Framework.Core.ServiceResult svcRt = null;
+        const short cUnit = 30;
 
         try
         {
             using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new ZumNet.BSL.ServiceBiz.ScheduleBiz())
             {
-                svcRt = schBiz.GetScheduleSearchParts(Convert.ToInt32(Session["DNID"]), folderId, targetDate, targetDate);
+                svcRt = schBiz.GetScheduleSearchParts(Convert.ToInt32(Session["DNID"]), "fd." + folderId.Split('.')[2] + ",", targetDate, targetDate);
             }
 
-            sb.Append("<div>");
-            sb.Append("<table>");
+            sb.Append("<div class=\"zc-bar\">");
+            sb.Append("<table class=\"table table-borderless mb-0\">");
             sb.Append("<thead>");
-            sb.Append("<tr>"); //시간 표시
+            sb.Append("<tr class=\"\">"); //시간 표시
+            for(int i=0; i< 50; i++)
+            {
+                if (i % 6 == 1 && i < 48) sb.AppendFormat("<td style=\"width: 2%\"><div class=\"zc-bar-time\"><span>{0}</span></div></td>", (i/2).ToString().Length == 1 ? "0" + (i/2).ToString() : (i/2).ToString());
+                else sb.Append("<td style=\"width: 2%\"></td>");
+            }
             sb.Append("</tr>");
             sb.Append("</thead>");
 
             sb.Append("<tbody>");
-            sb.Append("<tr>"); //상단 표시
+            sb.Append("<tr class=\"zc-bar-top\">"); //상단(height=4px) 표시
+            for (int i = 0; i < 50; i++)
+            {
+                sb.AppendFormat("<td class=\"{0}\" style=\"width: 2%\"></td>", i % 2 == 1 ? "zc-bar-edge" : "");
+            }
             sb.Append("</tr>");
 
-
+            int iCnt = 0;
             if (svcRt != null && svcRt.ResultCode == 0 && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
             {
                 foreach(DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                 {
+                    if (row["State"].ToString() != "99")
+                    {
+                        iCnt++;
 
+                        short cFrom = (short)(Convert.ToInt16(row["StartTime"].ToString().Split(':')[0]) * 2 + Convert.ToInt16(row["StartTime"].ToString().Split(':')[1]) / cUnit);
+                        short cTo = (short)(Convert.ToInt16(row["EndTime"].ToString().Split(':')[0]) * 2 + Convert.ToInt16(row["EndTime"].ToString().Split(':')[1]) / cUnit);
+                        //int iWidth = (cTo - cFrom) * 100 + (cTo - cFrom - 1) * 10;
+                        string sBtnClass = "";
+                        if (Session["URID"].ToString() == row["CreatorID"].ToString())
+                        {
+                            if (row["State"].ToString() == "7") sBtnClass = "btn btn-success";
+                            else if (row["State"].ToString() == "8") sBtnClass = "btn btn-secondary";
+                            else sBtnClass = "btn btn-third";
+                        }
+                        else
+                        {
+                            if (row["State"].ToString() == "7") sBtnClass = "btn btn-warning";
+                            else if (row["State"].ToString() == "8") sBtnClass = "btn btn-purple";
+                            else sBtnClass = "btn btn-danger";
+                        }
+
+                        sb.Append("<tr class=\"zc-bar-middle\">");
+                        for (int i = 0; i < 50; i++)
+                        {
+                            sb.AppendFormat("<td class=\"{0}\"><div>", i > 0 ? "zc-bar-edge" : "");
+
+                            if (i >= cFrom + 1 && i <= cTo)
+                            {
+                                //if (i == cFrom + 1)
+                                //{
+                                //    sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} selected\" style=\"width: {1}%\" data-toggle=\"tooltip\" data-placement=\"bottom\"\" title=\"\"></a>", sBtnClass, iWidth.ToString());
+                                //    sb.Append("<div class=\"d-none\" data-help=\"event\">");
+                                //    sb.Append("<div class=\"tooltip-inner\">");
+                                //    sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span></div>", row["StartTime"].ToString(), row["EndTime"].ToString());
+                                //    sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());
+                                //    sb.Append("</div>");
+                                //    sb.Append("</div>");
+                                //}
+                                sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} zc-bar-fill\" onclick=\"_zw.mu.readEvent(null,'{1}','{2}','{3}','');\" data-toggle=\"tooltip\" data-placement=\"bottom\"\" title=\"\"></a>"
+                                    , sBtnClass, row["ObjectType"].ToString(), row["ParticipantID"].ToString(), row["PeriodFrom"].ToString(), row["MessageID"].ToString());
+                                sb.Append("<div class=\"d-none\" data-help=\"event\">");
+                                sb.Append("<div class=\"tooltip-inner text-left\">");
+                                sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span></div>", row["StartTime"].ToString(), row["EndTime"].ToString());
+                                sb.AppendFormat("<div>{0}</div>", row["Subject"].ToString());
+                                sb.Append("</div>");
+                                sb.Append("</div>");
+                            }
+                            else
+                            {
+                                sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"zc-bar-unfill\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\"></a>", GetTitleHour(i));
+                            }
+                            sb.Append("</div></td>");
+                        }
+                        sb.Append("</tr>");
+                    }
                 }
             }
-            else
+            if (iCnt == 0)
             {
                 //빈칸
+                sb.Append("<tr class=\"zc-bar-middle\">");
+                for (int i = 0; i < 50; i++)
+                {
+                    if (i == 0 || i >= 49) sb.AppendFormat("<td class=\"{0}\"></td>", i > 0 ? "zc-bar-edge" : "");
+                    else sb.AppendFormat("<td class=\"zc-bar-edge\"><a href=\"javascript:void(0)\" class=\"zc-bar-unfill\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\"></a></td>", GetTitleHour(i));
+                }
+                sb.Append("</tr>");
             }
-            sb.Append("<tr>"); //하단 표시
+            sb.Append("<tr class=\"zc-bar-bottom\">"); //하단(height=4px) 표시
+            for (int i = 0; i < 50; i++)
+            {
+                sb.AppendFormat("<td class=\"{0}\" style=\"width: 2%\"></td>", i % 2 == 1 ? "zc-bar-edge" : "");
+            }
             sb.Append("</tr>");
             sb.Append("</tbody>");
             sb.Append("</table>");
@@ -60,12 +135,15 @@
         return sb.ToString();
     }
 
-
+    private string GetTitleHour(int cnt)
+    {
+        return ((cnt - 1) / 2).ToString() + "시 " + ((cnt - 1) % 2 == 0 ? "" : "30분") + " ~ " + (cnt / 2).ToString() + "시 " + (cnt % 2 == 0 ? "" : "30분");
+    }
 }
 
 @if (ViewBag.JPost["res"].Count > 0)
 {
-    <table class="table table-bordered">
+    <table class="table table-bordered mb-0">
         <thead>
             <tr class="">
                 <th class="text-center" style="width: 20%">자원명</th>
@@ -83,8 +161,8 @@
         {
             <tr>
                 <th>@j["name"]</th>
-                <td>
-
+                <td class="px-0">
+                    @Html.Raw(RenderResourceSchedule(j["oid"].ToString(), ViewBag.JPost["dt"].ToString()))
                 </td>
             </tr>
         }
@@ -92,6 +170,6 @@
     </table>
 }
 else
-{
+    {
     <div class="p-4 text-muted text-center h5">@Resources.Global.NoItemShow</div>
 }
