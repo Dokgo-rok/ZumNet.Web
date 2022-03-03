@@ -35,7 +35,7 @@ namespace ZumNet.Web.Areas.TnC.Controllers
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
             //초기 설정 가져오기
-            rt = Bc.CtrlHandler.BookingInit(this);
+            rt = Bc.CtrlHandler.BookingInit(this, false);
             if (rt != "")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -43,10 +43,12 @@ namespace ZumNet.Web.Areas.TnC.Controllers
 
             if (rt == "")
             {
+                int iTarget = Convert.ToInt32(ViewBag.R.fdid);
+
                 using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
                 {
                     svcRt = schBiz.GetBookingClass(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(ViewBag.R.ct.Value)
-                                , Convert.ToInt32(ViewBag.R.fdid.Value).ToString(), Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString());
+                                , ViewBag.R.opnode.ToString(), Convert.ToInt32(Session["URID"]), ViewBag.R.current["operator"].ToString());
 
                     if (svcRt != null && svcRt.ResultCode == 0)
                     {
@@ -59,21 +61,25 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                         return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
                     }
 
-                    int startDayOfWeek = Convert.ToInt32(DateTime.Today.DayOfWeek.ToString("d"));   // 시작일의 요일 배열 : 0 - 일요일, 1 - 월요일...
-                    int endDayOfWeek = 7 - startDayOfWeek - 1;
-
-                    DateTime dtStartTemp = DateTime.Today.AddDays(-startDayOfWeek); //Convert.ToDateTime("2020-04-05");
-                    DateTime dtEndTemp = DateTime.Today.AddDays(endDayOfWeek); //Convert.ToDateTime("2020-04-11");
-
-                    svcRt = schBiz.GetSchedulePartsList("0", Convert.ToInt32(Session["URID"]), "FD", 0, "", "", "PeriodFrom", dtStartTemp.ToShortDateString(), dtEndTemp.ToShortDateString());
-                    if (svcRt != null && svcRt.ResultCode == 0)
+                    if (iTarget == 0)
                     {
-                        ViewBag.BoardList = svcRt.ResultDataSet.Tables[0];
-                    }
-                    else
-                    {
-                        rt = svcRt.ResultMessage;
-                        return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                        //자원예약 첫 화면 경우
+                        int startDayOfWeek = Convert.ToInt32(DateTime.Today.DayOfWeek.ToString("d"));   // 시작일의 요일 배열 : 0 - 일요일, 1 - 월요일...
+                        int endDayOfWeek = 7 - startDayOfWeek - 1;
+
+                        DateTime dtStartTemp = DateTime.Today.AddDays(-startDayOfWeek); //Convert.ToDateTime("2020-04-05");
+                        DateTime dtEndTemp = DateTime.Today.AddDays(endDayOfWeek); //Convert.ToDateTime("2020-04-11");
+
+                        svcRt = schBiz.GetSchedulePartsList("0", Convert.ToInt32(Session["URID"]), "FD", 0, "", "", "PeriodFrom", dtStartTemp.ToShortDateString(), dtEndTemp.ToShortDateString());
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            ViewBag.BoardList = svcRt.ResultDataSet.Tables[0];
+                        }
+                        else
+                        {
+                            rt = svcRt.ResultMessage;
+                            return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                        }
                     }
                 }
             }
@@ -98,7 +104,7 @@ namespace ZumNet.Web.Areas.TnC.Controllers
             }
 
             //초기 설정 가져오기
-            rt = Bc.CtrlHandler.BookingInit(this);
+            rt = Bc.CtrlHandler.BookingInit(this, false);
             if (rt != "")
             {
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -157,7 +163,7 @@ namespace ZumNet.Web.Areas.TnC.Controllers
 
                     //초기 설정 가져오기
                     sPos = "300";
-                    rt = Bc.CtrlHandler.BookingInit(this);
+                    rt = Bc.CtrlHandler.BookingInit(this, false);
                     if (rt != "") return "[" + sPos + "] " + rt;
 
                     sPos = "400";
@@ -224,6 +230,159 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                     rt = ex.Message;
                 }
             }
+            return rt;
+        }
+        #endregion
+
+        #region [달력, 현황]
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Calendar(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath;
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0" || ViewBag.R.fdid == "0")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            //초기 설정 가져오기
+            rt = Bc.CtrlHandler.BookingInit(this, true);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            //첫 화면 데이터 가져오기
+            ViewBag.R["ft"] = StringHelper.SafeString(ViewBag.R.ft.ToString(), "Request"); //기본 목록보기
+
+            DateTime dtView = Convert.ToDateTime(ViewBag.R.lv["tgt"].ToString());
+            DateTime dtStartTemp = new DateTime(dtView.Year, dtView.Month, 1);
+            DateTime dtEndTemp = new DateTime(dtView.Year, dtView.Month, DateTime.DaysInMonth(dtView.Year, dtView.Month));
+
+            using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
+            {
+                if (ViewBag.R["ft"].ToString() == "Request")
+                {
+                    svcRt = schBiz.GetSchedulePartsList("1", 0, ViewBag.R.ot.ToString(), Convert.ToInt32(ViewBag.R.fdid.Value), "", "", "PeriodFrom", dtStartTemp.ToShortDateString(), dtEndTemp.ToShortDateString());
+                }
+                else
+                {
+                    string cmd = ViewBag.R["ft"].ToString() == "Month" ? "M" : ViewBag.R["ft"].ToString() == "Week" ? "W" : "D";
+                    string sScheduleType = StringHelper.SafeString(ViewBag.R.lv["sort"].ToString()); //nn, ap, cf, ev,va, an, tr ...
+                    svcRt = schBiz.GetScheduleSeacrhInfomation("", ViewBag.R.ot.ToString(), Convert.ToInt32(ViewBag.R.fdid.Value), 99, sScheduleType, cmd, ViewBag.R.lv["tgt"].ToString(), "", "");
+                }
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ViewBag.Mode = "";
+                ViewBag.BoardList = svcRt.ResultDataSet;
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Calendar()
+        {
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
+            if (rt == "")
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
+
+                    sPos = "200";
+                    rt = Resources.Global.Auth_InvalidPath;
+                    if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0") return "[" + sPos + "] " + rt;
+
+                    //초기 설정 가져오기
+                    sPos = "300";
+                    rt = Bc.CtrlHandler.BookingInit(this, true);
+                    if (rt != "") return "[" + sPos + "] " + rt;
+
+                    sPos = "400";
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    int iTarget = Convert.ToInt32(jPost["fdid"]);
+                    string formTable = jPost["ft"].ToString();
+
+                    DateTime dtView = Convert.ToDateTime(jPost["lv"]["tgt"].ToString());
+                    DateTime dtStartTemp = new DateTime(dtView.Year, dtView.Month, 1);
+                    DateTime dtEndTemp = new DateTime(dtView.Year, dtView.Month, DateTime.DaysInMonth(dtView.Year, dtView.Month));
+
+                    using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
+                    {
+                        if (ViewBag.R["ft"].ToString() == "Request")
+                        {
+                            sPos = "500";
+                            svcRt = schBiz.GetSchedulePartsList("1", 0, jPost["ot"].ToString(), iTarget, "", "", "PeriodFrom", dtStartTemp.ToShortDateString(), dtEndTemp.ToShortDateString());
+                        }
+                        else
+                        {
+                            sPos = "510";
+                            string cmd = formTable == "Month" ? "M" : formTable == "Week" ? "W" : "D";
+                            string sScheduleType = StringHelper.SafeString(jPost["lv"]["sort"].ToString()); //nn, ap, cf, ev,va, an, tr ...
+                            svcRt = schBiz.GetScheduleSeacrhInfomation("", jPost["ot"].ToString(), iTarget, 99, sScheduleType, cmd, dtView.ToString("yyyy-MM-dd"), "", "");
+                        }
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "520";
+                        ViewBag.Mode = "ajax";
+                        ViewBag.BoardList = svcRt.ResultDataSet;
+
+                        string sDesc = "";
+
+                        if (ViewBag.R.ft.ToString() == "Day")
+                        {
+                            sDesc = (dtView.Year == DateTime.Now.Year ? "" : dtView.Year.ToString() + "년 ") + dtView.Month.ToString() + "월 " + dtView.Day.ToString() + "일";
+                        }
+                        else if (ViewBag.R.ft.ToString() == "Week")
+                        {
+                            sDesc = (dtView.Year == DateTime.Now.Year ? "" : dtView.Year.ToString() + "년 ") + dtView.Month.ToString() + "월" + " " + dtView.Day.ToString()
+                                     + "일 ~ " + (dtView.Month == dtView.AddDays(6).Month ? "" : dtView.AddDays(6).Month.ToString() + "월 ") + dtView.AddDays(6).Day.ToString() + "일";
+                        }
+                        else //Month, Request
+                        {
+                            sDesc = (dtView.Year == DateTime.Now.Year ? "" : dtView.Year.ToString() + "년 ") + dtView.Month.ToString() + "월";
+                        }
+
+                        sPos = "530";
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_" + formTable, ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + sDesc;
+                    }
+                    else
+                    {
+                        rt = svcRt == null ? "조건에 해당되는 화면 누락" : svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+
             return rt;
         }
         #endregion

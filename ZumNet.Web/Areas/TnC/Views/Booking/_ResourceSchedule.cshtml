@@ -5,8 +5,20 @@
 @using Newtonsoft.Json.Linq;
 
 @{
+    string sPos = ViewBag.ResList != null && ViewBag.R != null && ViewBag.R.opnode.ToString() != "" ? "S" : "";
     string sDesc = "";
-    DateTime dtSearch = Convert.ToDateTime(ViewBag.JPost["dt"]);
+    DateTime dtSearch;
+
+    //Response.Write("AA=>" + sPos); Response.End();
+
+    if (sPos == "S") //특정 자원분류 선택 경우
+    {
+        dtSearch = ZumNet.Framework.Util.StringHelper.SafeDateTime(ViewBag.R.lv.tgt.ToString());
+    }
+    else
+    {
+        dtSearch = Convert.ToDateTime(ViewBag.JPost["dt"]);
+    }
 
     sDesc = (dtSearch.Year == DateTime.Now.Year ? "" : dtSearch.Year.ToString() + "년 ") + dtSearch.Month.ToString() + "월 " + dtSearch.Day.ToString() + "일";
 }
@@ -141,7 +153,7 @@
     }
 }
 
-@if (ViewBag.JPost["res"].Count > 0)
+@if (sPos == "S" && ViewBag.ResList["cls_" + ViewBag.R.opnode.ToString()].Count > 0)
 {
     <table class="table table-bordered mb-0">
         <thead>
@@ -150,7 +162,35 @@
                 <th>
                     <div class="d-flex justify-content-between align-items-center">
                         <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="prev"><i class="fas fa-arrow-left"></i></button>
-                        <span class="text-big font-weight-bold mx-3" data-for="DateDesc" data-val="@ViewBag.JPost["dt"]">@sDesc</span>
+                        <span class="text-big font-weight-bold mx-3" data-for="DateDesc" data-val="@dtSearch.ToString("yyyy-MM-dd")">@sDesc</span>
+                        <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="next"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (JObject j in ViewBag.ResList["cls_" + ViewBag.R.opnode.ToString()])
+            {
+                <tr>
+                    <th>@j["name"]</th>
+                    <td class="px-0">
+                        @Html.Raw(RenderResourceSchedule(j["oid"].ToString(), dtSearch.ToString("yyyy-MM-dd")))
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (ViewBag.JPost != null && ViewBag.JPost["res"].Count > 0)
+{
+    <table class="table table-bordered mb-0">
+        <thead>
+            <tr class="">
+                <th class="text-center" style="width: 20%">자원명</th>
+                <th>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="prev"><i class="fas fa-arrow-left"></i></button>
+                        <span class="text-big font-weight-bold mx-3" data-for="DateDesc" data-val="@dtSearch.ToString("yyyy-MM-dd")">@sDesc</span>
                         <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="next"><i class="fas fa-arrow-right"></i></button>
                     </div>
                 </th>
@@ -162,7 +202,7 @@
             <tr>
                 <th>@j["name"]</th>
                 <td class="px-0">
-                    @Html.Raw(RenderResourceSchedule(j["oid"].ToString(), ViewBag.JPost["dt"].ToString()))
+                    @Html.Raw(RenderResourceSchedule(j["oid"].ToString(), dtSearch.ToString("yyyy-MM-dd")))
                 </td>
             </tr>
         }
@@ -170,6 +210,6 @@
     </table>
 }
 else
-    {
+{
     <div class="p-4 text-muted text-center h5">@Resources.Global.NoItemShow</div>
 }

@@ -1,0 +1,85 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = ViewBag.R["ttl"];
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+    string sPatialView = "_" + ViewBag.R.ft.ToString();
+}
+@functions{
+
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @Styles.Render("~/Content/booking.css")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/Scripts/TnC/booking.js")
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+    <!-- sidebox -->
+    @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100 bg-white" data-controls="vw-full-fill">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-sm-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
+                <div class="d-flex align-items-center font-weight-bold">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
+
+                    <div class="h5 mb-0 z-ttl py-0 text-truncate">
+                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-2 mt-sm-0 z-lv-menu">
+                    <button class="btn btn-outline-purple btn-sm mr-2" onclick=""><i class="fas fa-plus"></i><span class="d-none d-sm-inline-block ml-1">자원신청</span></button>
+                    <button class="btn btn-outline-success btn-sm mr-2"><i class="fas fa-file-excel"></i><span class="d-none d-sm-inline-block ml-1">엑셀</span></button>
+                    <button class="btn icon-btn btn-outline-secondary m-0 btn-sm" aria-controls="vw-full-fill" onclick="_zw.ut.ctrls();"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-grow-0" style="border-top: 2px solid #eee">
+            <div class="d-flex align-items-center px-3 my-2">
+
+            </div>
+        </div>
+
+        <div class="flex-grow-0 px-3">
+            <div class="z-list-head">
+                @Html.Partial("_ListHead")
+            </div>
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-1 position-relative px-3" style="overflow: auto !important">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="z-list" id="__List">
+                @Html.Partial(sPatialView)
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+</div><!-- / .messages-wrapper -->

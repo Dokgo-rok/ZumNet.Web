@@ -1,0 +1,67 @@
+﻿@using System;
+@using System.Data;
+@{
+    string sDesc = "";
+    DateTime dtTraget = Convert.ToDateTime(ViewBag.R.lv["tgt"]);
+
+    if (ViewBag.R.ft.ToString() == "Day")
+    {
+        sDesc = (dtTraget.Year == DateTime.Now.Year ? "" : dtTraget.Year.ToString() + "년 ") + dtTraget.Month.ToString() + "월 " + dtTraget.Day.ToString() + "일";
+    }
+    else if (ViewBag.R.ft.ToString() == "Week")
+    {
+        sDesc = (dtTraget.Year == DateTime.Now.Year ? "" : dtTraget.Year.ToString() + "년 ") + dtTraget.Month.ToString() + "월" + " " + dtTraget.Day.ToString()
+                 + "일 ~ " + (dtTraget.Month == dtTraget.AddDays(6).Month ? "" : dtTraget.AddDays(6).Month.ToString() + "월 ") + dtTraget.AddDays(6).Day.ToString() + "일";
+    }
+    else //Month, Request
+    {
+        sDesc = (dtTraget.Year == DateTime.Now.Year ? "" : dtTraget.Year.ToString() + "년 ") + dtTraget.Month.ToString() + "월";
+    }
+}
+@functions{
+    private string GetQueryString(string page, string ot, string target, string viewDate)
+    {
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",fdid:\"" + target + "\",ot:\"" + ot + "\",ttl:\"\",opnode:\"" + ViewBag.R.opnode + "\",ft:\"" + page + "\",tgt:\"" + viewDate + "\"}");
+    }
+}
+<div class="d-flex d-sm-none align-items-center justify-content-center mb-2">
+    <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="prev"><i class="fas fa-arrow-left"></i></button>
+    <span class="text-big font-weight-bold mx-3" data-for="DateDesc">@sDesc</span>
+    <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="next"><i class="fas fa-arrow-right"></i></button>
+</div>
+
+<div class="d-flex align-items-center">
+    <ul class="nav nav-tabs col-6 col-sm-4 px-0 text-truncate">
+        <li class="nav-item">
+            <a class="nav-link@(ViewBag.R.ft.ToString() == "Request" ? " active" : "") px-2 px-sm-4" href="javascript:void(0)" data-zc-menu="Request">목록</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link@(ViewBag.R.ft.ToString() == "Day" ? " active" : "") px-2 px-sm-4"  href="javascript:void(0)" data-zc-menu="Day"> 일 </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link@(ViewBag.R.ft.ToString() == "Week" ? " active" : "") px-2 px-sm-4"  href="javascript:void(0)" data-zc-menu="Week"> 주 </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link@(ViewBag.R.ft.ToString() == "Month" ? " active" : "") px-2 px-sm-4"  href="javascript:void(0)" data-zc-menu="Month"> 월 </a>
+        </li>
+    </ul>
+
+    <div class="d-none d-sm-flex col-4 col-sm-4 justify-content-center align-items-center">
+        <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="prev"><i class="fas fa-arrow-left"></i></button>
+        <span class="text-big font-weight-bold mx-3" data-for="DateDesc">@sDesc</span>
+        <button class="btn btn-outline-primary icon-btn btn-sm rounded-circle" data-zv-menu="next"><i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    @if (ViewBag.R.ft.ToString() != "Request" && ViewBag.SchType != null && ViewBag.SchType.Count > 0)
+    {
+        <div class="nav d-flex justify-content-end col-6 col-sm-4 px-0 text-truncate">
+            <select class="custom-select" id="ddlSchType" style="max-width: 120px">
+                <option value="">전체</option>
+                @foreach (DataRow dr in ViewBag.SchType)
+                {
+                    <option value="@dr["SchType"]">@dr["TypeName"]</option>
+                }
+            </select>
+        </div>
+    }
+</div>

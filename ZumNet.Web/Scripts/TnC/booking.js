@@ -1,6 +1,6 @@
 ﻿$(function () {
-    $('a[data-zl-menu!=""]').click(function () {
-        var mn = $(this).attr("data-zl-menu"); //console.log(mn)
+    $('.messages-sidebox a[data-zl-menu]').click(function () {
+        var mn = $(this).attr("data-zl-menu"); console.log(mn)
 
         if (mn.toLowerCase() == 'list' || mn.toLowerCase() == 'mylist') {
             var encQi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + _zw.V.ot + '",fdid:"' + _zw.V.fdid + '",opnode:"",ft:"' + mn + '",ttl:"' + $.trim($(this).text()) + '"}';
@@ -37,6 +37,27 @@
         }
     });
 
+    $('.z-list-head .btn[data-zv-menu]').click(function () {
+        var mn = $(this).attr("data-zv-menu");
+        if (mn == 'prev' || mn == 'next') {
+            var format = 'M', iAdd = (mn == 'prev') ? -1 : 1;
+            if (_zw.V.ft.toLowerCase() == 'day' || _zw.V.ft.toLowerCase() == 'week') {
+                format = 'd';
+                if (_zw.V.ft.toLowerCase() == 'week') iAdd = mn == 'prev' ? -7 : 7;
+            }
+            var tgt = moment(_zw.V.lv.tgt).add(iAdd, format);
+
+            _zw.V.lv.tgt = tgt.format('YYYY-MM-DD');
+            _zw.V.ttl = '';
+            _zw.fn.loadList();
+        }
+    });
+
+    $('.z-list-head a[data-zc-menu]').click(function () {
+        var mn = $(this).attr("data-zc-menu");
+        _zw.V.ttl = ''; _zw.V.ft = mn;
+        window.location.href = '/TnC/Booking/Calendar?qi=' + _zw.base64.encode(_zw.fn.getLvQuery());
+    });
 
     $('#__CtDashboard #ddlResClass').on('change', function () { //console.log(_zw.cdr.res["cls_" + $(this).val()])
         var s = '', t = '';
@@ -58,6 +79,23 @@
         _zw.fn.loadBar();
     });
 
+    _zw.fn.bindBarCtrl = function () {
+        $('[data-toggle="tooltip"][title!=""]').tooltip();
+
+        $('.zc-bar .zc-bar-middle .zc-bar-fill').tooltip({
+            html: true,
+            title: function () { return $(this).next().html(); }
+        });
+
+        $('#__ResSchedule .btn[data-zv-menu]').click(function () {
+            var mn = $(this).attr("data-zv-menu"), tgt = $(this).parent().find('span[data-for="DateDesc"]');
+            if (mn == 'prev' || mn == 'next') {
+                $('#__CtDashboard input.start-date').val(moment(tgt.attr('data-val')).add(mn == 'prev' ? -1 : 1, 'd').format('YYYY-MM-DD'))
+                _zw.fn.loadBar();
+            }
+        });
+    }
+
     _zw.fn.loadBar = function () {
         if ($('#__CtDashboard #ddlResClass').val() != '') {
             //var rm = $('#__CtDashboard #ddlResList').val().indexOf('') > 0 ? '' : $('#__CtDashboard #ddlResList').children('option:selected').text();
@@ -75,7 +113,7 @@
                 });
                 j['res'].push(v);
             }
-            //console.log(JSON.stringify(j)); return;
+            //console.log(JSON.stringify(j));
 
             $.ajax({
                 type: "POST",
@@ -83,23 +121,7 @@
                 data: JSON.stringify(j),
                 success: function (res) {
                     if (res.substr(0, 2) == 'OK') {
-                        $('#__ResSchedule').html(res.substr(2));
-
-                        $('[data-toggle="tooltip"][title!=""]').tooltip();
-
-                        $('.zc-bar .zc-bar-middle .zc-bar-fill').tooltip({
-                            html: true,
-                            title: function () { return $(this).next().html(); }
-                        });
-
-                        $('#__ResSchedule .btn[data-zv-menu]').click(function () {
-                            var mn = $(this).attr("data-zv-menu"), tgt = $(this).parent().find('span[data-for="DateDesc"]');
-                            if (mn == 'prev' || mn == 'next') {
-                                $('#__CtDashboard input.start-date').val(moment(tgt.attr('data-val')).add(mn == 'prev' ? -1 : 1, 'd').format('YYYY-MM-DD'))
-                                _zw.fn.loadBar();
-                            }
-                        });
-
+                        $('#__ResSchedule').html(res.substr(2)); _zw.fn.bindBarCtrl();
                     } else bootbox.alert(res);
                 }
             });
@@ -119,17 +141,10 @@
 
                     var v = res.substr(2).split(_zw.V.lv.boundary); //console.log(JSON.parse(JSON.stringify($.trim(v[0]))))
                     $('.z-list-head [data-for="DateDesc"]').html(v[1]);
+                    $('#__List').html(v[0]);
 
-                    if ($('.zc-month').length > 0) {
-                        //_zw.fn.renderFullCalendar(_zw.V.lv.tgt);
-                        //_zw.Fc.render(_zw.V.lv.tgt);
-                        $('#__List').html(v[0]);
-
-                    } else {
-                        $('#__List').html(v[0]);
-                    }
-
-                    $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"]').tooltip({
+                    $('[data-toggle="tooltip"][title!=""]').tooltip();
+                    $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"], .zc-week a[data-toggle="tooltip"]').tooltip({
                         html: true,
                         title: function () { return $(this).next().html(); }
                     });
@@ -139,7 +154,7 @@
         });
     }
 
-    $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"]').tooltip({
+    $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"], .zc-week a[data-toggle="tooltip"]').tooltip({
         html: true,
         title: function () { return $(this).next().html(); }
     });
@@ -172,6 +187,10 @@
         j["boundary"] = _zw.V.lv.boundary;
 
         return JSON.stringify(j);
+    }
+
+    if (_zw.V.current.page.toLowerCase().indexOf('tnc/booking') >= 0) {
+        if (_zw.V.opnode.indexOf('0.0.') >= 0) _zw.fn.bindBarCtrl();
     }
 
     if ($('.zc-month').length > 0) {

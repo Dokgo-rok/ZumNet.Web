@@ -276,7 +276,21 @@ $(function () {
                 //    }                        
                 //});
             } else if (n.li_attr.objecttype == 'B') { //자원예약
-                bootbox.alert('준비중!');
+                if (_zw.V.current.page.toLowerCase() == '/tnc/booking/calendar') {
+                    _zw.V.ot = "FD";
+                    _zw.V.alias = n.li_attr.alias;
+                    _zw.V.xfalias = n.li_attr.xfalias;
+                    _zw.V.fdid = vId[vId.length - 1];
+                    _zw.V.current.acl = n.li_attr.acl;
+                    _zw.V.opnode = n.id;
+                    _zw.V.ttl = '';
+
+                    _zw.fn.loadList();
+
+                } else {
+                    encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"FD",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"",acl:"' + n.li_attr.acl + '"}');
+                    window.location.href = '/TnC/Booking/Calendar?qi=' + encQi;
+                }
             } else if (n.li_attr.objecttype == 'S') { //일정
                 bootbox.alert('준비중!');
             } else if (n.li_attr.objecttype == 'C') { //동호회
@@ -314,6 +328,10 @@ $(function () {
                         if (ft == '') return false;
                         encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + ft + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                         window.location.href = '/ExS/Lcm?qi=' + encQi;
+
+                    } else if (n.a_attr.url.toLowerCase().indexOf('/schedule/booking') >= 0) { //Booking
+                        encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                        window.location.href = '/TnC/Booking?qi=' + encQi;
 
                     } else {
                         //encQi = encodeURIComponent('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');

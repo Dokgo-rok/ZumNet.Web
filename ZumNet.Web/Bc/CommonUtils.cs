@@ -2257,13 +2257,23 @@ namespace ZumNet.Web.Bc
             return "";
         }
 
-        public static string BookingInit(this Controller ctrl)
+        public static string BookingInit(this Controller ctrl, bool resView)
         {
             string strReturn = "";
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
-            ctrl.ViewBag.R["ct"] = StringHelper.SafeString(ctrl.ViewBag.R.ct.ToString(), "112");
-            ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
+            if (resView)
+            {
+                ctrl.ViewBag.R["ot"] = StringHelper.SafeString(ctrl.ViewBag.R.ot.ToString(), "FD"); //대상 구분
+                ctrl.ViewBag.R["xfalias"] = StringHelper.SafeString(ctrl.ViewBag.R.xfalias.ToString(), "schedule");
+                //ctrl.ViewBag.R["opnode"] = StringHelper.SafeString(ctrl.ViewBag.R.opnode.ToString(), "FD." + ctrl.ViewBag.R.fdid.ToString()); //메뉴 위치 구별
+                ctrl.ViewBag.R.lv["tgt"] = StringHelper.SafeString(ctrl.ViewBag.R.lv.tgt.ToString(), DateTime.Now.ToString("yyyy-MM-dd")); //조회 희망 일자
+            }
+            else
+            {
+                //ctrl.ViewBag.R["ct"] = StringHelper.SafeString(ctrl.ViewBag.R.ct.ToString(), "112");
+                ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
+            }
 
             int iCategoryId = Convert.ToInt32(ctrl.ViewBag.R.ct.Value);
             int iFolderId = Convert.ToInt32(ctrl.ViewBag.R.fdid.Value);
@@ -2274,6 +2284,7 @@ namespace ZumNet.Web.Bc
                 if (HttpContext.Current.Session["Admin"].ToString() == "Y")
                 {
                     ctrl.ViewBag.R.current["operator"] = "Y";
+                    ctrl.ViewBag.R.current["acl"] = "SFDERVSDEMWRV";
                 }
                 else
                 {
@@ -2288,6 +2299,36 @@ namespace ZumNet.Web.Bc
                     {
                         //에러페이지
                         strReturn = svcRt.ResultMessage;
+                    }
+                }
+            }
+
+            if (resView)
+            {
+                using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
+                {
+                    svcRt = schBiz.GetResourceInfomation(Convert.ToInt32(HttpContext.Current.Session["DNID"]), iFolderId, ctrl.ViewBag.R["ot"].ToString());
+                    if (svcRt != null && svcRt.ResultCode == 0 && svcRt.ResultDataRow != null)
+                    {
+                        ctrl.ViewBag.ResInfo = svcRt.ResultDataRow;
+                        ctrl.ViewBag.R["ttl"] = svcRt.ResultDataRow["Parent"].ToString() + " / " + svcRt.ResultDataRow["DisplayName"].ToString();
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultItemCount == 0 ? "자원 정보 누락" : svcRt.ResultMessage;
+                    }
+
+                    if (strReturn == "")
+                    {
+                        svcRt = schBiz.GetScheduleMenuType(iCategoryId);
+                        if (svcRt != null && svcRt.ResultCode == 0 && svcRt.ResultItemCount > 0)
+                        {
+                            ctrl.ViewBag.SchType = svcRt.ResultDataRowCollection;
+                        }
+                        else
+                        {
+                            strReturn = svcRt.ResultItemCount == 0 ? "일정 종류 누락" : svcRt.ResultMessage;
+                        }
                     }
                 }
             }

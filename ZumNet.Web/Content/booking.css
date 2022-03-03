@@ -1,6 +1,23 @@
 ﻿/*******************************************************************************/
 /* 자원예약 */
 
+/* head, menu button */
+.z-lv-menu .btn {
+    line-height: 22px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.z-list-head .nav-tabs .nav-link {
+    padding-top: .325rem;
+    padding-bottom: .25rem;
+}
+
+    .z-list-head .nav-tabs .nav-link.active {
+        border-color: rgba(24,28,33,0.1);
+        border-bottom-color: #ffffff;
+    }
+
 /* resource schedule */
 .zc-bar .table th, .zc-bar .table td {
     padding: 0 !important;
@@ -50,6 +67,10 @@
     border-left: 1px solid #999;
 }
 
+/* calendar list */
+.zc-list .table thead th {
+    background-color: #f8f8f8;
+}
 /* calendar week */
 .zc-week {
     height: 100%;
@@ -166,4 +187,8 @@
         }
         .zc-calendar .zc-day-event i {
             margin-top: 1px;
+        }
+
+        .zc-calendar .zc-day-event.zc-event-start, .zc-calendar .zc-day-event.zc-event-end, .zc-calendar .zc-day-event.zc-event-mid {
+            background-color: rgba(85, 66, 248, 0.1);
         }

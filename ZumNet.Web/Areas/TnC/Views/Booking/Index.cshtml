@@ -3,8 +3,6 @@
 @using System.Threading;
 @using Newtonsoft.Json;
 @{
-
-
     ViewBag.Title = ViewBag.R["ttl"];
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
@@ -45,7 +43,6 @@
 -->
 <!-- `.messages-wrapper` fills all available space of container -->
 <div class="messages-wrapper">
-
     <!-- sidebox -->
     @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
     <!-- / sidebox -->
@@ -53,15 +50,51 @@
     <div class="d-flex flex-column w-100">
         <!-- Header -->
         <div class="flex-grow-0">
-            <div class="d-flex align-items-center font-weight-bold container-p-x py-3 py-md-4 m-0">
-                <div class="h5 mb-0">
-                    <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
-                </div>
+            @if (Convert.ToInt32(ViewBag.R.fdid) == 0)
+            {
+                <div class="d-flex align-items-center font-weight-bold container-p-x py-3 py-md-4 m-0">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
 
-                <div class="h5 font-weight-bold mb-0 z-ttl">
-                    <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    <div class="h5 font-weight-bold mb-0 z-ttl">
+                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="d-sm-flex justify-content-between container-p-x py-3 pt-sm-4 m-0">
+                    <div class="d-flex align-items-center font-weight-bold">
+                        <div class="h5 mb-0">
+                            <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                        </div>
+
+                        <div class="h5 font-weight-bold mb-0 z-ttl">
+                            <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between justify-content-sm-end mt-2 mt-sm-0">
+                        <div class="btn-group btn-group-sm" role="group" aria-label="My request">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text py-1 px-2" id="">자신</div>
+                            </div>
+                            <button class="btn btn-third">신청</button>
+                            <button class="btn btn-success">승인</button>
+                            <button class="btn btn-secondary">거부</button>
+                        </div>
+                        <div class="btn-group btn-group-sm ml-2" role="group" aria-label="Others request">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text py-1 px-2" id="">타인</div>
+                            </div>
+                            <button class="btn btn-danger">신청</button>
+                            <button class="btn btn-warning">승인</button>
+                            <button class="btn btn-purple">거부</button>
+                        </div>
+                    </div>
+                </div>
+            }
+
         </div>
         <!-- / Header -->
 
@@ -69,6 +102,8 @@
             <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
             <div class="messages-content flex-grow-0">
                 <div id="__CtDashboard" class="container-p-x">
+                    @if (Convert.ToInt32(ViewBag.R.fdid) == 0)
+                    {
                     <div class="z-lv-item mb-4">
                         <div class="font-weight-bold">
                             <i class="fe-calendar"></i> &nbsp;<span>이 주의 예약 현황</span>
@@ -100,7 +135,7 @@
                                     <button class="btn btn-warning">승인</button>
                                     <button class="btn btn-purple">거부</button>
                                 </div>
-                                
+
                             </div>
                         </div>
                         <div class="mt-2">
@@ -118,12 +153,12 @@
                                             }
                                         </select>
                                     </div>
-                                    <div class="form-group col-sm-4 mb-0">
+                                    <div class="form-group col-sm-4 mb-0 mt-2 mt-sm-0">
                                         <select id="ddlResList" class="custom-select">
                                             <option value="" selected>자원 분류를 선택하세요..</option>
                                         </select>
                                     </div>
-                                    <div class="input-group col-sm-4 mb-0">
+                                    <div class="input-group col-sm-4 mb-0 mt-2 mt-sm-0">
                                         <span class="input-group-preend bg-light">
                                             <span class="input-group-text bg-light">일자</span>
                                         </span>
@@ -137,9 +172,84 @@
                         </div>
                         <div class="mt-2" id="__ResSchedule"></div>
                     </div>
+                    }
+                    else
+                    {
+                    <div class="z-lv-item">
+                        <div>
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group col-sm-4 mb-0">
+                                        <select id="ddlResClass" class="custom-select">
+                                            <option value="@ViewBag.R.opnode">@ViewBag.Title</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-4 mb-0 mt-2 mt-sm-0">
+                                        <select id="ddlResList" class="custom-select">
+                                            <option value="ALL">전체</option>
+                                            @foreach (DataRow row in ViewBag.ResClass)
+                                            {
+                                                if (row["Deleted"].ToString() == "N" && row["ObjectType"].ToString() == "B")
+                                                {
+                                                    <option value="@row["NodeID"]">@row["DisplayName"]</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="input-group col-sm-4 mb-0 mt-2 mt-sm-0">
+                                        <span class="input-group-preend bg-light">
+                                            <span class="input-group-text bg-light">일자</span>
+                                        </span>
+                                        <input type="text" class="form-control datepicker start-date" value="@ViewBag.R.current.date" />
+                                        <span class="input-group-append">
+                                            <button class="btn btn-secondary" type="button" data-toggle="tooltip" data-placement="bottom" title="검색" data-zv-menu="search"><i class="fe-search"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="mt-2">
+                            <div class="callout callout-warning py-2">
+                                @if (Convert.ToInt32(ViewBag.R.fdid) == 1515)
+                                {
+                                    <h6 class="my-1">각 차량에 표기된 나이의 운전자만 보험 적용이 됩니다. 보험 적용 여부를 꼭 확인하시기 바랍니다.</h6>
+                                    <p>사용자께서는 내부 청소 등 뒷정리하시고, 차량 이상 발생시 반드시 담당부서에 말씀해 주시기 바랍니다.</p>
+                                }
+                                else if (Convert.ToInt32(ViewBag.R.fdid) == 1513)
+                                {
+                                    <h6 class="my-1">사용자께서는 음료잔 등 뒷정리하시고, 안내데스크 직원에게 사용완료했음을 말씀해 주시기 바랍니다.</h6>
+                                    <p></p>
+                                }
+                                else if (Convert.ToInt32(ViewBag.R.fdid) == 13227)
+                                {
+                                    <h6 class="my-1">사용자께서는 부속품(포인터 등) 유무 확인하시고, 사용 즉시 관리부서에 반납하시기 바랍니다.</h6>
+                                    <p></p>
+                                }
+                                else if (Convert.ToInt32(ViewBag.R.fdid) == 13235)
+                                {
+                                    <h6 class="my-1">1) 1566-2257로 전화   2) 내부 / 외부 1차 비밀번호 입력   3) 개인비밀번호 입력 (비밀번호는 공지사항 확인필수)</h6>
+                                    <p>외부고객과 통화시 사전에 외부고객용 개인비밀번호를 부여받아 사용 (공지사항 확인필수)</p>
+                                }
+                                else if (Convert.ToInt32(ViewBag.R.fdid) == 14339)
+                                {
+                                    <h6 class="my-1">2주일 이상 예약 불가입니다. 사용 후 재예약해주시기 바랍니다.</h6>
+                                    <p>사용자께서는 부속품 유무 확인하시고, 사용 후 관리 부서에 반납하시기 바랍니다. (반납시간: 오후 5시~6시)</p>
+                                }
+                                else if (Convert.ToInt32(ViewBag.R.fdid) == 14467)
+                                {
+                                    <h6 class="my-1">1) http://zoom.us 접속&nbsp;&nbsp;&nbsp;&nbsp;2) ID: 자원명@cresyn.com 예)CRE2@CRESYN.COM&nbsp;&nbsp;&nbsp;&nbsp;PW: 공지사항에서 자원명 별로 확인</h6>
+                                    <p>자원명 구성=> ID명(사용 가능시간, 회의 미팅ID), ※CRE3~5는 40분간 회의접속 가능하며 40분 후 회의방 재개설 필요</p>
+                                }
+                            </div>
+                        </div>
+                        <div class="mt-2" id="__ResSchedule">@Html.Partial("_ResourceSchedule")</div>
+                    </div>
+                    }
+
                 </div>
             </div>
         </div>
+
     </div>
     <!-- / content -->
 
