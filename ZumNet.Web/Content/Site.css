@@ -176,7 +176,7 @@
 .modal.show .modal-left, .modal.show .modal-right {
     transform: translate(0,0) !important;
 }
-.light-style div.datepicker, .popover {
+.light-style div.datepicker-dropdown, .popover {
     z-index: 1100 !important;
 }
 

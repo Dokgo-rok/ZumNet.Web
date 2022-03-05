@@ -59,6 +59,16 @@
         window.location.href = '/TnC/Booking/Calendar?qi=' + _zw.base64.encode(_zw.fn.getLvQuery());
     });
 
+    $('#ddlSchType').on('change', function () {
+        _zw.V.ttl = ''; _zw.V.lv.sort = $(this).val();
+        _zw.fn.loadList();
+    });
+
+    $('.zc-dayview .zc-daygrid .zc-col-header .switcher-input').on('change', function () {
+        if ($(this).prop('checked')) $('.zc-dayview .zc-daygrid .zc-timegrid-body .zc-timegrid-outtime').removeClass('d-table-row');
+        else $('.zc-dayview .zc-daygrid .zc-timegrid-body .zc-timegrid-outtime').addClass('d-table-row');
+    });
+
     $('#__CtDashboard #ddlResClass').on('change', function () { //console.log(_zw.cdr.res["cls_" + $(this).val()])
         var s = '', t = '';
         if ($(this).val() != '') {
@@ -144,7 +154,7 @@
                     $('#__List').html(v[0]);
 
                     $('[data-toggle="tooltip"][title!=""]').tooltip();
-                    $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"], .zc-week a[data-toggle="tooltip"]').tooltip({
+                    $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"], .zc-week a[data-toggle="tooltip"], .zc-dayview a[data-toggle="tooltip"]').tooltip({
                         html: true,
                         title: function () { return $(this).next().html(); }
                     });
@@ -154,7 +164,7 @@
         });
     }
 
-    $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"], .zc-week a[data-toggle="tooltip"]').tooltip({
+    $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"], .zc-week a[data-toggle="tooltip"], .zc-dayview a[data-toggle="tooltip"]').tooltip({
         html: true,
         title: function () { return $(this).next().html(); }
     });

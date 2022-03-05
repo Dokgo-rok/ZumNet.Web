@@ -1,1 +1,181 @@
-﻿
+﻿@using System;
+@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+
+@using ZumNet.Web.Bc;
+@{
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    DateTime dtTraget = Convert.ToDateTime(ViewBag.R.lv["tgt"]);
+    SetEvents(ViewBag.BoardList, ViewBag.SchType);
+}
+@functions{
+    Dictionary<string, string> _eventList = new Dictionary<string, string>();
+
+    private string RenderCalendar(string curDate, string acl)
+    {
+        StringBuilder sb = new StringBuilder();
+        string strAMPM = "";
+        string strHour = "";
+        string sRowCss = ""; //업무시간대 구분
+        string sKey = "";
+
+        for (int i = 0; i < 24; i++)
+        {
+            if (i < 12) strAMPM = i % 3 == 0 ? "오전" : "";
+            else strAMPM = i % 3 == 0 ? "오후" : "";
+
+            if (i == 0) strHour = "12";
+            else if (i > 12) strHour = (i - 12).ToString();
+            else strHour = i.ToString();
+
+            sKey = "T:" + (i < 10 ? "0" : "") + i.ToString() + ":";
+            sRowCss = i >= 8 && i <= 19 ? "zc-timegrid-worktime" : "zc-timegrid-outtime";
+
+            sb.AppendFormat("<tr class=\"{0}\">", sRowCss);
+            sb.AppendFormat("<th class=\"zc-col-time\" rowspan=\"2\"><span>{0}</span><span>{1}시</span>", strAMPM, strHour);
+            if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W")) sb.AppendFormat("<br /><a href=\"javascript:void(0)\" class=\"text-info\" onclick=\"_zw.fn.viewEvent(null,'{0}','{1}',0)\"><i class=\"fas fa-pencil-alt fs-11\"></i></a>", curDate, (i < 10 ? "0" : "") + i.ToString() + ":00");
+            sb.Append("</th>");
+            sb.AppendFormat("<td class=\"zc-col-content\" data-time=\"{0}:00\">", strHour);
+            if (this._eventList.ContainsKey(sKey + "00")) sb.Append(this._eventList[sKey + "00"]);
+            sb.Append("</td>");
+            sb.AppendFormat("<tr class=\"{0}\">", sRowCss);
+            sb.AppendFormat("<td class=\"zc-col-content-b\" data-time=\"{0}:30\">", strHour);
+            if (this._eventList.ContainsKey(sKey + "30")) sb.Append(this._eventList[sKey + "30"]);
+            sb.Append("</td>");
+            sb.Append("</tr>");
+        }
+
+        return sb.ToString();
+    }
+
+    private string RenderAllDay()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<tr>");
+        sb.AppendFormat("<th class=\"zc-col-time\"><span>{0}</span></th>", "종일");
+        sb.Append("<td class=\"zc-col-content\">");
+        sb.Append("<div class=\"d-flex flex-wrap\">");
+        if (this._eventList.ContainsKey("A:00:00")) sb.Append(this._eventList["A:00:00"]);
+        sb.Append("</div>");
+        sb.Append("</td>");
+        sb.Append("</tr>");
+        return sb.ToString();
+    }
+
+    private void SetEvents(DataSet data, DataRowCollection schType)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        foreach (DataRow row in data.Tables[0].Rows)
+        {
+            string sCssClass = "mr-3";
+            string sDpCond = row["DisplayCond"].ToString();
+            string sColor = "";
+            foreach (DataRow r in schType)
+            {
+                if (r["SchType"].ToString() == row["SchType"].ToString())
+                {
+                    sColor = r["Color"].ToString(); break;
+                }
+            }
+
+            sb.AppendFormat("<div class=\"{0}\" data-dpcond=\"{1}\" data-start=\"{2}\" data-end=\"{3}\">"
+                        , sCssClass, sDpCond, row["StartTime"].ToString(), row["EndTime"].ToString());
+            sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2});\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
+                            , "", row["PeriodFrom"].ToString(), row["MessageID"].ToString());
+            sb.AppendFormat("<i class=\"fas fa-chalkboard fs-10 mt-1 mr-1\" style=\"color:{0}\"></i>", sColor);
+            sb.AppendFormat("<span class=\"text-primary mr-2\">~ {0}</span>", row["EndTime"].ToString());
+            sb.AppendFormat("<span class=\"\">{0}</span>", row["subject"].ToString());
+            sb.Append("</a>");
+            sb.Append("<div class=\"d-none\" data-help=\"event\">");
+            sb.Append("<div class=\"tooltip-inner text-left\">");
+            sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
+            if (row["Repeat"].ToString() == "Y") sb.Append("<i class=\"fas fa-redo-alt ml-2\"></i>");
+            sb.Append("</div>");
+            sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            sb.Append("</div>");
+
+            string sKey = (row["StartTime"].ToString().CompareTo("00:00") == 0 && row["EndTime"].ToString().CompareTo("24:00") == 0 ? "A:" : "T:") + row["StartTime"].ToString();
+            string sEvents = this._eventList.ContainsKey(sKey) ? this._eventList[sKey] : "";
+            this._eventList[sKey] = sEvents + sb.ToString();
+
+            sb.Remove(0, sb.Length);
+        }
+    }
+}
+<div class="zc-dayview">
+    <table class="zc-daygrid table table-bordered">
+        <thead>
+            <tr class="zc-section">
+                <td>
+                    <div class="zc-scroller-harness">
+                        <div class="zc-scroller">
+                            <table class="zc-col-header table mb-0">
+                                <colgroup><col style="width: 80px;"><col style=""><col style="width: 120px;"></colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th class="zc-col-time">W-@CommonUtils.GetWeekOfYear(dtTraget.Year, dtTraget.Month, dtTraget.Day)</th>
+                                        <th class="zc-col-title border-right-0">@dtTraget.ToString("dddd")</th>
+                                        <th class="text-center border-left-0">
+                                            <label class="switcher mr-0">
+                                                <input type="checkbox" class="switcher-input" checked>
+                                                <span class="switcher-indicator">
+                                                    <span class="switcher-yes"></span>
+                                                    <span class="switcher-no"></span>
+                                                </span>
+                                                <span class="switcher-label">업무시간</span>
+                                            </label>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="zc-section">
+                <td class="zc-timegrid-divider table-active"></td>
+            </tr>
+            <tr class="zc-section">
+                <td>
+                    <div class="zc-scroller-harness">
+                        <div class="zc-scroller">
+                            <table class="zc-col-allday table mb-0">
+                                <colgroup><col style="width: 80px;"></colgroup>
+                                <tbody>
+                                    @Html.Raw(RenderAllDay())
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="zc-section">
+                <td class="zc-timegrid-divider table-active"></td>
+            </tr>
+            <tr class="zc-section zc-section-liquid">
+                <td>
+                    <div class="zc-scroller-harness">
+                        <div class="zc-scroller zc-scroller-absolute">
+                            <table class="zc-timegrid-body table mb-0">
+                                <colgroup><col style="width: 80px;"></colgroup>
+                                <tbody>
+                                    @Html.Raw(RenderCalendar(ViewBag.R.lv["tgt"].ToString(), ViewBag.R.current.acl.ToString()))
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -71,6 +71,7 @@
 .zc-list .table thead th {
     background-color: #f8f8f8;
 }
+
 /* calendar week */
 .zc-week {
     height: 100%;
@@ -192,3 +193,102 @@
         .zc-calendar .zc-day-event.zc-event-start, .zc-calendar .zc-day-event.zc-event-end, .zc-calendar .zc-day-event.zc-event-mid {
             background-color: rgba(85, 66, 248, 0.1);
         }
+
+/* calendar day */
+.zc-scroller {
+    position: relative;
+    overflow: hidden scroll;
+}
+.zc-dayview {
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    right: 1rem;
+    bottom: .5rem;
+    /*overflow: hidden;*/
+}
+    .zc-dayview .zc-daygrid {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-top: 2px solid #dcdcdc !important;
+        border-bottom: 1px solid #dcdcdc !important;
+    }
+        .zc-dayview .zc-daygrid .zc-section {
+            height: 1px;
+        }        
+        .zc-dayview .zc-daygrid .zc-section-liquid {
+            height: auto;
+        }
+        .zc-dayview .zc-daygrid .zc-section > td {
+            height: 1px;
+            padding: 0;
+        }
+        .zc-dayview .zc-daygrid .zc-section-liquid > td {
+            height: auto;
+        }
+        .zc-dayview .zc-daygrid .zc-section > * {
+            border-width: 0;
+        }
+        .zc-dayview .zc-daygrid .zc-section table tr > * {
+            padding: .25rem .375rem;
+        }
+        .zc-dayview .zc-daygrid .zc-section .zc-timegrid-divider {
+            padding: 0 0 2px;
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+        }
+        .zc-dayview .zc-scroller-harness {
+            position: relative;
+            overflow: hidden;
+            direction: ltr;
+        }
+    .zc-dayview .zc-section-liquid .zc-scroller-harness {
+        height: 100%;
+    }
+    .zc-dayview .zc-section-liquid .zc-scroller-absolute {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+    }
+    .zc-dayview .zc-section-liquid .zc-scroller-absolute .zc-timegrid-body {
+        height: 100%;
+    }
+        .zc-dayview .zc-section-liquid .zc-scroller-absolute .zc-timegrid-body tr:first-child > * {
+            border-top-width: 0;
+        }
+        .zc-dayview .zc-section-liquid .zc-scroller-absolute .zc-timegrid-body tr td {
+            min-height: 1.76rem;
+            height: 1.76rem;
+        }
+        .zc-dayview .zc-section-liquid .zc-scroller-absolute .zc-timegrid-body .zc-col-time span:first-child {
+            float: left;
+            margin-left: 0.75rem;
+        }
+        .zc-dayview .zc-section-liquid .zc-scroller-absolute .zc-timegrid-body .zc-timegrid-outtime {
+            display: none; /* table-row */
+        }
+        .zc-dayview .zc-section-liquid .zc-scroller-absolute .zc-timegrid-body .zc-col-content {
+            border-bottom-style: dotted;
+        }
+        .zc-dayview .zc-section-liquid .zc-scroller-absolute .zc-timegrid-body .zc-col-content-b {
+            border-top-style: dotted;
+        }
+        .zc-dayview .zc-daygrid .zc-section .zc-col-header tr > * {
+            border-top-width: 0;
+            border-bottom-width: 0;
+            background-color: #f8f8f8;
+        }
+    .zc-dayview .zc-daygrid .zc-section .zc-col-allday tr > * {
+        border-top-width: 0;
+        border-bottom-width: 0;
+    }
+
+    .zc-dayview .zc-daygrid .zc-section .zc-col-time {
+        text-align: right;
+    }
+    .zc-dayview .zc-daygrid .zc-section .zc-col-title {
+        text-align: center;
+    }

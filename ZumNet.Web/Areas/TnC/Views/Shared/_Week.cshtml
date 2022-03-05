@@ -100,7 +100,7 @@
         //sb.AppendFormat("<span class=\"text-right\" style=\"width: 30px; margin-left: {0}px\">{1}</span>", iLeft.ToString(), hour);
         sb.Append("</div>");
         sb.Append("<div class=\"card-header-title py-1\">");
-        if (acl == "A") sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info mr-2\" onclick=\"_zw.fn.viewEvent(null, '{0}', '', 0);\"><i class=\"fas fa-pencil-alt\"></i></a>", d.ToString("yyyy-MM-dd"));
+        if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W")) sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info mr-2\" onclick=\"_zw.fn.viewEvent(null, '{0}', '', 0);\"><i class=\"fas fa-pencil-alt\"></i></a>", d.ToString("yyyy-MM-dd"));
         sb.AppendFormat("<span>{0}/{1} {2}</span>", d.Month.ToString(), d.Day.ToString(), d.ToString("dddd"));
         sb.Append("</div>");
         sb.Append("</div>"); //card-header
@@ -128,7 +128,7 @@
                                 , row["MessageID"].ToString(), row["PeriodFrom"].ToString(), row["StartTime"].ToString(), row["EndTime"].ToString());
         sb.AppendFormat("<span class=\"fas fa-chalkboard fs-10 mr-1\" style=\"color:{0}\"></span>", sColor);
         //sb.AppendFormat("<span class=\"mr-2\">{0} ~ {1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
-        sb.AppendFormat("<span class=\"mr-2\">{0}</span>", row["StartTime"].ToString());
+        sb.AppendFormat("<span class=\"text-primary mr-2\">{0}</span>", row["StartTime"].ToString());
         sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2});\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
                         , "", row["PeriodFrom"].ToString(), row["MessageID"].ToString());
         sb.AppendFormat("<span>{0}</span>", row["subject"].ToString());

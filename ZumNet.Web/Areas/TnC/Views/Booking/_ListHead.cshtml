@@ -33,16 +33,16 @@
 <div class="d-flex align-items-center">
     <ul class="nav nav-tabs col-6 col-sm-4 px-0 text-truncate">
         <li class="nav-item">
-            <a class="nav-link@(ViewBag.R.ft.ToString() == "Request" ? " active" : "") px-2 px-sm-4" href="javascript:void(0)" data-zc-menu="Request">목록</a>
+            <a class="nav-link@(ViewBag.R.ft.ToString() == "Request" ? " active" : "") px-2 px-sm-3" href="javascript:void(0)" data-zc-menu="Request">목록</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link@(ViewBag.R.ft.ToString() == "Day" ? " active" : "") px-2 px-sm-4"  href="javascript:void(0)" data-zc-menu="Day"> 일 </a>
+            <a class="nav-link@(ViewBag.R.ft.ToString() == "Day" ? " active" : "") px-2 px-sm-3"  href="javascript:void(0)" data-zc-menu="Day">일별</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link@(ViewBag.R.ft.ToString() == "Week" ? " active" : "") px-2 px-sm-4"  href="javascript:void(0)" data-zc-menu="Week"> 주 </a>
+            <a class="nav-link@(ViewBag.R.ft.ToString() == "Week" ? " active" : "") px-2 px-sm-3"  href="javascript:void(0)" data-zc-menu="Week">주별</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link@(ViewBag.R.ft.ToString() == "Month" ? " active" : "") px-2 px-sm-4"  href="javascript:void(0)" data-zc-menu="Month"> 월 </a>
+            <a class="nav-link@(ViewBag.R.ft.ToString() == "Month" ? " active" : "") px-2 px-sm-3"  href="javascript:void(0)" data-zc-menu="Month">월별</a>
         </li>
     </ul>
 
@@ -56,10 +56,10 @@
     {
         <div class="nav d-flex justify-content-end col-6 col-sm-4 px-0 text-truncate">
             <select class="custom-select" id="ddlSchType" style="max-width: 120px">
-                <option value="">전체</option>
+                <option value="">&#9632; 전체</option>
                 @foreach (DataRow dr in ViewBag.SchType)
                 {
-                    <option value="@dr["SchType"]">@dr["TypeName"]</option>
+                <option style="color: @dr["Color"]" value="@dr["SchType"]">&#9632; @dr["TypeName"]</option>
                 }
             </select>
         </div>
