@@ -253,6 +253,214 @@ namespace ZumNet.Web.Bc
         }
         #endregion
 
+        #region [일정, 자원 JSO 변환]
+        public static string BindScheduleToJson(this Controller ctrl, ZumNet.Framework.Core.ServiceResult formData)
+        {
+            string strReturn = "";
+            JObject jV;
+            DataRow mainInfo = null;
+            DataTable partInfo = null;
+            DataTable fileInfo = null;
+            DataTable sharedInfo = null;
+            DataTable cmntInfo = null;
+
+            string sJsonPath = "~/Content/Json/jform_schedule.json"; //xfalias='' 인 경우 일반게시 또는 공지사항으로 적용
+            string sPos = "";
+
+            try
+            {
+                sPos = "100";
+                using (StreamReader reader = File.OpenText(HttpContext.Current.Server.MapPath(sJsonPath)))
+                {
+                    jV = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+                }
+
+                if (formData != null && formData.ResultDataSet != null && formData.ResultDataSet.Tables.Count > 0)
+                {
+                    sPos = "200";
+                    mainInfo = formData.ResultDataSet.Tables[0].Rows[0];
+                    partInfo = formData.ResultDataSet.Tables[1];
+                    fileInfo = formData.ResultDataSet.Tables[2];
+                    sharedInfo = formData.ResultDataSet.Tables[3];
+
+                    sPos = "300";
+                    jV["dnid"] = "";
+                    jV["ot"] = "";
+                    jV["otid"] = "";
+                    jV["schtype"] = mainInfo["SchType"].ToString();
+                    jV["task"] = mainInfo["TaskID"].ToString();
+                    jV["inherited"] = mainInfo["Inherited"].ToString();
+                    jV["state"] = mainInfo["State"].ToString();
+                    jV["priority"] = mainInfo["Priority"].ToString();
+                    
+                    jV["creur"] = mainInfo["DisplayName"].ToString();
+                    jV["creurid"] = mainInfo["CreatorID"].ToString();
+                    jV["creurcn"] = mainInfo["MailAccount"].ToString();
+                    jV["cremail"] = mainInfo["MailAccount"].ToString();
+                    jV["creempid"] = "";
+                    jV["cregrade"] = "";
+                    jV["credept"] = mainInfo["CreatorDept"].ToString();
+                    jV["credpid"] = mainInfo["CreatorDeptID"].ToString();
+                    jV["credpcd"] = "";
+                    jV["credate"] = mainInfo["CreateDate"].ToString();
+
+                    sPos = "310";
+                    jV["subject"] = mainInfo["Subject"].ToString();
+                    jV["location"] = mainInfo["Location"].ToString();
+                    jV["body"] = mainInfo["Body"].ToString();                    
+                    jV["periodfrom"] = mainInfo["PeriodFrom"].ToString();
+                    jV["start"] = mainInfo["StartTime"].ToString();
+                    jV["periodto"] = mainInfo["PeriodTo"].ToString();
+                    jV["end"] = mainInfo["EndTime"].ToString();
+                    jV["term"] = mainInfo["Term"].ToString();
+                    jV["alarm"] = mainInfo["Alarm"].ToString();
+                    jV["rsvd1"] = mainInfo["Reserved1"].ToString();
+
+                    sPos = "320";
+                    jV["repeat"]["type"] = mainInfo["RepeatType"].ToString();
+                    jV["repeat"]["end"] = mainInfo["RepeatEnd"].ToString();
+                    jV["repeat"]["count"] = mainInfo["RepeatCount"].ToString();
+                    jV["repeat"]["intervaltype"] = mainInfo["IntervalType"].ToString();
+                    jV["repeat"]["interval"] = mainInfo["Interval"].ToString();
+                    jV["repeat"]["conday"] = mainInfo["Cond_Day"].ToString();
+                    jV["repeat"]["conweek"] = mainInfo["Cond_Week"].ToString();
+                    jV["repeat"]["condate"] = mainInfo["Cond_Date"].ToString();
+                    jV["repeat"]["rsvd1"] = "";
+
+                    //참여자
+                    sPos = "400";
+                    if (partInfo != null && partInfo.Rows.Count > 0)
+                    {
+                        var jArr = new JArray();
+                        foreach (DataRow dr in partInfo.Rows)
+                        {
+                            JObject jTemp = JObject.Parse("{}");
+                            jTemp["ot"] = dr["ObjectType"].ToString();
+                            jTemp["partid"] = dr["ParticipantID"].ToString();
+                            jTemp["partdn"] = dr["DisplayName"].ToString();
+                            jTemp["partmail"] = dr["Mail"].ToString();
+                            jTemp["parttype"] = dr["PartType"].ToString();
+                            jTemp["state"] = dr["State"].ToString();
+                            jTemp["confirmed"] = dr["Confirmed"].ToString();
+                            jTemp["sendmail"] = dr["SendMail"].ToString();
+                            jTemp["approval"] = dr["Approval"].ToString();
+
+                            jArr.Add(jTemp);
+                        }
+                        jV["partlist"] = jArr;
+                        jV["partcount"] = partInfo.Rows.Count.ToString();
+                    }
+                    else
+                    {
+                        jV["partcount"] = "0";
+                    }
+
+                    //첨부파일
+                    sPos = "500";
+                    if (fileInfo != null && fileInfo.Rows.Count > 0)
+                    {
+                        decimal dSum = 0;
+                        var jArr = new JArray();
+                        foreach (DataRow dr in fileInfo.Rows)
+                        {
+                            dSum += Convert.ToDecimal(dr["FileSize"]);
+
+                            JObject jTemp = JObject.Parse("{}");
+                            jTemp["attachid"] = dr["AttachID"].ToString();
+                            jTemp["filename"] = dr["FileName"].ToString();
+                            jTemp["savedname"] = dr["SavedName"].ToString();
+                            jTemp["size"] = dr["FileSize"].ToString();
+                            jTemp["ext"] = dr["FileType"].ToString();
+                            jTemp["filepath"] = dr["FilePath"].ToString();
+                            jTemp["storagefolder"] = dr["StorageFolder"].ToString();
+
+                            jArr.Add(jTemp);
+
+                        }
+                        jV["attachlist"] = jArr;
+                        jV["attachcount"] = fileInfo.Rows.Count.ToString();
+                        jV["attachsize"] = CommonUtils.StrFileSize(dSum.ToString());
+                    }
+                    else
+                    {
+                        jV["attachcount"] = "0";
+                        jV["attachsize"] = "";
+                    }
+
+                    //공유정보
+                    sPos = "600";
+                    if (sharedInfo != null && sharedInfo.Rows.Count > 0)
+                    {
+                        var jArr = new JArray();
+                        foreach (DataRow dr in sharedInfo.Rows)
+                        {
+                            JObject jTemp = JObject.Parse("{}");
+                            jTemp["ot"] = dr["ObjectType"].ToString();
+                            jTemp["otid"] = dr["ObjectID"].ToString();
+                            jTemp["att"] = dr["AttType"].ToString();
+                            jTemp["shared"] = dr["Shared"].ToString();
+                            jTemp["display"] = dr["DisplayName"].ToString();
+
+                            jArr.Add(jTemp);
+                        }
+                        jV["sharedlist"] = jArr;
+                        jV["sharedcount"] = sharedInfo.Rows.Count.ToString();
+                    }
+                    else
+                    {
+                        jV["sharedcount"] = "0";
+                    }
+
+                    //댓글
+                    sPos = "700";
+                    if (cmntInfo != null && cmntInfo.Rows.Count > 0)
+                    {
+                        var jArr = new JArray();
+                        foreach (DataRow dr in cmntInfo.Rows)
+                        {
+                            JObject jTemp = JObject.Parse("{}");
+                            jTemp["msgid"] = dr["MessageID"].ToString();
+                            jTemp["xfalias"] = dr["XFAlias"].ToString();
+                            jTemp["seqid"] = dr["SeqID"].ToString();
+                            jTemp["creurid"] = dr["CreatorID"].ToString();
+                            //jTemp["creurcn"] = dr["CreatorCN"].ToString();
+                            jTemp["creur"] = dr["Creator"].ToString();
+                            jTemp["credate"] = dr["CreateDate"].ToString();
+                            jTemp["comment"] = dr["Comment"].ToString();
+                            jTemp["rsvd1"] = dr["Reserved1"].ToString();
+
+                            jArr.Add(jTemp);
+                        }
+                        jV["cmntlist"] = jArr;
+                        jV["cmntcount"] = mainInfo["CommentCount"].ToString();
+                    }
+                    else
+                    {
+                        jV["cmntcount"] = "0";
+                    }
+
+                    //jV["viewcount"] = mainInfo["ViewCount"].ToString();
+                }
+
+                sPos = "800";
+                ctrl.ViewBag.R.app = jV;
+            }
+            catch (Exception ex)
+            {
+                strReturn = "[" + sPos + "] " + ex.Message;
+            }
+            finally
+            {
+                if (partInfo != null) partInfo.Dispose();
+                if (fileInfo != null) fileInfo.Dispose();
+                if (sharedInfo != null) sharedInfo.Dispose();
+                if (cmntInfo != null) cmntInfo.Dispose();
+            }
+
+            return strReturn;
+        }
+        #endregion
+
         #region [결재 양식 JSON 변환]
         /// <summary>
         /// 결재양식 XML => JSON 변환

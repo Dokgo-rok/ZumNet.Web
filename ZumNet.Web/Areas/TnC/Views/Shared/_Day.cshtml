@@ -37,7 +37,7 @@
 
             sb.AppendFormat("<tr class=\"{0}\">", sRowCss);
             sb.AppendFormat("<th class=\"zc-col-time\" rowspan=\"2\"><span>{0}</span><span>{1}시</span>", strAMPM, strHour);
-            if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W")) sb.AppendFormat("<br /><a href=\"javascript:void(0)\" class=\"text-info\" onclick=\"_zw.fn.viewEvent(null,'{0}','{1}',0)\"><i class=\"fas fa-pencil-alt fs-11\"></i></a>", curDate, (i < 10 ? "0" : "") + i.ToString() + ":00");
+            if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W")) sb.AppendFormat("<br /><a href=\"javascript:void(0)\" class=\"text-info\" onclick=\"_zw.mu.writeEvent('', '{0}','{1}');\"><i class=\"fas fa-pencil-alt fs-11\"></i></a>", curDate, (i < 10 ? "0" : "") + i.ToString() + ":00");
             sb.Append("</th>");
             sb.AppendFormat("<td class=\"zc-col-content\" data-time=\"{0}:00\">", strHour);
             if (this._eventList.ContainsKey(sKey + "00")) sb.Append(this._eventList[sKey + "00"]);

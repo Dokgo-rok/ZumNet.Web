@@ -96,7 +96,7 @@ $(function () {
     // <========== Message-sidebox
 
     // wave
-    Waves.attach('.app-brand, .sidenav-item a, .btn, .z-wave', 'waves-light'); Waves.init();
+    Waves.attach('.app-brand, .sidenav-item a, .btn:not(.zc-bar .btn), .z-wave', 'waves-light'); Waves.init();
 
     // bootbox
     bootbox.setDefaults({
@@ -651,11 +651,34 @@ $(function () {
 
             }
         },
-        "readEvent": function (pm, ot, partId, dt, mi, opt) { //alert(dt + " : " + hm + " : " + mi)
-            var mode = mi != null && mi != '' && mi > 0 ? 'view' : 'new';
-            if (pm && mode == 'view') mode = 'edit';
+        "writeEvent": function (ca, dt, hm, pt, partid) { //일정, 자원예약
+            //alert(ca + " : " + dt + " : " + hm + " : " + pt + " : " + partid)
+            ca = ca || ''; dt = dt || ''; hm = hm || ''; pt = pt || ''; partid = partid || '0';
+            if (dt == '' && _zw.V.lv.tgt != '') dt = _zw.V.lv.tgt;
 
-            dt = dt || ''; opt = opt || '';
+            _zw.V.wnd = 'modal';
+            _zw.V.ot = pt;
+            _zw.V.fdid = partid;
+            _zw.V.lv.cd1 = hm;
+
+            $.ajax({
+                type: "POST",
+                url: ca == 'booking' ? '/TnC/Booking/Write' : '/TnC/Schedule/Write',
+                data: _zw.fn.getAppQuery(dt),
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') {
+                        var v = res.substr(2).split(_zw.V.lv.boundary);
+                        var p = $('#popForm');
+                        p.html(v[0]); _zw.V.app = JSON.parse(v[1]); console.log(_zw.V.app);
+                        
+                        p.modal();
+                    }
+                }
+            });
+        },
+        "readEvent": function (ca, mi, pt, partId) { //alert(ca + " : " + mi + " : " + pt + " : " + partId); return
+            if (mi == null || mi == '' || parseInt(mi) == '0') return false;
+            ca = ca || ''; pt = pt || ''; partid = partid || '';
 
             $.ajax({
                 type: "POST",
@@ -1045,6 +1068,7 @@ $(function () {
         "getAppQuery": function (tgt) {
             var j = {};
             j["M"] = _zw.V.mode;
+            j["wnd"] = _zw.V.wnd; //창 모드 ('', popup, modal)
             j["ct"] = _zw.V.ct;
             j["ctalias"] = _zw.V.ctalias;
             j["ot"] = _zw.V.ot;
@@ -1069,6 +1093,9 @@ $(function () {
             j["end"] = _zw.V.lv.end;
             j["basesort"] = _zw.V.lv.basesort;
             j["boundary"] = _zw.V.lv.boundary;
+
+            j["cd1"] = _zw.V.lv.cd1;
+            j["cd2"] = _zw.V.lv.cd2;
 
             //alert(j["permission"])
             return JSON.stringify(j);
@@ -1237,7 +1264,7 @@ $(function () {
             } else if (tp && tp.length > 0) {
                 qi['fi'] = ''; qi['ft'] = tp[0]; qi['k1'] = tp[1]; qi['Tp'] = tp[2];
             }
-            console.log(qi)
+            //console.log(qi)
             var url = '/EA/Form?qi=' + _zw.base64.encode(JSON.stringify(qi));
             _zw.ut.openWnd(url, "eaform", 800, 600, "resize");
         },

@@ -146,7 +146,7 @@
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("<div class=\"zc-day-top\">");
         sb.AppendFormat("<span class=\"d-flex align-items-center\"><a javascript:void(0) class=\"zc-day-number\">{0}</a>", cellDay.Date.Day.ToString()); //click to day-view
-        if (ZumNet.Framework.Util.StringHelper.HasAcl(_scheduleAcl, "W")) sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info ml-1\" onclick=\"_zw.fn.viewEvent(null,'{0}','',0)\"><i class=\"fas fa-pencil-alt fs-11 d-none d-sm-flex\"></i></a>", sCellDay);
+        if (ZumNet.Framework.Util.StringHelper.HasAcl(_scheduleAcl, "W")) sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info ml-1\" onclick=\"_zw.mu.writeEvent('','{0}')\"><i class=\"fas fa-pencil-alt fs-11 d-none d-sm-flex\"></i></a>", sCellDay);
         sb.Append("</span>");
 
         string sKey = cellDay.Date.Month.ToString() + "/" + cellDay.Date.Day.ToString();

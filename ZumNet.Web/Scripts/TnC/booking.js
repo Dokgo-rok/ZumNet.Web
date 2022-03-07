@@ -104,6 +104,16 @@
                 _zw.fn.loadBar();
             }
         });
+
+        $('.zc-bar .zc-bar-unfill, .zc-bar .zc-bar-fill').click(function () {
+            var p = $(this).parent(); do { p = p.parent(); } while (!p.hasClass('zc-bar'));
+            if ($(this).hasClass('zc-bar-fill') && $(this).attr('data-appid')) {
+                _zw.mu.readEvent('booking', $(this).attr('data-appid'), p.attr('data-parttype'), p.attr('data-partid'));
+            } else {
+                _zw.mu.writeEvent('booking', $('#__ResSchedule thead span[data-for="DateDesc"]').attr('data-val')
+                    , $(this).parent().parent().attr('data-time'), p.attr('data-parttype'), p.attr('data-partid'));
+            }
+        });
     }
 
     _zw.fn.loadBar = function () {

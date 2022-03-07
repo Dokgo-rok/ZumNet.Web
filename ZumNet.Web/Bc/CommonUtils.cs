@@ -1360,9 +1360,18 @@ namespace ZumNet.Web.Bc
 
             if (ctrl.Request.IsAjaxRequest())
             {
-                string req = StringHelper.SafeString(HttpContext.Current.Request["qi"]);
-                JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //CommonUtils.PostDataToJson();
-                //JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req)); //CommonUtils.PostDataToJson();
+                JObject jReq;
+
+                if (HttpContext.Current.Request["qi"] == null)
+                {
+                    jReq = CommonUtils.PostDataToJson(); //인코딩 안되는 Post 경우
+                }
+                else
+                {
+                    string req = StringHelper.SafeString(HttpContext.Current.Request["qi"]);
+                    jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //CommonUtils.PostDataToJson();
+                                                                            //JObject jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req)); //CommonUtils.PostDataToJson();
+                }
                 JObject jV; //Response Data
 
                 if (jReq == null || jReq.Count == 0)
@@ -2288,7 +2297,7 @@ namespace ZumNet.Web.Bc
                 }
                 else
                 {
-                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), iCategoryId, Convert.ToInt32(HttpContext.Current.Session["URID"]), iFolderId, "O", "0");
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), iCategoryId, Convert.ToInt32(HttpContext.Current.Session["URID"]), iFolderId, "B", "0");
 
                     if (svcRt != null && svcRt.ResultCode == 0)
                     {
@@ -2301,6 +2310,9 @@ namespace ZumNet.Web.Bc
                         strReturn = svcRt.ResultMessage;
                     }
                 }
+
+                if (iFolderId > 0 && ctrl.ViewBag.R.current["appacl"].ToString() == "")
+                    ctrl.ViewBag.R.current["appacl"] = ctrl.ViewBag.R.current["acl"].ToString().Substring(6, 4) + ctrl.ViewBag.R.current["acl"].ToString().Substring(ctrl.ViewBag.R.current["acl"].ToString().Length - 2);
             }
 
             if (resView)
@@ -2315,7 +2327,7 @@ namespace ZumNet.Web.Bc
                     }
                     else
                     {
-                        strReturn = svcRt.ResultItemCount == 0 ? "자원 정보 누락" : svcRt.ResultMessage;
+                        //strReturn = svcRt.ResultItemCount == 0 ? "자원 정보 누락" : svcRt.ResultMessage;
                     }
 
                     if (strReturn == "")

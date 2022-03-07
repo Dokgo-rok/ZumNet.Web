@@ -387,50 +387,55 @@ namespace ZumNet.Web.Areas.TnC.Controllers
         }
         #endregion
 
-        #region [이벤트]
+        #region [이벤트 - 예약, 일정]
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
-        public string EventView()
+        public string Write()
         {
-            string rt = "";
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
             if (Request.IsAjaxRequest())
             {
                 try
                 {
-                    JObject jPost = CommonUtils.PostDataToJson();
-                    if (jPost == null || jPost.Count == 0 || jPost["M"].ToString() == "" || jPost["dt"].ToString() == "") return "필수값 누락!";
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
 
-                    int iMessageId = StringHelper.SafeInt(jPost["mi"]);
-                    if (jPost["M"].ToString() == "new")
+                    //초기 설정 가져오기
+                    sPos = "200";
+                    rt = Bc.CtrlHandler.BookingInit(this, true);
+                    if (rt != "") return "[" + sPos + "] " + rt;
+
+                    if (ViewBag.R.current["operator"].ToString() == "N" && !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "W"))
                     {
-                        ViewBag.JPost = jPost;
+                        return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                    }
+
+                    sPos = "300";
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    rt = FormHandler.BindScheduleToJson(this, svcRt);
+
+                    if (rt != "")
+                    {
+                        rt = "[" + sPos + "] " + rt;
                     }
                     else
                     {
-                        ZumNet.Framework.Core.ServiceResult svcRt = null;
-                        using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
-                        {
-                            svcRt = todo.GetToDoView("", Convert.ToInt32(Session["DNID"]), iMessageId, jPost["dt"].ToString());
-                        }
+                        jPost["app"]["dnid"] = Session["DNID"].ToString();
+                        jPost["app"]["ot"] = jPost["ot"].ToString() == "" || jPost["ot"].ToString() == "FD" ? "UR" : jPost["ot"].ToString();
+                        jPost["app"]["otid"] = jPost["ot"].ToString() == "FD" || Convert.ToInt32(jPost["fdid"]) == 0 ? Session["URID"].ToString() : jPost["fdid"].ToString();
 
-                        if (svcRt != null && svcRt.ResultCode == 0)
-                        {
-                            ViewBag.WorkEvent = svcRt.ResultDataSet;
-                            ViewBag.JPost = jPost;
-                        }
-                        else
-                        {
-                            //에러페이지
-                            rt = svcRt.ResultMessage;
-                        }
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Write", ViewBag)
+                                + jPost["lv"]["boundary"].ToString() 
+                                + Newtonsoft.Json.JsonConvert.SerializeObject(jPost["app"]);
                     }
-
-                    if (rt == "") rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_EventView", ViewBag);
                 }
                 catch (Exception ex)
                 {
-                    rt = ex.Message;
+                    rt = "[" + sPos + "] " + ex.Message;
                 }
             }
             return rt;

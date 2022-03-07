@@ -36,7 +36,7 @@
                 svcRt = schBiz.GetScheduleSearchParts(Convert.ToInt32(Session["DNID"]), "fd." + folderId.Split('.')[2] + ",", targetDate, targetDate);
             }
 
-            sb.Append("<div class=\"zc-bar\">");
+            sb.AppendFormat("<div class=\"zc-bar\" data-parttype=\"{0}\" data-partid=\"{1}\">", "FD", folderId.Split('.')[2]);
             sb.Append("<table class=\"table table-borderless mb-0\">");
             sb.Append("<thead>");
             sb.Append("<tr class=\"\">"); //시간 표시
@@ -85,7 +85,7 @@
                         sb.Append("<tr class=\"zc-bar-middle\">");
                         for (int i = 0; i < 50; i++)
                         {
-                            sb.AppendFormat("<td class=\"{0}\"><div>", i > 0 ? "zc-bar-edge" : "");
+                            sb.AppendFormat("<td class=\"{0}\" data-time=\"{1}\"><div>", i > 0 ? "zc-bar-edge" : "", GetHour(i));
 
                             if (i >= cFrom + 1 && i <= cTo)
                             {
@@ -99,8 +99,7 @@
                                 //    sb.Append("</div>");
                                 //    sb.Append("</div>");
                                 //}
-                                sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} zc-bar-fill\" onclick=\"_zw.mu.readEvent(null,'{1}','{2}','{3}','');\" data-toggle=\"tooltip\" data-placement=\"bottom\"\" title=\"\"></a>"
-                                    , sBtnClass, row["ObjectType"].ToString(), row["ParticipantID"].ToString(), row["PeriodFrom"].ToString(), row["MessageID"].ToString());
+                                sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0} zc-bar-fill\" data-appid=\"{1}\" data-toggle=\"tooltip\" data-placement=\"bottom\"\" title=\"\"></a>", sBtnClass, row["MessageID"].ToString());
                                 sb.Append("<div class=\"d-none\" data-help=\"event\">");
                                 sb.Append("<div class=\"tooltip-inner text-left\">");
                                 sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span></div>", row["StartTime"].ToString(), row["EndTime"].ToString());
@@ -125,7 +124,7 @@
                 for (int i = 0; i < 50; i++)
                 {
                     if (i == 0 || i >= 49) sb.AppendFormat("<td class=\"{0}\"></td>", i > 0 ? "zc-bar-edge" : "");
-                    else sb.AppendFormat("<td class=\"zc-bar-edge\"><a href=\"javascript:void(0)\" class=\"zc-bar-unfill\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\"></a></td>", GetTitleHour(i));
+                    else sb.AppendFormat("<td class=\"zc-bar-edge\" data-time=\"{0}\"><div><a href=\"javascript:void(0)\" class=\"zc-bar-unfill\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{1}\"></a></div></td>", GetHour(i), GetTitleHour(i));
                 }
                 sb.Append("</tr>");
             }
@@ -145,6 +144,11 @@
         }
 
         return sb.ToString();
+    }
+
+    private string GetHour(int cnt)
+    {
+        return ((cnt - 1) / 2 < 10 ? "0" : "") + ((cnt - 1) / 2).ToString() + ":" + ((cnt - 1) % 2 == 0 ? "00" : "30");
     }
 
     private string GetTitleHour(int cnt)

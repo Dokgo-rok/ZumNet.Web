@@ -180,7 +180,7 @@
     z-index: 1100 !important;
 }
 
-/* ajax loader, workstatus-modal */
+/* ajax loader, workstatus-modal, left-worktime */
 .modal-ajaxloader .modal-content {
     box-shadow: 1px 3px 10px rgba(0,0,0,0.5);
     border-radius: .45rem;
@@ -199,6 +199,12 @@
 }
 #popWorkStatus .custom-control-label::before {
     top: .15rem;
+}
+.z-lm-worktime span[data-for] {
+    min-width: 55px;
+    display: inline-block;
+    text-align: right;
+    /*border: 1px solid blue;*/
 }
 
 /* 배경이미지 사용 아이콘 : 보류 */

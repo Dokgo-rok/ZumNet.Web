@@ -1,0 +1,77 @@
+﻿@using System.Data;
+@using System.Text;
+@using ZumNet.Web.Bc;
+@{
+    DateTime dtStart = Convert.ToDateTime(ViewBag.R.lv.tgt + " " + (ViewBag.R.lv.cd1.ToString() == "" ? DateTime.Now.ToString("HH:mm") : ViewBag.R.lv.cd1.ToString()));
+}
+
+<div class="modal-dialog modal-dialog-scrollable" style="max-width: 31rem">
+    <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header">
+            <h4 class="modal-title">자원예약</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group row">
+                <label for="txtSubject" class="col-sm-2 col-form-label font-weight-normal">제목</label>
+                <div class="col-sm-10 input-group align-items-center">
+                    <label class="custom-control custom-checkbox m-0 mr-2">
+                        <input type="checkbox" class="custom-control-input" name="ckbPrioriy" id="ckb01">
+                        <span class="custom-control-label">중요</span>
+                    </label>
+                    <input type="text" class="form-control" id="txtSubject">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="txtStart" class="col-sm-2 col-form-label font-weight-normal">일정</label>
+                <div class="col-sm-10 input-group align-items-center">
+                    <input type="text" class="form-control datepicker mr-sm-2" id="txtStart" value="@ViewBag.R.lv.tgt.ToString()" style="max-width: 115px ">
+                    <select class="custom-select mr-sm-2" id="cbStart">
+                        @Html.Raw(CommonUtils.OptionTime(dtStart.Hour, dtStart.Minute))
+                    </select>
+                    <select class="custom-select mr-1 mr-sm-2" id="cbEnd">
+                        @Html.Raw(CommonUtils.OptionTime(dtStart.Hour + 1, dtStart.Minute))
+                    </select>
+                    <label class="custom-control custom-checkbox m-0">
+                        <input type="checkbox" class="custom-control-input" name="ckbRepeat" id="ckb02">
+                        <span class="custom-control-label">반복</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="rdoState" class="col-sm-2 col-form-label font-weight-normal">파일</label>
+                <div class="col-sm-10 input-group align-items-center">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="customFile">
+                        <label class="custom-file-label" for="customFile">이미지 / 문서 첨부</label>
+                    </div>
+                    <div class="ml-2 mr-sm-5">
+                        <button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다"><i class="fas fa-question fs-11"></i></button>
+                        <div class="d-none" data-help="file">
+                            <div>
+                                <div class="row">
+                                    <div class="col-3 font-weight-bold">* 이미지</div>
+                                    <div class="col-9">JPEG, JPG, GIF, PNG</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3 font-weight-bold">* 문서</div>
+                                    <div class="col-9">PPT, PPTX, XLS, XLSX, DOC, DOCX, PDF, HWP, TXT</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-0">
+                <textarea class="form-control bootstrap-maxlength" id="txtBody" rows="5" maxlength="1000"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-outline-secondary px-3 font-weight-bold" onclick="_zw.fn.saveEvent()">@Resources.Global.Save</button>
+            <button type="button" class="btn btn-default px-3" data-dismiss="modal">@Resources.Global.Cancel</button>
+        </div>
+    </div>
+</div>

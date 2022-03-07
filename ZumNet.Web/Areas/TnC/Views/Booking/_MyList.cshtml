@@ -99,7 +99,7 @@
                         <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["PeriodFrom"].ToString(), "MM-dd HH:mm", "")</td>
                         <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["PeriodTo"].ToString(), "MM-dd HH:mm", "")</td>
                         <td>@row["Participant"].ToString()</td>
-                        <td><a href="javascript:void" class="z-lnk-navy-n" onclick="_zw.mu.readEvent(null, '@row["ObjectType"].ToString()', '@row["ParticipantID"].ToString()', '@row["PeriodFrom"].ToString()', '@row["MessageID"].ToString()');">@row["Subject"].ToString()</a></td>
+                        <td><a href="javascript:void" class="z-lnk-navy-n" onclick="_zw.mu.readEvent('booking', '@row["MessageID"].ToString()', '@row["ObjectType"].ToString()', '@row["ParticipantID"].ToString()');">@row["Subject"].ToString()</a></td>
                         <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CreateDate"].ToString(), "MM-dd HH:mm", "")</td>
                         <td class="d-none d-sm-table-cell">@GetReqState(row["InUse"].ToString(), row["State"].ToString())</td>
                         <td class="d-none d-sm-table-cell">@(row["Confirmed"].ToString() == "Y" ? "확인" : "미확인")</td>

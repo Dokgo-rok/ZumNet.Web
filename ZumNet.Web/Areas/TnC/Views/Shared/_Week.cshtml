@@ -100,7 +100,7 @@
         //sb.AppendFormat("<span class=\"text-right\" style=\"width: 30px; margin-left: {0}px\">{1}</span>", iLeft.ToString(), hour);
         sb.Append("</div>");
         sb.Append("<div class=\"card-header-title py-1\">");
-        if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W")) sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info mr-2\" onclick=\"_zw.fn.viewEvent(null, '{0}', '', 0);\"><i class=\"fas fa-pencil-alt\"></i></a>", d.ToString("yyyy-MM-dd"));
+        if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W")) sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info mr-2\" onclick=\"_zw.mu.writeEvent('', '{0}', '');\"><i class=\"fas fa-pencil-alt\"></i></a>", d.ToString("yyyy-MM-dd"));
         sb.AppendFormat("<span>{0}/{1} {2}</span>", d.Month.ToString(), d.Day.ToString(), d.ToString("dddd"));
         sb.Append("</div>");
         sb.Append("</div>"); //card-header
