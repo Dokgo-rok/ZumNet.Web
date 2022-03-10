@@ -105,6 +105,9 @@ $(function () {
         size: "sm"
     });
 
+    // moment
+    moment.locale($('#current_culture').val());
+
     //bootbox.setLocale({ locale: "ko", values: { OK: "확인", CANCEL: "취소", CONFIRM: "확인" }});
 
     // jquery ajax setup
@@ -670,7 +673,46 @@ $(function () {
                         var v = res.substr(2).split(_zw.V.lv.boundary);
                         var p = $('#popForm');
                         p.html(v[0]); _zw.V.app = JSON.parse(v[1]); console.log(_zw.V.app);
-                        
+
+                        _zw.ut.picker('date'); _zw.ut.maxLength();
+
+                        p.find('.btn[data-toggle="popover"]').popover({
+                            html: true,
+                            content: function () { return p.find('[data-help="file"]').html(); }
+                        });
+
+                        p.find('input[name="ckbRepeat"]').click(function () {
+                            if ($(this).prop('checked')) {
+                                _zw.cdr.showRepeat(p, 'init', 'txtStart;txtEnd', 'cbStart', 'cbEnd');
+                            } else {
+                                _zw.cdr.closeRepeat(p);
+                            }
+                        });
+
+                        $('.btn[data-zf-menu="openResList"]').click(function () {
+                            $.ajax({
+                                type: "POST",
+                                url: '/TnC/Booking/ResourceList',
+                                data: '{ct:"' + _zw.V.ct + '",operator:"' + _zw.V.current.operator + '"}',
+                                success: function (res) {
+                                    if (res.substr(0, 2) == 'OK') {
+                                        var resWnd = $('#popBlank');
+                                        resWnd.html(res.substr(2));
+
+                                        resWnd.find('.accordion .card-body .btn[data-val]').click(function () {console.log('-----------')
+                                            //alert($(this).val());
+                                            //resWnd.find("button[data-dismiss='modal']").click();
+                                        });
+
+                                        resWnd.modal();
+
+                                    } else {
+                                        bootbox.alert(res);
+                                    }
+                                }
+                            });
+                        });
+
                         p.modal();
                     }
                 }
@@ -1388,13 +1430,18 @@ $(function () {
         },
         "picker": function (kind) {
             if (kind == 'date') {
-                if ($('.datepicker').length > 0) {
-                    $('.datepicker').datepicker({
-                        autoclose: true,
-                        //format: "yyyy-mm-dd",
-                        language: $('#current_culture').val()
-                    });
-                }
+                $('.input-daterange').datepicker({
+                    autoclose: true,
+                    inputs: $('.input-daterange input[type="text"]'),
+                    //format: "yyyy-mm-dd",
+                    language: $('#current_culture').val()
+                });
+
+                $('.datepicker').datepicker({
+                    autoclose: true,
+                    //format: "yyyy-mm-dd",
+                    language: $('#current_culture').val()
+                });
             }
         },
         "maxLength": function () {
@@ -1562,40 +1609,104 @@ $(function () {
 
     //Calendar (일정,일지,자원 관련 공통 함수)
     _zw.cdr = {
+        "weekOfMonth": function (d) {//특정일이 해당월 몇주차 인지 그리고 마지막 주차인지
+            var m = moment(d); //console.log((m.month() == moment(d).add(7, 'd').month()).toString() + " : " + m.format('MM DD Do dddd'))
+            //var nth = m.week() - m.startOf('month').week() + 1;
+            //var isLast = m.month() == moment(d).add(7, 'd').month() ? 'N' : 'Y';
+            return (m.week() - m.startOf('month').week() + 1).toString() + ';' + (m.month() == moment(d).add(7, 'd').month() ? 'N' : 'Y');
+        },
         "showRepeat": function (p, m, from, st, et) { // p => modal wnd, fromdate, starttime, endtime
             var el = p.find('#cbRepeatType'), ckRptEnd = p.find('input[name="ckbRepeatEnd"]'), rptEnd = p.find('#txtRepeatEnd');
+            var end = '';
+            if (from.indexOf(';') > 0) {
+                end = from.split(';')[1]; from = from.split(';')[0];
+            }
 
             el.on('change', function () {
                 p.find('#sPerDay input, #sPerWeek input').val(1);
                 
                 //alert($(this).val() + " : " + p.find('#' + from).val() + " : " + p.find('#' + st).val());
 
-                if ($(this).val() == 1) {
+                if ($(this).val() == 1) {//day
                     if (m == 'init') {
                         _zw.cdr.initRepeattDay(p, 0);
                         ckRptEnd.prop('checked', false); rptEnd.val(moment(p.find('#' + from).val()).add(1, 'M').format('YYYY-MM-DD')).prop('disabled', false);
                     }
                     p.find('#sPerDay').removeClass('d-none').addClass('d-flex');
                     p.find('#sPerWeek').removeClass('d-flex').addClass('d-none');
+                    p.find('#sPerMonth').removeClass('d-flex').addClass('d-none');
                     p.find('[data-for="rpt-day"]').addClass('d-none');
+                    p.find('[data-for="rpt-monthyear"]').addClass('d-none');
 
-                } else if ($(this).val() == 2) {
+                } else if ($(this).val() == 2) {//weekday
                     if (m == 'init') {
                         _zw.cdr.initRepeattDay(p, 1);
                         ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
                     }
                     p.find('#sPerDay').removeClass('d-flex').addClass('d-none');
                     p.find('#sPerWeek').removeClass('d-none').addClass('d-flex');
+                    p.find('#sPerMonth').removeClass('d-flex').addClass('d-none');
                     p.find('[data-for="rpt-day"]').addClass('d-none');
+                    p.find('[data-for="rpt-monthyear"]').addClass('d-none');
 
-                } else if ($(this).val() == 3) {
+                } else if ($(this).val() == 3) {//week
                     if (m == 'init') {
                         _zw.cdr.initRepeattDay(p, 3, moment(p.find('#' + from).val()).day());
                         ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
                     }
                     p.find('#sPerDay').removeClass('d-flex').addClass('d-none');
                     p.find('#sPerWeek').removeClass('d-none').addClass('d-flex');
+                    p.find('#sPerMonth').removeClass('d-flex').addClass('d-none');
                     p.find('[data-for="rpt-day"]').removeClass('d-none');
+                    p.find('[data-for="rpt-monthyear"]').addClass('d-none');
+
+                } else if ($(this).val() == 4) {//month
+                    if (m == 'init') {
+                        _zw.cdr.initRepeattMonthYear(p, 0, p.find('#' + from).val());
+                        ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
+                    }
+                    p.find('#sPerDay').removeClass('d-flex').addClass('d-none');
+                    p.find('#sPerWeek').removeClass('d-flex').addClass('d-none');
+                    p.find('#sPerMonth').removeClass('d-none').addClass('d-flex');
+                    p.find('[data-for="rpt-day"]').addClass('d-none');
+                    p.find('[data-for="rpt-monthyear"]').removeClass('d-none');
+
+                } else if ($(this).val() == 5) {//year
+                    if (m == 'init') {
+                        _zw.cdr.initRepeattMonthYear(p, 1, p.find('#' + from).val());
+                        ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
+                    }
+                    p.find('#sPerDay').removeClass('d-flex').addClass('d-none');
+                    p.find('#sPerWeek').removeClass('d-flex').addClass('d-none');
+                    p.find('#sPerMonth').removeClass('d-flex').addClass('d-none');
+                    p.find('[data-for="rpt-day"]').addClass('d-none');
+                    p.find('[data-for="rpt-monthyear"]').removeClass('d-none');
+                }
+            });
+
+            p.find('#' + from).on('blur', function () {
+                if (end != '') {
+                    p.find('#' + end).val($(this).val());
+                    //p.find('#' + end).datepicker('update', $(this).val());
+                }
+                if (el.val() == 4 || el.val() == '5') {
+                    _zw.cdr.initRepeattMonthYear(p, el.val() - 4, $(this).val());
+                    ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
+                }
+            });
+
+            p.find('#' + from).datepicker().on('changeDate', function (e) {
+                //console.log($(this).val());
+                if (end != '') {
+                    p.find('#' + end).val($(this).val());
+                    //p.find('#' + from).datepicker('update', $(this).val());
+                }
+                //p.find('#' + from).data('datepicker').setStartDate($(this).val());
+                //p.find('#' + from).data('datepicker').setEndDate($(this).val());
+
+                if (el.val() == 4 || el.val() == '5') {
+                    _zw.cdr.initRepeattMonthYear(p, el.val() - 4, $(this).val());
+                    ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
                 }
             });
 
@@ -1607,7 +1718,7 @@ $(function () {
                 }
             });
 
-            p.find('#sPerDay a[data-val], #sPerWeek a[data-val]').click(function () {
+            p.find('#sPerDay a[data-val], #sPerWeek a[data-val], #sPerMonth a[data-val]').click(function () {
                 $(this).parent().find('input').val($(this).attr('data-val'));
             });
 
@@ -1615,46 +1726,94 @@ $(function () {
             el.change();
             _zw.fn.input(p);
 
-            p.find('[data-for="rpt-rule"], [data-for="rpt-end"]').removeClass('d-none');
+            p.find('[data-for="rpt-setting"], [data-for="rpt-rule"], [data-for="rpt-end"]').removeClass('d-none');
         },
         "closeRepeat": function (p) {
-            p.find('[data-for="rpt-rule"], [data-for="rpt-day"], [data-for="rpt-end"]').addClass('d-none');
+            p.find('[data-for="rpt-setting"], [data-for="rpt-rule"], [data-for="rpt-day"], [data-for="rpt-end"]').addClass('d-none');
         },
         "initRepeattDay": function (p, m, n) {
+            var iCkbDay = p.find('[data-for="rpt-day"] input[name="ckbDay"]').length;
             p.find('[data-for="rpt-day"] input[name="ckbDay"]').each(function (i, e) {
+                $(this).next().html(moment.weekdaysMin(i));
                 if (m == 0) {
                     e.checked = false;
                 } else if (m == 1) {//평일
-                    e.checked = i > 0 && i < $(this).length - 1 ? true :false;
+                    e.checked = i > 0 && i < iCkbDay - 1 ? true :false;
                 } else if (m == 2) {//주말
-                    e.checked = i > 0 && i < $(this).length - 1 ? false : true;
+                    e.checked = i > 0 && i < iCkbDay - 1 ? false : true;
                 } else {
                     e.checked = i == n - 1 ? true : false;
                 }
+                //console.log(iCkbDay + " : " + i + " : " + e.checked);
+            });
+            //console.log(m + " : " + p.find('[data-for="rpt-day"] input[name="ckbDay"]:checked').length)
+        },
+        "initRepeattMonthYear": function (p, m, d) {
+            var nth = _zw.cdr.weekOfMonth(d).split(';'), fromDate = moment(d); //console.log(nth + " :" + fromDate.format('YYYY-MM-DD'));
+            if (nth[1] == 'Y') p.find('[data-for="rpt-monthyear"] label.custom-radio:last').removeClass('d-none');
+            else p.find('[data-for="rpt-monthyear"] label.custom-radio:last').addClass('d-none');
+
+            var txt = [], vlu = [], ckDay = '';
+            for (var i = 0; i < 7; i++) { ckDay += fromDate.weekday() == i ? 'o' : 'x'; }
+
+            txt[0] = m == 0 ? fromDate.date() + '일' : fromDate.month() + 1 + '월 ' + fromDate.date() + '일';
+            txt[1] = (m == 1 ? fromDate.month() + 1 + '월 ' : '') + nth[0] + '번째 ' + fromDate.format('dddd');
+            txt[2] = (m == 1 ? fromDate.month() + 1 + '월 ' : '') + '마지막 ' + fromDate.format('dddd');
+
+            vlu[0] = m == 0 ? fromDate.date() : fromDate.month() + 1 + ';' + fromDate.date();
+            vlu[1] = (m == 1 ? fromDate.month() + 1 + ';' : '') + nth[0] + ';' + ckDay;
+            vlu[2] = (m == 1 ? fromDate.month() + 1 + ';' : '') + '9' + ';' + ckDay;
+
+            p.find('div[data-for="rpt-monthyear"] :radio[name="rdoMonthYear"]').each(function (idx, e) {
+                var n = $(this).next(); //console.log(idx + " : " + n[0].outerHTML)
+                if (idx == 0) e.checked = true;
+                n.attr('data-val', vlu[idx]); n.html(txt[idx]);
             });
         },
         "getRepeat": function (p) { // p => modal wnd
             if (p.find('input[name="ckbRepeat"]').prop('checked')) {
-                var sRType = p.find('#cbRepeatType').val(), sRInterval = 0, sRWeekDay = "";
+                var sRType = p.find('#cbRepeatType').val(), sRCount = '', sRIntType = '', sRInterval = 0, sRDay = '', sRWeek = '', sRDate = '';
                 if (sRType == 1) {
                     sRInterval = p.find("#sPerDay input").val();
-                } else {
+                } else if (sRType == 2 || sRType == 3) {
                     sRInterval = p.find("#sPerWeek input").val();
                     p.find('[data-for="rpt-day"] input[name="ckbDay"]').each(function (i, e) {
-                        sRWeekDay += e.checked ? "o" : "x"; // xoxxxxx
+                        sRDay += e.checked ? "o" : "x"; // xoxxxxx
                     });
-                    if (sRWeekDay.indexOf('o') == -1) return 'CHECK';
+                    if (sRDay.indexOf('o') == -1) return 'CHECK';
+                } else if (sRType == 4 || sRType == 5) {
+                    var rdoMonYear = p.find('div[data-for="rpt-monthyear"] :radio[name="rdoMonthYear"]:checked'), vlu = rdoMonYear.next().attr('data-val').split(';');
+                    sRIntType = rdoMonYear.val();
+
+                    if (sRType == 4) {
+                        sRInterval = p.find("#sPerMonth input").val();
+                        if (sRIntType == 'A') {
+                            sRDate = vlu;
+                        } else if (sRIntType == 'B') {
+                            sRDay = vlu[1]; sRWeek = vlu[0];
+                        }
+                    } else {
+                        sRInterval = vlu[0];
+                        if (sRIntType == 'A') {
+                            sRDate = vlu[1];
+                        } else if (sRIntType == 'B') {
+                            sRDay = vlu[2]; sRWeek = vlu[1];
+                        }
+                    }
                 }
-                if (sRType == 3) sRType = 2;
+                if (sRType >= 3) sRType--;
 
                 if (!$('input[name="ckbRepeatEnd"]').prop('checked')) {
                     if (!moment($('#txtRepeatEnd').val()).isValid()) return 'INVALID';
                     if (moment($('#txtRepeatEnd').val() + ' 00:00:00').diff(moment($('#txtStart').val() + ' 00:00:00')) <= 0) return 'END';
                 }
-                return sRType + "|" + sRInterval + "|" + sRWeekDay + "|" + $("#txtRepeatEnd").val();
+                //return sRType + "|" + sRInterval + "|" + sRDay + "|" + $("#txtRepeatEnd").val();
+
+                //repeat_type, end, count, interval_type, interval, cond_day, cond_week, cond_date
+                return sRType + '|' + $("#txtRepeatEnd").val() + '|' + sRCount + '|' + sRIntType + '|' + sRInterval + '|' + sRDay + '|' + sRWeek + '|' + sRDate;
 
             } else {
-                return '0|||';
+                return '0|||||||';
             }
         }
     };

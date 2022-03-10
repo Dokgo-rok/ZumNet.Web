@@ -17,164 +17,168 @@
 
 }
 @functions{
-    Calendar _monthCal = new Calendar();
-    Dictionary<string, string> _eventList = new Dictionary<string, string>();
+        Calendar _monthCal = new Calendar();
+        Dictionary<string, string> _eventList = new Dictionary<string, string>();
 
-    string _scheduleAcl = "";
-    //int iSeq = 1;
+        string _scheduleAcl = "";
+        //int iSeq = 1;
 
-    private string RenderCalendar()
-    {
-        StringWriter sw = new StringWriter();
-        HtmlTextWriter w = new HtmlTextWriter(sw);
-
-        _monthCal.RenderControl(w);
-
-        return sw.ToString();
-    }
-
-    private void InitCalendar(DateTime curDate, string acl)
-    {
-        _scheduleAcl = acl;
-
-        _monthCal.TodaysDate = curDate;
-        _monthCal.CssClass = "zc-calendar table table-bordered";
-        _monthCal.Width = Unit.Percentage(100);
-        _monthCal.BorderWidth = Unit.Pixel(0);
-        _monthCal.CellPadding = 0;
-        _monthCal.CellSpacing = 0;
-
-        _monthCal.ShowTitle = false;
-        _monthCal.ShowDayHeader = true;
-        _monthCal.ShowGridLines = true;
-
-        _monthCal.DayHeaderStyle.CssClass = "zc-header";
-        _monthCal.DayNameFormat = DayNameFormat.Short;
-        //_monthCal.DayStyle.CssClass = "zc-day";
-        //_monthCal.OtherMonthDayStyle.CssClass = "zc-day-other";
-        _monthCal.Visible = true;
-
-        _monthCal.DayRender += new DayRenderEventHandler(this.MonthCalendar_DayRender);
-    }
-
-    private void SetEvents(DataSet data, DataRowCollection schType)
-    {
-        StringBuilder sb = new StringBuilder();
-        int iUnit = 30; //1, 5, 10, 15, 30 단위만 허용한다
-
-        foreach (DataRow row in data.Tables[0].Rows)
+        private string RenderCalendar()
         {
-            DateTime dt = Convert.ToDateTime(row["PeriodFrom"]);
-            string sCssClass = "";
-            string sDpCond = row["DisplayCond"].ToString();
-            string sState = row["State"].ToString();
-            string sColor = "";
-            foreach(DataRow r in schType)
+            StringWriter sw = new StringWriter();
+            HtmlTextWriter w = new HtmlTextWriter(sw);
+
+            _monthCal.RenderControl(w);
+
+            return sw.ToString();
+        }
+
+        private void InitCalendar(DateTime curDate, string acl)
+        {
+            _scheduleAcl = acl;
+
+            _monthCal.TodaysDate = curDate;
+            _monthCal.CssClass = "zc-calendar table table-bordered";
+            _monthCal.Width = Unit.Percentage(100);
+            _monthCal.BorderWidth = Unit.Pixel(0);
+            _monthCal.CellPadding = 0;
+            _monthCal.CellSpacing = 0;
+
+            _monthCal.ShowTitle = false;
+            _monthCal.ShowDayHeader = true;
+            _monthCal.ShowGridLines = true;
+
+            _monthCal.DayHeaderStyle.CssClass = "zc-header";
+            _monthCal.DayNameFormat = DayNameFormat.Short;
+            //_monthCal.DayStyle.CssClass = "zc-day";
+            //_monthCal.OtherMonthDayStyle.CssClass = "zc-day-other";
+            _monthCal.Visible = true;
+
+            _monthCal.DayRender += new DayRenderEventHandler(this.MonthCalendar_DayRender);
+        }
+
+        private void SetEvents(DataSet data, DataRowCollection schType)
+        {
+            StringBuilder sb = new StringBuilder();
+            int iUnit = 30; //1, 5, 10, 15, 30 단위만 허용한다
+
+            foreach (DataRow row in data.Tables[0].Rows)
             {
-                if (r["SchType"].ToString() == row["SchType"].ToString())
+                DateTime dt = Convert.ToDateTime(row["PeriodFrom"]);
+                string sCssClass = "";
+                string sDpCond = row["DisplayCond"].ToString();
+                string sState = row["State"].ToString();
+                string sColor = "";
+                foreach(DataRow r in schType)
                 {
-                    sColor = r["Color"].ToString(); break;
+                    if (r["SchType"].ToString() == row["SchType"].ToString())
+                    {
+                        sColor = r["Color"].ToString(); break;
+                    }
                 }
+
+                if (Convert.ToInt16(row["State"]) != 7 && Convert.ToInt16(row["State"]) != 1)
+                {
+                    if (DateTime.Compare(Convert.ToDateTime(row["PeriodFrom"]), Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))) < 0) sState = "4";
+                    else sState = "0";
+                }
+
+                //Response.Write(row["MessageID"].ToString() + " : " + sState + "<br />");
+
+                if (sDpCond == "N")
+                {
+                    sCssClass = "zc-day-event";
+                }
+                else
+                {
+                    string[] v = sDpCond.Split(new char[] { '_' });
+
+                    if (v[1] == "1") sCssClass = "zc-day-event zc-event-start";
+                    else if (v[1] == "2") sCssClass = "zc-day-event zc-event-end";
+                    else sCssClass = "zc-day-event zc-event-mid";
+                }
+
+                sb.AppendFormat("<div class=\"{0} justify-content-center justify-content-sm-start\" data-dpcond=\"{1}\" data-start=\"{2}\" data-end=\"{3}\">"
+                            , sCssClass, sDpCond, row["StartTime"].ToString(), row["EndTime"].ToString());
+                sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.mu.readEvent('{1}','{2}','{3}', '{4}');\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
+                                , "d-flex", ViewBag.R.ctalias.ToString(), row["MessageID"].ToString(), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
+                sb.AppendFormat("<i class=\"fas fa-chalkboard fs-10 mt-1 mr-1\" style=\"color:{0}\"></i><span class=\"d-none d-sm-inline-block\">{1}</span>", sColor, row["subject"].ToString());
+                sb.Append("</a>");
+                sb.Append("<div class=\"d-none\" data-help=\"event\">");
+                sb.Append("<div class=\"tooltip-inner text-left\">");
+                sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
+                if (row["Repeat"].ToString() == "Y") sb.Append("<i class=\"fas fa-redo-alt ml-2\"></i>");
+                sb.Append("</div>");
+                sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());
+                sb.Append("</div>");
+                sb.Append("</div>");
+
+                sb.Append("</div>");
+
+                string sKey = dt.Month.ToString() + "/" + dt.Day.ToString();
+                string sEvents = this._eventList.ContainsKey(sKey) ? this._eventList[sKey] : "";
+                this._eventList[sKey] = sEvents + sb.ToString();
+
+                //Response.Write(sKey + " : " + this._eventList[sKey] + "<br />");
+
+                sb.Remove(0, sb.Length);
             }
-
-            if (Convert.ToInt16(row["State"]) != 7 && Convert.ToInt16(row["State"]) != 1)
-            {
-                if (DateTime.Compare(Convert.ToDateTime(row["PeriodFrom"]), Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))) < 0) sState = "4";
-                else sState = "0";
-            }
-
-            //Response.Write(row["MessageID"].ToString() + " : " + sState + "<br />");
-
-            if (sDpCond == "N")
-            {
-                sCssClass = "zc-day-event";
-            }
-            else
-            {
-                string[] v = sDpCond.Split(new char[] { '_' });
-
-                if (v[1] == "1") sCssClass = "zc-day-event zc-event-start";
-                else if (v[1] == "2") sCssClass = "zc-day-event zc-event-end";
-                else sCssClass = "zc-day-event zc-event-mid";
-            }
-
-            sb.AppendFormat("<div class=\"{0} justify-content-center justify-content-sm-start\" data-dpcond=\"{1}\" data-start=\"{2}\" data-end=\"{3}\">"
-                        , sCssClass, sDpCond, row["StartTime"].ToString(), row["EndTime"].ToString());
-            sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2});\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
-                            , "d-flex", row["PeriodFrom"].ToString(), row["MessageID"].ToString());
-            sb.AppendFormat("<i class=\"fas fa-chalkboard fs-10 mt-1 mr-1\" style=\"color:{0}\"></i><span class=\"d-none d-sm-inline-block\">{1}</span>", sColor, row["subject"].ToString());
-            sb.Append("</a>");
-            sb.Append("<div class=\"d-none\" data-help=\"event\">");
-            sb.Append("<div class=\"tooltip-inner text-left\">");
-            sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
-            if (row["Repeat"].ToString() == "Y") sb.Append("<i class=\"fas fa-redo-alt ml-2\"></i>");
-            sb.Append("</div>");
-            sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());
-            sb.Append("</div>");
-            sb.Append("</div>");
-
-            sb.Append("</div>");
-
-            string sKey = dt.Month.ToString() + "/" + dt.Day.ToString();
-            string sEvents = this._eventList.ContainsKey(sKey) ? this._eventList[sKey] : "";
-            this._eventList[sKey] = sEvents + sb.ToString();
-
-            //Response.Write(sKey + " : " + this._eventList[sKey] + "<br />");
-
-            sb.Remove(0, sb.Length);
+            //Response.Write("SetCalendar end : " + iSeq.ToString() + Environment.NewLine); iSeq++;
         }
-        //Response.Write("SetCalendar end : " + iSeq.ToString() + Environment.NewLine); iSeq++;
-    }
 
-    private void MonthCalendar_DayRender(object sender, DayRenderEventArgs e)
-    {
-        //Response.Write("DayRender : " + iSeq.ToString() + Environment.NewLine); iSeq++;
-        CalendarDay cellDay = e.Day;
-        TableCell cell = e.Cell;
-        cell.Controls.Clear();
-
-        string sCellCss = "zc-day";
-        string sCellDay = cellDay.Date.ToString("yyyy-MM-dd");
-
-        if (cellDay.IsOtherMonth) sCellCss += " zc-day-other";
-        else if (cellDay.Date.ToShortDateString() == DateTime.Now.ToShortDateString()) sCellCss += " zc-day-today";
-
-        cell.Width = cellDay.Date.DayOfWeek == DayOfWeek.Sunday || cellDay.Date.DayOfWeek == DayOfWeek.Saturday ? Unit.Percentage(12) : Unit.Percentage(15.2);
-        cell.CssClass = sCellCss + " zc-day-" + cellDay.Date.DayOfWeek.ToString().Substring(0, 3).ToLower();
-        cell.Attributes.Add("data-date", sCellDay);
-
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("<div class=\"zc-day-top\">");
-        sb.AppendFormat("<span class=\"d-flex align-items-center\"><a javascript:void(0) class=\"zc-day-number\">{0}</a>", cellDay.Date.Day.ToString()); //click to day-view
-        if (ZumNet.Framework.Util.StringHelper.HasAcl(_scheduleAcl, "W")) sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info ml-1\" onclick=\"_zw.mu.writeEvent('','{0}')\"><i class=\"fas fa-pencil-alt fs-11 d-none d-sm-flex\"></i></a>", sCellDay);
-        sb.Append("</span>");
-
-        string sKey = cellDay.Date.Month.ToString() + "/" + cellDay.Date.Day.ToString();
-        int iUnit = 30;
-        //string sTotal = this._eventTotal.ContainsKey(sKey) && StringHelper.SafeInt(this._eventTotal[sKey]) > 0 ? this._eventTotal[sKey] : "";
-        //string sHour = sTotal == "" || sTotal == "0" ? "" : CommonUtils.CvtMinToHour((Convert.ToInt32(sTotal) * iUnit).ToString()) + "h";
-        //if (sHour != "" && sHour != "0") sb.AppendFormat("<span class=\"d-none d-sm-flex text-purple font-weight-bold\">{0}</span>", sHour);
-
-        string strLunar = "";   // 음력
-        LunisolarDate lunDate = LunisolarDate.ConvertFromSolarDate(cellDay.Date);
-
-        int lunarDay = lunDate.Day;
-        int lunarMonth = lunDate.Month;
-
-        if (lunarDay == 1 || (lunarDay % 5 == 0))
+        private void MonthCalendar_DayRender(object sender, DayRenderEventArgs e)
         {
-            if (lunDate.LeapMonth) strLunar = "(" + "윤" + " " + lunarMonth.ToString() + "." + lunarDay.ToString() + ")";
-            else strLunar = "(" + lunarMonth.ToString() + "." + lunarDay.ToString() + ")";
+            //Response.Write("DayRender : " + iSeq.ToString() + Environment.NewLine); iSeq++;
+            CalendarDay cellDay = e.Day;
+            TableCell cell = e.Cell;
+            cell.Controls.Clear();
+
+            string sCellCss = "zc-day";
+            string sCellDay = cellDay.Date.ToString("yyyy-MM-dd");
+
+            if (cellDay.IsOtherMonth) sCellCss += " zc-day-other";
+            else if (cellDay.Date.ToShortDateString() == DateTime.Now.ToShortDateString()) sCellCss += " zc-day-today";
+
+            cell.Width = cellDay.Date.DayOfWeek == DayOfWeek.Sunday || cellDay.Date.DayOfWeek == DayOfWeek.Saturday ? Unit.Percentage(12) : Unit.Percentage(15.2);
+            cell.CssClass = sCellCss + " zc-day-" + cellDay.Date.DayOfWeek.ToString().Substring(0, 3).ToLower();
+            cell.Attributes.Add("data-date", sCellDay);
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<div class=\"zc-day-top\">");
+            sb.AppendFormat("<span class=\"d-flex align-items-center\"><a javascript:void(0) class=\"zc-day-number\">{0}</a>", cellDay.Date.Day.ToString()); //click to day-view
+            if (ZumNet.Framework.Util.StringHelper.HasAcl(_scheduleAcl, "W"))
+            {
+                sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info ml-1\" onclick=\"_zw.mu.writeEvent('{0}','{1}', '', '{2}', '{3}')\"><i class=\"fas fa-pencil-alt fs-11 d-none d-sm-flex\"></i></a>"
+                    , ViewBag.R.ctalias.ToString(), sCellDay, ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
+            }
+            sb.Append("</span>");
+
+            string sKey = cellDay.Date.Month.ToString() + "/" + cellDay.Date.Day.ToString();
+            int iUnit = 30;
+            //string sTotal = this._eventTotal.ContainsKey(sKey) && StringHelper.SafeInt(this._eventTotal[sKey]) > 0 ? this._eventTotal[sKey] : "";
+            //string sHour = sTotal == "" || sTotal == "0" ? "" : CommonUtils.CvtMinToHour((Convert.ToInt32(sTotal) * iUnit).ToString()) + "h";
+            //if (sHour != "" && sHour != "0") sb.AppendFormat("<span class=\"d-none d-sm-flex text-purple font-weight-bold\">{0}</span>", sHour);
+
+            string strLunar = "";   // 음력
+            LunisolarDate lunDate = LunisolarDate.ConvertFromSolarDate(cellDay.Date);
+
+            int lunarDay = lunDate.Day;
+            int lunarMonth = lunDate.Month;
+
+            if (lunarDay == 1 || (lunarDay % 5 == 0))
+            {
+                if (lunDate.LeapMonth) strLunar = "(" + "윤" + " " + lunarMonth.ToString() + "." + lunarDay.ToString() + ")";
+                else strLunar = "(" + lunarMonth.ToString() + "." + lunarDay.ToString() + ")";
+            }
+
+            sb.AppendFormat("<span class=\"d-none d-md-flex fs-11\">{0}</span>", strLunar);
+            sb.Append("</div>");
+
+            if (this._eventList.ContainsKey(sKey)) sb.Append(this._eventList[sKey]);  //events
+
+            cell.Text = sb.ToString();
         }
-
-        sb.AppendFormat("<span class=\"d-none d-md-flex fs-11\">{0}</span>", strLunar);
-        sb.Append("</div>");
-
-        if (this._eventList.ContainsKey(sKey)) sb.Append(this._eventList[sKey]);  //events
-
-        cell.Text = sb.ToString();
     }
-}
 
 <div class="zc-month">
     @*<div id="__fcView"></div>*@

@@ -232,6 +232,46 @@ namespace ZumNet.Web.Areas.TnC.Controllers
             }
             return rt;
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ResourceList()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["ct"].ToString() == "" || jPost["operator"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
+                    {
+                        svcRt = schBiz.GetBookingClass(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(jPost["ct"])
+                                    , "", Convert.ToInt32(Session["URID"]), jPost["operator"].ToString());
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            ViewBag.ResClass = svcRt.ResultDataRowCollection;
+                            ViewBag.ResList = svcRt.ResultDataDetail["Resources"];
+
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ResourceList", ViewBag);
+                        }
+                        else
+                        {
+                            rt = svcRt.ResultMessage;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
         #endregion
 
         #region [달력, 현황]
@@ -424,12 +464,14 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                     }
                     else
                     {
+                        sPos = "400";
                         jPost["app"]["dnid"] = Session["DNID"].ToString();
                         jPost["app"]["ot"] = jPost["ot"].ToString() == "" || jPost["ot"].ToString() == "FD" ? "UR" : jPost["ot"].ToString();
                         jPost["app"]["otid"] = jPost["ot"].ToString() == "FD" || Convert.ToInt32(jPost["fdid"]) == 0 ? Session["URID"].ToString() : jPost["fdid"].ToString();
 
+                        sPos = "410";
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Write", ViewBag)
-                                + jPost["lv"]["boundary"].ToString() 
+                                + jPost["lv"]["boundary"].ToString()
                                 + Newtonsoft.Json.JsonConvert.SerializeObject(jPost["app"]);
                     }
                 }

@@ -1,0 +1,81 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json.Linq;
+@{
+}
+@functions{
+    private string RenderResourceList(DataRowCollection resClass, JObject resList)
+    {
+        StringBuilder sb = new StringBuilder();
+        //sb.Append("<div class=\"list-group bg-white border border-secondary\">");
+        //foreach (DataRow row in resClass)
+        //{
+        //    if (row["Deleted"].ToString() == "N")
+        //    {
+        //        JArray q = (JArray)resList["cls_" + row["NodeID"].ToString()];
+        //        if (q.Count > 0)
+        //        {
+        //            sb.Append("<div class=\"row mx-0\">");
+        //            sb.AppendFormat("<div class=\"col-4 list-group-item list-group-item-action text-center border-bottom-1 border-light p-1\">{0}</div>", row["DisplayName"].ToString());
+        //            sb.Append("<div class=\"col-8 list-group-item list-group-item-action align-item-center p-1\">");
+
+        //            foreach (JObject j in q)
+        //            {
+        //                sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"btn btn-sm rounded-pill btn-default m-0 ml-1 mb-1\" data-val=\"{0}\">{1}</a>", j["oid"].ToString(), j["name"].ToString());
+        //            }
+
+        //            sb.Append("</div>");
+        //            sb.Append("</div>");
+        //        }
+        //    }
+        //}
+        //sb.Append("</div>");
+
+        sb.Append("<div class=\"accordion\">");
+        foreach (DataRow row in resClass)
+        {
+            if (row["Deleted"].ToString() == "N")
+            {
+                JArray q = (JArray)resList["cls_" + row["NodeID"].ToString()];
+                if (q.Count > 0)
+                {
+                    sb.AppendFormat("<div class=\"card mb-1 border\">");
+                    sb.Append("<div class=\"card-header px-3 py-2 bg-white\">");
+                    sb.AppendFormat("<a class=\"z-lnk-navy stretched-link\" data-toggle=\"collapse\" href=\"#accordion-{0}\" aria-expanded=\"false\">{1}</a>"
+                            , row["NodeID"].ToString().Replace("0.0.", ""), row["DisplayName"].ToString());
+                    sb.Append("</div>");
+                    sb.AppendFormat("<div id=\"accordion-{0}\" class=\"collapse\">", row["NodeID"].ToString().Replace("0.0.", ""));
+                    sb.Append("<div class=\"card-body px-3 pt-2 pb-0\">");
+
+                    foreach (JObject j in q)
+                    {
+                        sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"btn rounded-pill btn-default mr-2 mb-2\" data-val=\"{0};{1};{2}\">{3}</a>"
+                                , "D", j["oid"].ToString(), j["use"].ToString(), j["name"].ToString());
+                    }
+
+                    sb.Append("</div>"); //body
+                    sb.Append("</div>"); //acc
+                    sb.Append("</div>"); //card
+
+                }
+            }
+        }
+        sb.Append("</div>");
+        return sb.ToString();
+    }
+}
+
+<div class="modal-dialog modal-dialog-scrollable" style="max-width: 25rem">
+    <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header">
+            <h4 class="modal-title">자원</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body bg-light p-2 pb-1">
+            @Html.Raw(RenderResourceList(ViewBag.ResClass, ViewBag.ResList))
+        </div>
+    </div>
+</div>

@@ -2863,6 +2863,7 @@
     <Content Include="Areas\TnC\Views\Shared\_Day.cshtml" />
     <Content Include="Content\Json\jform_schedule.json" />
     <Content Include="Areas\TnC\Views\Shared\_Write.cshtml" />
+    <Content Include="Areas\TnC\Views\Shared\_ResourceList.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

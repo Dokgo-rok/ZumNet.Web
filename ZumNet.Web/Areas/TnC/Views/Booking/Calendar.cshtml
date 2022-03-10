@@ -21,6 +21,8 @@
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
     @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
     @Scripts.Render("~/Scripts/TnC/booking.js")
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
@@ -56,7 +58,7 @@
                 <div class="d-flex justify-content-end mt-2 mt-sm-0 z-lv-menu">
                     @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current.acl.ToString(), "W"))
                     {
-                        <button class="btn btn-outline-purple btn-sm mr-2" onclick="_zw.mu.writeEvent('booking', '', '', '@ViewBag.R.ot', '@ViewBag.R.fdid');"><i class="fas fa-plus"></i><span class="d-none d-sm-inline-block ml-1">자원신청</span></button>
+                        <button class="btn btn-outline-purple btn-sm mr-2" onclick="_zw.mu.writeEvent('@ViewBag.R.ctalias', '', '', '@ViewBag.R.ot', '@ViewBag.R.fdid');"><i class="fas fa-plus"></i><span class="d-none d-sm-inline-block ml-1">자원신청</span></button>
                     }
                     <button class="btn btn-outline-success btn-sm mr-2"><i class="fas fa-file-excel"></i><span class="d-none d-sm-inline-block ml-1">엑셀</span></button>
                     <button class="btn icon-btn btn-outline-secondary m-0 btn-sm" aria-controls="vw-full-fill" onclick="_zw.ut.ctrls();"><i class="fas fa-expand"></i></button>

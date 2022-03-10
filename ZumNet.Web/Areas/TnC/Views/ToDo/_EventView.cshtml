@@ -5,7 +5,7 @@
 
 }
 @functions{
-    private string RenderNewEvent(string startDate, DataSet ds)
+    private string RenderNewEvent(DateTime startDate, DataSet ds)
     {
         StringBuilder sb = new StringBuilder();
         sb.Append("<div class=\"modal-content bg-white\" style=\"box-shadow: 0px 5px 15px rgba(0,0,0,0.5)\">");
@@ -32,7 +32,7 @@
         sb.Append("<div class=\"form-group row mb-2\">");
         sb.Append("<label for=\"txtStart\" class=\"col-sm-2 col-form-label font-weight-normal\">일정</label>");
         sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker mr-sm-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 115px \">", startDate);
+        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker mr-sm-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 115px \">", startDate.ToShortDateString());
         sb.Append("<select class=\"custom-select mr-sm-2\" id=\"cbStart\">");
         sb.Append(CommonUtils.OptionTime(DateTime.Now.Hour, DateTime.Now.Minute));
         sb.Append("</select>");
@@ -105,11 +105,11 @@
         return sb.ToString();
     }
 
-    private string RenderEditEvent(string startDate, DataSet ds, string option)
+    private string RenderEditEvent(DateTime startDate, DataSet ds, string option)
     {
         string strTitle = "일지 수정";
-        if (option == "this") strTitle = Convert.ToDateTime(startDate).ToString("MM월 dd일") + " 일지 수정";
-        else if (option == "after") strTitle = Convert.ToDateTime(startDate).ToString("MM월 dd일") + " 이후 일지 수정";
+        if (option == "this") strTitle = startDate.ToString("MM월 dd일") + " 일지 수정";
+        else if (option == "after") strTitle = startDate.ToString("MM월 dd일") + " 이후 일지 수정";
         else if (option == "all") strTitle = "전체 반복 일지 수정";
 
         StringBuilder sb = new StringBuilder();
@@ -155,9 +155,9 @@
                 sb.Append("<label for=\"txtStart\" class=\"col-sm-2 col-form-label font-weight-normal\">일정</label>");
                 sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
 
-                if (option == "this") sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 100px \" readonly>", startDate);
-                else if (option == "after") sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker mr-sm-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 115px \">", startDate);
-                else sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker mr-sm-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 115px \">", drMain["PeriodFrom"].ToString());
+                if (option == "this") sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 100px \" readonly>", startDate.ToShortDateString());
+                else if (option == "after") sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker mr-sm-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 115px \">", startDate.ToShortDateString());
+                else sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker mr-sm-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 115px \">", Convert.ToDateTime(drMain["PeriodFrom"]).ToShortDateString());
 
                 sb.Append("<select class=\"custom-select mr-sm-2\" id=\"cbStart\">");
                 sb.Append(CommonUtils.OptionTime(drMain["StartTime"].ToString().Substring(0, 2), drMain["StartTime"].ToString().Substring(3, 2)));
@@ -259,7 +259,7 @@
         return sb.ToString();
     }
 
-    private string RenderViewEvent(string startDate, DataSet ds)
+    private string RenderViewEvent(DateTime startDate, DataSet ds)
     {
         StringBuilder sb = new StringBuilder();
         sb.Append("<div class=\"modal-content bg-white\" style=\"box-shadow: 0px 5px 15px rgba(0,0,0,0.5)\">");
@@ -295,7 +295,7 @@
             sb.Append("<div class=\"form-group row mb-2\">");
             sb.Append("<label for=\"txtStart\" class=\"col-sm-2 col-form-label font-weight-normal\">일정</label>");
             sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
-            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 100px \" readonly>", drMain["PeriodFrom"].ToString());
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 100px \" readonly>", Convert.ToDateTime(drMain["PeriodFrom"]).ToShortDateString());
             sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"cbStart\" value=\"{0}\" style=\"max-width: 70px \" readonly>", drMain["StartTime"].ToString());
             sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white mr-2\" id=\"cbEnd\" value=\"{0}\" style=\"max-width: 70px \" readonly>", drMain["EndTime"].ToString());
             sb.Append("<label class=\"custom-control custom-checkbox m-0\">");
@@ -653,15 +653,15 @@
 <div class="modal-dialog modal-dialog-scrollable" style="max-width: 31rem">
     @if (ViewBag.JPost["M"].ToString() == "new")
     {
-        @Html.Raw(RenderNewEvent(ViewBag.JPost["dt"].ToString(), ViewBag.WorkEvent))
+        @Html.Raw(RenderNewEvent(Convert.ToDateTime(ViewBag.JPost["dt"]), ViewBag.WorkEvent))
     }
     else if (ViewBag.JPost["M"].ToString() == "view")
     {
-        @Html.Raw(RenderViewEvent(ViewBag.JPost["dt"].ToString(), ViewBag.WorkEvent))
+        @Html.Raw(RenderViewEvent(Convert.ToDateTime(ViewBag.JPost["dt"]), ViewBag.WorkEvent))
     }
     else if (ViewBag.JPost["M"].ToString() == "edit")
     {
-        @Html.Raw(RenderEditEvent(ViewBag.JPost["dt"].ToString(), ViewBag.WorkEvent, ViewBag.JPost["opt"].ToString()))
+        @Html.Raw(RenderEditEvent(Convert.ToDateTime(ViewBag.JPost["dt"]), ViewBag.WorkEvent, ViewBag.JPost["opt"].ToString()))
     }
 
     @*<div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">

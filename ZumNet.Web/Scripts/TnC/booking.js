@@ -82,12 +82,17 @@
             }
         } else {
             $('#__CtDashboard #ddlResList').html('<option value="">자원 분류를 선택하세요..</option>');
-        }        
+        }
     });
 
     $('#__CtDashboard .btn[data-zv-menu="search"]').click(function () {
         _zw.fn.loadBar();
     });
+
+    _zw.fn.saveEvent = function () {
+        var p = $('#popForm');
+        var vRRule = _zw.cdr.getRepeat(p); console.log(vRRule);
+    }
 
     _zw.fn.bindBarCtrl = function () {
         $('[data-toggle="tooltip"][title!=""]').tooltip();

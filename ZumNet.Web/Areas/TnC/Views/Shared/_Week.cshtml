@@ -17,136 +17,140 @@
     }
 }
 @functions{
-    private string ViewList(DataSet data, string acl, DateTime monDay, DataRowCollection schType)
-    {
-        StringBuilder sbMon = new StringBuilder();
-        StringBuilder sbTue = new StringBuilder();
-        StringBuilder sbWed = new StringBuilder();
-        StringBuilder sbThu = new StringBuilder();
-        StringBuilder sbFri = new StringBuilder();
-        StringBuilder sbSat = new StringBuilder();
-        StringBuilder sbSun = new StringBuilder();
-
-        foreach (DataRow row in data.Tables[0].Rows)
+        private string ViewList(DataSet data, string acl, DateTime monDay, DataRowCollection schType)
         {
-            string strList = RenderEvent(row, acl, schType);
+            StringBuilder sbMon = new StringBuilder();
+            StringBuilder sbTue = new StringBuilder();
+            StringBuilder sbWed = new StringBuilder();
+            StringBuilder sbThu = new StringBuilder();
+            StringBuilder sbFri = new StringBuilder();
+            StringBuilder sbSat = new StringBuilder();
+            StringBuilder sbSun = new StringBuilder();
 
-            DayOfWeek dayOfWeek = Convert.ToDateTime(row["PeriodFrom"]).DayOfWeek; //sunday = 0
-
-            switch (dayOfWeek)
+            foreach (DataRow row in data.Tables[0].Rows)
             {
-                case System.DayOfWeek.Monday:
-                    sbMon.Append(strList);
-                    break;
-                case System.DayOfWeek.Tuesday:
-                    sbTue.Append(strList);
-                    break;
-                case System.DayOfWeek.Wednesday:
-                    sbWed.Append(strList);
-                    break;
-                case System.DayOfWeek.Thursday:
-                    sbThu.Append(strList);
-                    break;
-                case System.DayOfWeek.Friday:
-                    sbFri.Append(strList);
-                    break;
-                case System.DayOfWeek.Saturday:
-                    sbSat.Append(strList);
-                    break;
-                case System.DayOfWeek.Sunday:
-                    sbSun.Append(strList);
-                    break;
+                string strList = RenderEvent(row, acl, schType);
+
+                DayOfWeek dayOfWeek = Convert.ToDateTime(row["PeriodFrom"]).DayOfWeek; //sunday = 0
+
+                switch (dayOfWeek)
+                {
+                    case System.DayOfWeek.Monday:
+                        sbMon.Append(strList);
+                        break;
+                    case System.DayOfWeek.Tuesday:
+                        sbTue.Append(strList);
+                        break;
+                    case System.DayOfWeek.Wednesday:
+                        sbWed.Append(strList);
+                        break;
+                    case System.DayOfWeek.Thursday:
+                        sbThu.Append(strList);
+                        break;
+                    case System.DayOfWeek.Friday:
+                        sbFri.Append(strList);
+                        break;
+                    case System.DayOfWeek.Saturday:
+                        sbSat.Append(strList);
+                        break;
+                    case System.DayOfWeek.Sunday:
+                        sbSun.Append(strList);
+                        break;
+                }
             }
+
+            StringBuilder sbReturn = new StringBuilder();
+            sbReturn.Append("<div class=\"row m-0 p-0\">");
+            sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
+            sbReturn.Append(RenderWeek(monDay, acl, sbMon.ToString(), ""));
+            sbReturn.Append("</div>");
+            sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
+            sbReturn.Append(RenderWeek(monDay.AddDays(1), acl, sbTue.ToString(), ""));
+            sbReturn.Append("</div>");
+            sbReturn.Append("</div>");
+
+            sbReturn.Append("<div class=\"row m-0 p-0\">");
+            sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
+            sbReturn.Append(RenderWeek(monDay.AddDays(2), acl, sbWed.ToString(), ""));
+            sbReturn.Append("</div>");
+            sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
+            sbReturn.Append(RenderWeek(monDay.AddDays(3), acl, sbThu.ToString(), ""));
+            sbReturn.Append("</div>");
+            sbReturn.Append("</div>");
+
+            sbReturn.Append("<div class=\"row m-0 p-0\">");
+            sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
+            sbReturn.Append(RenderWeek(monDay.AddDays(4), acl, sbFri.ToString(), ""));
+            sbReturn.Append("</div>");
+            sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
+            sbReturn.Append(RenderWeek(monDay.AddDays(5), acl, sbSat.ToString(), "Y"));
+            sbReturn.Append(RenderWeek(monDay.AddDays(6), acl, sbSun.ToString(), "Y"));
+            sbReturn.Append("</div>");
+            sbReturn.Append("</div>");
+
+            return sbReturn.ToString();
         }
 
-        StringBuilder sbReturn = new StringBuilder();
-        sbReturn.Append("<div class=\"row m-0 p-0\">");
-        sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
-        sbReturn.Append(RenderWeek(monDay, acl, sbMon.ToString(), ""));
-        sbReturn.Append("</div>");
-        sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
-        sbReturn.Append(RenderWeek(monDay.AddDays(1), acl, sbTue.ToString(), ""));
-        sbReturn.Append("</div>");
-        sbReturn.Append("</div>");
-
-        sbReturn.Append("<div class=\"row m-0 p-0\">");
-        sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
-        sbReturn.Append(RenderWeek(monDay.AddDays(2), acl, sbWed.ToString(), ""));
-        sbReturn.Append("</div>");
-        sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
-        sbReturn.Append(RenderWeek(monDay.AddDays(3), acl, sbThu.ToString(), ""));
-        sbReturn.Append("</div>");
-        sbReturn.Append("</div>");
-
-        sbReturn.Append("<div class=\"row m-0 p-0\">");
-        sbReturn.Append("<div class=\"zc-week-left col-12 col-sm-6 px-0\">");
-        sbReturn.Append(RenderWeek(monDay.AddDays(4), acl, sbFri.ToString(), ""));
-        sbReturn.Append("</div>");
-        sbReturn.Append("<div class=\"zc-week-right col-12 col-sm-6 px-0\">");
-        sbReturn.Append(RenderWeek(monDay.AddDays(5), acl, sbSat.ToString(), "Y"));
-        sbReturn.Append(RenderWeek(monDay.AddDays(6), acl, sbSun.ToString(), "Y"));
-        sbReturn.Append("</div>");
-        sbReturn.Append("</div>");
-
-        return sbReturn.ToString();
-    }
-
-    private string RenderWeek(DateTime d, string acl, string data, string weekend)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("<div class=\"card zc-week-day{0}\">", weekend == "Y" ? " weekend" : "");
-        sb.Append("<div class=\"card-header with-elements\">");
-        sb.Append("<div class=\"card-header-elements mr-auto text-danger\">");
-        //sb.AppendFormat("<span class=\"text-right\" style=\"width: 30px; margin-left: {0}px\">{1}</span>", iLeft.ToString(), hour);
-        sb.Append("</div>");
-        sb.Append("<div class=\"card-header-title py-1\">");
-        if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W")) sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info mr-2\" onclick=\"_zw.mu.writeEvent('', '{0}', '');\"><i class=\"fas fa-pencil-alt\"></i></a>", d.ToString("yyyy-MM-dd"));
-        sb.AppendFormat("<span>{0}/{1} {2}</span>", d.Month.ToString(), d.Day.ToString(), d.ToString("dddd"));
-        sb.Append("</div>");
-        sb.Append("</div>"); //card-header
-        sb.Append("<div class=\"card-body\">");
-        sb.AppendFormat("<ul class=\"nav\">{0}</ul>", data);
-        sb.Append("</div>");
-        sb.Append("</div>");
-
-        return sb.ToString();
-    }
-
-    private string RenderEvent(DataRow row, string acl, DataRowCollection schType)
-    {
-        string sColor = "";
-        foreach (DataRow r in schType)
+        private string RenderWeek(DateTime d, string acl, string data, string weekend)
         {
-            if (r["SchType"].ToString() == row["SchType"].ToString())
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<div class=\"card zc-week-day{0}\">", weekend == "Y" ? " weekend" : "");
+            sb.Append("<div class=\"card-header with-elements\">");
+            sb.Append("<div class=\"card-header-elements mr-auto text-danger\">");
+            //sb.AppendFormat("<span class=\"text-right\" style=\"width: 30px; margin-left: {0}px\">{1}</span>", iLeft.ToString(), hour);
+            sb.Append("</div>");
+            sb.Append("<div class=\"card-header-title py-1\">");
+            if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W"))
             {
-                sColor = r["Color"].ToString(); break;
+                sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"text-info mr-2\" onclick=\"_zw.mu.writeEvent('{0}','{1}', '', '{2}', '{3}');\"><i class=\"fas fa-pencil-alt\"></i></a>"
+                        , ViewBag.R.ctalias.ToString(), d.ToString("yyyy-MM-dd"), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
             }
+            sb.AppendFormat("<span>{0}/{1} {2}</span>", d.Month.ToString(), d.Day.ToString(), d.ToString("dddd"));
+            sb.Append("</div>");
+            sb.Append("</div>"); //card-header
+            sb.Append("<div class=\"card-body\">");
+            sb.AppendFormat("<ul class=\"nav\">{0}</ul>", data);
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            return sb.ToString();
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("<li class=\"position-relative w-100 my-1\" id=\"schedule.{0}\" data-from=\"{1}\" data-start=\"{2}\" data-end=\"{3}\">"
-                                , row["MessageID"].ToString(), row["PeriodFrom"].ToString(), row["StartTime"].ToString(), row["EndTime"].ToString());
-        sb.AppendFormat("<span class=\"fas fa-chalkboard fs-10 mr-1\" style=\"color:{0}\"></span>", sColor);
-        //sb.AppendFormat("<span class=\"mr-2\">{0} ~ {1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
-        sb.AppendFormat("<span class=\"text-primary mr-2\">{0}</span>", row["StartTime"].ToString());
-        sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2});\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
-                        , "", row["PeriodFrom"].ToString(), row["MessageID"].ToString());
-        sb.AppendFormat("<span>{0}</span>", row["subject"].ToString());
-        sb.Append("</a>");
-        sb.Append("<div class=\"d-none\" data-help=\"event\">");
-        sb.Append("<div class=\"tooltip-inner text-left\">");
-        sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
-        if (row["Repeat"].ToString() == "Y") sb.Append("<i class=\"fas fa-redo-alt ml-2\"></i>");
-        sb.Append("</div>");
-        sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());
-        sb.Append("</div>");
-        sb.Append("</div>");
+        private string RenderEvent(DataRow row, string acl, DataRowCollection schType)
+        {
+            string sColor = "";
+            foreach (DataRow r in schType)
+            {
+                if (r["SchType"].ToString() == row["SchType"].ToString())
+                {
+                    sColor = r["Color"].ToString(); break;
+                }
+            }
 
-        sb.Append("</li>");
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<li class=\"position-relative w-100 my-1\" id=\"schedule.{0}\" data-from=\"{1}\" data-start=\"{2}\" data-end=\"{3}\">"
+                                    , row["MessageID"].ToString(), row["PeriodFrom"].ToString(), row["StartTime"].ToString(), row["EndTime"].ToString());
+            sb.AppendFormat("<span class=\"fas fa-chalkboard fs-10 mr-1\" style=\"color:{0}\"></span>", sColor);
+            //sb.AppendFormat("<span class=\"mr-2\">{0} ~ {1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
+            sb.AppendFormat("<span class=\"text-primary mr-2\">{0}</span>", row["StartTime"].ToString());
+            sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.mu.readEvent('{1}','{2}','{3}', '{4}');\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
+                            , "", ViewBag.R.ctalias.ToString(), row["MessageID"].ToString(), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
+            sb.AppendFormat("<span>{0}</span>", row["subject"].ToString());
+            sb.Append("</a>");
+            sb.Append("<div class=\"d-none\" data-help=\"event\">");
+            sb.Append("<div class=\"tooltip-inner text-left\">");
+            sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
+            if (row["Repeat"].ToString() == "Y") sb.Append("<i class=\"fas fa-redo-alt ml-2\"></i>");
+            sb.Append("</div>");
+            sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());
+            sb.Append("</div>");
+            sb.Append("</div>");
 
-        return sb.ToString();
+            sb.Append("</li>");
+
+            return sb.ToString();
+        }
     }
-}
 
 <div class="zc-week">
     @Html.Raw(ViewList(ViewBag.BoardList, ViewBag.R.current.acl.ToString(), ViewBag.Monday, ViewBag.SchType))

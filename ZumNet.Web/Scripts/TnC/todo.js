@@ -199,20 +199,20 @@
 
         //console.log(postJson); return
 
-        var vRRule = _zw.cdr.getRepeat(p).split('|');
+        var vRRule = _zw.cdr.getRepeat(p).split('|'); //repeat_type, end, count, interval_type, interval, cond_day, cond_week, cond_date
         //2018-09-07 반복유효체크
         if (vRRule == 'CHECK') { bootbox.alert("반복요일을 선택하십시오!"); return false; }
         else if (vRRule == 'INVALID') { bootbox.alert("반복종료일은 확인하십시오!", function () { $("#txtRepeatEnd").focus(); }); return false; }
         else if (vRRule == 'END') { bootbox.alert("반복종료일은 시작일 이후로 선택하십시오!", function () { $("#txtRepeatEnd").focus(); }); return false; }
 
         if (mode == "edit") {
-            postJson["repeatchange"] = ($("#hdRepeatType").val() != vRRule[0] || $("#hdInterval").val() != vRRule[1] || $("#hdConDay").val() != vRRule[2] || $("#hdRepeatEnd").val() != vRRule[3]
+            postJson["repeatchange"] = ($("#hdRepeatType").val() != vRRule[0] || $("#hdInterval").val() != vRRule[4] || $("#hdConDay").val() != vRRule[5] || $("#hdRepeatEnd").val() != vRRule[1]
                 || $("#txtStart").val() != $("#hdPeriodFrom").val() || $("#cbStart").val() != $("#hdStartTime").val() || $("#cbEnd").val() != $("#hdEndTime").val()) ? "Y" : "N";
         }
         postJson["repeattype"] = vRRule[0]; //0, 1, 2, 3, 4
-        postJson["interval"] = vRRule[1];
-        postJson["repeatday"] = vRRule[2];
-        postJson["repeatend"] = vRRule[3];
+        postJson["interval"] = vRRule[4];
+        postJson["repeatday"] = vRRule[5];
+        postJson["repeatend"] = vRRule[1];
 
         postJson["repeatchangeoption"] = opt;
         postJson["repeatchangedate"] = dt;

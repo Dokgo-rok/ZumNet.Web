@@ -1,11 +1,15 @@
 ﻿@using System.Data;
 @using System.Text;
+@using System.Threading;
+
 @using ZumNet.Web.Bc;
 @{
     DateTime dtStart = Convert.ToDateTime(ViewBag.R.lv.tgt + " " + (ViewBag.R.lv.cd1.ToString() == "" ? DateTime.Now.ToString("HH:mm") : ViewBag.R.lv.cd1.ToString()));
+    string sRptDayMargin = Thread.CurrentThread.CurrentUICulture.Name.Substring(0, 2) == "en" ? "ml-1" : "ml-2";
 }
-
-<div class="modal-dialog modal-dialog-scrollable" style="max-width: 31rem">
+@functions{
+}
+<div class="modal-dialog modal-dialog-scrollable" style="max-width: 40rem">
     <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
         <div class="modal-header">
             <h4 class="modal-title">자원예약</h4>
@@ -14,7 +18,7 @@
             </button>
         </div>
         <div class="modal-body">
-            <div class="form-group row">
+            <div class="form-group row mb-1 mb-sm-3">
                 <label for="txtSubject" class="col-sm-2 col-form-label font-weight-normal">제목</label>
                 <div class="col-sm-10 input-group align-items-center">
                     <label class="custom-control custom-checkbox m-0 mr-2">
@@ -24,23 +28,160 @@
                     <input type="text" class="form-control" id="txtSubject">
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="txtStart" class="col-sm-2 col-form-label font-weight-normal">일정</label>
+            <div class="form-group row mb-2 mb-sm-3">
+                <label for="txtLocation" class="col-sm-2 col-form-label font-weight-normal">장소 / 범주</label>
                 <div class="col-sm-10 input-group align-items-center">
-                    <input type="text" class="form-control datepicker mr-sm-2" id="txtStart" value="@ViewBag.R.lv.tgt.ToString()" style="max-width: 115px ">
-                    <select class="custom-select mr-sm-2" id="cbStart">
-                        @Html.Raw(CommonUtils.OptionTime(dtStart.Hour, dtStart.Minute))
+                    <input type="text" class="form-control" id="txtLocation">
+                    <select class="custom-select" id="ddlSchType" style="max-width: 120px">
+                        <option value="">&#9632; 전체</option>
+                        @foreach (DataRow dr in ViewBag.SchType)
+                        {
+                            <option style="color: @dr["Color"]" value="@dr["SchType"]">&#9632; @dr["TypeName"]</option>
+                        }
                     </select>
-                    <select class="custom-select mr-1 mr-sm-2" id="cbEnd">
-                        @Html.Raw(CommonUtils.OptionTime(dtStart.Hour + 1, dtStart.Minute))
-                    </select>
-                    <label class="custom-control custom-checkbox m-0">
-                        <input type="checkbox" class="custom-control-input" name="ckbRepeat" id="ckb02">
-                        <span class="custom-control-label">반복</span>
-                    </label>
+                </div>
+            </div>
+            <div class="form-group row mb-1 mb-sm-3">
+                <label for="" class="col-sm-2 col-form-label font-weight-normal">일시</label>
+                <div class="col-sm-10 input-daterange">
+                    <div class="form-group row mb-1">
+                        <div class="col-sm-2 d-none d-sm-block col-form-label">시작</div>
+                        <div class="col-sm-10  input-group align-items-center">
+                            <input type="text" class="form-control mr-2" id="txtStart" value="@dtStart.ToShortDateString()" style="max-width: 110px">
+                            <select class="custom-select" id="cbStart">
+                                @Html.Raw(CommonUtils.OptionTime(dtStart.Hour, dtStart.Minute))
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-0">
+                        <div class="col-sm-2 d-none d-sm-block col-form-label">종료</div>
+                        <div class="col-sm-10 input-group align-items-center">
+                            <input type="text" class="form-control mr-2" id="txtEnd" value="@dtStart.ToShortDateString()" style="max-width: 110px">
+                            <select class="custom-select mr-2" id="cbEnd">
+                                @Html.Raw(CommonUtils.OptionTime(dtStart.Hour + 1, dtStart.Minute))
+                            </select>
+                            <label class="custom-control custom-checkbox m-0">
+                                <input type="checkbox" class="custom-control-input" name="ckbRepeat" id="ckb02">
+                                <span class="custom-control-label">반복</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <div class="zc-rpt-set d-none" data-for="rpt-setting">
+                <div class="form-group row mb-1 mb-sm-2 d-none" data-for="rpt-rule">
+                    <label for="cbRepeatType" class="col-sm-2 col-form-label font-weight-normal">반복주기</label>
+                    <div class="col-sm-10 form-inline align-items-center">
+                        <select class="custom-select mr-2" id="cbRepeatType" style="max-width:115px">
+                            <option value="1">매일</option>
+                            <option value="2">매주 월-금</option>
+                            <option value="3">매주</option>
+                            <option value="4">매월</option>
+                            <option value="5">매년</option>
+                        </select>
+                        <div class="d-none align-items-center" id="sPerDay">
+                            <input type="text" class="form-control" maxlength="2" value="1" style="max-width: 40px" data-inputmask="number;1;">
+                            <label class="mb-0 ml-1">일마다</label>
+                            <a href="javascript:" class="btn btn-default ml-2" data-val="2">2일</a>
+                            <a href="javascript:" class="btn btn-default ml-2" data-val="3">3일</a>
+                        </div>
+                        <div class="d-flex align-items-center" id="sPerWeek">
+                            <input type="text" class="form-control" maxlength="2" value="1" style="max-width: 40px" data-inputmask="number;1;">
+                            <label class="mb-0 ml-1">주마다</label>
+                            <a href="javascript:" class="btn btn-default ml-2" data-val="2">2주</a>
+                            <a href="javascript:" class="btn btn-default ml-2" data-val="3">3주</a>
+                        </div>
+                        <div class="d-flex align-items-center" id="sPerMonth">
+                            <input type="text" class="form-control" maxlength="2" value="1" style="max-width: 40px" data-inputmask="number;1;">
+                            <label class="mb-0 ml-1">개월마다</label>
+                            <a href="javascript:" class="btn btn-default ml-2" data-val="2">2월</a>
+                            <a href="javascript:" class="btn btn-default ml-2" data-val="3">3월</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row mb-1 mb-sm-2 d-none" data-for="rpt-day">
+                    <label for="" class="col-sm-2 col-form-label font-weight-normal"></label>
+                    <div class="col-sm-10 input-group align-items-center">
+                        <label class="custom-control custom-checkbox m-0" for="ckb031">
+                            <input class="custom-control-input" id="ckb031" name="ckbDay" type="checkbox" value="sun">
+                            <span class="custom-control-label">일</span>
+                        </label>
+                        <label class="custom-control custom-checkbox m-0 @sRptDayMargin" for="ckb032">
+                            <input class="custom-control-input" id="ckb032" name="ckbDay" type="checkbox" value="mon">
+                            <span class="custom-control-label">월</span>
+                        </label>
+                        <label class="custom-control custom-checkbox m-0 @sRptDayMargin" for="ckb033">
+                            <input class="custom-control-input" id="ckb033" name="ckbDay" type="checkbox" value="tue">
+                            <span class="custom-control-label">화</span>
+                        </label>
+                        <label class="custom-control custom-checkbox m-0 @sRptDayMargin" for="ckb034">
+                            <input class="custom-control-input" id="ckb034" name="ckbDay" type="checkbox" value="wed">
+                            <span class="custom-control-label">수</span>
+                        </label>
+                        <label class="custom-control custom-checkbox m-0 @sRptDayMargin" for="ckb035">
+                            <input class="custom-control-input" id="ckb035" name="ckbDay" type="checkbox" value="thu">
+                            <span class="custom-control-label">목</span>
+                        </label>
+                        <label class="custom-control custom-checkbox m-0 @sRptDayMargin" for="ckb036">
+                            <input class="custom-control-input" id="ckb036" name="ckbDay" type="checkbox" value="fri">
+                            <span class="custom-control-label">금</span>
+                        </label>
+                        <label class="custom-control custom-checkbox m-0 @sRptDayMargin" for="ckb037">
+                            <input class="custom-control-input" id="ckb037" name="ckbDay" type="checkbox" value="sat">
+                            <span class="custom-control-label">토</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group row mb-1 mb-sm-2 d-none" data-for="rpt-monthyear">
+                    <label for="" class="col-sm-2 col-form-label font-weight-normal"></label>
+                    <div class="col-sm-10 input-group align-items-center">
+                        <label class="custom-control custom-radio m-0" for="rdo041">
+                            <input class="custom-control-input" id="rdo041" name="rdoMonthYear" type="radio" value="A">
+                            <span class="custom-control-label" data-val=""></span>
+                        </label>
+                        <label class="custom-control custom-radio m-0 ml-3" for="rdo042">
+                            <input class="custom-control-input" id="rdo042" name="rdoMonthYear" type="radio" value="B">
+                            <span class="custom-control-label" data-val=""></span>
+                        </label>
+                        <label class="custom-control custom-radio m-0 ml-3 d-none" for="rdo043">
+                            <input class="custom-control-input" id="rdo043" name="rdoMonthYear" type="radio" value="B">
+                            <span class="custom-control-label" data-val=""></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group row mb-0 d-none" data-for="rpt-end">
+                    <label for="txtRepeatEnd" class="col-sm-2 col-form-label font-weight-normal">반복기간</label>
+                    <div class="col-sm-10 form-inline align-items-center">
+                        <input class="form-control datepicker" id="txtRepeatEnd" value="" type="text" disabled="" style="max-width: 115px">
+                        <label class="mb-0 ml-1">까지</label>
+                        <label class="custom-control custom-checkbox m-0 ml-2 wd-30">
+                            <input type="checkbox" class="custom-control-input" name="ckbRepeatEnd" id="ckb04" checked="">
+                            <span class="custom-control-label">무한반복</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row mb-1 mb-sm-3">
+                <div class="col-sm-2 col-form-label dropdown">
+                    <label for="txtSubject" class="font-weight-normal mb-0">신청 자원</label>
+                    <button class="zf-btn-sm btn btn-default float-sm-right mb-1" title="@Resources.Global.Select" data-zf-menu="openResList"><i class="fe-search"></i></button>
+                    @*<button class="zf-btn-sm btn btn-default float-sm-right mb-1" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.Select"><i class="fe-search"></i></button>
+                    <div class="dropdown-menu p-1" style="min-width: 20rem;">
+                        @Html.Raw(RenderResourceList(ViewBag.ResClass, ViewBag.ResList))
+                    </div>*@
+                </div>
+                <div class="col-sm-10 input-group align-items-center">
+                    <input type="text" class="form-control" readonly value="@ViewBag.R["ttl"]" />
+                    <input type="hidden" id="hdParticipantID" value="@ViewBag.ResInfo["ParticipantID"]" />
+                    <input type="hidden" id="hdPartType" value="@ViewBag.ResInfo["PartType"]" />
+                    <input type="hidden" id="hdApproval" value="@ViewBag.ResInfo["Approval"]" />
+                </div>
+            </div>
             <div class="form-group row">
                 <label for="rdoState" class="col-sm-2 col-form-label font-weight-normal">파일</label>
                 <div class="col-sm-10 input-group align-items-center">
