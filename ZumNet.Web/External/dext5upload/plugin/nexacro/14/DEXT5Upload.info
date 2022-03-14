@@ -1498,6 +1498,23 @@
 				requirement="Runtime,HTML5"
 				description="업로드의 ZIndex를 설정 합니다."
 			/>
+      <Property
+				name="UseLongPath"
+				group="Misc"
+				defaultvalue=""
+				readonly="false"
+				initonly="false"
+				hidden="false"
+				control="false"
+				style="false"
+				expr="false"
+				deprecated="false"
+				unused="false"
+				objectinfo=""
+				unitinfo=""
+				requirement="Runtime,HTML5"
+				description="긴 경로 다운로드를 허용하도록 설정 합니다."
+			/>
     </PropertyInfo>
 
 

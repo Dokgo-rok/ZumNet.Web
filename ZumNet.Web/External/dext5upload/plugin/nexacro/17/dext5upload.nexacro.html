@@ -214,11 +214,12 @@
         }
 
         // error / cancel
-        function DEXT5UPLOAD_OnError(uploadID, code, message, uploadedFileListObj) {
+        function DEXT5UPLOAD_OnError(uploadID, code, message, uploadedFileListObj, otherData) {
             G_EventReturnValue = {
                 code: code,
                 message: message,
-                uploadedFileListObj: uploadedFileListObj
+                uploadedFileListObj: uploadedFileListObj,
+                otherData: otherData
             };
 
             window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_OnError#|" + (isAndroid ? JSON.stringify(G_EventReturnValue) : ""));

@@ -75,7 +75,11 @@
 
 			fn_onusernotify("DEXT5UPLOAD_AfterAddItemEndTime");
 		}
-		
+
+        function DEXT5UPLOAD_AfterAddWebFile(uploadID) {
+            fn_GetFileInfo();
+        }
+
 		// 전체 파일 삭제 완료 이벤트
 		function DEXT5UPLOAD_DeleteItemEndTime(uploadID, deleteItemCount) {
 			fn_GetFileInfo(uploadID);
@@ -93,8 +97,8 @@
 		}
 		
 		// 업로드 에러 이벤트
-		function DEXT5UPLOAD_OnError(uploadID, code, message, uploadedFileListObj) {
-			G_EventReturnValue = {code: code, message: message, uploadedFileListObj: uploadedFileListObj};
+		function DEXT5UPLOAD_OnError(uploadID, code, message, uploadedFileListObj, otherData) {
+            G_EventReturnValue = { code: code, message: message, uploadedFileListObj: uploadedFileListObj, otherData: otherData};
 			
 			fn_onusernotify("DEXT5UPLOAD_OnError");
 		}

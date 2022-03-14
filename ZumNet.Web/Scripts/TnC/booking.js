@@ -89,6 +89,104 @@
         _zw.fn.loadBar();
     });
 
+    _zw.mu.writeEvent = function (ca, dt, hm, pt, partid) { //일정, 자원예약
+        //alert(ca + " : " + dt + " : " + hm + " : " + pt + " : " + partid)
+        ca = ca || ''; dt = dt || ''; hm = hm || ''; pt = pt || ''; partid = partid || '0';
+        if (dt == '' && _zw.V.lv.tgt != '') dt = _zw.V.lv.tgt;
+
+        _zw.V.wnd = 'modal';
+        _zw.V.ot = pt;
+        _zw.V.fdid = partid;
+        _zw.V.lv.cd1 = hm;
+
+        $.ajax({
+            type: "POST",
+            url: ca == 'booking' ? '/TnC/Booking/Write' : '/TnC/Schedule/Write',
+            data: _zw.fn.getAppQuery(dt),
+            success: function (res) {
+                if (res.substr(0, 2) == 'OK') {
+                    var v = res.substr(2).split(_zw.V.lv.boundary);
+                    var p = $('#popForm');
+                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); console.log(_zw.V.app);
+
+                    _zw.ut.picker('date'); _zw.ut.maxLength();
+
+                    p.find('.btn[data-toggle="popover"]').popover({
+                        html: true,
+                        content: function () { return p.find('[data-help="file"]').html(); }
+                    });
+
+                    p.find('input[name="ckbRepeat"]').click(function () {
+                        if ($(this).prop('checked')) {
+                            _zw.cdr.showRepeat(p, 'init', 'txtStart;txtEnd', 'cbStart', 'cbEnd');
+                        } else {
+                            _zw.cdr.closeRepeat(p);
+                        }
+                    });
+
+                    $('.btn[data-zf-menu="openResList"]').click(function () {
+                        $.ajax({
+                            type: "POST",
+                            url: '/TnC/Booking/ResourceList',
+                            data: '{ct:"' + _zw.V.ct + '",operator:"' + _zw.V.current.operator + '"}',
+                            success: function (res) {
+                                if (res.substr(0, 2) == 'OK') {
+                                    var resWnd = $('#popBlank');
+                                    resWnd.html(res.substr(2));
+
+                                    resWnd.find('.accordion .card-body .btn[data-val]').click(function () {
+                                        var v = $(this).attr('data-val').split(';');
+                                        var partid = v[1].split('.');
+                                        var ttl = $(this).parent().parent().prev().find('a[data-toggle]').text() + ' / ' + $(this).text();
+
+                                        if (v[0] == p.find('input[data-for="SelectedPartType"]').val() && partid[2] == p.find('input[data-for="SelectedPartID"]').val()) {
+                                            bootbox.alert('이미 선택된 자원입니다!');
+                                        } else {
+                                            console.log(ttl + " : " + partid[2] + " : " + v[2])
+                                            p.find('span[data-for="SelectedPartName"]').html(ttl);
+                                            p.find('input[data-for="SelectedPartID"]').val(partid[2]);
+                                            p.find('input[data-for="SelectedPartType"]').val(v[0]);
+                                            p.find('input[data-for="SelectedApproval"]').val(v[2]);
+
+                                            resWnd.find("button[data-dismiss='modal']").click();
+                                        }
+                                    });
+
+                                    resWnd.modal();
+
+                                } else {
+                                    bootbox.alert(res);
+                                }
+                            }
+                        });
+                    });
+
+                    p.modal();
+                }
+            }
+        });
+    }
+
+    _zw.mu.readEvent = function (ca, mi, pt, partId) { //alert(ca + " : " + mi + " : " + pt + " : " + partId); return
+        if (mi == null || mi == '' || parseInt(mi) == '0') return false;
+        ca = ca || ''; pt = pt || ''; partid = partid || '';
+
+        $.ajax({
+            type: "POST",
+            url: "/TnC/Booking/EventView",
+            data: '{M:"' + mode + '",ct:"' + _zw.V.ct + '",ot:"' + ot + '",partid:"' + partId + '",dt:"' + dt + '",mi:"' + mi + '",opt:"' + opt + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == 'OK') {
+                    var p = $('#popForm');
+                    p.html(res.substr(2));
+
+
+                    p.modal();
+                }
+            }
+        });
+    }
+
     _zw.fn.saveEvent = function () {
         var p = $('#popForm');
         var vRRule = _zw.cdr.getRepeat(p); console.log(vRRule);

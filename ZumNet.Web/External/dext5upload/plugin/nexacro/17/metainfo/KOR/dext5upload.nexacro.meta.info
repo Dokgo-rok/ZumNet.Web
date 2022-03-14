@@ -623,6 +623,12 @@
        unused="false" objectinfo="" enuminfo="" enuminfo2="" delimiter="" unitinfo=""
        requirement="" csspropertyname="" csselementname="" normalpropertyname="ZIndex"
        description="업로드의 ZIndex를 설정 합니다." />
+      <Property name="UseLongPath"
+       edittype="String" group="DEXT5Upload_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+       readonly="false" initonly="false" hidden="false" control="false" style="false" expr="false" deprecated="false"
+       unused="false" objectinfo="" enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+       requirement="" csspropertyname="" csselementname="" normalpropertyname="UseLongPath"
+       description="긴 경로 다운로드를 허용하도록 설정 합니다." />
     </PropertyInfo>
 
     <CSSInfo>

@@ -33,7 +33,6 @@
                 <div class="col-sm-10 input-group align-items-center">
                     <input type="text" class="form-control" id="txtLocation">
                     <select class="custom-select" id="ddlSchType" style="max-width: 120px">
-                        <option value="">&#9632; 전체</option>
                         @foreach (DataRow dr in ViewBag.SchType)
                         {
                             <option style="color: @dr["Color"]" value="@dr["SchType"]">&#9632; @dr["TypeName"]</option>
@@ -176,16 +175,16 @@
                     </div>*@
                 </div>
                 <div class="col-sm-10 input-group align-items-center">
-                    <input type="text" class="form-control" readonly value="@ViewBag.R["ttl"]" />
-                    <input type="hidden" id="hdParticipantID" value="@ViewBag.ResInfo["ParticipantID"]" />
-                    <input type="hidden" id="hdPartType" value="@ViewBag.ResInfo["PartType"]" />
-                    <input type="hidden" id="hdApproval" value="@ViewBag.ResInfo["Approval"]" />
+                    <span class="col-form-label" data-for="SelectedPartName">@ViewBag.R["ttl"]</span>
+                    <input type="hidden" data-for="SelectedPartID" value="@ViewBag.ResInfo["ParticipantID"]" />
+                    <input type="hidden" data-for="SelectedPartType" value="@ViewBag.ResInfo["PartType"]" />
+                    <input type="hidden" data-for="SelectedApproval" value="@ViewBag.ResInfo["Approval"]" />
                 </div>
             </div>
             <div class="form-group row">
                 <label for="rdoState" class="col-sm-2 col-form-label font-weight-normal">파일</label>
                 <div class="col-sm-10 input-group align-items-center">
-                    <div class="custom-file">
+                    <div class="custom-file flex-grow-0" style="width: 250px">
                         <input type="file" class="custom-file-input" id="customFile">
                         <label class="custom-file-label" for="customFile">이미지 / 문서 첨부</label>
                     </div>

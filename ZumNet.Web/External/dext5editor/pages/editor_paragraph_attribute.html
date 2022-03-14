@@ -202,8 +202,11 @@
         function setFontFamilySelect() {
             var select = document.getElementById("font_family_select");
 
-            var font_famliy = DEXTTOP.DEXT5.util.xml.getNode(DEXTTOP.G_CURREDITOR._configXml, "font_family");
-            var cnt = DEXTTOP.DEXT5.util.xml.count(font_famliy, "font");
+            var font_famliy = DEXTTOP.G_CURREDITOR._config.fontFamilyList;
+            var cnt = font_famliy.length;
+
+            //var font_famliy = DEXTTOP.DEXT5.util.xml.getNode(DEXTTOP.G_CURREDITOR._configXml, "font_family");
+            //var cnt = DEXTTOP.DEXT5.util.xml.count(font_famliy, "font");
 
             var opt = document.createElement("option");
             opt.innerText = LayerWin.dext5_lang.paragraph_attribute.notapplicable;
@@ -217,9 +220,11 @@
             select.appendChild(opt);
 
             for (var i = 0; i < cnt; i++) {
-                var font = DEXTTOP.DEXT5.util.xml.getNodeValueIdx(font_famliy, "font", i);
+                var font = font_famliy[i];
+                //var font = DEXTTOP.DEXT5.util.xml.getNodeValueIdx(font_famliy, "font", i);
                 opt = document.createElement("option");
-                opt.innerText = font;
+                var fontText = Dext5LayerWin.getDisplayFontName(font);
+                opt.innerText = fontText;
                 opt.style.fontFamily = font;
                 opt.value = font;
                 //opt.onmouseover = function (e) { this.parentElement.value = this.value; };

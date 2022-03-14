@@ -42,8 +42,8 @@
                 {
                     sb.AppendFormat("<div class=\"card mb-1 border\">");
                     sb.Append("<div class=\"card-header px-3 py-2 bg-white\">");
-                    sb.AppendFormat("<a class=\"z-lnk-navy stretched-link\" data-toggle=\"collapse\" href=\"#accordion-{0}\" aria-expanded=\"false\">{1}</a>"
-                            , row["NodeID"].ToString().Replace("0.0.", ""), row["DisplayName"].ToString());
+                    sb.AppendFormat("<a class=\"z-lnk-navy\" data-toggle=\"collapse\" href=\"#accordion-{0}\" aria-expanded=\"false\">{1}</a>"
+                            , row["NodeID"].ToString().Replace("0.0.", ""), row["DisplayName"].ToString()); // stretched-link 사용X
                     sb.Append("</div>");
                     sb.AppendFormat("<div id=\"accordion-{0}\" class=\"collapse\">", row["NodeID"].ToString().Replace("0.0.", ""));
                     sb.Append("<div class=\"card-body px-3 pt-2 pb-0\">");

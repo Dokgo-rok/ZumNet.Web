@@ -169,9 +169,9 @@
                     getPasteToImagePopupMode = dextPersonalSetting.pasteToImagePopupMode;
                 };
 
-                personalSetting(personal_font_family, 'font_family', 'font', getFontFamily);
-                personalSetting(personal_font_size, 'font_size', 'size', getFontSize);
-                personalSetting(personal_line_height, 'line_height', 'line', getLineHeight);
+                personalSetting(personal_font_family, 'fontFamily', getFontFamily);
+                personalSetting(personal_font_size, 'fontSize', getFontSize);
+                personalSetting(personal_line_height, 'lineHeight', getLineHeight);
 
                 divPersonalSetting.style.display = '';
                 document.getElementById('div_auto_save').className = 'con border';
@@ -445,24 +445,17 @@
         }
 
         // 환경설정에 개인화 기능 값 설정 by jh 2018.05.15
-        function personalSetting(settingId, configValue, configAttValue, localStorageValue) {
+        function personalSetting(settingId, configValue, localStorageValue) {
             var config, cnt, value;
-            if (configValue == "line_height") {
-                config = DEXTTOP.G_CURREDITOR._config.lineHeightList;
-                cnt = config.length;
-            } else {
-                config = DEXTTOP.DEXT5.util.xml.getNode(DEXTTOP.G_CURREDITOR._configXml, configValue);
-                cnt = DEXTTOP.DEXT5.util.xml.count(config, configAttValue);
-            }
+            config = DEXTTOP.G_CURREDITOR._config[configValue + 'List'];
+            cnt = config.length;
 
             settingId.options.add(new Option(LayerWin.dext5_lang.setting.personal_default, ""));
             for (var _step = 0; _step < cnt; _step++) {
-                if (configValue == "line_height") {
-                    value = config[_step];
-                } else {
-                    value = DEXTTOP.DEXT5.util.xml.getNodeValueIdx(config, configAttValue, _step);
-                }
-                var option = new Option(value, value);
+                value = config[_step];
+                var textValue = Dext5LayerWin.getDisplayFontName(value);
+
+                var option = new Option(textValue, value);
                 if (value == localStorageValue) {
                     option.selected = true;
                 }

@@ -24,7 +24,7 @@
             var _skin_name = LayerWin._dext_editor._config.style.skinName;
             document.getElementById('dext_dialog_box').className = 'DEXT_fiVe_ED_Popup_Type03 DEXT_fiVe_PUi_' + _skin_name;
 
-            set_license();
+            aboutShowInfo();
 
             var span_ok = document.getElementById('span_ok');
             span_ok.innerHTML = LayerWin.dext5_lang.ok_cancel.ok;
@@ -36,29 +36,6 @@
             var a_ok_obj = document.getElementById('a_ok');
             setCursorPos(a_ok_obj, false, false);
             LayerWin.setFocusFirstAndLast(document, a_ok_obj);
-        }
-
-        function set_license() {
-            try {
-                document.getElementById("dext_license_company").innerHTML = ": " + LayerWin._dext_editor.____.l[1];
-                document.getElementById("dext_license_system").innerHTML = ": " + LayerWin._dext_editor.____.l[2];
-                document.getElementById("dext_license_product").innerHTML = ": " + LayerWin._dext_editor.____.l[7];
-                if (LayerWin._dext_editor.____.l[3] == 'S') {
-                    document.getElementById("dext_license_edition").innerHTML = ": " + "Standard Edition";
-                    //document.getElementById("dext_license_edition").innerHTML = ": " + "DEXT5 Editor Standard Edition";
-                } else {
-                    document.getElementById("dext_license_edition").innerHTML = ": " + "Professional Edition";
-                    //document.getElementById("dext_license_edition").innerHTML = ": " + "DEXT5 Editor Professional Edition";
-                }
-                if (LayerWin._dext_editor.____.l[6] == 0)
-                    document.getElementById("dext_license_user").innerHTML = ": " + 'Unlimited.';
-                else
-                    document.getElementById("dext_license_user").innerHTML = ": " + LayerWin._dext_editor.____.l[6];
-
-                document.getElementById("dext_license_ver").innerHTML = ": " + DEXTTOP.DEXT5.ReleaseVer;
-                //document.getElementById("dext_license_ver").innerHTML = ": " + parent.DEXT5.version + " " + parent.DEXT5.ReleaseVer;
-            } catch (e) { }
-
         }
     </script>
 </head>
