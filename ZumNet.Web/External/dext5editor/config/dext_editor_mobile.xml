@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dext5>
+  <license>
+    <product_key>FK64-3D30-W6U7-CH20</product_key>
+    <license_key>BJ8dYJrGiJVPogfZo3WZi19qmoWZGXU42YA022J13Nro3NC6Bel4wzqtPmIVwuI1Di1jD86Zv8qtPmIVwuI1Di1jD874QHtWQfd4RkZ8Ig6WRfQtPyE8yTEqL6GVQHttQeyyQWxVIVttQjc0Pfd4</license_key>
+    <mime_use mimeCharset="utf-8">0</mime_use>
+    <print_preview></print_preview>
+    <print_header>Header</print_header>
+    <print_footer>Footer</print_footer>
+    <use_form_print></use_form_print>
+    <trust_sites></trust_sites>
+  </license>
+  <xss_protection>
+    <xss_use>1</xss_use>
+    <xss_remove_tags></xss_remove_tags>
+    <xss_remove_events>all</xss_remove_events>
+  </xss_protection>
+  <tool_bar_1>
+    <tool>new</tool>
+    <tool>bold</tool>
+    <tool>italic</tool>
+    <tool>underline</tool>
+    <tool>strike_through</tool>
+    <tool>font_color</tool>
+    <tool>font_bg_color</tool>
+    <tool>image_create</tool>
+    <tool>emoticon</tool>
+    <tool>separator</tool>
+    <tool>align_left</tool>
+    <tool>align_center</tool>
+    <tool>align_right</tool>
+    <tool>align_full</tool>
+    <tool>separator</tool>
+    <tool>indent</tool>
+    <tool>outdent</tool>   
+  </tool_bar_1>
+  <tool_bar_2>
+    <tool>font_family</tool>
+    <tool>font_size</tool>
+    <tool>line_height</tool>
+    <tool>separator</tool>
+    <tool>list_number</tool>
+    <tool>list_bullets</tool>
+  </tool_bar_2>
+  <status_bar>
+    <status>design</status>
+    <status>preview</status>
+  </status_bar>
+  <remove_item>
+    <!--
+		<item>underline</item>
+		<item>flash_create</item>
+		<item>superscript</item>
+		<item>subscript</item>
+		<item>remove_format</item>
+		<item>copy</item>
+		<item>font_bg_color</item>
+		<item>list_number</item>
+		<item>list_bullets</item>
+		-->
+  </remove_item>
+  <font_size use_inc_dec="1">
+    <size>9pt</size>
+    <size>10pt</size>
+    <size>11pt</size>
+    <size>12pt</size>
+    <size>13pt</size>
+    <size>14pt</size>
+    <size>15pt</size>
+    <size>16pt</size>
+    <size>20pt</size>
+    <size>24pt</size>
+    <size>30pt</size>
+    <size>36pt</size>
+  </font_size>
+  <font_family use_local_font="0" use_recently_font="0">
+    <font>굴림</font>
+    <font>궁서</font>
+    <font>돋움</font>
+    <font>맑은 고딕</font>
+    <font>바탕</font>
+    <font>Arial</font>
+    <font>Tahoma</font>
+    <font>Times New Roman</font>
+    <font>Verdana</font>
+  </font_family>
+  <line_height use_inc_dec="1">
+    <line>1</line>
+    <line>1.2</line>
+    <line>1.5</line>
+    <line>1.8</line>
+    <line>2</line>
+    <line>2.5</line>
+    <line>3</line>
+  </line_height>
+  <setting>
+    <runtimes>html5</runtimes>
+    <encoding>utf-8</encoding>
+    <xmlnsname></xmlnsname>
+    <lang>ko-kr</lang>
+    <width>100%</width>
+    <height>100%</height>
+    <skinname></skinname>
+    <font_family>맑은 고딕</font_family>
+    <font_size>11pt</font_size>
+    <line_height mode="2">1.2</line_height>
+    <show_font_real>1</show_font_real>
+    <accessibility>0</accessibility>
+    <show_toolbar grouping="1">3</show_toolbar>
+    <showdialog_pos>1</showdialog_pos>
+    <source_viewtype>1</source_viewtype>
+    <user_css_url></user_css_url>
+    <img_default_size desc="이미지 삽입창의 Width, Height 기본 값을 지정합니다." width="" height=""></img_default_size>
+    <table_property allow_inoutdent_text="1" width="" height="" class="" inoutdent="" init_inoutdent="" td_height="" row_max_count="13" col_max_count="13" adjust_cursor_in_table="1" desc="테이블 생성시 width height className 기본값 설정 inoutdent : 표 들여쓰기 내어쓰기 기본값 설정, init_inoutdent : 표생성시 들여쓰기되어 생성될값, td_height: 생성시 td 기본 height">
+      <class_list desc="테이블에 지정가능한 ClassName"></class_list>
+      <line_style desc="테이블 선모양 리스트">solid,dotted,dashed,double,groove,ridge,inset,outset,none</line_style>
+      <no_resize_class></no_resize_class>
+      <show_line_for_border_none>0</show_line_for_border_none>
+      <use_mouse_inoutdent>1</use_mouse_inoutdent>
+    </table_property>
+    <drag_and_drop_allow>1</drag_and_drop_allow>
+    <use_correct_in_outdent>1</use_correct_in_outdent>
+    <browser_bugfixed>
+      <ie11_jaso>0</ie11_jaso>
+    </browser_bugfixed>
+    <use_gzip desc="core js에 대한 gzip">0</use_gzip>
+    <security>
+      <encrypt_param>1</encrypt_param>
+    </security>
+  </setting>
+  <uploader_setting use_html5mode="1">
+    <develop_langage>NET</develop_langage>
+    <handler_url></handler_url>
+    <handler_url_save_for_notes desc="http://를 포함한 전체 경로"></handler_url_save_for_notes>
+    <server_domain></server_domain>
+    <to_save_path_url></to_save_path_url>
+    <to_save_file_path_url></to_save_file_path_url>
+    <save_foldername_rule allow_custom_folder="1" desc="/, YYYY/, YYYY/MM/, YYYY/MM/DD/">YYYY/MM/</save_foldername_rule>
+    <save_file_foldername_rule allow_custom_folder="1" desc="/, YYYY/, YYYY/MM/, YYYY/MM/DD/">YYYY/MM/</save_file_foldername_rule>
+    <save_filename_rule desc="Reserved Field"></save_filename_rule>
+    <image_convert_format desc="jpg or empty"></image_convert_format>
+    <image_convert_width>0</image_convert_width>
+    <image_convert_height>0</image_convert_height>
+    <image_auto_fit>1</image_auto_fit>
+    <allow_media_file_type desc="동영상 삽입시 허용할 확장자 설정">wmv,asf</allow_media_file_type>
+    <allow_image_file_type desc="이미지 삽입시 허용할 확장자 설정">jpg,jpeg,png,gif,bmp</allow_image_file_type>
+    <allow_flash_file_type desc="플래시 삽입시 허용할 확장자 설정">swf,flv</allow_flash_file_type>
+    <allow_insert_file_type desc="파일 삽입시 허용할 확장자 설정"></allow_insert_file_type>
+    <attach_file_image desc="0: 허용안함, 1: 허용 (파일 삽입 시 파일 관련 이미지 삽입 허용)">1</attach_file_image>
+  </uploader_setting>
+  <extra_setting>
+    <paste_image_base64>0</paste_image_base64>
+    <empty_tag_remove>1</empty_tag_remove>
+    <custom_code></custom_code>
+  </extra_setting>
+</dext5>

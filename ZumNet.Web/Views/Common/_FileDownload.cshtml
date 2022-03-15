@@ -1,0 +1,27 @@
+﻿@using System;
+@using ZumNet.Framework.Util;
+
+@{
+    string sRealPath = StringHelper.SafeString(Request["fp"].ToString());
+    string sFileName = StringHelper.SafeString(Request["fn"].ToString());
+    string sXFAlias = StringHelper.SafeString(Request["xf"]);
+    string sSavedName = StringHelper.SafeString(Request["sn"]);
+
+
+    //Response.Write(Request["fp"].ToString() + " : " + Request["fn"].ToString());
+    //Response.Write(Request["fp"].ToString() + " : " + SecurityHelper.Base64Decode(Request["fp"].ToString()) + "<br />");
+    //Response.Write(Request["fn"].ToString() + " : " + SecurityHelper.Base64Decode(Request["fn"].ToString()) + "<br />");
+
+    if (sXFAlias != "" && sSavedName != "")
+    {
+
+    }
+    else
+    {
+
+    }
+
+    Response.Write(SecurityHelper.Base64Decode(sRealPath).Replace(@"\", "/") + "<br />" + SecurityHelper.Base64Decode(sFileName));
+
+    Response.End();
+}

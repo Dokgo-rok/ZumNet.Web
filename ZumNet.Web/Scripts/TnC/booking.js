@@ -107,7 +107,7 @@
                 if (res.substr(0, 2) == 'OK') {
                     var v = res.substr(2).split(_zw.V.lv.boundary);
                     var p = $('#popForm');
-                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); console.log(_zw.V.app);
+                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); //console.log(_zw.V.app);
 
                     _zw.ut.picker('date'); _zw.ut.maxLength();
 
@@ -122,6 +122,10 @@
                         } else {
                             _zw.cdr.closeRepeat(p);
                         }
+                    });
+
+                    p.find('input[name="ckbAllDay"]').click(function () {
+                        $('#cbStart').prop('disabled', $(this).prop('checked')); $('#cbEnd').prop('disabled', $(this).prop('checked'));
                     });
 
                     $('.btn[data-zf-menu="openResList"]').click(function () {
@@ -142,7 +146,7 @@
                                         if (v[0] == p.find('input[data-for="SelectedPartType"]').val() && partid[2] == p.find('input[data-for="SelectedPartID"]').val()) {
                                             bootbox.alert('이미 선택된 자원입니다!');
                                         } else {
-                                            console.log(ttl + " : " + partid[2] + " : " + v[2])
+                                            //console.log(ttl + " : " + partid[2] + " : " + v[2])
                                             p.find('span[data-for="SelectedPartName"]').html(ttl);
                                             p.find('input[data-for="SelectedPartID"]').val(partid[2]);
                                             p.find('input[data-for="SelectedPartType"]').val(v[0]);
@@ -161,35 +165,187 @@
                         });
                     });
 
+                    p.find('.btn[data-zm-menu]').click(function () {
+                        var mn = $(this).attr('data-zm-menu');
+                        if (mn == 'delete') {
+                            _zw.fn.deleteEvent([p], mi, dt);
+
+                        } else if (mn == 'edit') {
+                            
+
+                        } else if (mn == 'layer-mod' || mn == 'layer-del') {
+                            var info = $('#popBlank');
+                            info.html(p.find('#_LayerRptProc').html());
+
+                            if (mn == 'layer-mod') info.find('[data-for="rpt-modify"]').removeClass('d-none');
+                            else info.find('[data-for="rpt-delete"]').removeClass('d-none');
+
+                            info.find('.btn[data-zm-menu="confirm"]').click(function () {
+                                if (mn == 'layer-mod') {
+                                    _zw.fn.viewEvent(info, dt, '', mi, info.find('input[name="popup_repeat_mode"]:checked').val());
+                                } else {
+                                    _zw.fn.deleteEvent([info, p], mi, dt, info.find('input[name="popup_repeat_del_mode"]:checked').val())
+                                }
+                            });
+                            info.modal();
+
+                        } else if (mn == 'cmnt-reg' || mn == 'cmnt-mod' || mn == 'cmnt-del' || mn == 'cmnt-cancel') {
+
+                        }
+                    });
+
                     p.modal();
                 }
             }
         });
     }
 
-    _zw.mu.readEvent = function (ca, mi, pt, partId) { //alert(ca + " : " + mi + " : " + pt + " : " + partId); return
+    _zw.mu.readEvent = function (ca, mi, pt, partid) { //alert(ca + " : " + mi + " : " + pt + " : " + partId); return
         if (mi == null || mi == '' || parseInt(mi) == '0') return false;
-        ca = ca || ''; pt = pt || ''; partid = partid || '';
+        ca = ca || ''; pt = pt || ''; partid = partid || '0';
+
+        _zw.V.wnd = 'modal';
+        _zw.V.ot = pt;
+        _zw.V.appid = mi;
 
         $.ajax({
             type: "POST",
-            url: "/TnC/Booking/EventView",
-            data: '{M:"' + mode + '",ct:"' + _zw.V.ct + '",ot:"' + ot + '",partid:"' + partId + '",dt:"' + dt + '",mi:"' + mi + '",opt:"' + opt + '"}',
+            url: ca == 'booking' ? '/TnC/Booking/Read' : '/TnC/Schedule/Read',
+            data: _zw.fn.getAppQuery(),
             success: function (res) {
                 if (res.substr(0, 2) == 'OK') {
+                    var v = res.substr(2).split(_zw.V.lv.boundary);
                     var p = $('#popForm');
-                    p.html(res.substr(2));
+                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); console.log(_zw.V.app);
 
 
                     p.modal();
+                } else {
+                    bootbox.alert(res);
                 }
             }
         });
     }
 
-    _zw.fn.saveEvent = function () {
+    _zw.fn.saveEvent = function (dt, opt) {
         var p = $('#popForm');
-        var vRRule = _zw.cdr.getRepeat(p); console.log(vRRule);
+        dt = dt || ''; opt = opt || '';
+
+        if ($.trim($("#txtSubject").val()) == '') { bootbox.alert("제목을 입력하십시오!", function () { $("#txtSubject").focus(); }); return false; }
+        if (!moment($("#txtStart").val()).isValid()) { bootbox.alert("시작일을 확인하십시오!", function () { $("#txtStart").focus(); }); return false; }
+        if (!moment($("#txtEnd").val()).isValid()) { bootbox.alert("종료일을 확인하십시오!", function () { $("#txtEnd").focus(); }); return false; }
+
+        var mode = (_zw.V.app && _zw.V.app != '' && parseInt(_zw.V.app) > 0) ? "edit" : "new";
+        var postJson = {}; //_zw.V.app;
+        //postJson["cmntlist"] = []; postJson["sharedlist"] = []; //저장 중 필요 없는 목록 제거
+        postJson["repeat"] = {};
+        postJson["partlist"] = [];
+        postJson["attachlist"] = [];
+
+        postJson["mode"] = mode;
+        postJson["appid"] = _zw.V.appid;
+
+        var vRRule = _zw.cdr.getRepeat(p).split('|'); console.log(vRRule);
+        var rptEnd = $("#txtRepeatEnd");
+        if (vRRule == 'CHECK') { bootbox.alert("반복요일을 선택하십시오!"); return false; }
+        else if (vRRule == 'INVALID') { bootbox.alert("반복종료일은 확인하십시오!", function () { rptEnd.focus(); }); return false; }
+        else if (vRRule == 'END') { bootbox.alert("반복종료일은 시작일 이후로 선택하십시오!", function () { rptEnd.focus(); }); return false; }
+
+        var ttl = p.find('span[data-for="SelectedPartName"]').html();
+        var partId = p.find('input[data-for="SelectedPartID"]').val();
+        var partType = p.find('input[data-for="SelectedPartType"]').val();
+
+        if (ttl.indexOf('회의실') >= 0 && vRRule[0] != '0') { //2020-11-09 회의실 경우 1달 이상 되풀이 지정 불가
+            console.log(moment(rptEnd.val()).diff(moment($("#txtStart").val()), 'M', true));
+            if (rptEnd.val() == '' || moment(rptEnd.val()).diff(moment($("#txtStart").val()), 'M', true) > 1) {
+                bootbox.alert("[회의실] 경우 1달 이내 반복 가능합니다!", function () { rptEnd.focus(); }); return false;
+            }
+        }
+
+        var rptInfo = {};
+        if (mode == "edit") {
+            rptInfo["change"] = ($("#hdRepeatType").val() != vRRule[0] || $("#hdInterval").val() != vRRule[4] || $("#hdConDay").val() != vRRule[5] || $("#hdRepeatEnd").val() != vRRule[1]
+                || $("#txtStart").val() != $("#hdPeriodFrom").val() || $("#cbStart").val() != $("#hdStartTime").val() || $("#cbEnd").val() != $("#hdEndTime").val()) ? "Y" : "N";
+        }
+        
+        rptInfo["type"] = vRRule[0];
+        rptInfo["end"] = vRRule[1];
+        rptInfo["count"] = vRRule[2];
+        rptInfo["intervaltype"] = vRRule[3];
+        rptInfo["interval"] = vRRule[4];
+        rptInfo["conday"] = vRRule[5];
+        rptInfo["conweek"] = vRRule[6];
+        rptInfo["condate"] = vRRule[7];
+        rptInfo["changeopt"] = opt;
+        rptInfo["changedate"] = dt;
+        postJson["repeat"] = rptInfo;
+
+        postJson["ot"] = mode == 'new' ? 'UR' : _zw.V.ot;
+        postJson["otid"] = mode == 'new' ? _zw.V.current.urid : _zw.V.fdid;
+        postJson["schtype"] = $('#ddlSchType').val();
+        postJson["task"] = "0";
+        postJson["inherited"] = "Y";
+        postJson["state"] = "0";
+        postJson["priority"] = $("#ckbPrioriy").prop('checked') ? "H" : "";
+
+        postJson["subject"] = $("#txtSubject").val();
+        postJson["location"] = $("#txtLocation").val();
+        postJson["body"] = $("#txtBody").val();
+        postJson["periodfrom"] = $("#txtStart").val();
+        postJson["start"] = p.find('input[name="ckbAllDay"]').prop('checked') ? '00:00' : $("#cbStart").val();
+        postJson["periodto"] = $("#txtEnd").val();
+        postJson["end"] = p.find('input[name="ckbAllDay"]').prop('checked') ? '24:00' : $("#cbEnd").val();
+        postJson["term"] = moment(postJson["periodto"] + ' ' + postJson["end"]).diff(moment(postJson["periodfrom"] + ' ' + postJson["start"]), 'minutes');
+
+        if (partId != '') {
+            var partInfo = {};
+            partInfo["ot"] = 'FD';
+            partInfo["partid"] = partId;
+            partInfo["partdn"] = ttl;
+            partInfo["partmail"] = '';
+            partInfo["parttype"] = partType;
+            partInfo["state"] = '0';
+            partInfo["confirmed"] = 'N';
+            partInfo["sendmail"] = 'N';
+            partInfo["approval"] = p.find('input[data-for="SelectedApproval"]').val();
+            postJson["partlist"].push(partInfo);
+        }
+
+        postJson["alarm"] = "0";
+        postJson["creurid"] = _zw.V.current.urid;
+        postJson["credept"] = _zw.V.current.dept;
+        postJson["credpid"] = _zw.V.current.deptid;
+
+        var fi = $.trim($("#FILEINFO").val()), nCnt = 0, rt = '';
+        if (fi.length > 0) {
+            //rt = moveFileToStorage(fi); //파일정보 xml 문자열로 반환
+            //if (rt.substr(0, 2) == "OK") { rt = rt.substr(2); } else { alert(rt); return; }
+            //nCnt = (fi.split(String.fromCharCode(8)).length > 1) ? 2 : 1;
+        }
+        postJson["attachcount"] = nCnt; // 0, 1, 2
+        //postJson["attachlist"] = [];
+        postJson["taskact"] = "";
+
+        console.log(postJson);
+
+        bootbox.confirm("저장 하시겠습니까?", function (rt) {
+            if (rt) {
+                $.ajax({
+                    type: "POST",
+                    url: "/TnC/Booking/EventSave",
+                    data: JSON.stringify(postJson),
+                    success: function (res) {
+                        if (res.substr(0, 2) == 'OK') {
+                            bootbox.alert(res.substr(2), function () {
+                                if (p) p.find("button[data-dismiss='modal']").click();
+                                location.reload();
+                            });
+
+                        } else bootbox.alert(res);
+                    }
+                });
+            }
+        });
     }
 
     _zw.fn.bindBarCtrl = function () {

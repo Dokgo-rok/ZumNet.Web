@@ -418,5 +418,29 @@ namespace ZumNet.Web.Controllers
             return strView;
         }
         #endregion
+
+        #region [첨부파일 관련]
+        /// <summary>
+        /// 파일 첨부
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult FileUpload()
+        {
+            return View("_FileUpload");
+        }
+
+        /// <summary>
+        /// 파일 내려받기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult FileDownload()
+        {
+            return View("_FileDownload");
+        }
+        #endregion
     }
 }

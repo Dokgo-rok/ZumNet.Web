@@ -314,7 +314,7 @@ namespace ZumNet.Web.Bc
                     jV["end"] = mainInfo["EndTime"].ToString();
                     jV["term"] = mainInfo["Term"].ToString();
                     jV["alarm"] = mainInfo["Alarm"].ToString();
-                    jV["rsvd1"] = mainInfo["Reserved1"].ToString();
+                    jV["rsvd1"] = ""; // mainInfo["Reserved1"].ToString();
 
                     sPos = "320";
                     jV["repeat"]["type"] = mainInfo["RepeatType"].ToString();
@@ -322,9 +322,9 @@ namespace ZumNet.Web.Bc
                     jV["repeat"]["count"] = mainInfo["RepeatCount"].ToString();
                     jV["repeat"]["intervaltype"] = mainInfo["IntervalType"].ToString();
                     jV["repeat"]["interval"] = mainInfo["Interval"].ToString();
-                    jV["repeat"]["conday"] = mainInfo["Cond_Day"].ToString();
-                    jV["repeat"]["conweek"] = mainInfo["Cond_Week"].ToString();
-                    jV["repeat"]["condate"] = mainInfo["Cond_Date"].ToString();
+                    jV["repeat"]["conday"] = mainInfo["Con_Day"].ToString();
+                    jV["repeat"]["conweek"] = mainInfo["Con_Week"].ToString();
+                    jV["repeat"]["condate"] = mainInfo["Con_Date"].ToString();
                     jV["repeat"]["rsvd1"] = "";
 
                     //참여자

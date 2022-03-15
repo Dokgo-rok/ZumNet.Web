@@ -436,10 +436,15 @@ $(function () {
         },
         "editor": {
             "id": "dext5editor",
+            "holder": "__DextEditor",
+            "init": "dext_editor_mobile.xml", //mobile xml 사용 경우만
+            "lang": $('#current_culture').val(),
             "top": ""
         },
         "uploader": {
             "id": "dext5upload",
+            "holder": "__DextUpload",
+            "lang": $('#current_culture').val(),
             "df": "\u000B", //파일구분자
             "da": "\u000C" //속성구분자
         },
@@ -1347,18 +1352,22 @@ $(function () {
         },
         "picker": function (kind) {
             if (kind == 'date') {
-                $('.input-daterange').datepicker({
-                    autoclose: true,
-                    inputs: $('.input-daterange input[type="text"]'),
-                    //format: "yyyy-mm-dd",
-                    language: $('#current_culture').val()
-                });
+                if ($('.input-daterange').length > 0) {
+                    $('.input-daterange').datepicker({
+                        autoclose: true,
+                        inputs: $('.input-daterange input[type="text"]'),
+                        //format: "yyyy-mm-dd",
+                        language: $('#current_culture').val()
+                    });
+                }
 
-                $('.datepicker').datepicker({
-                    autoclose: true,
-                    //format: "yyyy-mm-dd",
-                    language: $('#current_culture').val()
-                });
+                if ($('.datepicker').length > 0) {
+                    $('.datepicker').datepicker({
+                        autoclose: true,
+                        //format: "yyyy-mm-dd",
+                        language: $('#current_culture').val()
+                    });
+                }
             }
         },
         "maxLength": function () {

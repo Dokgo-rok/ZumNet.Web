@@ -102,7 +102,7 @@
                             , state["s_" + sState][1], state["s_" + sState][2], row["subject"].ToString());
             sb.Append("</a>");
             sb.Append("<div class=\"d-none\" data-help=\"event\">");
-            sb.Append("<div class=\"tooltip-inner\">");
+            sb.Append("<div class=\"tooltip-inner text-left\">");
             sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
             if (row["RepeatType"].ToString() != "0") sb.Append("<i class=\"fas fa-redo-alt ml-2\"></i>");
             sb.Append("</div>");

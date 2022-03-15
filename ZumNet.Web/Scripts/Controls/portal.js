@@ -11,7 +11,7 @@
         }
     });
 
-    $('#_EA_COUNT a[data-box]').click(function (e) {
+    $('#_EA_COUNT .btn[data-box]').click(function (e) {
         e.preventDefault();
 
         var qi = '{ct:"109",ctalias:"ea",xfalias:"ea",ttl:"' + $(this).find('span:first').text() + '",opnode:"' + $(this).attr('data-location') + '"}'

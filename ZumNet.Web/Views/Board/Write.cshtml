@@ -60,7 +60,8 @@
             if ($('#__DextUpload').length > 0) {
                 DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
 
-                DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
+                DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;
+                DEXT5UPLOAD.config.Lang = _zw.T.uploader.lang;
                 new Dext5Upload(_zw.T.uploader.id);
 
                 $('.btn[data-zf-menu="toggleUploader"]').click(function () {
@@ -84,7 +85,8 @@
 
                 //DEXT5.config.ToSaveFilePathURL = "@sUploadPath";
 
-                DEXT5.config.EditorHolder = "__DextEditor";
+                DEXT5.config.EditorHolder = _zw.T.editor.holder;
+                DEXT5.config.Lang = _zw.T.editor.lang;
                 DEXT5.config.FocusInitObjId = "txtSubject";
 
                 new Dext5editor(_zw.T.editor.id);

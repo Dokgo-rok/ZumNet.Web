@@ -482,6 +482,114 @@ namespace ZumNet.Web.Areas.TnC.Controllers
             }
             return rt;
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Read()
+        {
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
+
+                    //초기 설정 가져오기
+                    sPos = "200";
+                    rt = Bc.CtrlHandler.BookingInit(this, true);
+                    if (rt != "") return "[" + sPos + "] " + rt;
+
+                    if (ViewBag.R.current["operator"].ToString() == "N" && !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R"))
+                    {
+                        return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                    }
+
+                    sPos = "300";
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using(ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
+                    {
+                        svcRt = schBiz.GetScheduleInfomation(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(jPost["appid"]));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "310";
+                        rt = FormHandler.BindScheduleToJson(this, svcRt);
+
+                        if (rt != "")
+                        {
+                            rt = "[" + sPos + "] " + rt;
+                        }
+                        else
+                        {
+                            sPos = "400";
+                            jPost["app"]["dnid"] = Session["DNID"].ToString();
+                            jPost["app"]["ot"] = jPost["ot"].ToString() == "" || jPost["ot"].ToString() == "FD" ? "UR" : jPost["ot"].ToString();
+                            jPost["app"]["otid"] = jPost["ot"].ToString() == "FD" || Convert.ToInt32(jPost["fdid"]) == 0 ? Session["URID"].ToString() : jPost["fdid"].ToString();
+
+                            sPos = "410";
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Read", ViewBag)
+                                    + jPost["lv"]["boundary"].ToString()
+                                    + Newtonsoft.Json.JsonConvert.SerializeObject(jPost["app"]);
+                        }
+                    }
+                    else
+                    {
+                        //에러페이지
+                        sPos = "320";
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventSave()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["mode"].ToString() == "") return "필수값 누락!";
+
+                    string fileInfo = "";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
+                    {
+                        svcRt = schBiz.SaveSchedule(jPost, Convert.ToInt32(Session["DNID"]), Convert.ToInt32(Session["URID"]), Session["DeptName"].ToString(), Convert.ToInt32(Session["DeptID"]), fileInfo);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK" + "저장했습니다!";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
         #endregion
     }
 }

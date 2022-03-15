@@ -843,6 +843,7 @@
     <Content Include="Content\worktime.css" />
     <Content Include="Content\ea.css" />
     <Content Include="Content\auth.css" />
+    <Content Include="External\dext5editor\config\dext_editor_mobile.xml" />
     <Content Include="External\dext5editor\config\dext_editor.xml" />
     <Content Include="External\dext5editor\config\dext_emoticon.xml" />
     <Content Include="External\dext5editor\config\dext_formlist.xml" />
@@ -2864,6 +2865,7 @@
     <Content Include="External\dext5upload\plugin\nexacro\17\metainfo\KOR\dext5upload.nexacro.enum.info" />
     <Content Include="External\dext5upload\plugin\nexacro\17\metainfo\KOR\dext5upload.nexacro.event.info" />
     <Content Include="External\dext5upload\plugin\nexacro\17\metainfo\KOR\dext5upload.nexacro.meta.info" />
+    <Content Include="Areas\TnC\Views\Shared\_Read.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -2952,6 +2954,8 @@
     <Content Include="Views\Shared\_ErrorInline.cshtml" />
     <Content Include="Views\Portal\Webpart\_ERP_KPI_S.cshtml" />
     <Content Include="Views\Organ\_PersonSimpleInfo.cshtml" />
+    <Content Include="Views\Common\_FileUpload.cshtml" />
+    <Content Include="Views\Common\_FileDownload.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

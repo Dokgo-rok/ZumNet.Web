@@ -1176,7 +1176,7 @@ namespace ZumNet.Web.Bc
                 string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], ""); //.Replace("+", " ");
                 if (req != "")
                 {
-                    jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
+                    jReq = JObject.Parse(SecurityHelper.Base64Decode(req)); //req.Replace(" ", "+") => urlencoding 안 했을 경우 필요
                     //jReq = JObject.Parse(HttpContext.Current.Server.UrlDecode(req));
                 }
                 else

@@ -169,8 +169,8 @@
 
         StringBuilder sb = new StringBuilder();
         //sb.AppendFormat("<li class=\"position-relative w-100 my-1\" id=\"task.{0}\" data-from=\"{1}\" data-repeat=\"{2}\">", dr["MessageID"].ToString(), dr["RepeatType"].ToString(), dr["PeriodFrom"].ToString());
-        sb.Append("<div class=\"d-flex\">");
-        sb.Append("<div class=\"d-flex align-items-center\">");
+        sb.Append("<div class=\"d-flex justify-content-between\">");
+        sb.Append("<div class=\"text-nowrap\">");
 
         if (acl == "A")
         {
@@ -198,12 +198,12 @@
         sb.Append("</span>"); //시간
         sb.Append("</div>");
 
-        sb.Append("<div class=\"text-truncate d-none d-md-flex\">");
+        sb.Append("<div class=\"d-none d-md-flex flex-fill\">");
         sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2})\">{3}</a>"
             , dr["State"].ToString() == "7" ? " text-decoration-line-through" : "", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString(), dr["Subject"].ToString());
         sb.Append("</div>"); //이벤트명
 
-        sb.Append("<div class=\"d-flex align-items-center\" style=\"position: absolute; right: 0\">");
+        sb.Append("<div class=\"text-nowrap ml-1\">");
         if (acl == "A")
         {
             //지연, 완료 상태
@@ -237,7 +237,7 @@
         sb.Append("</div>");
         sb.Append("</div>");
 
-        sb.Append("<div class=\"z-week-event text-truncate d-block d-md-none ml-3\">");
+        sb.Append("<div class=\"z-week-event text-truncate d-block d-md-none ml-3 mt-1\">");
         sb.AppendFormat("<a href=\"javascript:void(0)\" class=\"{0}\" title=\"{3}\" onclick=\"_zw.fn.viewEvent(null, '{1}','',{2})\">{3}</a>"
             , dr["State"].ToString() == "7" ? " text-decoration-line-through" : "", dr["PeriodFrom"].ToString(), dr["MessageID"].ToString(), dr["Subject"].ToString());
         sb.Append("</div>"); //이벤트명

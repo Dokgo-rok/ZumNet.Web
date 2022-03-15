@@ -36,10 +36,13 @@
     "conday": "",
     "conweek": "",
     "condate": "",
-    "rsvd1": ""
+    "rsvd1": "",
+    "changeopt": "",
+    "changedate": ""
   },
   "alarm": "",
   "rsvd1": "",
+  "taskact": "",
   "cstate": "",
   "vdate": "",
   "cdate": "",
