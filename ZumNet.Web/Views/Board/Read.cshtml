@@ -56,12 +56,30 @@
     {
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
     }
+
+    @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
     <script type="text/javascript">
         (function () {
             _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
 
+            _zw.dext5.view('view');
+
+            //if ($('#' + _zw.T.uploader.holder).length > 0) {
+
+            //    DEXT5UPLOAD.config.mode = 'view';
+            //    DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;
+            //    DEXT5UPLOAD.config.Lang = _zw.T.uploader.lang;
+            //    new Dext5Upload(_zw.T.uploader.id);
+
+            //}
+
             _zw.fn.view();
         }());
+
+        function DEXT5UPLOAD_OnCreationComplete(uploadID) {
+            // 업로드 생성 후 처리내용
+            _zw.dext5.addFile();
+        }
     </script>
 }
 

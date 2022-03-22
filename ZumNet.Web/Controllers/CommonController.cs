@@ -426,9 +426,9 @@ namespace ZumNet.Web.Controllers
         /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
-        public ActionResult FileUpload()
+        public ActionResult Upload()
         {
-            return View("_FileUpload");
+            return View("_Upload");
         }
 
         /// <summary>
@@ -437,9 +437,147 @@ namespace ZumNet.Web.Controllers
         /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
+        public ActionResult Download()
+        {
+            //Web Form 방식
+            return View("_Download");
+        }
+
+        [SessionExpireFilter]
+        [Authorize]
         public ActionResult FileDownload()
         {
-            return View("_FileDownload");
+            //MVC 방식
+            int _attachId = 0;
+            bool _disableDocSecurity = false; //기본 보안설정
+
+            string sPos = "[100]";
+            string sUserAgent = Request.ServerVariables["HTTP_USER_AGENT"].ToString();
+            string sRealPath = Request["fp"] != null && Request["fp"].ToString() != "" ? SecurityHelper.Base64Decode(Request["fp"].ToString()).Replace(@"\", "/") : "";
+            string sFileName = Request["fn"] != null && Request["fn"].ToString() != "" ? SecurityHelper.Base64Decode(Request["fn"].ToString()) : "";
+            string sXFAlias = Request["xf"] != null && Request["xf"].ToString() != "" ? StringHelper.SafeString(Request["xf"]) : "";
+            string sSavedName = Request["sn"] != null && Request["sn"].ToString() != "" ? StringHelper.SafeString(Request["sn"]) : "";
+
+            try
+            {
+                if (sXFAlias != "" && sSavedName != "")
+                {
+                    sPos = "[200]";
+                    DataSet ds = null;
+                    using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new ZumNet.DAL.FlowDac.EApprovalDac())
+                    {
+                        ds = eaDac.GetAttachedFileInfo(sXFAlias, sSavedName);
+                    }
+
+                    if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        DataRow dr = ds.Tables[0].Rows[0];
+                        sFileName = dr["FileName"].ToString();
+                        sRealPath = dr["FilePath"].ToString();
+
+                        int iPos = sRealPath.IndexOf(@"\");
+                        sRealPath = sRealPath.Substring(iPos);
+
+                        //2020-02-04 문서보안해제신청서 양식 첨부파일 결재 완료 후 7일 이내 보안해제
+                        _attachId = Convert.ToInt32(dr["AttachID"]);
+                        if (dr["DisableSecurity"].ToString() == "Y")
+                        {
+                            _disableDocSecurity = true;
+                        }
+                    }
+                }
+                else
+                {
+
+                }
+
+                sPos = "[300]";
+                //2014-06-19 크레신, pdf는 DRM 적용이 돼 있을 수 있으므로 제외
+                string[] vFile = sFileName.Split('.');
+                string ext = vFile[vFile.Length - 1].ToLower();
+
+                //2019-05-31 첨부경로 확인
+                if (!System.IO.File.Exists(Server.MapPath(sRealPath)))
+                {
+                    sRealPath = sRealPath.ToLower().Replace(@"\storage\", @"\Archive\");
+                }
+
+                //2020-10-27 스토리지 2차 추가로 인한 경로 추가확인
+                if (!System.IO.File.Exists(Server.MapPath(sRealPath)))
+                {
+                    sRealPath = sRealPath.ToLower().Replace(@"\Archive\", @"\ArchiveD\");
+                }
+
+                sPos = "[400]";
+                using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new ZumNet.DAL.FlowDac.EApprovalDac())
+                {
+                    eaDac.InsertEventFileView(_attachId, sFileName, sSavedName, sRealPath, Convert.ToInt32(Session["URID"]), Session["LogonID"].ToString()
+                                , Session["URName"].ToString(), Request.ServerVariables["REMOTE_HOST"], sUserAgent, (_disableDocSecurity ? "Y" : "N"));
+                }
+
+                _disableDocSecurity = true;
+
+                if (ext == "tif" || ext == "tiff" || ext == "jpg" || ext == "jpeg" || ext == "bmp"
+                     || ext == "gif" || ext == "png" || ext == "mht" || ext == "mhtml" || ext == "htm" || ext == "html")
+                {
+                    //보안 정책 예외 확장자 2015-01-09
+                }
+                else
+                {
+                    if (!_disableDocSecurity)
+                    {
+                        //2014-11-12 파일 암호화
+                        sRealPath = EncrypFile(Server.MapPath(sRealPath), ext);
+                        //Response.Write("PATH ==> " + HttpContext.Current.Server.MapPath(strRealPath) + " : " + Session["FRONTNAME"].ToString());
+                        //Response.End();
+                    }
+                }
+
+                sPos = "[500]";
+                byte[] fileBytes = System.IO.File.ReadAllBytes(sRealPath);
+                string strContentType = "";
+                if (ext == "pdf") strContentType = System.Net.Mime.MediaTypeNames.Application.Pdf;
+                else if (ext == "zip") strContentType = System.Net.Mime.MediaTypeNames.Application.Zip;
+                else strContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
+
+                sPos = "[600]";
+                return File(fileBytes, strContentType, sRealPath);
+            }
+            catch(Exception ex)
+            {
+                ex.Source = sPos + " " + ex.Source;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(ex, this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+        }
+
+        /// <summary>
+        /// 파일 암호화
+        /// </summary>
+        /// <param name="filePath"></param>
+        private string EncrypFile(string filePath, string ext)
+        {
+            string sEncrypServer = "192.168.100.249"; //Session["FRONTNAME"].ToString()
+            string strVPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["URAccount"].ToString();
+            string strUrl = String.Format("http://{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
+            string strReturn = "";
+
+            System.Net.HttpWebRequest HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+            System.Net.HttpWebResponse HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
+            using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
+            {
+                strReturn = sr.ReadToEnd();
+            }
+            HttpWResp.Close();
+
+            if (strReturn.Substring(0, 2) == "OK")
+            {
+                return strReturn.Substring(2);
+            }
+            else
+            {
+                throw new Exception(strReturn);
+                //return strReturn;
+            }
         }
         #endregion
     }

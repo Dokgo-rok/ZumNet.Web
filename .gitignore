@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /ZumNet.Web/Storage/CRESYN
+/ZumNet.Web/dext5editordata/2022/03

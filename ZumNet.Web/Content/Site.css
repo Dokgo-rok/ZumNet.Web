@@ -376,9 +376,9 @@
 }
 .contact-content .contact-content-img {
     margin-bottom: 1.25rem;
-    max-width: 6.5rem;
+    max-width: 7rem;
     height: 7.5rem;
-    border-radius: 1.25rem !important;
+    border-radius: 1.5rem !important;
 }
 .contacts-col-view .contact-content-name, .contacts-col-view .contact-content-user {
     display: block;

@@ -57,7 +57,7 @@
             _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
 
             //editor, uploader
-            if ($('#__DextUpload').length > 0) {
+            if ($('#' + _zw.T.uploader.holder).length > 0) {
                 DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
 
                 DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;
@@ -79,9 +79,9 @@
                 });
             }
 
-            if ($('#__DextEditor').length > 0) {
+            if ($('#' + _zw.T.editor.holder).length > 0) {
                 _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
-                $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+                $('#' + _zw.T.editor.holder).css('top', _zw.T.editor.top + 'px');
 
                 //DEXT5.config.ToSaveFilePathURL = "@sUploadPath";
 

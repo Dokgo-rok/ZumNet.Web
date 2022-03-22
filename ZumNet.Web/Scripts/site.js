@@ -363,9 +363,10 @@ $(function () {
         } else {
             _zw.ut.deleteCookie("accountField");
         }
-
+        //console.log($(this).valid())
         //event.cancelBubble = true;
         //event.preventDefault();
+        if ($(this).valid()) $('.btn[type="submit"]').prop('disabled', true);
     });
 
     $("[data-password]").on('click', function() {
@@ -1877,6 +1878,25 @@ $(function () {
     }
 
     _zw.dext5 = {
+        "view": function (m) {
+            if ($('#' + _zw.T.uploader.holder).length > 0) {
+                if (m == 'view') {
+                    DEXT5UPLOAD.config.Mode = m;
+                    DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;
+                    DEXT5UPLOAD.config.Lang = _zw.T.uploader.lang;
+                    new Dext5Upload(_zw.T.uploader.id);
+                }
+            }
+        },
+        "addFile": function () {
+            
+            for (var i = 0; i < _zw.V.app.attachlist.length; i++) {
+                var f = _zw.V.app.attachlist[i];
+                console.log(i + " : " + f.filepath.replace(/\\/gi, '/') + '/' + f.savedname);
+                DEXT5UPLOAD.AddUploadedFile((i + 1).toString(), f.filename, f.filepath.replace(/\\/gi, '/') + '/' + f.savedname, f.size, '', _zw.T.uploader.id);
+            }
+            
+        },
         "transferFile": function (currUploadID) {// 전송시작
             if (currUploadID) {
                 DEXT5UPLOAD.Transfer(currUploadID);

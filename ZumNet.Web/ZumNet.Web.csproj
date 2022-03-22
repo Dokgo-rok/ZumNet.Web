@@ -20,7 +20,7 @@
     <AssemblyName>ZumNet.Web</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44364</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -2954,8 +2954,8 @@
     <Content Include="Views\Shared\_ErrorInline.cshtml" />
     <Content Include="Views\Portal\Webpart\_ERP_KPI_S.cshtml" />
     <Content Include="Views\Organ\_PersonSimpleInfo.cshtml" />
-    <Content Include="Views\Common\_FileUpload.cshtml" />
-    <Content Include="Views\Common\_FileDownload.cshtml" />
+    <Content Include="Views\Common\_Upload.cshtml" />
+    <Content Include="Views\Common\_Download.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
@@ -2996,7 +2996,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55607</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44360/</IISUrl>
+          <IISUrl>http://localhost/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
