@@ -2,32 +2,36 @@
 
 using System;
 using System.Web;
+using System.Web.SessionState;
 
 using com.dext5;
 
-public class upload_handler : IHttpHandler
+public class upload_handler : IHttpHandler, IRequiresSessionState
 {
     private string _allowFileExt = "gif, jpg, jpeg, png, bmp, wmv, asf, swf, avi, mpg, mpeg, mp4, txt, doc, docx, xls, xlsx, ppt, pptx, hwp, zip, pdf, flv, webm, ogv";
-	
+
     public void ProcessRequest (HttpContext context)
-	{
-		DEXT5Handler DEXT5 = new DEXT5Handler();
+    {
+        DEXT5Handler DEXT5 = new DEXT5Handler();
 
         // 환경설정파일 물리적 폴더 (서버 환경변수를 사용할 경우)
         //DEXT5.SetConfigPhysicalPath = @"C:\dext5\config";
-        
-		DEXT5.JpegQuality = 100; // JPG 품질 (1 ~ 100)
+
+        DEXT5.JpegQuality = 100; // JPG 품질 (1 ~ 100)
         // (저품질, 용량 축소) 1 ~ 100 (고품질, 용량 증가)
 
         // ***************보안 설정 : 업로드 가능한 경로 설정 - 이외의 경로로 업로드 불가능***************
-        string[] allowUploadDirectoryPath = { context.Request.MapPath("/") };
+        string sUploadFolder = ZumNet.Framework.Configuration.Config.Read("UploadPath");
+        DEXT5.SetRealPath = @"D:\" + sUploadFolder + @"\" + context.Session["LogonID"].ToString();
+
+        string[] allowUploadDirectoryPath = { context.Request.MapPath("/" + sUploadFolder) };
         DEXT5.SetAllowUploadDirectoryPath = allowUploadDirectoryPath;
 
-		string rtn_message = DEXT5.DEXTProcess(context, _allowFileExt);
-	
-		if (DEXT5.IsImageUpload == true)
-		{
-			/*
+        string rtn_message = DEXT5.DEXTProcess(context, _allowFileExt);
+
+        if (DEXT5.IsImageUpload == true)
+        {
+            /*
 			// 동일 폴더에 이미지 썸네일 생성하기
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.ImageThumbnail(strSourceFile, "_thumb", 600, 0);
@@ -58,7 +62,7 @@ public class upload_handler : IHttpHandler
             }
             */
 
-			/*
+            /*
 			// 이미지 포멧 변경
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.ImageConvertFormat(strSourceFile, "png", 0);
@@ -88,7 +92,7 @@ public class upload_handler : IHttpHandler
             }
             */
 
-			/*
+            /*
 			// 비율로 이미지 크기 변환
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.ImageConvertSizeByPercent(strSourceFile, 50);
@@ -98,7 +102,7 @@ public class upload_handler : IHttpHandler
 			}
 			*/
 
-			/*
+            /*
 			// 이미지 회전
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.ImageRotate(strSourceFile, 90);
@@ -108,7 +112,7 @@ public class upload_handler : IHttpHandler
 			}
 			*/
 
-			/*
+            /*
 			// 이미지 워터마크
 			string strSourceFile = DEXT5.LastSaveFile;
 			string strWaterMarkFile = @"C:\Temp\watermark.jpg";
@@ -119,7 +123,7 @@ public class upload_handler : IHttpHandler
 			}
 			*/
 
-			/*
+            /*
 			// 텍스트 워터마크
 			string strSourceFile = DEXT5.LastSaveFile;
 			DEXT5.SetFontInfo("굴림", 50, "FF00FF");
@@ -149,8 +153,8 @@ public class upload_handler : IHttpHandler
                 string strLastError = DEXT5.LastErrorMessage;
             }
             */
-			
-			/*
+
+            /*
 			// 이미지 세로(Height) 크기
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.GetImageHeight(strSourceFile);
@@ -160,7 +164,7 @@ public class upload_handler : IHttpHandler
 			}
 			*/
 
-			/*
+            /*
 			// 이미지 Format 정보
 			string strSourceFile = DEXT5.LastSaveFile;
 			string rtn_value = DEXT5.GetImageFormat(strSourceFile);
@@ -171,7 +175,7 @@ public class upload_handler : IHttpHandler
 			*/
 
 
-			/*
+            /*
 			// 이미지 파일 크기
 			string strSourceFile = DEXT5.LastSaveFile;
 			long rtn_value = DEXT5.GetImageFileSize(strSourceFile);
@@ -180,8 +184,8 @@ public class upload_handler : IHttpHandler
 				string strLastError = DEXT5.LastErrorMessage;
 			}
 			*/
-			
-			/*
+
+            /*
 			// 파일 삭제
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.DeleteFile(strSourceFile, false);
@@ -197,12 +201,12 @@ public class upload_handler : IHttpHandler
             */
 
         }
-		
-		context.Response.Clear();
-		context.Response.Write(rtn_message);
+
+        context.Response.Clear();
+        context.Response.Write(rtn_message);
     }
 
-	
-	public bool IsReusable { get { return false; } }
+
+    public bool IsReusable { get { return false; } }
 
 }

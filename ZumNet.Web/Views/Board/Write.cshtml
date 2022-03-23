@@ -16,8 +16,11 @@
     }
 
     //첨부파일 임시 저장 폴더
-    string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["URAccount"].ToString();
+    string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
     ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+    //string strPath = HttpContext.Current.Server.MapPath(sUploadPath);
+    //Directory.Delete(strPath, true);
+    //Directory.CreateDirectory(strPath);
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 }
@@ -83,10 +86,10 @@
                 _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
                 $('#' + _zw.T.editor.holder).css('top', _zw.T.editor.top + 'px');
 
-                //DEXT5.config.ToSaveFilePathURL = "@sUploadPath";
-
                 DEXT5.config.EditorHolder = _zw.T.editor.holder;
                 DEXT5.config.Lang = _zw.T.editor.lang;
+                DEXT5.config.ToSavePathURL = $('#upload_path').val();
+                //DEXT5.config.ToSaveFilePathURL = $('#upload_path').val();
                 DEXT5.config.FocusInitObjId = "txtSubject";
 
                 new Dext5editor(_zw.T.editor.id);

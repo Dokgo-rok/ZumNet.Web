@@ -2,20 +2,21 @@
 
 using System;
 using System.Web;
+using System.Web.SessionState;
 
-public class dext5handler : IHttpHandler
+public class dext5handler : IHttpHandler, IRequiresSessionState 
 {
     Raonwiz.Dext5.UploadHandler upload = null;
 
     public void ProcessRequest (HttpContext context) {
-                
+
         upload = new Raonwiz.Dext5.UploadHandler();
 
         char cPathChar = System.IO.Path.DirectorySeparatorChar;
         string strRootFolder = context.Request.PhysicalPath;
         strRootFolder = strRootFolder.Substring(0, context.Request.PhysicalPath.LastIndexOf(cPathChar));
         strRootFolder = strRootFolder.Substring(0, strRootFolder.LastIndexOf(cPathChar));
-        
+
         //디버깅
         //Log Mode 설명
 
@@ -41,29 +42,29 @@ public class dext5handler : IHttpHandler
         ///////////////////////////////
         // 파일 저장전 이벤트 처리기 등록
         //upload.UploadBeforeInitializeEventEx += new Raonwiz.Dext5.UploadHandlerBeforeInitializeDelegateEx(Dext5_UploadBeforeInitializeEventEx); 
-        
+
         // 업로드 완료전 이벤트 처리기 등록
         //upload.UploadCompleteBeforeEventEx += new Raonwiz.Dext5.UploadHandlerBeforeCompleteDelegateEx(Dext5_UploadCompleteBeforeEventEx); 
-            
+
         // 업로드 완료후 이벤트 처리기 등록
         //upload.UploadCompleteEventEx += new Raonwiz.Dext5.UploadHandlerDelegateEx(Dext5_UploadCompleteEventEx);
 
         // 다운로드 경로변경 이벤트 처리기 등록
         //upload.OpenDownloadPathChangeEventEx += new Raonwiz.Dext5.OpenDownloadPathChangeDelegateEx(Dext5_OpenDownloadPathChangeEventEx);
-        
+
         // 다운로드 전 이벤트 처리기 등록
         //upload.OpenDownloadBeforeInitializeEventEx += new Raonwiz.Dext5.OpenDownloadBeforeInitializeDelegateEx(Dext5_OpenDownloadBeforeInitializeEventEx);
-        
+
         // 다운로드 완료후 이벤트 처리기 등록
         //upload.OpenDownloadCompleteEventEx += new Raonwiz.Dext5.OpenDownloadHandlerDelegateEx(Dext5_OpenDownloadCompleteEventEx);
-        
+
         // 로그 출력 전 이벤트 처리기 등록
         //upload.LoggerEvent += new Raonwiz.Dext5.LoggerDelegate(Dext5_LoggerEvent);
-        
+
         ///////////////////////////////
         // 서버모듈 설정
         ///////////////////////////////
-        
+
         // 실제 업로드 할 기본경로 설정 (가상경로와 물리적 경로로 설정 가능)
         // 폴더명 제일 뒤에 .과 공백이 있다면 제거하시고 설정해 주세요.(운영체제에서 지원되지 않는 문자열입니다.)
 
@@ -74,7 +75,7 @@ public class dext5handler : IHttpHandler
 
         // 임시파일 물리적 경로설정 ( SetPhysicalPath에 설정된 경로 + dext5temp )
         upload.SetTempPath = System.IO.Path.Combine(strRootFolder, "dext5uploaddata") + cPathChar + "dext5temp";
-         
+
         // ***************보안 설정 : 업로드 가능한 경로 설정 - 이외의 경로로 업로드 불가능***************
         string[] allowUploadDirectoryPath = {System.IO.Path.Combine(strRootFolder, "dext5uploaddata")};
         upload.SetAllowUploadDirectoryPath = allowUploadDirectoryPath;
@@ -87,27 +88,28 @@ public class dext5handler : IHttpHandler
         //-------------------- [설정방법1] 물리적 경로 설정 끝 --------------------//
 
         //-------------------- [설정방법2] 가상경로 설정 시작 --------------------//
-        upload.SetVirtualPath = "/dext5uploaddata";
+        string sVirtualPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath"); //"/dext5data/sjaekim";
+        upload.SetVirtualPath = sVirtualPath + "/" + context.Session["LogonID"].ToString(); // "/dext5uploaddata";
 
         // 임시파일 물리적 경로설정 ( SetVirtualPath에 설정된 경로 + dext5temp )
-        upload.SetTempPath = context.Request.MapPath("/dext5uploaddata") + cPathChar + "dext5temp";
+        upload.SetTempPath = context.Request.MapPath(sVirtualPath) + cPathChar + "dext5temp";
 
         // ***************보안 설정 : 업로드 가능한 경로 설정 - 이외의 경로로 업로드 불가능***************
-        string[] allowUploadDirectoryPath = { context.Request.MapPath("/dext5uploaddata") };
+        string[] allowUploadDirectoryPath = { context.Request.MapPath(sVirtualPath) };
         upload.SetAllowUploadDirectoryPath = allowUploadDirectoryPath;
 
         // ***************보안 설정 : 다운로드 가능한 경로 설정 - 이외의 경로에서 다운로드 불가능***************
         // context.Request.MapPath("/") 값은 샘플 동작을 위한 설정으로 실제 작업 시 제외하시면 됩니다.
-        string[] allowDownloadDirectoryPath = { context.Request.MapPath("/dext5uploaddata"), context.Request.MapPath("/") };
+        string[] allowDownloadDirectoryPath = { context.Request.MapPath(sVirtualPath), context.Request.MapPath("/") };
         upload.SetAllowDownloadDirectoryPath = allowDownloadDirectoryPath;
         //-------------------- [설정방법2] 가상경로 설정 끝 ---------------------//
 
         // 위에 설정된 임시파일 물리적 경로에서 불필요한 파일을 삭제 처리하는 설정 (단위: 일)    
         upload.SetGarbageCleanDay = 2;
-        
+
         // 환경설정파일 물리적 폴더 (서버 환경변수를 사용할 경우)
         //upload.SetConfigPhysicalPath = @"D:\Dext5UploadData\config";
-        
+
         // 웹표준 모드에서 멀티 파일 다운로드시 zip 파일명을 설정
         //upload.SetZipFileName = "download.zip";
 
@@ -128,7 +130,7 @@ public class dext5handler : IHttpHandler
         // 아래 부분을 적용하시면, 설정한 값으로 서버에서 확장자 체크가 이루어집니다.
         // 1번째 인자는 0: 제한으로 설정, 1: 허용으로 설정, 두번째 인자는 확장자 목록 : jpg,exe (구분자,)
         //upload.SetDownloadCheckFileExtension(0, "exe,aspx,jsp");
-    
+
         // 실제 실행부
         upload.Process(context);
 
@@ -141,7 +143,7 @@ public class dext5handler : IHttpHandler
         // 파일 저장전 발생하는 이벤트 입니다.
         // 파일에 대한 저장 경로를 변경해야 하는 경우 사용합니다.
         // 아직 클라이언트 측으로 출력을 내보내기 전이므로, 이곳에서 Response값을 변경하시면 클라이언트로 적용된 값이 전달됩니다.
-        
+
         //HttpContext context = parameterEntity.Context; //Context Value
         //string newFileLocation = parameterEntity.NewFileLocation; //NewFileLocation Value
         //string responseFileName = parameterEntity.ResponseFileName; //ResponseFileName Value
@@ -158,7 +160,7 @@ public class dext5handler : IHttpHandler
         // 파일 업로드 완료전 발생하는 이벤트 입니다.
         // 업로드된 파일의 DRM을 해제와 같은 파일처리 작업이 필요할 경우 사용합니다.
         // 아직 클라이언트 측으로 출력을 내보내기 전이므로, 이곳에서 Response값을 변경하시면 클라이언트로 적용된 값이 전달됩니다.
-        
+
         //HttpContext context = parameterEntity.Context; //Context Value
         //string newFileLocation = parameterEntity.NewFileLocation; //NewFileLocation Value
         //string responseFileServerPath = parameterEntity.ResponseFileServerPath; //ResponseFileServerPath Value
@@ -179,7 +181,7 @@ public class dext5handler : IHttpHandler
     private void Dext5_UploadCompleteEventEx(Raonwiz.Dext5.Process.Entity.UploadEventEntity parameterEntity)
     {
         // 파일 업로드 완료후 발생하는 이벤트 입니다.    
-            
+
         //HttpContext context = parameterEntity.Context; //Context Value
         //string newFileLocation = parameterEntity.NewFileLocation; //NewFileLocation Value
         //string responseFileServerPath = parameterEntity.ResponseFileServerPath; //ResponseFileServerPath Value
@@ -246,7 +248,7 @@ public class dext5handler : IHttpHandler
         //string[] downloadFilePath = parameterEntity.DownloadFilePath; //DownloadFilePath Value
         //string[] downloadFileName = parameterEntity.DownloadFileName; //DownloadFileName Value
         //string[] downloadCustomValue = parameterEntity.DownloadCustomValue;  //DownloadCustomValue
-        
+
         //parameterEntity.DownloadFilePath = downloadFilePath; //Change DownloadFilePath Value
 
         //upload.SetCustomError("사용자오류");
@@ -296,7 +298,7 @@ public class dext5handler : IHttpHandler
         //parameterEntity.LogText = strLogText; //Change LogText Value
         //parameterEntity.LogWriteFlag = true; // 로그 출력여부 설정
     }
-    
+
     public bool IsReusable {
         get {
             return false;

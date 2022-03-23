@@ -432,20 +432,24 @@ namespace ZumNet.Web.Controllers
         }
 
         /// <summary>
-        /// 파일 내려받기
+        /// Web Form 파일 내려받기
         /// </summary>
         /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
-        public ActionResult Download()
+        public ActionResult DownloadV()
         {
             //Web Form 방식
             return View("_Download");
         }
 
+        /// <summary>
+        /// MVC 파일 내려받기
+        /// </summary>
+        /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
-        public ActionResult FileDownload()
+        public ActionResult Download()
         {
             //MVC 방식
             int _attachId = 0;
@@ -488,7 +492,7 @@ namespace ZumNet.Web.Controllers
                 }
                 else
                 {
-
+                    sRealPath = Server.MapPath(sRealPath);
                 }
 
                 sPos = "[300]";
@@ -497,13 +501,13 @@ namespace ZumNet.Web.Controllers
                 string ext = vFile[vFile.Length - 1].ToLower();
 
                 //2019-05-31 첨부경로 확인
-                if (!System.IO.File.Exists(Server.MapPath(sRealPath)))
+                if (!System.IO.File.Exists(sRealPath))
                 {
                     sRealPath = sRealPath.ToLower().Replace(@"\storage\", @"\Archive\");
                 }
 
                 //2020-10-27 스토리지 2차 추가로 인한 경로 추가확인
-                if (!System.IO.File.Exists(Server.MapPath(sRealPath)))
+                if (!System.IO.File.Exists(sRealPath))
                 {
                     sRealPath = sRealPath.ToLower().Replace(@"\Archive\", @"\ArchiveD\");
                 }
@@ -527,7 +531,7 @@ namespace ZumNet.Web.Controllers
                     if (!_disableDocSecurity)
                     {
                         //2014-11-12 파일 암호화
-                        sRealPath = EncrypFile(Server.MapPath(sRealPath), ext);
+                        sRealPath = EncrypFile(sRealPath, ext);
                         //Response.Write("PATH ==> " + HttpContext.Current.Server.MapPath(strRealPath) + " : " + Session["FRONTNAME"].ToString());
                         //Response.End();
                     }
@@ -536,12 +540,31 @@ namespace ZumNet.Web.Controllers
                 sPos = "[500]";
                 byte[] fileBytes = System.IO.File.ReadAllBytes(sRealPath);
                 string strContentType = "";
+
+                sPos = "[510]";
                 if (ext == "pdf") strContentType = System.Net.Mime.MediaTypeNames.Application.Pdf;
                 else if (ext == "zip") strContentType = System.Net.Mime.MediaTypeNames.Application.Zip;
                 else strContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
+                
+                strContentType = MimeMapping.GetMimeMapping(sFileName);
 
-                sPos = "[600]";
-                return File(fileBytes, strContentType, sRealPath);
+                sPos = "[520]";
+                sFileName = HttpUtility.UrlEncode(sFileName, new UTF8Encoding()).Replace("+", "%20");
+
+                //FilePathResult fp = new FilePathResult(sRealPath, strContentType);
+                
+
+                if (ext == "pdf" || ext == "tif" || ext == "tiff" || ext == "jpg" || ext == "jpeg" || ext == "bmp"
+                     || ext == "gif" || ext == "png" || ext == "mht" || ext == "mhtml" || ext == "htm" || ext == "html")
+                {
+                    sPos = "[600]";
+                    return File(fileBytes, strContentType, sFileName); //sFileName 없으면 바로 열기 가능하나 다운로드파일명은 없게 됨
+                }
+                else
+                {
+                    sPos = "[610]";
+                    return File(fileBytes, strContentType, sFileName);
+                }   
             }
             catch(Exception ex)
             {
