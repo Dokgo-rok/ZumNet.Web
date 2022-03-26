@@ -325,6 +325,7 @@
     <Compile Include="Areas\WoA\Controllers\OrganController.cs" />
     <Compile Include="Areas\WoA\Controllers\ProcController.cs" />
     <Compile Include="Areas\WoA\WoAAreaRegistration.cs" />
+    <Compile Include="Bc\AttachmentsHandler.cs" />
     <Compile Include="Bc\AuthManager.cs" />
     <Compile Include="Bc\CommonUtils.cs" />
     <Compile Include="Bc\EAFormManager.cs" />
@@ -2956,6 +2957,8 @@
     <Content Include="Views\Organ\_PersonSimpleInfo.cshtml" />
     <Content Include="Views\Common\_Upload.cshtml" />
     <Content Include="Views\Common\_Download.cshtml" />
+    <Content Include="Views\Board\Edit.cshtml" />
+    <Content Include="Views\Board\_Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

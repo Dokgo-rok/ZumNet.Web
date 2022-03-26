@@ -100,7 +100,7 @@ public class dext5handler : IHttpHandler, IRequiresSessionState
 
         // ***************보안 설정 : 다운로드 가능한 경로 설정 - 이외의 경로에서 다운로드 불가능***************
         // context.Request.MapPath("/") 값은 샘플 동작을 위한 설정으로 실제 작업 시 제외하시면 됩니다.
-        string[] allowDownloadDirectoryPath = { context.Request.MapPath(sVirtualPath), context.Request.MapPath("/") };
+        string[] allowDownloadDirectoryPath = { context.Request.MapPath(sVirtualPath), context.Request.MapPath("/Storage") };
         upload.SetAllowDownloadDirectoryPath = allowDownloadDirectoryPath;
         //-------------------- [설정방법2] 가상경로 설정 끝 ---------------------//
 

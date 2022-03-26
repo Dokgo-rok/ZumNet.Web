@@ -8,7 +8,7 @@ using com.dext5;
 
 public class upload_handler : IHttpHandler, IRequiresSessionState
 {
-    private string _allowFileExt = "gif, jpg, jpeg, png, bmp, wmv, asf, swf, avi, mpg, mpeg, mp4, txt, doc, docx, xls, xlsx, ppt, pptx, hwp, zip, pdf, flv, webm, ogv";
+    private string _allowFileExt = "gif, jpg, jpeg, png, bmp, wmv, asf, swf, avi, mpg, mpeg, mp4, txt, doc, docx, xls, xlsx, ppt, pptx, hwp, zip, pdf, flv, webm, ogv, mov";
 
     public void ProcessRequest (HttpContext context)
     {

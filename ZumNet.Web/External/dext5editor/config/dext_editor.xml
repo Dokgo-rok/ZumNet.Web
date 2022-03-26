@@ -108,7 +108,6 @@
   <remove_item>
     <!--
 		<item>underline</item>
-		<item>flash_create</item>
 		<item>superscript</item>
 		<item>subscript</item>
 		<item>remove_format</item>
@@ -117,6 +116,12 @@
 		<item>list_number</item>
 		<item>list_bullets</item>
 		-->
+    <item>doc_bg_image</item>
+    <item>iframe_create</item>
+    <item>flash_create</item>
+    <item>media_create</item>
+    <item>insert_file</item>
+    <item>video</item>
   </remove_item>
   <remove_context_item>
     <!--
@@ -259,10 +264,10 @@
     <image_convert_width>0</image_convert_width>
     <image_convert_height>0</image_convert_height>
     <image_auto_fit desc="0: 사용하지 않음, 1 : 에디터 Width 크기에 맞춤">1</image_auto_fit>
-    <allow_media_file_type desc="동영상 삽입시 허용할 확장자 설정">wmv,asf</allow_media_file_type>
+    <allow_media_file_type desc="동영상 삽입시 허용할 확장자 설정">avi,wmv,asf,mp4,mov</allow_media_file_type>
     <allow_image_file_type desc="이미지 삽입시 허용할 확장자 설정">jpg,jpeg,png,gif,bmp</allow_image_file_type>
     <allow_flash_file_type desc="플래시 삽입시 허용할 확장자 설정">swf,flv</allow_flash_file_type>
-    <allow_insert_file_type desc="파일 삽입시 허용할 확장자 설정"></allow_insert_file_type>
+    <allow_insert_file_type desc="파일 삽입시 허용할 확장자 설정">pdf</allow_insert_file_type>
     <attach_file_image desc="0: 허용안함, 1: 허용 (파일 삽입 시 파일 관련 이미지 삽입 허용)">1</attach_file_image>
   </uploader_setting>
 

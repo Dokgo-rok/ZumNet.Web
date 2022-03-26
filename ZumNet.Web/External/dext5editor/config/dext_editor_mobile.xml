@@ -49,7 +49,6 @@
   <remove_item>
     <!--
 		<item>underline</item>
-		<item>flash_create</item>
 		<item>superscript</item>
 		<item>subscript</item>
 		<item>remove_format</item>
@@ -58,6 +57,12 @@
 		<item>list_number</item>
 		<item>list_bullets</item>
 		-->
+    <item>doc_bg_image</item>
+    <item>iframe_create</item>
+    <item>flash_create</item>
+    <item>media_create</item>
+    <item>insert_file</item>
+    <item>video</item>
   </remove_item>
   <font_size use_inc_dec="1">
     <size>9pt</size>

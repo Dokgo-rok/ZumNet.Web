@@ -19,7 +19,8 @@ $(function () {
     }
 
     _zw.mu.editMsg = function () {
-
+        postData = _zw.fn.getAppQuery(_zw.V.fdid);
+        window.location.href = '/Board/Edit?qi=' + _zw.base64.encode(postData);
     }
 
     _zw.mu.replyMsg = function () {
@@ -44,7 +45,7 @@ $(function () {
         }
 
         if ($('#ckbUsePopup').prop('checked') && $.trim($('#txtPopDate').val()) == '') {
-            bootbox.alert("팝업일을 입력하세요.", function () { $('#txtPopDate').focus(); }); return;
+            bootbox.alert("팝업종료일을 입력하세요.", function () { $('#txtPopDate').focus(); }); return;
         }
 
         if (DEXT5.isEmpty()) {
@@ -176,10 +177,13 @@ $(function () {
 
     _zw.fn.sendForm = function () {
         var fileList = DEXT5UPLOAD.GetNewUploadListForText(); //DEXT5UPLOAD.GetNewUploadListForJson();
-        //console.log(fileList)
+        //console.log(fileList); return
 
-        var imgList = DEXT5.getImages();
-        //console.log(imgList)
+        var imgList = DEXT5.getImagesEx(); //DEXT5.getImages();
+        //console.log(location);
+        //console.log(DEXT5.getBodyValue());
+        //console.log(DEXT5.getBodyValueEx());
+        //console.log(imgList);
 
         var jPost = _zw.V.app;
         jPost["ct"] = _zw.V.ct;
@@ -199,7 +203,7 @@ $(function () {
                 v["savedname"] = vInfo[1];
                 v["size"] = vInfo[2];
                 v["ext"] = vInfo[7];
-                v["filepath"] = vInfo[4];
+                v["filepath"] = vInfo[4].substr(1).replace(/\//gi, '\\');
                 v["storagefolder"] = "";
 
                 jPost["attachlist"].push(v);
@@ -210,6 +214,27 @@ $(function () {
         else {
             jPost["attachcount"] = 0;
         }
+
+        jPost["imglist"] = [];
+        if (imgList) {
+            var rgx = (location.origin + $('#upload_path').val()).toLowerCase();
+            var vImg = imgList.split(_zw.T.uploader.da);
+            for (var i = 0; i < vImg.length; i++) {
+                var vInfo = vImg[i].split(_zw.T.uploader.df);
+                if (vInfo[0].toLowerCase().indexOf(rgx) != -1) {
+                    var v = {};
+                    v["imgname"] = vInfo[1];
+                    v["imgpath"] = vInfo[0];
+                    v["origin"] = location.origin;
+                    jPost["imglist"].push(v);
+                }
+            }
+        }
+
+        console.log(jPost["attachlist"]);
+        console.log(jPost["imglist"]);
+        //return;
+
         jPost["msg"] = "";
         jPost["inherited"] = "Y";
         jPost["priority"] = (!$('#ckbPriority').prop("disabled") && $('#ckbPriority').prop('checked')) ? "Y" : "N";
@@ -230,6 +255,8 @@ $(function () {
         jPost["bodytext"] = "";
         jPost["pwd"] = ""; //익명
 
+        console.log(jPost["body"]);
+
         jPost["M"] = _zw.V.mode;
 
         $.ajax({
@@ -238,7 +265,10 @@ $(function () {
             data: JSON.stringify(jPost),
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
-                    alert("OK");
+                    //console.log(JSON.parse(res.substr(2)));
+                    bootbox.alert(res.substr(2), function () {
+                        _zw.mu.goList();
+                    });
 
                 } else bootbox.alert(res);
             }
@@ -254,7 +284,7 @@ function dext_editor_loaded_event() {
 function DEXT5UPLOAD_AfterAddItemEndTime() {
     console.log('transfer')
     // 파일 추가후 처리할 내용
-    //DEXT5UPLOAD.TransferEx(G_UploadID);
+    //DEXT5UPLOAD.TransferEx();
 }
 
 function DEXT5UPLOAD_OnTransfer_Start() {

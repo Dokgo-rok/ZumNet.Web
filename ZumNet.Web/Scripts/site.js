@@ -1531,7 +1531,10 @@ $(function () {
             //} else {
             //    bootbox.hideAll();
             //}
-        }               
+        },
+        "isMobile": function () {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent);
+        }
     };
 
     //Calendar (일정,일지,자원 관련 공통 함수)
@@ -1882,14 +1885,17 @@ $(function () {
             if ($('#' + _zw.T.uploader.holder).length > 0) {
                 if (m == 'view') {
                     DEXT5UPLOAD.config.Mode = m;
-                    DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;
-                    DEXT5UPLOAD.config.Lang = _zw.T.uploader.lang;
-                    new Dext5Upload(_zw.T.uploader.id);
+                } else if (m == 'edit') {
+                    if (_zw.ut.isMobile()) DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,remove';
+                    else DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,download,download_all,remove,remove_all';
                 }
+
+                DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;
+                DEXT5UPLOAD.config.Lang = _zw.T.uploader.lang;
+                new Dext5Upload(_zw.T.uploader.id);
             }
         },
         "addFile": function () {
-            
             for (var i = 0; i < _zw.V.app.attachlist.length; i++) {
                 var f = _zw.V.app.attachlist[i];
                 console.log(i + " : " + f.filepath.replace(/\\/gi, '/') + '/' + f.savedname);
