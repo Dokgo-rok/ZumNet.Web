@@ -59,7 +59,7 @@
 	  <complete_event_reset_use desc="업로드 완료 이벤트에서 ResetUpload API 사용시 1로 설정해야함">0</complete_event_reset_use>
     <user_message edit="" view="" desc="edit/view 에 문구 입력 사용, 기본값은 0 사용 안함, 1이면 사용">0</user_message>
     <disable_alert_message>
-      <disable_delete_confirm desc="0: 모든 confirm창 활성, 1:모든 confirm창 비활성, 2:선택 항목제거만 confirm창 비활성, 3:전체 항목제거만 confirm창 비활성">0</disable_delete_confirm>
+      <disable_delete_confirm desc="0: 모든 confirm창 활성, 1:모든 confirm창 비활성, 2:선택 항목제거만 confirm창 비활성, 3:전체 항목제거만 confirm창 비활성">1</disable_delete_confirm>
       <duplication desc="1:파일 추가 중복 시 alert창 비활성">1</duplication>
       <delete_unchosen desc="0:파일 삭제 시 선택된 파일이 없을 경우 alert창 활성, 1: 비활성">1</delete_unchosen>
       <download_unchosen desc="0:파일 다운로드 시 선택된 파일이 없을 경우 alert창 활성, 1: 비활성">1</download_unchosen>

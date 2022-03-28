@@ -10,3 +10,11 @@
 .z-list-body .table .table-warning, .z-list-body .table .table-warning > th, .z-list-body .table .table-warning > td {
     border-color: #e8e8e9 !important;
 }
+/*.z-list-body .table {
+    border-collapse: collapse
+}
+    .z-list-body .table thead tr th {
+        position: sticky;
+        top: 0;
+        border-top: 2px solid #ccc;
+    }*/

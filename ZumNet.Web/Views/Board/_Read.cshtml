@@ -12,9 +12,9 @@
 
 <!-- Header -->
 <div class="flex-grow-0">
-    <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.mode.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.mode.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
+    <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.wnd.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.wnd.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
         <div class="d-flex align-items-center font-weight-bold">
-            @if (ViewBag.R.mode.ToString() == "")
+            @if (ViewBag.R.wnd.ToString() == "")
             {
                 <div class="h5 mb-0">
                     <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
@@ -42,7 +42,7 @@
             </div>
         </div>
         <div>
-            @if (ViewBag.R.mode.ToString() == "")
+            @if (ViewBag.R.wnd.ToString() == "")
             {
                 <div class="btn-group">
                     <button class="btn btn-default" onclick="_zw.mu.goList();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.List"><i class="fas fa-list"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.List</span></button>
@@ -53,7 +53,7 @@
             <div class="btn-group">
                 <button class="btn btn-default" onclick="_zw.mu.preview();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Print"><i class="fe-printer"></i></button>
             </div>
-            @if (ViewBag.R.mode.ToString() != "")
+            @if (ViewBag.R.wnd.ToString() != "")
             {
                 <div class="btn-group">
                     <button class="btn btn-default" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
@@ -64,8 +64,8 @@
 </div>
 <!-- / Header -->
 
-<div class="flex-grow-1@(ViewBag.R.mode.ToString() == "" ? " position-relative" : "")" style="border-top: 2px solid #eee">
-    <div class="z-list-scroll" style="@(ViewBag.R.mode.ToString() == "" ? "" : "top: 48px")">
+<div class="flex-grow-1@(ViewBag.R.wnd.ToString() == "" ? " position-relative" : "")" style="border-top: 2px solid #eee">
+    <div class="z-list-scroll" style="@(ViewBag.R.wnd.ToString() == "" ? "" : "top: 48px")">
         <div class="pb-3 border-bottom">
             <div class="d-block d-sm-none container-p-x mt-3">
                 <div class="mb-2 text-muted">@Html.Raw(ViewBag.SiteMap)</div>
@@ -149,7 +149,7 @@
                 <ul class="list-group messages-list">
                     @foreach (var j in ViewBag.R.app.replylist)
                     {
-                        <li class="list-group-item list-group-item-action d-flex align-items-center@(j["msgid"].ToString() == ViewBag.R["appid"].ToString() ? " bg-light" : "")" xf="" appid="@j["msgid"]" acl="" auth="">
+                        <li class="list-group-item list-group-item-action d-flex align-items-center@(j["msgid"].ToString() == ViewBag.R["appid"].ToString() ? " bg-light" : "")" xf="@ViewBag.R.xfalias" appid="@j["msgid"]" acl="" auth="">
                             <div class="wd-99 flex-fill text-truncate d-flex align-items-center">
                                 @if (Convert.ToInt32(j["depth"]) > 0)
                                 {

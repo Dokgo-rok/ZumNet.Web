@@ -14,17 +14,40 @@ $(function () {
         var el, p, postData, tgtPage, stdPage;
         m = m || '';
 
+        _zw.V.appid = 0;
+        _zw.V.xfalias = xf;
+
         postData = _zw.fn.getAppQuery(_zw.V.fdid);
         window.location.href = '/Board/Write?qi=' + _zw.base64.encode(postData);
     }
 
-    _zw.mu.editMsg = function () {
+    _zw.mu.editMsg = function (xf) {
+        _zw.V.xfalias = xf;
+
         postData = _zw.fn.getAppQuery(_zw.V.fdid);
         window.location.href = '/Board/Edit?qi=' + _zw.base64.encode(postData);
     }
 
-    _zw.mu.replyMsg = function () {
+    _zw.mu.readTemp = function () {
+        var p = $(event.target).parent().parent();
+        var postData = '{wnd:"popup",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"",alias:"",xfalias:"' + p.attr('xf') + '",fdid:"0",appid:"' + p.attr('appid')
+                    + '",opnode:"",ttl:"",acl:"' + '",appacl:"",sort:"' + _zw.V.lv.sort + '",sortdir:"' + _zw.V.lv.sortdir + '",boundary:"' + _zw.V.lv.boundary + '"}';
+        //console.log(postData)
+        var url = '/Board/TempSaveRead?qi=' + _zw.base64.encode(postData);
+        _zw.ut.openWnd(url, "popupform", 800, 650, "resize");
+    }
 
+    _zw.mu.editTemp = function () {
+        var postData = _zw.fn.getAppQuery(_zw.V.fdid);
+        window.location.href = '/Board/TempSaveEdit?qi=' + _zw.base64.encode(postData);
+    }
+
+    _zw.mu.replyMsg = function (xf) {
+        _zw.V.mode = 'reply';
+        _zw.V.xfalias = xf;
+
+        var postData = _zw.fn.getAppQuery(_zw.V.fdid);
+        window.location.href = '/Board/Write?qi=' + _zw.base64.encode(postData);
     }
 
     _zw.mu.deleteMsg = function () {
@@ -34,8 +57,7 @@ $(function () {
     _zw.mu.registerMsg = function () {
         //var fp = $('#__FormView input[data-for="SelectedFolderPath"]').val();
         var fd = $('#__FormView input[data-for="SelectedFolder"]').val();
-        var fxf = $('#__FormView input[data-for="SelectedXFAlias"]').val();
-        if (fd == '' || fxf == '') {
+        if (fd == '' || fd == '0') {
             bootbox.alert("게시분류를 선택하세요!"); return;
         }
 
@@ -53,7 +75,10 @@ $(function () {
         }
 
         _zw.V.mode = "";
-        DEXT5UPLOAD.Transfer();
+        bootbox.confirm("등록 하시겠습니까?", function (rt) {
+            if (rt) { DEXT5UPLOAD.Transfer(); }
+        });
+        
     }
 
     _zw.mu.previewMsg = function () {
@@ -66,8 +91,14 @@ $(function () {
             bootbox.alert("제목을 입력하세요.", function () { $subject.focus(); }); return;
         }
 
+        var fd = $('#__FormView input[data-for="SelectedFolder"]').val();
+        var msg = '';
+        if (fd != '' && fd != '0') msg = '게시분류는 저장되지 않습니다. ';
+
         _zw.V.mode = "save";
-        DEXT5UPLOAD.Transfer();
+        bootbox.confirm(msg + "저장 하시겠습니까?", function (rt) {
+            if (rt) { DEXT5UPLOAD.Transfer(); }
+        });
     }
 
     _zw.mu.cancelMsg = function () {
@@ -86,9 +117,11 @@ $(function () {
         //    + '",searchtext:"' + _zw.V.lv.searchtext + '",start:"' + _zw.V.lv.start + '",end:"' + _zw.V.lv.end + '",boundary:"' + _zw.V.lv.boundary + '"}';
 
         //var j = JSON.parse(sJson);
+
+        var page = _zw.V.current.page; //.toLowerCase() == '/board/tempsave' ? _zw.V.current.page : '/Board/List';
         
         var postData = _zw.fn.getLvQuery(); //console.log(postData);
-        var url = '/Board/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
+        var url = page + '?qi=' + encodeURIComponent(_zw.base64.encode(postData)); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/Board/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 
@@ -133,7 +166,7 @@ $(function () {
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
         j["ft"] = _zw.V.ft;
-        //j["ttl"] = _zw.V.ttl;
+        j["ttl"] = _zw.V.ttl;
         
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;
@@ -162,11 +195,15 @@ $(function () {
         });
 
         var sCnt = _zw.ut.getCookie('bbsLvCount') || $('.z-lv-page select').val();
-        
+        var sSort = '';
+        if (_zw.V.current.page.toLowerCase() == '/board/tempsave') sSort = 'SavedDate';
+        else if (_zw.V.current.page.toLowerCase() == '/board/recent') sSort = 'CreateDate';
+        else sSort = 'SeqID';
+
         _zw.V.lv.tgt = tgt;
         _zw.V.lv.page = '1';
         _zw.V.lv.count = sCnt == undefined || sCnt == '' ? '20' : sCnt;
-        _zw.V.lv.sort = 'SeqID';
+        _zw.V.lv.sort = sSort;
         _zw.V.lv.sortdir = 'DESC';
         _zw.V.lv.search = '';
         _zw.V.lv.searchtext = '';
@@ -191,6 +228,7 @@ $(function () {
         jPost["fdid"] = $('#__FormView input[data-for="SelectedFolder"]').val();
         jPost["appid"] = _zw.V.appid;
 
+        jPost["attachlist"] = []; //초기화
         if (fileList) {
             var vFile = fileList.split(_zw.T.uploader.df);
             for (var i = 0; i < vFile.length; i++) {
@@ -208,6 +246,7 @@ $(function () {
 
                 jPost["attachlist"].push(v);
             }
+
             jPost["attachcount"] = fileList.length;
             jPost["attachsize"] = DEXT5UPLOAD.GetTotalFileSize();
         }
@@ -215,7 +254,7 @@ $(function () {
             jPost["attachcount"] = 0;
         }
 
-        jPost["imglist"] = [];
+        jPost["imglist"] = []; //초기화
         if (imgList) {
             var rgx = (location.origin + $('#upload_path').val()).toLowerCase();
             var vImg = imgList.split(_zw.T.uploader.da);
@@ -230,7 +269,6 @@ $(function () {
                 }
             }
         }
-
         console.log(jPost["attachlist"]);
         console.log(jPost["imglist"]);
         //return;
@@ -255,9 +293,9 @@ $(function () {
         jPost["bodytext"] = "";
         jPost["pwd"] = ""; //익명
 
-        console.log(jPost["body"]);
-
         jPost["M"] = _zw.V.mode;
+
+        //console.log(jPost); return
 
         $.ajax({
             type: "POST",
@@ -267,7 +305,12 @@ $(function () {
                 if (res.substr(0, 2) == "OK") {
                     //console.log(JSON.parse(res.substr(2)));
                     bootbox.alert(res.substr(2), function () {
-                        _zw.mu.goList();
+                        if (_zw.V.wnd == 'popup') {
+                            window.close(); opener.location.reload();
+                        } else {
+                            if (_zw.V.mode == 'save') window.location.href = '/Board/TempSave?qi=' + _zw.base64.encode(_zw.fn.getLvQuery());
+                            else _zw.mu.goList();
+                        }
                     });
 
                 } else bootbox.alert(res);
@@ -278,7 +321,7 @@ $(function () {
 
 function dext_editor_loaded_event() {
     // 에디터가 로드된 후 사용자의 css를 에디터에 적용시킵니다.
-
+    DEXT5.setBodyValue(_zw.V.app.body, _zw.T.editor.id);
 }
 
 function DEXT5UPLOAD_AfterAddItemEndTime() {
@@ -299,7 +342,64 @@ function DEXT5UPLOAD_OnTransfer_Complete() {
     _zw.fn.sendForm();
 }
 
+function DEXT5UPLOAD_CustomAction(uploadID, cmd) {
+    if (cmd == 'custom_remove') {
+        // 파일 삭제 전 처리할 내용
+        var fileList = DEXT5UPLOAD.GetSelectedAllFileListForText();
+        var newFile = fileList.newFile, webFile = fileList.webFile;
+        var sId = '';
+
+        //if (newFile) {
+        //    var vFile = newFile.split(_zw.T.uploader.df);
+        //    for (var i = 0; i < vFile.length; i++) {
+        //        var vInfo = vFile[i].split(_zw.T.uploader.da); console.log(vInfo)
+        //    }
+        //}
+
+        if (webFile) {
+            var vFile = webFile.split(_zw.T.uploader.df);
+            for (var i = 0; i < vFile.length; i++) {
+                var vInfo = vFile[i].split(_zw.T.uploader.da); console.log(vInfo)
+                if (i > 0) sId += ';';
+                sId += vInfo[5];
+            }
+        }
+
+        if (newFile || webFile) {
+            var msg = '삭제 하시겠습니까?' + (sId != '' ? ' 기존 첨부파일은 복구되지 않습니다.' : '');
+            bootbox.confirm(msg, function (rt) {
+                if (rt) {
+                    var bDelete = true;
+                    if (sId != '') {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Common/DeleteAttach",
+                            data: '{xf:"' + _zw.V.xfalias + '",appid:"' + _zw.V.appid + '",fdid:"' + _zw.V.fdid + '",tgtid:"' + sId + '"}',
+                            async: false,
+                            success: function (res) {
+                                if (res == "OK") {
+                                    //console.log('200=>' + res);
+                                } else {
+                                    bDelete = false; bootbox.alert(res);
+                                }
+                            }
+                        });
+                    }
+
+                    //console.log('300=>' + bDelete.toString());
+                    if (bDelete) DEXT5UPLOAD.DeleteSelectedFile();
+                }
+            });
+        }
+
+    } else if (cmd == 'custom_up') {
+        DEXT5UPLOAD.MoveForwardFile();
+    } else if (cmd == 'custom_down') {
+        DEXT5UPLOAD.MoveBackwardFile();
+    }
+}
+
 function DEXT5UPLOAD_OnError(uploadID, code, message, uploadedFileListObj) {
     //에러 발생 후 경고창 띄어줌
-    alert("Error Code : " + code + "\nError Message : " + message);
+    bootbox.alert("Error Code : " + code + "\nError Message : " + message);
 }

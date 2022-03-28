@@ -6,7 +6,7 @@
 @{
     ViewBag.Title = Resources.Global.ComposeNew;
 
-    if (ViewBag.R.mode.ToString() == "popup")
+    if (ViewBag.R.wnd.ToString() == "popup")
     {
         Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
     }
@@ -26,7 +26,7 @@
 }
 
 @section Styles {
-    @if (ViewBag.R.mode.ToString() == "")
+    @if (ViewBag.R.wnd.ToString() == "")
     {
         @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
         @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
@@ -35,7 +35,7 @@
 }
 
 @section Scripts {
-    @if (ViewBag.R.mode.ToString() == "")
+    @if (ViewBag.R.wnd.ToString() == "")
     {
         @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
         @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
@@ -47,7 +47,7 @@
 
     @Scripts.Render("~/Scripts/Board/list.js")
 
-    @if (ViewBag.R.mode.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    @if (ViewBag.R.wnd.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
     }
@@ -115,7 +115,7 @@
 </script>
 }
 
-@if (ViewBag.R.mode.ToString() == "popup")
+@if (ViewBag.R.wnd.ToString() == "popup")
 {
     <div class="" id="__FormView">
         @Html.Partial("_Write")

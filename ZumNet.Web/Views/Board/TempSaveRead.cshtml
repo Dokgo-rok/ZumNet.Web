@@ -1,0 +1,141 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@using ZumNet.Framework.Util;
+
+@{
+    ViewBag.Title = "임시저장함 : " + ViewBag.R.app["subject"];
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    bool bPrevEditorBody = false;
+    if (DateTime.Compare(Convert.ToDateTime("2022-01-01"), Convert.ToDateTime(ViewBag.R.app["credate"].Value)) > 0)
+    {
+        bPrevEditorBody = true;
+    }
+    bPrevEditorBody = true;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/Board/list.js")
+
+    @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
+    <script type="text/javascript">
+        (function () {
+            _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
+
+            _zw.dext5.view('view');
+
+            _zw.fn.view();
+        }());
+
+        function DEXT5UPLOAD_OnCreationComplete(uploadID) {
+            // 업로드 생성 후 처리내용
+            _zw.dext5.addFile();
+        }
+    </script>
+}
+
+<div class="" id="__FormView">
+    <!-- Header -->
+    <div class="flex-grow-0">
+        <div class="zf-menu d-flex justify-content-between container-p-x m-0 py-2">
+            <div class="d-flex align-items-center font-weight-bold">
+                <div class="btn-group">
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.editTemp();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.deleteMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
+
+                </div>
+            </div>
+            <div>
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="_zw.mu.preview();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Print"><i class="fe-printer"></i></button>
+                    <button class="btn btn-default" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / Header -->
+
+    <div class="flex-grow-1" style="border-top: 2px solid #eee">
+        <div class="z-list-scroll" style="top: 48px">
+            <div class="pb-3 border-bottom">
+                <div class="d-block d-sm-none container-p-x mt-3">
+                    <div class="mb-2 text-muted"></div>
+                    <h5 class="mb-0">@ViewBag.R.app["subject"]</h5>
+                </div>
+                <div class="d-none d-sm-flex justify-content-between container-p-x mt-3 mt-2">
+                    <h5 class="mb-0">@ViewBag.R.app["subject"]</h5>
+                    <div class="text-muted"></div>
+                </div>
+                <div class="d-flex justify-content-between container-p-x mt-2">
+                    <div class="">@ViewBag.R.app["creur"] / @ViewBag.R.app["credept"] / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.R.app["credate"].ToString(), true)</div>
+                </div>
+                @if (ViewBag.R.app["priority"].ToString() == "Y" || ViewBag.R.app["topline"].ToString() == "Y")
+                {
+                    <div class="d-flex container-p-x mt-2">
+                        @if (ViewBag.R.app["priority"].ToString() == "Y")
+                        {
+                            <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                                <input type="checkbox" id="ckbPriority" class="custom-control-input" checked disabled>
+                                <label class="custom-control-label" for="ckbPriority">@Resources.Global.Important</label>
+                            </div>
+                        }
+                        @if (ViewBag.R.app["topline"].ToString() == "Y")
+                        {
+                            <div class="custom-control custom-checkbox custom-control-inline mb-0">
+                                <input type="checkbox" id="ckbTopLine" class="custom-control-input" checked disabled>
+                                <label class="custom-control-label" for="ckbTopLine">TOPLINE</label>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            @if (Convert.ToInt32(ViewBag.R.app["attachcount"]) > 0)
+            {
+                <div class="container-p-x pt-3">
+                    <h6 class="mb-2">
+                        <i class="fas fa-paperclip"></i> @Resources.Global.AttachFile
+                        @if (Convert.ToInt32(ViewBag.R.app["attachcount"]) > 1)
+                        {
+                            <span class="text-danger ml-1">@ViewBag.R.app["attachcount"]</span><span class="text-muted ml-1">@ViewBag.R.app["attachsize"]</span>
+                        }
+                    </h6>
+                    <div class="zf-attach">
+                        @foreach (var j in ViewBag.R.app.attachlist)
+                        {
+                            <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
+                                <div class="mr-2">
+                                    <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
+                                </div>
+                                <div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64(j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
+                                <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
+                            </div>
+                        }
+                    </div>
+                    @*<div class="zf-uploader" id="__DextUpload"></div>*@
+                </div>
+            }
+
+            @if (bPrevEditorBody)
+            {
+                <div class="container-p-x py-3 zf-prevbody">
+                    @Html.Raw(ZumNet.Framework.Web.HtmlHandler.BodyInnerHtml(ViewBag.R.app["body"].ToString()))
+                </div>
+            }
+            else
+            {
+                <div class="container-p-x py-3">
+                    @Html.Raw(ViewBag.R.app["body"])
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

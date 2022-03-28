@@ -1,8 +1,12 @@
-﻿@{
-
+﻿@if (ViewBag.R.xfalias == "")
+{
+    if (ViewBag.R.current["page"].ToString().ToLower() == "/board/tempsave" || ViewBag.R.current["page"].ToString().ToLower() == "/board/recent")
+    {
+        <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" onclick="_zw.mu.refresh();"><i class="fe-refresh-cw"></i></button>
+        <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" onclick="_zw.mu.deleteMsg();"><i class="fe-trash-2"></i></button>
+    }
 }
-
-@if (ViewBag.R.xfalias == "notice" || ViewBag.R.xfalias == "bbs" || ViewBag.R.xfalias == "file")
+else if (ViewBag.R.xfalias == "notice" || ViewBag.R.xfalias == "bbs" || ViewBag.R.xfalias == "file")
 {
     <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" onclick="_zw.mu.refresh();"><i class="fe-refresh-cw"></i></button>
     if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))

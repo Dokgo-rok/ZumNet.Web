@@ -2959,6 +2959,13 @@
     <Content Include="Views\Common\_Download.cshtml" />
     <Content Include="Views\Board\Edit.cshtml" />
     <Content Include="Views\Board\_Edit.cshtml" />
+    <Content Include="Views\Board\TempSave.cshtml" />
+    <Content Include="Views\Board\_TempSaveView.cshtml" />
+    <Content Include="Views\Board\TempSaveRead.cshtml" />
+    <Content Include="Views\Board\TempSaveEdit.cshtml" />
+    <Content Include="Views\Board\Recent.cshtml" />
+    <Content Include="Views\Board\_RecentView.cshtml" />
+    <Content Include="Views\Report\_FORM_LEAVEUPDATE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

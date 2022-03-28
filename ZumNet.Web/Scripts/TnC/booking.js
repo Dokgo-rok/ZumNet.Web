@@ -1,10 +1,10 @@
 ﻿$(function () {
     $('.messages-sidebox a[data-zl-menu]').click(function () {
-        var mn = $(this).attr("data-zl-menu"); console.log(mn)
+        var mn = $(this).attr("data-zl-menu"); //console.log(mn)
 
         if (mn.toLowerCase() == 'list' || mn.toLowerCase() == 'mylist') {
             var encQi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + _zw.V.ot + '",fdid:"' + _zw.V.fdid + '",opnode:"",ft:"' + mn + '",ttl:"' + $.trim($(this).text()) + '"}';
-            window.location.href = '/TnC/Booking/List?qi=' + _zw.base64.encode(encQi);
+            window.location.href = '/TnC/Booking/List?qi=' + encodeURIComponent(_zw.base64.encode(encQi));
         }
     });
 

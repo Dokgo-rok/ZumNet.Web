@@ -39,9 +39,9 @@
 
 <!-- Header -->
 <div class="flex-grow-0">
-    <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.mode.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.mode.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
+    <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.wnd.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.wnd.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
         <div class="d-flex align-items-center font-weight-bold">
-            @if (ViewBag.R.mode.ToString() == "")
+            @if (ViewBag.R.wnd.ToString() == "")
             {
                 <div class="h5 mb-0">
                     <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
@@ -64,8 +64,8 @@
 </div>
 <!-- / Header -->
 
-<div class="flex-grow-1@(ViewBag.R.mode.ToString() == "" ? " position-relative" : "")" style="border-top: 2px solid #eee">
-    <div class="z-list-scroll" style="@(ViewBag.R.mode.ToString() == "" ? "" : "top: 48px")">
+<div class="flex-grow-1@(ViewBag.R.wnd.ToString() == "" ? " position-relative" : "")" style="border-top: 2px solid #eee">
+    <div class="z-list-scroll" style="@(ViewBag.R.wnd.ToString() == "" ? "" : "top: 48px")">
         <div class="">
             <div class="d-flex align-items-center container-p-x mt-2">
                 <div class="custom-control custom-checkbox custom-control-inline mb-0 mr-2 mr-sm-3">
@@ -104,7 +104,7 @@
                 <div class="form-group row mb-1">
                     <div class="col-form-label col-sm-2">@Resources.Global.Subject</div>
                     <div class="col-sm-10">
-                        <input type="text" id="txtSubject" class="form-control" placeholder="@Resources.Global.Subject">
+                        <input type="text" id="txtSubject" class="form-control" placeholder="@Resources.Global.Subject" value="@ViewBag.R.app["subject"]">
                     </div>
                 </div>
 

@@ -1,0 +1,32 @@
+﻿@using System.Data;
+
+@if (ViewBag.BoardList != null && ViewBag.BoardList.Count > 0)
+{
+    foreach (DataRow row in ViewBag.BoardList)
+    {
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x" xf="@row["XFAlias"]" appid="@row["MessageID"]" tempid="@row["TempID"]">
+            <div class="wd-8 wd-lg-5 wd-xl-4 message-checkbox">
+                <label class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input">
+                    <span class="custom-control-label"></span>
+                </label>
+            </div>
+            <div class="wd-25 wd-lg-18 wd-xl-15 pr-2">
+                <span class="flex-fill">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["SavedDate"].ToString())</span>
+            </div>
+            <div class="wd-67 wd-lg-12 wd-xl-12 text-right text-sm-left pr-1">
+                <span class="">@row["DisplayName"]</span>
+            </div>
+            <div class="wd-8 d-sm-none"></div>
+            <div class="w-92 flex-fill d-flex align-items-center">
+                <a class="text-truncate font-weight-bold" href="javascript:void(0)" onclick="_zw.mu.readTemp();">@row["Subject"].ToString()</a>
+            </div>
+        </li>
+    }
+}
+else
+{
+    <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x">
+        <div class="w-100 text-center pt-3">@Resources.Global.NoItemShow</div>
+    </li>
+}

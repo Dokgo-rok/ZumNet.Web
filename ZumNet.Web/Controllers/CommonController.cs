@@ -574,6 +574,45 @@ namespace ZumNet.Web.Controllers
         }
 
         /// <summary>
+        /// 첨부파일 삭제
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DeleteAttach()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    return "전송 데이터 누락!";
+                }
+                else if (StringHelper.SafeString(jPost["xf"]) == "" || StringHelper.SafeString(jPost["tgtid"]) == "")
+                {
+                    return "필수값 누락!";
+                }
+
+                int iFolderId = StringHelper.SafeInt(jPost["fdid"]);
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.DeleteAttachFile(jPost["xf"].ToString(), jPost["tgtid"].ToString(), Convert.ToInt32(Session["DNID"]), StringHelper.SafeInt(jPost["fdid"]), StringHelper.SafeInt(jPost["appid"]));
+                }
+
+                if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                else strView = "OK";
+            }
+
+            return strView;
+        }
+
+        /// <summary>
         /// 파일 암호화
         /// </summary>
         /// <param name="filePath"></param>

@@ -1,0 +1,95 @@
+﻿@using System.Data;
+@{ 
+    //Response.Write(":::" + ViewBag.BoardList.Count.ToString());
+}
+
+@if (ViewBag.BoardList != null && ViewBag.BoardList.Count > 0)
+{
+    foreach (DataRow row in ViewBag.BoardList)
+    {
+        string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
+
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)" xf="@row["XFAlias"]" appid="@row["MessageID"]" fdid="@row["FD_ID"]">
+            <div class="wd-8 wd-lg-5 wd-xl-4 message-checkbox">
+                <label class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input">
+                    <span class="custom-control-label"></span>
+                </label>
+            </div>
+
+            <div class="wd-20 wd-lg-15 wd-xl-12 pr-2 text-truncate">
+                <span class="text-truncate">@row["DisplayName"]</span>
+            </div>
+
+            <div class="wd-72 flex-fill text-truncate d-flex align-items-center">
+                @if (Convert.ToInt32(row["Depth"]) > 0)
+                {
+                    for (int k = 1; k < Convert.ToInt32(row["Depth"]); k++)
+                    {
+                        <span class="px-1"></span>
+                    }
+                    <i class="fe-corner-down-right text-big text-warning font-weight-bold mx-1"></i>
+                }
+                @if (row["Priority"].ToString() == "Y")
+                {
+                    <img src="~/images/plugins/hot.gif" alt="" class="mr-1" />
+                }
+                @if (ZumNet.Web.Bc.CommonUtils.DateDiff(row["CreateDate"].ToString(), DateTime.Now.ToString()) <= 1)
+                {
+                    <img src="~/images/plugins/new.gif" alt="" class="mr-1" />
+                }
+                <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');">@row["Subject"].ToString()</a>
+                @if (Convert.ToInt32(row["CommentCount"]) > 0)
+                {
+                    <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>
+                }
+            </div>
+
+            <div class="w-100 d-sm-none py-0"></div>
+
+            <div class="wd-99 wd-lg-34 wd-xl-32 d-flex">
+                <div class="wd-8 d-sm-none"></div>
+                @if (Convert.ToInt32(row["Depth"]) > 0)
+                {
+                    <div class="d-sm-none">
+                        <span class="d-inline-block">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        @for (int k = 0; k < Convert.ToInt32(row["Depth"]); k++)
+                        {
+                            <span class="d-inline-block">&nbsp;</span>
+                        }
+                    </div>
+                }
+                @if (row["HasAttachFile"].ToString() != "0")
+                {
+                    <div class="wd-5 wd-lg-12 wd-xl-10 text-sm-right">
+                        <a href="javascript:void(0)" class="text-blue pr-2"><i class="fe-paperclip"></i></a>
+                    </div>
+                    <div class="wd-15 wd-lg-35 wd-xl-35 t-sm text-sm-center pr-2">
+                        <span class="">@row["CreatorName"]</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-none d-sm-block wd-lg-12 wd-xl-10"></div>
+                    <div class="wd-20 wd-lg-35 wd-xl-35 t-sm text-sm-center pr-2">
+                        <span class="">@row["CreatorName"]</span>
+                    </div>
+                }
+
+                <div class="wd-20 wd-lg-35 wd-xl-30 t-sm text-sm-center pr-2">
+                    <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</span>
+                </div>
+
+                <div class="text-right text-pink flex-fill pr-1">
+                    <span class="">@row["ViewCount"]</span>
+                </div>
+            </div>
+        </li>
+    }
+}
+else
+{
+    <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x">
+        <div class="w-100 text-center pt-3">@Resources.Global.NoItemShow</div>
+    </li>
+}

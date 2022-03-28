@@ -274,7 +274,7 @@ namespace ZumNet.Web.Controllers
         }
         #endregion
 
-        #region [게시물 작성, 조회]
+        #region [게시물 작성, 조회, 편집 화면]
         // GET: Board
         [SessionExpireFilter]
         [Authorize]
@@ -569,6 +569,8 @@ namespace ZumNet.Web.Controllers
             int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
             int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
             string sObjectType = iFolderId == 0 ? "" : "O";
+            
+            if (ViewBag.R.mode.ToString() != "reply") ViewBag.R["appid"] = "0"; //답글이 아니고 신규 작성 경우 appid = 0 이어야 한다!!!
 
             //권한체크, 폴더환경정보
             using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
@@ -613,9 +615,31 @@ namespace ZumNet.Web.Controllers
             {
                 ViewBag.FolderEnv = null;
             }
-            
-            rt = FormHandler.BindFormToJson(this, null);
-            if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+
+            if (ViewBag.R.mode.ToString() == "reply")
+            {
+                using(ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+                {
+                    svcRt = bd.GetBoardMsg(Convert.ToInt32(Session["URID"]), iFolderId, ViewBag.R.appid.ToString(), ViewBag.R.xfalias.ToString());
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    rt = FormHandler.BindFormToJson(this, svcRt);
+                    if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+                else
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+                ViewBag.R["appid"] = "0"; //BindFormToJson에서 parent 설정 후 빈값 설정
+            }
+            else
+            {
+                rt = FormHandler.BindFormToJson(this, null);
+                if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
 
             return View();
         }
@@ -765,6 +789,306 @@ namespace ZumNet.Web.Controllers
             }
 
             return strView;
+        }
+        #endregion
+
+        #region [임시저장함 목록, 조회, 편집]
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult TempSave(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath; //"잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+
+            ViewBag.R.lv["page"] = ViewBag.R.lv["page"].ToString() == "" || ViewBag.R.lv["page"].ToString() == "0" ? "1" : ViewBag.R.lv["page"].ToString();
+            ViewBag.R.lv["count"] = ViewBag.R.lv["count"].ToString() == "" || ViewBag.R.lv["count"].ToString() == "0" ? Bc.CommonUtils.GetLvCookie("").ToString() : ViewBag.R.lv["count"].ToString();
+            ViewBag.R.lv["sort"] = ViewBag.R.lv["sort"].ToString() == "" ? "SavedDate" : ViewBag.R.lv["sort"].ToString();
+            ViewBag.R.lv["sortdir"] = ViewBag.R.lv["sortdir"].ToString() == "" ? "DESC" : ViewBag.R.lv["sortdir"].ToString();
+
+            using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+            {
+                svcRt = bd.GetTemporaryMessageList(iCategoryId, Convert.ToInt32(Session["URID"]), Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value)
+                                        , ViewBag.R.lv["sort"].ToString(), ViewBag.R.lv["sortdir"].ToString(), ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString()
+                                        , ViewBag.R.lv["start"].ToString(), ViewBag.R.lv["end"].ToString());
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ViewBag.BoardList = svcRt.ResultDataRowCollection;
+                ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string TempSave()
+        {
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
+            if (rt == "")
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    int iCategoryId = Convert.ToInt32(jPost["ct"]);
+
+                    sPos = "200";
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        svcRt = bd.GetTemporaryMessageList(iCategoryId, Convert.ToInt32(Session["URID"]), Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
+                                                    , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString()
+                                                    , jPost["lv"]["searchtext"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "300";
+                        ViewBag.BoardList = svcRt.ResultDataRowCollection;
+                        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+
+                        sPos = "310";
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_TempSaveView", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListCount.cshtml", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListMenu.cshtml", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListPagination.cshtml", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult TempSaveRead(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath; //"잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            //int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+            int iAppId = Convert.ToInt32(ViewBag.R.appid.Value); //messageid
+
+            using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+            {
+                svcRt = bd.GetTemporaryMsgView(Convert.ToInt32(Session["DNID"]), iAppId.ToString(), ViewBag.R.xfalias.ToString());
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                rt = FormHandler.BindTempFormToJson(this, svcRt);
+                if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+
+                rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                if (ViewBag.R.app["creurid"].ToString() != Session["URID"].ToString())
+                {
+                    return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult TempSaveEdit()
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath; //"잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+            int iAppId = Convert.ToInt32(ViewBag.R.appid.Value); //messageid
+
+            using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+            {
+                svcRt = bd.GetTemporaryMsgView(Convert.ToInt32(Session["DNID"]), iAppId.ToString(), ViewBag.R.xfalias.ToString());
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                rt = FormHandler.BindTempFormToJson(this, svcRt);
+                if (rt != "") return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+
+                rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                if (ViewBag.R.app["creurid"].ToString() != Session["URID"].ToString())
+                {
+                    return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+        #endregion
+
+        #region [최근 게시물 목록]
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Recent(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath; //"잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+
+            ViewBag.R.lv["page"] = ViewBag.R.lv["page"].ToString() == "" || ViewBag.R.lv["page"].ToString() == "0" ? "1" : ViewBag.R.lv["page"].ToString();
+            ViewBag.R.lv["count"] = ViewBag.R.lv["count"].ToString() == "" || ViewBag.R.lv["count"].ToString() == "0" ? Bc.CommonUtils.GetLvCookie("").ToString() : ViewBag.R.lv["count"].ToString();
+            ViewBag.R.lv["sort"] = ViewBag.R.lv["sort"].ToString() == "" ? "CreateDate" : ViewBag.R.lv["sort"].ToString();
+            ViewBag.R.lv["sortdir"] = ViewBag.R.lv["sortdir"].ToString() == "" ? "DESC" : ViewBag.R.lv["sortdir"].ToString();
+
+            using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+            {
+                svcRt = bd.GetRecentlyMessageListOfCT(iCategoryId, Convert.ToInt32(ViewBag.R.lv.page.Value), Convert.ToInt32(ViewBag.R.lv.count.Value)
+                                , ViewBag.R.lv["sort"].ToString(), ViewBag.R.lv["sortdir"].ToString(), ViewBag.R.lv["search"].ToString(), ViewBag.R.lv["searchtext"].ToString()
+                                , ViewBag.R.lv["start"].ToString(), ViewBag.R.lv["end"].ToString(), Convert.ToInt32(Session["URID"]));
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ViewBag.BoardList = svcRt.ResultDataTable.Rows;
+                ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Recent()
+        {
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
+            if (rt == "")
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    int iCategoryId = Convert.ToInt32(jPost["ct"]);
+
+                    sPos = "200";
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        svcRt = bd.GetRecentlyMessageListOfCT(iCategoryId, Convert.ToInt32(jPost["lv"]["page"]), Convert.ToInt32(jPost["lv"]["count"])
+                                        , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString()
+                                        , jPost["lv"]["searchtext"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString(), Convert.ToInt32(Session["URID"]));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "300";
+                        ViewBag.BoardList = svcRt.ResultDataTable.Rows;
+                        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+
+                        sPos = "310";
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_RecentView", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListCount.cshtml", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListMenu.cshtml", ViewBag)
+                                + jPost["lv"]["boundary"].ToString()
+                                + RazorViewToString.RenderRazorViewToString(this, "~/Views/Common/_ListPagination.cshtml", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
         }
         #endregion
     }

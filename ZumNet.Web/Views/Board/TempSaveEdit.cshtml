@@ -1,0 +1,174 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@using ZumNet.Framework.Util;
+
+@{
+    ViewBag.Title = "임시저장함 : " + ViewBag.R.app["subject"];
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+
+    //첨부파일 임시 저장 폴더
+    string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+    ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    bool bPrevEditorBody = false;
+    string sPopup = " disabled";
+    string sTopLine = " disabled";
+    string sPriority = " disabled";
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
+
+    @Scripts.Render("~/Scripts/Board/list.js")
+
+    @if (ViewBag.R.wnd.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
+    @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
+    @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
+    <script type="text/javascript">
+        (function () {
+            _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
+
+            //editor, uploader
+            if ($('#' + _zw.T.uploader.holder).length > 0) {
+                _zw.dext5.view('edit');
+            }
+
+            if ($('#' + _zw.T.editor.holder).length > 0) {
+                _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
+                $('#' + _zw.T.editor.holder).css('top', _zw.T.editor.top + 'px');
+
+                DEXT5.config.EditorHolder = _zw.T.editor.holder;
+                DEXT5.config.Lang = _zw.T.editor.lang;
+                if (_zw.ut.isMobile()) DEXT5.config.InitXml = _zw.T.editor.init;
+                DEXT5.config.ToSavePathURL = $('#upload_path').val();
+                DEXT5.config.FocusInitObjId = "txtSubject";
+
+                new Dext5editor(_zw.T.editor.id);
+
+                $('.btn[data-zf-menu="toggleEditor"]').click(function () {
+                    var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'];
+                    var vIcon = ['fe-arrow-down', 'fe-arrow-up'];
+                    if ($(this).attr('aria-expanded') == 'false') {
+                        $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
+                        $('#__DextEditor').css('top', '0');
+                    } else {
+                        $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
+                        $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+                    }
+                });
+            }
+        }());
+
+        function DEXT5UPLOAD_OnCreationComplete(uploadID) {
+            // 업로드 생성 후 처리내용
+            _zw.dext5.addFile();
+        }
+    </script>
+}
+
+<div class="" id="__FormView">
+    <!-- Header -->
+    <div class="flex-grow-0">
+        <div class="zf-menu d-flex justify-content-between container-p-x m-0 py-2">
+            <div class="d-flex align-items-center font-weight-bold">
+                <div class="btn-group">
+                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg();"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
+                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" onclick="_zw.mu.previewMsg();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Preview</span></button>
+                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" onclick="_zw.mu.saveMsg();"><i class="fe-save"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.TempSave</span></button>
+                </div>
+            </div>
+            <div>
+                <div class="btn-group">
+                    <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.EditorExpand" data-zf-menu="toggleEditor" aria-expanded="false"><i class="fe-arrow-up"></i></button>
+                    <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Cancel" onclick="_zw.mu.cancelMsg();"><i class="fe-log-out"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / Header -->
+
+    <div class="flex-grow-1" style="border-top: 2px solid #eee">
+        <div class="z-list-scroll" style="top: 48px">
+            <div class="">
+                <div class="d-flex align-items-center container-p-x mt-2">
+                    <div class="custom-control custom-checkbox custom-control-inline mb-0 mr-2 mr-sm-3">
+                        <input type="checkbox" id="ckbPriority" class="custom-control-input" @sPriority@(ViewBag.R.app["priority"].ToString() == "Y" ? " checked" : "")>
+                        <label class="custom-control-label" for="ckbPriority">@Resources.Global.Important</label>
+                    </div>
+                    <div class="custom-control custom-checkbox custom-control-inline mb-0 mr-2 mr-sm-3">
+                        <input type="checkbox" id="ckbTopLine" class="custom-control-input" @sTopLine@(ViewBag.R.app["topline"].ToString() == "Y" ? " checked" : "")>
+                        <label class="custom-control-label" for="ckbTopLine">TOPLINE</label>
+                    </div>
+                    <div class="custom-control custom-checkbox custom-control-inline mb-0 mr-2 mr-sm-3">
+                        <input type="checkbox" id="ckbUsePopup" class="custom-control-input" @sPopup@(ViewBag.R.app["ispopup"].ToString() == "Y" ? " checked" : "")>
+                        <label class="custom-control-label" for="ckbUsePopup">@Resources.Global.Popup</label>
+                    </div>
+                    <div class="custom-control-inline mr-0">
+                        <div class="col-form-label d-none d-sm-block">팝업종료일</div>
+                        <div class="ml-2">
+                            <input type="text" id="txtPopDate" class="datepicker form-control" placeholder="팝업종료일" style="width: 110px" disabled data-inputmask="date;yyyy-MM-dd" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-p-x mt-2">
+                    <div class="form-group row mb-1">
+                        <div class="col-form-label col-sm-2">
+                            <span>@Resources.Global.Posting @Resources.Global.Classification</span>
+                            <button class="zf-btn-sm btn btn-default float-right" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Select" data-zf-menu="openClassWnd"><i class="fe-search"></i></button>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" data-for="SelectedFolderPath" class="form-control" placeholder="@Resources.Global.Posting @Resources.Global.Classification" readonly value="@(ViewBag.SiteMap != null && ViewBag.SiteMap.ToString() != "" ? ViewBag.R.ttl : "")">
+                            <input type="hidden" data-for="SelectedFolder" value="@ViewBag.R.fdid" />
+                            <input type="hidden" data-for="SelectedXFAlias" value="@ViewBag.R.xfalias" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-1">
+                        <div class="col-form-label col-sm-2">@Resources.Global.Subject</div>
+                        <div class="col-sm-10">
+                            <input type="text" id="txtSubject" class="form-control" placeholder="@Resources.Global.Subject" value="@ViewBag.R.app["subject"]">
+                        </div>
+                    </div>
+
+                    <div class="form-inline row mb-1">
+                        <div class="col-form-label col-sm-2">@Resources.Global.Writer</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" readonly value="@ViewBag.R.current.user / @ViewBag.R.current.dept">
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-0">
+                        <div class="col-form-label col-sm-2">
+                            <span>@Resources.Global.AttachFile</span>
+                            @*<button class="zf-btn-sm btn btn-default float-right" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.UploaderFold" data-zf-menu="toggleUploader" aria-expanded="false"><i class="fe-chevron-up"></i></button>*@
+                        </div>
+                        <div class="col-sm-10">
+                             <div class="zf-uploader" id="__DextUpload"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-p-x py-2 zf-editor position-absolute" id="__DextEditor" style="top: ; bottom: 0; left: 0; right: 0; min-height: 50%"></div>
+        </div>
+    </div>
+
+</div>
+
+

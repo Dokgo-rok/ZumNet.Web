@@ -93,7 +93,7 @@
                     else if (strID == "LOCATION" || strID == "TRIPPERSON")
                     {
                         strValue = row[strID].ToString();
-                        if (strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm();\">" + row[strID].ToString() + "</a>";
+                        if (strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">" + row[strID].ToString() + "</a>";
                     }
                     else if (strID == "STATE")
                     {
