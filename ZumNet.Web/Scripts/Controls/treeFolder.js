@@ -58,7 +58,7 @@ $(function () {
             //    });
             //});
         })
-        .on('changed.jstree', function (e, d) {
+        .on('changed.jstree', function (e, d) {//2022-03-29 막음
             if (d.selected.length == 1) {
                 var n = d.instance.get_node(d.selected[0]); //alert(n.a_attr.url + " : " + n.li_attr.objecttype)
                 //alert(n.li_attr.objecttype + ' : ' + n.li_attr.alias + ' : ' + n.li_attr.xfalias + ' : ' + n.li_attr.acl.substr(n.li_attr.acl.length-1, 1))
@@ -362,6 +362,17 @@ $(function () {
                         encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + ft + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                         window.location.href = '/ExS/PQm?qi=' + encQi;
                     }
+
+                } else if (n.a_attr.url.toLowerCase().indexOf('extensionservice/voc') >= 0) { //VOC
+                    if (_zw.ut.isMobile()) { bootbox.alert('모바일 환경에서는 지원되지 않습니다!'); return false; }
+
+                    var vUrl = n.a_attr.url.split('/');
+                    var page = vUrl[vUrl.length - 1].split('.')[0].toUpperCase(); //alert(page)
+                    var x = window.screen.width, h = window.screen.height;
+                    encQi = encodeURIComponent(_zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}'));
+
+                    if (page == 'REPORT') _zw.ut.openWnd('/ExS/Voc/Ledger?qi=' + encQi, 'VocReport', x, h, 'resize');
+                    else if (page == 'STATISTICS') _zw.ut.openWnd('/ExS/Voc/Statistics?qi=' + encQi, 'VocStatistics', x, h, 'resize');
 
                 } else {
                     //alert(n.li_attr.alias + " : " + n.a_attr.url)

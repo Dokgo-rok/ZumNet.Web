@@ -1,0 +1,661 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@{
+    if (ViewBag.M == "")
+    {
+        ViewBag.Title = ViewBag.R["ttl"];
+        Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+    }
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+}
+
+@functions{
+    private string GetSUMMARY(DataSet ds, DataSet dsPCC)
+    {
+        int iToday = Convert.ToInt32(ds.Tables[0].Rows[0]["TODAY"]);
+        int iMonth = Convert.ToInt32(ds.Tables[0].Rows[0]["MONTH"]);
+        int iYear = Convert.ToInt32(ds.Tables[0].Rows[0]["YEAR"]);
+        int iTotal = Convert.ToInt32(ds.Tables[0].Rows[0]["TOTAL"]);
+        int iRowTotal = 0; //한 항목 합
+
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"col-7\" id=\"__summary\">");
+        sb.AppendFormat("<h3 class=\"mb-0 text-center\">오늘 {0}건, 이달 {1}건 접수. 누적 {2}건</h3>", CvtNo(iToday.ToString()), CvtNo(iMonth.ToString()), CvtNo(iTotal.ToString()));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"col-5 px-0\" id=\"__pcc\">");
+        sb.Append("<table class=\"table table-bordered table-sm mb-0 table-as-st\">");
+        sb.Append("<colgroup><col style=\"width:28%\" /><col style=\"width:18%\" /><col style=\"width:18%\" /><col style=\"width:18%\" /><col style=\"width:18%\" /></colgroup>");
+        sb.Append("<thead><tr>");
+        sb.Append("<th>PCC현황</th>");
+        foreach (DataRow dr in dsPCC.Tables[0].Rows) sb.AppendFormat("<th>{0}</th>", dr["STATUS"].ToString());
+        sb.AppendFormat("<th>{0}</th>", "총");
+        sb.Append("</tr></thead>");
+
+        sb.AppendFormat("<tfoot><tr><th><input type=\"text\" class=\"border text-center\" readonly id=\"txtPCCDate\" style=\"width:78px\" value=\"{0}\" /> 기준", DateTime.Now.ToString("yyyy-MM-dd"));
+
+        foreach (DataRow dr in dsPCC.Tables[0].Rows)
+        {
+            iRowTotal += Convert.ToInt32(dr["CNT"].ToString());
+            sb.AppendFormat("<th>{0}</th>", CvtNo(dr["CNT"].ToString()));
+        }
+        sb.AppendFormat("<th>{0}</th></tr></tfoot>", CvtNo(iRowTotal.ToString()));
+        sb.Append("</table>");
+        sb.Append("</div>");
+        return sb.ToString();
+    }
+
+    private string GetTAT(DataSet ds)
+    {
+        DataRow[] rowCol = null;
+        DataRow[] rowCol2 = null;
+        int[,] vTAT = new int[13, 3]; //검색년도 월별 접수건수, TAT값이 있는 건수, TAT
+
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+        StringBuilder sb3 = new StringBuilder();
+        StringBuilder sb4 = new StringBuilder();
+        StringBuilder sb5 = new StringBuilder();
+
+        for (int i = 0; i < 12; i++)
+        {
+            rowCol = ds.Tables[1].Select("MONTH = " + (i + 1).ToString());
+            rowCol2 = ds.Tables[2].Select("MONTH = " + (i + 1).ToString());
+
+            vTAT[i, 0] = (rowCol != null && rowCol.Length > 0) ? Convert.ToInt32(rowCol[0]["CNT"]) : 0;
+            if (rowCol2 != null && rowCol2.Length > 0)
+            {
+                vTAT[i, 1] = Convert.ToInt32(rowCol2[0]["CNT"]);
+                vTAT[i, 2] = Convert.ToInt32(rowCol2[0]["TAT"]);
+            }
+            else
+            {
+                vTAT[i, 1] = 0;
+                vTAT[i, 2] = 0;
+            }
+        }
+
+        sb.Append("<div class=\"col-12 col-md-6\" id=\"__tat\">");
+        sb.Append("<table class=\"table table-bordered table-sm table-as-st\">");
+        sb.Append("<thead><tr>");
+        sb.Append("<th class=\"wd-18\">구분</th><th class=\"wd-6\">1월</th><th class=\"wd-6\">2월</th><th class=\"wd-6\">3월</th><th class=\"wd-6\">4월</th><th class=\"wd-6\">5월</th><th class=\"wd-6\">6월</th>");
+        sb.Append("<th class=\"wd-6\">7월</th><th class=\"wd-6\">8월</th><th class=\"wd-6\">9월</th><th class=\"wd-6\">10월</th><th class=\"wd-6\">11월</th><th class=\"wd-6\">12월</th><th class=\"wd-10\">TOTAL</th>");
+        sb.Append("</tr></thead>");
+
+        for (int i = 0; i < 12; i++)
+        {
+            if (i == 0)
+            {
+                sb2.Append("<tr><th>접수건수</th>");
+                sb3.Append("<tr><th>유효TAT건수</th>");
+                sb4.Append("<tr><th>TAT</th>");
+                sb5.Append("<tr><th>평균 TAT</th>");
+            }
+
+            sb2.AppendFormat("<td>{0}</td>", vTAT[i, 0]);
+            sb3.AppendFormat("<td>{0}</td>", vTAT[i, 1]);
+            sb4.AppendFormat("<td>{0}</td>", vTAT[i, 2]);
+            sb5.AppendFormat("<th>{0}</th>", DivNo(vTAT[i, 1], vTAT[i, 2]));
+
+            vTAT[12, 0] += vTAT[i, 0];
+            vTAT[12, 1] += vTAT[i, 1];
+            vTAT[12, 2] += vTAT[i, 2];
+
+            if (i == 11)
+            {
+                sb2.AppendFormat("<th>{0}</th></tr>", vTAT[12, 0]);
+                sb3.AppendFormat("<th>{0}</th></tr>", vTAT[12, 1]);
+                sb4.AppendFormat("<th>{0}</th></tr>", vTAT[12, 2]);
+                sb5.AppendFormat("<th>{0}</th></tr>", DivNo(vTAT[12, 1], vTAT[12, 2]));
+            }
+        }
+        sb.Append("<tbody>");
+        sb.Append(sb2.ToString());
+        sb.Append(sb3.ToString());
+        sb.Append(sb4.ToString());
+        sb.Append("</tbody>");
+
+        sb.Append("<tfoot>");
+        sb.Append(sb5.ToString());
+        sb.Append("</tfoot>");
+
+        sb2.Remove(0, sb2.Length);
+        sb3.Remove(0, sb3.Length);
+        sb4.Remove(0, sb4.Length);
+
+        sb.Append("</table>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"col-12 col-md-6\" id=\"chart__tat\"></div>");
+        sb.Append("<script type='text/javascript'>");
+        sb.Append("FusionCharts.ready(function() {");
+        sb.Append("fchart_tat = new FusionCharts({");
+        sb.AppendFormat("type: \"{0}\",", "mscombidy2d");
+        sb.AppendFormat("renderAt: \"{0}\",", "chart__tat");
+        sb.AppendFormat("width: \"{0}\",", "100%");
+        sb.AppendFormat("height: \"{0}\",", "300px");
+        sb.AppendFormat("dataFormat: \"{0}\",", "xml");
+        sb.Append("dataSource:'");
+
+        sb.Append("<chart caption=\"\" drawcrossline=\"1\" yaxisname=\"접수건수 / 유효TAT수\" syaxisname=\"평균TAT\" showvalues=\"0\" showanchors=\"0\" numberprefix=\"\"");
+        sb.Append(" plothighlighteffect=\"fadeout\" chartTopMargin=\"\" chartLeftMargin=\"4\" chartBottomMargin=\"8\" chartRightMargin=\"4\" theme=\"fusion\">");
+        sb.Append("<categories>");
+        for (int i = 0; i < 12; i++)
+        {
+            sb.AppendFormat("<category label=\"{0}월\" />", (i + 1).ToString());
+        }
+        //sb.Append("]");
+        sb.Append("</categories>");
+        sb.Append("<dataset seriesname=\"접수건수\" plottooltext=\"$label 접수:$dataValue 건\">");
+        for (int i = 0; i < 12; i++)
+        {
+            sb.AppendFormat("<set value=\"{0}\" />", vTAT[i, 0]);
+        }
+        sb.Append("</dataset>"); //접수건수
+        sb.Append("<dataset seriesname=\"유효TAT수\" plottooltext=\"$label 유효TAT:$dataValue 건\">");
+        for (int i = 0; i < 12; i++)
+        {
+            sb.AppendFormat("<set value=\"{0}\" />", vTAT[i, 1]);
+        }
+        sb.Append("</dataset>"); //유효
+        sb.Append("<dataset seriesname=\"평균TAT\" plottooltext=\"$label 평균TAT:$dataValue 일\" parentyaxis=\"S\" renderas=\"line\" showvalues=\"0\">");
+        for (int i = 0; i < 12; i++)
+        {
+            sb.AppendFormat("<set value=\"{0}\" />", DivNo(vTAT[i, 1], vTAT[i, 2]));
+        }
+        sb.Append("</dataset>"); //평균
+        sb.Append("</chart>");
+
+        sb.Append("'}).render();"); //function
+        sb.Append("});"); //ready
+        sb.Append("</script>");
+
+        sb.Append("");
+
+        return sb.ToString();
+    }
+
+    private string GetRESULT(DataSet ds)
+    {
+        int iRowTotal = 0; //한 항목 합
+        int[] vColTotal = new int[12]; //한 열 합
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"col-12\" id=\"__result\">");
+        sb.Append("<table class=\"table table-bordered table-sm table-as-st\">");
+        sb.Append("<thead><tr>");
+        sb.Append("<th class=\"wd-18\">구분</th><th class=\"wd-6\">1월</th><th class=\"wd-6\">2월</th><th class=\"wd-6\">3월</th><th class=\"wd-6\">4월</th><th class=\"wd-6\">5월</th><th class=\"wd-6\">6월</th>");
+        sb.Append("<th class=\"wd-6\">7월</th><th class=\"wd-6\">8월</th><th class=\"wd-6\">9월</th><th class=\"wd-6\">10월</th><th class=\"wd-6\">11월</th><th class=\"wd-6\">12월</th><th class=\"wd-10\">TOTAL</th>");
+        sb.Append("</tr></thead>");
+        sb.Append("<tbody>");
+        for (int i = 0; i < ds.Tables[3].Rows.Count; i++)
+        {
+            DataRow dr = ds.Tables[3].Rows[i];
+            sb.AppendFormat("<tr><th>{0}</th>", dr["RESULT"].ToString());
+            for (int j = 1; j <= 12; j++)
+            {
+                sb.AppendFormat("<td>{0}</td>", CvtNo(dr[j].ToString()));
+                iRowTotal += Convert.ToInt32(dr[j]);
+                vColTotal[j - 1] += Convert.ToInt32(dr[j]);
+            }
+            sb.AppendFormat("<th>{0}</th></tr>", CvtNo(iRowTotal.ToString()));
+            iRowTotal = 0;
+        }
+        sb.Append("</tbody>");
+        sb.AppendFormat("<tfoot><tr><th>{0}</th>", "TOTAL");
+        for (int i = 0; i < vColTotal.Length; i++)
+        {
+            sb.AppendFormat("<th>{0}</th>", CvtNo(vColTotal[i].ToString()));
+            iRowTotal += vColTotal[i];
+        }
+        sb.AppendFormat("<th>{0}</th></tr></tfoot>", CvtNo(iRowTotal.ToString()));
+        sb.Append("</table>");
+        sb.Append("</div>"); //tbl
+
+
+        return sb.ToString();
+    }
+
+    private string GetPRODCLS(DataSet ds)
+    {
+        int iRowTotal = 0; //한 항목 합
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"col-12 col-md-5\" id=\"__prodcls\">");
+        sb.Append("<table class=\"table table-bordered table-sm table-as-st\">");
+        sb.Append("<thead><tr>");
+        sb.Append("<th class=\"w-50\">구분</th><th class=\"w-25\">접수</th><th class=\"w-25\">%</th></tr>");
+        sb.Append("</tr></thead>");
+
+        foreach (DataRow dr in ds.Tables[6].Rows) iRowTotal += Convert.ToInt32(dr["CNT"]);
+
+        for (int i = 0; i < ds.Tables[6].Rows.Count; i++)
+        {
+            DataRow dr = ds.Tables[6].Rows[i];
+            sb.AppendFormat("<tr><th>{0}</th>", (dr["PRODCLS"].ToString() == "") ? "미기재" : dr["PRODCLS"].ToString());
+            sb.AppendFormat("<td>{0}</td>", CvtNo(dr["CNT"].ToString()));
+            sb.AppendFormat("<th>{0}%</th></tr>", CvtPercent(Convert.ToDecimal(dr["CNT"]), iRowTotal));
+        }
+        sb.AppendFormat("<tfoot><tr><th>{0}</th><th>{1}</th><th>{2}</th></tfoot>", "TOTAL", CvtNo(iRowTotal.ToString()), "100%");
+        sb.Append("</table>");
+        sb.Append("</div>"); //tbl
+
+        sb.Append("<div class=\"col-12 col-md-7\" id=\"chart__prodcls\"></div>");
+        sb.Append("<script type='text/javascript'>");
+        sb.Append("FusionCharts.ready(function() {");
+        sb.Append("fchart_prod = new FusionCharts(");
+        sb.Append("{");
+        sb.AppendFormat("type: \"{0}\",", "pie2d");
+        sb.AppendFormat("renderAt: \"{0}\",", "chart__prodcls");
+        sb.AppendFormat("width: \"{0}\",", "100%");
+        sb.AppendFormat("height: \"{0}\",", "300px");
+        sb.AppendFormat("dataFormat: \"{0}\",", "json");
+        sb.Append("dataSource:");
+
+        sb.Append("{chart: {");
+        //sb.Append("caption: \"제품군별 처리 결과\",");
+        sb.Append("plottooltext: \"<b>$percentValue</b>\",");
+        sb.Append("showlegend: \"1\",");
+        sb.Append("showpercentvalues: \"1\",");
+        sb.Append("legendposition: \"bottom\",");
+        sb.Append("usedataplotcolorforlabels: \"1\",");
+
+        sb.Append("chartTopMargin: \"4\",");
+        sb.Append("chartLeftMargin: \"4\",");
+        sb.Append("chartBottomMargin: \"8\",");
+        sb.Append("chartRightMargin: \"4\",");
+
+        sb.Append("theme: \"fusion\"");
+        sb.Append("},");
+        sb.Append("data: [");
+        for (int i = 0; i < ds.Tables[6].Rows.Count; i++)
+        {
+            DataRow dr = ds.Tables[6].Rows[i];
+            if (i > 0) sb.Append(",");
+            sb.Append("{");
+            sb.AppendFormat("label:\"{0}\", value:\"{1}\"", (dr["PRODCLS"].ToString() == "") ? "미기재" : dr["PRODCLS"].ToString(), CvtPercent(Convert.ToDecimal(dr["CNT"]), iRowTotal));
+            sb.Append("}");
+        }
+        sb.Append("]}"); //datasource
+        sb.Append("}).render();"); //function
+        sb.Append("});"); //ready
+        sb.Append("</script>");
+
+        sb.Append("");
+
+        return sb.ToString();
+    }
+
+    private string GetMODEL(DataSet ds)
+    {
+        DataRow[] rowCol = null;
+        int iRowTotal = 0; //한 항목 합
+        int iTemp = 0;
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"col-12 col-md-6\" id=\"chart__prodmodel\"></div>");
+        sb.Append("<script type='text/javascript'>");
+        sb.Append("FusionCharts.ready(function() {");
+        sb.Append("fchart_prodmodel = new FusionCharts({");
+        sb.AppendFormat("type: \"{0}\",", "mscolumn2d");
+        sb.AppendFormat("renderAt: \"{0}\",", "chart__prodmodel");
+        sb.AppendFormat("width: \"{0}\",", "100%");
+        sb.AppendFormat("height: \"{0}\",", "350px");
+        sb.AppendFormat("dataFormat: \"{0}\",", "xml");
+        sb.Append("dataSource:'");
+
+        sb.Append("<chart caption=\"\" drawcrossline=\"1\" xaxisname=\"\" yaxisname=\"접수건수\" showvalues=\"0\" showanchors=\"0\" numberprefix=\"\"");
+        sb.Append(" plothighlighteffect=\"fadeout\" chartTopMargin=\"50\" chartLeftMargin=\"4\" chartBottomMargin=\"8\" chartRightMargin=\"8\" theme=\"fusion\">");
+        sb.Append("<categories>");
+        foreach (DataRow dr in ds.Tables[8].Rows) sb.AppendFormat("<category label=\"{0}\" />", dr[0].ToString().Trim());
+        sb.AppendFormat("<category label=\"{0}\" />", "미기재");
+        sb.Append("</categories>");
+
+        int iModel = (ds.Tables[7].Rows.Count > 0) ? ds.Tables[7].Rows.Count : 0;
+        if (iModel > 3) iModel = 3;
+        for (int i = 0; i < iModel; i++)
+        {
+            DataRow r = ds.Tables[7].Rows[i];
+            sb.AppendFormat("<dataset seriesname=\"{0}\" plottooltext=\"{0} $label:$dataValue 건\">", r["MODELNMA"].ToString());
+            for (int j = 0; j <= ds.Tables[8].Rows.Count; j++)
+            {
+                if (j < ds.Tables[8].Rows.Count)
+                {
+                    DataRow dr = ds.Tables[8].Rows[j];
+                    rowCol = ds.Tables[9].Select("MODELNMA = '" + r["MODELNMA"].ToString() + "' AND TROUBLE = '" + dr[0].ToString() + "'");
+                }
+                else
+                {
+                    rowCol = ds.Tables[9].Select("MODELNMA = '" + r["MODELNMA"].ToString() + "' AND TROUBLE = ''");
+                }
+                iTemp = (rowCol != null && rowCol.Length > 0) ? Convert.ToInt32(rowCol[0]["CNT"]) : 0;
+                sb.AppendFormat("<set value=\"{0}\" />", iTemp.ToString());
+            }
+            sb.Append("</dataset>");
+        }
+        sb.Append("</chart>");
+
+        sb.Append("'}).render();"); //function
+        sb.Append("});"); //ready
+        sb.Append("</script>");
+
+        sb.Append("<div class=\"col-12 col-md-6\" id=\"__prodmodel\">");
+        sb.Append("<table class=\"table table-bordered table-sm table-as-st\">");
+        sb.Append("<thead><tr>");
+        sb.Append("<th class=\"wd-20\">불량유형 / 모델</th>");
+        foreach (DataRow dr in ds.Tables[7].Rows) sb.AppendFormat("<th class=\"wd-13\">{0}</th>", dr["MODELNMA"].ToString());
+        sb.Append("<th class=\"wd-15\">TOTAL</th>");
+        sb.Append("</tr></thead>");
+
+        sb.Append("<tbody>");
+        for (int i = 0; i <= ds.Tables[8].Rows.Count; i++)
+        {
+            if (i < ds.Tables[8].Rows.Count)
+            {
+                DataRow dr = ds.Tables[8].Rows[i];
+                sb.AppendFormat("<tr><th>{0}</th>", dr[0].ToString());
+                foreach (DataRow r in ds.Tables[7].Rows)
+                {
+                    rowCol = ds.Tables[9].Select("MODELNMA = '" + r["MODELNMA"].ToString() + "' AND TROUBLE = '" + dr[0].ToString() + "'");
+                    iTemp = (rowCol != null && rowCol.Length > 0) ? Convert.ToInt32(rowCol[0]["CNT"]) : 0;
+                    //sb.AppendFormat("<td>{0} / {1}%</td>", CvtNo(iTemp.ToString()), CvtPercent(iTemp, Convert.ToDecimal(r["CNT"])));
+                    sb.AppendFormat("<td>{0}</td>", CvtNo(iTemp.ToString()));
+                    iRowTotal += iTemp;
+                }
+            }
+            else
+            {
+                sb.AppendFormat("<tr><th>{0}</th>", "미기재");
+                foreach (DataRow r in ds.Tables[7].Rows)
+                {
+                    rowCol = ds.Tables[9].Select("MODELNMA = '" + r["MODELNMA"].ToString() + "' AND TROUBLE = ''");
+                    iTemp = (rowCol != null && rowCol.Length > 0) ? Convert.ToInt32(rowCol[0]["CNT"]) : 0;
+                    //sb.AppendFormat("<td>{0} / {1}%</td>", CvtNo(iTemp.ToString()), CvtPercent(iTemp, Convert.ToDecimal(r["CNT"])));
+                    sb.AppendFormat("<td>{0}</td>", CvtNo(iTemp.ToString()));
+                    iRowTotal += iTemp;
+                }
+            }
+            sb.AppendFormat("<th>{0}</th></tr>", CvtNo(iRowTotal.ToString()));
+            iRowTotal = 0;
+        }
+        sb.Append("</tbody>");
+        sb.AppendFormat("<tfoot><tr><th>{0}</th>", "TOTAL");
+        foreach (DataRow dr in ds.Tables[7].Rows)
+        {
+            sb.AppendFormat("<th>{0}</th>", CvtNo(dr["CNT"].ToString()));
+            iRowTotal += Convert.ToInt32(dr["CNT"]);
+        }
+        sb.AppendFormat("<th>{0}</th></tr></tfoot>", CvtNo(iRowTotal.ToString()));
+        sb.Append("</table>");
+        sb.Append("</div>"); //tbl
+
+        sb.Append("");
+
+        return sb.ToString();
+    }
+
+    private string GetREQUEST(DataSet ds)
+    {
+        int iRowTotal = 0; //한 항목 합
+        int[] vColTotal = new int[12]; //한 열 합
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"col-12\" id=\"__request\">");
+        sb.Append("<table class=\"table table-bordered table-sm table-as-st\">");
+        sb.Append("<thead><tr>");
+        sb.Append("<th class=\"wd-18\">구분</th><th class=\"wd-6\">1월</th><th class=\"wd-6\">2월</th><th class=\"wd-6\">3월</th><th class=\"wd-6\">4월</th><th class=\"wd-6\">5월</th><th class=\"wd-6\">6월</th>");
+        sb.Append("<th class=\"wd-6\">7월</th><th class=\"wd-6\">8월</th><th class=\"wd-6\">9월</th><th class=\"wd-6\">10월</th><th class=\"wd-6\">11월</th><th class=\"wd-6\">12월</th><th class=\"wd-10\">TOTAL</th>");
+        sb.Append("</tr></thead>");
+        sb.Append("<tbody>");
+        for (int i = 0; i < ds.Tables[4].Rows.Count; i++)
+        {
+            DataRow dr = ds.Tables[4].Rows[i];
+            sb.AppendFormat("<tr><th>{0}</th>", dr["REQUEST"].ToString());
+            for (int j = 1; j <= 12; j++)
+            {
+                sb.AppendFormat("<td>{0}</td>", CvtNo(dr[j].ToString()));
+                iRowTotal += Convert.ToInt32(dr[j]);
+                vColTotal[j - 1] += Convert.ToInt32(dr[j]);
+            }
+            sb.AppendFormat("<th>{0}</th></tr>", CvtNo(iRowTotal.ToString()));
+            iRowTotal = 0;
+        }
+        sb.Append("</tbody>");
+        sb.AppendFormat("<tfoot><tr><th>{0}</th>", "TOTAL");
+        for (int i = 0; i < vColTotal.Length; i++)
+        {
+            sb.AppendFormat("<th>{0}</th>", CvtNo(vColTotal[i].ToString()));
+            iRowTotal += vColTotal[i];
+        }
+        sb.AppendFormat("<th>{0}</th></tr></tfoot>", CvtNo(iRowTotal.ToString()));
+        sb.Append("</table>");
+        sb.Append("</div>"); //tbl
+
+        return sb.ToString();
+    }
+
+    private string GetKIND(DataSet ds)
+    {
+        int iRowTotal = 0; //한 항목 합
+        int[] vColTotal = new int[12]; //한 열 합
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"col-12\" id=\"__kind\">");
+        sb.Append("<table class=\"table table-bordered table-sm table-as-st\">");
+        sb.Append("<thead><tr>");
+        sb.Append("<th class=\"wd-18\">구분</th><th class=\"wd-6\">1월</th><th class=\"wd-6\">2월</th><th class=\"wd-6\">3월</th><th class=\"wd-6\">4월</th><th class=\"wd-6\">5월</th><th class=\"wd-6\">6월</th>");
+        sb.Append("<th class=\"wd-6\">7월</th><th class=\"wd-6\">8월</th><th class=\"wd-6\">9월</th><th class=\"wd-6\">10월</th><th class=\"wd-6\">11월</th><th class=\"wd-6\">12월</th><th class=\"wd-10\">TOTAL</th>");
+        sb.Append("</tr></thead>");
+        sb.Append("<tbody>");
+        for (int i = 0; i < ds.Tables[5].Rows.Count; i++)
+        {
+            DataRow dr = ds.Tables[5].Rows[i];
+            sb.AppendFormat("<tr><th>{0}</th>", dr["KIND"].ToString());
+            for (int j = 1; j <= 12; j++)
+            {
+                sb.AppendFormat("<td>{0}</td>", CvtNo(dr[j].ToString()));
+                iRowTotal += Convert.ToInt32(dr[j]);
+                vColTotal[j - 1] += Convert.ToInt32(dr[j]);
+            }
+            sb.AppendFormat("<th>{0}</th></tr>", CvtNo(iRowTotal.ToString()));
+            iRowTotal = 0;
+        }
+        sb.Append("</tbody>");
+        sb.AppendFormat("<tfoot><tr><th>{0}</th>", "TOTAL");
+        for (int i = 0; i < vColTotal.Length; i++)
+        {
+            sb.AppendFormat("<th>{0}</th>", CvtNo(vColTotal[i].ToString()));
+            iRowTotal += vColTotal[i];
+        }
+        sb.AppendFormat("<th>{0}</th></tr></tfoot>", CvtNo(iRowTotal.ToString()));
+        sb.Append("</table>");
+        sb.Append("</div>"); //tbl
+
+        return sb.ToString();
+    }
+
+    #region [유틸 함수]
+    private string CvtNo(string s)
+    {
+        try
+        {
+            if (s == "" || s == "0") return "0";
+            return Convert.ToDecimal(s).ToString("#,###");
+        }
+        catch
+        {
+            return "0";
+        }
+    }
+
+    private string DivNo(decimal s1, decimal s2)
+    {
+        decimal dRt = 0;
+        if (s1 > 0) dRt = Math.Round(s2 / s1, 2);
+        return dRt.ToString();
+    }
+
+    private string CvtPercent(decimal s1, decimal s2)
+    {
+        decimal dRt = 0;
+        if (s2 > 0) dRt = Math.Round(s1 / s2 * 100, 2);
+        return dRt.ToString();
+    }
+    #endregion
+}
+@section Styles {
+    @if (ViewBag.M == "")
+    {
+        @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+        @Styles.Render("~/Content/voc.css")
+    }
+}
+
+@section Scripts {
+    @if (ViewBag.M == "")
+    {
+        @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+        //@Scripts.Render("~/External/FusionChartsXT/js/fusioncharts.js")
+        //@Scripts.Render("~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js")
+        //@Scripts.Render("~/Scripts/ExS/voc.js")
+        if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+        {
+            <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+        }
+
+        <script type="text/javascript">
+            (function () {
+                _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
+
+                $('#ddlYear').change(function () {
+                    var encQi = encodeURIComponent(_zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",fdid:"' + _zw.V.fdid + '",opnode:"",ttl:"' + _zw.V.ttl + '",tgt:"' + $(this).val() + '"}'));
+                    window.location.href = '?qi=' + encQi;
+                });
+            }());
+
+            var fchart_tat = null, fchart_prod = null, fchart_prodmodel = null;
+        </script>
+    }
+}
+
+@if (ViewBag.M == "ajax")
+{
+
+}
+else
+{
+    <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
+    <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>
+
+    <div class="layout-wrapper">
+        <div class="layout-inner">
+            <div class="d-flex flex-column bg-white w-100">
+                <!-- Header -->
+                <div class="flex-grow-0">
+                    <div class="d-flex justify-content-between container-p-x m-0 py-2">
+                        <div class="d-flex align-items-center font-weight-bold">
+                            <div class="h5 mb-0 z-ttl py-0 text-truncate">
+                                <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center flex-fill justify-content-end">
+                            <select class="custom-select mr-2" id="ddlYear" style="max-width: 120px">
+                                @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionYear(2019, DateTime.Now.Year, Convert.ToInt32(ViewBag.R.lv.tgt.ToString()))))
+                            </select>
+                            <button class="btn btn-default font-weight-bold mr-2" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" onclick="location.reload();"><i class="fe-refresh-cw mr-1"></i>@Resources.Global.Refresh</button>
+                            <button class="btn btn-default font-weight-bold" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-grow-0" style="border-top: 2px solid #eee; border-bottom: 2px solid #eee">
+                    <div class="d-flex align-items-center justify-content-end px-3 my-2">
+                        @Html.Raw(GetSUMMARY(ViewBag.ST, ViewBag.PCC))
+                    </div>
+                </div>
+                <!-- / Header -->
+
+                <div class="flex-grow-1 position-relative">
+                    <div class="z-list-scroll px-3">
+                        <div class="z-list py-2" id="__List">
+                            <div class="card border-0">
+                                <div class="card-header with-elements px-0 border-bottom-0">
+                                    <div class="card-header-title"><i class="mdi mdi-check-outline mr-1"></i>TAT (Turn Around Time - 방문, 택배 접수 건)</div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="row">
+                                        @Html.Raw(GetTAT(ViewBag.ST))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0">
+                                <div class="card-header with-elements px-0 border-bottom-0">
+                                    <div class="card-header-title"><i class="mdi mdi-check-outline mr-1"></i>처리현황</div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="row">
+                                        @Html.Raw(GetRESULT(ViewBag.ST))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0">
+                                <div class="card-header with-elements px-0 border-bottom-0">
+                                    <div class="card-header-title"><i class="mdi mdi-check-outline mr-1"></i>제품군별 처리 결과 (방문, 택배 접수 건)</div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="row">
+                                        @Html.Raw(GetPRODCLS(ViewBag.ST))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0">
+                                <div class="card-header with-elements px-0 border-bottom-0">
+                                    <div class="card-header-title"><i class="mdi mdi-check-outline mr-1"></i>TOP 5 접수 모델별 불량유형 (방문, 택배 접수 건)</div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="row">
+                                        @Html.Raw(GetMODEL(ViewBag.ST))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0">
+                                <div class="card-header with-elements px-0 border-bottom-0">
+                                    <div class="card-header-title"><i class="mdi mdi-check-outline mr-1"></i>VOC 출처별</div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="row">
+                                        @Html.Raw(GetREQUEST(ViewBag.ST))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0">
+                                <div class="card-header with-elements px-0 border-bottom-0">
+                                    <div class="card-header-title"><i class="mdi mdi-check-outline mr-1"></i>VOC 상세내역</div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="row">
+                                        @Html.Raw(GetKIND(ViewBag.ST))
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

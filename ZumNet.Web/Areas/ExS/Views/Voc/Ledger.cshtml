@@ -1,0 +1,513 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@{
+    if (ViewBag.M == "")
+    {
+        ViewBag.Title = ViewBag.R["ttl"];
+        Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+    }
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    //검색필드 정의
+    ConfigColumn();
+
+    if (ViewBag.M == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.M, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()));
+        Response.End();
+    }
+
+}
+@functions{
+    string[,] _columnConfig = null; //검색필드용
+
+    private void ConfigColumn()
+    {
+        string[,] arr = { { "REGID", "ID", "4%", "", "", "" }, { "REQUEST", "구분", "4%", "", "", "Y" }, { "RCTDT", "접수일", "5%", "", "", "Y" }
+                        , { "CUSTOMER", "고객명", "6%", "", "Y", "" }, { "CONTACT", "연락처", "5%", "", "Y", "" }, { "PRODCLS", "제품분류", "6%", "", "", "" }, { "MODELNMA", "품명", "5%", "", "Y", "Y" }
+                        , { "MODELCOLOR", "색상", "4%", "", "Y", "Y" }, { "SERIALNO", "S/N", "5%", "", "Y", "Y" }, { "PURCHDT", "구입일", "5%", "", "Y", "Y" }
+                        , { "KIND", "VOC", "6%", "", "", "Y" }, { "RESULT", "최종판정", "5%", "", "", "Y" }, { "STATUS", "진행상태", "5%", "", "", "Y" }
+                        , { "REPAIR", "수리내역", "5%", "", "", "Y" }, { "TROUBLE", "불량유형", "7%", "", "", "Y" }, { "TAT", "TAT", "3%", "", "Y", "Y" }
+                        , { "REASON", "고장원인", "11%", "L", "Y", "" }, { "CRNM", "등록자", "4%", "", "", "" }, { "CRDT", "등록일", "5%", "", "", "" }};
+        this._columnConfig = arr;
+    }
+
+    private string RenderColumnHeader(string mode, string sortCol, string sortType)
+    {
+        if (_columnConfig != null)
+        {
+            string sBlind = " d-none";
+            string sSortIcon = "";
+
+            StringBuilder sb = new StringBuilder("<table class=\"table table-hover table-bordered table-sm mb-0\">");
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead><tr class=\"table-success\">");
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 5].ToString() == "Y")
+                {
+                    sBlind = (sortCol == _columnConfig[i, 0].ToString()) ? "" : " d-none";
+                    sSortIcon = (sortCol == _columnConfig[i, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+
+                    sb.AppendFormat("<th class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), sSortIcon, sBlind);
+                }
+                else
+                {
+                    sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", _columnConfig[i, 1].ToString());
+                }
+            }
+            sb.Append("</tr></thead></table>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string RenderExcelColumnHeader()
+    {
+        if (_columnConfig != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<tr class=\"col-header\">");
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<td style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</td>", _columnConfig[i, 1].ToString());
+
+                //20-02-06 엑셀내려받기 경우 메모 필드 추가
+                if (_columnConfig[i, 0].ToString() == "REASON")
+                {
+                    sb.AppendFormat("<td style=\"text-align:center;background:#d1dae7;color:#175d7f;width:60px\">{0}</td>", "금액"); //20-08-11
+                    sb.AppendFormat("<td style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</td>", "메모");
+                    sb.AppendFormat("<td style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</td>", "고객요청사항");
+                    sb.AppendFormat("<td style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</td>", "세부내용");
+                }
+            }
+            sb.Append("</tr>");
+
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string RenderColumnGroup()
+    {
+        if (_columnConfig != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string ViewList(string mode, DataSet data, string sortCol, string sortType)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-bordered table-sm mb-0\">");
+        if (mode == "xls") sb.Append(RenderExcelColumnHeader());
+        else sb.Append(RenderColumnGroup());
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strRowClass = "";
+            string strBgColor = "";
+            int iRow = 1;
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                if (row["DELDT"].ToString() != "") strRowClass += " del";
+
+                foreach (object[] o in ViewBag.CodeTable["voc.status"])
+                {
+                    if (o[4].ToString() == row["STATUS"].ToString() && o[5].ToString() != "#000000")
+                    {
+                        strBgColor = o[5].ToString(); break;
+                    }
+                    else
+                    {
+                        strBgColor = "";
+                    }
+                }
+
+                sb.AppendFormat("<tr class=\"{0}\" id=\"_{1}\" style=\"background-color:{2}\">", strRowClass, row["REGID"].ToString(), strBgColor);
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+
+                    if (mode != "xls" && (strID == "CRDT" || strID == "MFDT"))
+                    {
+                        strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row[strID].ToString(), "yy-MM-dd", "");
+                    }
+                    else if (mode != "xls" && (strID == "REGID" || strID == "RCTDT" || strID == "CUSTOMER" || strID == "CONTACT" || strID == "MODELNMA"))
+                    {
+                        strValue = row[strID].ToString();
+                        if (strID == "RCTDT") strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(strValue, "yy-MM-dd", "");
+
+                        if (strValue != "")
+                        {
+                            strValue = "<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewEvent('V');\" title=\"" + Server.HtmlEncode(strValue) + "\">" + StringLen(strValue, 100) + "</a>";
+                        }
+                        else { strValue = ""; }
+                    }
+                    else if (strID == "REASON")
+                    {
+                        strValue = "";
+                        //2019-12-10 고장유형 선택 방식변경
+                        string strTemp = row[strID].ToString();
+                        if (strTemp.IndexOf(';') > 0)
+                        {
+                            foreach (object[] o in ViewBag.CodeTable["voc.reason"])
+                            {
+                                if (strTemp.IndexOf(o[3].ToString()) >= 0)
+                                {
+                                    if (strValue == "") strValue = (o[3].ToString() == "99" ? row["REASONC"].ToString() : o[4].ToString());
+                                    else strValue += ", " + (o[3].ToString() == "99" ? row["REASONC"].ToString() : o[4].ToString());
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString().Replace(Environment.NewLine, "<br />");
+                    }
+
+                    strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
+                    if (mode == "xls") sb.AppendFormat("<td style=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "" : "text-align: center", strValue);
+                    else sb.AppendFormat("<td style=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-align: left" : "", strValue);
+
+                    //20-02-06 엑셀내려받기 경우 메모 필드 추가
+                    if (mode == "xls" && strID == "REASON")
+                    {
+                        sb.AppendFormat("<td>{0}</td>", row["ETC"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["MEMO1"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["CONTENTS"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString());
+                    }
+                }
+                sb.Append("</tr>");
+                iRow++;
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"{0}\" class=\"py-15\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = "AS_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">td {border:1px solid #c6c6c6}</style><head><body>");
+        //Response.Write("<style type=\"text/css\">table {border:1px solid #c6c6c6} td {border-right:1px solid #c6c6c6;border-bottom:1px solid #c6c6c6}</style>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    private string StringLen(string s, int len)
+    {
+        if (s.Length > len) return s.Substring(0, len) + "..";
+        else return s;
+    }
+
+    private string RenderDDDate(string formTable)
+    {
+        string sSelected = "";
+
+        StringBuilder sb = new StringBuilder();
+
+        //기본 검색
+        sb.Append("<div class=\"input-group\">");
+
+        //구분
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[1, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond1\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.request"])
+        {
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == o[4].ToString() ? " selected" : "";
+            sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+        }
+        sb.Append("</select>");
+
+        //제품분류
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[2, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond2\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.prodcls"])
+        {
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd2"]) == o[4].ToString() ? " selected" : "";
+            sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+        }
+        sb.Append("</select>");
+
+        //VOC
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[3, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond3\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.kind"])
+        {
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd3"]) == o[4].ToString() ? " selected" : "";
+            sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+        }
+        sb.Append("</select>");
+
+        sb.Append("<div class=\"d-block d-sm-none w-100 my-1\"></div>");
+
+        //검색
+        sb.Append("<select class=\"custom-select\" id=\"_Search\">");
+        sb.Append("<option value=\"\">선택</option>");
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            if (_columnConfig[i, 4].ToString() == "Y")
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["search"]) == _columnConfig[i, 0].ToString() ? " selected" : "";
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), sSelected);
+            }
+
+        }
+        sb.Append("</select>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" style=\"max-width: 150px\" value=\"{0}\">", ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+        sb.Append("<div class=\"input-group-append\">");
+        sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+        sb.Append("</div>");
+        sb.Append("<div class=\"input-group-append\">"); //d-none d-sm-flex
+        sb.Append("<button class=\"btn btn-default\" aria-controls=\"vw-search-cond\" onclick=\"_zw.ut.ctrls();\" title=\"상세\"><i class=\"fas fa-angle-down\"></i></button>");
+        sb.Append("</div>");
+
+        sb.Append("</div>"); //<-기본검색
+
+
+        //상세 검색
+        sb.Append("<div class=\"d-none mt-2 p-0\" data-controls=\"vw-search-cond\">");
+
+        sb.Append("<div class=\"datepicker input-group input-daterange\">");
+        //최종판정
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[4, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond4\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.result"])
+        {
+            if (o[7].ToString() != "N")
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd4"]) == o[2].ToString() ? " selected" : "";
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+            }
+        }
+        sb.Append("</select>");
+
+        //진행상태
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[5, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond5\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.status"])
+        {
+            if (o[7].ToString() != "N")
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd5"]) == o[2].ToString() ? " selected" : "";
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+            }
+        }
+        sb.Append("</select>");
+
+        //수리내역
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[6, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond6\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.repair"])
+        {
+            if (o[7].ToString() != "N")
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd6"]) == o[2].ToString() ? " selected" : "";
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+            }
+        }
+        sb.Append("</select>");
+
+        //불량유형
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[7, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond7\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.trouble"])
+        {
+            if (o[7].ToString() != "N")
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd7"]) == o[2].ToString() ? " selected" : "";
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+            }
+        }
+        sb.Append("</select>");
+
+        //접수일자
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light\">{0}</span>", "접수일자");
+        sb.Append("</div>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\" style=\"max-width: 100px\">", ViewBag.R.lv.start);
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.Append("<span class=\"input-group-text\">~</span>");
+        sb.Append("</div>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control end-date\" value=\"{0}\" style=\"max-width: 100px\">", ViewBag.R.lv.end);
+        sb.Append("</div>");
+
+        sb.Append("</div>"); //<-상세검색
+
+
+        return sb.ToString();
+    }
+}
+@section Styles {
+    @if (ViewBag.M == "")
+    {
+        @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+        @Styles.Render("~/Content/voc.css")
+    }
+}
+
+@section Scripts {
+    @if (ViewBag.M == "")
+    {
+        @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+        @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+        @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+        @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
+
+        @Scripts.Render("~/Scripts/ExS/voc.js")
+        if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+        {
+            <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+        }
+
+        <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+    }
+}
+
+@if (ViewBag.M == "ajax")
+{
+    <div class="z-list-head mb-0 px-0">
+        @Html.Raw(RenderColumnHeader(ViewBag.Mode, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))
+    </div>
+    <div class="z-list-body">
+        @Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))
+    </div>
+}
+else
+{
+    <div class="layout-wrapper">
+        <div class="layout-inner">
+            <div class="d-flex flex-column bg-white w-100" style="min-width: 1024px">
+                <!-- Header -->
+                <div class="flex-grow-0">
+                    <div class="d-flex justify-content-between container-p-x m-0 py-2">
+                        <div class="d-flex align-items-center font-weight-bold">
+                            <div class="h5 mb-0 z-ttl py-0 text-truncate">
+                                <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end z-lv-menu">
+                            <button class="btn btn-default py-1 font-weight-bold mr-2" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" onclick="_zw.mu.refresh();"><i class="fe-refresh-cw mr-1"></i>@Resources.Global.Refresh</button>
+                            @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S"))
+                            {
+                                <button class="btn btn-default py-1 font-weight-bold mr-2" data-toggle="tooltip" data-placement="bottom" title="AS접수" onclick="_zw.fn.viewEvent('N');"><i class="fe-edit mr-1"></i>AS접수</button>
+                                <button class="btn btn-default py-1 font-weight-bold mr-2" data-toggle="tooltip" data-placement="bottom" title="엑셀 내보내기" onclick="_zw.fn.exportExcel();"><i class="fas fa-file-excel text-success mr-1"></i>내보내기</button>
+                            }
+                            <button class="btn btn-default py-1 font-weight-bold" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-grow-0" style="border-top: 2px solid #eee">
+                    <div class="d-flex align-items-center px-2 mt-2">
+                        <div class="z-lv-cond w-100">
+                            @Html.Raw(RenderDDDate(ViewBag.R.ft.ToString()))
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-grow-0">
+                    <div class="d-flex align-items-center px-2 my-2">
+                        <div class="d-flex align-items-center z-lv-page mr-5" id="__ListCount">
+                            @Html.Partial("~/Views/Common/_ListCountBig.cshtml")
+                        </div>
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            @Html.Partial("~/Views/Common/_ListPagination.cshtml")
+                        </ul>
+                    </div>
+                </div>
+                <!-- / Header -->
+
+                <div class="flex-grow-1 position-relative">
+                    <div class="z-list z-list-sticky" id="__List">
+                        <div class="z-list-head mb-0 px-0">
+                            @Html.Raw(RenderColumnHeader(ViewBag.Mode, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))
+                        </div>
+                        <div class="z-list-body">
+                            @Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

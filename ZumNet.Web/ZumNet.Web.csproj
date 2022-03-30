@@ -364,7 +364,9 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
+    <Content Include="Content\voc.css" />
     <Content Include="Content\todo.css" />
     <Content Include="Content\lcm.css" />
     <Content Include="Content\pqm.css" />
@@ -2018,6 +2020,7 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
+    <Content Include="Scripts\ExS\voc.js" />
     <Content Include="Scripts\ExS\lcm.js" />
     <Content Include="Scripts\ExS\mc.js" />
     <Content Include="Scripts\ExS\pqm.js" />
@@ -2867,6 +2870,9 @@
     <Content Include="External\dext5upload\plugin\nexacro\17\metainfo\KOR\dext5upload.nexacro.event.info" />
     <Content Include="External\dext5upload\plugin\nexacro\17\metainfo\KOR\dext5upload.nexacro.meta.info" />
     <Content Include="Areas\TnC\Views\Shared\_Read.cshtml" />
+    <Content Include="Areas\ExS\Views\Voc\Ledger.cshtml" />
+    <Content Include="Areas\ExS\Views\Voc\Statistics.cshtml" />
+    <Content Include="Areas\ExS\Views\Voc\_EventView.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -2966,6 +2972,8 @@
     <Content Include="Views\Board\Recent.cshtml" />
     <Content Include="Views\Board\_RecentView.cshtml" />
     <Content Include="Views\Report\_FORM_LEAVEUPDATE.cshtml" />
+    <Content Include="Views\Shared\Layouts\Partials\_HiddenFields.cshtml" />
+    <Content Include="Views\Common\_ListCountBig.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

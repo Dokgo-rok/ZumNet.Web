@@ -45,6 +45,8 @@
     <div class="page-loader"><div class="bg-info"></div></div>
     @RenderBody()
 
+    @Html.Partial("Layouts/Partials/_HiddenFields")
+
     <!-- Modal Popup -->
     <div class="modal fade" id="popLayer" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false" data-width="350">
         <div class="modal-dialog modal-dialog-scrollable">
@@ -80,6 +82,8 @@
             </div>
         </div>
     </div>
+
+    <iframe id="ifrView" name="ifrView" src="~/Blank.htm" style="display: none"></iframe>
 
     <!-- Core scripts -->
     @Scripts.Render("~/bundle/jquery")

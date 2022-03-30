@@ -1,0 +1,9 @@
+﻿@if (HttpContext.Current.Session != null && HttpContext.Current.Session.Count > 0 && HttpContext.Current.Session["LogonID"] != null)
+{
+<form id="fmExternal" method="post" action="" class="d-none">
+    <input type="hidden" id="auth_external" name="auth_external" value="@Session["LogonID"]" />
+    <input type="hidden" id="current_culture" name="current_culture" value="@System.Threading.Thread.CurrentThread.CurrentUICulture.Name" />
+    <input type="hidden" id="upload_path" name="upload_path" value="@("/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString())" />
+</form>
+}
+

@@ -26,10 +26,10 @@
 }
 
 @section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
     @if (ViewBag.R.wnd.ToString() == "")
     {
         @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
-        @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
         @Styles.Render("~/bundle/vendor/css/pages/messages")
     }
 }
@@ -38,9 +38,8 @@
     @if (ViewBag.R.wnd.ToString() == "")
     {
         @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
-        @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
     }
-
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
     @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
@@ -55,7 +54,7 @@
     @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
     @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
 
-<script type="text/javascript">
+    <script type="text/javascript">
         (function () {
             _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
 
@@ -112,7 +111,7 @@
                 });
             }
         }());
-</script>
+    </script>
 }
 
 @if (ViewBag.R.wnd.ToString() == "popup")

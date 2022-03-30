@@ -1,0 +1,83 @@
+﻿/*******************************************************************************/
+/* VOC */
+
+.z-list-sticky {
+    position: absolute;
+    top: 0;
+    left: .5rem;
+    right: .5rem;
+    bottom: .5rem;
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+    .z-list-sticky .z-list-head {
+        position: relative;
+        overflow: hidden scroll;
+        /*padding-right: 17px !important;*/
+        border-top: 2px solid #ccc;
+        border-bottom: 2px solid #ccc;
+    }
+    .z-list-sticky .z-list-body {
+        position: absolute;
+        top: 2.3rem;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: auto;
+    }
+        .z-list-sticky .z-list-body table {
+            border-top-width: 0 !important
+        }
+
+.z-list-head .table th {
+    text-align: center;
+}
+
+.z-list-head .table .table-success, .z-list-head .table .table-success > th, .z-list-head .table .table-success > td,
+.z-list-head .table .table-warning, .z-list-head .table .table-warning > th, .z-list-head .table .table-warning > td,
+.z-list-body .table .table-success, .z-list-body .table .table-success > th, .z-list-body .table .table-success > td,
+.z-list-body .table .table-warning, .z-list-body .table .table-warning > th, .z-list-body .table .table-warning > td {
+    border-color: #e8e8e9 !important;
+}
+
+.table-as-st {
+    border: 2px solid #999 !important;
+}
+    .table-as-st thead th {
+        background-color: #66b3ff;
+    }
+
+    .table-as-st tfoot th {
+        background-color: #cce5ff;
+    }
+
+    .table-as-st th, .table-as-st td {
+        vertical-align: middle;
+        text-align: center;
+        border-color: #bbb !important;
+    }
+
+.z-list .card .card-header-title {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.modal-dialog .z-list .table th {
+    vertical-align: middle;
+    text-align: center
+}
+.modal-dialog .z-list .table th, .modal-dialog .z-list .table td {
+    padding: .15rem !important;
+}
+    .modal-dialog .z-list .table td .custom-select {
+        height: 1.625rem;
+        padding-top: .175rem;
+        padding-bottom: .175rem;
+    }
+    .modal-dialog .z-list .table td input.form-control {
+        height: 1.625rem;
+    }
+    .modal-dialog .z-list .table td .input-group .btn {
+        height: 1.625rem;
+        padding-top: .175rem;
+    }

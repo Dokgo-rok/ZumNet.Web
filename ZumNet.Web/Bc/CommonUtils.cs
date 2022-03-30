@@ -2266,6 +2266,12 @@ namespace ZumNet.Web.Bc
             return "";
         }
 
+        /// <summary>
+        /// 자원에약 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="resView"></param>
+        /// <returns></returns>
         public static string BookingInit(this Controller ctrl, bool resView)
         {
             string strReturn = "";
@@ -2343,6 +2349,134 @@ namespace ZumNet.Web.Bc
                         }
                     }
                 }
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
+        /// VOC 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="codeInfo"></param>
+        /// <returns></returns>
+        public static string VocInit(this Controller ctrl, bool codeInfo)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            //권한체크
+            if (HttpContext.Current.Session["Admin"].ToString() == "Y")
+            {
+                ctrl.ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), Convert.ToInt32(ctrl.ViewBag.R.ct.Value)
+                                    , Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(ctrl.ViewBag.R.fdid.Value), "O", "0");
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                    ctrl.ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            if (strReturn == "")
+            {
+                //SiteMap
+                if (Convert.ToInt32(ctrl.ViewBag.R.fdid.Value) > 0)
+                {
+                    //Title이 빈값인 경우(Ajax로 불러온 경우 ttl=''로 설정, 이후 로그아웃 되어 returnUrl로 넘어 왔을 때)
+                    strReturn = SiteMap(ctrl, Convert.ToInt32(ctrl.ViewBag.R.ct.Value), Convert.ToInt32(ctrl.ViewBag.R.fdid.Value), ctrl.ViewBag.R["opnode"].ToString());
+                }
+
+                //리스트뷰
+                ctrl.ViewBag.R.lv["page"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["page"].ToString(), "1");
+                ctrl.ViewBag.R.lv["count"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["count"].ToString(), "50");
+
+                ctrl.ViewBag.R.lv["basesort"] = StringHelper.SafeString(ctrl.ViewBag.R.lv["basesort"].ToString(), "RCTDT");
+            }
+
+            if (strReturn == "" && codeInfo)
+            {
+                //코드정보 설정
+                string[,] codeConfig = {
+                        { "voc", "reason", "고장유형" },
+                        { "voc", "request", "구분" },
+                        { "voc", "prodcls", "제품분류" },
+                        { "voc", "kind", "VOC" },
+                        { "voc", "result", "최종판정" },
+                        { "voc", "status", "진행상태" },
+                        { "voc", "repair", "수리내역" },
+                        { "voc", "trouble", "불량유형" }
+                };
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.SelectCodeDescription(codeConfig);
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ctrl.ViewBag.CodeConfig = codeConfig;
+                    ctrl.ViewBag.CodeTable = svcRt.ResultDataDetail;
+                }
+                else
+                {
+                    //에러페이지
+                    strReturn = svcRt.ResultMessage;
+                }
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
+        /// VOC 코드 정보
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <returns></returns>
+        public static string VocInit(this Controller ctrl)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            //코드정보 설정
+            string[,] codeConfig = {
+                        { "voc", "request", "" },
+                        { "voc", "kind", "" },
+                        { "voc", "result", "" },
+                        { "voc", "status", "" },
+                        { "voc", "repair", "" },
+                        { "voc", "trouble", "" },
+                        { "voc", "prodmodel", "" },
+                        { "voc", "prodcolor", "" },
+                        { "voc", "reason", "" }
+                };
+
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+            {
+                svcRt = cb.SelectCodeDescription(codeConfig);
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ctrl.ViewBag.CodeConfig = codeConfig;
+                ctrl.ViewBag.CodeTable = svcRt.ResultDataDetail;
+            }
+            else
+            {
+                //에러페이지
+                strReturn = svcRt.ResultMessage;
             }
 
             return strReturn;

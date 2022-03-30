@@ -1,0 +1,721 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@{
+
+}
+@functions{
+    private string NewVoc(JObject post)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        if (post["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(post["acl"].ToString(), "S"))
+        {
+            sb.Append("<div class=\"modal-body px-2 py-3\">"); //modal-body
+
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">접수정보</i></h6>");
+
+            sb.Append("<table class=\"table table-bordered table-sm\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:37%\" /><col style=\"width:13%\" /><co /></colspan>");
+
+            //구분, VOC
+            sb.Append("<tr><th class=\"bg-light\">구분</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "REQUEST");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.request"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.Append("</select></td>");
+
+            sb.Append("<th class=\"bg-light\">VOC</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "KIND");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.kind"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.Append("</select>");
+            sb.Append("</td></tr>");
+
+            //불량유형, 수리내역
+            sb.Append("<tr><th class=\"bg-light\">불량유형</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "TROUBLE");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.trouble"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.Append("</select></td>");
+
+            sb.Append("<th class=\"bg-light\">수리내역</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "REPAIR");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.repair"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.Append("</select>");
+            sb.Append("</td></tr>");
+
+            //진행상태, 최종판정
+            sb.Append("<tr><th class=\"bg-light\">진행상태</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "STATUS");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.status"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.Append("</select></td>");
+
+            sb.Append("<th class=\"bg-light\">최종판정</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "RESULT");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.result"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.Append("</select>");
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">고객정보</i></h6>");
+
+            sb.Append("<table class=\"table table-bordered table-sm\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:37%\" /><col style=\"width:13%\" /><co /></colspan>");
+
+            //품명A, 품명B
+            sb.Append("<tr><th class=\"bg-light\">품명A</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "MODELNMA");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.prodmodel"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", "_ETC_", "기타"); //20-01-27 기타 추가
+            sb.Append("</select>");
+            sb.AppendFormat("<div class=\"input-group\" id=\"{0}\" style=\"display:none\"><input type=\"text\" class=\"form-control\" maxlength=\"30\" value=\"\" />", "p_MODELNMA");
+            sb.AppendFormat("<button class=\"btn btn-warning\" data-for=\"{0}\">입력취소</button></div>", "MODELNMA");
+            sb.Append("</td>");
+
+            sb.Append("<th class=\"bg-light\">품명B</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "MODELNMB");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.prodmodel"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", "_ETC_", "기타"); //20-01-27 기타 추가
+            sb.Append("</select>");
+            sb.AppendFormat("<div class=\"input-group\" id=\"{0}\" style=\"display:none\"><input type=\"text\" class=\"form-control\" maxlength=\"30\" value=\"\" />", "p_MODELNMB");
+            sb.AppendFormat("<button class=\"btn btn-warning\" data-for=\"{0}\">입력취소</button></div>", "MODELNMB");
+            sb.Append("</td>");
+
+            //색상, S/N
+            sb.Append("<tr><th class=\"bg-light\">색상</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "MODELCOLOR");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.prodcolor"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", "_ETC_", "기타"); //20-01-27 기타 추가
+            sb.Append("</select>");
+            sb.AppendFormat("<div class=\"input-group\" id=\"{0}\" style=\"display:none\"><input type=\"text\" class=\"form-control\" maxlength=\"30\" value=\"\" />", "p_MODELCOLOR");
+            sb.AppendFormat("<button class=\"btn btn-warning\" data-for=\"{0}\">입력취소</button></div>", "MODELCOLOR");
+            sb.Append("</td>");
+
+            sb.Append("<th class=\"bg-light\">S/N</th><td>");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"30\" value=\"\" />", "SERIALNO");
+            sb.Append("</td></tr>");
+
+            //접수일자, 구입일자
+            sb.Append("<tr><th class=\"bg-light\">접수일자</th><td>");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"{1}\" />", "RCTDT", DateTime.Now.ToString("yyyy-MM-dd"));
+            sb.Append("</td><th class=\"bg-light\">구입일자</th><td>");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"\" />", "PURCHDT");
+            sb.Append("</td></tr>");
+
+            //고객명, 연락처
+            sb.Append("<tr><th class=\"bg-light\">고객명</th><td>");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"50\" value=\"\" />", "CUSTOMER");
+            sb.Append("</td><th class=\"bg-light\">연락처</td><td colspan=\"3\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"50\" value=\"\" />", "CONTACT");
+            sb.Append("</td></tr>");
+
+            //주소
+            sb.Append("<tr><th class=\"bg-light\">주소</th><td colspan=\"3\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"200\" value=\"\" />", "ADDRESS");
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">고장내역</i></h6>");
+
+            sb.Append("<table class=\"table table-bordered table-sm\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><co /></colspan>");
+
+            //고장원인
+            sb.AppendFormat("<tr><th class=\"bg-light\">고장원인</th><td><div id=\"{0}\" class=\"px-2 pt-2 pb-0\">", "f_child");
+            //sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"txaText\" onkeyup=\"checkTextAreaLength(this, 1000);\"></textarea>", "REASON");
+            foreach (object[] o in ViewBag.CodeTable["voc.reason"])
+            {
+                if (o[3].ToString() == "99")
+                {
+                    //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString());
+                    //sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"\" style=\"width:200px\" /></span>", "REASONC");
+                    sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
+                    sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled />", o[3].ToString(), "REASON");
+                    sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
+                    sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"\" style=\"width:180px; height: 22px\" /></span>", "REASONC");
+                    sb.Append("</label>");
+
+                }
+                else
+                {
+                    //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString());
+                    sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
+                    sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled />", o[3].ToString(), "REASON");
+                    sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
+                    sb.Append("</label>");
+                }
+            }
+            sb.Append("</div></td></tr>");
+
+            //고객요청사항
+            sb.Append("<tr><th class=\"bg-light\">고객요청<br />사항</th><td>");
+            sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"1000\"></textarea>", "CONTENTS");
+            sb.Append("</td></tr>");
+
+            //세부내용
+            sb.Append("<tr><th class=\"bg-light\">세부내용</th><td>");
+            sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"1000\"></textarea>", "DESCRIPTION");
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">기타사항</i></h6>");
+
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:37%\" /><col style=\"width:13%\" /><co /></colspan>");
+
+            //완료일자, TAT
+            sb.Append("<tr><th class=\"bg-light\">조치완료</th><td>");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"\" />", "COMPDT");
+            sb.Append("</td><th class=\"bg-light\">TAT</th><td>");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"10\" value=\"\" />", "TAT");
+            sb.Append("</td></tr>");
+
+            //비고->금액
+            sb.Append("<tr><th class=\"bg-light\">금액</th><td colspan=\"3\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"200\" value=\"\" />", "ETC");
+            sb.Append("</td></tr>");
+
+            //메모
+            sb.Append("<tr><th class=\"bg-light\">메모</th><td colspan=\"3\">");
+            sb.AppendFormat("<textarea type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"200\"></textarea>", "MEMO1");
+            sb.Append("</td></tr>");
+
+            //등록자
+            sb.Append("<tr><th class=\"bg-light\">등록자</th><td colspan=\"3\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", Session["DeptName"].ToString() + ". " + Session["URName"].ToString() + ". " + DateTime.Now.ToString("yy-MM-dd HH:mm"));
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Register);
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5\">{0}</div>", Resources.Global.Auth_NoPermission);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+
+    private string ViewVoc(JObject post, DataSet ds)
+    {
+        DataRow row = null;
+
+        string sAuth = "N"; //관리자 A, 작성자/수정자 B, 일반 N
+        string sChecked = "";
+        string sDisabled = "";
+        string sModelReason = "";
+        bool bDel = false; //삭제여부
+
+        string strFld01 = "";
+        string strFld02 = "";
+        string strFld03 = "";
+
+        if (post["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(post["acl"].ToString(), "S")) sAuth = "A";
+
+        StringBuilder sb = new StringBuilder();
+
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            row = ds.Tables[0].Rows[0];
+
+            bDel = (row["DELDT"].ToString() != "") ? true : false;
+            if (sAuth != "A")
+            {
+                if (Session["URID"].ToString() == row["CRID"].ToString() || Session["URID"].ToString() == row["ETID"].ToString()) sAuth = "B";
+                else sAuth = "N";
+            }
+
+            strFld01 = (row["CRDPT"].ToString() == "" ? "" : row["CRDPT"].ToString() + ". ") + row["CRNM"].ToString() + ". " + Convert.ToDateTime(row["CRDT"]).ToString("yy-MM-dd HH:mm"); //작성정보
+            if (row["MFDT"].ToString() != "")
+                strFld02 = (row["ETDPT"].ToString() == "" ? "" : row["ETDPT"].ToString() + ". ") + row["ETNM"].ToString() + ". " + Convert.ToDateTime(row["MFDT"]).ToString("yy-MM-dd HH:mm"); //수정정보
+
+            strFld03 = (row["DELDT"].ToString() != "") ? "삭제(" + Convert.ToDateTime(row["DELDT"]).ToString("yyyy-MM-dd HH:mm") + ")" : "";
+
+            sb.Append("<div class=\"modal-body px-2 py-3\">"); //modal-body
+
+            sb.AppendFormat("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">접수정보 ({0}){1}</i></h6>", row["REGID"].ToString(), (bDel ? " - <span style=\"color:red\">[삭제 건]</span>" : ""));
+
+            sb.Append("<table class=\"table table-bordered table-sm\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:37%\" /><col style=\"width:13%\" /><co /></colspan>");
+
+            //구분, VOC
+            sb.Append("<tr><th class=\"bg-light\">구분</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["REQUEST"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "REQUEST");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.request"])
+                {
+                    if (row["REQUEST"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                sb.Append("</select>");
+            }
+
+            sb.Append("</td><th class=\"bg-light\">VOC</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["KIND"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "KIND");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.kind"])
+                {
+                    if (row["KIND"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                sb.Append("</select>");
+            }
+            sb.Append("</td></tr>");
+
+            //불량유형, 수리내역
+            sb.Append("<tr><th class=\"bg-light\">불량유형</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["TROUBLE"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "TROUBLE");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.trouble"])
+                {
+                    if (row["TROUBLE"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                sb.Append("</select>");
+            }
+            sb.Append("</td>");
+
+            sb.Append("<th class=\"bg-light\">수리내역</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["REPAIR"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "REPAIR");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.repair"])
+                {
+                    if (row["REPAIR"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                sb.Append("</select>");
+            }
+            sb.Append("</td></tr>");
+
+            //진행상태, 최종판정
+            sb.Append("<tr><th class=\"bg-light\">진행상태</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["STATUS"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "STATUS");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.status"])
+                {
+                    if (row["STATUS"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                sb.Append("</select>");
+            }
+
+            sb.Append("</td><th class=\"bg-light\">최종판정</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["RESULT"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "RESULT");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.result"])
+                {
+                    if (row["RESULT"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                sb.Append("</select>");
+            }
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">고객정보</i></h6>");
+
+            sb.Append("<table class=\"table table-bordered table-sm\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:37%\" /><col style=\"width:13%\" /><co /></colspan>");
+
+            //품명A, 품명B
+            bool bDDLValue = false; //20-01-27 선택값 유무
+            sb.Append("<tr><th class=\"bg-light\">품명A</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["MODELNMA"].ToString());
+            else
+            {
+                foreach (object[] o in ViewBag.CodeTable["voc.prodmodel"])
+                {
+                    if (row["MODELNMA"].ToString() == o[4].ToString())
+                    {
+                        bDDLValue = true; break;
+                    }
+                }
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\"{1}>", "MODELNMA", (row["MODELNMA"].ToString() != "" && !bDDLValue) ? " style=\"display:none\"" : "");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.prodmodel"])
+                {
+                    if (row["MODELNMA"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                if (row["MODELNMA"].ToString() != "" && !bDDLValue) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", "_ETC_", "기타"); //20-01-27 기타 추가
+                else sb.AppendFormat("<option value=\"{0}\">{1}</option>", "_ETC_", "기타");
+                sb.Append("</select>");
+                sb.AppendFormat("<div class=\"input-group\" id=\"{0}\"{2}><input type=\"text\" class=\"form-control\" maxlength=\"30\" value=\"{1}\" />", "p_MODELNMA", (row["MODELNMA"].ToString() != "" && !bDDLValue) ? row["MODELNMA"].ToString() : "", (row["MODELNMA"].ToString() != "" && !bDDLValue) ? "" : " style=\"display:none\"");
+                sb.AppendFormat("<button class=\"btn btn-warning\" data-for=\"{0}\">입력취소</button></div>", "MODELNMA");
+            }
+
+            bDDLValue = false;
+            sb.Append("</td><th class=\"bg-light\">품명B</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["MODELNMB"].ToString());
+            else
+            {
+                foreach (object[] o in ViewBag.CodeTable["voc.prodmodel"])
+                {
+                    if (row["MODELNMB"].ToString() == o[4].ToString())
+                    {
+                        bDDLValue = true; break;
+                    }
+                }
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\"{1}>", "MODELNMB", (row["MODELNMB"].ToString() != "" && !bDDLValue) ? " style=\"display:none\"" : "");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.prodmodel"])
+                {
+                    if (row["MODELNMB"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                if (row["MODELNMB"].ToString() != "" && !bDDLValue) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", "_ETC_", "기타"); //20-01-27 기타 추가
+                else sb.AppendFormat("<option value=\"{0}\">{1}</option>", "_ETC_", "기타");
+                sb.Append("</select>");
+                sb.AppendFormat("<div class=\"input-group\" id=\"{0}\"{2}><input type=\"text\" class=\"form-control\" maxlength=\"30\" value=\"{1}\" />", "p_MODELNMB", (row["MODELNMB"].ToString() != "" && !bDDLValue) ? row["MODELNMB"].ToString() : "", (row["MODELNMB"].ToString() != "" && !bDDLValue) ? "" : " style=\"display:none\"");
+                sb.AppendFormat("<button class=\"btn btn-warning\" data-for=\"{0}\">입력취소</button></div>", "MODELNMB");
+            }
+            sb.Append("</td></tr>");
+
+            //색상, S/N
+            bDDLValue = false;
+            sb.Append("<tr><th class=\"bg-light\">색상</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["MODELCOLOR"].ToString());
+            else
+            {
+                foreach (object[] o in ViewBag.CodeTable["voc.prodcolor"])
+                {
+                    if (row["MODELCOLOR"].ToString() == o[4].ToString())
+                    {
+                        bDDLValue = true; break;
+                    }
+                }
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\"{1}>", "MODELCOLOR", (row["MODELCOLOR"].ToString() != "" && !bDDLValue) ? " style=\"display:none\"" : "");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.prodcolor"])
+                {
+                    if (row["MODELCOLOR"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                if (row["MODELCOLOR"].ToString() != "" && !bDDLValue) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", "_ETC_", "기타"); //20-01-27 기타 추가
+                else sb.AppendFormat("<option value=\"{0}\">{1}</option>", "_ETC_", "기타");
+                sb.Append("</select>");
+                sb.AppendFormat("<div class=\"input-group\" id=\"{0}\"{2}><input type=\"text\" class=\"form-control\" maxlength=\"30\" value=\"{1}\" />", "p_MODELCOLOR", (row["MODELCOLOR"].ToString() != "" && !bDDLValue) ? row["MODELCOLOR"].ToString() : "", (row["MODELCOLOR"].ToString() != "" && !bDDLValue) ? "" : "style=\"display:none\"");
+                sb.AppendFormat("<button class=\"btn btn-warning\" data-for=\"{0}\">입력취소</button></div>", "MODELCOLOR");
+            }
+
+            sb.Append("</td><th class=\"bg-light\">S/N</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["SERIALNO"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"30\" value=\"{1}\" />", "SERIALNO", row["SERIALNO"].ToString());
+            sb.Append("</td></tr>");
+
+            //접수일자, 구입일자
+            sb.Append("<tr><th class=\"bg-light\">접수일자</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["RCTDT"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"{1}\" />", "RCTDT", row["RCTDT"].ToString());
+            sb.Append("</td><th class=\"bg-light\">구입일자</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["PURCHDT"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"{1}\" />", "PURCHDT", row["PURCHDT"].ToString());
+            sb.Append("</td></tr>");
+
+            //고객명, 연락처
+            sb.Append("<tr><th class=\"bg-light\">고객명</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["CUSTOMER"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"50\" value=\"{1}\" />", "CUSTOMER", row["CUSTOMER"].ToString());
+            sb.Append("</td><th class=\"bg-light\">연락처</th><td colspan=\"3\">");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["CONTACT"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"50\" value=\"{1}\" />", "CONTACT", row["CONTACT"].ToString());
+            sb.Append("</td></tr>");
+
+            //주소
+            sb.Append("<tr><th class=\"bg-light\">주소</th><td colspan=\"3\">");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["ADDRESS"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"200\" value=\"{1}\" />", "ADDRESS", row["ADDRESS"].ToString());
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">고장내역</i></h6>");
+
+            sb.Append("<table class=\"table table-bordered table-sm\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><co /></colspan>");
+
+            //고장원인
+            //sb.Append("<tr><th class=\"bg-light\">고장원인</th><td>");
+            //if (bDel || sAuth == "N")
+            //    sb.AppendFormat("<textarea class=\"form-control\" readonly>{0}</textarea>", row["REASON"].ToString());
+            //else
+            //    sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"txaText\" onkeyup=\"checkTextAreaLength(this, 1000);\">{1}</textarea>", "REASON", row["REASON"].ToString());
+            //sb.Append("</td></tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">고장원인</th><td><div id=\"{0}\" class=\"px-2 pt-2 pb-0\">", "f_child");
+            //sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"txaText\" onkeyup=\"checkTextAreaLength(this, 1000);\"></textarea>", "REASON");
+
+            foreach (object[] s in ViewBag.CodeTable["voc.prodmodel"])
+            {
+                if (s[4].ToString() == row["MODELNMA"].ToString())
+                {
+                    sModelReason = s[7].ToString(); break;
+                }
+            }
+
+            foreach (object[] o in ViewBag.CodeTable["voc.reason"])
+            {
+                sChecked = (row["REASON"].ToString().IndexOf(o[3].ToString()) >= 0) ? " checked = \"checked\"" : "";
+                sDisabled = (sModelReason.IndexOf(o[3].ToString() + ";") >= 0) ? "" : " disabled";
+
+                if (bDel || sAuth == "N")
+                {
+                    if (o[3].ToString() == "99")
+                    {
+                        //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" disabled id=\"ckb_{0}\" name=\"{1}\" value=\"{0}\"{3}{4} onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
+                        //sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" style=\"width:200px\" /></span>", row["REASONC"].ToString());
+
+                        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
+                        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" disabled id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
+                        sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
+                        sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" readonly value=\"\" style=\"width:180px; height: 22px\" /></span>", row["REASONC"].ToString());
+                        sb.Append("</label>");
+                    }
+                    else
+                    {
+                        //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" disabled id=\"ckb_{0}\" name=\"{1}\" value=\"{0}\"{3}{4} /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
+                        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
+                        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" disabled id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
+                        sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
+                        sb.Append("</label>");
+                    }
+                }
+                else
+                {
+                    if (o[3].ToString() == "99")
+                    {
+                        //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{3}{4} onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
+                        //if (sChecked != "") sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"{1}\" style=\"width:200px\" /></span>", "REASONC", row["REASONC"].ToString());
+                        //else sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"{1}\" style=\"width:200px\" /></span>", "REASONC", row["REASONC"].ToString());
+
+                        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
+                        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
+                        sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
+                        if (sChecked != "") sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"{1}\" style=\"width:180px; height: 22px\" /></span>", "REASONC", row["REASONC"].ToString());
+                        else sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"{1}\" style=\"width:180px; height: 22px\" /></span>", "REASONC", row["REASONC"].ToString());
+                        sb.Append("</label>");
+                    }
+                    else
+                    {
+                        //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{3}{4} /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);                        
+                        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
+                        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
+                        sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
+                        sb.Append("</label>");
+                    }
+                }
+            }
+            sb.Append("</div></td></tr>");
+
+            //고객요청사항
+            sb.Append("<tr><th class=\"bg-light\">고객요청<br />사항</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<textarea class=\"form-control\" readonly>{0}</textarea>", row["CONTENTS"].ToString());
+            else
+                sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"1000\">{1}</textarea>", "CONTENTS", row["CONTENTS"].ToString());
+            sb.Append("</td></tr>");
+
+            //세부내용
+            sb.Append("<tr><th class=\"bg-light\">세부내용</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<textarea class=\"form-control\" readonly>{0}</textarea>", row["DESCRIPTION"].ToString());
+            else
+                sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"1000\">{1}</textarea>", "DESCRIPTION", row["DESCRIPTION"].ToString());
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">기타사항</i></h6>");
+
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:37%\" /><col style=\"width:13%\" /><co /></colspan>");
+
+            //완료일자, TAT
+            sb.Append("<tr><th class=\"bg-light\">조치완료</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["COMPDT"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"{1}\" />", "COMPDT", row["COMPDT"].ToString());
+            sb.Append("</td><th class=\"bg-light\">TAT</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input class=\"form-control\" readonly>{0}</textarea>", row["TAT"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"10\" value=\"{1}\" />", "TAT", row["TAT"].ToString());
+            sb.Append("</td></tr>");
+
+            //비고->금액
+            sb.Append("<tr><th class=\"bg-light\">금액</th><td colspan=\"3\">");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["ETC"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"200\" value=\"{1}\" />", "ETC", row["ETC"].ToString());
+            sb.Append("</td></tr>");
+
+            //메모
+            sb.Append("<tr><th class=\"bg-light\">메모</th><td colspan=\"3\">");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<textarea type=\"text\" class=\"form-control\" readonly>{0}</textarea>", row["MEMO1"].ToString());
+            else
+                sb.AppendFormat("<textarea type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"200\">{1}</textarea>", "MEMO1", row["MEMO1"].ToString());
+            sb.Append("</td></tr>");
+
+            //등록자
+            sb.Append("<tr><th class=\"bg-light\">등록자</th><td colspan=\"3\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", strFld01);
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">최종수정</th><td colspan=\"3\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", strFld02);
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            if (sAuth != "N")
+            {
+                if (bDel)
+                {
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"restore\">{0}</button>", "복구"); //S
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"remove\">{0}</button>", "제거"); //R
+                }
+                else
+                {
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Confirm);
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"delete\">{0}</button>", Resources.Global.Delete); //D
+                }
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+            }
+            else
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            }
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5\">{0}</div>", Resources.Global.NoItemShow);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+}
+<div class="modal-dialog modal-dialog-scrollable" style="max-width: 40rem">
+    <div class="modal-content bg-white z-list" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header py-2">
+            <h5 class="modal-title">A/S 접수</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+
+        @if (ViewBag.JPost["M"].ToString() == "new")
+        {
+            @Html.Raw(NewVoc(ViewBag.JPost))
+        }
+        else
+        {
+            @Html.Raw(ViewVoc(ViewBag.JPost, ViewBag.VocEvent))
+        }
+    </div>
+</div>

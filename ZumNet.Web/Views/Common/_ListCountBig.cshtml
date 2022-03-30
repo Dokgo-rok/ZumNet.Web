@@ -1,0 +1,25 @@
+﻿@{
+    int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+    int totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+    int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+    int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+    int totalPage = totalCount / pageCount;
+
+    if (totalCount % pageCount > 0) { totalPage++; }
+    if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+    string sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+}
+
+<div class="z-lv-total mr-1">
+    <i class="fe-chevron-right"></i> @sPage
+</div>
+<div class="input-group">
+    <select class="custom-select">
+        <option value="30" @(pageCount == 30 ? " selected" : "")>30</option>
+        <option value="50" @(pageCount == 50 ? " selected" : "")>50</option>
+        <option value="70" @(pageCount == 70 ? " selected" : "")>70</option>
+        <option value="100" @(pageCount == 100 ? " selected" : "")>100</option>
+    </select>
+</div>
+

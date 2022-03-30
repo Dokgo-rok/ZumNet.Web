@@ -113,15 +113,21 @@
             <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
         </div>
         <div class="row mt-3">
-            <div class="col-6 text-center px-0">
-                @if (ViewBag.R.current["operator"].ToString() == "Y")
-                {
+            @if (ViewBag.R.current["operator"].ToString() == "Y")
+            {
+                <div class="col-6 text-center px-0">
                     <a class="" href="/TnC/ToDo/Report"><i class="fas fa-chalkboard"></i> 집계현황</a>
-                }
-            </div>
-            <div class="col-6 text-center px-0">
-                <a class="" href="/TnC/ToDo/Report"><i class="fe-calendar fs-14"></i> 주간계획</a>
-            </div>
+                </div>
+                <div class="col-6 text-center px-0">
+                    <a class="" href="/TnC/ToDo/Report"><i class="fe-calendar fs-14"></i> 주간계획</a>
+                </div>
+            }
+            else
+            {
+                <div class="col-12 text-center px-0">
+                    <a class="" href="/TnC/ToDo/Report"><i class="fe-calendar fs-14"></i> 주간계획</a>
+                </div>
+            }
         </div>
     </div>
 
