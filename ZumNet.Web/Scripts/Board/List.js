@@ -14,6 +14,7 @@ $(function () {
         var el, p, postData, tgtPage, stdPage;
         m = m || '';
 
+        _zw.V.mode = '';
         _zw.V.appid = 0;
         _zw.V.xfalias = xf;
 
@@ -21,7 +22,8 @@ $(function () {
         window.location.href = '/Board/Write?qi=' + _zw.base64.encode(postData);
     }
 
-    _zw.mu.editMsg = function (xf) {
+    _zw.mu.editMsg = function (xf) { //alert(_zw.V.appid)
+        _zw.V.mode = '';
         _zw.V.xfalias = xf;
 
         postData = _zw.fn.getAppQuery(_zw.V.fdid);
@@ -42,7 +44,7 @@ $(function () {
         window.location.href = '/Board/TempSaveEdit?qi=' + _zw.base64.encode(postData);
     }
 
-    _zw.mu.replyMsg = function (xf) {
+    _zw.mu.replyMsg = function (xf) { //alert(_zw.V.appid)
         _zw.V.mode = 'reply';
         _zw.V.xfalias = xf;
 
@@ -51,7 +53,7 @@ $(function () {
     }
 
     _zw.mu.deleteMsg = function () {
-
+        alert(_zw.V.appid)
     }
 
     _zw.mu.registerMsg = function () {
@@ -102,7 +104,11 @@ $(function () {
     }
 
     _zw.mu.cancelMsg = function () {
-        history.back();
+        //history.back(); //<- 읽기 창에서 새글 갔다 오면 appid=0으로 돼 이후 수정, 답글 클릭시 오류 발생!!
+        if (_zw.V.mode != 'reply' && _zw.V.current.page.toLowerCase() == '/board/write') {
+            if (_zw.V.wnd == 'popup') window.close();
+            else _zw.mu.goList();
+        } else history.back();
     }
 
     _zw.mu.goList = function () {

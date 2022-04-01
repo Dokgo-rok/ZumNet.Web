@@ -179,10 +179,20 @@
                     </div>*@
                 </div>
                 <div class="col-sm-10 input-group align-items-center">
-                    <span class="col-form-label" data-for="SelectedPartName">@ViewBag.R["ttl"]</span>
-                    <input type="hidden" data-for="SelectedPartID" value="@ViewBag.ResInfo["ParticipantID"]" />
-                    <input type="hidden" data-for="SelectedPartType" value="@ViewBag.ResInfo["PartType"]" />
-                    <input type="hidden" data-for="SelectedApproval" value="@ViewBag.ResInfo["Approval"]" />
+                    @if (ViewBag.ResInfo != null)
+                    {
+                        <span class="col-form-label" data-for="SelectedPartName">@ViewBag.R["ttl"]</span>
+                        <input type="hidden" data-for="SelectedPartID" value="@ViewBag.ResInfo["ParticipantID"]" />
+                        <input type="hidden" data-for="SelectedPartType" value="@ViewBag.ResInfo["PartType"]" />
+                        <input type="hidden" data-for="SelectedApproval" value="@ViewBag.ResInfo["Approval"]" />
+                    }
+                    else
+                    {
+                        <span class="col-form-label" data-for="SelectedPartName"></span>
+                        <input type="hidden" data-for="SelectedPartID" value="" />
+                        <input type="hidden" data-for="SelectedPartType" value="" />
+                        <input type="hidden" data-for="SelectedApproval" value="" />
+                    }
                 </div>
             </div>
             <div class="form-group row">

@@ -216,7 +216,7 @@
                 if (res.substr(0, 2) == 'OK') {
                     var v = res.substr(2).split(_zw.V.lv.boundary);
                     var p = $('#popForm');
-                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); console.log(_zw.V.app);
+                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); //console.log(_zw.V.app);
 
 
                     p.modal();
@@ -235,6 +235,12 @@
         if (!moment($("#txtStart").val()).isValid()) { bootbox.alert("시작일을 확인하십시오!", function () { $("#txtStart").focus(); }); return false; }
         if (!moment($("#txtEnd").val()).isValid()) { bootbox.alert("종료일을 확인하십시오!", function () { $("#txtEnd").focus(); }); return false; }
 
+        var ttl = p.find('span[data-for="SelectedPartName"]').html();
+        var partId = p.find('input[data-for="SelectedPartID"]').val();
+        var partType = p.find('input[data-for="SelectedPartType"]').val();
+        if ($.trim(ttl) == '' || partId == '' || partId == '0') { bootbox.alert("신청 자원이 없습니다!"); return false; }
+
+
         var mode = (_zw.V.app && _zw.V.app != '' && parseInt(_zw.V.app) > 0) ? "edit" : "new";
         var postJson = {}; //_zw.V.app;
         //postJson["cmntlist"] = []; postJson["sharedlist"] = []; //저장 중 필요 없는 목록 제거
@@ -245,15 +251,11 @@
         postJson["mode"] = mode;
         postJson["appid"] = _zw.V.appid;
 
-        var vRRule = _zw.cdr.getRepeat(p).split('|'); console.log(vRRule);
+        var vRRule = _zw.cdr.getRepeat(p).split('|'); //console.log(vRRule);
         var rptEnd = $("#txtRepeatEnd");
         if (vRRule == 'CHECK') { bootbox.alert("반복요일을 선택하십시오!"); return false; }
         else if (vRRule == 'INVALID') { bootbox.alert("반복종료일은 확인하십시오!", function () { rptEnd.focus(); }); return false; }
         else if (vRRule == 'END') { bootbox.alert("반복종료일은 시작일 이후로 선택하십시오!", function () { rptEnd.focus(); }); return false; }
-
-        var ttl = p.find('span[data-for="SelectedPartName"]').html();
-        var partId = p.find('input[data-for="SelectedPartID"]').val();
-        var partType = p.find('input[data-for="SelectedPartType"]').val();
 
         if (ttl.indexOf('회의실') >= 0 && vRRule[0] != '0') { //2020-11-09 회의실 경우 1달 이상 되풀이 지정 불가
             console.log(moment(rptEnd.val()).diff(moment($("#txtStart").val()), 'M', true));

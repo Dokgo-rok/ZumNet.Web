@@ -339,5 +339,93 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             return rt;
         }
         #endregion
+
+        #region [AS 대장 저장, 삭제]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Save()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["M"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+                    {
+                        svcRt = rpBiz.SetRegisterVOC(jPost["M"].ToString(), StringHelper.SafeLong(jPost["oid"].ToString()), jPost["REQUEST"].ToString()
+                            , jPost["RCTDT"].ToString(), jPost["CUSTOMER"].ToString(), jPost["CONTACT"].ToString(), jPost["ADDRESS"].ToString()
+                            , jPost["MODELNMA"].ToString() , jPost["MODELNMB"].ToString(), jPost["MODELCOLOR"].ToString(), jPost["SERIALNO"].ToString()
+                            , jPost["PURCHDT"].ToString() , jPost["KIND"].ToString() , jPost["RESULT"].ToString(), jPost["STATUS"].ToString()
+                            , jPost["REPAIR"].ToString(), jPost["TROUBLE"].ToString(), StringHelper.SafeString(jPost["EXPTDT"]), jPost["COMPDT"].ToString()
+                            , jPost["TAT"].ToString(), jPost["CONTENTS"].ToString(), jPost["REASON"].ToString(), jPost["REASONC"].ToString()
+                            , StringHelper.SafeString(jPost["DESCRIPTION"]), StringHelper.SafeString(jPost["ETC"]), jPost["MEMO1"].ToString(), StringHelper.SafeString(jPost["MEMO2"])
+                            , StringHelper.SafeString(jPost["CGID"]), StringHelper.SafeString(jPost["CGNM"]), StringHelper.SafeString(jPost["CGDPTID"]), StringHelper.SafeString(jPost["CGDPT"])
+                            , Session["URID"].ToString(), Session["URName"].ToString(),Session["DeptID"].ToString(), Session["DeptName"].ToString(), ""); //sTRBLs
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK" + "저장했습니다!";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Delete()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["M"].ToString() == "") return "필수값 누락!";
+
+                    long lRegId = StringHelper.SafeLong(jPost["oid"].ToString());
+                    if (lRegId == 0) return "삭제 항목 누락!";
+
+                    if (jPost["operator"].ToString() != "Y" && !ZumNet.Framework.Util.StringHelper.HasAcl(jPost["acl"].ToString(), "S")) return  "삭제 권한이 없습니다!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+                    {
+                        svcRt = rpBiz.SetRegisterVOC(jPost["M"].ToString(), lRegId, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+                                , Session["URID"].ToString(), Session["URName"].ToString(), Session["DeptID"].ToString(), Session["DeptName"].ToString(), "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK" + "처리했습니다!";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
     }
 }

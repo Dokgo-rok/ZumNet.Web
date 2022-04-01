@@ -134,9 +134,9 @@
 
             //접수일자, 구입일자
             sb.Append("<tr><th class=\"bg-light\">접수일자</th><td>");
-            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"{1}\" />", "RCTDT", DateTime.Now.ToString("yyyy-MM-dd"));
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"10\" value=\"{1}\" />", "RCTDT", DateTime.Now.ToString("yyyy-MM-dd"));
             sb.Append("</td><th class=\"bg-light\">구입일자</th><td>");
-            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"\" />", "PURCHDT");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"10\" value=\"\" />", "PURCHDT");
             sb.Append("</td></tr>");
 
             //고객명, 연락처
@@ -204,7 +204,7 @@
 
             //완료일자, TAT
             sb.Append("<tr><th class=\"bg-light\">조치완료</th><td>");
-            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"\" />", "COMPDT");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"10\" value=\"\" />", "COMPDT");
             sb.Append("</td><th class=\"bg-light\">TAT</th><td>");
             sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"10\" value=\"\" />", "TAT");
             sb.Append("</td></tr>");
@@ -490,12 +490,12 @@
             if (bDel || sAuth == "N")
                 sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["RCTDT"].ToString());
             else
-                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"{1}\" />", "RCTDT", row["RCTDT"].ToString());
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"10\" value=\"{1}\" />", "RCTDT", row["RCTDT"].ToString());
             sb.Append("</td><th class=\"bg-light\">구입일자</th><td>");
             if (bDel || sAuth == "N")
                 sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["PURCHDT"].ToString());
             else
-                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"{1}\" />", "PURCHDT", row["PURCHDT"].ToString());
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"10\" value=\"{1}\" />", "PURCHDT", row["PURCHDT"].ToString());
             sb.Append("</td></tr>");
 
             //고객명, 연락처
@@ -627,7 +627,7 @@
             if (bDel || sAuth == "N")
                 sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["COMPDT"].ToString());
             else
-                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"8\" value=\"{1}\" />", "COMPDT", row["COMPDT"].ToString());
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control datepicker\" maxlength=\"10\" value=\"{1}\" />", "COMPDT", row["COMPDT"].ToString());
             sb.Append("</td><th class=\"bg-light\">TAT</th><td>");
             if (bDel || sAuth == "N")
                 sb.AppendFormat("<input class=\"form-control\" readonly>{0}</textarea>", row["TAT"].ToString());
