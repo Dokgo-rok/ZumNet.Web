@@ -1339,6 +1339,16 @@ namespace ZumNet.Web.Bc
                 jV["lv"]["cd11"] = StringHelper.SafeString(jReq["cd11"]);
                 jV["lv"]["cd12"] = StringHelper.SafeString(jReq["cd12"]);
 
+                //개발원가견적 조건
+                if (StringHelper.SafeString(jReq["ctalias"]).ToUpper() == "CE")
+                {
+                    jV["checkunload"] = StringHelper.SafeInt(jReq["appid"], 0) == 0 ? true : false;
+                    jV["nsstatus"] = StringHelper.SafeString(jReq["nsstatus"], "0"); //2020-11-16 : 상위 포함관계, 0: 미포함, 1 : 상위정상포함, 2 : 상위반려
+                    jV["rptid"] = StringHelper.SafeString(jReq["rptid"], "");
+                    jV["rptmode"] = StringHelper.SafeString(jReq["rptmode"], "3"); //0 : 신규집계 시뮬, 1 : 신규집계 작성/편집, 2 : 집계 조회, 3 : 하위
+                    jV["gvmode"] = "";
+                }
+
                 ctrl.ViewBag.R = jV;
             }
             catch (Exception ex)
@@ -1490,6 +1500,16 @@ namespace ZumNet.Web.Bc
                         jV["lv"]["cd10"] = StringHelper.SafeString(jReq["cd10"]);
                         jV["lv"]["cd11"] = StringHelper.SafeString(jReq["cd11"]);
                         jV["lv"]["cd12"] = StringHelper.SafeString(jReq["cd12"]);
+
+                        //개발원가견적 조건
+                        if (StringHelper.SafeString(jReq["ctalias"]).ToUpper() == "CE")
+                        {
+                            jV["checkunload"] = StringHelper.SafeInt(jReq["appid"], 0) == 0 ? true : false;
+                            jV["nsstatus"] = StringHelper.SafeString(jReq["nsstatus"], "0"); //2020-11-16 : 상위 포함관계, 0: 미포함, 1 : 상위정상포함, 2 : 상위반려
+                            jV["rptid"] = StringHelper.SafeString(jReq["rptid"], "");
+                            jV["rptmode"] = StringHelper.SafeString(jReq["rptmode"], "3"); //0 : 신규집계 시뮬, 1 : 신규집계 작성/편집, 2 : 집계 조회, 3 : 하위
+                            jV["gvmode"] = "";
+                        }
 
                         ctrl.ViewBag.R = jV;
 
@@ -1891,6 +1911,83 @@ namespace ZumNet.Web.Bc
                     //에러페이지
                     strReturn = svcRt.ResultMessage;
                 }
+
+                #region [기본정보 설정]
+                if (strReturn == "")
+                {
+                    try
+                    {
+                        using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                        {
+                            if (ctrl.ViewBag.R.current["page"].ToString().ToLower() == "grid" && ctrl.ViewBag.R.mode.ToString() != "new"
+                                && ctrl.ViewBag.R.mode.ToString() != "add" && StringHelper.SafeInt(ctrl.ViewBag.R.appid.Value) != 0)
+                            {
+                                svcRt = cost.GetSTDDAY(StringHelper.SafeInt(ctrl.ViewBag.R.appid.Value), "");
+                            }
+                            else
+                            {
+                                svcRt = cost.GetSTDDAY(0, "");
+                            }
+                        }
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append("{");
+                            string[] v = svcRt.ResultDataDetail["XR"] != null ? svcRt.ResultDataDetail["XR"].ToString().Split(';') : "0;".Split(';');
+                            sb.AppendFormat("xrate:[{0}, \"{1}\"]", v[0], v[1]);
+                            v = svcRt.ResultDataDetail["SP"] != null ? svcRt.ResultDataDetail["SP"].ToString().Split(';') : "0;".Split(';');
+                            sb.AppendFormat(",stdpay:[{0}, \"{1}\"]", v[0], v[1]);
+                            v = svcRt.ResultDataDetail["OP"] != null ? svcRt.ResultDataDetail["OP"].ToString().Split(';') : "0;".Split(';');
+                            sb.AppendFormat(",outpay:[{0}, \"{1}\"]", v[0], v[1]);
+                            sb.Append("}");
+
+                            ctrl.ViewBag.R["stdinfo"] = JObject.Parse(sb.ToString());
+                            sb.Remove(0, sb.Length);
+
+                            DataTable dt = (DataTable)svcRt.ResultDataDetail["XRATE"];
+                            sb.Append("{");
+                            int i = 0;
+                            foreach (DataColumn col in dt.Columns)
+                            {
+                                if (col.ColumnName != "REGID" && col.ColumnName != "STDDT" && col.ColumnName != "XCLS")
+                                {
+                                    if (i > 0) sb.Append(",");
+                                    sb.AppendFormat("{0}:\"{1}\"", col.ColumnName, dt.Rows[0][col.ColumnName].ToString());
+                                    i++;
+                                }
+                            }
+                            dt = null;
+                            i = 0;
+                            sb.Append("}");
+
+                            ctrl.ViewBag.R["stdrate"] = JObject.Parse(sb.ToString());
+                            sb.Remove(0, sb.Length);
+
+                            sb.Append("{");
+                            foreach (object[] o in ctrl.ViewBag.CodeTable["ce.center"])
+                            {
+                                if (i > 0) sb.Append(",");
+                                sb.AppendFormat("{0}:[\"{1}\", {2}]", o[3].ToString(), o[4].ToString(), o[6].ToString());
+                                i++;
+                            }
+                            sb.Append("}");
+
+                            ctrl.ViewBag.R["corp"] = JObject.Parse(sb.ToString());
+
+                            ctrl.ViewBag.R["calcpay"] = JObject.Parse("{}");
+                        }
+                        else
+                        {
+                            //에러페이지
+                            strReturn = svcRt.ResultMessage;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        strReturn = ex.Message;
+                    }
+                }
+                #endregion
             }
             else if (ctAlias == "MC")
             {

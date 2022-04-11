@@ -1312,6 +1312,8 @@ $(function () {
                 e.value = numeral(e.value.replace('%', '')).format('0,0' + dec);
                 if (v[0] == 'percent') e.value += '%';
             }
+
+            if (_zw.fn.onblurCategory) _zw.fn.onblurCategory(e, v); // ct별 blur 처리
         }
     };
 

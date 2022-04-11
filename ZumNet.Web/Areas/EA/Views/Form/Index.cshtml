@@ -34,43 +34,58 @@
     @Scripts.Render("~/Scripts/EA/form.js")
 
 <script type="text/javascript">
-(function () {
-    _zw.V = @Html.Raw(ViewBag.JForm);
+    (function () {
+        _zw.V = @Html.Raw(ViewBag.JForm);
 
-    if ($('#__DextUpload').length > 0) {
-        DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
+        if ($('#__DextUpload').length > 0) {
+            DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
 
-        DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
-        new Dext5Upload(_zw.T.uploader.id);
+            DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
+            new Dext5Upload(_zw.T.uploader.id);
 
-        $('.btn[data-zf-menu="toggleUploader"]').click(function () {
-        });
-    }
+            $('.btn[data-zf-menu="toggleUploader"]').click(function () {
+            });
+        }
 
-    if ($('#__DextEditor').length > 0) {
-        _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
-        $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+        if ($('#__DextEditor').length > 0) {
+            _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
+            $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
 
-        DEXT5.config.EditorHolder = "__DextEditor";
-        //DEXT5.config.FocusInitObjId = "txtSubject";
+            DEXT5.config.EditorHolder = "__DextEditor";
+            //DEXT5.config.FocusInitObjId = "txtSubject";
 
-        new Dext5editor(_zw.T.editor.id);
+            new Dext5editor(_zw.T.editor.id);
 
-        $('.btn[data-zf-menu="toggleEditor"]').click(function () {
-            var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'], vIcon = ['fe-arrow-down', 'fe-arrow-up'];
-            var p = $('#__FormView .m');
-            var orgHeight = p.find('.fm-editor').outerHeight(), maxHeight = p.outerHeight() - p.find('.fh').outerHeight(); //alert(orgHeight + " : " + maxHeight)
+            $('.btn[data-zf-menu="toggleEditor"]').click(function () {
+                var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'], vIcon = ['fe-arrow-down', 'fe-arrow-up'];
+                var p = $('#__FormView .m');
+                var orgHeight = p.find('.fm-editor').outerHeight(), maxHeight = p.outerHeight() - p.find('.fh').outerHeight(); //alert(orgHeight + " : " + maxHeight)
 
-            if ($(this).attr('aria-expanded') == 'false') {
-                $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
-                p.find('.fm-editor').css('height', maxHeight + 'px'); p.find('.ff, .fb, .fm, .fm-lines, .fm-file').hide();
-            } else {
-                $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
-                p.find('.fm-editor').css('height', ''); p.find('.ff, .fb, .fm, .fm-lines, .fm-file').show();
+                if ($(this).attr('aria-expanded') == 'false') {
+                    $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
+                    p.find('.fm-editor').css('height', maxHeight + 'px'); p.find('.ff, .fb, .fm, .fm-lines, .fm-file').hide();
+                } else {
+                    $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
+                    p.find('.fm-editor').css('height', ''); p.find('.ff, .fb, .fm, .fm-lines, .fm-file').show();
+                }
+            });
+        }
+    }());
+
+    function dext_editor_loaded_event() {
+        // 에디터가 로드된 후
+        console.log(_zw.V.def["maintable"] + " : " + _zw.V.tp + " : " + _zw.V.doc["key1"])
+        if (_zw.V.def["maintable"] == 'FORM_DRAFT' && (_zw.V.tp == 'CE' || _zw.V.tp == 'MC') && _zw.V.doc["key1"] != '') {
+            //console.log(opener._zw)
+            if (opener && (opener._zw.V.ft.toLowerCase() == 'stdexchangedetail' || opener._zw.V.ft.toLowerCase() == 'stdpaydetail')) {
+                //alert(opener._zw.V.current["ft"].toLowerCase())
+                if ($('#Subject').length > 0 && _zw.V.doc["subject"] != '') $('#Subject').val(_zw.V.doc["subject"]);
+
+                DEXT5.setBodyValue(opener.document.getElementById('_HiddenFormData').value, _zw.T.editor.id);
             }
-        });
+        }
+
     }
-}());
 </script>
 }
 

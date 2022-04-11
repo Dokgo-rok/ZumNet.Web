@@ -14,12 +14,12 @@
         position: relative;
         overflow: hidden scroll;
         /*padding-right: 17px !important;*/
-        border-top: 2px solid #ccc;
-        border-bottom: 2px solid #ccc;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
     }
     .z-list-sticky .z-list-body {
         position: absolute;
-        top: 2.3rem;
+        top: 2.1rem;
         left: 0;
         right: 0;
         bottom: 0;

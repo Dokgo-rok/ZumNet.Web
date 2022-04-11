@@ -366,6 +366,7 @@
     <Content Include="Areas\WoA\Scripts\tree.js" />
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
+    <Content Include="Content\ce.css" />
     <Content Include="Content\voc.css" />
     <Content Include="Content\todo.css" />
     <Content Include="Content\lcm.css" />
@@ -2020,6 +2021,7 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
+    <Content Include="Scripts\ExS\ce.js" />
     <Content Include="Scripts\ExS\voc.js" />
     <Content Include="Scripts\ExS\lcm.js" />
     <Content Include="Scripts\ExS\mc.js" />
@@ -2873,6 +2875,19 @@
     <Content Include="Areas\ExS\Views\Voc\Ledger.cshtml" />
     <Content Include="Areas\ExS\Views\Voc\Statistics.cshtml" />
     <Content Include="Areas\ExS\Views\Voc\_EventView.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_LeftMenu.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_List.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_Report.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_MyList.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_DeptList.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\Grid.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_StdExchange.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_StdPay.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_OutPay.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_CodeMgr.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_StdExchangeDetail.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_StdPayDetail.cshtml" />
+    <Content Include="Areas\ExS\Views\CE\_OutPayDetail.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

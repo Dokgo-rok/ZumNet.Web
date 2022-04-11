@@ -1,0 +1,191 @@
+﻿
+@using System.Data;
+@using System.Text;
+
+@functions{
+    private string ListStdPay(DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"col-md-6 mt-3\">");
+        sb.Append("<table class=\"table table-striped\">");
+        sb.Append("<thead>");
+        sb.Append("<tr>");
+        sb.AppendFormat("<th>{0}</th>", "기준월");
+        sb.AppendFormat("<th>{0}</th>", "구분");
+        sb.AppendFormat("<th class=\"d-none d-sm-table-cell\">{0}</th>", "작성부서");
+        sb.AppendFormat("<th>{0}</th>", "작성자");
+        sb.AppendFormat("<th>{0}</th>", "작성일자");
+        sb.AppendFormat("<th class=\"d-none d-sm-table-cell\">{0}</th>", "완료일자");
+        sb.AppendFormat("<th>{0}</th>", "");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                DateTime sd = Convert.ToDateTime(row["STDDT"]);
+                sb.Append("<tr>");
+                sb.AppendFormat("<td><a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewStdInfo('{0}');\" title=\"{1}\">{1}</a></td>", row["REGID"].ToString(), sd.ToString("yy년 MM월"));
+                if (row["STATE"].ToString() == "7") sb.AppendFormat("<td>{0}</td>", row["XCLS"].ToString());
+                else
+                {
+                    if (row["STATE"].ToString() == "0") sb.AppendFormat("<td>{0}</td>", "작성");
+                    else if (row["STATE"].ToString() == "1") sb.AppendFormat("<td>{0}</td>", "결재중");
+                    else if (row["STATE"].ToString() == "8") sb.AppendFormat("<td>{0}</td>", "반려");
+                    else if (row["STATE"].ToString() == "6") sb.AppendFormat("<td>{0}</td>", "취소");
+                }
+                //sb.AppendFormat("<td>{0}</td>", row["XCLS"].ToString());
+                sb.AppendFormat("<td class=\"d-none d-sm-table-cell\">{0}</td>", row["CRDPT"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["CRNM"].ToString());
+                sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CRDT"].ToString(), "yy-MM-dd", ""));
+                sb.AppendFormat("<td class=\"d-none d-sm-table-cell\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["COMPDT"].ToString(), "yy-MM-dd", ""));
+                sb.Append("<td>");
+                if (row["LNKEA"].ToString() != "" && row["LNKEA"].ToString() != "0")
+                {
+                    sb.AppendFormat("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"{1}\"><i class=\"fas fa-tag\"></i></a>", row["LNKEA"].ToString(), "관련문서");
+                }
+                sb.AppendFormat("<a class=\"z-lnk-navy-n ml-2\" href=\"javascript:\" onclick=\"_zw.fn.viewStdSimple('StdPay', '{0}');\" title=\"{1}\"><i class=\"far fa-hand-point-right\"></i></a>", row["REGID"].ToString(), "임율보기");
+                sb.Append("</td>");
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"7\">{0}</th>", "등록된 기준임율이 없습니다!");
+            sb.Append("</tr>");
+
+            //ltrNavbar.Text = String.Format("<li><a href=\"{0}.aspx?M=new\" class=\"nav-link text-info\" title=\"{1}\"><i class=\"glyphicon glyphicon-edit\"></i> 임율작성</a></li>", Master.CurrentPage, "임율 작성하기");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>");
+
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        return sb.ToString();
+    }
+
+    private string ViewStdRate(DataSet ds)
+    {
+        DataRow rowStd = null;
+        DataRow rowRate = null;
+        DataRow rowItem = null;
+        DataRowCollection rowItems = null;
+        decimal dVal = 0;
+        decimal dVal2 = 0;
+        string sVal = "";
+        string sVal2 = "";
+
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            rowStd = ds.Tables[0].Rows[0];
+            rowItems = ds.Tables[1].Rows;
+            rowRate = ds.Tables[2].Rows[0];
+        }
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (ViewBag.Mode != "StdPay") sb.Append("<div class=\"col-md-6 mt-3\" id=\"_SimpleView\">");
+        sb.Append("<div class=\"card\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+        sb.Append("<div class=\"card-header bg-light border-bottom-0\">");
+        sb.AppendFormat("<div class=\"h6 mb-0\">{0} : <span class=\"text-success\">{1}</span></div>", "적용일시", ZumNet.Framework.Util.StringHelper.SafeString(rowStd["STDDT"]));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"card-body p-0\">");
+        sb.Append("<table class=\"table table-striped mb-0 border-bottom-0\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+
+        sb.Append("<thead>");
+        sb.AppendFormat("<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th>{4}</th><th>{5}</th></tr>", "법인명", "적용통화", "변동원가율", "변동원가<br />(USD)", "SMT임율", "(USD)");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        foreach (object[] o in ViewBag.CodeTable["ce.center"])
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th>{0}</th>", o[3].ToString());
+            sb.AppendFormat("<td>{0}</td>", o[4].ToString());
+
+            if (rowItems != null)
+            {
+                foreach (DataRow r in rowItems)
+                {
+                    if (r["CORP"].ToString() == o[3].ToString())
+                    {
+                        rowItem = r; break;
+                    }
+                }
+            }
+
+            if (rowItem != null)
+            {
+                try
+                {
+                    dVal = Convert.ToDecimal(rowItem["DIR_COST"]) + Convert.ToDecimal(rowItem["FL_COST"]);
+                    dVal2 = Convert.ToDecimal(rowRate["USD_" + o[4].ToString()]);
+
+                    //sVal = (o[3].ToString().Substring(0, 1) == "C") ? CE.CEUtil.CvtNumeric(dVal.ToString(), 4) : CE.CEUtil.CvtNumeric(dVal.ToString());
+                    sVal = ZumNet.Web.Bc.CommonUtils.CvtNumeric(dVal.ToString(), 4);
+                    sVal2 = ZumNet.Web.Bc.CommonUtils.CvtNumeric((dVal / dVal2).ToString(), 4);
+                }
+                catch
+                { }
+
+                sb.AppendFormat("<td>{0}</td>", sVal);
+                sb.AppendFormat("<td>{0}</td>", sVal2);
+
+                try
+                {
+                    dVal = Convert.ToDecimal(rowItem["SMT_COST"]);
+                    //sVal = (o[3].ToString().Substring(0, 1) == "C") ? CE.CEUtil.CvtNumeric(dVal.ToString(), 4) : CE.CEUtil.CvtNumeric(dVal.ToString());
+                    sVal = ZumNet.Web.Bc.CommonUtils.CvtNumeric(dVal.ToString(), 4);
+                    sVal2 = ZumNet.Web.Bc.CommonUtils.CvtNumeric((dVal / dVal2).ToString(), 4);
+                }
+                catch
+                { }
+
+                sb.AppendFormat("<td>{0}</td>", sVal);
+                sb.AppendFormat("<td>{0}</td>", sVal2);
+            }
+            else
+            {
+                sb.Append("<td></td><td></td><td></td><td></td>");
+            }
+            sb.Append("</tr>");
+
+            dVal = 0;
+            dVal2 = 0;
+            sVal = "";
+            sVal2 = "";
+            rowItem = null;
+        }
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        sb.Append("</div>");
+        sb.Append("</div>");
+        if (ViewBag.Mode != "StdPay") sb.Append("</div>");
+
+        rowStd = null;
+        rowRate = null;
+        rowItem = null;
+        rowItems = null;
+
+        return sb.ToString();
+    }
+}
+
+@if (ViewBag.Mode == "StdPay")
+{
+    @Html.Raw(ViewStdRate(ViewBag.StdRate))
+}
+else
+{
+    <div class="row">
+        @Html.Raw(ListStdPay(ViewBag.BoardList))
+        @Html.Raw(ViewStdRate(ViewBag.StdRate))
+    </div>
+}

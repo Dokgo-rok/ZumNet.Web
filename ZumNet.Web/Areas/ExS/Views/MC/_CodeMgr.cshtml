@@ -76,9 +76,9 @@ else
     <div class="row">
         <div class="col-sm-6 col-lg-4 py-3">
             <div class="card" data-zf-code="@ViewBag.CodeConfig[1, 0].@ViewBag.CodeConfig[1, 1]" style="border-color: rgba(24, 28, 33, 0.2);">
-                <div class="card-header bg-light px-3">
+                <div class="card-header bg-light d-flex align-items-center justify-content-between px-3 py-2 border-bottom-0">
                     <span>@ViewBag.CodeConfig[1, 2]</span>
-                    <button type="button" class="btn btn-default btn-sm float-right" title="추가" data-btn="add"><i class="fas fa-plus"></i></button>
+                    <button type="button" class="btn btn-default btn-sm" title="추가" data-btn="add"><i class="fas fa-plus"></i></button>
                 </div>
                 <div class="card-body p-0">
                     @Html.Raw(RenderCodeTable(ViewBag.CodeConfig[1, 1], ViewBag.CodeTable[ViewBag.CodeConfig[1, 0] + "." + @ViewBag.CodeConfig[1, 1]]))
@@ -88,9 +88,9 @@ else
 
         <div class="col-sm-6 col-lg-4 py-3">
             <div class="card" data-zf-code="@ViewBag.CodeConfig[2, 0].@ViewBag.CodeConfig[2, 1]" style="border-color: rgba(24, 28, 33, 0.2);">
-                <div class="card-header bg-light px-3">
+                <div class="card-header bg-light d-flex align-items-center justify-content-between px-3 py-2 border-bottom-0">
                     <span>@ViewBag.CodeConfig[2, 2]</span>
-                    <button type="button" class="btn btn-default btn-sm float-right" title="추가" data-btn="add"><i class="fas fa-plus"></i></button>
+                    <button type="button" class="btn btn-default btn-sm" title="추가" data-btn="add"><i class="fas fa-plus"></i></button>
                 </div>
                 <div class="card-body p-0">
                     @Html.Raw(RenderCodeTable(ViewBag.CodeConfig[2, 1], ViewBag.CodeTable[ViewBag.CodeConfig[2, 0] + "." + @ViewBag.CodeConfig[2, 1]]))

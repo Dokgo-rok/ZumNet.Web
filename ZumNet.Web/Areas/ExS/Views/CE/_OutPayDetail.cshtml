@@ -1,0 +1,150 @@
+﻿@using System.Data;
+@using System.Text;
+
+@using ZumNet.Web.Bc;
+@using ZumNet.Framework.Util;
+
+@functions{
+    private string ViewXRate(DataSet ds)
+    {
+        DataRow row = null;
+        DataRow rowRate = null;
+        decimal dVal = 0;
+        decimal dVal2 = 0;
+        string sVal = "";
+        string sVal2 = "";
+
+        if (ds != null && ds.Tables.Count > 0)
+        {
+            row = ds.Tables[0].Rows[0];
+            if (ds.Tables[1].Rows.Count > 0) rowRate = ds.Tables[1].Rows[0];
+        }
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+        StringBuilder sb3 = new StringBuilder();
+        StringBuilder sb4 = new StringBuilder();
+        StringBuilder sb5 = new StringBuilder();
+
+        sb.Append("<div class=\"mt-3\">");
+        sb.Append("<table class=\"table table-bordered table-sm\">");
+        sb.Append("<tbody>");
+        sb.Append("<tr>");
+        sb.Append("<th style=\"width: 15%\">적용시점</th>");
+        if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+        {
+            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><input type=\"text\" class=\"datepicker form-control text-center\" data-zf-field=\"STDDT\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{0}\" /></td>", ViewBag.Mode == "new" ? DateTime.Now.ToString("yyyy-MM-01") : Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd"));
+        }
+        else
+        {
+            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><strong>{0}</strong></td>", Convert.ToDateTime(row["STDDT"]).ToString("yyyy年 MM月 dd日 부터"));
+        }
+        sb.Append("<td style=\"width: 15%\">작성자</td>");
+        if (ViewBag.Mode == "new")
+        {
+            sb.AppendFormat("<td>{0} {1}</td>", Session["DeptName"].ToString(), Session["URName"].ToString());
+        }
+        else
+        {
+            sb.AppendFormat("<td>{0} {1}</td>", row["CRDPT"].ToString(), row["CRNM"].ToString());
+        }
+        sb.Append("</tr>");
+        sb.Append("<tr>");
+        sb.Append("<th>구분</th>");
+        if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+        {
+            sb.Append("<td><select class=\"form-control\" data-zf-field=\"XCLS\">");
+            sb.AppendFormat("<option value=\"\"{0}>선택</option>", (ViewBag.Mode == "edit" && row["XCLS"].ToString() == "") ? " selected" : "");
+            sb.AppendFormat("<option value=\"변경\"{0}>변경</option>", (ViewBag.Mode == "edit" && row["XCLS"].ToString() == "변경") ? " selected" : "");
+            sb.AppendFormat("<option value=\"검토\"{0}>검토</option></td>", (ViewBag.Mode == "edit" && row["XCLS"].ToString() == "검토") ? " selected" : "");
+        }
+        else
+        {
+            sb.AppendFormat("<td>{0}<input type=\"hidden\" data-zf-field=\"XCLS\" value=\"{0}\" /></td>", row["XCLS"].ToString());
+        }
+        sb.Append("<td>작성일자</td>");
+        if (ViewBag.Mode == "new")
+        {
+            sb.AppendFormat("<td>{0}</td>", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+        }
+        else
+        {
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(row["CRDT"].ToString()));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>");
+
+        sb.Append("<div>");
+        sb.Append("<div class=\"pl-3\">&#42; 생산지별 외주임율</div>");
+        sb.Append("<div class=\"mt-2\">");
+
+        sb.Append("<table class=\"table table-bordered table-sm\">");
+        sb.Append("<colgroup><col width=\"16%\" /><col width=\"14%\" /><col width=\"14%\" /><col width=\"14%\" /><col width=\"14%\" /><col width=\"14%\" /><col width=\"14%\" /></colgroup>");
+        sb.Append("<tbody>");
+
+
+        sb2.AppendFormat("<tr><td>{0}</td>", "법인");
+        sb3.AppendFormat("<tr><td>{0}</td>", "통화");
+        sb4.AppendFormat("<tr class=\"table-success\"><td>{0}</td>", "적용금액");
+        sb5.AppendFormat("<tr class=\"table-warning\"><td>{0}</td>", "USD");
+
+        foreach (object[] o in ViewBag.CodeTable["ce.center"])
+        {
+            sb2.AppendFormat("<td>{0}</td>", o[5].ToString());
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit") sb3.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", o[4].ToString());
+            else sb3.AppendFormat("<td>{0}</td>", o[4].ToString());
+
+            if (row != null)
+            {
+                dVal = Convert.ToDecimal(DataHelper.GetFieldValueToString(row, "CORP_" + o[3].ToString(), "0"));
+                dVal2 = Convert.ToDecimal(DataHelper.GetFieldValueToString(rowRate, "USD_" + o[4].ToString(), "0"));
+
+                //sVal = (o[3].ToString().Substring(0, 1) == "C") ? CommonUtils.CvtNumeric(dVal.ToString(), 4) : CommonUtils.CvtNumeric(dVal.ToString());
+                sVal = CommonUtils.CvtNumeric(dVal.ToString(), 4);
+                sVal2 = CommonUtils.CvtNumeric((dVal / dVal2).ToString(), 4);
+            }
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb4.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"CORP_{0}\" data-inputmask=\"number;10;{2}\" value=\"{1}\" /></td>"
+                    , o[3].ToString(), sVal, (o[4].ToString() == "KRW" || o[4].ToString() == "IDR" || o[4].ToString() == "VND") ? "4" : "4");
+                sb5.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal2);
+            }
+            else
+            {
+                sb4.AppendFormat("<td>{0}</td>", sVal);
+                sb5.AppendFormat("<td>{0}</td>", sVal2);
+            }
+        }
+
+        sb2.Append("</tr>");
+        sb3.Append("</tr>");
+        sb4.Append("</tr>");
+        sb5.Append("</tr>");
+
+        sb.Append(sb2.ToString());
+        sb.Append(sb3.ToString());
+        sb.Append(sb4.ToString());
+        sb.Append(sb5.ToString());
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        sb.Append("</div>");
+
+        //숨은필드
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"STATE\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["STATE"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRNM\" value= {0} />", ViewBag.Mode == "new" ? Session["URName"].ToString() : row["CRNM"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRID\" value= {0} />", ViewBag.Mode == "new" ? Session["URID"].ToString() : row["CRID"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRDPT\" value= {0} />", ViewBag.Mode == "new" ? Session["DeptName"].ToString() : row["CRDPT"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRDPTID\" value= {0} />", ViewBag.Mode == "new" ? Session["DeptID"].ToString() : row["CRDPTID"].ToString());
+
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+}
+
+@Html.Raw(ViewXRate(ViewBag.BoardList))

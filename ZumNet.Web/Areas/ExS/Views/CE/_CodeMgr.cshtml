@@ -1,0 +1,212 @@
+﻿@using System.Collections;
+@using System.Text;
+
+@{
+}
+
+@functions {
+
+    private string RenderCodeTable(string k2, ArrayList code)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<table class=\"table table-sm mb-0\">");
+        sb.Append("<thead>");
+        if (k2 == "center")
+        {
+            sb.Append("<tr><th class=\"text-center\" style=\"width: 60px\">순번</th><th class=\"text-center\" style=\"width: 70px\">법인</th><th class=\"text-center\" style=\"width: 70px\">통화</th><th class=\"text-center\">법인구분</th><th class=\"text-center\" style=\"width: 70px\">ERP ID</th><th class=\"text-center\" style=\"width: 70px\">임율표시</th><th></th></tr>");
+        }
+        else if (k2 == "distcost") //2020-10-19 사용안함
+        {
+            sb.Append("<tr><th class=\"text-center\" style=\"width: 60px\">순번</th><th class=\"text-center\" style=\"width: 70px\">이름</th><th class=\"text-center\">구분</th><th class=\"text-center\">계산내역</th><th class=\"text-center\" style=\"width: 85px\">비용</th><th></th></tr>");
+        }
+        else if (k2 == "xcls")
+        {
+            sb.Append("<tr><th class=\"text-center\" style=\"width: 60px\">순번</th><th class=\"text-center\">이름</th><th class=\"text-center\" style=\"width: 150px\">부문</th><th></th></tr>");
+        }
+        else if (k2 == "costpc")
+        {
+            sb.Append("<tr><th class=\"text-center\" style=\"width: 60px\">순번</th><th class=\"text-center\" style=\"width: 170px\">이름</th><th class=\"text-center\">계산내역</th><th class=\"text-center\" style=\"width: 50px\">입력</th><th></th></tr>");
+        }
+        else if (k2 == "costsga")
+        {
+            sb.Append("<tr><th class=\"text-center\" style=\"width: 60px\">순번</th><th class=\"text-center\" style=\"width: 120px\">이름</th><th class=\"text-center\">계산내역</th><th class=\"text-center\" style=\"width: 50px\">입력</th><th class=\"text-center\" style=\"width: 100px\">적용 대상</th><th></th></tr>");
+        }
+        else
+        {
+            sb.Append("<tr><th class=\"text-center\" style=\"width: 60px\">순번</th><th class=\"text-center\">이름</th><th></th></tr>");
+        }
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+        if (code != null && code.Count > 0)
+        {
+            foreach (object[] o in code)
+            {
+                sb.Append("<tr>");
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"k3\" readonly /></td>", o[2].ToString());
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item1\" /></td>", o[3].ToString());
+
+                if (k2 == "center" || k2 == "distcost" || k2 == "costsga")
+                {
+                    sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item2\" /></td>", o[4].ToString());
+                    sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item3\" /></td>", o[5].ToString());
+                    sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item4\" /></td>", o[6].ToString());
+                }
+                else if (k2 == "costpc")
+                {
+                    sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item2\" /></td>", o[4].ToString());
+                    sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item3\" /></td>", o[5].ToString());
+                }
+                else if (k2 == "xcls")
+                {
+                    sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item2\" /></td>", o[4].ToString());
+                }
+
+                if (k2 == "center")
+                {
+                    sb.AppendFormat("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"{0}\" data-zf-field=\"item5\" /></td>", o[7].ToString());
+                }
+
+                sb.Append("<td>");
+                sb.Append("<div class=\"btn-group btn-group-sm\" role=\"group\">");
+                sb.Append("<button type=\"button\" class=\"btn btn-default\" title=\"삭제\" data-btn=\"del\"><i class=\"fas fa-minus\"></i></button>");
+                sb.Append("<button type=\"button\" class=\"btn btn-success\" title=\"저장\" data-btn=\"save\"><i class=\"fas fa-check\"></i></button>");
+                sb.Append("</div>");
+                sb.Append("</td>");
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"k3\" readonly /></td>");
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item1\" /></td>");
+
+            if (k2 == "center" || k2 == "distcost" || k2 == "costsga")
+            {
+                sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item2\" /></td>");
+                sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item3\" /></td>");
+                sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item4\" /></td>");
+            }
+            else if (k2 == "costpc")
+            {
+                sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item2\" /></td>");
+                sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item3\" /></td>");
+            }
+            else if (k2 == "xcls")
+            {
+                sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item2\" /></td>");
+            }
+
+            if (k2 == "center")
+            {
+                sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item5\" /></td>");
+            }
+
+            sb.Append("<td>");
+            sb.Append("<div class=\"btn-group btn-group-sm\" role=\"group\">");
+            sb.Append("<button type=\"button\" class=\"btn btn-default\" title=\"삭제\" data-btn=\"del\"><i class=\"fas fa-minus\"></i></button>");
+            sb.Append("<button type=\"button\" class=\"btn btn-success\" title=\"저장\" data-btn=\"save\"><i class=\"fas fa-check\"></i></button>");
+            sb.Append("</div>");
+            sb.Append("</td>");
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        sb.Append("<script type=\"text/template\" class=\"zf-sp-template\">"); //template script
+        sb.Append("<tr>");
+        sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"k3\" /></td>");
+        sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item1\" /></td>");
+
+        if (k2 == "center" || k2 == "distcost" || k2 == "costsga")
+        {
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item2\" /></td>");
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item3\" /></td>");
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item4\" /></td>");
+        }
+        else if (k2 == "costpc")
+        {
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item2\" /></td>");
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item3\" /></td>");
+        }
+        else if (k2 == "xcls")
+        {
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item2\" /></td>");
+        }
+
+        if (k2 == "center")
+        {
+            sb.Append("<td><input type=\"text\" class=\"form-control input-sm text-center\" value=\"\" data-zf-field=\"item5\" /></td>");
+        }
+
+        sb.Append("<td>");
+        sb.Append("<div class=\"btn-group btn-group-sm\" role=\"group\">");
+        sb.Append("<button type=\"button\" class=\"btn btn-default\" title=\"삭제\" data-btn=\"del\"><i class=\"fas fa-minus\"></i></button>");
+        sb.Append("<button type=\"button\" class=\"btn btn-success\" title=\"저장\" data-btn=\"save\"><i class=\"fas fa-check\"></i></button>");
+        sb.Append("</div>");
+        sb.Append("</td>");
+        sb.Append("</tr>");
+        sb.Append("</script>"); //template script
+
+        return sb.ToString();
+    }
+}
+
+@if (ViewBag.Mode == "ajax")
+{
+    @Html.Raw(RenderCodeTable("", ViewBag.CodeList))
+}
+else
+{
+    <div class="row">
+        @for (int i = 0; i < 4; i++)
+        {
+            <div class="col-sm-6 col-lg-3 py-3">
+                <div class="card" data-zf-code="@ViewBag.CodeConfig[i, 0].@ViewBag.CodeConfig[i, 1]" style="border-color: rgba(24, 28, 33, 0.2);">
+                    <div class="card-header bg-light d-flex align-items-center justify-content-between px-3 py-2 border-bottom-0">
+                        <span>@ViewBag.CodeConfig[i, 2]</span>
+                        <button type="button" class="btn btn-default btn-sm" title="추가" data-btn="add"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="card-body p-0">
+                        @Html.Raw(RenderCodeTable(ViewBag.CodeConfig[i, 1], ViewBag.CodeTable[ViewBag.CodeConfig[i, 0] + "." + @ViewBag.CodeConfig[i, 1]]))
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row">
+        @for (int i = 4; i < 6; i++)
+        {
+        <div class="col-sm-6 py-3">
+            <div class="card" data-zf-code="@ViewBag.CodeConfig[i, 0].@ViewBag.CodeConfig[i, 1]" style="border-color: rgba(24, 28, 33, 0.2);">
+                <div class="card-header bg-light d-flex align-items-center justify-content-between px-3 py-2 border-bottom-0">
+                    <span>@ViewBag.CodeConfig[i, 2]</span>
+                    <button type="button" class="btn btn-default btn-sm" title="추가" data-btn="add"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="card-body p-0">
+                    @Html.Raw(RenderCodeTable(ViewBag.CodeConfig[i, 1], ViewBag.CodeTable[ViewBag.CodeConfig[i, 0] + "." + @ViewBag.CodeConfig[i, 1]]))
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    <div class="row">
+        @for (int i = 6; i < 8; i++)
+        {
+        <div class="col-sm-6 py-3">
+            <div class="card" data-zf-code="@ViewBag.CodeConfig[i, 0].@ViewBag.CodeConfig[i, 1]" style="border-color: rgba(24, 28, 33, 0.2);">
+                <div class="card-header bg-light d-flex align-items-center justify-content-between px-3 py-2 border-bottom-0">
+                    <span>@ViewBag.CodeConfig[i, 2]</span>
+                    <button type="button" class="btn btn-default btn-sm" title="추가" data-btn="add"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="card-body p-0">
+                    @Html.Raw(RenderCodeTable(ViewBag.CodeConfig[i, 1], ViewBag.CodeTable[ViewBag.CodeConfig[i, 0] + "." + @ViewBag.CodeConfig[i, 1]]))
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+}
+
+

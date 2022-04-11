@@ -278,8 +278,10 @@ namespace ZumNet.Web.Bc
 						if (strTransferXml != "") oCategoryInfo.InnerXml = strTransferXml;
 						//ResponseText(oCategoryInfo.InnerXml); return;
 					}
+                    oDocInfo.SelectSingleNode("externalkey1").InnerXml = StringHelper.SetDataAsCDATASection(externalKey1);
+                    oDocInfo.SelectSingleNode("externalkey2").InnerXml = StringHelper.SetDataAsCDATASection(externalKey2);
 
-					if (xfDef.SubTableCount > 0)
+                    if (xfDef.SubTableCount > 0)
 					{
 						strMsg = "하위테이블 구성";
 						xSubTables = new XmlDocument();

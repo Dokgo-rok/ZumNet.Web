@@ -369,7 +369,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                 ZumNet.Framework.Core.ServiceResult svcRt = null;
                 using(ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
                 {
-                    svcRt = cost.SetStdPay(sMode, iAppId, jPost["stddt"].ToString(), jPost["xcls"].ToString(), jPost["state"].ToString()
+                    svcRt = cost.SetMCStdPay(sMode, iAppId, jPost["stddt"].ToString(), jPost["xcls"].ToString(), jPost["state"].ToString()
                                     , Convert.ToInt32(Session["URID"]), Session["URName"].ToString(), Convert.ToInt32(Session["DeptID"])
                                     , Session["DeptName"].ToString(), (JArray)jPost["sub"]);
                 }

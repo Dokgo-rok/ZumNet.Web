@@ -1,0 +1,422 @@
+﻿@using System.Data;
+@using System.Text;
+
+@using ZumNet.Web.Bc;
+@using ZumNet.Framework.Util;
+
+@functions{
+    private string ViewXRate(DataSet ds)
+    {
+        DataRow row = null;
+        DataRow rowPrev = null;
+        string sVal = "";
+
+        if (ds != null && ds.Tables.Count > 0)
+        {
+            if (ds.Tables.Count == 1)
+            {
+                row = ds.Tables[0].Rows[0];
+                rowPrev = ds.Tables[0].Rows[0];
+            }
+            else
+            {
+                row = ds.Tables[0].Rows[0];
+                if (ds.Tables[1].Rows.Count > 0) rowPrev = ds.Tables[1].Rows[0];
+            }
+        }
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"mt-3\">");
+        //sb.Append("<div class=\"text-right\">");
+        //sb.Append("<div class=\"btn-group btn-group-sm py-15\" role=\"group\" aria-label=\"\">");
+        //sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\">목록</button>");
+        //sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\">관련문서</button>");
+        //sb.Append("</div>");
+        //sb.Append("</div>");
+
+        sb.Append("<table class=\"table table-bordered table-sm\">");
+        sb.Append("<tbody>");
+        sb.Append("<tr>");
+        sb.Append("<th style=\"width: 15%\">적용시점</th>");
+        if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+        {
+            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><input type=\"text\" class=\"datepicker form-control text-center\" data-zf-field=\"STDDT\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{0}\" /></td>", ViewBag.Mode == "new" ? DateTime.Now.ToString("yyyy-MM-01") : Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd"));
+        }
+        else
+        {
+            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><strong>{0}</strong><input type=\"hidden\" data-zf-field=\"STDDT\" value=\"{1}\" /></td>", Convert.ToDateTime(row["STDDT"]).ToString("yyyy年 MM月 dd日 부터"), Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd"));
+        }
+        
+        sb.Append("<td style=\"width: 15%\">작성자</td>");
+        if (ViewBag.Mode == "new")
+        {
+            sb.AppendFormat("<td>{0} {1}</td>", Session["DeptName"].ToString(), Session["URName"].ToString());
+        }
+        else
+        {
+            sb.AppendFormat("<td>{0} {1}</td>", row["CRDPT"].ToString(), row["CRNM"].ToString());
+        }
+        sb.Append("</tr>");
+        sb.Append("<tr>");
+        sb.Append("<th>구분</th>");
+        if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+        {
+            sb.Append("<td><select class=\"custom-select\" data-zf-field=\"XCLS\">");
+            sb.AppendFormat("<option value=\"\"{0}>선택</option>", (ViewBag.Mode == "edit" && row["XCLS"].ToString() == "") ? " selected" : "");
+            sb.AppendFormat("<option value=\"변경\"{0}>변경</option>", (ViewBag.Mode == "edit" && row["XCLS"].ToString() == "변경") ? " selected" : "");
+            sb.AppendFormat("<option value=\"검토\"{0}>검토</option></td>", (ViewBag.Mode == "edit" && row["XCLS"].ToString() == "검토") ? " selected" : "");
+        }
+        else
+        {
+            sb.AppendFormat("<td>{0}<input type=\"hidden\" data-zf-field=\"XCLS\" value=\"{0}\" /></td>", row["XCLS"].ToString());
+        }
+        sb.Append("<td>작성일자</td>");
+        if (ViewBag.Mode == "new")
+        {
+            sb.AppendFormat("<td>{0}</td>", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+        }
+        else
+        {
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(row["CRDT"].ToString()));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>");
+
+        sb.Append("<div>");
+        sb.Append("<div class=\"pl-3\">1. 통화별 원화환율</div>");
+        sb.Append("<div class=\"mt-2\">");
+
+        sb.Append("<table class=\"table table-bordered table-sm\">");
+        sb.Append("<colgroup><col width=\"16%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /></colgroup>");
+        sb.Append("<thead>");
+        sb.Append("<tr>");
+        sb.AppendFormat("<td colspan=\"2\">{0}</td>", "구분");
+        sb.AppendFormat("<td>{0}</td>", "USD/KRW");
+        sb.AppendFormat("<td>{0}</td>", "JPY(100)<br />/KRW");
+        sb.AppendFormat("<td>{0}</td>", "HKD/KRW");
+        sb.AppendFormat("<td>{0}</td>", "CNY/KRW");
+        sb.AppendFormat("<td>{0}</td>", "IDR/KRW");
+        sb.AppendFormat("<td>{0}</td>", "VND/KRW");
+        sb.AppendFormat("<td>{0}</td>", "EUR/KRW");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        if (row != null)
+        {
+            sb.Append("<tr>");
+            sb.Append("<td>기존 적용환율</td>");
+            sb.Append("<td>매매기준율</td>");
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "USD_KRW", ""), 0));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "JPY_KRW", ""), 0));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "HKD_KRW", ""), 0));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "CNY_KRW", ""), 0));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "IDR_KRW", ""), 4));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "VND_KRW", ""), 4));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "EUR_KRW", ""), 0));
+            sb.Append("</tr>");
+
+            sb.Append("<tr class=\"table-success\">");
+            sb.AppendFormat("<th>{0}월 예상환율</th>", ViewBag.Mode == "new" ? DateTime.Now.Month.ToString() : Convert.ToDateTime(row["STDDT"]).Month.ToString());
+            sb.Append("<th>매매기준율</th>");
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10\" value=\"{1}\" /></th>", "USD_KRW", CommonUtils.CvtNumeric(row["USD_KRW"].ToString(), 0));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10\" value=\"{1}\" /></th>", "JPY_KRW", CommonUtils.CvtNumeric(row["JPY_KRW"].ToString(), 0));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10\" value=\"{1}\" /></th>", "HKD_KRW", CommonUtils.CvtNumeric(row["HKD_KRW"].ToString(), 0));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10\" value=\"{1}\" /></th>", "CNY_KRW", CommonUtils.CvtNumeric(row["CNY_KRW"].ToString(), 0));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10;4\" value=\"{1}\" /></th>", "IDR_KRW", CommonUtils.CvtNumeric(row["IDR_KRW"].ToString(), 4));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10;4\" value=\"{1}\" /></th>", "VND_KRW", CommonUtils.CvtNumeric(row["VND_KRW"].ToString(), 4));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10\" value=\"{1}\" /></th>", "EUR_KRW", CommonUtils.CvtNumeric(row["EUR_KRW"].ToString(), 0));
+            }
+            else
+            {
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["USD_KRW"].ToString(), 0));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["JPY_KRW"].ToString(), 0));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["HKD_KRW"].ToString(), 0));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["CNY_KRW"].ToString(), 0));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["IDR_KRW"].ToString(), 4));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["VND_KRW"].ToString(), 4));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["EUR_KRW"].ToString(), 0));
+            }
+            sb.Append("</tr>");
+
+            sb.Append("<tr class=\"table-warning\">");
+            sb.Append("<td>변동율</td>");
+            sb.Append("<td>%</td>");
+
+            sVal = CommonUtils.CvtPercent(row["USD_KRW"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "USD_KRW", "0"), DataHelper.GetFieldValueToString(rowPrev, "USD_KRW", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["JPY_KRW"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "JPY_KRW", "0"), DataHelper.GetFieldValueToString(rowPrev, "JPY_KRW", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["HKD_KRW"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "HKD_KRW", "0"), DataHelper.GetFieldValueToString(rowPrev, "HKD_KRW", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["CNY_KRW"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "CNY_KRW", "0"), DataHelper.GetFieldValueToString(rowPrev, "CNY_KRW", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["IDR_KRW"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "IDR_KRW", "0"), DataHelper.GetFieldValueToString(rowPrev, "IDR_KRW", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["VND_KRW"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "VND_KRW", "0"), DataHelper.GetFieldValueToString(rowPrev, "VND_KRW", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["EUR_KRW"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "EUR_KRW", "0"), DataHelper.GetFieldValueToString(rowPrev, "EUR_KRW", "0"), 2);
+
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+            sb.Append("</tr>");
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"9\">{0}</th>", "조회된 데이터가 없습니다!");
+            sb.Append("</tr>");
+        }
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append("<div>");
+        sb.Append("<div class=\"pl-3\">2. 통화별 환산율</div>");
+        sb.Append("<div class=\"mt-2\">");
+
+        sb.Append("<table class=\"table table-bordered table-sm\">");
+        sb.Append("<colgroup><col width=\"16%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /><col width=\"10.5%\" /></colgroup>");
+        sb.Append("<thead>");
+        sb.Append("<tr>");
+        sb.AppendFormat("<td colspan=\"2\">{0}</td>", "구분");
+        sb.AppendFormat("<td>{0}</td>", "USD/JPY");
+        sb.AppendFormat("<td>{0}</td>", "USD/IDR");
+        sb.AppendFormat("<td>{0}</td>", "USD/HKD");
+        sb.AppendFormat("<td>{0}</td>", "HKD/CNY");
+        sb.AppendFormat("<td>{0}</td>", "USD/CNY");
+        sb.AppendFormat("<td>{0}</td>", "USD/VND");
+        sb.AppendFormat("<td>{0}</td>", "EUR/USD");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        if (row != null)
+        {
+            sb.Append("<tr>");
+            sb.Append("<td>기존 적용환율</td>");
+            sb.Append("<td>RATE</td>");
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "USD_JPY", ""), 0));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "USD_IDR", ""), 0));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "USD_HKD", ""), 2));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "HKD_CNY", ""), 2));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "USD_CNY", ""), 2));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "USD_VND", ""), 0));
+            sb.AppendFormat("<td>{0}</td>", CommonUtils.CvtNumeric(DataHelper.GetFieldValueToString(rowPrev, "EUR_USD", ""), 2));
+            sb.Append("</tr>");
+
+            sb.Append("<tr class=\"table-success\">");
+            sb.AppendFormat("<th>{0}월 예상환율</th>", ViewBag.Mode == "new" ? DateTime.Now.Month.ToString() : Convert.ToDateTime(row["STDDT"]).Month.ToString());
+            sb.Append("<th>RATE</th>");
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10\" value=\"{1}\" /></th>", "USD_JPY", CommonUtils.CvtNumeric(row["USD_JPY"].ToString(), 0));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10\" value=\"{1}\" /></th>", "USD_IDR", CommonUtils.CvtNumeric(row["USD_IDR"].ToString(), 0));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10;2\" value=\"{1}\" /></th>", "USD_HKD", CommonUtils.CvtNumeric(row["USD_HKD"].ToString(), 2));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10;2\" value=\"{1}\" /></th>", "HKD_CNY", CommonUtils.CvtNumeric(row["HKD_CNY"].ToString(), 2));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10;2\" value=\"{1}\" /></th>", "USD_CNY", CommonUtils.CvtNumeric(row["USD_CNY"].ToString(), 2));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10\" value=\"{1}\" /></th>", "USD_VND", CommonUtils.CvtNumeric(row["USD_VND"].ToString(), 0));
+                sb.AppendFormat("<th><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"{0}\" data-inputmask=\"number;10;2\" value=\"{1}\" /></th>", "EUR_USD", CommonUtils.CvtNumeric(row["EUR_USD"].ToString(), 2));
+            }
+            else
+            {
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["USD_JPY"].ToString(), 0));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["USD_IDR"].ToString(), 0));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["USD_HKD"].ToString(), 2));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["HKD_CNY"].ToString(), 2));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["USD_CNY"].ToString(), 2));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["USD_VND"].ToString(), 0));
+                sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["EUR_USD"].ToString(), 2));
+            }
+                sb.Append("</tr>");
+
+            sb.Append("<tr class=\"table-warning\">");
+            sb.Append("<td>변동율</td>");
+            sb.Append("<td>%</td>");
+
+            sVal = CommonUtils.CvtPercent(row["USD_JPY"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "USD_JPY", "0"), DataHelper.GetFieldValueToString(rowPrev, "USD_JPY", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["USD_IDR"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "USD_IDR", "0"), DataHelper.GetFieldValueToString(rowPrev, "USD_IDR", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["USD_HKD"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "USD_HKD", "0"), DataHelper.GetFieldValueToString(rowPrev, "USD_HKD", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["HKD_CNY"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "HKD_CNY", "0"), DataHelper.GetFieldValueToString(rowPrev, "HKD_CNY", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["USD_CNY"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "USD_CNY", "0"), DataHelper.GetFieldValueToString(rowPrev, "USD_CNY", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["USD_VND"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "USD_VND", "0"), DataHelper.GetFieldValueToString(rowPrev, "USD_VND", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+
+            sVal = CommonUtils.CvtPercent(row["EUR_USD"].ToString(), DataHelper.GetFieldValueToString(rowPrev, "EUR_USD", "0"), DataHelper.GetFieldValueToString(rowPrev, "EUR_USD", "0"), 2);
+            if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+            {
+                sb.AppendFormat("<td><input type=\"text\" class=\"form-control text-center\" readonly value=\"{0}\" /></td>", sVal);
+            }
+            else
+            {
+                sb.AppendFormat("<td{0}>{1}</td>", sVal.IndexOf('-') >= 0 ? " class=\"text-danger\"" : "", sVal);
+            }
+            sb.Append("</tr>");
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"9\">{0}</th>", "조회된 데이터가 없습니다!");
+            sb.Append("</tr>");
+        }
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        sb.Append("</div>");
+        sb.Append("</div>");
+        
+        sb.Append("<div class=\"row pl-3\">");
+        sb.Append("<div class=\"col-md-2\"><strong>&#8251; 배포처</strong></div><div class=\"col-md-10\">KH, CD, CT, CH, IC, JY, IS, CL, VH</div>");
+
+        sVal = CommonUtils.CvtPercent(row["S_USD_IDR"].ToString(), DataHelper.GetFieldValueToString(row, "USD_IDR", "0"), DataHelper.GetFieldValueToString(row, "USD_IDR", "0"), 2);
+        if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+        {
+            sb.Append("<div class=\"col-md-2\"><strong>&#8251; 삼성 USD/IDR</strong></div><div class=\"col-md-10\"><span style=\"display: inline-block;width: 100px\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control text-center\" style=\"display: inline-block\" data-zf-field=\"S_USD_IDR\" data-inputmask=\"number;10\" value=\"{0}\" /></span>", CommonUtils.CvtNumeric(row["S_USD_IDR"].ToString(), 0));
+            sb.AppendFormat(" (기준환산율 대비 <span style=\"display: inline-block;width: 60px\"><input type=\"text\" class=\"form-control text-center\" readonly style=\"display: inline-block\" value=\"{0}\" /></span>%)</div>", sVal);
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"col-md-2\"><strong>&#8251; 삼성 USD/IDR</strong></div><div class=\"col-md-10\"><span>{0}</span> (기준환산율 대비 <span>{1}</span>% {2})</div>"
+                        , CommonUtils.CvtNumeric(row["S_USD_IDR"].ToString(), 0), sVal, Convert.ToDecimal(sVal) > 0 ? "높음" : "낮음");
+        }
+        //sb.Append("<table class=\"table table-condensed\">");
+        //sb.Append("<tbody>");
+        //sb.Append("<tr><th>&#8251; 배포처</th><td>KH, CD, CT, CH, IC, JY, IS, CL, VH</td></tr>");
+        //sb.Append("<tr><th>&#8251; 삼성 USD/IDR</th>");
+        //sb.AppendFormat("<td>{0} (기준환산율 대비 {1}% {2})</td></tr>", CommonUtils.CvtNumeric(row["S_USD_IDR"].ToString(), 0), sVal, Convert.ToDecimal(sVal) > 0 ? "높음" : "낮음");
+        //sb.Append("</tbody>");
+        //sb.Append("</table>");
+        
+        //숨은필드
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"REGID\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["REGID"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"STATE\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["STATE"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRNM\" value= {0} />", ViewBag.Mode == "new" ? Session["URName"].ToString() : row["CRNM"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRID\" value= {0} />", ViewBag.Mode == "new" ? Session["URID"].ToString() : row["CRID"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRDPT\" value= {0} />", ViewBag.Mode == "new" ? Session["DeptName"].ToString() : row["CRDPT"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRDPTID\" value= {0} />", ViewBag.Mode == "new" ? Session["DeptID"].ToString() : row["CRDPTID"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"LNKEA\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["LNKEA"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"USD_EUR\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["USD_EUR"].ToString());
+        
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+}
+
+@Html.Raw(ViewXRate(ViewBag.BoardList))

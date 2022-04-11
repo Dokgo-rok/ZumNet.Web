@@ -1,6 +1,518 @@
-﻿@{
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@{
+    if (ViewBag.R.ft.ToString() == "Grid")
+    {
+        ViewBag.R["ttl"] = "개발원가견적표";
+    }
+    else if (ViewBag.R.ft.ToString() == "MyList")
+    {
+        ViewBag.R["ttl"] = "작성 목록";
+    }
+    else if (ViewBag.R.ft.ToString() == "DeptList")
+    {
+        ViewBag.R["ttl"] = "부서 목록";
+    }
+    else if (ViewBag.R.ft.ToString() == "List")
+    {
+        ViewBag.R["ttl"] = "개발원가견적 목록";
+    }
+    else if (ViewBag.R.ft.ToString() == "Report")
+    {
+        ViewBag.R["ttl"] = "집계";
+    }
+    else if (ViewBag.R.ft.ToString() == "StdExchange")
+    {
+        ViewBag.R["ttl"] = "기준환율";
+    }
+    else if (ViewBag.R.ft.ToString() == "StdExchangeDetail")
+    {
+        ViewBag.R["ttl"] = "기존 및 당월 예상 기준 환율";
+    }
+    else if (ViewBag.R.ft.ToString() == "StdPay")
+    {
+        ViewBag.R["ttl"] = "기준임율";
+    }
+    else if (ViewBag.R.ft.ToString() == "StdPayDetail")
+    {
+        ViewBag.R["ttl"] = "생산지별 기준율";
+    }
+    else if (ViewBag.R.ft.ToString() == "OutPay")
+    {
+        ViewBag.R["ttl"] = "외주임율";
+    }
+    else if (ViewBag.R.ft.ToString() == "OutPayDetail")
+    {
+        ViewBag.R["ttl"] = "생산지별 외주임율";
+    }
+    else if (ViewBag.R.ft.ToString() == "CodeMgr")
+    {
+        ViewBag.R["ttl"] = "코드관리";
+    }
+    else
+    {
+        ViewBag.R["ttl"] = "개발원가견적 목록";
+    }
+
     ViewBag.Title = ViewBag.R["ttl"];
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    string sPatialView = "_" + ViewBag.R.ft.ToString();
+    string sListScroll = " z-list-scroll";
+
+    //Response.Write("--" + ViewBag.CodeTable["ce.center"].ToString());
+    //Response.End();
+
+}
+@functions{
+    private string GetQueryString(string m, string page, string ttl, string appId)
+    {
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\",appid:\"" + appId + "\"}");
+    }
+
+    private string RenderMenu(string formTable, DataSet ds)
+    {
+        DataRow row = null;
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0) row = ds.Tables[0].Rows[0];
+
+        StringBuilder sb = new StringBuilder();
+
+        if (formTable == "Grid")
+        {
+            sb.Append("<li class=\"nav-item\"><button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button></li>");
+        }
+        else if (formTable == "MyList" || formTable == "DeptList" || formTable == "List" || formTable == "Report")
+        {
+            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"text-muted\" disabled title=\"{0}\" data-zf-menu=\"reportGrid\"><i class=\"fe-edit\"></i> {0}</a></li>", "집계견적표작성");
+            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"text-muted\" disabled title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"fe-send\"></i> {0}</a></li>", "결재요청");
+
+            sb.Append("<li class=\"nav-item\"><button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button></li>");
+        }
+        else if (formTable == "StdExchangeDetail")
+        {
+            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-backward\"></i> {2}</a></li>", GetQueryString("", "StdExchange", "", "0"), "되돌아가기", Resources.Global.List);
+
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S"))
+            {
+                if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+                {
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"saveStd\"><i class=\"fas fa-check\"></i> {0}</a></li>", Resources.Global.Save, "환율 저장하기");
+                    //if (Master.Mode == "edit") sb.AppendFormat("<li><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"glyphicon glyphicon-send\"></i> 결재요청</a></li>", "결재요청하기");
+                }
+                else
+                {
+                    if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
+                    {
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fe-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "환율 편집하기", Resources.Global.Edit);
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\" fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
+                    }
+                    if (row["STATE"].ToString() == "7" || row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-edit\"></i> 환율작성</a></li>", GetQueryString("new", formTable, "", "0"), "환율 작성하기");
+                }
+
+                if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
+                {
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"deleteStd\"><i class=\"fe-x\"></i> 삭제</a></li>", "삭제하기");
+                }
+            }
+
+            if (ViewBag.Mode != "new" && ViewBag.Mode != "edit") if (row["LNKEA"].ToString() != "" && row["LNKEA"].ToString() != "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-tag\"></i> {1}</a></li>", row["LNKEA"].ToString(), "관련문서");
+        }
+        else if (formTable == "StdPayDetail")
+        {
+            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-backward\"></i> {2}</a></li>", GetQueryString("", "StdPay", "", "0"), "되돌아가기", Resources.Global.List);
+
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S"))
+            {
+                if (ViewBag.Mode == "new" || ViewBag.Mode == "reuse" || ViewBag.Mode == "edit")
+                {
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"saveStd\"><i class=\"fas fa-check\"></i> {0}</a></li>", Resources.Global.Save, "기준임율 저장하기");
+                    //if (Master.Mode == "edit") sb.AppendFormat("<li><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"glyphicon glyphicon-send\"></i> 결재요청</a></li>", "결재요청하기");
+                }
+                else
+                {
+                    if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
+                    {
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fe-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "기준임율 편집하기", Resources.Global.Edit);
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\" fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
+                    }
+                    if (row["STATE"].ToString() == "7") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-edit\"></i> 임율작성</a></li>", GetQueryString("new", formTable, "", "0"), "기준임율 작성하기");
+                    else if (row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n text-danger\" title=\"{2}\"><i class=\"glyphicon glyphicon-duplicate\"></i> 임율재사용</a></li>", GetQueryString("reuse", formTable, "", ViewBag.R.appid.ToString()), "임율 재사용하기");
+                }
+
+                if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
+                {
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"deleteStd\"><i class=\"fe-x\"></i> 삭제</a></li>", "삭제하기");
+                }
+            }
+
+            if (ViewBag.Mode != "new" && ViewBag.Mode != "reuse" && ViewBag.Mode != "edit") if (row["LNKEA"].ToString() != "" && row["LNKEA"].ToString() != "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-tag\"></i> {1}</a></li>", row["LNKEA"].ToString(), "관련문서");
+        }
+        else if (formTable == "OutPayDetail")
+        {
+            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-backward\"></i> {2}</a></li>", GetQueryString("", "OutPay", "", "0"), "되돌아가기", Resources.Global.List);
+
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S"))
+            {
+                if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
+                {
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"saveStd\"><i class=\"fas fa-check\"></i> {0}</a></li>", Resources.Global.Save, "외주임율 저장하기");
+                }
+                else
+                {
+                    if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
+                    {
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fe-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "외주임율 편집하기", Resources.Global.Edit);
+                    }
+                    if (row["STATE"].ToString() == "7" || row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-edit\"></i> 임율작성</a></li>", GetQueryString("new", formTable, "", "0"), "외주임율 작성하기");
+                }
+
+                if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
+                {
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"deleteStd\"><i class=\"fe-x\"></i> 삭제</a></li>", "삭제하기");
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"changeState\"><i class=\"fas fa-forward\"></i> 완료처리</a></li>", "완료 처리하기");
+                }
+            }
+        }
+        return sb.ToString();
+    }
+
+    private string RenderSearch(string formTable)
+    {
+        string sSelected = "";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"z-list-page d-flex align-items-center\">");
+        sb.Append("<i class=\"fe-clock mr-2\"></i>");
+        sb.Append("<div class=\"z-list-cnt mr-3\">");
+        sb.Append("<select class=\"custom-select\" id=\"_SearchYear\">");
+        sb.Append("<option value=\"\">전체</option>");
+        sb.Append("<option value=\"1\" selected>이전 1년</option>");
+        for (int i = DateTime.Now.Year; i >= 2020; i--)
+        {
+            sb.AppendFormat("<option value=\"{0}\">{0}년</option>", i.ToString());
+        }
+        sb.Append("</select>");
+        sb.Append("</div>");
+
+        if (formTable == "MyList")
+        {
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "9" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"9\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">임시 저장</span>");
+            sb.Append("</label>");
+
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">전체</span>");
+            sb.Append("</label>");
+        }
+        else if (formTable == "DeptList")
+        {
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "Y" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"Y\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">확인 대상</span>");
+            sb.Append("</label>");
+
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">전체</span>");
+            sb.Append("</label>");
+        }
+
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"flex-fill z-lv-cond d-flex\">");
+        sb.Append("<div class=\"input-group justify-content-end\">");
+
+        if (formTable == "MyList" || formTable == "DeptList" || formTable == "List" || formTable == "Report")
+        {
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light\">{0}</span>", "모델 + 고객");
+            sb.Append("</div>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control search-text\" placeholder=\"{0}\" style=\"max-width: 150px\" value=\"{1}\">", Resources.Global.Search, ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+        }
+        else if (formTable == "ExcelList")
+        {
+        }
+
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @Styles.Render("~/Content/ce.css")
 }
 
-<h2>Index</h2>
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
 
+    @Scripts.Render("~/Scripts/ExS/ce.js")
+
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+
+    @if (ViewBag.R.ft.ToString() == "CodeMgr")
+    {
+        <script type="text/javascript">
+            $(function () {
+                $('.card[data-zf-code]').each(function () {
+                    var $this = $(this), cd = $this.attr('data-zf-code'), tp = $this.find('.zf-sp-template');
+
+                    $this.find('button[data-btn="add"]').on('click', function () {
+                        $this.find('table tbody').append(tp.html());
+
+                        var row = $this.find('table tbody tr').last();
+                        row.find('button[data-btn="del"]').on('click', function () {
+                            _zw.fn.setCode('delete', $this, cd, row);
+                        });
+                        row.find('button[data-btn="save"]').on('click', function () {
+                            _zw.fn.setCode('save', $this, cd, row);
+                        });
+                    });
+
+                    $this.find('button[data-btn="del"]').on('click', function () {
+                        _zw.fn.setCode('delete', $this, cd, $(this).parent().parent().parent());
+                    });
+
+                    $this.find('button[data-btn="save"]').on('click', function () {
+                        _zw.fn.setCode('save', $this, cd, $(this).parent().parent().parent());
+                    });
+                });
+
+            });
+        </script>
+
+    }
+    else if (ViewBag.R.ft.ToString() == "StdExchangeDetail" || ViewBag.R.ft.ToString() == "StdPayDetail" || ViewBag.R.ft.ToString() == "OutPayDetail")
+    {
+        <script type="text/javascript">
+            $(function () {
+                if (_zw.V.mode == 'new' || _zw.V.mode == 'reuse' || _zw.V.mode == 'edit') _zw.fn.input();
+            });
+        </script>
+    }
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    @Html.Partial("_LeftMenu")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100 bg-white" data-controls="vw-full-fill">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
+                <div class="d-flex align-items-center font-weight-bold">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
+
+                    <div class="h5 mb-0 z-ttl py-0 text-truncate">
+                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
+                </div>
+                <ul class="nav d-flex align-items-center justify-content-end z-lv-menu">
+                    @Html.Raw(RenderMenu(ViewBag.R.ft.ToString(), ViewBag.BoardList))
+                </ul>
+            </div>
+        </div>
+
+        <div class="flex-grow-0" style="border-top: 2px solid #eee">
+            @if (ViewBag.R.ft.ToString() == "MyList" || ViewBag.R.ft.ToString() == "DeptList" || ViewBag.R.ft.ToString() == "List" || ViewBag.R.ft.ToString() == "Report")
+            {
+                <div class="d-flex justify-content-between px-3 my-2">
+                    @Html.Raw(RenderSearch(ViewBag.R.ft.ToString()))
+                </div>
+            }
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-1 position-relative">
+            @if (ViewBag.R.ft.ToString() == "_MyList" || ViewBag.R.ft.ToString() == "_DeptList" || ViewBag.R.ft.ToString() == "_List" || ViewBag.R.ft.ToString() == "_Report")
+            {
+                <div class="z-list z-list-sticky" id="__List">
+                    @Html.Partial(sPatialView)
+                </div>
+            }
+            else
+            {
+                <div class="px-3@(sListScroll)">
+                    <div class="z-list">
+                        <div class="z-list-head"></div>
+                        <div class="z-list-body" id="__List">
+                            @Html.Partial(sPatialView)
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- / content -->
+
+    @if (ViewBag.R.ft.ToString() == "StdExchangeDetail")
+    {
+        <div class="d-none" id="_HiddenForm">
+            <div style="padding-left: 4px; font-size: 18px; font-weight: 700">&#9635; 기존 및 당월 예상 기준 환율</div>
+            <div>
+                <div style="margin-top: 30px; padding-left: 8px; font-size: 14px; font-weight: 700">1. 통화별 원화환율</div>
+                <div style="margin-top: 10px">
+                    <table cellpadding="4" cellspacing="0" border="0" style="width: 100%; border: 2px solid #666;  text-align: center; font-size: 13px">
+                        <thead>
+                            <tr>
+                                <td colspan="2" style="width: 30%; border-right: 1px solid #666; border-bottom: 1px solid #666">구분</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">USD/KRW</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">JPY(100)<br>/KRW</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">HKD/KRW</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">CNY/KRW</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">IDR/KRW</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">VND/KRW</td>
+                                <td style="width: 10%; border-bottom: 1px solid #666">EUR/KRW</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="width: 18%; border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-bottom: 1px solid #666"></td>
+                            </tr>
+                            <tr>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                            </tr>
+                            <tr>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></td>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style=" border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div>
+                <div style="margin-top: 30px; padding-left: 8px; font-size: 14px; font-weight: 700">2. 통화별 환산율</div>
+                <div style="margin-top: 10px">
+                    <table cellpadding="4" cellspacing="0" border="0" style="width: 100%; border: 2px solid #666;  text-align: center; font-size: 13px">
+                        <thead>
+                            <tr>
+                                <td colSpan="2" style="width: 30%; border-right: 1px solid #666; border-bottom: 1px solid #666">구분</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">USD/JPY</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">USD/IDR</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">USD/HKD</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">HKD/CNY</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">USD/CNY</td>
+                                <td style="width: 10%; border-right: 1px solid #666; border-bottom: 1px solid #666">USD/VND</td>
+                                <td style="width: 10%; border-bottom: 1px solid #666">EUR/USD</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="width: 18%; border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666"></td>
+                                <td style="border-bottom: 1px solid #666"></td>
+                            </tr>
+                            <tr>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                                <th style="border-bottom: 1px solid #666; background-color: #dff0d8"></th>
+                            </tr>
+                            <tr>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></td>
+                                <td style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></td>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style="border-right: 1px solid #666; border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                                <th style=" border-bottom: 1px solid #666; background-color: #fcf8e3"></th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="margin-top: 10px">
+                <table cellpadding="4" cellspacing="0" border="0" style="width: 100%; font-size: 13px">
+                    <tbody>
+                        <tr><th style="width: 18%; text-align: left">※ 배포처</th><td>KH, CD, CT, CH, IC, JY, IS, CL, VH</td></tr>
+                        <tr><th style="text-align: left">※ 삼성 USD/IDR</th><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <textarea id="_HiddenFormData" class="d-none"></textarea>
+    }
+    else if (ViewBag.R.ft.ToString() == "StdPayDetail")
+    {
+        <div class="d-none" id="_HiddenForm">
+            <div class="p-first" style="padding-left: 4px; font-size: 14px; font-weight: 700">개발원가견적에 반영할 기준율을 하기와 같이 변경하고저 하니 검토 후 승인 부탁드립니다.</div><br />
+            <div class="p-second" style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 적용시점 : </div><br />
+            <div style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 산출기준</div><br />
+            <div style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 개발원가기준율</div><br />
+            <div class="p-html" style="font-size: 14px"></div>
+            <div style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 기타</div><br />
+        </div>
+        <textarea id="_HiddenFormData" class="d-none"></textarea>
+    }
+</div><!-- / .messages-wrapper -->

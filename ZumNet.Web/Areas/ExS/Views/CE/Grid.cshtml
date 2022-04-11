@@ -1,0 +1,175 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@{
+    ViewBag.R["ttl"] = "개발원가견적표";
+    ViewBag.Title = ViewBag.R["ttl"];
+
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+
+
+    //Response.Write("--" + ViewBag.CodeTable["ce.center"].ToString());
+    //Response.End();
+
+}
+@functions{
+    private string GetQueryString(string m, string page, string ttl, string appId)
+    {
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\",appid:\"" + appId + "\"}");
+    }
+
+    private string RenderMenu(string formTable, DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        if (formTable == "Grid")
+        {
+            sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
+        }
+        else if (formTable == "MyList" || formTable == "DeptList" || formTable == "List" || formTable == "Report")
+        {
+            sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
+        }
+        else if (formTable == "")
+        {
+
+        }
+        //sb.Append("</ul>");
+        return sb.ToString();
+    }
+
+    private string RenderSearch(string formTable)
+    {
+        string sSelected = "";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"z-list-page d-flex align-items-center\">");
+        sb.Append("<i class=\"fe-clock mr-2\"></i>");
+        sb.Append("<div class=\"z-list-cnt mr-3\">");
+        sb.Append("<select class=\"custom-select\" id=\"_SearchYear\">");
+        sb.Append("<option value=\"\">전체</option>");
+        sb.Append("<option value=\"1\" selected>이전 1년</option>");
+        for (int i = DateTime.Now.Year; i >= 2020; i--)
+        {
+            sb.AppendFormat("<option value=\"{0}\">{0}년</option>", i.ToString());
+        }
+        sb.Append("</select>");
+        sb.Append("</div>");
+
+        if (formTable == "MyList")
+        {
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "9" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"9\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">임시 저장</span>");
+            sb.Append("</label>");
+
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">전체</span>");
+            sb.Append("</label>");
+        }
+        else if (formTable == "DeptList")
+        {
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "Y" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"Y\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">확인 대상</span>");
+            sb.Append("</label>");
+
+            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "" ? " checked" : "";
+            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
+            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"\"{0}>", sSelected);
+            sb.Append("<span class=\"custom-control-label\">전체</span>");
+            sb.Append("</label>");
+        }
+
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"flex-fill z-lv-cond d-flex\">");
+        sb.Append("<div class=\"input-group justify-content-end\">");
+
+        if (formTable == "MyList" || formTable == "DeptList" || formTable == "List" || formTable == "Report")
+        {
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.AppendFormat("<span class=\"input-group-text bg-light\">{0}</span>", "모델 + 고객");
+            sb.Append("</div>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control search-text\" placeholder=\"{0}\" style=\"max-width: 150px\" value=\"{1}\">", Resources.Global.Search, ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+        }
+        else if (formTable == "ExcelList")
+        {
+        }
+
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @Styles.Render("~/Content/ce.css")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
+
+    @Scripts.Render("~/Scripts/ExS/ce.js")
+
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+
+    <!-- sidebox -->
+    @Html.Partial("_LeftMenu")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100 bg-white" data-controls="vw-full-fill">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
+                <div class="d-flex align-items-center font-weight-bold">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
+
+                    <div class="h5 mb-0 z-ttl py-0 text-truncate">
+                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
+                </div>
+                <ul class="nav d-flex align-items-center justify-content-end z-lv-menu">
+                </ul>
+            </div>
+        </div>
+
+        <div class="flex-grow-0" style="border-top: 2px solid #eee">
+            <div class="d-flex justify-content-between px-3 my-2">
+                준비중
+            </div>
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-1 position-relative">
+            
+        </div>
+    </div>
+    <!-- / content -->
+</div><!-- / .messages-wrapper -->

@@ -31,7 +31,7 @@
         sb.Append("<th style=\"width: 15%\">적용시점</th>");
         if (mode == "new" || mode == "reuse" || mode == "edit")
         {
-            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><input type=\"text\" class=\"form-control text-center\" data-zf-field=\"STDDT\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{0}\" /></td>", mode == "new" || mode == "reuse" ? DateTime.Now.ToString("yyyy-MM-01") : Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd"));
+            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><input type=\"text\" class=\"datepicker form-control text-center\" data-zf-field=\"STDDT\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{0}\" /></td>", mode == "new" || mode == "reuse" ? DateTime.Now.ToString("yyyy-MM-01") : Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd"));
         }
         else
         {

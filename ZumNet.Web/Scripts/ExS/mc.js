@@ -113,17 +113,17 @@ $(function () {
         if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
 
         bootbox.confirm("삭제 하시겠습니까?", function (rt) {
-        if (rt) {
-            $.ajax({
-                type: "POST",
-                url: "/ExS/MC/SetStdPay",
-                data: '{M:"D",appid:"' + _zw.V.appid + '",ft:"' + _zw.V.ft + '"}',
-                success: function (res) {
-                    if (res.substr(0, 2) == "OK") {
-                        bootbox.alert(res.substr(2), function () { _zw.fn.viewMCPage('StdPay') });
-                    } else bootbox.alert(res);
-                }
-            });
+            if (rt) {
+                $.ajax({
+                    type: "POST",
+                    url: "/ExS/MC/SetStdPay",
+                    data: '{M:"D",appid:"' + _zw.V.appid + '",ft:"' + _zw.V.ft + '"}',
+                    success: function (res) {
+                        if (res.substr(0, 2) == "OK") {
+                            bootbox.alert(res.substr(2), function () { _zw.fn.viewMCPage('StdPay') });
+                        } else bootbox.alert(res);
+                    }
+                });
             }
         });
     }
@@ -133,17 +133,17 @@ $(function () {
 
         if (!window.confirm("결재요청 하시겠습니까?\n\r\n\r처리 중 화면을 새로고침 하지 마십시오!")) return false;
 
-        _ZF.util.ajaxLoader(true, '양식 준비중 입니다');
+        _zw.ut.ajaxLoader(true, '양식 준비중 입니다');
 
-        if (_ZF.V.curPage == 'stdpay') {
-            ft = 'DRAFT'; tp = 'CE'; k1 = 'MCSTDPAY'; k2 = _ZF.V.appid;
+        if (_zw.V.ft.toLowerCase() == 'stdpaydetail') {
+            ft = 'DRAFT'; tp = 'CE'; k1 = 'MCSTDPAY'; k2 = _zw.V.appid;
             var dt = new Date($('input[data-zf-field="STDDT"]').val());
             sj = dt.getFullYear() + "년 모델별 실적원가율 " + $('[data-zf-field="XCLS"]').val() + "의 건";
 
             var s = '';
-            $('.panel[data-zf-code]').each(function () {
+            $('.card[data-zf-code]').each(function () {
                 if ($(this).find('input:checkbox').prop('checked')) {
-                    var c = $(this).find('.panel-heading').next().clone();
+                    var c = $(this).find('.card-body').clone();
                     var t = c.find('.z-grid');
                     t.removeClass('z-grid z-grid-bordered').attr({ 'cellpadding': '4px', 'cellspacing': '0', 'border': '0' }).css({ 'font-size': '13px', 'width': '1040px', 'border-top': '2px solid #666', 'border-left': '2px solid #666', 'border-right': '1px solid #666', 'border-bottom': '1px solid #666', 'text-align': 'center' });
                     t.find('colgroup').remove();
@@ -155,22 +155,21 @@ $(function () {
                         if ($(this).val() == '' || parseFloat($(this).val().replace('%', '')) == 0) $(this).parent().html('&nbsp;');
                         else $(this).parent().html($(this).val());
                     });
-                    s += '<div style="margin-bottom: 20px"><div style="padding-left: 8px; margin-bottom: 6px; font-weight: 700">- ' + $(this).find('.panel-heading strong').text() + '</div><div>' + c.html() + '</div></div>';
+                    s += '<div style="margin-bottom: 20px"><div style="padding-left: 8px; margin-bottom: 6px; font-weight: 700">- ' + $(this).find('.card-header a').text() + '</div><div>' + c.html() + '</div></div>';
                 }
             });
 
-            $('#_HIddenForm .p-first').html(dt.getFullYear() + "년 " + $('#_HIddenForm .p-first').html());
-            $('#_HIddenForm .p-second').html($('#_HIddenForm .p-second').html() + dt.getFullYear() + "년 " + (dt.getMonth() + 1) + "월부터 적용")
+            $('#_HiddenForm .p-first').html(dt.getFullYear() + "년 " + $('#_HiddenForm .p-first').html());
+            $('#_HiddenForm .p-second').html($('#_HiddenForm .p-second').html() + dt.getFullYear() + "년 " + (dt.getMonth() + 1) + "월부터 적용")
 
-            $('#_HIddenForm .p-html').html(s);
-            $('#_HIddenFormData').val($('#_HIddenForm').html());
+            $('#_HiddenForm .p-html').html(s); //console.log($('#_HiddenForm').html())
+            $('#_HiddenFormData').val($('#_HiddenForm').html());
         }
 
-        //_ZF.util.ajaxLoader(false);
-
-        var x = "840", y = window.screen.height;
-        var url = "/" + _ZF.V.root + "/EA/Forms/XFormMain.aspx?M=new&tp=" + tp + "&ft=" + ft + "&k1=" + k1 + "&k2=" + k2 + "&sj=" + escape(sj);
-        _ZF.util.openWnd(url, "", x, y, "resize");
+        var qi = {};
+        qi['M'] = 'new'; qi['xf'] = 'ea'; qi['fi'] = ''; qi['Tp'] = tp; qi['ft'] = ft; qi['k1'] = k1; qi['k2'] = k2; qi['sj'] = sj;
+        var url = '/EA/Form?qi=' + encodeURIComponent(_zw.base64.encode(JSON.stringify(qi)));
+        _zw.ut.openWnd(url, "", 800, 600, "resize");
     }
 
     _zw.fn.viewListItem = function (f, fld, model, t, sub) {
@@ -362,6 +361,8 @@ $(function () {
                 case 'item5': i5 = $(this).val(); break;
             }
         });
+
+        if (m == 'D' && k3 == '' && i1 == '' && i2 == '' && i3 == '') { row.remove(); return false; }
 
         $.ajax({
             type: "POST",

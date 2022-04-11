@@ -1,0 +1,144 @@
+﻿
+@using System.Data;
+@using System.Text;
+
+@functions{
+    private string ListXRate(DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"col-md-8 mt-3\">");
+        sb.Append("<table class=\"table table-striped\">");
+        sb.Append("<thead>");
+        sb.Append("<tr>");
+        sb.AppendFormat("<th>{0}</th>", "기준월");
+        sb.AppendFormat("<th>{0}</th>", "구분");
+        sb.AppendFormat("<th>{0}</th>", "작성부서");
+        sb.AppendFormat("<th>{0}</th>", "작성자");
+        sb.AppendFormat("<th>{0}</th>", "작성일자");
+        sb.AppendFormat("<th>{0}</th>", "완료일자");
+        sb.AppendFormat("<th>{0}</th>", "");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                DateTime sd = Convert.ToDateTime(row["STDDT"]);
+                sb.Append("<tr>");
+                sb.AppendFormat("<td><a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewStdInfo('{0}');\" title=\"{1}\">{1}</a></td>", row["REGID"].ToString(), sd.ToString("yy년 MM월"));
+
+                if (row["STATE"].ToString() == "7") sb.AppendFormat("<td>{0}</td>", row["XCLS"].ToString());
+                else
+                {
+                    if (row["STATE"].ToString() == "0") sb.AppendFormat("<td>{0}</td>", "작성");
+                    else if (row["STATE"].ToString() == "1") sb.AppendFormat("<td>{0}</td>", "결재중");
+                    else if (row["STATE"].ToString() == "8") sb.AppendFormat("<td>{0}</td>", "반려");
+                    else if (row["STATE"].ToString() == "6") sb.AppendFormat("<td>{0}</td>", "취소");
+                }
+                sb.AppendFormat("<td>{0}</td>", row["CRDPT"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["CRNM"].ToString());
+                sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CRDT"].ToString(), "yy-MM-dd", ""));
+                sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["COMPDT"].ToString(), "yy-MM-dd", ""));
+                sb.Append("<td>");
+                if (row["LNKEA"].ToString() != "" && row["LNKEA"].ToString() != "0")
+                {
+                    sb.AppendFormat("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"{1}\"><i class=\"fas fa-tag\"></i></a>", row["LNKEA"].ToString(), "관련문서");
+                }
+                sb.AppendFormat("<a class=\"z-lnk-navy-n ml-2\" href=\"javascript:\" onclick=\"_zw.fn.viewStdSimple('StdExchange', '{0}');\" title=\"{1}\"><i class=\"far fa-hand-point-right\"></i></a>", row["REGID"].ToString(), "환율보기");
+                sb.Append("</td>");
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"7\">{0}</th>", "등록된 기준환율이 없습니다!");
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>");
+
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        return sb.ToString();
+    }
+
+    private string ViewStdRate(DataSet ds)
+    {
+        string sTTL = "적용일시";
+        string sSTD = "";
+        string sHKD = "";
+        string sCNY = "";
+        string sVND = "";
+        string sIDR = "";
+        string sUSD = "";
+        string sEUR = "";
+        string sKRW = "";
+        string sJPY = "";
+
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            DataRow row = ds.Tables[0].Rows[0];
+            sTTL = row["XCLS"].ToString() + " 일시";
+            sSTD = row["STDDT"].ToString();
+            sHKD = row["USD_HKD"].ToString();
+            sCNY = row["USD_CNY"].ToString();
+            sVND = row["USD_VND"].ToString();
+            sIDR = row["USD_IDR"].ToString();
+            sUSD = "1";
+            sEUR = row["EUR_USD"].ToString();
+            sKRW = row["USD_KRW"].ToString();
+            sJPY = row["USD_JPY"].ToString();
+
+            row = null;
+        }
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (ViewBag.Mode != "StdExchange") sb.Append("<div class=\"col-md-4 mt-3\" id=\"_SimpleView\">");
+        sb.Append("<div class=\"card\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+        sb.Append("<div class=\"card-header bg-light border-bottom-0\">");
+        sb.AppendFormat("<div class=\"h6 mb-0\">{0} : <span class=\"text-success\">{1}</span></div>", sTTL, sSTD);
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"card-body p-0\">");
+        sb.Append("<table class=\"table table-striped mb-0 border-bottom-0\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+
+        sb.Append("<thead>");
+        sb.AppendFormat("<tr><th>{0}</th><th>{1}</th></tr>", "통화", "USD 환율");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "HKD", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sHKD));
+        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "CNY", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sCNY));
+        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "VND", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sVND));
+        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "IDR", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sIDR));
+        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "USD", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sUSD));
+        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "EUR", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sEUR));
+        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "KRW", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sKRW));
+        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "JPY", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sJPY));
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+        if (ViewBag.Mode != "StdExchange") sb.Append("</div>");
+
+        return sb.ToString();
+    }
+}
+
+@if (ViewBag.Mode == "StdExchange")
+{
+    @Html.Raw(ViewStdRate(ViewBag.StdRate))
+}
+else
+{
+    <div class="row">
+        @Html.Raw(ListXRate(ViewBag.BoardList))
+        @Html.Raw(ViewStdRate(ViewBag.StdRate))
+    </div>
+}

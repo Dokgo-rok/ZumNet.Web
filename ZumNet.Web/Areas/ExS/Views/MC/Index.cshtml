@@ -255,6 +255,7 @@
     }
 }
 @section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
     @Styles.Render("~/bundle/vendor/css/pages/messages")
     @Styles.Render("~/Content/mc.css")
 }
@@ -266,6 +267,11 @@
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
 
     @Scripts.Render("~/Scripts/ExS/mc.js")
+
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
 
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
 
@@ -389,9 +395,9 @@
             <textarea id="hhdTable" name="hhdTable" class="d-none"></textarea>
         </form>
     }
-    else if (ViewBag.R.ft.ToString() == "StdTime")
+    else if (ViewBag.R.ft.ToString() == "StdPayDetail")
     {
-        <div class="d-none" id="_HIddenForm">
+        <div class="d-none" id="_HiddenForm">
             <div class="p-first" style="padding-left: 4px; font-size: 14px; font-weight: 700">모델별에 반영할 실적원가율을 하기와 같이 변경하고저 하니 검토 후 승인 부탁드립니다.</div><br />
             <div class="p-second" style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 적용시점 : </div><br />
             <div style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 산출기준</div><br />
@@ -399,6 +405,6 @@
             <div class="p-html" style="font-size: 14px"></div>
             <div style="padding-left: 8px; font-size: 14px; font-weight: 700">&#9679; 기타</div><br />
         </div>
-        <textarea id="_HIddenFormData" class="d-none"></textarea>
+        <textarea id="_HiddenFormData" class="d-none"></textarea>
     }
 </div><!-- / .messages-wrapper -->

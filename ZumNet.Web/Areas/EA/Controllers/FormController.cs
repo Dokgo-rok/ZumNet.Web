@@ -138,6 +138,13 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 ViewBag.FormHtml = svcRt.ResultDataString;
                 ViewBag.Title = svcRt.ResultDataDetail["DocName"];
                 ViewBag.JForm = svcRt.ResultDataDetail["XForm"];
+
+                if (jReq["M"].ToString() == "new")
+                {
+                    if (jReq["ft"] != null) ViewBag.JForm["ft"] = jReq["ft"].ToString();
+                    if (jReq["Tp"] != null) ViewBag.JForm["tp"] = jReq["Tp"].ToString();
+                    if (jReq["sj"] != null) ViewBag.JForm["doc"]["subject"] = jReq["sj"].ToString();
+                }
             }
             else
             {

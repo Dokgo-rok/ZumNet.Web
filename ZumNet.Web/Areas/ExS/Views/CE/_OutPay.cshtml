@@ -1,0 +1,124 @@
+﻿
+@using System.Data;
+@using System.Text;
+
+@functions{
+    private string ListOutPay(DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<div class=\"col-md-6 mt-3\">");
+        sb.Append("<table class=\"table table-striped\">");
+        sb.Append("<thead>");
+        sb.Append("<tr>");
+        sb.AppendFormat("<th>{0}</th>", "기준월");
+        sb.AppendFormat("<th>{0}</th>", "구분");
+        sb.AppendFormat("<th class=\"d-none d-sm-table-cell\">{0}</th>", "작성부서");
+        sb.AppendFormat("<th>{0}</th>", "작성자");
+        sb.AppendFormat("<th>{0}</th>", "작성일자");
+        sb.AppendFormat("<th class=\"d-none d-sm-table-cell\">{0}</th>", "완료일자");
+        sb.AppendFormat("<th>{0}</th>", "");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                DateTime sd = Convert.ToDateTime(row["STDDT"]);
+                sb.Append("<tr>");
+                sb.AppendFormat("<td><a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewStdInfo('{0}');\" title=\"{1}\">{1}</a></td>", row["REGID"].ToString(), sd.ToString("yy년 MM월"));
+                sb.AppendFormat("<td>{0}</td>", row["XCLS"].ToString());
+                sb.AppendFormat("<td class=\"d-none d-sm-table-cell\">{0}</td>", row["CRDPT"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["CRNM"].ToString());
+                sb.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CRDT"].ToString(), "yy-MM-dd", ""));
+                sb.AppendFormat("<td class=\"d-none d-sm-table-cell\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["COMPDT"].ToString(), "yy-MM-dd", ""));
+                sb.Append("<td>");
+                sb.AppendFormat("<a class=\"z-lnk-navy-n ml-2\" href=\"javascript:\" onclick=\"_zw.fn.viewStdSimple('OutPay', '{0}');\" title=\"{1}\"><i class=\"far fa-hand-point-right\"></i></a>", row["REGID"].ToString(), "임율보기");
+                sb.Append("</td>");
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"7\">{0}</th>", "등록된 외주임율이 없습니다!");
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>");
+
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        return sb.ToString();
+    }
+
+    private string ViewStdRate(DataSet ds)
+    {
+        DataRow rowOut = null;
+        DataRow rowRate = null;
+        decimal dVal = 0;
+        decimal dVal2 = 0;
+        string sVal = "";
+        string sVal2 = "";
+
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            rowOut = ds.Tables[0].Rows[0];
+            rowRate = ds.Tables[1].Rows[0];
+        }
+        if (ds != null) { ds.Dispose(); ds = null; }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (ViewBag.Mode != "OutPay") sb.Append("<div class=\"col-md-6 mt-3\" id=\"_SimpleView\">");
+        sb.Append("<div class=\"card\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+        sb.Append("<div class=\"card-header bg-light border-bottom-0\">");
+        sb.AppendFormat("<div class=\"h6 mb-0\">{0} : <span class=\"text-success\">{1}</span></div>", "적용일시", ZumNet.Framework.Util.StringHelper.SafeString(rowOut["STDDT"]));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"card-body p-0\">");
+        sb.Append("<table class=\"table table-striped mb-0 border-bottom-0\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+
+        sb.Append("<thead>");
+        sb.AppendFormat("<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th class=\"d-none d-sm-table-cell\">{4}</th></tr>", "법인명", "적용통화", "적용금액", "USD", "법인구분");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        foreach (object[] o in ViewBag.CodeTable["ce.center"])
+        {
+            dVal = ZumNet.Framework.Util.StringHelper.SafeDecimal(rowOut["CORP_" + o[3].ToString()], 0);
+            dVal2 = ZumNet.Framework.Util.StringHelper.SafeDecimal(rowRate["USD_" + o[4].ToString()], 0);
+
+            //sVal = (o[3].ToString().Substring(0, 1) == "C") ? CE.CEUtil.CvtNumeric(dVal.ToString(), 4) : CE.CEUtil.CvtNumeric(dVal.ToString());
+            sVal = ZumNet.Web.Bc.CommonUtils.CvtNumeric(dVal.ToString(), 4);
+            sVal2 = ZumNet.Web.Bc.CommonUtils.CvtNumeric((dVal / dVal2).ToString(), 4);
+
+            sb.AppendFormat("<tr><th>{0}</th><td>{1}</td><td>{2}</td><th>{3}</th><td class=\"d-none d-sm-table-cell\">{4}</td></tr>", o[3].ToString(), o[4].ToString(), sVal, sVal2, o[5].ToString());
+        }
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        sb.Append("</div>");
+        sb.Append("</div>");
+        if (ViewBag.Mode != "OutPay") sb.Append("</div>");
+
+        rowOut = null;
+        rowRate = null;
+
+        return sb.ToString();
+    }
+}
+
+@if (ViewBag.Mode == "OutPay")
+{
+    @Html.Raw(ViewStdRate(ViewBag.StdRate))
+}
+else
+{
+    <div class="row">
+        @Html.Raw(ListOutPay(ViewBag.BoardList))
+        @Html.Raw(ViewStdRate(ViewBag.StdRate))
+    </div>
+}

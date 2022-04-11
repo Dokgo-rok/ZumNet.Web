@@ -368,11 +368,12 @@ $(function () {
 
                     var vUrl = n.a_attr.url.split('/');
                     var page = vUrl[vUrl.length - 1].split('.')[0].toUpperCase(); //alert(page)
-                    var x = window.screen.width, h = window.screen.height;
+                    var w = window.screen.width, h = window.screen.height;
+                    w = w >= 1600 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h;
                     encQi = encodeURIComponent(_zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}'));
 
-                    if (page == 'REPORT') _zw.ut.openWnd('/ExS/Voc/Ledger?qi=' + encQi, 'VocReport', x, h, 'resize');
-                    else if (page == 'STATISTICS') _zw.ut.openWnd('/ExS/Voc/Statistics?qi=' + encQi, 'VocStatistics', x, h, 'resize');
+                    if (page == 'REPORT') _zw.ut.openWnd('/ExS/Voc/Ledger?qi=' + encQi, 'VocReport', w, h, 'resize');
+                    else if (page == 'STATISTICS') _zw.ut.openWnd('/ExS/Voc/Statistics?qi=' + encQi, 'VocStatistics', w, h, 'resize');
 
                 } else {
                     //alert(n.li_attr.alias + " : " + n.a_attr.url)

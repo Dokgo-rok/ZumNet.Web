@@ -1,0 +1,223 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+
+@using Newtonsoft.Json;
+
+@{
+    ConfigColumn(ViewBag.Mode);
+
+    //Response.Write("-----------------------------" + ViewBag.BoardList.Tables[0].Rows.Count.ToString());
+}
+
+@functions {
+    string[,] _columnConfig = null;
+    private void ConfigColumn(string mode)
+    {
+        //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
+        string[,] arr = { { "SEQ", "순번", "4%", "", "", ""} , { "MODEL", "모델번호", "12%", "left", "", "" }, { "BUYER", "고객", "10%", "", "", "" }
+                        , { "XCLS", "구분", "5%", "", "", ""}, { "SUBJECT", "시트명", "19%", "left", "", ""}, { "CORP", "생산지", "5%", "", "", "" }
+                        , { "ITEMCLS", "품목분류", "7%", "", "", "" }, { "VER", "버전", "5%", "", "", "" }, { "STATE", "상태", "6%", "", "", "" }
+                        , { "CRNM", "작성자", "7%", "", "", "" }, { "CRDT", "작성일자", "10%", "", "", "" }, { "_CDT_", "완료/확인", "10%", "", "", "" }
+                    };
+        this._columnConfig = arr;
+    }
+
+    private string RenderColumnHeader(string mode, string sortCol, string sortType)
+    {
+        if (_columnConfig != null)
+        {
+            string sBlind = " d-none";
+            string sSortIcon = "";
+
+            StringBuilder sb = new StringBuilder();
+            //sb.Append("<table class=\"table table-hover table-sm mb-0\">"):
+
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<thead><tr class=\"\">");
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 5].ToString() == "Y")
+                {
+                    sBlind = (sortCol == _columnConfig[i, 0].ToString()) ? "" : " d-none";
+                    sSortIcon = (sortCol == _columnConfig[i, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+
+                    sb.AppendFormat("<th class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), sSortIcon, sBlind);
+                }
+                else
+                {
+                    sb.AppendFormat("<th class=\"text-truncate\">{0}</th>", _columnConfig[i, 1].ToString());
+                }
+            }
+            sb.Append("</tr></thead>");
+            //sb.Append("</table>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string RenderExcelColumnHeader()
+    {
+        if (_columnConfig != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+
+            sb.Append("<tr class=\"col-header\">");
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<td style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</td>", _columnConfig[i, 1].ToString());
+            }
+            sb.Append("</tr>");
+
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string RenderColumnGroup()
+    {
+        if (_columnConfig != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+            }
+            sb.Append("</colgroup>");
+            return sb.ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string ViewList(string mode, DataSet data, string sortCol, string sortType)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table class=\"table table-hover table-sm mb-0\">");
+        if (mode == "xls") sb.Append(RenderExcelColumnHeader());
+        else sb.Append(RenderColumnHeader(mode, sortCol, sortType));
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strStatus = "";
+            string strClass = "";
+            int iSeq = 1;
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                strClass = row["STATE"].ToString() == "7" ? " class=\"table-success\"" : "";
+                sb.AppendFormat("<tr{0}>", strClass);
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+
+                    if (strID == "SEQ")
+                    {
+                        strValue = iSeq.ToString();
+                    }
+                    else if (strID == "CRDT" || strID == "MFDT" || strID == "PUBDT" || strID == "COMPDT" || strID == "REQDT" || strID == "REQCOMPDT")
+                    {
+                        strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row[strID].ToString(), "MM-dd HH:mm", "");
+                    }
+                    else if (strID == "XCLS")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strValue == "ALL") strValue = "<strong class=\"text-danger\">집계</strong>";
+                    }
+                    else if (strID == "MODEL" || strID == "SUBJECT")
+                    {
+                        if (strID == "SUBJECT" && Convert.ToInt16(row["NESTEDCNT"]) > 0) strStatus = String.Format(" <span class=\"text-warning\">({0})</span>", row["NESTEDCNT"].ToString());
+                        else strStatus = "";
+
+                        strValue = row[strID].ToString();
+
+                        strValue = String.Format("<a href=\"Grid.aspx?app={0}&lv={1}\" title=\"{2}\">{3}{4}</a>", row["CEID"].ToString()
+                                                , ViewBag.R.ft.ToString(), Server.HtmlEncode(strValue), strValue, strStatus);
+
+                        if (strID == "SUBJECT" && row["XCLS"].ToString() == "ALL")
+                        {
+                            strValue += String.Format("<button type=\"button\" class=\"btn btn-primary\" aria-expanded=\"false\" value=\"{0}\"><i class=\"glyphicon glyphicon-plus\"></i></button>", row["CEID"].ToString());
+                        }
+                    }
+                    else if (strID == "STATE")
+                    {
+                        strValue = row[strID].ToString();
+                        if (strValue == "7") strValue = "완료";
+                        else if (strValue == "1") strValue = "진행중";
+                        else if (strValue == "8") strValue = "<strong class=\"text-danger\">반려</strong>";
+                        else if (strValue == "9") strValue = "<strong class=\"text-warning\">임시</strong>";
+                        else strValue = "작성";
+                    }
+                    else if (strID == "_CDT_")
+                    {
+                        if (row["XCLS"].ToString() == "ALL") strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["COMPDT"].ToString(), "MM-dd HH:mm", "");
+                        else
+                        {
+                            if (row["FCFMSS"].ToString() == "Y") strValue = "<span title=\"작성자 확인\" class=\"text-success\"><i class=\"glyphicon glyphicon-ok\"></i></span>";
+                            else strValue = "<span title=\"작성자 확인 전\" class=\"text-muted\"><i class=\"glyphicon glyphicon-minus\"></i></span>";
+
+                            if (row["SCFMSS"].ToString() == "Y") strValue += " / <span title=\"부서장 확인\" class=\"text-success\"><i class=\"glyphicon glyphicon-ok\"></i></span>";
+                            else
+                            {
+                                if (Convert.ToInt16(row["NESTEDCNT"]) > 0) strValue += " / <span title=\"부서장 확인 전\" class=\"text-muted\"><i class=\"glyphicon glyphicon-minus\"></i></span>";
+                                else strValue += String.Format(" / <input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" />", iSeq.ToString(), row["CEID"].ToString(), "viewChiefCfm");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString().Replace(Environment.NewLine, "<br />");
+                    }
+
+                    sb.AppendFormat("<td style=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-align: left" : "", strValue);
+
+                }
+                sb.Append("</tr>");
+                iSeq++;
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th colspan=\"{0}\" class=\"py-3\">{1}</th>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+        return sb.ToString();
+    }
+}
+
+@*<div class="z-list-head mb-0 px-0">
+    @Html.Raw(RenderColumnHeader(ViewBag.Mode, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))
+</div>*@
+<div class="z-list-body">
+    @Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))
+</div>
