@@ -289,8 +289,8 @@ $(function () {
             else if (numeral($(t[1]).text()).value() < 0) s += ' 낮음)';
             else s += ')';
 
-            $('#_HiddenForm table').last().find('td').last().text(s);
-            $('#_HiddenForm').val($('#_HiddenForm').html())
+            $('#_HiddenForm table').last().find('td').last().text(s); //console.log($('#_HiddenForm').html())
+            $('#_HiddenFormData').val($('#_HiddenForm').html())
 
         } else if (_zw.V.ft.toLowerCase() == 'stdpaydetail') {
             ft = 'DRAFT'; tp = 'CE'; k1 = 'STDPAY'; k2 = _zw.V.appid;
