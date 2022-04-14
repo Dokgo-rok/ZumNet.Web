@@ -10,9 +10,11 @@
 
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/pages/messages")
+    
 }
 
 @section Scripts {
+    @Scripts.Render("~/Scripts/Docs/kms.js")
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
 }
 
@@ -26,7 +28,6 @@
     <!-- sidebox -->
     @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
     <!-- / sidebox -->
-
     <!-- content -->
     <div class="d-flex flex-column w-100">
         <!-- Header -->

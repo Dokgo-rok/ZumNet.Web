@@ -261,7 +261,8 @@ $(function () {
 
     //Common Form Menu
     //_zw.fn.input();
-    
+
+    //폴더선택 모달 창
     $('.btn[data-zf-menu="openClassWnd"]').click(function () {
         var ttl = $(this).prev().html();
 
@@ -323,7 +324,7 @@ $(function () {
                 $('#popLayer').modal('hide');
             });
         }).modal();
-    });    
+    });
 
     //메인창에서만 실행!!!!!
     if ($('#layout-navbar').length > 0) {
@@ -655,11 +656,11 @@ $(function () {
                 window.location.href = stdPage + '?qi=' + _zw.base64.encode(postData);
             }
         },
-        "writeMsg": function (xf, m) {
-            if (xf == 'doc') {
+        //"writeMsg": function (xf, m) {
+        //    if (xf == 'doc') {
 
-            }
-        },
+        //    }
+        //},
         "setComment": function (seq) {
             var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
             var txt = p.find('[data-column="Comment"]');
@@ -797,8 +798,48 @@ $(function () {
 
     //함수
     _zw.fn = {
-        "org": function () {
-            alert("org")
+        "org": function (tgt, multi) {//tgt : user, group, all, multi : y, n
+            $.ajax({
+                type: "POST",
+                url: "/Organ/Plate",
+                data: '{M:"' + tgt + '",multi:"' + multi + '",boundary:"' + _zw.V.lv.boundary + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        var v = res.substr(2).split(_zw.V.lv.boundary); //console.log(JSON.parse(v[1]))
+
+                        $('#popLayer').on('show.bs.modal', function (e) {
+                            $(this).html(v[0]);
+
+                            $('#__OrgMapTree').jstree({
+                                core: {
+                                    data: JSON.parse(v[1]).data
+                                },
+                                plugins: ["types", "wholerow"],
+                                types: {
+                                    default: { icon: "fas fa-user-friends text-secondary" },
+                                    root: { icon: "fas fa-city text-indigo" }
+                                }
+                            })
+                            .on('loaded.jstree', function (e, data) {
+                            })
+                            .on('changed.jstree', function (e, d) {
+                                if (d.selected.length == 1) {
+                                    var n = d.instance.get_node(d.selected[0]);
+
+                                    if ('7777.' + n.id == _zw.V.opnode) return false; //'7777.' => 부서명 Navigation에 사용
+
+                                    if (n.li_attr.hasmember) {
+                                        var vPath = $("#__OrgMapTree").jstree("get_path", d.selected[0]);
+                                    }
+                                }
+                            });
+                        }).modal();
+
+
+                    } else bootbox.alert(res);
+                },
+                beforeSend: function () { } //로딩 X
+            });
         },
         "view": function () {
             $.ajax({

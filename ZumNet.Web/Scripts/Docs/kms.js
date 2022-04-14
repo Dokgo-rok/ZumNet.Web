@@ -2,36 +2,51 @@
 
 $(function () {
 
-    _zw.mu.writeMsg = function (xf, m) {
+    _zw.mu.writeMsg = function (xf) {
+        _zw.V.mode = '';
+        _zw.V.wnd = 'popup';
+        _zw.V.appid = 0;
+        _zw.V.xfalias = xf;
 
+        var postData = _zw.fn.getAppQuery(_zw.V.fdid);
+        var url = '/Docs/Kms/Write?qi=' + encodeURIComponent(_zw.base64.encode(postData));
+        _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
     }
 
-    _zw.mu.editMsg = function () {
+    _zw.mu.editMsg = function (xf) { //alert(_zw.V.appid)
+        _zw.V.mode = '';
+        _zw.V.wnd = 'popup';
+        _zw.V.xfalias = xf;
 
+        var postData = _zw.fn.getAppQuery(_zw.V.fdid);
+        var url = '/Docs/Kms/Edit?qi=' + encodeURIComponent(_zw.base64.encode(postData));
+        _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
     }
 
     _zw.mu.deleteMsg = function () {
 
     }
 
+    _zw.mu.previewMsg = function () {
+
+    }
+
+    _zw.mu.cancelMsg = function () {
+        //history.back(); //<- 읽기 창에서 새글 갔다 오면 appid=0으로 돼 이후 수정, 답글 클릭시 오류 발생!!
+        if (_zw.V.mode != 'reply' && _zw.V.current.page.toLowerCase() == '/docs/kms/write') {
+            if (_zw.V.wnd == 'popup') window.close();
+            else _zw.mu.goList();
+        } else history.back();
+    }
+
     _zw.mu.goList = function () {
         var postData = _zw.fn.getLvQuery();
-        window.location.href = '/Docs/Kms/List?qi=' + _zw.base64.encode(postData);
+        window.location.href = '/Docs/Kms/List?qi=' + encodeURIComponent(_zw.base64.encode(postData));
     }
 
     _zw.fn.loadList = function () {
-
-        //var sJson = '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + _zw.V.ot + '",xfalias:"' + _zw.V.xfalias + '",permission:"' + _zw.V.current.acl + '",tgt:"' + _zw.V.lv.tgt
-        //    + '",page:' + _zw.V.lv.page + ',count:' + _zw.V.lv.count + ',sort:"' + _zw.V.lv.sort + '",sortdir:"' + _zw.V.lv.sortdir + '",search:"' + _zw.V.lv.search
-        //    + '",searchtext:"' + _zw.V.lv.searchtext + '",start:"' + _zw.V.lv.start + '",end:"' + _zw.V.lv.end + '",boundary:"' + _zw.V.lv.boundary + '"}';
-
-        //var j = JSON.parse(sJson);
-        //console.log(j.ctalias);
-
-        var postData = _zw.fn.getLvQuery(); console.log(postData);
-        var url = '/Docs/Kms/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
-        //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
-        //else url = '/Docs/Kms/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
+        var postData = _zw.fn.getLvQuery(); //console.log(postData);
+        var url = '/Docs/Kms/List?qi=' + encodeURIComponent(_zw.base64.encode(postData)); //encodeURIComponent(postData);
 
         $.ajax({
             type: "POST",
@@ -74,7 +89,7 @@ $(function () {
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
         j["ft"] = _zw.V.ft;
-        //j["ttl"] = _zw.V.ttl;
+        j["ttl"] = _zw.V.ttl;
 
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;

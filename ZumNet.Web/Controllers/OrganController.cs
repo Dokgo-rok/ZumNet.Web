@@ -226,5 +226,76 @@ namespace ZumNet.Web.Controllers
             }
             return strView;
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Plate()
+        {
+            string rt = "";
+            string sPos = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    string sOrgTree = "";
+
+                    if (jPost == null || jPost.Count == 0 || jPost["M"].ToString() == "") //user, group, all
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                    {
+                        sPos = "100";
+                        svcRt = cb.GetGradeCode("1", Convert.ToInt32(Session["DNID"]), "A");
+                        if (svcRt != null && svcRt.ResultCode == 0) ViewBag.GradeCode = svcRt.ResultDataRowCollection;
+                        else rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                    }
+
+                    if (rt == "")
+                    {
+                        using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+                        {
+                            sPos = "200";
+                            svcRt = op.GetOrgMapInfo(Convert.ToInt32(Session["DNID"]), 0, "D", Convert.ToInt32(Session["DeptID"]), DateTime.Now.ToString("yyyy-MM-dd"), "N");
+
+                            if (svcRt != null && svcRt.ResultCode == 0) sOrgTree = CtrlHandler.OrgTreeString(svcRt);
+                            else rt = "[" + sPos + "] " + svcRt.ResultMessage;
+
+                            if (rt == "")
+                            {
+                                sPos = "300";
+                                svcRt = op.GetGroupMemberList(Session["DNID"].ToString(), Session["DeptID"].ToString(), DateTime.Now.ToString("yyyy-MM-dd"), "Code1", "", Session["Admin"].ToString());
+                            }
+                        }
+
+                        if (rt == "" && svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            sPos = "400";
+                            ViewBag.MemberList = svcRt.ResultDataSet;
+                            ViewBag.JPost = jPost;
+
+                            sPos = "410";
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Plate", ViewBag)
+                                    + jPost["boundary"].ToString() + sOrgTree;
+                        }
+                        else
+                        {
+                            //에러페이지
+                            rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
     }
 }

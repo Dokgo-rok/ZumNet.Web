@@ -9,7 +9,7 @@ $(function () {
             },
             plugins: ["types", "wholerow"],
             types: {
-                default: { icon: "fas fa-user-friends text-warning" },
+                default: { icon: "fas fa-user-friends text-secondary" },
                 root: { icon: "fas fa-city text-indigo" }
             }
         })

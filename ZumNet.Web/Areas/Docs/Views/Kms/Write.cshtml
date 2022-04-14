@@ -1,0 +1,140 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = Resources.Global.ComposeKnowledge;
+
+    if (ViewBag.R.wnd.ToString() == "popup")
+    {
+        Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+    }
+
+    //첨부파일 임시 저장 폴더
+    string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+    ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @if (ViewBag.R.wnd.ToString() == "")
+    {
+        @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+        @Styles.Render("~/bundle/vendor/css/pages/messages")
+    }
+}
+
+@section Scripts {
+    @if (ViewBag.R.wnd.ToString() == "")
+    {
+        @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+    }
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
+
+    @Scripts.Render("~/Scripts/Docs/kms.js")
+
+    @if (ViewBag.R.wnd.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
+    @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
+    @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
+
+    <script type="text/javascript">
+        (function () {
+            _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
+
+            //editor, uploader
+            if ($('#' + _zw.T.uploader.holder).length > 0) {
+                DEXT5UPLOAD.config.ButtonBarEdit = 'add,remove,remove_all';
+
+                DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;
+                DEXT5UPLOAD.config.Lang = _zw.T.uploader.lang;
+                new Dext5Upload(_zw.T.uploader.id);
+
+                $('.btn[data-zf-menu="toggleUploader"]').click(function () {
+                    var vText = ['@Resources.Global.UploaderFold', '@Resources.Global.UploaderExpand'];
+                    var vIcon = ['fe-chevron-down', 'fe-chevron-up'];
+                    if ($(this).attr('aria-expanded') == 'false') {
+                        $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
+                        $('#__DextUpload').hide();
+                        $('#__DextEditor').css('top', '188px');
+                    } else {
+                        $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
+                        $('#__DextUpload').show();
+                        $('#__DextEditor').css('top', '350px');
+                    }
+                });
+            }
+
+            if ($('#' + _zw.T.editor.holder).length > 0) {
+                _zw.T.editor.top = $('.zf-editor').prev().outerHeight() + 8; //alert(posTop)
+                $('#' + _zw.T.editor.holder).css('top', _zw.T.editor.top + 'px');
+
+                DEXT5.config.EditorHolder = _zw.T.editor.holder;
+                DEXT5.config.Lang = _zw.T.editor.lang;
+                if (_zw.ut.isMobile()) DEXT5.config.InitXml = _zw.T.editor.init;
+                DEXT5.config.ToSavePathURL = $('#upload_path').val();
+                //DEXT5.config.ToSaveFilePathURL = $('#upload_path').val();
+                DEXT5.config.FocusInitObjId = "txtSubject";
+
+                new Dext5editor(_zw.T.editor.id);
+
+                $('.btn[data-zf-menu="toggleEditor"]').click(function () {
+                    //var os = $('.z-list-scroll .zf-editor').offset();
+
+                    //alert(DEXT5.getBodyValue('editor1'));
+
+                    var vText = ['@Resources.Global.EditorExpand', '@Resources.Global.EditorFold'];
+                    var vIcon = ['fe-arrow-down', 'fe-arrow-up'];
+                    if ($(this).attr('aria-expanded') == 'false') {
+                        $(this).attr('data-original-title', vText[1]).attr('aria-expanded', true).find('i').removeClass(vIcon[1]).addClass(vIcon[0]);
+                        $('#__DextEditor').css('top', '0');
+                    } else {
+                        $(this).attr('data-original-title', vText[0]).attr('aria-expanded', false).find('i').removeClass(vIcon[0]).addClass(vIcon[1]);
+                        $('#__DextEditor').css('top', _zw.T.editor.top + 'px');
+                    }
+                });
+            }
+        }());
+    </script>
+}
+
+@if (ViewBag.R.wnd.ToString() == "popup")
+{
+    <div class="" id="__FormView">
+        @Html.Partial("_Write")
+    </div>
+}
+else
+{
+    <!--
+    =================================================================
+    **************************** CONTENT ****************************
+    -->
+    <!-- `.messages-wrapper` fills all available space of container -->
+    <div class="messages-wrapper">
+
+        <!-- sidebox -->
+        @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+        <!-- / sidebox -->
+        <!-- content -->
+        <div class="d-flex flex-column w-100" id="__FormView">
+            @Html.Partial("_Write")
+        </div>
+        <!-- / content -->
+
+    </div><!-- / .messages-wrapper -->
+}
+

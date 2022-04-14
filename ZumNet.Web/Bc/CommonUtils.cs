@@ -1535,15 +1535,15 @@ namespace ZumNet.Web.Bc
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static JObject OrgTree(ZumNet.Framework.Core.ServiceResult data)
+        public static string OrgTreeString(ZumNet.Framework.Core.ServiceResult data)
         {
             string sOpenNode = data.ResultDataDetail["openNode"].ToString();
             string sIconType;
 
             StringBuilder sb = new StringBuilder();
             sb.Append("{");
-            sb.AppendFormat("selected:\"{0}\"", sOpenNode);
-            sb.Append(",data:[");
+            sb.AppendFormat("\"selected\":\"{0}\"", sOpenNode);
+            sb.Append(",\"data\":[");
 
             int i = 0;
             string[] v = sOpenNode.Split(';');
@@ -1562,37 +1562,37 @@ namespace ZumNet.Web.Bc
                 if (i > 0) { sb.Append(",{"); }
                 else { sb.Append("{"); }
 
-                sb.AppendFormat("id:\"{0}\"", row["GR_ID"].ToString());
-                sb.AppendFormat(",parent:\"{0}\"", row["MemberOf"].ToString() == "0" ? "#" : row["MemberOf"].ToString());
-                sb.AppendFormat(",text:\"{0}\"", row["DisplayName"].ToString());
+                sb.AppendFormat("\"id\":\"{0}\"", row["GR_ID"].ToString());
+                sb.AppendFormat(",\"parent\":\"{0}\"", row["MemberOf"].ToString() == "0" ? "#" : row["MemberOf"].ToString());
+                sb.AppendFormat(",\"text\":\"{0}\"", row["DisplayName"].ToString());
                 //sb.AppendFormat(",icon:\"{0}\"", "");
-                sb.AppendFormat(",type:\"{0}\"", sIconType);
+                sb.AppendFormat(",\"type\":\"{0}\"", sIconType);
 
                 if (v.Contains(row["GR_ID"].ToString()))
                 {
                     if (v[v.Length - 1] == row["GR_ID"].ToString())
                     {
-                        sb.Append(",state:{opened:true,disabled:false,selected:true}");
+                        sb.Append(",\"state\":{\"opened\":true,\"disabled\":false,\"selected\":true}");
                     }
                     else
                     {
-                        sb.Append(",state:{opened:true,disabled:false,selected:false}");
+                        sb.Append(",\"state\":{\"opened\":true,\"disabled\":false,\"selected\":false}");
                     }
                 }
                 else
                 {
-                    sb.Append(",state:{opened:false,disabled:false,selected:false}");
+                    sb.Append(",\"state\":{\"opened\":false,\"disabled\":false,\"selected\":false}");
                 }
-                sb.Append(",li_attr:{");
-                sb.AppendFormat("level:\"{0}\"", row["NodeLevel"].ToString());
-                sb.AppendFormat(",gralias:\"{0}\"", row["GRAlias"].ToString());
-                sb.AppendFormat(",policy:\"{0}\"", row["Policy"].ToString());
-                sb.AppendFormat(",history:\"{0}\"", row["HasHistory"].ToString());
-                sb.AppendFormat(",inuse:\"{0}\"", row["InUse"].ToString());
-                sb.AppendFormat(",hasmember:\"{0}\"", row["HasMember"].ToString());
-                sb.AppendFormat(",rcv:\"{0}\"", row["Reserved1"].ToString());
+                sb.Append(",\"li_attr\":{");
+                sb.AppendFormat("\"level\":\"{0}\"", row["NodeLevel"].ToString());
+                sb.AppendFormat(",\"gralias\":\"{0}\"", row["GRAlias"].ToString());
+                sb.AppendFormat(",\"policy\":\"{0}\"", row["Policy"].ToString());
+                sb.AppendFormat(",\"history\":\"{0}\"", row["HasHistory"].ToString());
+                sb.AppendFormat(",\"inuse\":\"{0}\"", row["InUse"].ToString());
+                sb.AppendFormat(",\"hasmember\":\"{0}\"", row["HasMember"].ToString());
+                sb.AppendFormat(",\"rcv\":\"{0}\"", row["Reserved1"].ToString());
                 sb.Append("}");
-                sb.Append(",a_attr:{}");
+                sb.Append(",\"a_attr\":{}");
                 sb.Append("}");
 
                 i++;
@@ -1600,7 +1600,17 @@ namespace ZumNet.Web.Bc
             sb.Append("]");
             sb.Append("}");
 
-            return JObject.Parse(sb.ToString());
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 조직도 트리구조 반환
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static JObject OrgTree(ZumNet.Framework.Core.ServiceResult data)
+        {
+            return JObject.Parse(OrgTreeString(data));
         }
 
         /// <summary>

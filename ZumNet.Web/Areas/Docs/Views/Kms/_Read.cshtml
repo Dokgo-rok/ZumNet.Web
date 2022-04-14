@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json;
+@using ZumNet.Framework.Util;
 
 @{
     bool bPrevEditorBody = false;
@@ -11,9 +12,9 @@
 
 <!-- Header -->
 <div class="flex-grow-0">
-    <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.mode.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.mode.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
+    <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.wnd.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.wnd.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
         <div class="d-flex align-items-center font-weight-bold">
-            @if (ViewBag.R.mode.ToString() == "")
+            @if (ViewBag.R.wnd.ToString() == "")
             {
                 <div class="h5 mb-0">
                     <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
@@ -37,7 +38,7 @@
             </div>
         </div>
         <div>
-            @if (ViewBag.R.mode.ToString() == "")
+            @if (ViewBag.R.wnd.ToString() == "")
             {
                 <div class="btn-group">
                     <button class="btn btn-default" onclick="_zw.mu.goList();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.List"><i class="fas fa-list"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.List</span></button>
@@ -48,7 +49,7 @@
             <div class="btn-group">
                 <button class="btn btn-default" onclick="_zw.mu.preview();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Print"><i class="fe-printer"></i></button>
             </div>
-            @if (ViewBag.R.mode.ToString() != "")
+            @if (ViewBag.R.wnd.ToString() != "")
             {
                 <div class="btn-group">
                     <button class="btn btn-default" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
@@ -59,8 +60,8 @@
 </div>
 <!-- / Header -->
 
-<div class="flex-grow-1@(ViewBag.R.mode.ToString() == "" ? " position-relative" : "")" style="border-top: 2px solid #eee">
-    <div class="z-list-scroll" style="@(ViewBag.R.mode.ToString() == "" ? "" : "top: 48px")">
+<div class="flex-grow-1@(ViewBag.R.wnd.ToString() == "" ? " position-relative" : "")" style="border-top: 2px solid #eee">
+    <div class="z-list-scroll" style="@(ViewBag.R.wnd.ToString() == "" ? "" : "top: 48px")">
         <div class="pb-3 border-bottom">
             <div class="d-block d-sm-none container-p-x mt-3">
                 <div class="mb-2 text-muted">@Html.Raw(ViewBag.SiteMap)</div>
@@ -134,7 +135,7 @@
                             <div class="mr-2">
                                 <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
                             </div>
-                            <div class=""><a href="/file/download?fn=@Server.UrlEncode(j["filename"].ToString())&fp=@Server.UrlEncode(j["filepath"].ToString() + "\\" + j["savedname"].ToString())">@j["filename"]</a></div>
+                            <div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64(j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
                             <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
                         </div>
                     }
