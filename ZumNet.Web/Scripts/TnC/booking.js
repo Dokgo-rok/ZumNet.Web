@@ -411,7 +411,7 @@
 
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true); //console.log(postData)
-        var url = '?qi=' + _zw.base64.encode(postData);
+        var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({
             type: "POST",

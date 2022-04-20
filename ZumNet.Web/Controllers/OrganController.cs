@@ -214,7 +214,7 @@ namespace ZumNet.Web.Controllers
 
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
-                    ViewBag.PersonInfo = svcRt.ResultDataSet.Tables[0].Rows[0];
+                    ViewBag.PersonInfo = svcRt.ResultDataSet;
 
                     strView = "OK" + RazorViewToString.RenderRazorViewToString(this, "_PersonSimpleInfo", ViewBag.MemberList);
                 }
@@ -248,40 +248,160 @@ namespace ZumNet.Web.Controllers
                         return "필수값 누락!";
                     }
 
-                    using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
-                    {
-                        sPos = "100";
-                        svcRt = cb.GetGradeCode("1", Convert.ToInt32(Session["DNID"]), "A");
-                        if (svcRt != null && svcRt.ResultCode == 0) ViewBag.GradeCode = svcRt.ResultDataRowCollection;
-                        else rt = "[" + sPos + "] " + svcRt.ResultMessage;
-                    }
-
-                    if (rt == "")
+                    if (jPost["M"].ToString() == "group")
                     {
                         using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
                         {
-                            sPos = "200";
+                            sPos = "100";
                             svcRt = op.GetOrgMapInfo(Convert.ToInt32(Session["DNID"]), 0, "D", Convert.ToInt32(Session["DeptID"]), DateTime.Now.ToString("yyyy-MM-dd"), "N");
 
-                            if (svcRt != null && svcRt.ResultCode == 0) sOrgTree = CtrlHandler.OrgTreeString(svcRt);
+                            if (rt == "" && svcRt != null && svcRt.ResultCode == 0)
+                            {
+                                sPos = "110";
+                                sOrgTree = CtrlHandler.OrgTreeString(svcRt);
+                                ViewBag.JPost = jPost;
+
+                                sPos = "120";
+                                rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Plate", ViewBag)
+                                        + jPost["boundary"].ToString() + sOrgTree;
+                            }
+                            else
+                            {
+                                //에러페이지
+                                rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                            }
+                        }
+                    }
+                    else if (jPost["M"].ToString() == "user" || jPost["M"].ToString() == "group" || jPost["M"].ToString() == "all")
+                    {
+                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        {
+                            sPos = "200";
+                            svcRt = cb.GetGradeCode("1", Convert.ToInt32(Session["DNID"]), "A");
+                            if (svcRt != null && svcRt.ResultCode == 0) ViewBag.GradeCode = svcRt.ResultDataRowCollection;
                             else rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                        }
+
+                        if (rt == "")
+                        {
+                            using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+                            {
+                                sPos = "210";
+                                svcRt = op.GetOrgMapInfo(Convert.ToInt32(Session["DNID"]), 0, "D", Convert.ToInt32(Session["DeptID"]), DateTime.Now.ToString("yyyy-MM-dd"), "N");
+
+                                if (svcRt != null && svcRt.ResultCode == 0) sOrgTree = CtrlHandler.OrgTreeString(svcRt);
+                                else rt = "[" + sPos + "] " + svcRt.ResultMessage;
+
+                                if (rt == "")
+                                {
+                                    sPos = "220";
+                                    svcRt = op.GetGroupMemberList(Session["DNID"].ToString(), Session["DeptID"].ToString(), DateTime.Now.ToString("yyyy-MM-dd"), "Code1", "", Session["Admin"].ToString());
+
+                                    if (svcRt != null && svcRt.ResultCode == 0) ViewBag.MemberList = svcRt.ResultDataSet;
+                                    else rt = "[" + sPos + "] " + svcRt.ResultMessage;
+
+                                }
+                            }
 
                             if (rt == "")
                             {
-                                sPos = "300";
-                                svcRt = op.GetGroupMemberList(Session["DNID"].ToString(), Session["DeptID"].ToString(), DateTime.Now.ToString("yyyy-MM-dd"), "Code1", "", Session["Admin"].ToString());
+                                sPos = "230";
+                                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                                {
+                                    svcRt = cb.GetMemberStates(Convert.ToInt32(Session["URID"]), Convert.ToInt32(Session["DeptID"]));
+                                }
+
+                                if (svcRt != null && svcRt.ResultCode == 0)
+                                {
+                                    sPos = "240";
+                                    ViewBag.UserInfo = svcRt.ResultDataSet;
+                                    ViewBag.JPost = jPost;
+
+                                    sPos = "250";
+                                    rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Plate", ViewBag)
+                                            + jPost["boundary"].ToString() + sOrgTree;
+                                }
+                                else
+                                {
+                                    //에러페이지
+                                    rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                                }
+                            }
+                        }
+                    }
+                    else if (jPost["M"].ToString() == "userinfo")
+                    {
+                        if (jPost["urid"].ToString() == "" || jPost["grid"].ToString() == "") return "필수값 누락!";
+
+                        sPos = "300";
+                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        {
+                            svcRt = cb.GetMemberStates(Convert.ToInt32(jPost["urid"]), Convert.ToInt32(jPost["grid"]));
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            sPos = "310";
+                            ViewBag.UserInfo = svcRt.ResultDataSet;
+                            ViewBag.JPost = jPost;
+
+                            sPos = "320";
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Plate", ViewBag);
+                        }
+                        else
+                        {
+                            //에러페이지
+                            rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                        }
+                    }
+                    else
+                    {
+                        if (jPost["M"].ToString() == "search")
+                        {
+                            if (jPost["ur"].ToString() == "" && jPost["urcn"].ToString() == "" && jPost["dept"].ToString() == "" && jPost["grade"].ToString() == "") return "필수값 누락!";
+
+                            sPos = "900";
+                            StringBuilder sbSearch = new StringBuilder();
+                            if (StringHelper.SafeString(jPost["ur"]) != "") sbSearch.AppendFormat(" AND DisplayName LIKE '%{0}%'", jPost["ur"].ToString());
+                            if (StringHelper.SafeString(jPost["urcn"]) != "") sbSearch.AppendFormat(" AND LogonID LIKE '%{0}%'", jPost["urcn"].ToString());
+                            if (StringHelper.SafeString(jPost["dept"]) != "") sbSearch.AppendFormat(" AND GroupName LIKE '%{0}%'", jPost["dept"].ToString());
+                            if (StringHelper.SafeString(jPost["grade"]) != "") sbSearch.AppendFormat(" AND Code1 = '{0}'", jPost["grade"].ToString());
+
+                            sPos = "910";
+                            using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+                            {
+                                svcRt = op.GetDeptGroupList(StringHelper.SafeInt(Session["DNID"].ToString()), 1, 1000, "", "", "", sbSearch.ToString());
+                            }
+                        }
+                        else if (jPost["M"].ToString() == "userinfo")
+                        {
+                            if (jPost["urid"].ToString() == "" || jPost["grid"].ToString() == "") return "필수값 누락!";
+
+                            sPos = "920";
+                            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                            {
+                                svcRt = cb.GetMemberStates(Convert.ToInt32(jPost["urid"]), Convert.ToInt32(jPost["grid"]));
+                            }
+                        }
+                        else
+                        {
+                            if (jPost["grid"].ToString() == "")  return "필수값 누락!";
+
+                            sPos = "930";
+                            using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+                            {
+                                svcRt = op.GetGroupMemberList(Session["DNID"].ToString(), jPost["grid"].ToString(), DateTime.Now.ToString("yyyy-MM-dd"), "Code1", "", Session["Admin"].ToString());
                             }
                         }
 
-                        if (rt == "" && svcRt != null && svcRt.ResultCode == 0)
+                        if (svcRt != null && svcRt.ResultCode == 0)
                         {
-                            sPos = "400";
+                            sPos = "990";
                             ViewBag.MemberList = svcRt.ResultDataSet;
                             ViewBag.JPost = jPost;
 
-                            sPos = "410";
-                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Plate", ViewBag)
-                                    + jPost["boundary"].ToString() + sOrgTree;
+                            sPos = "991";
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Plate", ViewBag);
                         }
                         else
                         {

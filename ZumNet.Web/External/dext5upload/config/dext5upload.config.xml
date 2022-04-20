@@ -19,8 +19,8 @@
     <show_button_bar_view align="left" desc="버튼 위치 정렬 왼쪽 : left, 오른쪽 :right">open,saveandopen,download,download_all,print</show_button_bar_view>
     <button_bar_position desc="edit/view 버튼 영역 위치 설정, 기본값은 bottom 이고, top : 위, bottom : 아래로 버튼 위치">bottom</button_bar_position>
     <border_style desc="solid,dashed,none">none</border_style>
-    <max_one_file_size unit="MB" desc="0: 제한없음" unit_desc="B: byte, KB: kilobyte, MB: megabyte, GB: gigabyte">200</max_one_file_size>
-    <max_total_file_size unit="MB" desc="0: 제한없음" unit_desc="B: byte, KB: kilobyte, MB: megabyte, GB: gigabyte">200</max_total_file_size>
+    <max_one_file_size unit="MB" desc="0: 제한없음" unit_desc="B: byte, KB: kilobyte, MB: megabyte, GB: gigabyte">500</max_one_file_size>
+    <max_total_file_size unit="GB" desc="0: 제한없음" unit_desc="B: byte, KB: kilobyte, MB: megabyte, GB: gigabyte">1</max_total_file_size>
     <max_total_file_count desc="0: 제한없음, 0보다 큰 수 인 경우 해당 개수를 초과해서 첨부">0</max_total_file_count>
     <hide_list_info desc="0: 업로드영역 이미지 보여줌, 1: 업로드영역 이미지 숨김">0</hide_list_info>
     <extension allow_or_limit="0" desc="0: 제한으로 설정, 1: 허용으로 설정, 확장자는 ','로 구분"></extension>

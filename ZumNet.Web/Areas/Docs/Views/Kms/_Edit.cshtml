@@ -16,11 +16,14 @@
                 </div>
             }
 
-            <div class="btn-group">
-                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg();"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
-                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" onclick="_zw.mu.previewMsg();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Preview</span></button>
+        <div class="btn-group">
+            <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg();"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
+            <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" onclick="_zw.mu.previewMsg();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Preview</span></button>
+            @if (ViewBag.R.app.state == '0')
+            {
                 <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" onclick="_zw.mu.saveMsg();"><i class="fe-save"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.TempSave</span></button>
-            </div>
+            }
+        </div>
         </div>
         <div>
             <div class="btn-group">
@@ -54,7 +57,18 @@
                         <button class="zf-btn-sm btn btn-default float-right" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Select" onclick="_zw.fn.org('user', 'y');"><i class="fe-search"></i></button>
                     </div>
                     <div class="col-sm-10">
-                        <ul class="nav border rounded px-1 pb-1" style="height: 2.075rem; overflow: auto" data-for="CoRegList"></ul>
+                        <ul class="nav border rounded px-1 pb-1" style="height: 2.075rem; overflow: auto" data-for="CoRegList">
+                            @if (Convert.ToInt32(ViewBag.R.app["coregcount"]) > 0)
+                            {
+                                foreach (var j in ViewBag.R.app.coreglist)
+                                {
+                                    <li class="nav-item bg-info rounded d-flex align-items-center pl-2 pr-1 mt-1 mr-1" data-val="_@j["acttype"]_@j["actorid"]">
+                                        <a class="text-white" href="javascript:void(0)" onclick="_zw.fn.viewUserSimpleInfo('@j["actorid"]');">@j["actordept"] [@j["actorgrade"]] @j["actor"]</a>
+                                        <button class="btn btn-sm btn-18 ml-2 text-white"><span aria-hidden="true">×</span></button>
+                                    </li>
+                                }
+                            }
+                        </ul>
                     </div>
                 </div>
 
@@ -68,13 +82,14 @@
                 <div class="form-inline row mb-1">
                     <div class="col-form-label col-sm-2">@Resources.Global.Writer</div>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" readonly value="@ViewBag.R.current.user / @ViewBag.R.current.dept">
+                        <input type="text" class="form-control w-100" readonly value="@ViewBag.R.current.user / @ViewBag.R.current.dept / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.R.app["pubdate"].ToString(), true)">
                     </div>
                 </div>
 
                 <div class="form-group row mb-0">
                     <div class="col-form-label col-sm-2">
                         <span>@Resources.Global.AttachFile</span>
+                        @*<button class="zf-btn-sm btn btn-default float-right" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.UploaderFold" data-zf-menu="toggleUploader" aria-expanded="false"><i class="fe-chevron-up"></i></button>*@
                     </div>
                     <div class="col-sm-10">
                         <div class="zf-uploader" id="__DextUpload"></div>

@@ -2890,6 +2890,9 @@
     <Content Include="Areas\ExS\Views\CE\_OutPayDetail.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\_Write.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\Write.cshtml" />
+    <Content Include="Areas\Docs\Views\Kms\MyList.cshtml" />
+    <Content Include="Areas\Docs\Views\Kms\Edit.cshtml" />
+    <Content Include="Areas\Docs\Views\Kms\_Edit.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -2992,6 +2995,7 @@
     <Content Include="Views\Shared\Layouts\Partials\_HiddenFields.cshtml" />
     <Content Include="Views\Common\_ListCountBig.cshtml" />
     <Content Include="Views\Organ\_Plate.cshtml" />
+    <Content Include="Views\Shared\_NoPermissionPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

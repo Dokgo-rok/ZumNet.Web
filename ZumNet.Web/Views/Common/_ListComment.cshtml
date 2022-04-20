@@ -18,12 +18,12 @@
 
         var base64 = Convert.ToBase64String(byData);
 
-        return String.Format("<img src=\"data:{0};base64,{1}\" alt=\"User Image\" class=\"mr-3 rounded-circle{2}\"  style=\"height:32px\" alt=\"user\">", imageFormat, base64, imageOpacity);
+        return String.Format("<img src=\"data:{0};base64,{1}\" alt=\"User Image\" class=\"mr-3 rounded-circle{2}\"  style=\"height: 2.5rem\" alt=\"user\">", imageFormat, base64, imageOpacity);
     }
 }
 <div class="container-p-x my-3">
     <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.R.app["cmntcount"]</span></h6>
-    <div class="bg-lighter border p-3">
+    <div class="bg-lighter border px-3 py-2">
         <div id="__CommentList">
             @if (Convert.ToInt32(ViewBag.R.app["cmntcount"]) > 0)
             {
@@ -40,15 +40,15 @@
                                 <div>
                                     @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString())
                                     {
-                                        <a class="text-dark mr-2" href="javascript:void();" onclick="_zw.mu.editComment(@j["seqid"]);">@Resources.Global.Modify</a>
+                                        <a class="text-dark mr-2" href="javascript:void(0)" onclick="_zw.mu.editComment(@j["seqid"]);">@Resources.Global.Modify</a>
                                     }
                                     @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
                                     {
-                                        <a class="text-muted" href="javascript:void();" onclick="_zw.mu.deleteComment(@j["seqid"]);">@Resources.Global.Delete</a>
+                                        <a class="text-muted" href="javascript:void(0)" onclick="_zw.mu.deleteComment(@j["seqid"]);">@Resources.Global.Delete</a>
                                     }
                                 </div>
                             </div>
-                            <p>@Html.Raw(j["comment"].ToString().Replace("\n", "<br />"))</p>
+                            <p class="mt-1 mb-3">@Html.Raw(ZumNet.Framework.Util.StringHelper.ReplaceReply(j["comment"].ToString()))</p>
                             <div class="d-none mt-1 mb-3">
                                 <div>
                                     <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment">@j["comment"]</textarea>

@@ -592,11 +592,19 @@ $(function () {
                 p = $(el).parent().parent();
                 if (p.attr('xf') == undefined) p = $(el).parent().parent().parent();
 
+                var sortCol = _zw.V.lv.sort, sortType = _zw.V.lv.sortdir;
+                if (sortCol == '') {
+                    if (_zw.V.xfalias == 'knowledge') sortCol = 'CreateDate';
+                    else if (_zw.V.xfalias == 'doc') sortCol = 'CreateDate';
+                    else sortCol = 'SeqID';
+                }
+                if (sortType == '') sortType = 'DESC'
+
                 postData = '{wnd:"' + m + '",ct:"' + (p.attr('ctid') != undefined ? p.attr('ctid') : _zw.V.ct) + '",ctalias:"",ot:"",alias:"",xfalias:"' + p.attr('xf')
                     + '",fdid:"' + (p.attr('fdid') != undefined ? p.attr('fdid') : _zw.V.fdid) + '",appid:"' + p.attr('appid') + '",opnode:"",ttl:"",acl:"'
-                    + '",appacl:"' + (p.attr('acl') != undefined ? p.attr('acl') : '') + '",sort:"SeqID",sortdir:"DESC",boundary:"' + _zw.V.lv.boundary + '"}';
+                    + '",appacl:"' + (p.attr('acl') != undefined ? p.attr('acl') : '') + '",sort:"' + sortCol + '",sortdir:"' + sortType + '",boundary:"' + _zw.V.lv.boundary + '"}';
                 tgtPage = stdPage;
-                //alert(postData); return
+                //console.log(postData);
 
             } else {
                 if (m == 'prev') {
@@ -620,10 +628,10 @@ $(function () {
                 tgtPage = _zw.V.current.page;
             }
             
-            var url = tgtPage + '?qi=' + _zw.base64.encode(postData);
+            var url = tgtPage + '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
             if (m == 'popup') {
-                _zw.ut.openWnd(url, "popupform", 800, 650, "resize");
+                _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
 
             } else if (tgtPage.toLowerCase() == stdPage.toLowerCase()) {
                 $.ajax({
@@ -645,6 +653,8 @@ $(function () {
                                 _zw.V.app = JSON.parse(v[1]);
 
                                 window.document.title = _zw.V.app['subject'];
+
+                                _zw.fn.view(); //읽음 처리
                             }
                         } else bootbox.alert(res);
                     }
@@ -806,39 +816,138 @@ $(function () {
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {
                         var v = res.substr(2).split(_zw.V.lv.boundary); //console.log(JSON.parse(v[1]))
+                        var p = $('#popBlank'); p.html(v[0]); //body 없는 modal 경우 show.bs.modal 사용시 버튼 이벤트 안됨
 
-                        $('#popLayer').on('show.bs.modal', function (e) {
-                            $(this).html(v[0]);
+                        new PerfectScrollbar(p.find('.zf-org .tab-content .tab-pane')[0]);
+                        new PerfectScrollbar(p.find('.zf-org .zf-org-list')[0]);
+                        new PerfectScrollbar(p.find('.zf-org .zf-org-select')[0]);
 
-                            $('#__OrgMapTree').jstree({
-                                core: {
-                                    data: JSON.parse(v[1]).data
+                        $('#__OrgMapTree').jstree({
+                            core: {
+                                data: JSON.parse(v[1]).data,
+                                multiple: false
+                            },
+                            plugins: ["types", "wholerow"],
+                            types: {
+                                default: { icon: "fas fa-user-friends text-secondary" },
+                                root: { icon: "fas fa-city text-indigo" }
+                            }
+                        })
+                        .on('select_node.jstree', function (e, d) {
+                            if (d.selected.length == 1) {
+                                var n = d.instance.get_node(d.selected[0]);
+                                if ('7777.' + n.id == _zw.V.opnode) return false; //'7777.' => 부서명 Navigation에 사용
+                                if (n.li_attr.hasmember == 'Y') {
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Organ/Plate",
+                                        data: '{M:"member",grid:"' + n.id + '",boundary:"' + _zw.V.lv.boundary + '"}',
+                                        success: function (res) {
+                                            if (res.substr(0, 2) == "OK") {
+                                                p.find('.zf-org .zf-org-list').html(res.substr(2));
+                                                _zw.fn.orgUserClick(p, multi);
+                                            } else bootbox.alert(res);
+                                        },
+                                        beforeSend: function () { } //로딩 X
+                                    });
+                                }
+                            }
+                        });
+
+                        //p.find('.zf-org .nav .nav-link').on('shown.bs.tab', function (e) {
+                        //    if ($(e.target).attr('aria-controls') == 'orgmaptree') {
+                        //    }
+                        //    //console.log(e.relatedTarget)
+                        //});
+
+                        $('#__OrgMapSearch input[data-for]').keyup(function (e) {
+                            if (e.which == 13) $('#__OrgSearch .btn-outline-success').click();
+                        });
+
+                        $('#__OrgMapSearch .btn-outline-success').click(function () {
+                            var j = {}; j['M'] = 'search'; j['boundary'] = _zw.V.lv.boundary;
+                            if ($('#orgmapsearch').hasClass('active')) {//검색창 활성화 여부
+                                $('#__OrgMapSearch [data-for]').each(function () {
+                                    j[$(this).attr('data-for')] = $(this).val();
+                                });
+                            }
+                            $.ajax({
+                                type: "POST",
+                                url: "/Organ/Plate",
+                                data: JSON.stringify(j),
+                                success: function (res) {
+                                    if (res.substr(0, 2) == "OK") {
+                                        p.find('.zf-org .zf-org-list').html(res.substr(2));
+                                        _zw.fn.orgUserClick(p, multi);
+                                    } else bootbox.alert(res);
                                 },
-                                plugins: ["types", "wholerow"],
-                                types: {
-                                    default: { icon: "fas fa-user-friends text-secondary" },
-                                    root: { icon: "fas fa-city text-indigo" }
-                                }
-                            })
-                            .on('loaded.jstree', function (e, data) {
-                            })
-                            .on('changed.jstree', function (e, d) {
-                                if (d.selected.length == 1) {
-                                    var n = d.instance.get_node(d.selected[0]);
-
-                                    if ('7777.' + n.id == _zw.V.opnode) return false; //'7777.' => 부서명 Navigation에 사용
-
-                                    if (n.li_attr.hasmember) {
-                                        var vPath = $("#__OrgMapTree").jstree("get_path", d.selected[0]);
-                                    }
-                                }
+                                beforeSend: function () { } //로딩 X
                             });
-                        }).modal();
+                            return false;
+                        });
 
+                        _zw.fn.orgUserClick(p, multi);
 
+                        p.find('.btn[data-zm-menu]').click(function () {
+                            var mn = $(this).attr('data-zm-menu');
+                            if (mn == 'addUser') {
+                                if (multi == 'n') $('.zf-org .zf-org-select div.d-flex').remove();
+
+                                $('.zf-org .zf-org-list input:checkbox:checked').each(function () {
+                                    var jUser = JSON.parse($(this).attr('data-attr')); //console.log(jUser); return;
+
+                                    if ($('.zf-org .zf-org-select input:checkbox[data-for="' + $(this).attr('data-for') + '"]').length > 0) {
+                                        bootbox.alert("중복된 사용자 입니다!");
+                                    } else {
+                                        var s = $('.zf-org-template').html();
+                                        s = s.replace("{$id}", $(this).attr('data-for'));
+                                        //s = s.replace("{$attr}", $(this).attr('data-attr'));
+                                        s = s.replace("{$user}", $(this).next().text());
+                                        s = s.replace("{$grade}", $(this).parent().parent().next().text())
+                                        s = s.replace("{$dept}", jUser['grdn'])
+
+                                        $('.zf-org .zf-org-select').append(s);
+                                        $('.zf-org .zf-org-select input:checkbox[data-for="' + $(this).attr('data-for') + '"]').attr('data-attr', $(this).attr('data-attr'));
+                                    }
+                                    $(this).prop('checked', false);
+                                });
+                            } else if (mn == 'removeUser') {
+                                $('.zf-org .zf-org-select input:checkbox:checked').each(function () {
+                                    $(this).parent().parent().parent().remove();
+                                });
+                            } else if (mn == 'confirm') {
+                                if (_zw.fn.orgSelect) _zw.fn.orgSelect(p);
+                            }
+                        });
+
+                        p.modal('show');
                     } else bootbox.alert(res);
-                },
-                beforeSend: function () { } //로딩 X
+                }
+            });
+        },
+        "orgUserClick": function (p, multi) {
+            p.find('.zf-org .zf-org-list input:checkbox').click(function () {
+                if ($(this).prop('checked')) {
+                    if (multi == 'n') {
+                        p.find('.zf-org .zf-org-list input:checkbox[data-for!="' + $(this).attr('data-for') + '"]:checked').prop('checked', false);
+                        //var el = $(this)[0];
+                        //p.find('.zf-org .zf-org-list input:checkbox').each(function (idx, e) {
+                        //    if (e != el) { if (e.checked) e.checked = false; }
+                        //});
+                    }
+
+                    var jUser = JSON.parse($(this).attr('data-attr'));
+                    $.ajax({
+                        type: "POST",
+                        url: "/Organ/Plate",
+                        data: '{M:"userinfo",urid:"' + jUser['id'] + '",grid:"' + jUser['grid'] + '"}',
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") p.find('.zf-org .zf-org-info .table tbody').html(res.substr(2));
+                            else bootbox.alert(res);
+                        },
+                        beforeSend: function () { } //로딩 X
+                    });
+                }
             });
         },
         "view": function () {
@@ -1930,7 +2039,7 @@ $(function () {
                     DEXT5UPLOAD.config.Mode = m;
                 } else if (m == 'edit') {
                     if (_zw.ut.isMobile()) DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,custom_remove|항목삭제';
-                    else DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,download,download_all,custom_remove|항목삭제,custom_up|위,custom_down|아래'; // remove,remove_all
+                    else DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,download,custom_remove|항목삭제,custom_up|위,custom_down|아래'; // remove,remove_all
                 }
 
                 DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;

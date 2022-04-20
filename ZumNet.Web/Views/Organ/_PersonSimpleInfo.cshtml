@@ -1,6 +1,7 @@
 ﻿@using System.Data;
 @using ZumNet.Web.Bc;
 @{
+    DataRow rowInfo = ViewBag.PersonInfo != null && ViewBag.PersonInfo.Tables.Count > 0 && ViewBag.PersonInfo.Tables[0].Rows.Count > 0 ? ViewBag.PersonInfo.Tables[0].Rows[0] : null;
 }
 
 @functions {
@@ -36,66 +37,74 @@
             </button>
         </div>
         <div class="modal-body">
-            <div class="media contact-content">
-                @Html.Raw(GetOrgUserImage(ViewBag.PersonInfo["LogonID"].ToString()))
-                <div class="media-body">
-                    @if (ViewBag.PersonInfo["Description"].ToString() == "")
-                    {
-                        <p class="text-primary pt-3 text-center">입력된 소개글이 없습니다.</p>
-                    }
-                    else
-                    {
-                        <p class="pt-3 text-center">@ViewBag.PersonInfo["Description"]</p>
-                    }
+            @if (rowInfo == null)
+            {
+                <p class="mt-4 mb-5 fs-16 text-muted text-center">@Resources.Global.Auth_NoDB</p>
+            }
+            else
+            {
+                <div class="media contact-content">
+                    @Html.Raw(GetOrgUserImage(rowInfo["LogonID"].ToString()))
+                    <div class="media-body">
+                        @if (rowInfo["Description"].ToString() == "")
+                        {
+                            <p class="text-primary pt-3 text-center">입력된 소개글이 없습니다.</p>
+                        }
+                        else
+                        {
+                            <p class="pt-3 text-center">@rowInfo["Description"]</p>
+                        }
+                    </div>
                 </div>
-            </div>
-            <div class="border border">
-                <table class="table table-bordered table-sm mb-0">
-                    <tr>
-                        <th class="table-secondary text-nowrap">@Resources.Global.Name</th>
-                        <td class="">@ViewBag.PersonInfo["UserName"]</td>
-                    </tr>
-                    <tr>
-                        <th class="table-secondary text-nowrap">@Resources.Global.Department</th>
-                        <td class="">@ViewBag.PersonInfo["TeamName"]</td>
-                    </tr>
-                    <tr>
-                        <th class="table-secondary text-nowrap">@Resources.Global.Jikwi</th>
-                        <td class="">@ViewBag.PersonInfo["Position"]</td>
-                    </tr>
-                    <tr>
-                        <th class="table-secondary text-nowrap">담당업무</th>
-                        <td class="">@ViewBag.PersonInfo["BusinessMain"]</td>
-                    </tr>
-                    <tr>
-                        <th class="table-secondary text-nowrap">핸드폰</th>
-                        <td class="">@ViewBag.PersonInfo["Mobile"]</td>
-                    </tr>
-                    <tr>
-                        <th class="table-secondary text-nowrap">Mail</th>
-                        <td class="">@ViewBag.PersonInfo["MainMail"]</td>
-                    </tr>
-                    <tr>
-                        <th class="table-secondary text-nowrap">연락처</th>
-                        <td class="">@ViewBag.PersonInfo["InterPhone"]</td>
-                    </tr>
-                    @if (ViewBag.PersonInfo["LogonID"].ToString() == "sjaekim")
-                    {
+                <div class="border border">
+                    <table class="table table-bordered table-sm mb-0">
                         <tr>
-                            <th class="table-secondary text-nowrap">생년월일</th>
-                            <td class="">@ViewBag.PersonInfo["Birthday"]</td>
+                            <th class="table-secondary text-nowrap">@Resources.Global.Name</th>
+                            <td class="">@rowInfo["UserName"]</td>
                         </tr>
                         <tr>
-                            <th class="table-secondary text-nowrap">입사일</th>
-                            <td class="">@ViewBag.PersonInfo["Indate"]</td>
+                            <th class="table-secondary text-nowrap">@Resources.Global.Department</th>
+                            <td class="">@rowInfo["TeamName"]</td>
                         </tr>
                         <tr>
-                            <th class="table-secondary text-nowrap">최종학교</th>
-                            <td class="">@ViewBag.PersonInfo["SecondBusiness5"]</td>
+                            <th class="table-secondary text-nowrap">@Resources.Global.Jikwi</th>
+                            <td class="">@rowInfo["Position"]</td>
                         </tr>
-                    }
-                </table>
-            </div>
+                        <tr>
+                            <th class="table-secondary text-nowrap">담당업무</th>
+                            <td class="">@rowInfo["BusinessMain"]</td>
+                        </tr>
+                        <tr>
+                            <th class="table-secondary text-nowrap">핸드폰</th>
+                            <td class="">@rowInfo["Mobile"]</td>
+                        </tr>
+                        <tr>
+                            <th class="table-secondary text-nowrap">Mail</th>
+                            <td class="">@rowInfo["MainMail"]</td>
+                        </tr>
+                        <tr>
+                            <th class="table-secondary text-nowrap">연락처</th>
+                            <td class="">@rowInfo["InterPhone"]</td>
+                        </tr>
+                        @if (rowInfo["LogonID"].ToString() == "sjaekim")
+                        {
+                            <tr>
+                                <th class="table-secondary text-nowrap">생년월일</th>
+                                <td class="">@rowInfo["Birthday"]</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary text-nowrap">입사일</th>
+                                <td class="">@rowInfo["Indate"]</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary text-nowrap">최종학교</th>
+                                <td class="">@rowInfo["SecondBusiness5"]</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            }
+
         </div>
         @*<div class="modal-footer">
             <div class="text-center">

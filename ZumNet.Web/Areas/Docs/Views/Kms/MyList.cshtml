@@ -4,7 +4,7 @@
 @using Newtonsoft.Json;
 
 @{
-    ViewBag.Title = ViewBag.R["ttl"];
+    ViewBag.Title = "지식관리 - " + ViewBag.R["ttl"];
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
@@ -41,19 +41,32 @@
     <div class="d-flex flex-column w-100">
         <!-- Header -->
         <div class="flex-grow-0">
-            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
-                <div class="d-flex align-items-center font-weight-bold">
+            <div class="z-lv-tab d-flex container-p-x m-0 mt-1 pt-2">
+                <div class="flex-fill d-flex align-items-center font-weight-bold">
                     <div class="h5 mb-0">
                         <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
                     </div>
 
-                    <div class="h5 mb-0 z-ttl">
-                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    <div class="h5 mb-0">
+                        @*<i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>*@
+
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link@(ViewBag.R.mode == "temp" ? " active" : "")" href="javascript:void(0)" data-zl-menu="Temp">임시 저장</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link@(ViewBag.R.mode == "complete" ? " active" : "")" href="javascript:void(0)" data-zl-menu="Complete">완료 지식</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link@(ViewBag.R.mode == "approval" ? " active" : "")" href="javascript:void(0)" data-zl-menu="Approval">처리할 지식</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <div class="d-flex align-items-center z-lv-page" id="__ListCount">
                     @Html.Partial("~/Views/Common/_ListCount.cshtml")
                 </div>
+
             </div>
 
             <hr class="border-light m-0 d-none">
@@ -75,7 +88,10 @@
                         <select class="custom-select">
                             <option value="">@Resources.Global.Select...</option>
                             <option value="Subject" @(ViewBag.R.lv.search == "Subject" ? " selected" : "")>@Resources.Global.Title</option>
-                            <option value="CreatorName" @(ViewBag.R.lv.search == "CreatorName" ? " selected" : "")>@Resources.Global.Writer</option>
+                            @if (ViewBag.R.mode != "temp" && ViewBag.R.mode != "complete")
+                            {
+                                <option value="CreatorName" @(ViewBag.R.lv.search == "CreatorName" ? " selected" : "")>@Resources.Global.Writer</option>
+                            }
                         </select>
                         <input type="text" class="form-control search-text" placeholder="@Resources.Global.Search" value="@ViewBag.R.lv.searchtext">
                         <span class="input-group-append">
@@ -96,38 +112,49 @@
                             <span class="custom-control-label"></span>
                         </label>
                     </div>
-                    @if (ViewBag.R.mode == "")
+                    <div class="wd-20 wd-lg-20 wd-xl-20 text-truncate">
+                        <a href="javascript:void(0)" data-val="FDName">@Resources.Global.Classification<i class="@(ViewBag.R.lv.sort == "FDName" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+                    </div>
+                    <div class="flex-fill text-truncate">
+                        <a href="javascript:void(0)" data-val="Subject">@Resources.Global.Title<i class="@(ViewBag.R.lv.sort == "Subject" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+                    </div>
+
+                    @if (ViewBag.R.mode == "approval")
                     {
-                        <div class="d-none d-md-block wd-lg-6 wd-xl-5 text-center pr-2 text-truncate">
-                            <a href="javascript:void(0)" class="flex-fill" data-val="SeqID">@Resources.Global.SeqNo<i class="@(ViewBag.R.lv.sort == "SeqID" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "") : "")"></i></a>
+                        <div class="wd-lg-34 wd-xl-32 d-flex">
+                            <div class="wd-lg-12 wd-xl-10 text-center">
+                                @Resources.Global.Attach
+                            </div>
+                            <div class="wd-15 wd-lg-35 wd-xl-35 t-sm text-sm-center text-center pr-2 text-truncate">
+                                <a href="javascript:void(0)" data-val="CreatorName">@Resources.Global.Writer<i class="@(ViewBag.R.lv.sort == "CreatorName" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+                            </div>
+
+                            <div class="wd-20 wd-lg-35 wd-xl-30 t-sm text-sm-center text-center pr-2 text-truncate">
+                                <a href="javascript:void(0)" data-val="PublishDate">@Resources.Global.Date_Created<i class="@(ViewBag.R.lv.sort == "PublishDate" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+                            </div>
+
+                            <div class="text-right text-pink flex-fill text-truncate">
+                                <a href="javascript:void(0)" data-val="ViewCount">@Resources.Global.ViewCount<i class="@(ViewBag.R.lv.sort == "ViewCount" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+                            </div>
                         </div>
                     }
                     else
                     {
-                        <div class="wd-20 wd-lg-20 wd-xl-20 text-truncate">
-                            <a href="javascript:void(0)" data-val="FDName">@Resources.Global.Classification<i class="@(ViewBag.R.lv.sort == "FDName" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+                        <div class="wd-lg-30 wd-xl-26 d-flex">
+                            <div class="wd-lg-20 wd-xl-20 text-center">
+                                @Resources.Global.Attach
+                            </div>
+
+                            <div class="wd-30 wd-lg-45 wd-xl-45 t-sm text-sm-center text-center pr-2 text-truncate">
+                                <a href="javascript:void(0)" data-val="PublishDate">@Resources.Global.Date_Created<i class="@(ViewBag.R.lv.sort == "PublishDate" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+                            </div>
+
+                            <div class="text-right text-pink flex-fill text-truncate">
+                                <a href="javascript:void(0)" data-val="ViewCount">@Resources.Global.ViewCount<i class="@(ViewBag.R.lv.sort == "ViewCount" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
+                            </div>
                         </div>
                     }
-                    <div class="flex-fill text-truncate text-center">
-                        <a href="javascript:void(0)" data-val="Subject">@Resources.Global.Title<i class="@(ViewBag.R.lv.sort == "Subject" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
-                    </div>
 
-                    <div class="wd-lg-34 wd-xl-32 d-flex">
-                        <div class="wd-lg-12 wd-xl-10 text-center">
-                            @Resources.Global.Attach
-                        </div>
-                        <div class="wd-15 wd-lg-35 wd-xl-35 t-sm text-sm-center text-center pr-2 text-truncate">
-                            <a href="javascript:void(0)" data-val="CreatorName">@Resources.Global.Writer<i class="@(ViewBag.R.lv.sort == "CreatorName" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
-                        </div>
-
-                        <div class="wd-20 wd-lg-35 wd-xl-30 t-sm text-sm-center text-center pr-2 text-truncate">
-                            <a href="javascript:void(0)" data-val="PublishDate">@Resources.Global.Date_Created<i class="@(ViewBag.R.lv.sort == "PublishDate" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
-                        </div>
-
-                        <div class="text-right text-pink flex-fill text-truncate">
-                            <a href="javascript:void(0)" data-val="ViewCount">@Resources.Global.ViewCount<i class="@(ViewBag.R.lv.sort == "ViewCount" ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : "")"></i></a>
-                        </div>
-                    </div>
                 </li>
             </ul>
         </div>

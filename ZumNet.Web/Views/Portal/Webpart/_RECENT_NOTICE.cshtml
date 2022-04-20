@@ -97,6 +97,7 @@
                                     <img src="~/images/plugins/new.gif" alt="" />
                                 }
                                 <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');">[@row["DisplayName"].ToString()] @row["Subject"].ToString()</a>
+                                @*<a class="text-truncate" href="javascript:void(0)" onclick="_zw.fn.modalMsg('@row["XFAlias"]', '@row["MessageID"]', '@row["FD_ID"]');">[@row["DisplayName"].ToString()] @row["Subject"].ToString()</a>*@
                                 @if (Convert.ToInt32(row["CommentCount"]) > 0)
                                 {
                                     <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>

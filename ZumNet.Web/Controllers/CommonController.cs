@@ -267,6 +267,45 @@ namespace ZumNet.Web.Controllers
             return strView;
         }
 
+        /// <summary>
+        /// 각종 게시물 삭제 처리
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DeleteMsg()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    return "전송 데이터 누락!";
+                }
+                else if (StringHelper.SafeString(jPost["xf"]) == "" || StringHelper.SafeString(jPost["urid"]) == "" || StringHelper.SafeString(jPost["mi"]) == "")
+                {
+                    return "필수값 누락!";
+                }
+
+                int iFolderId = StringHelper.SafeInt(jPost["fdid"]);
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
+                {
+                    svcRt = bb.DelBoardMessage(iFolderId, Convert.ToInt32(Session["DNID"]), jPost["xf"].ToString(), jPost["mi"].ToString(), Convert.ToInt32(jPost["urid"]));
+                }
+
+                if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                else strView = "OK";
+            }
+
+            return strView;
+        }
+
         #region [댓글 관련]
         /// <summary>
         /// 댓글 등록

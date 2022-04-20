@@ -57,7 +57,7 @@
 
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true); //console.log(postData)
-        var url = '?qi=' + _zw.base64.encode(postData);
+        var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({
             type: "POST",
@@ -87,7 +87,7 @@
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
         j["ft"] = _zw.V.ft;
-        //j["ttl"] = _zw.V.ttl;
+        j["ttl"] = _zw.V.ttl;
 
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;

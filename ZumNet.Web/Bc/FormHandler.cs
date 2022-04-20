@@ -94,7 +94,7 @@ namespace ZumNet.Web.Bc
                         jV["att"] = mainInfo["AttType"].ToString();
                         jV["msg"] = mainInfo["MsgType"].ToString();
                         jV["priority"] = mainInfo["Priority"].ToString();
-                        if (ctrl.ViewBag.R.xfalias == "knowledge") jV["state"] = mainInfo["State"].ToString();
+
                         jV["creur"] = mainInfo["CreatorName"].ToString();
                         jV["creurid"] = mainInfo["CreatorID"].ToString();
                         jV["creurcn"] = mainInfo["CreatorAccount"].ToString();
@@ -123,6 +123,9 @@ namespace ZumNet.Web.Bc
                         sPos = "500";
                         if (ctrl.ViewBag.R.xfalias == "knowledge")
                         {
+                            jV["state"] = mainInfo["State"].ToString();
+                            jV["coregurid"] = mainInfo["CoRegistrant"].ToString();
+
                             if (coregInfo != null && coregInfo.Rows.Count > 0)
                             {
                                 var jArr = new JArray();

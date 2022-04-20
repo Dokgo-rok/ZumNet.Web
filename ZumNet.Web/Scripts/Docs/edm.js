@@ -22,7 +22,7 @@ $(function () {
         //console.log(j.ctalias);
 
         var postData = _zw.fn.getLvQuery(); console.log(postData);
-        var url = '/Docs/Edm/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
+        var url = '/Docs/Edm/List?qi=' + encodeURIComponent(_zw.base64.encode(postData)); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/Docs/Edm/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 
@@ -67,7 +67,7 @@ $(function () {
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
         j["ft"] = _zw.V.ft;
-        //j["ttl"] = _zw.V.ttl;
+        j["ttl"] = _zw.V.ttl;
 
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;

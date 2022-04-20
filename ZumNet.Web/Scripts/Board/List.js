@@ -275,8 +275,8 @@ $(function () {
                 }
             }
         }
-        console.log(jPost["attachlist"]);
-        console.log(jPost["imglist"]);
+        //console.log(jPost["attachlist"]);
+        //console.log(jPost["imglist"]);
         //return;
 
         jPost["msg"] = "";

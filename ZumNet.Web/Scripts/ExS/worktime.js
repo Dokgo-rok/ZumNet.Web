@@ -423,7 +423,7 @@ $(function () {
     
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true);
-        var url = '?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
+        var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData)); //encodeURIComponent(postData);
 
         $.ajax({
             type: "POST",

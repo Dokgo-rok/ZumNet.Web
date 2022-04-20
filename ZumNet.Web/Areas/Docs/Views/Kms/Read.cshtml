@@ -17,7 +17,19 @@
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 }
-
+@functions{
+    private string CheckCoRegister()
+    {
+        if (Convert.ToInt32(ViewBag.R.app["coregcount"]) > 0)
+        {
+            foreach(var j in ViewBag.R.app.coreglist)
+            {
+                if (Session["URID"].ToString() == j["actorid"].ToString() && j["isread"].ToString() == "N") return "Y";
+            }
+        }
+        return "N";
+    }
+}
 @section Styles {
     @if (ViewBag.R.wnd.ToString() == "")
     {
@@ -41,13 +53,14 @@
     {
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
     }
-    <script type="text/javascript">
-        (function () {
+<script type="text/javascript">
+        $(function () {
             _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
 
             _zw.fn.view();
-        }());
-    </script>
+            if ("@CheckCoRegister()" == "Y") _zw.fn.setCoRegState();
+        });
+</script>
 }
 
 @if (ViewBag.R.wnd.ToString() == "popup")
