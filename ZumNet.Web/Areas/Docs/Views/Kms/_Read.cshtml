@@ -8,8 +8,23 @@
         bPrevEditorBody = true;
     }
     bPrevEditorBody = true;
-}
 
+    bool bOwner = ViewBag.R.app["creurid"].ToString() == Session["URID"].ToString() ? true : false;
+}
+@functions{
+    private bool CheckCoRegister()
+    {
+        if (Convert.ToInt32(ViewBag.R.app["coregcount"]) > 0)
+        {
+            //foreach (var j in ViewBag.R.app.coreglist)
+            //{
+            //    if (Session["URID"].ToString() == j["actorid"].ToString() && j["isread"].ToString() == "N") return true;
+            //}
+            if (ViewBag.R.app["coregurid"].ToString().IndexOf(Session["URID"].ToString()) != -1) return true;
+        }
+        return false;
+    }
+}
 <!-- Header -->
 <div class="flex-grow-0">
     <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.wnd.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.wnd.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
@@ -20,18 +35,22 @@
                     <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
                 </div>
             }
-
+            
             <div class="btn-group">
+                @if (CheckCoRegister())
+                {
+                    <button class="btn btn-success font-weight-bold" onclick="_zw.mu.confirmMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Confirm"><i class="fas fa-user-check"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Confirm</span></button>
+                }
                 <button class="btn btn-default font-weight-bold" onclick="_zw.mu.readMsg('reload');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh"><i class="fe-refresh-cw"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Refresh</span></button>
                 @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
                 {
                     @*<button class="btn btn-default font-weight-bold" onclick="_zw.mu.writeMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>*@
                 }
-                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E"))
+                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
                 {
-                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class="far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
                 }
-                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "D"))
+                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "D") || bOwner)
                 {
                     <button class="btn btn-default font-weight-bold" onclick="_zw.mu.deleteMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
                 }

@@ -729,7 +729,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
-        public string CoRegState()
+        public string KnowledgeConfirm()
         {
             string strView = "";
 

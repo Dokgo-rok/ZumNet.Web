@@ -57,7 +57,7 @@
                         <button class="zf-btn-sm btn btn-default float-right" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Select" onclick="_zw.fn.org('user', 'y');"><i class="fe-search"></i></button>
                     </div>
                     <div class="col-sm-10">
-                        <ul class="nav border rounded px-1 pb-1" style="height: 2.075rem; overflow: auto" data-for="CoRegList">
+                        <ul class="nav border rounded px-1 pb-1" style="height: 2.075rem; overflow: auto" id="__CoRegList">
                             @if (Convert.ToInt32(ViewBag.R.app["coregcount"]) > 0)
                             {
                                 foreach (var j in ViewBag.R.app.coreglist)

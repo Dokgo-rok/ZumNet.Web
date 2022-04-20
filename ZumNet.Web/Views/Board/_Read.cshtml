@@ -8,6 +8,8 @@
         bPrevEditorBody = true;
     }
     bPrevEditorBody = true;
+
+    bool bOwner = ViewBag.R.app["creurid"].ToString() == Session["URID"].ToString() ? true : false;
 }
 
 <!-- Header -->
@@ -31,11 +33,11 @@
                     }
                     <button class="btn btn-default font-weight-bold" onclick="_zw.mu.writeMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.New"><i class="fe-edit-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.New</span></button>
                 }
-                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E"))
+                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
                 {
                     <button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class=" far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
                 }
-                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "D"))
+                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "D") || bOwner)
                 {
                     <button class="btn btn-default font-weight-bold" onclick="_zw.mu.deleteMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
                 }

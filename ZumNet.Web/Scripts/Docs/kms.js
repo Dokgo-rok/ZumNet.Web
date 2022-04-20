@@ -40,11 +40,12 @@ $(function () {
 
         var postData = _zw.fn.getAppQuery(_zw.V.fdid);
         var url = '/Docs/Kms/Edit?qi=' + encodeURIComponent(_zw.base64.encode(postData));
-        _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
+        if (m == 'temp') _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
+        else window.location.href = url;
     }
 
     _zw.mu.deleteMsg = function () {
-        if (_zw.V.current.page.toLowerCase().indexOf('/list') > 0 || _zw.V.current.page.toLowerCase().indexOf('/mylist') > 0) {
+        if ($('#__ListView').length > 0) { //게시판, 임시저장, 최근지식 등
             $('#__ListView input:checkbox:checked').each(function () {
                 var p = $(this).parent().parent().parent();
                 //console.log(p.attr('appid') + " : " + p.attr('auth') + " : " + $.trim(p.find('div:nth-child(3)').text()))
@@ -138,6 +139,24 @@ $(function () {
         }
     }
 
+    _zw.mu.confirmMsg = function () {
+        if (_zw.V.app.state == '7' && _zw.V.app.creurid != _zw.V.current.urid) {
+            bootbox.confirm('해당 지식 열람 확인하시겠습니까?', function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Docs/Kms/KnowledgeConfirm",
+                        data: '{xf:"' + _zw.V.xfalias + '",fdid:"' + _zw.V.fdid + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '"}',
+                        success: function (res) {
+                            if (res == "OK") bootbox.alert('처리했습니다!', function () { window.location.reload(); opener.location.reload(); });
+                            else console.log(res);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
     _zw.mu.goList = function () {
         var postData = _zw.fn.getLvQuery();
         window.location.href = '/Docs/Kms/List?qi=' + encodeURIComponent(_zw.base64.encode(postData));
@@ -157,36 +176,27 @@ $(function () {
                 var s = $('.zf-coreg-template').html();
                 s = s.replace("{$id}", jUser['id']);
                 s = s.replace("{$coreg}", jUser['grdn'] + ' [' + jUser['grade'] + '] ' + $(this).next().text());
-                $('ul[data-for="CoRegList"]').append(s);
+                $('#__CoRegList').append(s);
                 vList.push(j);
             }
         });
-        p.find("button[data-dismiss='modal']").click(); 
+        p.find("button[data-dismiss='modal']").click();
 
-        $('ul[data-for="CoRegList"] li[data-val] .btn').click(function () {
+        $('#__CoRegList li[data-val] .btn').click(function () {
             var c = $(this).parent(), v = c.attr('data-val').split('_');
-            var idx = vList.findIndex(function (item) { return item.acttype == v[1] && item.actorid == v[2]; });
-            if (idx > -1) vList.splice(idx, 1);
+            var idx = _zw.V.app.coreglist.findIndex(function (item) { return item.acttype == v[1] && item.actorid == v[2]; });
+            if (idx > -1) _zw.V.app.coreglist.splice(idx, 1);
             c.remove();
-
             //console.log(_zw.V.app.coreglist);
         });
     }
 
-    _zw.fn.setCoRegState = function () {
-        if (_zw.V.app.state == '7' && _zw.V.app.creurid != _zw.V.current.urid) {
-            $.ajax({
-                type: "POST",
-                url: "/Docs/Kms/CoRegState",
-                data: '{xf:"' + _zw.V.xfalias + '",fdid:"' + _zw.V.fdid + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '"}',
-                success: function (res) {
-                    if (res == "OK") opener.location.reload();
-                    else console.log(res);
-                },
-                beforeSend: function () { } //로딩 X
-            });
-        }
-    }
+    $('#__CoRegList li[data-val] .btn').click(function () {
+        var c = $(this).parent(), v = c.attr('data-val').split('_');
+        var idx = _zw.V.app.coreglist.findIndex(function (item) { return item.acttype == v[1] && item.actorid == v[2]; });
+        if (idx > -1) _zw.V.app.coreglist.splice(idx, 1);
+        c.remove();
+    });    
 
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(); //console.log(postData);
@@ -364,11 +374,11 @@ $(function () {
                 if (res.substr(0, 2) == "OK") {
                     //console.log(JSON.parse(res.substr(2)));
                     bootbox.alert(res.substr(2), function () {
-                        if (_zw.V.wnd == 'popup') {
-                            window.close(); opener.location.reload();
-                        } else {
-                            if (_zw.V.mode == 'save') window.location.href = 'Docs/Kms/TempSave?qi=' + _zw.base64.encode(_zw.fn.getLvQuery());
-                            else _zw.mu.goList();
+                        window.close();
+                        if (_zw.V.mode == 'save') opener.location.href = 'Docs/Kms/MyList?qi=' + _zw.base64.encode(_zw.fn.getLvQuery());
+                        else {
+                            if (opener.__ListView && opener._zw.mu.goList) opener._zw.mu.goList();
+                            else opener.location.reload();
                         }
                     });
 

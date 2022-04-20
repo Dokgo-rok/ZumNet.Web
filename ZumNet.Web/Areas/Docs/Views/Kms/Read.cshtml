@@ -17,19 +17,6 @@
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 }
-@functions{
-    private string CheckCoRegister()
-    {
-        if (Convert.ToInt32(ViewBag.R.app["coregcount"]) > 0)
-        {
-            foreach(var j in ViewBag.R.app.coreglist)
-            {
-                if (Session["URID"].ToString() == j["actorid"].ToString() && j["isread"].ToString() == "N") return "Y";
-            }
-        }
-        return "N";
-    }
-}
 @section Styles {
     @if (ViewBag.R.wnd.ToString() == "")
     {
@@ -58,7 +45,6 @@
             _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
 
             _zw.fn.view();
-            if ("@CheckCoRegister()" == "Y") _zw.fn.setCoRegState();
         });
 </script>
 }

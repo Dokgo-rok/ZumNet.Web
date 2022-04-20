@@ -53,7 +53,43 @@ $(function () {
     }
 
     _zw.mu.deleteMsg = function () {
-        alert(_zw.V.appid)
+        if ($('#__ListView').length > 0) {//게시판, 임시저장함
+            $('#__ListView input:checkbox:checked').each(function () {
+                var p = $(this).parent().parent().parent();
+                //console.log(p.attr('appid') + " : " + p.attr('auth') + " : " + $.trim(p.find('div:nth-child(3)').text()))
+            });
+            bootbox.alert('준비중!');
+        } else {
+            var bDeletable = true;
+            if (_zw.V.app.cmntcount > 0 || (_zw.V.app.replycount > 1 && parseInt(_zw.V.app.depth) == 0)) bDeletable = false;
+
+            if (!bDeletable) {
+                bootbox.alert('삭제할 수 없는 문서입니다!'); return false; //답글 또는 댓글 존재
+            } else {
+                bootbox.confirm("삭제 하시겠습니까?", function (rt) {
+                    if (rt) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Common/DeleteMsg",
+                            data: '{xf:"' + _zw.V.xfalias + '",fdid:"' + _zw.V.fdid + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '"}',
+                            success: function (res) {
+                                if (res == "OK") {
+                                    bootbox.alert('삭제했습니다.', function () {
+                                        window.close();
+                                        if (opener) {
+                                            if (opener._zw.mu.search) opener._zw.mu.search(opener._zw.V.lv.page);
+                                            else opener.location.reload();
+                                        } else {
+                                            _zw.mu.goList();
+                                        }
+                                    });
+                                } else bootbox.alert(res);
+                            }
+                        });
+                    }
+                });
+            }
+        }
     }
 
     _zw.mu.registerMsg = function () {
