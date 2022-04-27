@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -464,9 +465,58 @@ namespace ZumNet.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [SessionExpireFilter]
+        [HttpPost]
         [Authorize]
         public ActionResult Upload()
         {
+            //long lOneSize = Convert.ToInt64(ZumNet.Framework.Configuration.Config.Read("MaxUploadSize"));
+            //long lMaxSize = Convert.ToInt64(ZumNet.Framework.Configuration.Config.Read("MaxUploadTotalSize"));
+            //long lSize = 0;
+            //long lSum = 0;
+
+            //string rt = "";
+
+            //HttpFileCollectionBase files = Request.Files;
+            //for (int i = 0; i > files.Count; i++)
+            //{
+            //    HttpPostedFileBase f = files[i];
+            //    if (f != null)
+            //    {
+            //        lSize = StringHelper.CvtByte(f.ContentLength, "MB");
+            //        if (lSize >= lOneSize)
+            //        {
+            //            rt = "파일크기는 " + lOneSize.ToString() + "M를 넘을 수 없습니다!";
+            //            break;
+            //        }
+            //        else
+            //        {
+            //            lSum += lSize;
+            //        }
+            //    }
+            //}
+
+            //if (rt == "")
+            //{
+            //    if (lSum >= lMaxSize) rt = "전체 파일크기는 " + lOneSize.ToString() + "M를 넘을 수 없습니다!";
+            //    else
+            //    {
+            //        string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+            //        ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+
+            //        for (int i = 0; i > files.Count; i++)
+            //        {
+            //            HttpPostedFileBase f = files[i];
+            //            if (f != null)
+            //            {
+            //                var inputFileName = Path.GetFileName(f.FileName);
+            //                var tempSavePath = Path.Combine(Server.MapPath(sUploadPath) + "/" + inputFileName);
+
+            //                f.SaveAs(tempSavePath);
+            //            }   
+            //        }
+            //    }
+            //}
+            
             return View("_Upload");
         }
 
@@ -622,30 +672,59 @@ namespace ZumNet.Web.Controllers
         public string DeleteAttach()
         {
             string strView = "";
+            string sPos = "";
 
             if (Request.IsAjaxRequest())
             {
-                JObject jPost = CommonUtils.PostDataToJson();
-
-                if (jPost == null || jPost.Count == 0)
+                try
                 {
-                    return "전송 데이터 누락!";
+                    sPos = "[100]";
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0)
+                    {
+                        return "전송 데이터 누락!";
+                    }
+                    else if (!jPost.ContainsKey("tgtid") && !jPost.ContainsKey("fp"))
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    int iFolderId = StringHelper.SafeInt(jPost["fdid"]);
+
+                    sPos = "[200]";
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                    {
+                        if (jPost["xf"].ToString() != "" && jPost["tgtid"].ToString() != "" && jPost.ContainsKey("appid") && jPost["appid"].ToString() != "")
+                        {
+                            sPos = "[210]";
+                            svcRt = cb.DeleteAttachFile(jPost["xf"].ToString(), jPost["tgtid"].ToString(), Convert.ToInt32(Session["DNID"]), StringHelper.SafeInt(jPost["fdid"]), StringHelper.SafeInt(jPost["appid"]));
+                        }
+                        else if (jPost["tgtid"].ToString() != "")
+                        {
+                            sPos = "[220]";
+                            svcRt = cb.DeleteAttachFile(jPost["xf"].ToString(), Convert.ToInt32(jPost["tgtid"]));
+                        }
+                    }
+
+                    sPos = "[300]";
+                    if (svcRt != null && svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                    else
+                    {
+                        sPos = "[310]";
+                        if (jPost.ContainsKey("fp") && StringHelper.SafeString(jPost["fp"].ToString()) != "")
+                        {
+                            sPos = "[320]";
+                            string sRealPath = Server.MapPath(SecurityHelper.Base64Decode(Server.UrlDecode(jPost["fp"].ToString())));
+                            FileHelper.DeleteFile(sRealPath);
+                        }
+                        strView = "OK";
+                    }
                 }
-                else if (StringHelper.SafeString(jPost["xf"]) == "" || StringHelper.SafeString(jPost["tgtid"]) == "")
+                catch(Exception ex)
                 {
-                    return "필수값 누락!";
+                    strView = sPos + " " + ex.Message;
                 }
-
-                int iFolderId = StringHelper.SafeInt(jPost["fdid"]);
-                ZumNet.Framework.Core.ServiceResult svcRt = null;
-
-                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
-                {
-                    svcRt = cb.DeleteAttachFile(jPost["xf"].ToString(), jPost["tgtid"].ToString(), Convert.ToInt32(Session["DNID"]), StringHelper.SafeInt(jPost["fdid"]), StringHelper.SafeInt(jPost["appid"]));
-                }
-
-                if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
-                else strView = "OK";
             }
 
             return strView;

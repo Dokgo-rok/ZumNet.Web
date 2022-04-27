@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
 using System.Web;
 using System.Web.Mvc;
 
@@ -156,6 +156,286 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                 }
             }
 
+            return rt;
+        }
+        #endregion
+
+        #region [과정 작성, 조회]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CourseView()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    if (jPost == null || jPost.Count == 0 || jPost["M"].ToString() == "" || jPost["ft"].ToString() == "") return "필수값 누락!";
+                    if (jPost["M"].ToString() != "new" && StringHelper.SafeInt(jPost["oid"]) == 0) return "필수값 누락!";
+
+                    //초기 설정
+                    rt = Bc.CtrlHandler.LcmCode(this);
+                    if (rt != "") throw new Exception(rt);
+
+                    if (jPost["M"].ToString() == "new")
+                    {
+                        ViewBag.JPost = jPost;
+                    }
+                    else
+                    {
+                        using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+                        {
+                            svcRt = rpBiz.GetReport("CI", StringHelper.SafeInt(jPost["oid"]), jPost["ft"].ToString(), "", "", "", "", "", "", "");
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            ViewBag.CourceInfo = svcRt.ResultDataSet;
+                            ViewBag.JPost = jPost;
+                        }
+                        else
+                        {
+                            //에러페이지
+                            rt = svcRt.ResultMessage;
+                        }
+                    }
+
+                    if (rt == "") rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_CourceView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CourseSave()
+        {
+            string strView = "";
+            string strMsg = "";
+            string sPos = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0) return "전송 데이터 누락!";
+                    if (jPost["M"].ToString() == "" || jPost["ft"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    sPos = "200";
+                    string sAdmin = jPost["operator"].ToString() == "Y" || StringHelper.HasAcl(jPost["acl"].ToString(), "S") ? "Y" : "N";
+
+                    if (jPost["M"].ToString() == "CHECK")
+                    {
+                        sPos = "300";
+                        using (BSL.InterfaceBiz.ReportBiz rptBiz = new BSL.InterfaceBiz.ReportBiz())
+                        {
+                            svcRt = rptBiz.GetReport("CE", Convert.ToInt32(jPost["oid"]), jPost["ft"].ToString(), "", "", Session["URID"].ToString(), sAdmin, "", "", "");
+                        }
+
+                        if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                        else
+                        {
+                            sPos = "310";
+                            if (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0)
+                            {
+                                string sStatus = svcRt.ResultDataSet.Tables[0].Rows[0]["Status"].ToString();
+                                if (sAdmin == "Y" || sStatus != "P")
+                                {
+                                    if (sStatus == "Y") strView = sStatus;
+                                    else if (sStatus == "A") strView = sStatus + "해당 과정으로 작성된 신청서가 있습니다!\n과정변경 경우 신청자들에게 메일알림이 됩니다\n변경 하시겠습니까?";
+                                    else strView = "해당 과정으로 작성된 보고서가 있으므로 변경 할 수 없습니다!";
+                                }
+                                else strView = "권한이 없습니다!";
+                            }
+                            else strView = "권한체크 실패!";
+                        }
+                    }
+                    else
+                    {
+                        sPos = "400";
+                        AttachmentsHandler attachHdr = new AttachmentsHandler();
+                        svcRt = attachHdr.TempToStorage(Convert.ToInt32(Session["DNID"]), jPost["xfalias"].ToString(), (JArray)jPost["attachlist"], null, "");
+                        if (svcRt.ResultCode != 0)
+                        {
+                            strView = svcRt.ResultMessage;
+                        }
+                        else
+                        {
+                            jPost["attachlist"] = (JArray)svcRt.ResultDataDetail["FileInfo"];
+                        }
+
+                        sPos = "410";
+                        string sFileInfo = attachHdr.ConvertFileInfoToXml((JArray)jPost["attachlist"]);
+                        string sHasAttach = Convert.ToInt32(jPost["attachcount"].ToString()) > 0 ? "Y" : "N";
+
+                        sPos = "500";
+                        using (BSL.InterfaceBiz.ReportBiz rptBiz = new BSL.InterfaceBiz.ReportBiz())
+                        {
+                            svcRt = rptBiz.SetLCMCOURSE(jPost["M"].ToString(), Convert.ToInt32(jPost["oid"]), jPost["StdYear"].ToString()
+                                    , jPost["ClsDN1"].ToString(), jPost["ClsDN2"].ToString(), jPost["ClsDN3"].ToString(), jPost["ClsDN4"].ToString(), ""
+                                    , jPost["ClsCD1"].ToString(), jPost["ClsCD2"].ToString(), jPost["ClsCD3"].ToString(), "", ""
+                                    , jPost["CourseDN"].ToString(), 0, jPost["InstDN"].ToString(), jPost["Place"].ToString(), 1
+                                    , jPost["FromDate"].ToString(), jPost["ToDate"].ToString(), "", "", jPost["DurDay"].ToString(), jPost["DurTime"].ToString()
+                                    , "", "", "", "", jPost["Cost1"].ToString(), "", "", "", ""
+                                    , jPost["InstructorID"].ToString(), jPost["Instructor"].ToString(), jPost["InstructorInfo1"].ToString(), jPost["InstructorInfo2"].ToString(), ""
+                                    , jPost["Contents"].ToString(), jPost["Etc"].ToString(), "", ""
+                                    , Convert.ToInt32(Session["URID"]), Session["URName"].ToString(), Convert.ToInt32(Session["DeptID"]), Session["DeptName"].ToString()
+                                    , sHasAttach, sFileInfo);
+
+                            sPos = "510";
+                            strMsg = jPost["M"].ToString() == "M" ? "변경 하였습니다" : "저장 하였습니다";
+
+                            sPos = "520";
+                            if (jPost["mail"].ToString() == "OK") //메일 알림
+                            {
+                                string sMailDomain = "@" + ZumNet.Framework.Configuration.Config.Read("DomainName");
+                                svcRt = rptBiz.GetReport("CE", Convert.ToInt32(jPost["oid"]), jPost["ft"].ToString(), "", "", Session["URID"].ToString()
+                                                , sAdmin, jPost["mail"].ToString(), sMailDomain, "");
+
+                                sPos = "530";
+                                if (svcRt.ResultCode != 0) strMsg += "\n\n" + svcRt.ResultMessage;
+                                else
+                                {
+                                    //메일발송 처리는 추후
+                                }
+                            }
+                        }
+
+                        if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                        else strView = "OK" + strMsg;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    strView = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return strView;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CourseDelete()
+        {
+            string strView = "";
+            string sPos = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0) return "전송 데이터 누락!";
+                    else if (jPost["M"].ToString() == "" || jPost["oid"].ToString() == "") return "필수값 누락!";
+
+                    sPos = "200";
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    string sAdmin = jPost["operator"].ToString() == "Y" || StringHelper.HasAcl(jPost["acl"].ToString(), "S") ? "Y" : "N";
+
+                    using (BSL.InterfaceBiz.ReportBiz rptBiz = new BSL.InterfaceBiz.ReportBiz())
+                    {
+                        sPos = "300";
+                        svcRt = rptBiz.GetReport("CD", Convert.ToInt32(jPost["oid"]), jPost["ft"].ToString(), "", "", Session["URID"].ToString(), sAdmin, "", "", "");
+
+                        if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                        else
+                        {
+                            sPos = "310";
+                            if (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0)
+                            {
+                                string sStatus = svcRt.ResultDataSet.Tables[0].Rows[0]["Status"].ToString();
+                                if (sAdmin == "Y" || sStatus != "P")
+                                {
+                                    sPos = "320";
+                                    if (sStatus == "Y")
+                                    {
+                                        sPos = "400";
+                                        svcRt = rptBiz.DeleteLCMCOURSE(jPost["M"].ToString(), Convert.ToInt32(jPost["oid"]), Convert.ToInt32(Session["URID"])
+                                                    , Session["URName"].ToString(), Convert.ToInt32(Session["DeptID"]), Session["DeptName"].ToString());
+
+                                        if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                                        else strView = "OK";
+                                    }
+                                    else strView = "해당 과정으로 작성된 신청서나 보고서가 있으므로 삭제 할 수 없습니다!";
+                                }
+                                else strView = "권한이 없습니다!";
+                            }
+                            else strView = "권한체크 실패!";
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    strView = "[" + sPos + "] " + ex.Message;
+                }                
+            }
+            return strView;
+        }
+        #endregion
+
+        #region [수강신청 및 결과 정보 화면]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string LcmInfo()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    if (jPost == null || jPost.Count == 0 || jPost["M"].ToString() == "" || jPost["ft"].ToString() == "") return "필수값 누락!";
+
+                    int iLcmId = StringHelper.SafeInt(jPost["oid"]);
+                    int iCourseId = StringHelper.SafeInt(jPost["csi"]);
+
+                    //초기 설정
+                    //rt = Bc.CtrlHandler.LcmCode(this);
+                    //if (rt != "") throw new Exception(rt);
+
+                    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+                    {
+                        svcRt = rpBiz.GetReport(jPost["M"].ToString(), iLcmId, jPost["ft"].ToString(), "", "", "", "", "", "", "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.LcmInfo = svcRt.ResultDataSet;
+                        ViewBag.JPost = jPost;
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+
+                    if (rt == "") rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_LcmInfo", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
             return rt;
         }
         #endregion

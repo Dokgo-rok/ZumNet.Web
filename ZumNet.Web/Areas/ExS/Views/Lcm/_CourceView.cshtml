@@ -1,0 +1,777 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@{
+    string sTitle = "교육과정 " + (ViewBag.JPost["M"].ToString() == "new" ? "작성" : "조회");
+
+    if (ViewBag.JPost["M"].ToString() == "new" || ViewBag.JPost["M"].ToString() == "edit")
+    {
+        //첨부파일 임시 저장 폴더
+        string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+        ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+    }
+
+}
+@functions{
+    private string NewCource(JObject post)
+    {
+        DataRowCollection colInst = null;
+        string rt = "";
+        bool bInst = false;
+        bool bTemp = false;
+
+        if (post["operator"].ToString() != "Y" && !ZumNet.Framework.Util.StringHelper.HasAcl(post["acl"].ToString(), "S"))
+        {
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                ZumNet.Framework.Core.ServiceResult svcRt = rpBiz.GetReport("IC", Convert.ToInt32(Session["URID"]), "LCM_INSTRUCTOR", "", "", "", "", "", "", "");
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    if (svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                    {
+                        colInst = svcRt.ResultDataSet.Tables[0].Rows;
+                        bInst = true;
+                    }
+                    else rt = Resources.Global.Auth_NoPermission;
+                }
+                else
+                {
+                    //에러페이지
+                    rt = svcRt.ResultMessage;
+                }
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (rt == "")
+        {
+            sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+
+            //sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\">접수정보</i></h6>");
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:21%\" /><col style=\"width:13%\" /><col style=\"width:22%\" /><col style=\"width:12%\" /><col style=\"width:19%\" /></colspan>");
+
+            //교육년도, 사내외, 교육방식
+            sb.Append("<tr><th class=\"bg-light\">교육년도</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "StdYear");
+            if (bInst)
+            {
+                foreach (DataRow r in colInst) sb.AppendFormat("<option value=\"{0}\">{0}년</option>", r["StdYear"].ToString());
+            }
+            else
+            {
+                sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(2013, DateTime.Now.AddYears(1).Year, DateTime.Now.Year));
+            }
+            //bInst = true;
+            sb.Append("</select></td>");
+
+            sb.Append("<th class=\"bg-light\">사내외</th><td>");
+            if (bInst)
+            {
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", "사내");
+            }
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "ClsCD1");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["lcm.class_a"])
+                {
+                    sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[2].ToString(), o[3].ToString());
+                }
+                sb.Append("</select></td>");
+            }
+
+            sb.Append("<th class=\"bg-light\">교육방식</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "ClsCD2");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["lcm.class_b"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[2].ToString(), o[3].ToString());
+            }
+            sb.Append("</select>");
+            sb.Append("</td></tr>");
+
+            //교육유형, 교육분야
+            sb.Append("<tr><th class=\"bg-light\">교육유형</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "ClsCD3");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["lcm.class_c"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[2].ToString(), o[3].ToString());
+            }
+            sb.Append("</select></td>");
+
+            sb.Append("<th class=\"bg-light\">교육분야</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "ClsCD4");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["lcm.class_d"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{0}</option>", o[3].ToString());
+            }
+            sb.AppendFormat("<option value=\"--WRITE--\">{0}</option>", "직접입력");
+            sb.Append("</select></td>");
+
+            sb.Append("<td colspan=\"2\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"50\" value=\"\" style=\"display:none\" />", "ClsDN4");
+            sb.Append("</td></tr>");
+
+            //과정명
+            sb.Append("<tr><th class=\"bg-light\">과정명</th><td colspan=\"5\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"100\" value=\"\" />", "CourseDN");
+            sb.Append("</td></tr>");
+
+            //교육기관
+            sb.Append("<tr><th class=\"bg-light\">교육기관</th><td colspan=\"5\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"100\" value=\"\" />", "InstDN");
+            sb.Append("</td></tr>");
+
+            //교육장소
+            sb.Append("<tr><th class=\"bg-light\">교육장소</th><td colspan=\"5\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"100\" value=\"\" />", "Place");
+            sb.Append("</td></tr>");
+
+            //교육일자
+            sb.Append("<tr><th class=\"bg-light\">교육일자</th><td colspan=\"5\">");
+            sb.Append("<div class=\"d-sm-flex\">");
+            sb.Append("<div class=\"form-inline input-daterange\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control start-date\" data-inputmask=\"date;yyyy-MM-dd\" style=\"width:100px\" value=\"\" />", "FromDate");
+            sb.Append("<span class=\"px-1\">~</span>");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control end-date\" data-inputmask=\"date;yyyy-MM-dd\" style=\"width:100px\" value=\"\" />", "ToDate");
+            sb.Append("</div>");
+            sb.Append("<div class=\"flex-fill form-inline mt-1 mt-sm-0\">");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control text-right px-1 ml-sm-1\" data-inputmask=\"number;3;0\" style=\"width:40px\" value=\"\" /><span class=\"ml-1\">일간</span>", "DurDay");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control text-right px-1 ml-1\" data-inputmask=\"number;3;0;\" style=\"width:40px\" value=\"\" /><span class=\"ml-1\">시간</span>", "DurTime");
+            sb.Append("<span class=\"text-danger ml-1\">(1일 최대 8시간)</span>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+            sb.Append("</td></tr>");
+
+            //교육비용
+            sb.Append("<tr><th class=\"bg-light\">교육비용</th><td>");
+            sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control text-right px-1\" data-inputmask=\"number;10;0;\" style=\"width:100px\" value=\"\" />", "Cost1");
+            sb.Append("</td><th class=\"bg-light\">폐쇄여부</td><td colspan=\"3\">");
+            sb.Append("<input type=\"text\" class=\"form-control\" readonly value=\"\" />");
+            sb.Append("</td></tr>");
+
+            //사내교육강사
+            if (bInst)
+            {
+                sb.Append("<tr id=\"_row_clscd1\"><th class=\"bg-light\">교육강사</th><td>");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" readonly value=\"{1}\" />", "Instructor", Session["URName"].ToString());
+                sb.Append("</td>");
+
+                sb.Append("<th class=\"bg-light\">부서</th><td>");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" readonly value=\"{1}\" />", "InstructorInfo1", Session["DeptName"].ToString());
+                sb.Append("</td>");
+
+                sb.Append("<th class=\"bg-light\">직위</th><td>");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" readonly value=\"{1}\" />", "InstructorInfo2", Session["CodeName1"].ToString());
+                sb.Append("</td></tr>");
+            }
+            else
+            {
+                sb.Append("<tr id=\"_row_clscd1\" style=\"display:none\"><th class=\"bg-light\"><a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.showInstLayer();\">교육강사</a></th><td>");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" readonly value=\"\" />", "Instructor");
+                sb.Append("</td>");
+
+                sb.Append("<th class=\"bg-light\">부서</th><td>");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" readonly value=\"\" />", "InstructorInfo1");
+                sb.Append("</td>");
+
+                sb.Append("<th class=\"bg-light\">직위</th><td>");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" readonly value=\"\" />", "InstructorInfo2");
+                sb.Append("</td></tr>");
+            }
+
+            //세부사항
+            sb.Append("<tr><th class=\"bg-light\">세부사항</th><td colspan=\"5\">");
+            sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"2000\"></textarea>", "Contents");
+            sb.Append("</td></tr>");
+
+            //기타
+            sb.Append("<tr><th class=\"bg-light\">기타</th><td colspan=\"5\">");
+            sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"500\"></textarea>", "Etc");
+            sb.Append("</td></tr>");
+
+            //파일첨부
+            sb.Append("<tr><th class=\"bg-light\">파일</th><td colspan=\"5\">");
+            sb.Append(RenderFile(post["M"].ToString(), null));
+            sb.Append("</td></tr>");
+
+            //작성
+            sb.Append("<tr><th class=\"bg-light\">작성</th><td colspan=\"5\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", Session["DeptName"].ToString() + ". " + Session["URName"].ToString() + ". " + DateTime.Now.ToString("yy-MM-dd HH:mm"));
+            sb.Append("</td></tr>");
+
+            //최종수정
+            //sb.Append("<tr><th class=\"bg-light\">최종수정</td><td colspan=\"5\">");
+            //sb.AppendFormat("<input type=\"text\" class=\"txtRead\" readonly value=\"{0}\" />", strFld02);
+            //sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            //기타 숨은 필드
+            if (bInst)
+            {
+                sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "InstructorID", Session["URID"].ToString()); //강사ID
+                sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"A10\" />", "ClsCD1"); //숨은필드
+                sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"사내\" />", "ClsDN1"); //숨은필드
+            }
+            else
+            {
+                sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "InstructorID"); //강사ID
+                sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "ClsDN1"); //숨은필드
+            }
+
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "ClsDN2"); //숨은필드
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "ClsDN3"); //숨은필드
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Register);
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5 h5\">{0}</p>", rt);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+
+    private string EditCource(JObject post, DataSet ds)
+    {
+        DataRow row = null;
+        DataTable dtFile = null;
+
+        string sAuth = "D"; //관리자 A, 작성자/수정자 B, 강사 C, 일반 D
+        bool bDel = false; //폐쇄여부
+        bool bTemp = false;
+
+        string strFld01 = "";
+        string strFld02 = "";
+        string strFld03 = "";
+
+        if (post["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(post["acl"].ToString(), "S")) sAuth = "A";
+
+        StringBuilder sb = new StringBuilder();
+
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            row = ds.Tables[0].Rows[0];
+            if (ds.Tables.Count > 1) dtFile = ds.Tables[1];
+
+            bDel = (row["DeleteDate"].ToString() != "") ? true : false;
+            if (sAuth != "A")
+            {
+                if (Session["URID"].ToString() == row["CreatorID"].ToString() || Session["URID"].ToString() == row["EditorID"].ToString()) sAuth = "B";
+                else if (row["ClsCD1"].ToString() == "A10" && Session["URID"].ToString() == row["InstructorID"].ToString()) sAuth = "C";
+                else sAuth = "D";
+            }
+
+            strFld01 = (row["CreatorDept"].ToString() == "" ? "" : row["CreatorDept"].ToString() + ". ") + row["Creator"].ToString() + ". " + Convert.ToDateTime(row["CreateDate"]).ToString("yy-MM-dd HH:mm"); //작성정보
+            if (row["LastModified"].ToString() != "")
+                strFld02 = (row["EditorDept"].ToString() == "" ? "" : row["EditorDept"].ToString() + ". ") + row["Editor"].ToString() + ". " + Convert.ToDateTime(row["LastModified"]).ToString("yy-MM-dd HH:mm"); //수정정보
+
+            strFld03 = (row["DeleteDate"].ToString() != "") ? "폐쇄(" + Convert.ToDateTime(row["DeleteDate"]).ToString("yyyy-MM-dd HH:mm") + ")" : "";
+
+            sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:21%\" /><col style=\"width:13%\" /><col style=\"width:22%\" /><col style=\"width:12%\" /><col style=\"width:19%\" /></colspan>");
+
+            sb.Append("<tr><th class=\"bg-light\">교육년도</th><td>");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["StdYear"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "StdYear");
+                if (sAuth == "C")
+                {
+                    sb.AppendFormat("<option value=\"{0}\">{0}년</option>", Convert.ToInt32(row["StdYear"]));
+                }
+                else
+                {
+                    sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(2013, DateTime.Now.AddYears(1).Year, DateTime.Now.Year));
+                }
+                sb.Append("</select>");
+            }
+            sb.Append("</td><th class=\"bg-light\">사내외</th><td>");
+            //if (bReadOnly)
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["ClsDN1"].ToString());
+            //else
+            //{
+            //    sb.AppendFormat("<select name=\"RegChangeData\" data-field=\"{0}\" style=\"width:\" onchange=\"event_Select_onchange(this, 'ClsDN1');\">", "ClsCD1");
+            //    foreach (object[] o in optList1)
+            //    {
+            //        if (row["ClsCD1"].ToString() == o[2].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[2].ToString(), o[3].ToString());
+            //        else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[2].ToString(), o[3].ToString());
+            //    }
+            //    sb.Append("</select>");
+            //}
+            sb.Append("</td><th class=\"bg-light\">교육방식</th><td>");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["ClsDN2"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "ClsCD2");
+                foreach (object[] o in ViewBag.CodeTable["lcm.class_b"])
+                {
+                    if (row["ClsCD2"].ToString() == o[2].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[2].ToString(), o[3].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[2].ToString(), o[3].ToString());
+                }
+                sb.Append("</select>");
+            }
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">교육유형</th><td>");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["ClsDN3"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "ClsCD3");
+                foreach (object[] o in ViewBag.CodeTable["lcm.class_c"])
+                {
+                    if (row["ClsCD3"].ToString() == o[2].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[2].ToString(), o[3].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[2].ToString(), o[3].ToString());
+                }
+                sb.Append("</select>");
+            }
+            sb.Append("</td><th class=\"bg-light\">교육분야</th><td>");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["ClsDN4"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "ClsCD4");
+                foreach (object[] o in ViewBag.CodeTable["lcm.class_d"]) { if (row["ClsDN4"].ToString() == o[3].ToString()) { bTemp = true; break; } } //직접입력 여부 확인
+                foreach (object[] o in ViewBag.CodeTable["lcm.class_d"])
+                {
+                    if (bTemp && row["ClsDN4"].ToString() == o[3].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{0}</option>", o[3].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{0}</option>", o[3].ToString());
+                }
+                sb.AppendFormat("<option{0} value=\"--WRITE--\">{1}</option>", (bTemp ? "" : " selected=\"selected\""), "직접입력");
+                sb.Append("</select>");
+            }
+            sb.Append("</td><td colspan=\"2\">");
+            if (bDel || sAuth == "D")
+                sb.Append("&nbsp;");
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"50\" value=\"{1}\"{2} />", "ClsDN4", row["ClsDN4"].ToString(), (bTemp ? " style=\"display:none\"" : ""));
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">과정명</th><td colspan=\"5\">");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["CourseDN"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"100\" value=\"{1}\" />", "CourseDN", row["CourseDN"].ToString());
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">교육기관</th><td colspan=\"5\">");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["InstDN"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"100\" value=\"{1}\" />", "InstDN", row["InstDN"].ToString());
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">교육장소</th><td colspan=\"5\">");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["Place"].ToString());
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" maxlength=\"100\" value=\"{1}\" />", "Place", row["Place"].ToString());
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">교육일자</th><td colspan=\"5\">");
+            sb.Append("<div class=\"d-sm-flex align-items-center\">");
+            if (bDel || sAuth == "D")
+            {
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" style=\"width:100px\" />", row["FromDate"].ToString());
+                sb.AppendFormat("({0})", row["FromWeekDay"].ToString().Replace("요일", ""));
+                sb.AppendFormat("&nbsp;~&nbsp;<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" style=\"width:100px\" />", row["ToDate"].ToString());
+                sb.AppendFormat("({0})", row["ToWeekDay"].ToString().Replace("요일", ""));
+                sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control bg-white text-right px-1 ml-1\" readonly value=\"{0}\" style=\"width:40px\" />일간", row["DurDay"].ToString());
+                sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control bg-white text-right px-1 ml-1\" readonly value=\"{0}\" style=\"width:40px\" />시간", row["DurTime"].ToString());
+            }
+            else
+            {
+                sb.Append("<div class=\"form-inline input-daterange\">");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control start-date\" data-inputmask=\"date;yyyy-MM-dd\" style=\"width:100px\" value=\"{1}\" />", "FromDate", row["FromDate"].ToString());
+                sb.Append("<span class=\"px-1\">~</span>");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control end-date\" data-inputmask=\"date;yyyy-MM-dd\" style=\"width:100px\" value=\"{1}\" />", "ToDate", row["ToDate"].ToString());
+                sb.Append("</div>");
+                sb.Append("<div class=\"flex-fill form-inline mt-1 mt-sm-0\">");
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control text-right px-1 ml-sm-1\" data-inputmask=\"number;3;0\" style=\"width:40px\" value=\"{1}\" /><span class=\"ml-1\">일간</span>", "DurDay", row["DurDay"].ToString());
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control text-right px-1 ml-1\" data-inputmask=\"number;3;0;\" style=\"width:40px\" value=\"{1}\" /><span class=\"ml-1\">시간</span>", "DurTime", row["DurTime"].ToString());
+            }
+            sb.Append("<span class=\"text-danger ml-1\">(1일 최대 8시간)</span>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">교육비용</th><td>");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white text-right\" readonly value=\"{0}\" />", ZumNet.Web.Bc.CommonUtils.CvtCurrency(row["Cost1"].ToString()));
+            else
+                sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control\" style=\"width:100px\" data-inputmask=\"number;10;0;\" value=\"{1}\" />", "Cost1", ZumNet.Web.Bc.CommonUtils.CvtCurrency(row["Cost1"].ToString()));
+            sb.Append("</td><th class=\"bg-light\">폐쇄여부</td><td colspan=\"3\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", strFld03);
+            sb.Append("</td></tr>");
+
+            if (row["ClsCD1"].ToString() == "A10") //사내교육강사
+            {
+                if (bDel || sAuth == "C" || sAuth == "D")
+                {
+                    sb.Append("<tr><th class=\"bg-light\">교육강사</th><td>");
+                    sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["Instructor"].ToString());
+                    sb.Append("</td>");
+
+                    sb.Append("<th class=\"bg-light\">부서</th><td>");
+                    sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["InstructorInfo1"].ToString());
+                    sb.Append("</td>");
+
+                    sb.Append("<th class=\"bg-light\">직위</th><td>");
+                    sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", row["InstructorInfo2"].ToString());
+                    sb.Append("</td></tr>");
+                }
+                else
+                {
+                    sb.Append("<tr><th class=\"bg-light\"><a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.showInstLayer();\">교육강사</a></th><td>");
+                    sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bg-white\" readonly value=\"{1}\" />", "Instructor", row["Instructor"].ToString());
+                    sb.Append("</td>");
+
+                    sb.Append("<th class=\"bg-light\">부서</th><td>");
+                    sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bg-white\" readonly value=\"{1}\" />", "InstructorInfo1", row["InstructorInfo1"].ToString());
+                    sb.Append("</td>");
+
+                    sb.Append("<th class=\"bg-light\">직위</th><td>");
+                    sb.AppendFormat("<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bg-white\" readonly value=\"{1}\" />", "InstructorInfo2", row["InstructorInfo2"].ToString());
+                    sb.Append("</td></tr>");
+                }
+            }
+
+            sb.Append("<tr><th class=\"bg-light\">세부사항</th><td colspan=\"5\">");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<textarea class=\"form-control bg-white\" readonly>{0}</textarea>", row["Contents"].ToString());
+            else
+                sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"2000\">{1}</textarea>", "Contents", row["Contents"].ToString());
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">기타</td><td colspan=\"5\">");
+            if (bDel || sAuth == "D")
+                sb.AppendFormat("<textarea class=\"form-control bg-white\" readonly>{0}</textarea>", row["Etc"].ToString());
+            else
+                sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"500\">{1}</textarea>", "Etc", row["Etc"].ToString());
+            sb.Append("</td></tr>");
+
+            //파일첨부
+            sb.Append("<tr><th class=\"bg-light\">파일</th><td colspan=\"5\">");
+            if (!bDel && sAuth != "D") //____RVS____RV <= 메시지부분 S에 대해
+            {
+                sb.Append(RenderFile("edit", dtFile)); //파일첨부
+            }
+            else
+            {
+                sb.Append(RenderFile("view", dtFile)); //파일첨부
+            }
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">작성</td><td colspan=\"5\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", strFld01);
+            sb.Append("</td></tr>");
+
+            sb.Append("<tr><th class=\"bg-light\">최종수정</td><td colspan=\"5\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" readonly value=\"{0}\" />", strFld02);
+            sb.Append("</td></tr>");
+
+            sb.Append("</table>");
+
+            //기타 숨은 필드
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "ClsCD1", row["ClsCD1"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "ClsDN1", row["ClsDN1"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "ClsDN2", row["ClsDN2"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "ClsDN3", row["ClsDN3"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "InstructorID", row["InstructorID"].ToString());
+            if (row["ClsCD1"].ToString() != "A10") //사내교육이 아닌경우
+            {
+                sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "Instructor", row["Instructor"].ToString());
+                sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "InstructorInfo1", row["InstructorInfo1"].ToString());
+                sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "InstructorInfo2", row["InstructorInfo2"].ToString());
+            }
+
+            //sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "CurrentNM", Session["URName"].ToString()); //작업자
+            //sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "CurrentID", Session["URID"].ToString()); //작업자ID
+            //sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "CurrentDept", Session["DeptName"].ToString()); //작업자부서
+            //sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "CurrentDeptID", Session["DeptID"].ToString()); //작업자부서ID
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            if (sAuth != "D") //____RVS____RV <= 메시지부분 S에 대해
+            {
+                //if (bDel)
+                //{
+                //    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"restore\">{0}</button>", "복구");
+                //}
+                //else
+                //{
+                //    sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Save);
+                //    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"delete\">{0}</button>", Resources.Global.Delete);
+                //}
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Save);
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+            }
+            else
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            }
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5 h5\">{0}</p>", Resources.Global.NoItemShow);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+
+    private string ViewCource(JObject post, DataSet ds)
+    {
+        DataRow row = null;
+        DataTable dtFile = null;
+
+        string sAuth = "D"; //관리자 A, 작성자/수정자 B, 강사 C, 일반 D
+        bool bDel = false; //폐쇄여부
+
+        string strFld01 = "";
+        string strFld02 = "";
+        string strFld03 = "";
+
+        if (post["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(post["acl"].ToString(), "S")) sAuth = "A";
+
+        StringBuilder sb = new StringBuilder();
+
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            row = ds.Tables[0].Rows[0];
+            if (ds.Tables.Count > 1) dtFile = ds.Tables[1];
+
+            bDel = (row["DeleteDate"].ToString() != "") ? true : false;
+            if (sAuth != "A")
+            {
+                if (Session["URID"].ToString() == row["CreatorID"].ToString() || Session["URID"].ToString() == row["EditorID"].ToString()) sAuth = "B";
+                else if (row["ClsCD1"].ToString() == "A10" && Session["URID"].ToString() == row["InstructorID"].ToString()) sAuth = "C";
+                else sAuth = "D";
+            }
+
+            strFld01 = (row["CreatorDept"].ToString() == "" ? "" : row["CreatorDept"].ToString() + ". ") + row["Creator"].ToString() + ". " + Convert.ToDateTime(row["CreateDate"]).ToString("yy-MM-dd HH:mm"); //작성정보
+            if (row["LastModified"].ToString() != "")
+                strFld02 = (row["EditorDept"].ToString() == "" ? "" : row["EditorDept"].ToString() + ". ") + row["Editor"].ToString() + ". " + Convert.ToDateTime(row["LastModified"]).ToString("yy-MM-dd HH:mm"); //수정정보
+
+            strFld03 = (row["DeleteDate"].ToString() != "") ? "폐쇄(" + Convert.ToDateTime(row["DeleteDate"]).ToString("yyyy-MM-dd HH:mm") + ")" : "";
+
+            sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:21%\" /><col style=\"width:13%\" /><col style=\"width:22%\" /><col style=\"width:12%\" /><col style=\"width:19%\" /></colspan>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육년도</th><td><div class=\"p-1\">{0}</div></td>", row["StdYear"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">사내외</th><td><div class=\"p-1\">{0}</div></td>", row["ClsDN1"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">교육방식</th><td><div class=\"p-1\">{0}</div></td>", row["ClsDN2"].ToString());
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육유형</th><td><div class=\"p-1\">{0}</div></td>", row["ClsDN3"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">교육분야</th><td colspan=\"3\"><div class=\"p-1\">{0}</div></td>", row["ClsDN4"].ToString());
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">과정명</th><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", row["CourseDN"].ToString());
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육기관</th><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", row["InstDN"].ToString());
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육장소</th><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", row["Place"].ToString());
+
+            sb.Append("<tr><th class=\"bg-light\">교육일자</th><td colspan=\"5\"><div class=\"p-1\">");
+            sb.AppendFormat("{0} ({1})", row["FromDate"].ToString(), row["FromWeekDay"].ToString().Replace("요일", ""));
+            sb.AppendFormat("&nbsp;~&nbsp;{0} ({1})", row["ToDate"].ToString(), row["ToWeekDay"].ToString().Replace("요일", ""));
+            sb.AppendFormat("&nbsp;{0}일간&nbsp;&nbsp;{1}시간", row["DurDay"].ToString(), row["DurTime"].ToString());
+            sb.Append("<span class=\"text-danger ml-1\">(1일 최대 8시간)</span>");
+            sb.Append("</div></td></tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육비용</th><td><div class=\"p-1\">{0}</div></td>", ZumNet.Web.Bc.CommonUtils.CvtCurrency(row["Cost1"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">폐쇄여부</td><td colspan=\"3\"><div class=\"p-1\">{0}</div></td></tr>", strFld03);
+
+            if (row["ClsCD1"].ToString() == "A10") //사내교육강사
+            {
+                sb.AppendFormat("<tr><th class=\"bg-light\">교육강사</th><td><div class=\"p-1\">{0}</div></td>", row["Instructor"].ToString());
+                sb.AppendFormat("<th class=\"bg-light\">부서</th><td><div class=\"p-1\">{0}</div></td>", row["InstructorInfo1"].ToString());
+                sb.AppendFormat("<th class=\"bg-light\">직위</th><td><div class=\"p-1\">{0}</div></td>", row["InstructorInfo2"].ToString());
+                sb.Append("</tr>");
+            }
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">세부사항</th><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", StringHelper.ReplaceReply(row["Contents"].ToString()));
+            sb.AppendFormat("<tr><th class=\"bg-light\">기타</td><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", StringHelper.ReplaceReply(row["Etc"].ToString()));
+
+            //파일첨부
+            sb.Append("<tr><th class=\"bg-light\">파일</th><td colspan=\"5\">");
+            sb.Append(RenderFile("view", dtFile)); //파일첨부
+            sb.Append("</td></tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">작성</td><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", strFld01);
+            sb.AppendFormat("<tr><th class=\"bg-light\">최종수정</td><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", strFld02);
+            sb.Append("</table>");
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            if (sAuth != "D") //____RVS____RV <= 메시지부분 S에 대해
+            {
+                if (bDel) sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-secondary\" data-zm-menu=\"restore\">{0}</button>", "복구");
+                else
+                {
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"edit\">{0}</button>", Resources.Global.Edit);
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-secondary\" data-zm-menu=\"delete\">{0}</button>", Resources.Global.Delete);
+                }
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+            }
+            else
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            }
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5 h5\">{0}</p>", Resources.Global.NoItemShow);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+
+    private string RenderFile(string mode, DataTable file)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"zf-upload\">");
+        if (mode != "view")
+        {
+            sb.Append("<div class=\"zf-upload-select d-flex align-items-center\">");
+
+            sb.Append("<form id=\"uploadForm\" name=\"uploadForm\" action=\"/Common/Upload\" method=\"post\" enctype=\"multipart/form-data\" target=\"ifrView\">");
+            sb.Append("<div class=\"custom-file\">");
+            sb.Append("<input type=\"file\" class=\"custom-file-input\" id=\"file1\" name=\"file1\" multiple />");
+            sb.Append("<input name=\"completed\" type=\"hidden\" value=\"parent._zw.fu.complete\" />");
+            sb.Append("<label class=\"custom-file-label\" for=\"customFile\">이미지 / 문서 첨부</label>");
+            sb.Append("</div>"); //custom-file
+            sb.Append("</form>");
+            sb.Append("<div class=\"ml-2\">");
+            sb.Append("<button class=\"btn btn-outline-info btn-18 rounded-circle\" data-toggle=\"popover\" data-placement=\"bottom\" data-original-title=\"첨부 가능한 파일 형식은 다음과 같습니다\"><i class=\"fas fa-question fs-11\"></i></button>");
+            sb.Append("<div class=\"d-none\" data-help=\"file\">");
+            sb.Append("<div>");
+            sb.Append("<div class=\"row\">");
+            sb.Append("<div class=\"col-3 font-weight-bold\">* 이미지</div>");
+            sb.Append("<div class=\"col-9\" data-for=\"ext\">JPEG, JPG, GIF, PNG</div>");
+            sb.Append("</div>"); //row
+            sb.Append("<div class=\"row\">");
+            sb.Append("<div class=\"col-3 font-weight-bold\">* 문서</div>");
+            sb.Append("<div class=\"col-9\" data-for=\"ext\">PPT, PPTX, XLS, XLSX, DOC, DOCX, PDF, HWP, TXT</div>");
+            sb.Append("</div>"); //row
+            //sb.Append("<div class=\"row\">");
+            //sb.Append("<div class=\"col-3 font-weight-bold\">* 동영상</div>");
+            //sb.Append("<div class=\"col-9\" data-for=\"ext\">MOV, MP4, AVI</div>");
+            //sb.Append("</div>"); //row
+            sb.Append("</div>");
+            sb.Append("</div>"); //data-help
+            sb.Append("</div>"); //ml-2
+            sb.Append("</div>"); //d-flex
+        }
+
+        sb.AppendFormat("<div class=\"zf-upload-list border rounded mt-1 px-2 pt-2 pb-0{0}\">", file == null || file.Rows.Count == 0 ? " d-none" : "");
+
+        var jArr = new JArray();
+        if (file != null)
+        {
+            foreach (DataRow dr in file.Rows)
+            {
+                sb.Append("<div class=\"d-flex align-items-center mb-1\">");
+                sb.AppendFormat("<div class=\"mr-1\"><i class=\"{0}\"></i></div>", ZumNet.Web.Bc.CommonUtils.GetFileExt(dr["FileType"].ToString()));
+                sb.AppendFormat("<div class=\"mr-1\"><a href=\"/Common/DownloadV?fn={0}&fp={1}\" target=\"_blank\">{2}</a></div>"
+                                , Server.UrlEncode(SecurityHelper.ToBase64(dr["FileName"].ToString()))
+                                , Server.UrlEncode(SecurityHelper.ToBase64(dr["FilePath"].ToString() + "\\" + dr["SavedName"].ToString()))
+                                , dr["FileName"]);
+                sb.AppendFormat("<div class=\"mr-1 text-muted\">{0}</div>", ZumNet.Web.Bc.CommonUtils.StrFileSize(dr["FileSize"].ToString()));
+
+                if (mode == "edit")
+                {
+                    sb.AppendFormat("<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\" onclick=\"_zw.fu.delete('{0}', '{1}', '{2}');\"><i class=\"fe-x\"></i></button></div>"
+                                , dr["AttachID"].ToString()
+                                , Server.UrlEncode(dr["FileName"].ToString())
+                                , Server.UrlEncode(SecurityHelper.ToBase64(dr["FilePath"].ToString() + "\\" + dr["SavedName"].ToString())));
+                }
+
+                sb.Append("</div>");
+
+                JObject jTemp = JObject.Parse("{}");
+                jTemp["attachid"] = dr["AttachID"].ToString();
+                jTemp["filename"] = dr["FileName"].ToString();
+                jTemp["savedname"] = dr["SavedName"].ToString();
+                jTemp["size"] = dr["FileSize"].ToString();
+                jTemp["ext"] = dr["FileType"].ToString();
+                jTemp["filepath"] = dr["FilePath"].ToString();
+                jTemp["storagefolder"] = dr["StorageFolder"].ToString();
+
+                jArr.Add(jTemp);
+            }
+        }
+        sb.AppendFormat("<textarea id=\"__FILEINFO\" style=\"display:none\">{0}</textarea>", JsonConvert.SerializeObject(jArr));
+        sb.Append("</div>");
+        sb.Append("</div>"); //zf-upload
+
+        return sb.ToString();
+    }
+}
+<div class="modal-dialog modal-dialog-scrollable" style="max-width: 45rem">
+    <div class="modal-content bg-white z-list" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header py-2">
+            <h5 class="modal-title">@sTitle</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+
+        @if (ViewBag.JPost["M"].ToString() == "new")
+        {
+            @Html.Raw(NewCource(ViewBag.JPost))
+        }
+        else if (ViewBag.JPost["M"].ToString() == "edit")
+        {
+            @Html.Raw(EditCource(ViewBag.JPost, ViewBag.CourceInfo))
+        }
+        else
+        {
+            @Html.Raw(ViewCource(ViewBag.JPost, ViewBag.CourceInfo))
+        }
+    </div>
+</div>

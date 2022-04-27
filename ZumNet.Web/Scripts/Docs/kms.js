@@ -301,16 +301,17 @@ $(function () {
         if (fileList) {
             var vFile = fileList.split(_zw.T.uploader.df);
             for (var i = 0; i < vFile.length; i++) {
-                var vInfo = vFile[i].split(_zw.T.uploader.da);
+                var vInfo = vFile[i].split(_zw.T.uploader.da); //console.log(vInfo)
                 var v = {};
                 v["attachid"] = 0;
+                v["atttype"] = "O";
                 v["seq"] = i + 1;
                 v["isfile"] = "Y";
                 v["filename"] = vInfo[0];
                 v["savedname"] = vInfo[1];
                 v["size"] = vInfo[2];
                 v["ext"] = vInfo[7];
-                v["filepath"] = vInfo[4].substr(1).replace(/\//gi, '\\');
+                v["filepath"] = vInfo[4].split(':')[1]; //vInfo[4].substr(1).replace(/\//gi, '\\');
                 v["storagefolder"] = "";
 
                 jPost["attachlist"].push(v);
@@ -428,7 +429,7 @@ function DEXT5UPLOAD_CustomAction(uploadID, cmd) {
         if (webFile) {
             var vFile = webFile.split(_zw.T.uploader.df);
             for (var i = 0; i < vFile.length; i++) {
-                var vInfo = vFile[i].split(_zw.T.uploader.da); console.log(vInfo)
+                var vInfo = vFile[i].split(_zw.T.uploader.da); //console.log(vInfo)
                 if (i > 0) sId += ';';
                 sId += vInfo[5];
             }

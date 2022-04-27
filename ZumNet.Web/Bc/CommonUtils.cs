@@ -682,7 +682,7 @@ namespace ZumNet.Web.Bc
         public static string ReplaceReply(string s)
         {
             //return s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("&quot;", "\\\"").Replace("&quot", "\\\"").Replace(" ", "&nbsp;").Replace(Environment.NewLine, "<br />");
-            return s.Replace(" ", "&nbsp;").Replace(Environment.NewLine, "<br />");
+            return s.Replace(" ", "&nbsp;").Replace("\n", "<br />");
         }
 
         /// <summary>
@@ -2238,6 +2238,44 @@ namespace ZumNet.Web.Bc
                 {
                     strReturn = ex.Message;
                 }
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
+        /// VOC 코드 정보
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <returns></returns>
+        public static string LcmCode(this Controller ctrl)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            //코드정보 설정
+            string[,] codeConfig = {
+                        { "lcm", "class_a", "사내외" },
+                        { "lcm", "class_b", "교육방식" },
+                        { "lcm", "class_c", "교육유형" },
+                        { "lcm", "class_d", "교육분야" }
+
+            };
+
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+            {
+                svcRt = cb.SelectCodeDescription(codeConfig);
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ctrl.ViewBag.CodeConfig = codeConfig;
+                ctrl.ViewBag.CodeTable = svcRt.ResultDataDetail;
+            }
+            else
+            {
+                //에러페이지
+                strReturn = svcRt.ResultMessage;
             }
 
             return strReturn;

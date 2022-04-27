@@ -10,11 +10,27 @@
 .z-list-body .table .table-warning, .z-list-body .table .table-warning > th, .z-list-body .table .table-warning > td {
     border-color: #e8e8e9 !important;
 }
-/*.z-list-body .table {
-    border-collapse: collapse
+
+.modal-dialog .z-list .table th {
+    vertical-align: middle;
+    text-align: center
 }
-    .z-list-body .table thead tr th {
-        position: sticky;
-        top: 0;
-        border-top: 2px solid #ccc;
-    }*/
+
+.modal-dialog .z-list .table th, .modal-dialog .z-list .table td {
+    padding: .15rem !important;
+}
+
+    .modal-dialog .z-list .table td .custom-select {
+        height: 1.625rem;
+        padding-top: .175rem;
+        padding-bottom: .175rem;
+    }
+
+    .modal-dialog .z-list .table td input.form-control {
+        height: 1.625rem;
+    }
+
+    .modal-dialog .z-list .table td .input-group .btn {
+        height: 1.625rem;
+        padding-top: .175rem;
+    }

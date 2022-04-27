@@ -458,12 +458,12 @@ $(function () {
             "STD_TIME": "",     //상태유지 타이머 기준시각
             "CUR_TIME": "",     //현시각
             "POP_TIME": ""      //팝업시각
-        }
+        }        
     };
 
     _zw.C = [];     //사용되는 차트 배열
     _zw.G = null;   //사용되는 그리드
-    _zw.Fc = {      //Full Calendar
+    _zw.Fc = {      //Full Calendar : 추후 사용 고려
         _inst: null,
         _events: [],
         "setEvents": function (list) {
@@ -1438,7 +1438,6 @@ $(function () {
                         if (!$(this).prop('readonly') && !$(this).prop('disabled')) _zw.ut.maskInput($(this)[0]);
                     });
                 }
-                
             } else {
                 if (p && p.length > 0) {
                     p.each(function () {
@@ -1686,7 +1685,7 @@ $(function () {
         },
         "isMobile": function () {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent);
-        }
+        }        
     };
 
     //Calendar (일정,일지,자원 관련 공통 함수)
@@ -1899,6 +1898,218 @@ $(function () {
             }
         }
     };
+
+    //File Upload (기본 input[type=file] 이용)
+    _zw.fu = {
+        "fileList": [],
+        "bind": function () { //p : zf-upload 를 포함하는 parent (modal)
+            if ($('.zf-upload').length > 0) {
+                _zw.fu.fileList = JSON.parse($('.zf-upload #__FILEINFO').val()); //초기화
+                //console.log(_zw.fu.fileList)
+
+                var p = $('.zf-upload'), fm = p.find('#uploadForm')[0], fi = p.find('input[type="file"]');
+                fi.on('mouseover', function () {
+                    $(this).parent().find('.custom-file-label').addClass('border-primary');
+                });
+                fi.on('mouseout', function () {
+                    $(this).parent().find('.custom-file-label').removeClass('border-primary');
+                });
+
+                fi.on('change', function () {
+                    //var f = $(this).val().split('.'), ext = f[f.length - 1].toUpperCase(), bExt = false;
+                    //p.find('[data-help="file"] .row div[data-for="ext"]').each(function (idx, e) {
+                    //    //console.log(idx + " : " + $(this).text())
+                    //    if ($(this).text().indexOf(ext) != -1) { bExt = true; return false; }
+                    //});
+                    //if (!bExt) {
+                    //    bootbox.alert('첨부 가능한 파일 형식이 아닙니다!', function () { fm.reset(); }); return false;
+                    //}
+                    //if (_zw.fu.fileList.length > 0) {
+                    //    var n = $(this).val().split(String.fromCharCode(92)), fnm = n[n.length - 1];
+                    //    var idx = _zw.fu.fileList.findIndex(function (item) { return item.filename == fnm; });
+                    //    if (idx > -1) {
+                    //        bootbox.alert('중복된 파일입니다!', function () { fm.reset(); }); return false;
+                    //    }
+                    //}
+
+                    var x = $(this)[0];
+                    if ('files' in x) {
+                        if (x.files.length == 0) return false;
+                        else {
+                            for (var i = 0; i < x.files.length; i++) {
+                                var file = x.files[i]; //console.log(file.value + " : " + file.name + " : " + file.size);
+                                var f = file.name.split('.'), ext = f[f.length - 1].toUpperCase();
+                                if (!_zw.fu.checkExt(ext)) {
+                                    bootbox.alert('[' + ext + ']는 첨부 가능한 파일 형식이 아닙니다!', function () { fm.reset(); }); return false;
+                                }
+                                if (!_zw.fu.checkDouble(file.name)) {
+                                    bootbox.alert('[' + file.name + ']는 중복된 파일입니다!', function () { fm.reset(); }); return false;
+                                }
+                            }
+                        }
+                    } else {
+                        if (x.value == '') return false;
+                        else {
+                            f = x.value;
+                            var n = f.split(String.fromCharCode(92)), fmn = n[n.length - 1], f = fmn.split('.'), ext = f[f.length - 1].toUpperCase();
+                            if (!_zw.fu.checkExt(ext)) {
+                                bootbox.alert('[' + ext + ']는 첨부 가능한 파일 형식이 아닙니다!', function () { fm.reset(); }); return false;
+                            }
+                            if (!_zw.fu.checkDouble(fm)) {
+                                bootbox.alert('[' + fmn + ']는 중복된 파일입니다!', function () { fm.reset(); }); return false;
+                            }
+                        }
+                    }
+                    fm.submit();
+                });
+
+                p.find('.btn[data-toggle="popover"]').popover({
+                    html: true,
+                    content: function () { return p.find('[data-help="file"]').html(); }
+                });
+            }
+        },
+        "checkExt": function (ext) {
+            var bExt = false;
+            $('.zf-upload [data-help="file"] .row div[data-for="ext"]').each(function (idx, e) {
+                //console.log(idx + " : " + $(this).text())
+                if ($(this).text().indexOf(ext) != -1) { bExt = true; return false; }
+            });
+            return bExt;
+        },
+        "checkDouble": function (fm) {
+            if (_zw.fu.fileList.length > 0) {
+                var idx = _zw.fu.fileList.findIndex(function (item) { return item.filename == fm; });
+                if (idx > -1) return false;
+            }
+            return true;
+        },
+        "complete": function (msg) {
+            $('.zf-upload #uploadForm')[0].reset();
+            var rt = decodeURIComponent(msg).replace(/\+/gi, ' '), iFileCnt = _zw.fu.fileList.length;
+            if (rt.substr(0, 2) == 'OK') {
+                var vFile = rt.substr(2).split(_zw.T.uploader.df);
+                for (var i = 0; i < vFile.length; i++) {
+                    var vInfo = vFile[i].split(_zw.T.uploader.da);
+                    var s = "<div class=\"d-flex align-items-center mb-1\">"
+                        + "<div class=\"mr-1\"><i class=\"" + _zw.fu.fileExt(vInfo[2]) + "\"></i></div>"
+                        + "<div class=\"mr-1\"><a href=\"/Common/DownloadV?fn=" + encodeURIComponent(_zw.base64.encode(vInfo[0])) + "&fp=" + encodeURIComponent(_zw.base64.encode(vInfo[4])) + "\" target=\"_blank\">" + vInfo[0] + "</a></div>"
+                        + "<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\" onclick=\"_zw.fu.delete('','" + encodeURIComponent(vInfo[0]) + "','" + encodeURIComponent(_zw.base64.encode(vInfo[4])) + "')\"><i class=\"fe-x\"></i></button></div>"
+                        + "</div>";
+
+                    $('.zf-upload .zf-upload-list').append(s).removeClass('d-none');
+
+                    var v = {};
+                    v["attachid"] = 0;
+                    v["atttype"] = "O";
+                    v["seq"] = iFileCnt + i + 1;
+                    v["isfile"] = "Y";
+                    v["filename"] = vInfo[0];
+                    v["savedname"] = vInfo[1];
+                    v["ext"] = vInfo[2];
+                    v["size"] = vInfo[3];
+                    v["filepath"] = vInfo[4];
+                    v["storagefolder"] = "";
+
+                    _zw.fu.fileList.push(v);
+                }
+            } else {
+                bootbox.alert(rt); return false;
+            }
+            //console.log(_zw.fu.fileList)
+        },
+        "delete": function (id, fm, path) {
+            if (fm != '') fm = decodeURIComponent(fm); //console.log(fm + " : " + _zw.base64.decode(decodeURIComponent(path)))
+            var p = _zw.ut.eventBtn().parent().parent();
+
+            bootbox.confirm('선택한 파일을 삭제하시겠습니까?', function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Common/DeleteAttach",
+                        data: '{xf:"' + _zw.V.xfalias + '",tgtid:"' + id + '",fp:"' + path + '"}',
+                        success: function (res) {
+                            if (res == "OK") {
+                                p.remove();
+                                var idx = _zw.fu.fileList.findIndex(function (item) {
+                                    if (id != '' && parseInt(id) > 0) return item.attachid == id;
+                                    else return item.filename == fm;
+                                });
+                                if (idx > -1) _zw.fu.fileList.splice(idx, 1);
+                                if (_zw.fu.fileList.length == 0) $('.zf-upload .zf-upload-list').addClass('d-none');
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
+            
+        },
+        "fileExt": function (ext) {
+            var rt = '';
+            switch (ext.toLowerCase()) {
+                case "mht":
+                    rt = "far fa-file-alt text-danger";
+                    break;
+
+                case "txt":
+                    rt = "far fa-file-alt text-secondary";
+                    break;
+
+                case "zip":
+                    rt = "far fa-file-archive text-purple";
+                    break;
+
+                case "doc":
+                case "docx":
+                    rt = "far fa-file-word text-blue";
+                    break;
+
+                case "xls":
+                case "xlsx":
+                    rt = "far fa-file-excel text-teal";
+                    break;
+
+                case "ppt":
+                case "pptx":
+                    rt = "far fa-file-powerpoint text-danger";
+                    break;
+
+                case "pdf":
+                    rt = "far fa-file-pdf text-danger";
+                    break;
+
+                case "png":
+                case "bmp":
+                case "jpg":
+                case "gif":
+                    rt = "far fa-file-image text-twitter";
+                    break;
+
+                case "avi":
+                case "mkv":
+                case "mov":
+                case "mp4":
+                case "mpg":
+                case "wmv":
+                    rt = "far fa-file-video text-facebook";
+                    break;
+
+                case "mp3":
+                case "ogg":
+                case "wma":
+                case "wav":
+                    rt = "far fa-file-audio text-secondary";
+                    break;
+
+                default:
+                    rt = "far fa-file text-secondary";
+                    break;
+            }
+            return rt;
+        },
+        "fileSize": function (len) {
+        }
+    }
 
     //Base64 Encode, Decode
     _zw.base64 = {

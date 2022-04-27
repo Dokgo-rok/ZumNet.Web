@@ -1,20 +1,12 @@
 ﻿@using System.Collections;
 @using System.Data;
 @using System.Text;
-@using System.Threading;
 @using Newtonsoft.Json;
 
 @{
-    //부재자현황, FORM_LEAVEUPDATE
+    //교육시간집계대장 , REGISTER_EDUTIME
 
     ConfigColumn();
-
-    if (ViewBag.R.lv["start"].ToString() == "")
-    {
-        ViewBag.R.lv["start"] = DateTime.Now.ToString("yyyy-MM-") + "01";
-    }
-
-    //Response.Write("=======" + ViewBag.R.lv.cd1.ToString());
 }
 
 @functions {
@@ -24,13 +16,12 @@
 
     private void ConfigColumn()
     {
-        //크레신 : 직출직퇴 현황
-        string[,] arr = { { "SEQ", "NO", "5%", "", "" }, { "APPLICANTDEPT", "부서명", "15%", "L", "Y" }, { "APPLICANT", "이름", "8%", "", "Y" }
-                            , { "COMPANION", "동행자", "10%", "", "Y" }, { "OUTSIDECODE", "구분", "8%", "", "Y" }, { "FROMDATE", "시작일", "12%", "", "" }
-                            , { "FROMTIME", "시작시간", "7%", "", "" }, { "TOTIME", "종료시간", "7%", "", "" }, { "TODATE", "종료일", "12%", "", "" }
-                            , { "MESSAGEID", "결재문서", "8%", "", "" }, { "DocStatus", "결재상태", "8%", "", "" }};
+        //컬럼 : id,표기,넓이,정렬,검색여부
+        string[,] arr = { { "stdyear", "구분년도", "11%", "", "" }, { "ApplDept", "신청부서/구분", "34%", "L", "" }
+                            , { "DisplayName", "신청자", "11%", "", "Y" }, { "ClsDN1", "사내외", "11%", "", "" },{ "clsdn2", "교육방식", "11%", "", "" }
+                            , { "Item1", "교육유형", "11%", "", "" },{ "Time", "교육시간", "11%", "", "" }
+            };
         this._columnConfig = arr;
-        this._tblWidth = "100%";
     }
 
     private string RenderColumnHeader(string mode)
@@ -76,35 +67,15 @@
             sb.Append("<tbody>");
 
             DataTable dt = data.Tables[0];
-            DataRow[] rowCol = null;
-
             foreach (DataRow row in dt.Rows)
             {
-                sb.AppendFormat("<tr id=\"_{0}\">", row["MessageID"].ToString());
-
+                sb.Append("<tr>");
 
                 for (int i = 0; i < _columnConfig.GetLength(0); i++)
                 {
                     strID = _columnConfig[i, 0].ToString();
+                    strValue = row[strID].ToString();
 
-                    if (strID.ToUpper() == "SEQ")
-                    {
-                        strValue = iRow.ToString();
-                    }
-                    else if (strID == "PublishDate" || strID == "PIStart")
-                    {
-                        strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
-                    }
-                    else if (strID == "MESSAGEID")
-                    {
-                        strValue = row[strID].ToString();
-                        if (strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">관련문서</a>";
-                    }
-                    else
-                    {
-                        strValue = row[strID].ToString();
-                    }
-                    //strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
                     sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "", strValue);
                 }
                 sb.Append("</tr>");
@@ -147,45 +118,17 @@
 
     private string ListCond()
     {
-        string swidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-70 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
-
+        int iYear = ViewBag.R.lv.start != "" && Convert.ToInt32(ViewBag.R.lv.start) > 0 ? Convert.ToInt32(ViewBag.R.lv.start) : DateTime.Now.Year;
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", swidth);
+        sb.Append("<div class=\"input-group z-list-cond d-flex justify-content-end\">");
 
-        sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
-        sb.Append("<div class=\"input-group-prepend\">");
-        sb.Append("<span class=\"input-group-text\">~</span>");
-        sb.Append("</div>");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control end-date px-1\" value=\"{0}\">", ViewBag.R.lv.end);
-        sb.AppendFormat("<div class=\"input-group-append{0}\">", _columnConfig != null && _columnConfig.GetLength(0) > 0 ? "  d-flex d-sm-none" : "");
+        sb.Append("<select class=\"custom-select ml-1 start-date\">");
+        sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(2009, DateTime.Now.Year, iYear));
+        sb.Append("</select>");
+        sb.Append("<span class=\"input-group-append\">");
         sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
-        sb.Append("</div>");
-        sb.Append("</div>");
-
-        if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
-        {
-            sb.Append("<div class=\"z-list-search input-group d-none d-sm-flex\">");
-            sb.Append("<select class=\"custom-select ml-1\" id=\"_SearchSelect\">");
-            sb.AppendFormat("<option value=\"\">{0}..</option>", Resources.Global.Select);
-            for (int i = 0; i < _columnConfig.GetLength(0); i++)
-            {
-                if (_columnConfig[i, 4].ToString() == "Y")
-                {
-                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == ViewBag.R.lv.cd1.ToString() ? " selected" : "");
-                }
-
-            }
-            sb.Append("</select>");
-            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, ViewBag.R.lv.cd2.ToString());
-
-            sb.Append("<span class=\"input-group-append\">");
-            sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
-            sb.Append("</span>");
-            sb.Append("</div>");
-        }
-
+        sb.Append("</span>");
         sb.Append("</div>"); //z-list-cond
         return sb.ToString();
     }

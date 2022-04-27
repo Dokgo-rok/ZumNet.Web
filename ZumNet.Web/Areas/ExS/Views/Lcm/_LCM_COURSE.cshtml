@@ -6,6 +6,12 @@
 
 @{
     ConfigColumn(ViewBag.Mode);
+
+    if (ViewBag.Mode == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()));
+        Response.End();
+    }
 }
 
 @functions {
@@ -73,10 +79,10 @@
             }
             sb.Append("</colgroup>");
 
-            sb.Append("<thead><tr class=\"success\">");
+            sb.Append("<thead><tr class=\"col-header\">");
             for (int i = 0; i < _columnConfig.GetLength(0); i++)
             {
-                sb.AppendFormat("<th class=\"xls_th\">{0}</th>", _columnConfig[i, 1].ToString());
+                sb.AppendFormat("<th style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</th>", _columnConfig[i, 1].ToString());
             }
             sb.Append("</tr></thead>");
 
@@ -88,7 +94,7 @@
         }
     }
 
-    private string ViewList(string mode, DataSet data, string sortCol, string sortType, string formTable)
+    private string ViewList(string mode, DataSet data, string sortCol, string sortType)
     {
         StringBuilder sb = new StringBuilder();
         sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 1000px\">");
@@ -118,11 +124,10 @@
                     else if (strID == "CourseDN")
                     {
                         strValue = row[strID].ToString();
-                        if (strValue != "")
+                        if (mode != "xls" && strValue != "")
                         {
                             strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewCourse('V');\" title=\"{0}\">{0}</a>", strValue);
                         }
-                        else { strValue = ""; }
 
                         if (row["DeleteDate"].ToString() != "") strValue = "<span class=\"text-danger\">[폐쇄]</span>" + strValue;
                     }
@@ -144,8 +149,16 @@
                         strValue = row[strID].ToString();
                     }
 
-                    if (_columnConfig[i, 3].ToString() == "") sb.AppendFormat("<td class=\"\">{0}</td>", strValue);
-                    else sb.AppendFormat("<td class=\"text-{0}\">{1}</td>", _columnConfig[i, 3].ToString(), strValue);
+                    if (mode == "xls")
+                    {
+                        if (_columnConfig[i, 3].ToString() == "") sb.AppendFormat("<td style=\"text-align: center\">{0}</td>", strValue);
+                        else sb.AppendFormat("<td style=\"text-align: {0}\">{1}</td>", _columnConfig[i, 3].ToString(), strValue);
+                    }
+                    else
+                    {
+                        if (_columnConfig[i, 3].ToString() == "") sb.AppendFormat("<td class=\"\">{0}</td>", strValue);
+                        else sb.AppendFormat("<td class=\"text-{0}\">{1}</td>", _columnConfig[i, 3].ToString(), strValue);
+                    }
                     strValue = "";
                 }
                 sb.Append("</tr>");
@@ -164,6 +177,24 @@
         if (data != null) { data.Dispose(); data = null; }
         return sb.ToString();
     }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = "LCM_COURSE_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">td {border:1px solid #c6c6c6}</style><head><body>");
+        //Response.Write("<style type=\"text/css\">table {border:1px solid #c6c6c6} td {border-right:1px solid #c6c6c6;border-bottom:1px solid #c6c6c6}</style>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
 }
 
-@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), ViewBag.R.ft.ToString()))
+@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))

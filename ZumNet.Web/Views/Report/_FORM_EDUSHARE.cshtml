@@ -1,20 +1,12 @@
 ﻿@using System.Collections;
 @using System.Data;
 @using System.Text;
-@using System.Threading;
 @using Newtonsoft.Json;
 
 @{
-    //부재자현황, FORM_LEAVEUPDATE
+    //사외교육결과 공유현황판 , FORM_EDUSHARE
 
     ConfigColumn();
-
-    if (ViewBag.R.lv["start"].ToString() == "")
-    {
-        ViewBag.R.lv["start"] = DateTime.Now.ToString("yyyy-MM-") + "01";
-    }
-
-    //Response.Write("=======" + ViewBag.R.lv.cd1.ToString());
 }
 
 @functions {
@@ -24,13 +16,13 @@
 
     private void ConfigColumn()
     {
-        //크레신 : 직출직퇴 현황
-        string[,] arr = { { "SEQ", "NO", "5%", "", "" }, { "APPLICANTDEPT", "부서명", "15%", "L", "Y" }, { "APPLICANT", "이름", "8%", "", "Y" }
-                            , { "COMPANION", "동행자", "10%", "", "Y" }, { "OUTSIDECODE", "구분", "8%", "", "Y" }, { "FROMDATE", "시작일", "12%", "", "" }
-                            , { "FROMTIME", "시작시간", "7%", "", "" }, { "TOTIME", "종료시간", "7%", "", "" }, { "TODATE", "종료일", "12%", "", "" }
-                            , { "MESSAGEID", "결재문서", "8%", "", "" }, { "DocStatus", "결재상태", "8%", "", "" }};
+        //컬럼 : id,표기,넓이,정렬,검색여부
+        string[,] arr = { { "SEQ", "NO", "3%", "", "" }, { "CLSDN4", "교육분야", "10%", "", "Y" }, { "COURSEDN", "과정명", "25%", "L", "Y" }
+                        , { "INSTDN", "교육기관", "15%", "L", "Y" }, { "FROMDATE", "시작일", "8%", "", "" }, { "TODATE", "종료일", "8%", "", "" }
+                        , { "APPLDEPT", "수강부서", "10%", "", "Y" }, { "APPLDN", "수강자", "10%", "", "Y" }, {"MessageID", "결재문서", "", "", ""}
+
+            };
         this._columnConfig = arr;
-        this._tblWidth = "100%";
     }
 
     private string RenderColumnHeader(string mode)
@@ -49,7 +41,7 @@
         sb.Append("<tr class=\"table-success\">");
         for (int i = 0; i < _columnConfig.GetLength(0); i++)
         {
-            if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y") strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort();\">{0}</a>", _columnConfig[i, 1].ToString());
+            if (mode != "xls" && _columnConfig[i, 4].ToString() == "___Y") strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort();\">{0}</a>", _columnConfig[i, 1].ToString());
             else strValue = _columnConfig[i, 1].ToString();
 
             if (mode != "xls")
@@ -76,35 +68,31 @@
             sb.Append("<tbody>");
 
             DataTable dt = data.Tables[0];
-            DataRow[] rowCol = null;
-
             foreach (DataRow row in dt.Rows)
             {
-                sb.AppendFormat("<tr id=\"_{0}\">", row["MessageID"].ToString());
-
+                sb.Append("<tr>");
 
                 for (int i = 0; i < _columnConfig.GetLength(0); i++)
                 {
                     strID = _columnConfig[i, 0].ToString();
-
                     if (strID.ToUpper() == "SEQ")
                     {
                         strValue = iRow.ToString();
                     }
-                    else if (strID == "PublishDate" || strID == "PIStart")
+                    else if (strID == "_FROMDATE" || strID == "_TODATE")
                     {
                         strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
                     }
-                    else if (strID == "MESSAGEID")
+                    else if (strID == "MessageID")
                     {
-                        strValue = row[strID].ToString();
-                        if (strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">관련문서</a>";
+                        strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row[strID].ToString() + "');\">관련문서</a>";
                     }
                     else
                     {
                         strValue = row[strID].ToString();
                     }
-                    //strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
+
+
                     sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "", strValue);
                 }
                 sb.Append("</tr>");
@@ -147,11 +135,11 @@
 
     private string ListCond()
     {
-        string swidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-70 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-70 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
 
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", swidth);
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
 
         sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
         sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);

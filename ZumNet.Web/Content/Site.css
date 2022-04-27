@@ -180,7 +180,7 @@
     z-index: 1100 !important;
 }
 
-/* ajax loader, workstatus-modal, left-worktime, schedule-repeat-setting */
+/* ajax loader, workstatus-modal, left-worktime, schedule-repeat-setting, basic-uploader */
 .modal-ajaxloader .modal-content {
     box-shadow: 1px 3px 10px rgba(0,0,0,0.5);
     border-radius: .45rem;
@@ -219,6 +219,7 @@
         margin-bottom: 1rem;
     }
 }
+
 
 /* 배경이미지 사용 아이콘 : 보류 */
 .z-bg-icon {

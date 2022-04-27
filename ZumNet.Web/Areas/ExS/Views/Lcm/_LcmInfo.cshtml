@@ -1,0 +1,145 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@{
+    string sTitle = "수강신청 결과보고 현황";
+
+}
+@functions{
+    private string ViewLcm(JObject post, DataSet ds)
+    {
+        DataRow row = null;
+        bool bTemp = false;
+
+        string strFld01 = "";
+        string strFld02 = "";
+        string strFld03 = "";
+        string strFld04 = "";
+
+        StringBuilder sb = new StringBuilder();
+
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            row = ds.Tables[0].Rows[0];
+
+            strFld01 = (row["CreatorDept"].ToString() == "" ? "" : row["CreatorDept"].ToString() + ". ") + row["Creator"].ToString() + ". " + ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CreateDate"].ToString()); //신청정보
+            if (row["Reporter"].ToString() != "")
+                strFld02 = (row["ReporterDept"].ToString() == "" ? "" : row["ReporterDept"].ToString() + ". ") + row["Reporter"].ToString() + ". " + ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CompleteDate"].ToString()); //보고정보
+
+            strFld03 = (row["IsCancel"].ToString() == "Y") ? "신청취소(" + ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["DeleteDate"].ToString()) + ")" : "";
+
+            if (row["Instructor"].ToString() != "")
+                strFld04 = (row["InstructorInfo1"].ToString() == "" ? "" : row["InstructorInfo1"].ToString() + ". ") + (row["InstructorInfo2"].ToString() == "" ? "" : row["InstructorInfo2"].ToString() + ". ") + row["Instructor"].ToString(); //강사정보
+
+            sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+
+            //수강신청정보
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\"></i>수강신청정보</h6>");
+            sb.Append("<table class=\"table table-bordered table-sm\">");
+            sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:20%\" /><col style=\"width:13%\" /><col style=\"width:20%\" /><col style=\"width:13%\" /><co /></colspan>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">신청자</th><td colspan=\"5\"><div class=\"p-1\">{0}. {1}. {2}</div></td></tr>", row["ApplDept"].ToString(), row["ApplGrade"].ToString(), row["ApplDN"].ToString());
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육년도</th><td><div class=\"p-1\">{0}</div></td>", row["StdYear"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">사내외</th><td><div class=\"p-1\">{0}</div></td>", row["ClsDN1"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">교육방식</th><td><div class=\"p-1\">{0}</div></td>", row["ClsDN2"].ToString());
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육유형</th><td><div class=\"p-1\">{0}</div></td>", row["ClsDN3"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">교육분야</th><td colspan=\"3\"><div class=\"p-1\">{0}</div></td>", row["ClsDN4"].ToString());
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">과정명</th><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", row["CourseDN"].ToString());
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육기관</th><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", row["InstDN"].ToString());
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육장소</th><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", row["Place"].ToString());
+
+            sb.Append("<tr><th class=\"bg-light\">교육일자</th><td colspan=\"5\"><div class=\"p-1\">");
+            sb.AppendFormat("{0} ({1})", row["FromDate"].ToString(), row["FromWeekDay"].ToString().Replace("요일", ""));
+            sb.AppendFormat("&nbsp;~&nbsp;{0} ({1})", row["ToDate"].ToString(), row["ToWeekDay"].ToString().Replace("요일", ""));
+            sb.AppendFormat("&nbsp;&nbsp;&nbsp;{0} 일간&nbsp;&nbsp;{1} 시간", row["DurDay"].ToString(), row["DurTime"].ToString());
+            sb.Append("</div></td></tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">교육비용</th><td><div class=\"p-1\">{0}</div></td>", ZumNet.Web.Bc.CommonUtils.CvtCurrency(row["Cost"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">취소여부</th><td colspan=\"3\"><div class=\"p-1\">{0}</div></td>", strFld03);
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">강사정보</td><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", strFld04);
+            sb.AppendFormat("<tr><th class=\"bg-light\">작성</td><td colspan=\"5\"><div class=\"p-1\">{0}</div></td></tr>", strFld01);
+
+            sb.Append("</table>");
+
+            //결과보고정보
+            sb.Append("<h6 class=\"mb-1\"><i class=\"fe-chevron-right mr-1\"></i>결과보고정보</h6>");
+
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            if (row["ClsCD1"].ToString() == "A10")
+            {
+                sb.Append("<colspan><col style=\"width:13%\" /><co /></colspan>");
+
+                sb.AppendFormat("<tr><th class=\"bg-light\">교육내용</th><td><div class=\"p-1\">{0}</div></td></tr>", row["Contents"].ToString());
+                sb.AppendFormat("<tr><th class=\"bg-light\">평가점수</th><td><div class=\"p-1\">{0}</div></td></tr>", row["Summary"].ToString());
+                sb.AppendFormat("<tr><th class=\"bg-light\">교육후기</th><td><div class=\"p-1\">{0}</div></td></tr>", row["Remark"].ToString());
+                sb.AppendFormat("<tr><th class=\"bg-light\">보고</th><td><div class=\"p-1\">{0}</div></td></tr>", strFld02);
+                sb.AppendFormat("<input type=\"text\" class=\"txtRead\" readonly=\"readonly\" value=\"{0}\" />", strFld02);
+            }
+            else
+            {
+                sb.Append("<colspan><col style=\"width:13%\" /><col style=\"width:20%\" /><col style=\"width:13%\" /><co /></colspan>");
+
+                sb.AppendFormat("<tr><th class=\"bg-light\">교육내용<br />요약</th><td colspan=\"3\"><div class=\"p-1\">{0}</div></td></tr>", row["Summary"].ToString());
+                sb.AppendFormat("<tr><th class=\"bg-light\">특이사항</th><td colspan=\"3\"><div class=\"p-1\">{0}</div></td></tr>", row["Remark"].ToString());
+
+                sb.AppendFormat("<tr><th class=\"bg-light\">전달교육</th><td><div class=\"p-1\">{0}</div></td>", (row["TransYN"].ToString() == "Y" ? "실시" : "미실시"));
+                sb.AppendFormat("<th class=\"bg-light\">전달교육대상</th><td><div class=\"p-1\">{0}</div></td>", row["TransTarget"].ToString());
+                sb.Append("</tr>");
+
+                sb.AppendFormat("<tr><th class=\"bg-light\">실시일</th><td><div class=\"p-1\">{0}</div></td>", row["TransDate"].ToString());
+                sb.AppendFormat("</td><th class=\"bg-light\">미실시사유</th><td><div class=\"p-1\">{0}</div></td>", row["TransNRsn"].ToString());
+                sb.Append("</tr>");
+
+                sb.AppendFormat("<tr><th class=\"bg-light\">전달내용</td><td colspan=\"3\"><div class=\"p-1\">{0}</div></td></tr>", row["TransNote"].ToString());
+                sb.AppendFormat("<tr><th class=\"bg-light\">교육만족도</td><td colspan=\"3\"><div class=\"p-1\"><span class=\"mr-3\">내용 : {0},</span><span class=\"mr-3\">강사 : {1},</span><span>시설 : {2}</span></div></td></tr>"
+                                        , row["PollA"].ToString(), row["PollB"].ToString(), row["PollC"].ToString());
+                sb.AppendFormat("<tr><th class=\"bg-light\">보고</td><td colspan=\"3\"><div class=\"p-1\">{0}</div></td></tr>", strFld02);
+            }
+            sb.Append("</table>");
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5 h5\">{0}</p>", Resources.Global.NoItemShow);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+}
+<div class="modal-dialog modal-dialog-scrollable" style="max-width: 45rem">
+    <div class="modal-content bg-white z-list" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header py-2">
+            <h5 class="modal-title">@sTitle</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+
+        @if (ViewBag.JPost["M"].ToString() == "LI")
+        {
+            @Html.Raw(ViewLcm(ViewBag.JPost, ViewBag.LcmInfo))
+        }
+    </div>
+</div>

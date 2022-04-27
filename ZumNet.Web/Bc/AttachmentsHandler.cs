@@ -48,7 +48,7 @@ namespace ZumNet.Web.Bc
             try
             {
                 var jArr = new JArray();
-                if (fileInfo.Count > 0)
+                if (fileInfo != null && fileInfo.Count > 0)
                 {
                     foreach (JObject j in fileInfo)
                     {
@@ -71,7 +71,7 @@ namespace ZumNet.Web.Bc
 
                 jArr = new JArray();
                 string sBody = body;
-                if (imgInfo.Count > 0)
+                if (imgInfo != null && imgInfo.Count > 0)
                 {
                     System.Text.RegularExpressions.Regex rgx = null;
                     string strPattern = "";
@@ -176,7 +176,7 @@ namespace ZumNet.Web.Bc
                         if (xfAlias == "ea") strSavedName = ZumNet.Framework.Entities.Flow.ProcessStateChart.NewGuid();    //2010-07-06
                         else strSavedName = fileName; //DEXT5 Editor 사용시 iLocID 붙일 필요 없음
 
-                        strSourcePath = filePath;
+                        strSourcePath = HttpContext.Current.Server.MapPath(filePath); //filePath;
                     }
 
                     sPos = "[230]";
@@ -325,11 +325,12 @@ namespace ZumNet.Web.Bc
             sb.Append("<fileinfo>");
             foreach (JObject j in fileInfo)
             {
-                sb.AppendFormat("<file size=\"{0}\" filetype=\"{1}\" prefix=\"{2}\" isfile=\"{3}\" location=\"{4}\">"
-                    , j["size"].ToString(), j["ext"].ToString(), j["prefix"].ToString(), j["isfile"].ToString(), j["location"].ToString());
+                sb.AppendFormat("<file atttype=\"{0}\" seq=\"{1}\" isfile=\"{2}\" size=\"{3}\" filetype=\"{4}\" prefix=\"{5}\" location=\"{6}\">"
+                    , j["atttype"].ToString(), j["seq"].ToString(), j["isfile"].ToString(), j["size"].ToString(), j["ext"].ToString(), j["prefix"].ToString(), j["location"].ToString());
                 sb.AppendFormat("<filename><![CDATA[{0}]]></filename>", j["filename"].ToString());
                 sb.AppendFormat("<savedname><![CDATA[{0}]]></savedname>", j["savedname"].ToString());
-                sb.AppendFormat("<storagefolder><![CDATA[{0}]]></storagefolder>", j["storagefolder"].ToString());
+                sb.AppendFormat("<storagefolder><![CDATA[{0}]]></storagefolder>", j["storagefolder"].ToString()); //storagefolder, fullpath -> category별로 틀림
+                sb.AppendFormat("<fullpath><![CDATA[{0}]]></fullpath>", j["storagefolder"].ToString());
                 sb.Append("</file>");
             }
             sb.Append("</fileinfo>");

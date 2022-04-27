@@ -6,6 +6,12 @@
 
 @{
     ConfigColumn(ViewBag.Mode);
+
+    if (ViewBag.Mode == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()));
+        Response.End();
+    }
 }
 
 @functions {
@@ -76,10 +82,13 @@
             }
             sb.Append("</colgroup>");
 
-            sb.Append("<thead><tr class=\"success\">");
+            sb.Append("<thead><tr class=\"col-header\">");
             for (int i = 0; i < _columnConfig.GetLength(0); i++)
             {
-                sb.AppendFormat("<th class=\"xls_th\">{0}</th>", _columnConfig[i, 1].ToString());
+                if (_columnConfig[i, 0].ToString() == "rownum") sb.AppendFormat("<th style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</th>", "");
+                else if (_columnConfig[i, 0].ToString() == "__NOTICEA__") sb.AppendFormat("<th style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</th>", "참석알림");
+                else if (_columnConfig[i, 0].ToString() == "__NOTICEC__") sb.AppendFormat("<th style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</th>", "보고요청");
+                else  sb.AppendFormat("<th style=\"text-align:center;background:#d1dae7;color:#175d7f\">{0}</th>", _columnConfig[i, 1].ToString());
             }
             sb.Append("</tr></thead>");
 
@@ -91,7 +100,7 @@
         }
     }
 
-    private string ViewList(string mode, DataSet data, string sortCol, string sortType, string formTable)
+    private string ViewList(string mode, DataSet data, string sortCol, string sortType)
     {
         StringBuilder sb = new StringBuilder();
         sb.Append("<table class=\"table table-hover table-bordered table-sm\" style=\"min-width: 1530px\">");
@@ -132,7 +141,7 @@
                     else if (strID == "CourseDN")
                     {
                         strValue = row[strID].ToString();
-                        if (strValue != "")
+                        if (mode != "xls" && strValue != "")
                         {
                             strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewLcmInfo('LI', 'LCM_MAIN');\" title=\"{0}\">{0}</a>", strValue);
                         }
@@ -148,7 +157,8 @@
                             }
                             else
                             {
-                                strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"\">{1}</a>", row["ReqApvID"].ToString(), strValue);
+                                if (mode != "xls")
+                                    strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"\">{1}</a>", row["ReqApvID"].ToString(), strValue);
                             }
                         }
                     }
@@ -163,7 +173,8 @@
                             }
                             else
                             {
-                                strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"\">{1}</a>", row["RepoApvID"].ToString(), strValue);
+                                if (mode != "xls")
+                                    strValue = String.Format("<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" title=\"\">{1}</a>", row["RepoApvID"].ToString(), strValue);
                             }
                         }
                     }
@@ -172,8 +183,11 @@
                         if (row["IsCancel"].ToString() != "Y" && row["FromDate"].ToString() != "" && DateTime.Compare(Convert.ToDateTime(row["FromDate"]), DateTime.Now) > 0
                                 && (row["ReqIFState"].ToString() == "N" || row["ReqIFState"].ToString() == "Y" || row["ReqIFState"].ToString() == "I"))
                         {
-                            strValue = String.Format("<input id=\"ckbReq_{0}\" name=\"ckbReq\" type=\"checkbox\" /><label for=\"ckbReq_{0}\">{1}</label>"
-                                        , row["LcmID"].ToString(), ZumNet.Web.Bc.CommonUtils.DateDiff(DateTime.Now.ToString("yyyy-MM-dd"), row["FromDate"].ToString()));
+                            if (mode != "xls")
+                                strValue = String.Format("<input id=\"ckbReq_{0}\" name=\"ckbReq\" type=\"checkbox\" /><label for=\"ckbReq_{0}\">{1}</label>"
+                                    , row["LcmID"].ToString(), ZumNet.Web.Bc.CommonUtils.DateDiff(DateTime.Now.ToString("yyyy-MM-dd"), row["FromDate"].ToString()));
+                            else
+                                strValue = ZumNet.Web.Bc.CommonUtils.DateDiff(DateTime.Now.ToString("yyyy-MM-dd"), row["FromDate"].ToString()).ToString();
                         }
                         else
                         {
@@ -190,8 +204,11 @@
                                 && (row["ReqIFState"].ToString() == "N" || row["ReqIFState"].ToString() == "Y")
                                 && (row["RepoIFState"].ToString() == "-" || row["RepoIFState"].ToString() == "C" || row["RepoIFState"].ToString() == "R"))
                         {
-                            strValue = String.Format("<input id=\"ckbRepo_{0}\" name=\"ckbRepo\" type=\"checkbox\" /><label for=\"ckbRepo_{0}\">{1}</label>"
-                                        , row["LcmID"].ToString(), ZumNet.Web.Bc.CommonUtils.DateDiff(DateTime.Now.ToString("yyyy-MM-dd"), row["ToDate"].ToString()));
+                            if (mode != "xls")
+                                strValue = String.Format("<input id=\"ckbRepo_{0}\" name=\"ckbRepo\" type=\"checkbox\" /><label for=\"ckbRepo_{0}\">{1}</label>"
+                                    , row["LcmID"].ToString(), ZumNet.Web.Bc.CommonUtils.DateDiff(DateTime.Now.ToString("yyyy-MM-dd"), row["ToDate"].ToString()));
+                            else
+                                strValue = ZumNet.Web.Bc.CommonUtils.DateDiff(DateTime.Now.ToString("yyyy-MM-dd"), row["ToDate"].ToString()).ToString();
                         }
                         else
                         {
@@ -220,8 +237,16 @@
                         strValue = row[strID].ToString();
                     }
 
-                    if (_columnConfig[i, 3].ToString() == "") sb.AppendFormat("<td class=\"\">{0}</td>", strValue);
-                    else sb.AppendFormat("<td class=\"text-{0}\">{1}</td>", _columnConfig[i, 3].ToString(), strValue);
+                    if (mode == "xls")
+                    {
+                        if (_columnConfig[i, 3].ToString() == "") sb.AppendFormat("<td style=\"text-align: center\">{0}</td>", strValue);
+                        else sb.AppendFormat("<td style=\"text-align: {0}\">{1}</td>", _columnConfig[i, 3].ToString(), strValue);
+                    }
+                    else
+                    {
+                        if (_columnConfig[i, 3].ToString() == "") sb.AppendFormat("<td class=\"\">{0}</td>", strValue);
+                        else sb.AppendFormat("<td class=\"text-{0}\">{1}</td>", _columnConfig[i, 3].ToString(), strValue);
+                    }
                     strValue = "";
                 }
                 sb.Append("</tr>");
@@ -241,6 +266,24 @@
         return sb.ToString();
     }
 
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = "LCM_ADMIN_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">td {border:1px solid #c6c6c6}</style><head><body>");
+        //Response.Write("<style type=\"text/css\">table {border:1px solid #c6c6c6} td {border-right:1px solid #c6c6c6;border-bottom:1px solid #c6c6c6}</style>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
     private string LcmState(string state, string cancel)
     {
         if (cancel == "Y") return "취소";
@@ -256,4 +299,4 @@
     }
 }
 
-@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), ViewBag.R.ft.ToString()))
+@Html.Raw(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()))

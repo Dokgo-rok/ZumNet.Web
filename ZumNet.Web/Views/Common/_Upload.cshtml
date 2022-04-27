@@ -1,1 +1,83 @@
-﻿
+﻿@using System.Web;
+
+@using ZumNet.Framework.Configuration;
+@using ZumNet.Framework.Util;
+
+@{
+    string rt = "";
+
+    try
+    {
+        if (Request.Files.Count > 0)
+        {
+            HttpFileCollectionBase files = Request.Files;
+
+            long lOneSize = Convert.ToInt64(Config.Read("MaxUploadSize"));
+            long lMaxSize = Convert.ToInt64(Config.Read("MaxUploadTotalSize"));
+            long lSize = 0;
+            long lSum = 0;
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                HttpPostedFileBase f = files[i];
+                if (f != null)
+                {
+                    lSize = StringHelper.CvtByte(f.ContentLength, "MB");
+                    if (lSize >= lOneSize)
+                    {
+                        rt = "파일크기는 " + lOneSize.ToString() + "M를 넘을 수 없습니다!";
+                        break;
+                    }
+                    else
+                    {
+                        lSum += lSize;
+                    }
+                }
+            }
+
+            if (rt == "")
+            {
+                if (lSum >= lMaxSize)
+                {
+                    throw new Exception("전체 파일크기는 " + lOneSize.ToString() + "M를 넘을 수 없습니다!");
+                }
+                else
+                {
+                    string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+                    FileHelper.CreateDirectory(sUploadPath);
+
+                    char cFile = (char)11; //\u000B, 파일구분자
+                    char cAttr = (char)12; //\u000C, 속성구분자
+
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        HttpPostedFileBase f = files[i];
+                        if (f != null)
+                        {
+                            string sFileName = Path.GetFileName(f.FileName);
+                            string sExt = Path.GetExtension(sFileName).Substring(1);
+                            string sSavedName = Guid.NewGuid().ToString() + "." + sExt;
+                            //Response.Write(i + " => " + sFileName + " :" + sExt + " : " + f.ContentLength.ToString() + " : " + sSavedName + "<br />");
+                            string tempSavePath = Path.Combine(Server.MapPath(sUploadPath) + @"\" + sSavedName);
+                            f.SaveAs(tempSavePath);
+
+                            if (rt.Length > 0)
+                            {
+                                rt += cFile;
+                            }
+                            rt += sFileName + cAttr + sSavedName + cAttr + sExt + cAttr + f.ContentLength.ToString() + cAttr + sUploadPath + "/" + sSavedName;
+                        }
+                    }
+                }
+                rt = "OK" + rt;
+            }
+        }
+    }
+    catch(Exception ex)
+    {
+        rt = ex.Message;
+    }
+
+    Response.Write("<script type='text/javascript'>" + Request["completed"].ToString() + "('" + Server.UrlEncode(rt) + "');</script>");
+    Response.End();
+}

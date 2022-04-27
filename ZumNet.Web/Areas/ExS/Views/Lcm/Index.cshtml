@@ -55,7 +55,7 @@
         }
         else if (formTable == "LCM_EDUPOINT")
         {
-            
+
         }
     }
 
@@ -69,7 +69,27 @@
         StringBuilder sb = new StringBuilder();
 
         //sb.AppendFormat("<button class=\"btn icon-btn btn-outline-info m-0 mr-2 btn-sm\" title=\"{0}\" onclick=\"_zw.mu.refresh();\"><i class=\"fe-refresh-cw\"></i></button>", Resources.Global.Refresh);
-        sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
+        if (formTable == "LCM_COURSE")
+        {
+            //신규등록 버튼 -> 작성권한은 클릭시 체크(강사 경우 고려)
+            sb.AppendFormat("<button class=\"btn btn-default py-1 mr-2\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" onclick=\"_zw.fn.viewCourse('N');\"><i class=\"fe-edit\"></i><span class=\"d-none d-sm-inline-block ml-1\">{1}</span></button>", "과정등록", "과정등록");
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "S"))
+            {
+                sb.AppendFormat("<button class=\"btn btn-default py-1 mr-2\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" onclick=\"_zw.fn.exportExcel();\"><i class=\"fas fa-cloud-download-alt text-success\"></i><span class=\"d-none d-sm-inline-block ml-1\">{1}</span></button>", "엑셀 내보내기", "내보내기");
+                sb.AppendFormat("<button class=\"btn btn-default py-1 mr-2\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" onclick=\"_zw.fn.importFile();\"><i class=\"fas fa-cloud-upload-alt text-success\"></i><span class=\"d-none d-sm-inline-block ml-1\">{1}</span></button>", "엑셀 불러오기", "불러오기");
+            }
+        }
+        else if (formTable == "LCM_ADMIN")
+        {
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "S"))
+            {
+                sb.AppendFormat("<button class=\"btn btn-default py-1 mr-2\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" onclick=\"_zw.fn.importFile('LCM_CYBERREPORT');\"><i class=\"fas fa-cloud-upload-alt text-success\"></i><span class=\"d-none d-sm-inline-block ml-1\">{1}</span></button>", "엑셀 사이버교육결과 등록", "사이버교육결과");
+                sb.AppendFormat("<button class=\"btn btn-default py-1 mr-2\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" onclick=\"_zw.fn.exportExcel();\"><i class=\"fas fa-cloud-download-alt text-success\"></i><span class=\"d-none d-sm-inline-block ml-1\">{1}</span></button>", "엑셀 내보내기", "내보내기");
+                sb.AppendFormat("<button class=\"btn btn-default py-1 mr-2\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" onclick=\"_zw.fn.sendMail('NA');\"><i class=\"far fa-envelope\"></i><span class=\"d-none d-sm-inline-block ml-1\">{1}</span></button>", "교육참석 알림 메일 발송", "참석알림");
+                sb.AppendFormat("<button class=\"btn btn-default py-1 mr-2\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" onclick=\"_zw.fn.sendMail('NB');\"><i class=\"far fa-envelope\"></i><span class=\"d-none d-sm-inline-block ml-1\">{1}</span></button>", "교육결과보고 요청 메일 발송", "결과보고요청");
+            }
+        }
+        sb.Append("<button class=\"btn btn-default py-1 font-weight-bold\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
 
         return sb.ToString();
     }
@@ -368,9 +388,6 @@
                 <div class="nav d-flex align-items-center justify-content-end">
                     @if (ViewBag.Error == "")
                     {
-                        <div class="z-list-page mr-2" id="__ListCount">
-                            @Html.Partial("_ListCount")
-                        </div>
                         @Html.Raw(RenderMenu(ViewBag.R.ft.ToString()))
                     }
                 </div>
@@ -378,11 +395,14 @@
         </div>
 
         <div class="flex-grow-0" style="border-top: 2px solid #eee">
-            <div class="d-flex align-items-center px-3 my-2">
+            <div class="d-flex justify-content-between px-3 my-2">
                 @if (ViewBag.Error == "")
                 {
-                    <div class="z-lv-cond w-100">
+                    <div class="z-lv-cond flex-fill">
                         @Html.Raw(RenderDDDate(ViewBag.R.ft.ToString()))
+                    </div>
+                    <div class="z-list-page pt-2" id="__ListCount">
+                        @Html.Partial("_ListCount")
                     </div>
                 }
             </div>

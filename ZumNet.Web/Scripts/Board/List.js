@@ -277,13 +277,14 @@ $(function () {
                 var vInfo = vFile[i].split(_zw.T.uploader.da);
                 var v = {};
                 v["attachid"] = 0;
+                v["atttype"] = "O";
                 v["seq"] = i + 1;
                 v["isfile"] = "Y";
                 v["filename"] = vInfo[0];
                 v["savedname"] = vInfo[1];
                 v["size"] = vInfo[2];
                 v["ext"] = vInfo[7];
-                v["filepath"] = vInfo[4].substr(1).replace(/\//gi, '\\');
+                v["filepath"] = vInfo[4].split(':')[1]; //vInfo[4].substr(1).replace(/\//gi, '\\');
                 v["storagefolder"] = "";
 
                 jPost["attachlist"].push(v);

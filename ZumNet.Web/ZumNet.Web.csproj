@@ -2893,6 +2893,8 @@
     <Content Include="Areas\Docs\Views\Kms\MyList.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\Edit.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\_Edit.cshtml" />
+    <Content Include="Areas\ExS\Views\Lcm\_CourceView.cshtml" />
+    <Content Include="Areas\ExS\Views\Lcm\_LcmInfo.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -2996,6 +2998,8 @@
     <Content Include="Views\Common\_ListCountBig.cshtml" />
     <Content Include="Views\Organ\_Plate.cshtml" />
     <Content Include="Views\Shared\_NoPermissionPopup.cshtml" />
+    <Content Include="Views\Report\_REGISTER_EDUTIME.cshtml" />
+    <Content Include="Views\Report\_FORM_EDUSHARE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

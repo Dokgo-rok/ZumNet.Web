@@ -17,9 +17,8 @@ $(function () {
     _zw.fn.bindCtrl();
 
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery(true);
-        //var url = '?qi=' + encodeURIComponent(postData);
-        var url = '?qi=' + _zw.base64.encode(postData);
+        var postData = _zw.fn.getLvQuery(true); //console.log(postData)
+        var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({
             type: "POST",
@@ -42,10 +41,23 @@ $(function () {
             }
         });
     }
-    _zw.fn.goSearch = function () {
+
+    _zw.fn.sort = function (col) {
+        var el = event.target ? event.target : event.srcElement;
+        var dir = $(el).find('i').hasClass('fe-arrow-up') ? 'DESC' : 'ASC';
+        _zw.fn.goSearch(null, col, dir);
+    }
+
+    _zw.fn.goSearch = function (page, sort, dir) {
         _zw.fn.initLv(_zw.V.current.urid);
-        _zw.V.lv.start = $('.datepicker .start-date').val();
-        _zw.V.lv.end = $('.datepicker .end-date').val();
+
+        sort = sort || ''; dir = dir || '';
+        _zw.V.lv.sort = sort;
+        _zw.V.lv.sortdir = dir;
+        _zw.V.lv.page = (page) ? page : 1;
+
+        _zw.V.lv.start = $('.z-list-cond .start-date').val();
+        _zw.V.lv.end = $('.z-list-cond .end-date').val();
 
         _zw.V.lv.cd1 = $('#_SearchSelect').val();
 
@@ -72,7 +84,7 @@ $(function () {
         j["acl"] = _zw.V.current.acl;
         j["opnode"] = _zw.V.opnode;
         j["ft"] = _zw.V.ft;
-        //j["ttl"] = _zw.V.ttl;
+        j["ttl"] = _zw.V.ttl;
 
         j["tgt"] = _zw.V.lv.tgt;
         j["page"] = _zw.V.lv.page;
