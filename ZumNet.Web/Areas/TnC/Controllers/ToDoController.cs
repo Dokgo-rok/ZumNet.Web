@@ -288,31 +288,46 @@ namespace ZumNet.Web.Areas.TnC.Controllers
         public string EventSave()
         {
             string rt = "";
+            string sPos = "";
+
             if (Request.IsAjaxRequest())
             {
                 try
                 {
+                    sPos = "100";
                     JObject jPost = CommonUtils.PostDataToJson();
                     if (jPost == null || jPost.Count == 0 || jPost["mode"].ToString() == "") return "필수값 누락!";
 
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
-                    using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
-                    {
-                        svcRt = todo.SaveToDo(Convert.ToInt32(Session["URID"]), Session["DeptName"].ToString(),  Convert.ToInt32(Session["DeptID"]), jPost);
-                    }
 
-                    if (svcRt != null && svcRt.ResultCode == 0)
+                    sPos = "200";
+                    AttachmentsHandler attachHdr = new AttachmentsHandler();
+                    svcRt = attachHdr.TempToStorage(Convert.ToInt32(Session["DNID"]), jPost["xfalias"].ToString(), (JArray)jPost["attachlist"], null, "");
+                    if (svcRt.ResultCode != 0)
                     {
-                        rt = "OK" + "저장했습니다!";
+                        rt = "[" + sPos + "] " + svcRt.ResultMessage;
                     }
                     else
                     {
-                        rt = svcRt.ResultMessage;
+                        sPos = "210";
+                        jPost["attachlist"] = (JArray)svcRt.ResultDataDetail["FileInfo"];
+                        
+                        sPos = "220";
+                        jPost["fileinfo"] = attachHdr.ConvertFileInfoToXml((JArray)jPost["attachlist"]);
+
+                        sPos = "300";
+                        using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                        {
+                            svcRt = todo.SaveToDo(Convert.ToInt32(Session["URID"]), Session["DeptName"].ToString(), Convert.ToInt32(Session["DeptID"]), jPost);
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0) rt = "OK" + "저장했습니다!";
+                        else rt = "[" + sPos + "] " + svcRt.ResultMessage;
                     }
                 }
                 catch (Exception ex)
                 {
-                    rt = ex.Message;
+                    rt = "[" + sPos + "] " + ex.Message;
                 }
             }
             return rt;

@@ -2,12 +2,85 @@
 @using System.Text;
 @using System.Threading;
 
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+
+@using ZumNet.Framework.Util;
 @using ZumNet.Web.Bc;
 @{
     DateTime dtStart = Convert.ToDateTime(ViewBag.R.lv.tgt + " " + (ViewBag.R.lv.cd1.ToString() == "" ? DateTime.Now.ToString("HH:mm") : ViewBag.R.lv.cd1.ToString()));
     string sRptDayMargin = Thread.CurrentThread.CurrentUICulture.Name.Substring(0, 2) == "en" ? "ml-1" : "ml-2";
 }
 @functions{
+    private string RenderFile(string mode, JArray file)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"zf-upload w-100\">");
+        if (mode != "view")
+        {
+            sb.Append("<div class=\"zf-upload-select d-flex align-items-center\">");
+
+            sb.Append("<form id=\"uploadForm\" name=\"uploadForm\" action=\"/Common/Upload\" method=\"post\" enctype=\"multipart/form-data\" target=\"ifrView\">");
+            sb.Append("<div class=\"custom-file\">");
+            sb.Append("<input type=\"file\" class=\"custom-file-input\" id=\"file1\" name=\"file1\" multiple />");
+            sb.Append("<input name=\"completed\" type=\"hidden\" value=\"parent._zw.fu.complete\" />");
+            sb.Append("<label class=\"custom-file-label\" for=\"customFile\">이미지 / 문서 첨부</label>");
+            sb.Append("</div>"); //custom-file
+            sb.Append("</form>");
+            sb.Append("<div class=\"ml-2\">");
+            sb.Append("<button class=\"btn btn-outline-info btn-18 rounded-circle\" data-toggle=\"popover\" data-placement=\"bottom\" data-original-title=\"첨부 가능한 파일 형식은 다음과 같습니다\"><i class=\"fas fa-question fs-11\"></i></button>");
+            sb.Append("<div class=\"d-none\" data-help=\"file\">");
+            sb.Append("<div>");
+            sb.Append("<div class=\"row\">");
+            sb.Append("<div class=\"col-3 font-weight-bold\">* 이미지</div>");
+            sb.Append("<div class=\"col-9\" data-for=\"ext\">JPEG, JPG, GIF, PNG</div>");
+            sb.Append("</div>"); //row
+            sb.Append("<div class=\"row\">");
+            sb.Append("<div class=\"col-3 font-weight-bold\">* 문서</div>");
+            sb.Append("<div class=\"col-9\" data-for=\"ext\">PPT, PPTX, XLS, XLSX, DOC, DOCX, PDF, HWP, TXT</div>");
+            sb.Append("</div>"); //row
+                                 //sb.Append("<div class=\"row\">");
+                                 //sb.Append("<div class=\"col-3 font-weight-bold\">* 동영상</div>");
+                                 //sb.Append("<div class=\"col-9\" data-for=\"ext\">MOV, MP4, AVI</div>");
+                                 //sb.Append("</div>"); //row
+            sb.Append("</div>");
+            sb.Append("</div>"); //data-help
+            sb.Append("</div>"); //ml-2
+            sb.Append("</div>"); //d-flex
+        }
+
+        sb.AppendFormat("<div class=\"zf-upload-list border rounded mt-1 px-2 pt-2 pb-0{0}\">", file == null || file.Count == 0 ? " d-none" : "");
+
+        if (file != null && file.Count > 0)
+        {
+            foreach (JObject j in file)
+            {
+                sb.Append("<div class=\"d-flex align-items-center mb-1\">");
+                sb.AppendFormat("<div class=\"mr-1\"><i class=\"{0}\"></i></div>", ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString()));
+                sb.AppendFormat("<div class=\"mr-1\"><a href=\"/Common/DownloadV?fn={0}&fp={1}\" target=\"_blank\">{2}</a></div>"
+                                , Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))
+                                , Server.UrlEncode(SecurityHelper.ToBase64(j["filepath"].ToString() + "\\" + j["savedname"].ToString()))
+                                , j["filename"]);
+                sb.AppendFormat("<div class=\"mr-1 text-muted\">{0}</div>", ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString()));
+
+                if (mode == "edit")
+                {
+                    sb.AppendFormat("<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\" onclick=\"_zw.fu.delete('{0}', '{1}', '{2}');\"><i class=\"fe-x\"></i></button></div>"
+                                , j["attachid"].ToString()
+                                , Server.UrlEncode(j["filename"].ToString())
+                                , Server.UrlEncode(SecurityHelper.ToBase64(j["filepath"].ToString() + "\\" + j["savedname"].ToString())));
+                }
+
+                sb.Append("</div>");
+            }
+        }
+        sb.AppendFormat("<textarea id=\"__FILEINFO\" style=\"display:none\">{0}</textarea>", JsonConvert.SerializeObject(file));
+        sb.Append("</div>");
+        sb.Append("</div>"); //zf-upload
+
+        return sb.ToString();
+    }
 }
 <div class="modal-dialog modal-dialog-scrollable" style="max-width: 40rem">
     <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
@@ -174,9 +247,9 @@
                     <label for="txtSubject" class="font-weight-normal mb-0">신청 자원</label>
                     <button class="zf-btn-sm btn btn-default float-sm-right mb-1" title="@Resources.Global.Select" data-zf-menu="openResList"><i class="fe-search"></i></button>
                     @*<button class="zf-btn-sm btn btn-default float-sm-right mb-1" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.Select"><i class="fe-search"></i></button>
-                    <div class="dropdown-menu p-1" style="min-width: 20rem;">
-                        @Html.Raw(RenderResourceList(ViewBag.ResClass, ViewBag.ResList))
-                    </div>*@
+                        <div class="dropdown-menu p-1" style="min-width: 20rem;">
+                            @Html.Raw(RenderResourceList(ViewBag.ResClass, ViewBag.ResList))
+                        </div>*@
                 </div>
                 <div class="col-sm-10 input-group align-items-center">
                     @if (ViewBag.ResInfo != null)
@@ -198,25 +271,7 @@
             <div class="form-group row">
                 <label for="rdoState" class="col-sm-2 col-form-label font-weight-normal">파일</label>
                 <div class="col-sm-10 input-group align-items-center">
-                    <div class="custom-file flex-grow-0" style="width: 250px">
-                        <input type="file" class="custom-file-input" id="customFile">
-                        <label class="custom-file-label" for="customFile">이미지 / 문서 첨부</label>
-                    </div>
-                    <div class="ml-2 mr-sm-5">
-                        <button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다"><i class="fas fa-question fs-11"></i></button>
-                        <div class="d-none" data-help="file">
-                            <div>
-                                <div class="row">
-                                    <div class="col-3 font-weight-bold">* 이미지</div>
-                                    <div class="col-9">JPEG, JPG, GIF, PNG</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-3 font-weight-bold">* 문서</div>
-                                    <div class="col-9">PPT, PPTX, XLS, XLSX, DOC, DOCX, PDF, HWP, TXT</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @Html.Raw(RenderFile("new", null))
                 </div>
             </div>
             <div class="form-group mb-0">
@@ -224,7 +279,7 @@
             </div>
         </div>
         <div class="modal-footer justify-content-center">
-            <button type="button" class="btn btn-outline-secondary px-3 font-weight-bold" onclick="_zw.fn.saveEvent()">@Resources.Global.Save</button>
+            <button type="button" class="btn btn-outline-secondary px-3 font-weight-bold" data-zm-menu="save">@Resources.Global.Save</button>
             <button type="button" class="btn btn-default px-3" data-dismiss="modal">@Resources.Global.Cancel</button>
         </div>
     </div>

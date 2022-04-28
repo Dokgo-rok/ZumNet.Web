@@ -69,6 +69,7 @@
                 case "0": return "신청중";
                 case "7": return "승인";
                 case "8": return "거부";
+                case "6": return "보류";
                 default: return "신청중";
             }
         }
@@ -99,7 +100,7 @@
                             <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["PeriodFrom"].ToString(), "MM-dd HH:mm", "")</td>
                             <td>@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["PeriodTo"].ToString(), "MM-dd HH:mm", "")</td>
                             <td>@row["Participant"].ToString()</td>
-                            <td><a href="javascript:void(0)" class="z-lnk-navy-n" onclick="_zw.mu.readEvent('@ViewBag.R.ctalias', '@row["MessageID"].ToString()', '@row["ObjectType"].ToString()', '@row["ParticipantID"].ToString()');">@row["Subject"].ToString()</a></td>
+                            <td><a href="javascript:void(0)" class="z-lnk-navy-n" onclick="_zw.mu.readEvent('@ViewBag.R.ctalias', '', '@row["MessageID"].ToString()', '@row["ObjectType"].ToString()', '@row["ParticipantID"].ToString()');">@row["Subject"].ToString()</a></td>
                             <td>@row["Creator"].ToString()</td>
                             <td class="d-none d-sm-table-cell">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CreateDate"].ToString(), "MM-dd HH:mm", "")</td>
                             <td class="d-none d-sm-table-cell">@GetReqState(row["InUse"].ToString(), row["State"].ToString())</td>
@@ -110,7 +111,7 @@
                                 }
                                 else
                                 {
-                                    <a href="javascript:void();" class="z-lnk-navy-n" data-toggle="tooltip" data-placement="bottom" title="@GetRepeatDesc(row["RepeatType"].ToString(), row["Repeat"].ToString())">반복</a>
+                                    <a href="javascript:void(0);" class="z-lnk-navy-n" data-toggle="tooltip" data-placement="bottom" title="@GetRepeatDesc(row["RepeatType"].ToString(), row["Repeat"].ToString())">반복</a>
                                 }
                             </td>
                         </tr>

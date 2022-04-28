@@ -2895,6 +2895,7 @@
     <Content Include="Areas\Docs\Views\Kms\_Edit.cshtml" />
     <Content Include="Areas\ExS\Views\Lcm\_CourceView.cshtml" />
     <Content Include="Areas\ExS\Views\Lcm\_LcmInfo.cshtml" />
+    <Content Include="Areas\TnC\Views\Shared\_Edit.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

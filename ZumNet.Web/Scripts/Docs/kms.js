@@ -14,7 +14,6 @@ $(function () {
         }
     });
 
-
     _zw.mu.writeMsg = function (xf) {
         _zw.V.mode = '';
         _zw.V.wnd = 'popup';

@@ -127,6 +127,8 @@
                         _zw.fn.bindCtrl();
 
                     } else bootbox.alert(res);
+
+                    _zw.ut.hideRightBar();
                 },
                 beforeSend: function () {//jstree ajax event와 충돌하는 듯....pace.js가 이벤트 종료가 안됨!!
                     //$('#ajaxLoader').modal('show');

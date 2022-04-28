@@ -192,6 +192,38 @@ $(function () {
         _zw.ut.hideRightBar();
     });
 
+    $('#__NewMessage[data-for]').click(function () {
+        var ct = $(this).attr('data-for');
+
+        if (ct == 'board') {
+            _zw.V.mode = '';
+            _zw.V.wnd = 'popup';
+            _zw.V.appid = 0;
+            //_zw.V.xfalias = _zw.V.xfalias == '' ? 'bbs' : _zw.V.xfalias;
+
+            var postData = _zw.fn.getAppQuery(_zw.V.fdid);
+            var url = '/Board/Write?qi=' + encodeURIComponent(_zw.base64.encode(postData));
+            _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
+
+        } else if (ct == 'ea') {
+            _zw.fn.newEAForm();
+
+        } else if (ct == 'kdoc') {
+            bootbox.alert('준비중')
+
+        } else if (ct == 'kms') {
+            _zw.mu.writeMsg('knowledge');
+
+        } else if (ct == 'todo') {
+            _zw.fn.viewEvent(null, _zw.V.lv.tgt, '', 0);
+
+        } else if (ct == 'booking') {
+            _zw.mu.writeEvent('booking');
+        }
+
+        _zw.ut.hideRightBar();
+    });
+
     //ListView Menu
     _zw.ut.picker('date');
 
@@ -1106,6 +1138,7 @@ $(function () {
                         p.html(res.substr(2)).css('width', $(this).attr('data-width') + "px");
                         p.modal();
                     }
+                    _zw.ut.hideRightBar();
                 }
             });
         },

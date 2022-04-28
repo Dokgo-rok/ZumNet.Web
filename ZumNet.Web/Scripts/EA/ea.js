@@ -35,10 +35,6 @@ $(function () {
         }
     });
 
-    $('#__NewMessage').click(function () {
-        _zw.ut.hideRightBar(); _zw.fn.newEAForm();
-    });
-
     _zw.fn.getEACount('', 'ea', 'base2', '', 'N');
 
     _zw.fn.loadList = function () {

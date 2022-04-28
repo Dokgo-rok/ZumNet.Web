@@ -556,36 +556,119 @@ namespace ZumNet.Web.Areas.TnC.Controllers
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
-        public string EventSave()
+        public string Edit()
         {
-            string rt = "";
+            string sPos = "";
+            string rt = Bc.CtrlHandler.AjaxInit(this);
+
             if (Request.IsAjaxRequest())
             {
                 try
                 {
-                    JObject jPost = CommonUtils.PostDataToJson();
-                    if (jPost == null || jPost.Count == 0 || jPost["mode"].ToString() == "") return "필수값 누락!";
+                    sPos = "100";
+                    JObject jPost = ViewBag.R;
 
-                    string fileInfo = "";
+                    //초기 설정 가져오기
+                    sPos = "200";
+                    rt = Bc.CtrlHandler.BookingInit(this, true);
+                    if (rt != "") return "[" + sPos + "] " + rt;
 
+                    if (ViewBag.R.current["operator"].ToString() == "N" && !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "W"))
+                    {
+                        return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                    }
+
+                    sPos = "300";
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
+
                     using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
                     {
-                        svcRt = schBiz.SaveSchedule(jPost, Convert.ToInt32(Session["DNID"]), Convert.ToInt32(Session["URID"]), Session["DeptName"].ToString(), Convert.ToInt32(Session["DeptID"]), fileInfo);
+                        svcRt = schBiz.GetScheduleInfomation(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(jPost["appid"]));
                     }
 
                     if (svcRt != null && svcRt.ResultCode == 0)
                     {
-                        rt = "OK" + "저장했습니다!";
+                        sPos = "310";
+                        rt = FormHandler.BindScheduleToJson(this, svcRt);
+
+                        if (rt != "")
+                        {
+                            rt = "[" + sPos + "] " + rt;
+                        }
+                        else
+                        {
+                            sPos = "400";
+                            jPost["app"]["dnid"] = Session["DNID"].ToString();
+                            jPost["app"]["ot"] = jPost["ot"].ToString() == "" || jPost["ot"].ToString() == "FD" ? "UR" : jPost["ot"].ToString();
+                            jPost["app"]["otid"] = jPost["ot"].ToString() == "FD" || Convert.ToInt32(jPost["fdid"]) == 0 ? Session["URID"].ToString() : jPost["fdid"].ToString();
+
+                            sPos = "410";
+                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_Edit", ViewBag)
+                                    + jPost["lv"]["boundary"].ToString()
+                                    + Newtonsoft.Json.JsonConvert.SerializeObject(jPost["app"]);
+                        }
                     }
                     else
                     {
+                        //에러페이지
+                        sPos = "320";
                         rt = svcRt.ResultMessage;
                     }
                 }
                 catch (Exception ex)
                 {
-                    rt = ex.Message;
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventSave()
+        {
+            string rt = "";
+            string sPos = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["mode"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    sPos = "200";
+                    AttachmentsHandler attachHdr = new AttachmentsHandler();
+                    svcRt = attachHdr.TempToStorage(Convert.ToInt32(Session["DNID"]), jPost["xfalias"].ToString(), (JArray)jPost["attachlist"], null, "");
+                    if (svcRt.ResultCode != 0)
+                    {
+                        rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                    }
+                    else
+                    {
+                        sPos = "210";
+                        jPost["attachlist"] = (JArray)svcRt.ResultDataDetail["FileInfo"];
+
+                        sPos = "220";
+                        string fileInfo = attachHdr.ConvertFileInfoToXml((JArray)jPost["attachlist"]);
+
+                        sPos = "300";
+                        using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
+                        {
+                            svcRt = schBiz.SaveSchedule(jPost, Convert.ToInt32(Session["DNID"]), Convert.ToInt32(Session["URID"]), Session["DeptName"].ToString(), Convert.ToInt32(Session["DeptID"]), fileInfo);
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0) rt = "OK" + "저장했습니다!";
+                        else rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                    }   
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
                 }
             }
             return rt;

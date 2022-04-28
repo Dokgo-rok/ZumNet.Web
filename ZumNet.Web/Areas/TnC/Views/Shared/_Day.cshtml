@@ -10,7 +10,7 @@
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
     DateTime dtTraget = Convert.ToDateTime(ViewBag.R.lv["tgt"]);
-    SetEvents(ViewBag.BoardList, ViewBag.SchType);
+    SetEvents(ViewBag.BoardList, ViewBag.SchType, ViewBag.R.lv["tgt"].ToString());
 }
 @functions{
         Dictionary<string, string> _eventList = new Dictionary<string, string>();
@@ -39,7 +39,7 @@
                 sb.AppendFormat("<th class=\"zc-col-time\" rowspan=\"2\"><span>{0}</span><span>{1}시</span>", strAMPM, strHour);
                 if (ZumNet.Framework.Util.StringHelper.HasAcl(acl, "W"))
                 {
-                    sb.AppendFormat("<br /><a href=\"javascript:void(0)\" class=\"text-info\" onclick=\"_zw.mu.writeEvent('{0}','{1}', '', '{2}', '{3}');\"><i class=\"fas fa-pencil-alt fs-11\"></i></a>"
+                    sb.AppendFormat("<br /><a href=\"javascript:void(0)\" class=\"text-info\" onclick=\"_zw.mu.writeEvent('{0}','{1}','{2}','{3}','{4}');\"><i class=\"fas fa-pencil-alt fs-11\"></i></a>"
                                 , ViewBag.R.ctalias.ToString(), curDate, (i < 10 ? "0" : "") + i.ToString() + ":00", ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
                 }
                 sb.Append("</th>");
@@ -70,7 +70,7 @@
             return sb.ToString();
         }
 
-        private void SetEvents(DataSet data, DataRowCollection schType)
+        private void SetEvents(DataSet data, DataRowCollection schType, string curDate)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -89,8 +89,8 @@
 
                 sb.AppendFormat("<div class=\"{0}\" data-dpcond=\"{1}\" data-start=\"{2}\" data-end=\"{3}\">"
                             , sCssClass, sDpCond, row["StartTime"].ToString(), row["EndTime"].ToString());
-                sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.mu.readEvent('{1}','{2}','{3}', '{4}');\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
-                                , "", ViewBag.R.ctalias.ToString(), row["MessageID"].ToString(), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
+                sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.mu.readEvent('{1}','{2}','{3}','{4}','{5}');\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
+                                , "", ViewBag.R.ctalias.ToString(), curDate, row["MessageID"].ToString(), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
                 sb.AppendFormat("<i class=\"fas fa-chalkboard fs-10 mt-1 mr-1\" style=\"color:{0}\"></i>", sColor);
                 sb.AppendFormat("<span class=\"text-primary mr-2\">~ {0}</span>", row["EndTime"].ToString());
                 sb.AppendFormat("<span class=\"\">{0}</span>", row["subject"].ToString());

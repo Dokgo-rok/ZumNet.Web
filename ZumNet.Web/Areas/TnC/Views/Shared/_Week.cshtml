@@ -133,8 +133,8 @@
             sb.AppendFormat("<span class=\"fas fa-chalkboard fs-10 mr-1\" style=\"color:{0}\"></span>", sColor);
             //sb.AppendFormat("<span class=\"mr-2\">{0} ~ {1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
             sb.AppendFormat("<span class=\"text-primary mr-2\">{0}</span>", row["StartTime"].ToString());
-            sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.mu.readEvent('{1}','{2}','{3}', '{4}');\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
-                            , "", ViewBag.R.ctalias.ToString(), row["MessageID"].ToString(), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
+            sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.mu.readEvent('{1}','{2}','{3}','{4}','{5}');\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
+                            , "", ViewBag.R.ctalias.ToString(), row["PeriodFrom"].ToString(), row["MessageID"].ToString(), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
             sb.AppendFormat("<span>{0}</span>", row["subject"].ToString());
             sb.Append("</a>");
             sb.Append("<div class=\"d-none\" data-help=\"event\">");

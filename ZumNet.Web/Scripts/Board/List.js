@@ -16,7 +16,7 @@ $(function () {
 
         _zw.V.mode = '';
         _zw.V.appid = 0;
-        _zw.V.xfalias = xf;
+        _zw.V.xfalias = _zw.V.xfalias == '' && xf != '' ? xf : _zw.V.xfalias;
 
         postData = _zw.fn.getAppQuery(_zw.V.fdid);
         window.location.href = '/Board/Write?qi=' + _zw.base64.encode(postData);

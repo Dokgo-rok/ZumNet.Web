@@ -7,6 +7,11 @@
         });
     });
 
+    $('.messages-sidebox a[data-zl-menu]').click(function () {
+        var mn = $(this).attr("data-zl-menu"); //console.log(mn)
+        bootbox.alert('준비중 : ' + mn); _zw.ut.hideRightBar();
+    });
+
     $('.z-list-head .btn[data-zv-menu]').click(function () { //.z-lv-menu .btn[data-zv-menu]
         var mn = $(this).attr("data-zv-menu");
         if (mn == 'prev' || mn == 'next') {
@@ -109,12 +114,7 @@
                     p.html(res.substr(2));
 
                     if (mode != 'view') {
-                        _zw.ut.picker('date'); _zw.ut.maxLength();
-
-                        p.find('.btn[data-toggle="popover"]').popover({
-                            html: true,
-                            content: function () { return p.find('[data-help="file"]').html(); }
-                        });
+                        _zw.ut.picker('date'); _zw.ut.maxLength(); _zw.fu.bind();
 
                         p.find('input[name="ckbRepeat"]').click(function () {
                             if ($(this).prop('checked')) {
@@ -178,6 +178,7 @@
         var mode = (mi && mi != '' && mi != '0') ? "edit" : "new";
         var postJson = {};
         postJson["mode"] = mode;
+        postJson["xfalias"] = _zw.V.xfalias;
         postJson["messageid"] = mi;
         postJson["objecttype"] = _zw.V.ot;
         postJson["objectid"] = _zw.V.fdid;
@@ -224,15 +225,18 @@
         postJson["creatordept"] = "";
         postJson["creatordeptid"] = "";
 
-        var fi = $.trim($("#FILEINFO").val()), nCnt = 0, rt = '';
-        if (fi.length > 0) {
-            //rt = moveFileToStorage(fi); //파일정보 xml 문자열로 반환
-            //if (rt.substr(0, 2) == "OK") { rt = rt.substr(2); } else { alert(rt); return; }
-            //nCnt = (fi.split(String.fromCharCode(8)).length > 1) ? 2 : 1;
+        postJson["attachlist"] = [];
+        if (_zw.fu.fileList.length) {
+            for (var i = 0; i < _zw.fu.fileList.length; i++) {
+                var v = _zw.fu.fileList[i];
+                if (v["attachid"] == '' || parseInt(v["attachid"]) == 0) postJson["attachlist"].push(v);
+            }
         }
-        postJson["isfile"] = nCnt; // 0, 1, 2
-        postJson["fileinfo"] = rt;
+        postJson["fileinfo"] = "";
+        postJson["isfile"] = _zw.fu.fileList.length > 1 ? '2' : _zw.fu.fileList.length;
         postJson["taskactivity"] = "";
+
+        //console.log(postJson);
 
         bootbox.confirm("저장 하시겠습니까?", function (rt) {
             if (rt) {

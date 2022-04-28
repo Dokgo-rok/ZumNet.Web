@@ -2422,10 +2422,10 @@ namespace ZumNet.Web.Bc
             string strReturn = "";
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
+            ctrl.ViewBag.R["xfalias"] = StringHelper.SafeString(ctrl.ViewBag.R.xfalias.ToString(), "schedule");
             if (resView)
             {
                 ctrl.ViewBag.R["ot"] = StringHelper.SafeString(ctrl.ViewBag.R.ot.ToString(), "FD"); //대상 구분
-                ctrl.ViewBag.R["xfalias"] = StringHelper.SafeString(ctrl.ViewBag.R.xfalias.ToString(), "schedule");
                 //ctrl.ViewBag.R["opnode"] = StringHelper.SafeString(ctrl.ViewBag.R.opnode.ToString(), "FD." + ctrl.ViewBag.R.fdid.ToString()); //메뉴 위치 구별
                 ctrl.ViewBag.R.lv["tgt"] = StringHelper.SafeString(ctrl.ViewBag.R.lv.tgt.ToString(), DateTime.Now.ToString("yyyy-MM-dd")); //조회 희망 일자
             }

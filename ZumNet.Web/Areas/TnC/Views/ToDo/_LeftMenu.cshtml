@@ -108,7 +108,7 @@
     <div class="py-3 px-4">
         <div class="media align-items-center">
             <div class="media-body">
-                <a id="__NewMessage" href="javascript:void(0)" class="btn btn-linkedin rounded-pill btn-block" onclick="_zw.fn.viewEvent(null, '@ViewBag.R.lv.tgt', '', 0);"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeLog</a>
+                <a id="__NewMessage" href="javascript:void(0)" class="btn btn-linkedin rounded-pill btn-block" data-for="todo"><i class="fas fa-plus mr-2"></i>@Resources.Global.ComposeLog</a>
             </div>
             <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
         </div>
@@ -116,16 +116,16 @@
             @if (ViewBag.R.current["operator"].ToString() == "Y")
             {
                 <div class="col-6 text-center px-0">
-                    <a class="" href="/TnC/ToDo/Report"><i class="fas fa-chalkboard"></i> 집계현황</a>
+                    <a class="" href="javascript:void(0)" data-zl-menu="Report"><i class="fas fa-chalkboard"></i> 집계현황</a>
                 </div>
                 <div class="col-6 text-center px-0">
-                    <a class="" href="/TnC/ToDo/Report"><i class="fe-calendar fs-14"></i> 주간계획</a>
+                    <a class="" href="javascript:void(0)" data-zl-menu="WeekPlan"><i class="fe-calendar fs-14"></i> 주간계획</a>
                 </div>
             }
             else
             {
                 <div class="col-12 text-center px-0">
-                    <a class="" href="/TnC/ToDo/Report"><i class="fe-calendar fs-14"></i> 주간계획</a>
+                    <a class="" href="javascript:void(0)" data-zl-menu="WeekPlan"><i class="fe-calendar fs-14"></i> 주간계획</a>
                 </div>
             }
         </div>
