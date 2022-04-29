@@ -134,7 +134,7 @@
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
                 <td style="width:92px">
-                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[( @bizrole='receive' and @actrole='_approver' ) and @partid!='' and @step!='0'], '__si_Last', '1', '승인')"/>
+                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[( @bizrole='last' and @actrole='_approver' ) and @partid!='' and @step!='0'], '__si_Last', '1', '승인')"/>
                 </td>
               </tr>
             </table>

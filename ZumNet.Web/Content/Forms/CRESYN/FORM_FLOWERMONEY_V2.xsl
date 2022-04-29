@@ -416,8 +416,8 @@
                         <option value="">선택</option>
                         <option value="5">크레신주식회사 회장 이종배</option>
                         <option value="6">크레신주식회사 대표이사 이종배</option>
-                        <option value="7">크레신주식회사 대표이사 오우동</option>
-                        <option value="8">기타</option>
+                        <option value="7">크레신주식회사 대표이사 이태윤</option>
+                        <option value="8">기타(직접입력)</option>
                       </select>
                       <input type="text" id="__mainfield" name="FLONAME"  class="txtText" maxlength="50" style="margin-left:10px;width:50%;display:none" />
                     </xsl:when>
