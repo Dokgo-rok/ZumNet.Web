@@ -87,7 +87,7 @@
 @functions {
     private string GetNavUserImage()
     {
-        string imagepath = Server.MapPath("~/images/users/" + Session["LogonID"].ToString() + ".jpg");
+        string imagepath = Server.MapPath("~/Storage/cresyn/PersonPhoto/" + Session["LogonID"].ToString() + ".jpg");
         if (File.Exists(imagepath))
         {
             FileStream fs = new FileStream(imagepath, FileMode.Open);

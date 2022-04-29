@@ -432,17 +432,16 @@
     bottom: 0;
     left: 0;
     right: 0;
-    
     overflow: auto;
-    display: -ms-flexbox;
-    -ms-flex-align: stretch;
     align-items: stretch;
-    -ms-flex: 1 1 auto;
     flex: 1 1 auto;
-    -ms-flex-direction: column;
     flex-direction: column;
-    -ms-flex-pack: justify;
     justify-content: space-between;
+    /*display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex: 1 1 auto;
+    -ms-flex-direction: column;
+    -ms-flex-pack: justify;*/
 }
 
 .z-list-head {
