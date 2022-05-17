@@ -219,6 +219,9 @@
   <data name="SS_Disagree" xml:space="preserve">
     <value>Disagree</value>
   </data>
+  <data name="SS_Draft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
   <data name="SS_None" xml:space="preserve">
     <value>None</value>
   </data>

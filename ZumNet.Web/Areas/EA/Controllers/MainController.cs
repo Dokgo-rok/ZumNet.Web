@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
 using System.Web;
 using System.Web.Mvc;
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ZumNet.Framework.Util;
 
@@ -324,6 +325,71 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 }
             }
             return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string AutoSearch()
+        {
+            JObject jReturn = new JObject();
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    string[] vPostData = CommonUtils.PostDataToString().Split(','); //xf,location,partid,field,text
+                    string sSearchText = "";
+                    if (vPostData[3] == "docname")
+                    {
+                        sSearchText = "WHERE DN_ID = " + Session["DNID"].ToString() + " AND XFAlias = '" + vPostData[0] + "' AND ParticipantID = '" + vPostData[2] + "'";
+                        if (vPostData[1] == "ep") sSearchText += " AND PIState = 1 AND State = 0 AND ViewState = 3 AND SignStatus = 0 AND SignKind <> 3 AND SignKind <> 4"; //예정함
+                        else if (vPostData[1] == "go") sSearchText += " AND PIState = 1 AND State = 7 AND (ViewState = 7 OR ViewState = 3) AND SignStatus <> 0"; //진행함
+                        else if (vPostData[1] == "av") sSearchText += " AND PIState = 1 AND State = 2 AND ViewState = 3"; //결재함
+                        if (vPostData[4] != "") sSearchText += " AND DocName LIKE '%" + vPostData[4] + "%'";
+                    }
+                    else if (vPostData[3] == "creator")
+                    {
+                        sSearchText = vPostData[4];
+                    }
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    if (sSearchText != "")
+                    {
+                        using (ZumNet.BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
+                        {
+                            svcRt = ea.SearchAutoComplete(vPostData[3], sSearchText);
+                        }
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                        {
+                            var jArr = new JArray();
+                            foreach (DataRow dr in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                JObject jTemp = JObject.Parse("{}");
+                                jTemp["name"] = dr["Name"].ToString();
+                                if (dr.Table.Columns.Contains("DocCount")) jTemp["count"] = dr["DocCount"].ToString();
+                                jArr.Add(jTemp);
+                            }
+                            jReturn["result"] = "OK";
+                            jReturn["data"] = jArr;
+                        }
+                        else jReturn["result"] = Resources.Global.NoItemShow;
+                    }
+                    else
+                    {
+                        jReturn["result"] = svcRt != null ? svcRt.ResultMessage : Resources.Global.NoItemShow;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    jReturn["result"] = ex.Message;
+                }
+            }
+
+            return JsonConvert.SerializeObject(jReturn);
         }
         #endregion
 

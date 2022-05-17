@@ -59,6 +59,51 @@
         window.location.href = '/TnC/Booking/Calendar?qi=' + encodeURIComponent(_zw.base64.encode(_zw.fn.getLvQuery()));
     });
 
+    //popover
+    $('.z-ttl .btn[data-popover="resource-info"]').on('click', function () {
+        var p = $(this), tgt = $('div[data-info="resource-info"]'); console.log(tgt.children())
+        if (tgt.children().length == 0) {
+            $.ajax({
+                type: "POST",
+                url: "/TnC/Booking/ResourceInfo",
+                data: '{M:"popover",fdid:"' + _zw.V.fdid + '",boundary:"' + _zw.V.lv.boundary + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        tgt.html(res.substr(2));
+
+                        //p.on('shown.bs.popover', function () {//show로 할 경우 안 click 이벤트 발생X
+                            //var pop = $(this)
+                            //$('button[data-dismiss="popover"]').click(function () {
+                            //    pop.popover('hide');
+                            //});
+                        p.popover({
+                            html: true,
+                            trigger: 'focus',
+                            title: function () { return tgt.find('.header').html(); },
+                            content: function () { return tgt.find('.content').html(); }
+                        }).popover('toggle');
+
+                    } else bootbox.alert(res);
+                },
+                beforeSend: function () { } //로딩 X
+            });
+        }
+    });
+
+    //$('.z-ttl .btn[data-popover="resource-info"]').on('show.bs.popover', function () {
+
+    //}).on('shown.bs.popover', function () {//show로 할 경우 안 click 이벤트 발생X
+    //    var pop = $(this)
+    //    $('button[data-dismiss="popover"]').click(function () {
+    //        pop.popover('hide');
+    //    });
+    //}).popover({
+    //    html: true,
+    //    title: function () { return $('div[data-info="resource-info"] .header').html(); },
+    //    content: function () { return $('div[data-info="resource-info"] .content').html(); }
+    //});
+    
+
     $('#ddlSchType').on('change', function () {
         _zw.V.ttl = ''; _zw.V.lv.sort = $(this).val();
         _zw.fn.loadList();
@@ -154,7 +199,7 @@
                 if (res.substr(0, 2) == 'OK') {
                     var v = res.substr(2).split(_zw.V.lv.boundary);
                     var p = $('#popForm');
-                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); //console.log(_zw.V.app);
+                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); //console.log(_zw.V);
 
                     p.find('.btn[data-zm-menu]').click(function () {
                         var mn = $(this).attr('data-zm-menu');
@@ -195,12 +240,13 @@
 
     _zw.mu.editEvent = function (ca, dt, mi, pt, partid, opt) {
         if (mi == null || mi == '' || parseInt(mi) == '0') return false;
-        ca = ca || ''; pt = pt || ''; partid = partid || '0'; dt = dt || 'x'; //if (dt == '' && _zw.V.lv.tgt != '') dt = _zw.V.lv.tgt;
+        ca = ca || ''; pt = pt || ''; partid = partid || '0'; dt = dt || ''; //if (dt == '' && _zw.V.lv.tgt != '') dt = _zw.V.lv.tgt;
 
         _zw.V.wnd = 'modal';
         _zw.V.ot = pt;
         _zw.V.fdid = partid;
         _zw.V.appid = mi;
+        _zw.V.lv.cd1 = opt != null && opt.length > 0 ? opt[1] : '';
 
         $.ajax({
             type: "POST",
@@ -210,13 +256,16 @@
                 if (res.substr(0, 2) == 'OK') {
                     var v = res.substr(2).split(_zw.V.lv.boundary);
                     var p = $('#popForm');
-                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); //console.log(_zw.V.app);
+                    p.html(v[0]); _zw.V.app = JSON.parse(v[1]); //console.log(_zw.V);
 
                     _zw.ut.picker('date'); _zw.ut.maxLength(); _zw.fu.bind();
 
+                    if (opt != null && opt.length > 0) _zw.V.app['repeat']["changeopt"] = opt[1];
+                    _zw.V.app['repeat']["changedate"] = dt;
+
                     p.find('input[name="ckbRepeat"]').click(function () {
                         if ($(this).prop('checked')) {
-                            _zw.cdr.showRepeat(p, 'init', 'txtStart;txtEnd', 'cbStart', 'cbEnd');
+                            _zw.cdr.showRepeat(p, '', 'txtStart;txtEnd', 'cbStart', 'cbEnd', _zw.V.app['repeat']);
                         } else {
                             _zw.cdr.closeRepeat(p);
                         }
@@ -235,6 +284,8 @@
                         else _zw.fn.saveEvent();
                     });
 
+                    if (!p.find('input[name="ckbRepeat"]').prop('disabled') && _zw.V.app['repeat']['type'] != '0') _zw.cdr.showRepeat(p, '', 'txtStart;txtEnd', 'cbStart', 'cbEnd', _zw.V.app['repeat']);
+                    
                     if (opt != null && opt.length > 0) opt[0].find("button[data-dismiss='modal']").click();
                     p.modal();
                 }
@@ -244,6 +295,7 @@
 
     _zw.fn.saveEvent = function (dt, opt) {
         var p = $('#popForm');
+        var mode = (_zw.V.appid && _zw.V.appid != '' && parseInt(_zw.V.appid) > 0) ? "edit" : "new";
         dt = dt || ''; opt = opt || '';
 
         if ($.trim($("#txtSubject").val()) == '') { bootbox.alert("제목을 입력하십시오!", function () { $("#txtSubject").focus(); }); return false; }
@@ -253,10 +305,8 @@
         var ttl = p.find('span[data-for="SelectedPartName"]').html();
         var partId = p.find('input[data-for="SelectedPartID"]').val();
         var partType = p.find('input[data-for="SelectedPartType"]').val();
-        if ($.trim(ttl) == '' || partId == '' || partId == '0') { bootbox.alert("신청 자원이 없습니다!"); return false; }
-
-
-        var mode = (_zw.V.app && _zw.V.app != '' && parseInt(_zw.V.app) > 0) ? "edit" : "new";
+        if (mode == 'new' && ($.trim(ttl) == '' || partId == '' || partId == '0')) { bootbox.alert("신청 자원이 없습니다!"); return false; }
+        
         var postJson = {}; //_zw.V.app;
         //postJson["cmntlist"] = []; postJson["sharedlist"] = []; //저장 중 필요 없는 목록 제거
         postJson["repeat"] = {};
@@ -266,14 +316,17 @@
         postJson["xfalias"] = _zw.V.xfalias;
         postJson["appid"] = _zw.V.appid;
 
+        var startTime = p.find('input[name="ckbAllDay"]').prop('checked') ? '00:00' : $("#cbStart").val();
+        var endTime = p.find('input[name="ckbAllDay"]').prop('checked') ? '24:00' : $("#cbEnd").val();
+
         var vRRule = _zw.cdr.getRepeat(p).split('|'); //console.log(vRRule);
         var rptEnd = $("#txtRepeatEnd");
         if (vRRule == 'CHECK') { bootbox.alert("반복요일을 선택하십시오!"); return false; }
         else if (vRRule == 'INVALID') { bootbox.alert("반복종료일은 확인하십시오!", function () { rptEnd.focus(); }); return false; }
         else if (vRRule == 'END') { bootbox.alert("반복종료일은 시작일 이후로 선택하십시오!", function () { rptEnd.focus(); }); return false; }
 
-        if (ttl.indexOf('회의실') >= 0 && vRRule[0] != '0') { //2020-11-09 회의실 경우 1달 이상 되풀이 지정 불가
-            console.log(moment(rptEnd.val()).diff(moment($("#txtStart").val()), 'M', true));
+        if (mode == 'new' && ttl.indexOf('회의실') >= 0 && vRRule[0] != '0') { //2020-11-09 회의실 경우 1달 이상 되풀이 지정 불가
+            //console.log(moment(rptEnd.val()).diff(moment($("#txtStart").val()), 'M', true));
             if (rptEnd.val() == '' || moment(rptEnd.val()).diff(moment($("#txtStart").val()), 'M', true) > 1) {
                 bootbox.alert("[회의실] 경우 1달 이내 반복 가능합니다!", function () { rptEnd.focus(); }); return false;
             }
@@ -281,8 +334,11 @@
 
         var rptInfo = {};
         if (mode == "edit") {
-            rptInfo["change"] = ($("#hdRepeatType").val() != vRRule[0] || $("#hdInterval").val() != vRRule[4] || $("#hdConDay").val() != vRRule[5] || $("#hdRepeatEnd").val() != vRRule[1]
-                || $("#txtStart").val() != $("#hdPeriodFrom").val() || $("#cbStart").val() != $("#hdStartTime").val() || $("#cbEnd").val() != $("#hdEndTime").val()) ? "Y" : "N";
+            var orgRpt = _zw.V.app["repeat"];
+            rptInfo["change"] = (orgRpt["type"] != vRRule[0] || orgRpt["end"] != vRRule[1] || orgRpt["count"] != vRRule[2] || orgRpt["intervaltype"] != vRRule[3]
+                || orgRpt["interval"] != vRRule[4] || orgRpt["conday"] != vRRule[5] || orgRpt["conweek"] != vRRule[6] || orgRpt["condate"] != vRRule[7]
+                || $("#txtStart").val() != _zw.V.app["periodfrom"] || startTime != _zw.V.app["start"]
+                || $("#txtEnd").val() != _zw.V.app["periodto"] || endTime != _zw.V.app["end"]) ? "Y" : "N";
         }
         
         rptInfo["type"] = vRRule[0];
@@ -303,18 +359,18 @@
         postJson["task"] = "0";
         postJson["inherited"] = "Y";
         postJson["state"] = "0";
-        postJson["priority"] = $("#ckbPrioriy").prop('checked') ? "H" : "";
+        postJson["priority"] = $(':checkbox[name="ckbPrioriy"]').prop('checked') ? "H" : "";
 
         postJson["subject"] = $("#txtSubject").val();
         postJson["location"] = $("#txtLocation").val();
         postJson["body"] = $("#txtBody").val();
         postJson["periodfrom"] = $("#txtStart").val();
-        postJson["start"] = p.find('input[name="ckbAllDay"]').prop('checked') ? '00:00' : $("#cbStart").val();
+        postJson["start"] = startTime; //p.find('input[name="ckbAllDay"]').prop('checked') ? '00:00' : $("#cbStart").val();
         postJson["periodto"] = $("#txtEnd").val();
-        postJson["end"] = p.find('input[name="ckbAllDay"]').prop('checked') ? '24:00' : $("#cbEnd").val();
+        postJson["end"] = endTime; //p.find('input[name="ckbAllDay"]').prop('checked') ? '24:00' : $("#cbEnd").val();
         postJson["term"] = moment(postJson["periodto"] + ' ' + postJson["end"]).diff(moment(postJson["periodfrom"] + ' ' + postJson["start"]), 'minutes');
 
-        if (partId != '') {
+        if (mode == 'new' && partId != '') {
             var partInfo = {};
             partInfo["ot"] = 'FD';
             partInfo["partid"] = partId;
@@ -326,6 +382,9 @@
             partInfo["sendmail"] = 'N';
             partInfo["approval"] = p.find('input[data-for="SelectedApproval"]').val();
             postJson["partlist"].push(partInfo);
+
+        } else if (mode == 'edit') {
+            postJson["partlist"] = _zw.V.app["partlist"]; //편집모드에서 자원 수정 X
         }
 
         postJson["alarm"] = "0";
@@ -343,7 +402,7 @@
         postJson["attachcount"] = _zw.fu.fileList.length > 1 ? '2' : _zw.fu.fileList.length;
         postJson["taskact"] = "";
 
-        console.log(postJson);
+        //console.log(postJson);
 
         bootbox.confirm("저장 하시겠습니까?", function (rt) {
             if (rt) {
@@ -355,7 +414,32 @@
                         if (res.substr(0, 2) == 'OK') {
                             bootbox.alert(res.substr(2), function () {
                                 if (p) p.find("button[data-dismiss='modal']").click();
-                                location.reload();
+                                _zw.fn.loadList(); //location.reload();
+                            });
+
+                        } else bootbox.alert(res);
+                    }
+                });
+            }
+        });
+    }
+
+    _zw.fn.deleteEvent = function (ca, dt, mi, opt) {
+        if (_zw.V.current.operator != 'Y' && _zw.V.current.urid != _zw.V.app.creurid && _zw.V.current.appacl.substr(1, 1) != 'D') return false;
+
+        bootbox.confirm("해당 일정을 삭제하시겠습니까?", function (rt) {
+            if (rt) {
+                if (opt != null && opt.length > 0) opt[0].find("button[data-dismiss='modal']").click();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/TnC/Booking/EventDelete",
+                    data: '{mi:"' + mi + '",ot:"' + _zw.V.app.ot + '",otid:"' + _zw.V.app.otid + '",dt:"' + dt + '",opt:"' + (opt != null && opt.length > 0 ? opt[1] : '') + '"}',
+                    success: function (res) {
+                        if (res.substr(0, 2) == 'OK') {
+                            bootbox.alert(res.substr(2), function () {
+                                $('#popForm').find("button[data-dismiss='modal']").click();
+                                _zw.fn.loadList();
                             });
 
                         } else bootbox.alert(res);

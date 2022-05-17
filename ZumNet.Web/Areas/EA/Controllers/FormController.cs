@@ -23,7 +23,6 @@ namespace ZumNet.Web.Areas.EA.Controllers
             JObject jReq;
             string rt = Resources.Global.Auth_InvalidPath;
             string req = StringHelper.SafeString(Request["qi"], "");
-
             if (req == "")
             {
                 return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -40,37 +39,21 @@ namespace ZumNet.Web.Areas.EA.Controllers
             }
 
             rt = "";
-            if (jReq["M"].ToString() == "") rt = "필수 항목[Mode] 누락";
-            else if (StringHelper.SafeString(jReq["xf"]) == "") rt = "필수 항목[xfalias] 누락";
-            else if ((jReq["M"].ToString() == "read" || jReq["M"].ToString() == "edit" || jReq["M"].ToString() == "html") && StringHelper.SafeInt(jReq["mi"]) == 0) rt = "필수 항목[MessageID] 누락";
-            //else if (jReq["M"].ToString() == "new" && jReq["fi"].ToString() == "") rt = "필수 항목[FormID] 누락";
-            else if (jReq["M"].ToString() == "new")
-            {
-                if (jReq["fi"].ToString() == "")
-                {
-                    if (StringHelper.SafeString(jReq["Tp"]) != "" && StringHelper.SafeString(jReq["ft"]) != "" && StringHelper.SafeString(jReq["k1"]) != "")
-                    {
-                        //외부에서 오는 경우(임시 처리)
-                        using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new DAL.FlowDac.EApprovalDac())
-                        {
-                            ZumNet.Framework.Entities.Flow.XFormDefinition xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), "", jReq["ft"].ToString());
-                            jReq["fi"] = xfDef.FormID; xfDef = null;
-                        }
-                    }
-                    else
-                    {
-                        rt = "필수 항목[FormID] 누락";
-                    }
-                }
-            }
+            //if (jReq["M"].ToString() == "") rt = "필수 항목[Mode] 누락";
+            //else if (StringHelper.SafeString(jReq["xf"]) == "") rt = "필수 항목[xfalias] 누락";
+            if (jReq["M"].ToString() == "") jReq["M"] = "new";
+            if (jReq["xf"].ToString() == "") jReq["xf"] = "ea";
 
+            ViewBag.JReq = jReq;
+            rt = Bc.CtrlHandler.EFormInit(this);
             if (rt != "")
             {
                 return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
+            jReq = ViewBag.JReq;
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
-            string xfAlias = StringHelper.SafeString(jReq["xf"]);
+            string xfAlias = StringHelper.SafeString(jReq["xf"].ToString());
 
             using (EAFormManager fmMgr = new EAFormManager())
             {
@@ -134,7 +117,6 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
             if (svcRt != null && svcRt.ResultCode == 0)
             {
-                ViewBag.JReq = jReq;
                 ViewBag.FormHtml = svcRt.ResultDataString;
                 ViewBag.Title = svcRt.ResultDataDetail["DocName"];
                 ViewBag.JForm = svcRt.ResultDataDetail["XForm"];
@@ -145,6 +127,12 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     if (jReq["Tp"] != null) ViewBag.JForm["tp"] = jReq["Tp"].ToString();
                     if (jReq["sj"] != null) ViewBag.JForm["doc"]["subject"] = jReq["sj"].ToString();
                 }
+
+                if (ViewBag.WorkNotice != null) ViewBag.JForm["wn"] = ViewBag.WorkNotice;
+                ViewBag.JForm["preapvwi"] = ViewBag.PreApprovalWI;
+                ViewBag.JForm["checkpwd"] = ViewBag.PwdCheck;
+
+                ViewBag.JForm["boundary"] = CommonUtils.BOUNDARY();
             }
             else
             {
@@ -263,5 +251,167 @@ namespace ZumNet.Web.Areas.EA.Controllers
             }
             return strView;
         }
+
+        #region [문서정보, 관련문서 등]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DocProp()
+        {
+            string sPos = "";
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (BSL.ServiceBiz.DocBiz docBiz = new BSL.ServiceBiz.DocBiz())
+                    {
+                        sPos = "200";
+                        svcRt = docBiz.GetDocLevelKeepYear(Convert.ToInt32(Session["DNID"]));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "300";
+                        ViewBag.JPost = jPost;
+                        ViewBag.DocLevel = svcRt.ResultDataDetail["DocLevel"];
+                        ViewBag.KeepYear = svcRt.ResultDataDetail["KeepYear"];
+
+                        sPos = "310";
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "DocProp", ViewBag);
+                    }
+                    else
+                    {
+                        sPos = "400";
+                        //에러페이지
+                        rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
+
+        #region [결재선 관리자]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string SignLine()
+        {
+            string rt = "";
+            string sPos = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    ViewBag.JPost = jPost;
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    if (jPost["M"].ToString() == "draft" || jPost["M"].ToString() == "approval")
+                    {
+                        string sOrgTree = "";
+                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        {
+                            sPos = "200";
+                            svcRt = cb.GetGradeCode("1", Convert.ToInt32(Session["DNID"]), "A");
+                            if (svcRt != null && svcRt.ResultCode == 0) ViewBag.GradeCode = svcRt.ResultDataRowCollection;
+                            else throw new Exception(svcRt.ResultMessage);
+
+                            sPos = "210";
+                            svcRt = cb.GetMemberStates(Convert.ToInt32(Session["URID"]), Convert.ToInt32(Session["DeptID"]));
+                            if (svcRt != null && svcRt.ResultCode == 0) ViewBag.UserInfo = svcRt.ResultDataSet;
+                            else throw new Exception(svcRt.ResultMessage);
+                        }
+
+                        using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+                        {
+                            sPos = "300";
+                            svcRt = op.GetOrgMapInfo(Convert.ToInt32(Session["DNID"]), 0, "D", Convert.ToInt32(Session["DeptID"]), DateTime.Now.ToString("yyyy-MM-dd"), "N");
+                            if (svcRt != null && svcRt.ResultCode == 0) sOrgTree = CtrlHandler.OrgTreeString(svcRt);
+                            else throw new Exception(svcRt.ResultMessage);
+
+                            sPos = "310";
+                            svcRt = op.GetGroupMemberList(Session["DNID"].ToString(), Session["DeptID"].ToString(), DateTime.Now.ToString("yyyy-MM-dd"), "Code1", "", Session["Admin"].ToString());
+                            if (svcRt != null && svcRt.ResultCode == 0) ViewBag.MemberList = svcRt.ResultDataSet;
+                            else throw new Exception(svcRt.ResultMessage);
+                        }
+
+                        using (ZumNet.BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
+                        {
+                            sPos = "400";
+                            svcRt = ea.GetPersonLine(0, Convert.ToInt32(Session["URID"]));
+                            if (svcRt != null && svcRt.ResultCode == 0) ViewBag.PersonLine = svcRt.ResultDataSet;
+                            else throw new Exception(svcRt.ResultMessage);
+                        }
+
+                        sPos = "500";
+                        Framework.Entities.Flow.SchemaList schemaActList = null;
+                        string strSchemaOption = jPost["fi"].ToString() + ";" + Session["DeptID"].ToString() + ";" + Session["URID"].ToString();
+                        if (jPost["tp"].ToString() != "") strSchemaOption += ";" + jPost["tp"].ToString();
+
+                        if (jPost["M"].ToString() == "approval")
+                        {
+                            Framework.Entities.Flow.WorkItem curWI = null;
+                            Framework.Entities.Flow.Activity curAct = null;
+
+                            sPos = "510";
+                            using (ZumNet.DAL.FlowDac.ProcessDac procDac = new DAL.FlowDac.ProcessDac())
+                            {
+                                curWI = procDac.SelectWorkItem(jPost["wi"].ToString());
+                                curAct = procDac.GetProcessActivity(curWI.ActivityID);
+                            }
+
+                            sPos = "520";
+                            using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new DAL.FlowDac.EApprovalDac())
+                            {
+                                ViewBag.DL = eaDac.SelectXFormDL(0, jPost["xf"].ToString(), Convert.ToInt32(jPost["appid"]), "");
+                            }
+
+                            sPos = "530";
+                            using (BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+                            {
+                                schemaActList = wkList.RetrieveSchemaList(Convert.ToInt32(jPost["def"]), curWI.OID, curAct.Step, curAct.ActivityID, curWI.ParentWorkItemID, strSchemaOption);
+                            }
+
+                            sPos = "540";
+                            ViewBag.CurrentWI = curWI;
+                            ViewBag.CurrentAct = curAct;
+                        }
+                        else
+                        {
+                            sPos = "550";
+                            using (BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+                            {
+                                schemaActList = wkList.RetrieveSchemaList(Convert.ToInt32(jPost["def"]), 0, 0, "", "", strSchemaOption);
+                            }
+                        }
+                        sPos = "590";
+                        ViewBag.SchemaList = schemaActList;
+
+                        sPos = "600";
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "SignLine", ViewBag)
+                                + jPost["boundary"].ToString() + sOrgTree;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
     }
 }

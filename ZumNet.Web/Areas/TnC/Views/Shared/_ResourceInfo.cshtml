@@ -1,0 +1,85 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json.Linq;
+@{
+}
+@functions{
+    private string GetResourceInfo(string mode, DataRow info, DataSet acl)
+    {
+        StringBuilder sb = new StringBuilder();
+        //sb.Append("<div class=\"d-none\" data-info=\"resource-info\">");
+        if (info != null)
+        {
+            sb.Append("<div class=\"header\">");
+            sb.Append("<div class=\"d-flex justify-content-between align-items-center\">");
+            sb.Append("<h6 class=\"mb-0\">자원 정보</h6>");
+            sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"popover\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>"); //onclick=\"$('.z-ttl .btn').popover('hide');\"
+            sb.Append("</div>");
+            sb.Append("</div>");
+            //sb.Append(ViewBag.Boundary);
+            sb.Append("<div class=\"content\">");
+            sb.Append("<div class=\"border\">");
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<tbody>");
+            sb.AppendFormat("<tr><th class=\"table-success\">자원명</th><td>{0}</td></tr>", info["DisplayName"].ToString());
+            sb.AppendFormat("<tr><th class=\"table-success\">사용방식</th><td>{0}</td></tr>", info["InUse"].ToString() == "Y" ? "허가제" : "선점제");
+            sb.AppendFormat("<tr><th class=\"table-success\">사용인원</th><td>{0}</td></tr>", info["Count"].ToString() == "" ? "0 명" : info["Count"].ToString() + " 명");
+            sb.AppendFormat("<tr><th class=\"table-success\">고장유무</th><td>{0}</td></tr>", info["Reserved1"].ToString() == "Y" ? "고장" : "정상");
+            sb.AppendFormat("<tr><th class=\"table-success\">생성일</th><td>{0}</td></tr>", ZumNet.Framework.Util.DateHelper.CheckDateTime(info["CreateDate"].ToString(), "yyyy-MM-dd", ""));
+            sb.Append("<tr><th class=\"table-success\" colspan=\"2\">설명</th></tr>");
+            sb.AppendFormat("<tr><td colspan=\"2\"><textarea class=\"form-control\" rows=\"2\">{0}</textarea></td></tr>", info["Description"].ToString());
+
+            sb.Append("<tr><th class=\"table-success\" colspan=\"2\">자원담당자</th></tr>");
+            sb.Append("<tr><td colspan=\"2\" style=\"height: 2rem; min-height: 2rem\">");
+            sb.Append("<ul class=\"nav flex-column\">");
+            if (acl != null && acl.Tables.Count > 0)
+            {
+
+                foreach (DataRow dr in acl.Tables[0].Rows)
+                {
+                    string sIcon = "";
+                    if (dr["AclKind"].ToString().Substring(0, 1) == "S" || ZumNet.Framework.Util.StringHelper.HasAcl(dr["AclKind"].ToString(), "S"))
+                    {
+                        if (dr["TargetType"].ToString() == "DN") sIcon = "fas fa-city text-indigo";
+                        else if (dr["TargetType"].ToString() == "DN") sIcon = "fas fa-user-friends text-seconday";
+                        else sIcon = "fas fa-user text-primary";
+
+                        sb.AppendFormat("<li class=\"nav-item px-2 pt-1\"><i class=\"{0}\"></i>&nbsp;&nbsp;{1}</li>", sIcon, dr["TargetName"].ToString());
+                    }
+                }
+
+            }
+            sb.Append("</ul>");
+            sb.Append("</td></tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+        }
+        //sb.Append("</div>");
+        return sb.ToString();
+    }
+}
+
+@if (ViewBag.Mode == "modal")
+{
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+            <div class="modal-header">
+                <h5 class="modal-title">자원 정보</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body bg-light p-2 pb-1">
+                @Html.Raw(GetResourceInfo(ViewBag.Mode, ViewBag.ResInfo, ViewBag.ResAcl))
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @Html.Raw(GetResourceInfo(ViewBag.Mode, ViewBag.ResInfo, ViewBag.ResAcl))
+}
+

@@ -1,0 +1,98 @@
+﻿@using System.Data;
+@{
+    string sSelected = "";
+}
+
+<div class="form-group row mb-1">
+    <label class="col-sm-2 col-form-label">문서분류</label>
+    <div class="col-sm-10">
+        <input type="text" class="form-control bg-white" readonly data-for="addinfo" value="@ViewBag.JPost["category"][0]["desc"]" />
+        <input type="hidden" data-for="addinfo2" value="@ViewBag.JPost["category"][0]["fdid"]" />
+        <input type="hidden" data-for="addinfo3" value="@ViewBag.JPost["category"][0]["xfalias"]" />
+        <input type="hidden" data-for="addinfo4" value="@ViewBag.JPost["category"][0]["atttype"]" />
+    </div>
+</div>
+
+<div class="form-group row mb-1">
+    <label class="col-sm-2 col-form-label">보안등급</label>
+    <div class="col-sm-4">
+        <select class="custom-select bg-white" data-for="doclevel" disabled>
+            @foreach (DataRow dr in ViewBag.DocLevel)
+            {
+                if (dr["DocLevel"].ToString() == ViewBag.JPost["doclevel"].ToString())
+                {
+                    sSelected = " selected";
+                }
+                else if (dr["IsDefault"].ToString() == "Y")
+                {
+                    sSelected = " selected";
+                }
+                else
+                {
+                    sSelected = "";
+                }
+                <option value="@dr["DocLevel"]"@sSelected>@dr["DisplayName"]</option>
+            }
+        </select>
+    </div>
+    <label class="col-sm-2 col-form-label">보존년한</label>
+    <div class="col-sm-4">
+        <select class="custom-select bg-white" data-for="keepyear" disabled>
+            @foreach (DataRow dr in ViewBag.KeepYear)
+            {
+                if (dr["KeepYear"].ToString() == ViewBag.JPost["keepyear"].ToString())
+                {
+                    sSelected = " selected";
+                }
+                else if (dr["IsDefault"].ToString() == "Y")
+                {
+                    sSelected = " selected";
+                }
+                else
+                {
+                    sSelected = "";
+                }
+                <option value="@dr["KeepYear"]" @sSelected>@dr["DisplayName"]</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="form-group row mb-1">
+    <label class="col-sm-2 col-form-label">중요도</label>
+    <div class="col-sm-4">
+        <select class="custom-select@(ViewBag.JPost["M"].ToString() == "read" ? " bg-white" : "")" data-for="priority"@(ViewBag.JPost["M"].ToString() == "read" ? " disabled" : "")>
+            <option value="H"@(ViewBag.JPost["priority"].ToString() == "H" ? " selected" : "")>높음</option>
+            <option value="N"@(ViewBag.JPost["priority"].ToString() == "N" || ViewBag.JPost["priority"].ToString() == "" ? " selected" : "")>보통</option>
+            <option value="L"@(ViewBag.JPost["priority"].ToString() == "L" ? " selected" : "")>낮음</option>
+        </select>
+    </div>
+    <label class="col-sm-2 col-form-label">문서종류</label>
+    <div class="col-sm-4">
+        <select class="custom-select@(ViewBag.JPost["M"].ToString() == "read" ? " bg-white" : "")" data-for="secret"@(ViewBag.JPost["M"].ToString() == "read" ? " disabled" : "")>
+            <option value="N"@(ViewBag.JPost["secret"].ToString() == "N" || ViewBag.JPost["secret"].ToString() == "" ? " selected" : "")>일반문서</option>
+            <option value="Y"@(ViewBag.JPost["secret"].ToString() == "Y" ? " selected" : "")>비밀문서</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group row mb-1">
+    <label class="col-sm-2 col-form-label">권한설정</label>
+    <div class="col-sm-10">
+        <select class="custom-select@(ViewBag.JPost["M"].ToString() == "read" ? " bg-white" : "")" data-for="inherited"@(ViewBag.JPost["M"].ToString() == "read" ? " disabled" : "")>
+            <option value="P"@(ViewBag.JPost["inherited"].ToString() == "P" || ViewBag.JPost["inherited"].ToString() == "" ? " selected" : "")>참여자 열람</option>
+            <option value="G"@(ViewBag.JPost["inherited"].ToString() == "G" ? " selected" : "")>참여자 및 해당 부서 열람</option>
+            <option value="A"@(ViewBag.JPost["inherited"].ToString() == "A" ? " selected" : "")>전사 열람</option>
+            <option value="L"@(ViewBag.JPost["inherited"].ToString() == "L" ? " selected" : "")>참여자 열람(문서관리 상속)</option>
+            <option value="M"@(ViewBag.JPost["inherited"].ToString() == "M" ? " selected" : "")>참여자 및 해당 부서 열람(문서관리 상속)</option>
+            <option value="N"@(ViewBag.JPost["inherited"].ToString() == "N" ? " selected" : "")>전사 열람(문서관리 상속)</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group mb-0">
+    <label class="col-form-label">관련업무</label>
+    <div class="border rounded p-3 text-center text-muted">
+        해당 사항이 없습니다!
+    </div>
+</div>

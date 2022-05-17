@@ -1,6 +1,6 @@
 ﻿<div class="z-lv-menu btn-group-sm">
     <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
-    <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeForm" data-zv-menu="write"><i class="fe-edit-2"></i></button>
+    @*<button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeForm" data-zv-menu="write"><i class="fe-edit-2"></i></button>*@
 </div>
 
 <div class="px-1 flex-grow-1"></div>
@@ -10,8 +10,8 @@
         if (ViewBag.CurBox[2] == "ep" || ViewBag.CurBox[2] == "av" || ViewBag.CurBox[2] == "go")
         {
             <div class="input-group mr-1 z-lv-date">
-                <input type="text" class="form-control wd-lg-60 wd-xl-60" data-val="DocName" placeholder="@Resources.Global.DocName">
-                <input type="text" class="form-control wd-lg-40 wd-xl-40" data-val="Creator" placeholder="@Resources.Global.Writer">
+                <input type="text" class="form-control wd-lg-60 wd-xl-60" data-val="DocName" placeholder="@Resources.Global.DocName" autocomplete="off" />
+                <input type="text" class="form-control wd-lg-40 wd-xl-40" data-val="Creator" placeholder="@Resources.Global.Writer" autocomplete="off" />
             </div>
         }
         else

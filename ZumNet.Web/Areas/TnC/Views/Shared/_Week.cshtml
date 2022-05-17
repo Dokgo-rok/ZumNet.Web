@@ -134,12 +134,21 @@
             //sb.AppendFormat("<span class=\"mr-2\">{0} ~ {1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
             sb.AppendFormat("<span class=\"text-primary mr-2\">{0}</span>", row["StartTime"].ToString());
             sb.AppendFormat("<a href=\"javascript:void(0);\" class=\"{0}\" onclick=\"_zw.mu.readEvent('{1}','{2}','{3}','{4}','{5}');\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\">"
-                            , "", ViewBag.R.ctalias.ToString(), row["PeriodFrom"].ToString(), row["MessageID"].ToString(), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
+                            , "", ViewBag.R.ctalias.ToString(), row["orgPeriodFrom"].ToString(), row["MessageID"].ToString(), ViewBag.R.ot.ToString(), ViewBag.R.fdid.ToString());
             sb.AppendFormat("<span>{0}</span>", row["subject"].ToString());
             sb.Append("</a>");
             sb.Append("<div class=\"d-none\" data-help=\"event\">");
             sb.Append("<div class=\"tooltip-inner text-left\">");
-            sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0}</span> ~ <span>{1}</span>", row["StartTime"].ToString(), row["EndTime"].ToString());
+            if (row["orgPeriodFrom"].ToString() != row["orgPeriodTo"].ToString())
+            {
+                sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0} {1} ~ {2} {3}</span>"
+                        , Convert.ToDateTime(row["orgPeriodFrom"]).ToString("M.d"), row["orgStartTime"].ToString(), Convert.ToDateTime(row["orgPeriodTo"]).ToString("M.d"), row["orgEndTime"].ToString());
+            }
+            else
+            {
+                sb.AppendFormat("<div class=\"d-flex align-items-center\"><span>{0} {1} ~ {2}</span>"
+                        , Convert.ToDateTime(row["orgPeriodFrom"]).ToString("M.d"), row["orgStartTime"].ToString(), row["orgEndTime"].ToString());
+            }
             if (row["Repeat"].ToString() == "Y") sb.Append("<i class=\"fas fa-redo-alt ml-2\"></i>");
             sb.Append("</div>");
             sb.AppendFormat("<div>{0}</div>", row["subject"].ToString());

@@ -19,21 +19,44 @@
   "oid": "",
   "appid": "",
   "partid": "",
+  "wid": "",
   "biz": "",
   "act": "",
-  "wid": "",
-  "wnid": "", //worknotice
   "inherited": "",
   "priority": "",
   "secret": "",
   "docstatus": "",
+  "doclevel": "",
+  "keepyear": "",
   "tms": "",
   "prevwork": "",
   "nextwork": "",
   "piname": "",
   "showline": "",
+
+  "apvmode": "", //결재모드
+  "curactid": "",
+  "tp": "",
+  "pos": "",
+  "pwid": "", //상위 workitemid
+  "preapvwi": "", //선결
+  "checkpwd": "", //비밀번호 체크여부
   "boundary": "",
 
+  "wn": { //worknotice
+    "wnid": "",
+    "wnstate": "",
+    "appalias": "",
+    "appid": "",
+    "appdn": "",
+    "appmid": "",
+    "preappalias": "",
+    "preappid": "",
+    "preappdn": "",
+    "prepiid": "",
+    "premid": "",
+    "prewiid": ""
+  },
   "def": {
     "formid": "",
     "processid": "",

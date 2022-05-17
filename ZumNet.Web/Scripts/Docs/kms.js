@@ -173,7 +173,7 @@ $(function () {
                 j['actordept'] = jUser['grdn']; j['actordpid'] = jUser['grid']; j['actordpcd'] = jUser['gralias']; j['rsvd1'] = '';
 
                 var s = $('.zf-coreg-template').html();
-                s = s.replace("{$id}", jUser['id']);
+                s = s.replace(/\{\$id\}/gi, jUser['id']);
                 s = s.replace("{$coreg}", jUser['grdn'] + ' [' + jUser['grade'] + '] ' + $(this).next().text());
                 $('#__CoRegList').append(s);
                 vList.push(j);

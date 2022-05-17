@@ -10,14 +10,14 @@
 @{
     JObject jApp = ViewBag.R.app;
 
-    DateTime dtStart = Convert.ToDateTime(jApp["periodfrom"].ToString() + " " + jApp["start"].ToString());
-    DateTime dtEnd = Convert.ToDateTime(jApp["periodto"].ToString() + " " + jApp["end"].ToString());
+    //DateTime dtStart = Convert.ToDateTime(jApp["periodfrom"].ToString() + " " + jApp["start"].ToString());
+    //DateTime dtEnd = Convert.ToDateTime(jApp["periodto"].ToString() + " " + jApp["end"].ToString());
     string sRptDayMargin = Thread.CurrentThread.CurrentUICulture.Name.Substring(0, 2) == "en" ? "ml-1" : "ml-2";
 
     bool bEditable = false;
     bool bDeletable = false;
     if (Session["URID"].ToString() == jApp["creurid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y"
-        || StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R"))
+        || StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E"))
     {
         bEditable = true;
     }
@@ -26,8 +26,6 @@
     {
         bDeletable = true;
     }
-
-
 }
 @functions{
     private string LInkAttachFile(JObject j)
@@ -56,13 +54,12 @@
         }
     }
 
-    private string GetDateDesc(JObject j, string curDate)
+    private string GetDateDesc(JObject j, string selectedDate)
     {
-        // 사용 보류
         bool bRpt = j["repeat"]["type"].ToString() == "0" ? false : true;
 
         StringBuilder sb = new StringBuilder();
-        if (bRpt || curDate == "x")
+        if (!bRpt || selectedDate == "x")
         {
             sb.AppendFormat("{0} {1} ~ ", j["periodfrom"].ToString().Replace("-", "."), j["start"].ToString());
             if (j["periodfrom"].ToString() != j["periodto"].ToString()) sb.AppendFormat("{0}", j["periodto"].ToString().Replace("-", "."));
@@ -70,10 +67,10 @@
         }
         else
         {
-            //DateHelper.DateDiff()
-
-
-            //sb.AppendFormat("{0} {1} ~ ", curDate.Replace("-", "."), j["start"].ToString());
+            double dDiff = ZumNet.Framework.Util.DateHelper.DateDiff(j["periodfrom"].ToString(), j["periodto"].ToString(), "");
+            sb.AppendFormat("{0} {1} ~ ", selectedDate.Replace("-", "."), j["start"].ToString());
+            if (dDiff > 0) sb.AppendFormat("{0}", Convert.ToDateTime(selectedDate).AddDays(dDiff).ToString("yyyy.MM.dd"));
+            sb.AppendFormat(" {0} ({1}시간)", j["end"].ToString(), DateHelper.CvtMinToHour(j["term"].ToString()));
         }
 
         return sb.ToString();
@@ -86,47 +83,75 @@
         string sStart = j["periodfrom"].ToString().Replace("-", ".") + "부터";
         if (jRpt["end"].ToString().Trim() != "") sStart += "&nbsp;" + jRpt["end"].ToString().Replace("-", ".") + "까지";
 
-        string sInterval = (jRpt["interval"].ToString().Trim() == "1") ? "매" : jRpt["interval"].ToString();
-        string sType = "";
-        if (jRpt["type"].ToString() == "1") sType = "일";
-        else if (jRpt["type"].ToString() == "2") sType = "주";
-        else if (jRpt["type"].ToString() == "3") sType = "월";
+        string sDay = "";
+        if (jRpt["conday"].ToString().Length > 0) //xxxoxxx
+        {
+            sDay = (jRpt["conday"].ToString().Substring(0, 1) == "o") ? "일" : "";
+            if (jRpt["conday"].ToString().Substring(1, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "월";
+            }
+            if (jRpt["conday"].ToString().Substring(2, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "화";
+            }
+            if (jRpt["conday"].ToString().Substring(3, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "수";
+            }
+            if (jRpt["conday"].ToString().Substring(4, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "목";
+            }
+            if (jRpt["conday"].ToString().Substring(5, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "금";
+            }
+            if (jRpt["conday"].ToString().Substring(6, 1) == "o")
+            {
+                if (sDay != "") sDay += ",";
+                sDay += "토";
+            }
+            if (sDay.Length == 1) sDay += "요일";
+        }
 
-        //xxxoxxx
-        string sDay = (jRpt["conday"].ToString().Substring(0, 1) == "o") ? "일" : "";
-        if (jRpt["conday"].ToString().Substring(1, 1) == "o")
+        if (jRpt["type"].ToString() == "4") //년
         {
-            if (sDay != "") sDay += ",";
-            sDay += "월";
-        }
-        if (jRpt["conday"].ToString().Substring(2, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "화";
-        }
-        if (jRpt["conday"].ToString().Substring(3, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "수";
-        }
-        if (jRpt["conday"].ToString().Substring(4, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "목";
-        }
-        if (jRpt["conday"].ToString().Substring(5, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "금";
-        }
-        if (jRpt["conday"].ToString().Substring(6, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "토";
-        }
-        if (sDay.Length == 1) sDay += "요일";
+            string sDesc = "매년 ";
+            if (jRpt["intervaltype"].ToString() == "A") sDesc += jRpt["interval"].ToString() + "월 " + jRpt["condate"].ToString() + "일";
+            else if (jRpt["intervaltype"].ToString() == "B")
+            {
+                if (jRpt["conweek"].ToString() == "9") sDesc += jRpt["interval"].ToString() + "월 " + "마지막 " + sDay;
+                else sDesc += jRpt["interval"].ToString() + "월 " + jRpt["conweek"].ToString() + "번째 " + sDay;
+            }
 
-        return sStart + "&nbsp;&nbsp;|&nbsp;&nbsp;" + sInterval + sType + "&nbsp;" + sDay + " 반복";
+            return sStart + "&nbsp;&nbsp;|&nbsp;&nbsp;" + sDesc;// + " 반복";
+        }
+        else
+        {
+            string sInterval = (jRpt["interval"].ToString().Trim() == "1") ? "매" : jRpt["interval"].ToString();
+            string sType = "";
+            if (jRpt["type"].ToString() == "1") sType = "일마다";
+            else if (jRpt["type"].ToString() == "2") sType = "주마다";
+            else if (jRpt["type"].ToString() == "3") sType = (jRpt["interval"].ToString().Trim() == "1") ? "월마다" : "개월마다";
+
+            if (jRpt["type"].ToString() == "3") //월
+            {
+                if (jRpt["intervaltype"].ToString() == "A") sDay = jRpt["condate"].ToString() + "일";
+                else if (jRpt["intervaltype"].ToString() == "B")
+                {
+                    if (jRpt["conweek"].ToString() == "9") sDay = "마지막 " + sDay;
+                    else sDay = jRpt["conweek"].ToString() + "번째 " + sDay;
+                }
+            }
+
+            return sStart + "&nbsp;&nbsp;|&nbsp;&nbsp;" + sInterval + sType + "&nbsp;" + sDay;// + " 반복";
+        }
     }
 
     private string PopupLayer()
@@ -272,14 +297,14 @@
             </button>
         </div>
         <div class="modal-body">
-            <div class="form-group row mb-1 mb-sm-3">
+            <div class="form-group row mb-1 mb-sm-2">
                 <label for="txtSubject" class="col-sm-2 col-form-label font-weight-normal">제목</label>
                 <div class="col-sm-10 input-group align-items-center">
                     <span class="mr-2"><span class="d-none">중요</span><i class="@(jApp["priority"].ToString() == "H" ? "fas text-success" : "far text-light") fa-star fs-16"></i></span>
                     <input type="text" class="form-control bg-white" id="txtSubject" readonly value="@jApp["subject"]">
                 </div>
             </div>
-            <div class="form-group row mb-2 mb-sm-3">
+            <div class="form-group row mb-2 mb-sm-2">
                 <label for="txtLocation" class="col-sm-2 col-form-label font-weight-normal">장소 / 범주</label>
                 <div class="col-sm-10 input-group align-items-center">
                     <input type="text" class="form-control bg-white" id="txtLocation" readonly value="@jApp["location"]">
@@ -291,9 +316,9 @@
                     </select>
                 </div>
             </div>
-            <div class="form-group row mb-1 mb-sm-3">
+            <div class="form-group row mb-1 mb-sm-2">
                 <label for="" class="col-sm-2 col-form-label font-weight-normal">일시</label>
-                <div class="col-sm-10 input-daterange">
+                @*<div class="col-sm-10 input-daterange">
                     <div class="form-group row mb-1">
                         <div class="col-sm-2 d-none d-sm-block col-form-label">시작</div>
                         <div class="col-sm-10  input-group align-items-center">
@@ -320,12 +345,15 @@
                             </label>
                         </div>
                     </div>
+                </div>*@
+                <div class="col-sm-10 input-group align-items-center">
+                    @Html.Raw(GetDateDesc(jApp, ViewBag.R.lv["tgt"].ToString()))
                 </div>
             </div>
 
             @if (jApp["repeat"]["type"].ToString() != "0")
             {
-                <div class="form-group row mb-1 mb-sm-3">
+                <div class="form-group row mb-1 mb-sm-2">
                     <label for="" class="col-sm-2 col-form-label font-weight-normal">반복</label>
                     <div class="col-sm-10 input-group align-items-center">
                         @Html.Raw(GetRepeatDesc(jApp))
@@ -333,7 +361,7 @@
                 </div>
             }
 
-            <div class="form-group row mb-1 mb-sm-3">
+            <div class="form-group row mb-1 mb-sm-2">
                 <div class="col-sm-2 col-form-label dropdown">
                     <label for="txtSubject" class="font-weight-normal mb-0">신청 자원</label>
                 </div>
@@ -354,8 +382,8 @@
                     @Html.Raw(RenderFile("view", (JArray)jApp["attachlist"]))
                 </div>
             </div>
-            <div class="form-group mb-1 mb-sm-3">
-                <div class="border p-2 zf-prevbody" id="txtBody" style="min-height: 6rem">@Html.Raw(ZumNet.Framework.Web.HtmlHandler.BodyInnerHtml(jApp["body"].ToString()))</div>
+            <div class="form-group mb-1 mb-sm-2">
+                <div class="border p-2 zf-prevbody" id="txtBody" style="min-height: 6rem">@Html.Raw(ZumNet.Framework.Web.HtmlHandler.BodyInnerHtml(jApp["body"].ToString(), true))</div>
             </div>
             <div class="form-group row mb-0">
                 <label for="" class="col-sm-2 col-form-label font-weight-normal">작성</label>

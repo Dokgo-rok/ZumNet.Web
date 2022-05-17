@@ -1,4 +1,17 @@
-﻿$(function () {
+﻿var defaultWhiteList = $.fn.popover.Constructor.Default.whiteList;
+defaultWhiteList['*'].push(/^data-[\w-]+/, 'colspan', 'rows', 'style', 'onclick');
+defaultWhiteList.div = [];
+defaultWhiteList.table = [];
+defaultWhiteList.thead = [];
+defaultWhiteList.tbody = [];
+defaultWhiteList.tr = [];
+defaultWhiteList.th = [];
+defaultWhiteList.td = [];
+defaultWhiteList.button = [];
+defaultWhiteList.input = [];
+defaultWhiteList.textarea = [];
+
+$(function () {
     if (window.layoutHelpers) {
 
         // Auto update layout
@@ -107,6 +120,7 @@ $(function () {
 
     // moment
     moment.locale($('#current_culture').val());
+    //moment.updateLocale($('#current_culture').val(), { week: { dow: 0 } }); // 한 주의 시작 요일은 일요일(0)
 
     //bootbox.setLocale({ locale: "ko", values: { OK: "확인", CANCEL: "취소", CONFIRM: "확인" }});
 
@@ -296,66 +310,48 @@ $(function () {
 
     //폴더선택 모달 창
     $('.btn[data-zf-menu="openClassWnd"]').click(function () {
-        var ttl = $(this).prev().html();
+        var p = $('#popLayer'), ttl = $(this).prev().html();
+        
+        p.find('.modal-title').html(ttl);
+        p.find('.modal-body').html('<div id="__ClassTree"></div>');
+        var pAdd = p.find('.modal-footer div[data-for="zf-addinfo"]');
+        pAdd.html('<input type="text" class="form-control text-danger" data-for="addinfo" value="" /><input type="hidden" data-for="addinfo2" value="" /><input type="hidden" data-for="addinfo3" value="" />');
 
-        $('#popLayer').on('show.bs.modal', function (e) {
-            //var w = ''
-            //if ($(this).attr("data-width") && parseInt($(this).attr("data-width")) > 0) w = ' style="width: ' + $(this).attr("data-width") + 'px;"';
-            //var s = '<div class="modal-dialog modal-dialog-scrollable"' + w + '>'
-            //    + '<div class="modal-content">'
-            //    + '<div class="modal-header">'
-            //    + '<h6 class="modal-title">' + ttl + '</h6>'
-            //    + '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
-            //    + '</div>'
-            //    + '<div class="modal-body"><div id="__ClassTree"></div></div>'
-            //    + '<div class="modal-footer">'
-            //    + '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
-            //    + '<button type="button" class="btn btn-primary">Understood</button>'
-            //    + '</div>'
-            //    + '</div>'
-            //    + '</div>'
-            //$(this).html(s);
+        if (p.attr("data-width") && parseInt(p.attr("data-width")) > 0) p.find(".modal-dialog").css("width", p.attr("data-width") + "px");
 
-            $(this).find('.modal-title').html(ttl);
-            $(this).find('.modal-body').html('<div id="__ClassTree"></div>');
-            var pAdd = $(this).find('.modal-footer div[data-for="zf-addinfo"]');
-            pAdd.html('<input type="text" class="form-control text-danger" data-for="addinfo" value="" /><input type="hidden" data-for="addinfo2" value="" /><input type="hidden" data-for="addinfo3" value="" />');
+        var cSelect = pAdd.find('input[data-for="addinfo"]'), cSelect2 = pAdd.find('input[data-for="addinfo2"]'), cSelect3 = pAdd.find('input[data-for="addinfo3"]');
 
-            if ($(this).attr("data-width") && parseInt($(this).attr("data-width")) > 0) $(this).find(".modal-dialog").css("width", $(this).attr("data-width") + "px");
+        $('#__ClassTree').jstree(_zw.T.tree).on("select_node.jstree", function (e, d) {
+            var n = d.instance.get_node(d.selected);
+            var vId = n.id.split('.');
+            var vPath = d.instance.get_path(d.selected[0]).join(' / ');
 
-            var cSelect = pAdd.find('input[data-for="addinfo"]'), cSelect2 = pAdd.find('input[data-for="addinfo2"]'), cSelect3 = pAdd.find('input[data-for="addinfo3"]');
+            //console.log(vPath + " : " + n.li_attr.objecttype + " : " + n.li_attr.acl.substr(10, 1) + " : " + n.li_attr.xfalias)
 
-            $('#__ClassTree').jstree(_zw.T.tree)
-                .on("select_node.jstree", function (e, d) {
-                    var n = d.instance.get_node(d.selected);
-                    var vId = n.id.split('.');
-                    var vPath = d.instance.get_path(d.selected[0]).join(' / ');
+            if (n.li_attr.objecttype == 'G' && n.li_attr.acl.substr(10, 1) == 'W'
+                && ((_zw.V.xfalias == '' && (n.li_attr.xfalias == 'notice' || n.li_attr.xfalias == 'bbs'))
+                    || (_zw.V.xfalias == n.li_attr.xfalias)
+                )) {
 
-                    //console.log(vPath + " : " + n.li_attr.objecttype + " : " + n.li_attr.acl.substr(10, 1) + " : " + n.li_attr.xfalias)
+                if (_zw.V.current.operator == 'Y' || n.li_attr.acl.substr(10, 1) == 'W') {
+                    cSelect.val(vPath); cSelect2.val(vId[vId.length - 1]); cSelect3.val(n.li_attr.xfalias);
+                } else {
+                    cSelect.val('Not Permission!'); cSelect2.val(''); cSelect3.val('');
+                }
+            } else {
+                cSelect.val('Mismatched Folder!!'); cSelect2.val(''); cSelect3.val('');
+            }
+        });
 
-                    if (n.li_attr.objecttype == 'G' && n.li_attr.acl.substr(10, 1) == 'W'
-                        && ((_zw.V.xfalias == '' && (n.li_attr.xfalias == 'notice' || n.li_attr.xfalias == 'bbs'))
-                            || (_zw.V.xfalias == n.li_attr.xfalias)
-                        )) {
+        p.find('.btn[data-zm-menu="confirm"]').click(function () {
+            $('#__FormView input[data-for="SelectedFolderPath"]').val(cSelect.val());
+            $('#__FormView input[data-for="SelectedFolder"]').val(cSelect2.val());
+            $('#__FormView input[data-for="SelectedXFAlias"]').val(cSelect3.val());
 
-                        if (_zw.V.current.operator == 'Y' || n.li_attr.acl.substr(10, 1) == 'W') {
-                            cSelect.val(vPath); cSelect2.val(vId[vId.length - 1]); cSelect3.val(n.li_attr.xfalias);
-                        } else {
-                            cSelect.val('Not Permission!'); cSelect2.val(''); cSelect3.val('');
-                        }
-                    } else {
-                        cSelect.val('Mismatched Folder!!'); cSelect2.val(''); cSelect3.val('');
-                    }
-            })
-
-            $(this).find('.btn[data-zm-menu="confirm"]').click(function () {
-                $('#__FormView input[data-for="SelectedFolderPath"]').val(cSelect.val());
-                $('#__FormView input[data-for="SelectedFolder"]').val(cSelect2.val());
-                $('#__FormView input[data-for="SelectedXFAlias"]').val(cSelect3.val());
-
-                $('#popLayer').modal('hide');
-            });
-        }).modal();
+            $(this).off('click'); //if none, loop
+            $('#popLayer').modal('hide');
+        }); 
+        p.modal();
     });
 
     //메인창에서만 실행!!!!!
@@ -1414,7 +1410,7 @@ $(function () {
             }
             //console.log(qi)
             var url = '/EA/Form?qi=' + _zw.base64.encode(JSON.stringify(qi));
-            _zw.ut.openWnd(url, "eaform", 800, 600, "resize");
+            _zw.ut.openWnd(url, "eaform", 900, 600, "resize");
         },
         "openEAForm": function (opt) {
             var el = event.target, p = el.parentNode; do { p = p.parentNode; } while (!$(p).hasClass('z-lv-row'));
@@ -1455,12 +1451,12 @@ $(function () {
             }
 
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
-            _zw.ut.openWnd(url, eaWndNm, 800, 600, "resize");
+            _zw.ut.openWnd(url, eaWndNm, 900, 600, "resize");
         },
         "openEAFormSimple": function (mi) {
             var qi = '{M:"read",mi:"' + mi + '",oi:"",wi:"",xf:"ea"}';
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
-            _zw.ut.openWnd(url, '', 800, 600, "resize");
+            _zw.ut.openWnd(url, '', 900, 600, "resize");
         },
         "input": function (e, p) {
             if (e) {
@@ -1729,15 +1725,15 @@ $(function () {
             //var isLast = m.month() == moment(d).add(7, 'd').month() ? 'N' : 'Y';
             return (m.week() - m.startOf('month').week() + 1).toString() + ';' + (m.month() == moment(d).add(7, 'd').month() ? 'N' : 'Y');
         },
-        "showRepeat": function (p, m, from, st, et) { // p => modal wnd, fromdate, starttime, endtime
+        "showRepeat": function (p, m, from, st, et, rpt) { // p => modal wnd, fromdate, starttime, endtime
             var el = p.find('#cbRepeatType'), ckRptEnd = p.find('input[name="ckbRepeatEnd"]'), rptEnd = p.find('#txtRepeatEnd');
             var end = '';
             if (from.indexOf(';') > 0) {
                 end = from.split(';')[1]; from = from.split(';')[0];
-            }
+            } //console.log(rpt)
 
             el.on('change', function () {
-                p.find('#sPerDay input, #sPerWeek input').val(1);
+                if (m == 'init') p.find('#sPerDay input, #sPerWeek input').val(1);
                 
                 //alert($(this).val() + " : " + p.find('#' + from).val() + " : " + p.find('#' + st).val());
 
@@ -1803,7 +1799,7 @@ $(function () {
                     p.find('#' + end).val($(this).val());
                     //p.find('#' + end).datepicker('update', $(this).val());
                 }
-                if (el.val() == 4 || el.val() == '5') {
+                if (el.val() == 4 || el.val() == 5) {
                     _zw.cdr.initRepeattMonthYear(p, el.val() - 4, $(this).val());
                     ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
                 }
@@ -1818,7 +1814,7 @@ $(function () {
                 //p.find('#' + from).data('datepicker').setStartDate($(this).val());
                 //p.find('#' + from).data('datepicker').setEndDate($(this).val());
 
-                if (el.val() == 4 || el.val() == '5') {
+                if (el.val() == 4 || el.val() == 5) {
                     _zw.cdr.initRepeattMonthYear(p, el.val() - 4, $(this).val());
                     ckRptEnd.prop('checked', true); rptEnd.val('').prop('disabled', true);
                 }
@@ -1837,6 +1833,10 @@ $(function () {
             });
 
             if (m == 'init') el.val(3);
+            if (rpt && rpt.type && (rpt.type == '3' || rpt.type == '4')) {
+                _zw.cdr.initRepeattMonthYear(p, parseInt(rpt.type) - 3, p.find('#' + from).val(), rpt['conweek']);
+            }
+
             el.change();
             _zw.fn.input(p);
 
@@ -1845,7 +1845,7 @@ $(function () {
         "closeRepeat": function (p) {
             p.find('[data-for="rpt-setting"], [data-for="rpt-rule"], [data-for="rpt-day"], [data-for="rpt-end"]').addClass('d-none');
         },
-        "initRepeattDay": function (p, m, n) {
+        "initRepeattDay": function (p, m, n) {//alert(n)
             var iCkbDay = p.find('[data-for="rpt-day"] input[name="ckbDay"]').length;
             p.find('[data-for="rpt-day"] input[name="ckbDay"]').each(function (i, e) {
                 $(this).next().html(moment.weekdaysMin(i));
@@ -1856,13 +1856,13 @@ $(function () {
                 } else if (m == 2) {//주말
                     e.checked = i > 0 && i < iCkbDay - 1 ? false : true;
                 } else {
-                    e.checked = i == n - 1 ? true : false;
+                    e.checked = i == n ? true : false;
                 }
                 //console.log(iCkbDay + " : " + i + " : " + e.checked);
             });
             //console.log(m + " : " + p.find('[data-for="rpt-day"] input[name="ckbDay"]:checked').length)
         },
-        "initRepeattMonthYear": function (p, m, d) {
+        "initRepeattMonthYear": function (p, m, d, conWeek) {
             var nth = _zw.cdr.weekOfMonth(d).split(';'), fromDate = moment(d); //console.log(nth + " :" + fromDate.format('YYYY-MM-DD'));
             if (nth[1] == 'Y') p.find('[data-for="rpt-monthyear"] label.custom-radio:last').removeClass('d-none');
             else p.find('[data-for="rpt-monthyear"] label.custom-radio:last').addClass('d-none');
@@ -1878,9 +1878,13 @@ $(function () {
             vlu[1] = (m == 1 ? fromDate.month() + 1 + ';' : '') + nth[0] + ';' + ckDay;
             vlu[2] = (m == 1 ? fromDate.month() + 1 + ';' : '') + '9' + ';' + ckDay;
 
+            var iChk = 0;
+            if (conWeek && conWeek != '') {
+                iChk = conWeek == '9' ? 2 : 1;
+            }
             p.find('div[data-for="rpt-monthyear"] :radio[name="rdoMonthYear"]').each(function (idx, e) {
                 var n = $(this).next(); //console.log(idx + " : " + n[0].outerHTML)
-                if (idx == 0) e.checked = true;
+                if (idx == iChk) e.checked = true;
                 n.attr('data-val', vlu[idx]); n.html(txt[idx]);
             });
         },
@@ -1998,6 +2002,8 @@ $(function () {
 
                 p.find('.btn[data-toggle="popover"]').popover({
                     html: true,
+                    trigger: 'focus',
+                    //title: '', //data-original-title 값이 우선
                     content: function () { return p.find('[data-help="file"]').html(); }
                 });
             }
@@ -2011,7 +2017,7 @@ $(function () {
             return bExt;
         },
         "checkDouble": function (fm) {
-            if (_zw.fu.fileList.length > 0) {
+            if (_zw.fu.fileList && _zw.fu.fileList.length > 0) {
                 var idx = _zw.fu.fileList.findIndex(function (item) { return item.filename == fm; });
                 if (idx > -1) return false;
             }

@@ -135,6 +135,9 @@
   <data name="AttendWork" xml:space="preserve">
     <value>去工作</value>
   </data>
+  <data name="Auth_AlreadyLogin" xml:space="preserve">
+    <value>已经登录的用户。</value>
+  </data>
   <data name="Auth_DoubleAccount" xml:space="preserve">
     <value>存在一个或多个帐户。请联系管理员。</value>
   </data>

@@ -10,13 +10,17 @@
 @{
     JObject jApp = ViewBag.R.app;
 
-    DateTime dtStart = Convert.ToDateTime(jApp["periodfrom"].ToString() + " " + jApp["start"].ToString());
-    DateTime dtEnd = Convert.ToDateTime(jApp["periodto"].ToString() + " " + jApp["end"].ToString());
-    string sRptDayMargin = Thread.CurrentThread.CurrentUICulture.Name.Substring(0, 2) == "en" ? "ml-1" : "ml-2";
+    //첨부파일 임시 저장 폴더
+    string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+    ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+
+    //DateTime dtStart = Convert.ToDateTime(jApp["periodfrom"].ToString() + " " + jApp["start"].ToString());
+    //DateTime dtEnd = Convert.ToDateTime(jApp["periodto"].ToString() + " " + jApp["end"].ToString());
+    
 
     bool bEditable = false;
     if (Session["URID"].ToString() == jApp["creurid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y"
-        || StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R"))
+        || StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E"))
     {
         bEditable = true;
     }
@@ -41,18 +45,87 @@
         }
     }
 
-    private string RenderRepeat(JObject j)
+    private string GetTitle(string editOption, string selectedDate)
+    {
+        string strTitle = "자원예약 수정";
+        if (editOption == "this") strTitle = Convert.ToDateTime(selectedDate).ToString("MM월 dd일") + " 예약 수정";
+        else if (editOption == "after") strTitle = Convert.ToDateTime(selectedDate).ToString("MM월 dd일") + " 이후 예약 수정";
+        else if (editOption == "all") strTitle = "전체 예약 수정";
+
+        return strTitle;
+    }
+
+    private string GetDateDesc(JObject j, string selectedDate, string editOption)
+    {
+        bool bRpt = j["repeat"]["type"].ToString() == "0" ? false : true;
+        DateTime dtStart;
+        DateTime dtEnd;
+
+        StringBuilder sb = new StringBuilder();
+        if (!bRpt || selectedDate == "x" || editOption == "all")
+        {
+            dtStart = Convert.ToDateTime(j["periodfrom"].ToString() + " " + j["start"].ToString());
+            dtEnd = Convert.ToDateTime(j["periodto"].ToString() + " " + j["end"].ToString());
+        }
+        else
+        {
+            double dDiff = ZumNet.Framework.Util.DateHelper.DateDiff(j["periodfrom"].ToString(), j["periodto"].ToString(), "");
+
+            dtStart = Convert.ToDateTime(selectedDate.ToString() + " " + j["start"].ToString());
+            dtEnd = Convert.ToDateTime(selectedDate.ToString() + " " + j["end"].ToString()).AddDays(dDiff);
+        }
+
+        sb.Append("<div class=\"form-group row mb-1\">");
+        sb.Append("<div class=\"col-sm-2 d-none d-sm-block col-form-label\">시작</div>");
+        sb.Append("<div class=\"col-sm-10  input-group align-items-center\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control mr-2\" id=\"txtStart\" value=\"{0}\" style=\"max-width: 110px\">", dtStart.ToString("yyyy-MM-dd"));
+        sb.Append("<select class=\"custom-select\" id=\"cbStart\">");
+        sb.Append(CommonUtils.OptionTime(dtStart.Hour, dtStart.Minute));
+        sb.Append("</select>");
+        sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
+        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbAllDay\" id=\"ckb02\"{0}>", j["end"].ToString() == "24:00" ? "checked" : "");
+        sb.Append("<span class=\"custom-control-label\">종일</span>");
+        sb.Append("</label>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+        sb.Append("<div class=\"form-group row mb-0\">");
+        sb.Append("<div class=\"col-sm-2 d-none d-sm-block col-form-label\">종료</div>");
+        sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control mr-2\" id=\"txtEnd\" value=\"{0}\" style=\"max-width: 110px\">", dtEnd.ToString("yyyy-MM-dd"));
+        sb.Append("<select class=\"custom-select\" id=\"cbEnd\">");
+        sb.Append(CommonUtils.OptionTime(dtEnd.Hour, dtEnd.Minute));
+        sb.Append("</select>");
+        sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
+        if (editOption == "this")
+            sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbRepeat\" id=\"ckb03\"{0}>", " disabled");
+        else
+            sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbRepeat\" id=\"ckb03\"{0}>", j["repeat"]["type"].ToString() != "0" ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">반복</span>");
+        sb.Append("</label>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+
+    private string RenderRepeat(JObject j, string selectedDate, string editOption)
     {
         string sRType = "0";
         string sInterval = "1"; //기본 1
         string sConDay = "";
+        string sConWeek = "";
+        string sConDate = "";
         string sREnd = "";
+
+        string sRptDayMargin = Thread.CurrentThread.CurrentUICulture.Name.Substring(0, 2) == "en" ? "ml-1" : "ml-2";
 
         if (j != null)
         {
             sRType = Convert.ToInt16(j["repeat"]["type"]) > 2 ? (Convert.ToInt16(j["repeat"]["type"]) + 1).ToString() : j["repeat"]["type"].ToString().Trim();
             sInterval = j["repeat"]["interval"].ToString().Trim();
             sConDay = j["repeat"]["conday"].ToString().Trim();
+            sConWeek = j["repeat"]["conweek"].ToString().Trim();
+            sConDate = j["repeat"]["condate"].ToString().Trim();
             sREnd = j["repeat"]["end"].ToString().Trim();
 
             if (sRType == "2" && sConDay != "xooooox") sRType = "3";
@@ -60,122 +133,231 @@
         if (sConDay == "") sConDay = "xxxxxxx";
 
         StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("<div class=\"zc-rpt-set{0}\" data-for=\"rpt-setting\">", sRType != "0" && editOption != "this" ? "" : " d-none");
+
         sb.AppendFormat("<div class=\"form-group row mb-1 mb-sm-2{0}\" data-for=\"rpt-rule\">", sRType != "0" ? "" : " d-none");
         sb.Append("<label for=\"cbRepeatType\" class=\"col-sm-2 col-form-label font-weight-normal\">반복주기</label>");
         sb.Append("<div class=\"col-sm-10 form-inline align-items-center\">");
-        sb.Append("<select class=\"custom-select mr-2\" id=\"cbRepeatType\" style=\"max-width:115px\">"); //반복종류
-        sb.AppendFormat("<option value=\"1\"{0}>매일</option>", (sRType == "1") ? " selected" : "");
-        sb.AppendFormat("<option value=\"2\"{0}>매주 월-금</option>", (sRType == "2") ? " selected" : "");
-        sb.AppendFormat("<option value=\"3\"{0}>매주</option>", (sRType == "3") ? " selected" : "");
+        sb.Append("<select class=\"custom-select mr-2\" id=\"cbRepeatType\" style=\"max-width:115px\">");
+        sb.AppendFormat("<option value=\"1\"{0}>매일</option>", sRType == "1" ? " selected" : "");
+        sb.AppendFormat("<option value=\"2\"{0}>매주 월-금</option>", sRType == "2" ? " selected" : "");
+        sb.AppendFormat("<option value=\"3\"{0}>매주</option>", sRType == "3" ? " selected" : "");
+        sb.AppendFormat("<option value=\"4\"{0}>매월</option>", sRType == "4" ? " selected" : "");
+        sb.AppendFormat("<option value=\"5\"{0}>매년</option>", sRType == "5" ? " selected" : "");
         sb.Append("</select>");
         sb.AppendFormat("<div class=\"{0} align-items-center\" id=\"sPerDay\">", sRType == "1" ? "d-flex" : "d-none");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"\" maxlength=\"2\" value=\"{0}\" style=\"max-width: 40px\" data-inputmask=\"number;1;\"><label class=\"mb-0 ml-1\">일마다</label>", sInterval); //매일
-        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"2\">2일</a><a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"3\">3일</a>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control\" maxlength=\"2\" value=\"{0}\" style=\"max-width: 40px\" data-inputmask=\"number;1;\">", sInterval);
+        sb.Append("<label class=\"mb-0 ml-1\">일마다</label>");
+        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"2\">2일</a>");
+        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"3\">3일</a>");
         sb.Append("</div>");
-        sb.AppendFormat("<div class=\"{0} align-items-center\" id=\"sPerWeek\">", sRType != "1" ? "d-flex" : "d-none");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"\" maxlength=\"2\" value=\"{0}\" style=\"max-width: 40px\" data-inputmask=\"number;1;\"><label class=\"mb-0 ml-1\">주마다</label>", sInterval); //매일
-        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"2\">2주</a><a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"3\">3주</a>");
+        sb.AppendFormat("<div class=\"{0} align-items-center\" id=\"sPerWeek\">", sRType == "2" || sRType == "3" ? "d-flex" : "d-none");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control\" maxlength=\"2\" value=\"{0}\" style=\"max-width: 40px\" data-inputmask=\"number;1;\">", sInterval);
+        sb.Append("<label class=\"mb-0 ml-1\">주마다</label>");
+        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"2\">2주</a>");
+        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"3\">3주</a>");
+        sb.Append("</div>");
+        sb.AppendFormat("<div class=\"{0} align-items-center\" id=\"sPerMonth\">", sRType == "4" ? "d-flex" : "d-none");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control\" maxlength=\"2\" value=\"{0}\" style=\"max-width: 40px\" data-inputmask=\"number;1;\">", sInterval);
+        sb.Append("<label class=\"mb-0 ml-1\">개월마다</label>");
+        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"2\">2월</a>");
+        sb.Append("<a href=\"javascript:\" class=\"btn btn-default ml-2\" data-val=\"3\">3월</a>");
         sb.Append("</div>");
         sb.Append("</div>");
-        sb.Append("</div>"); //pRRule -> rpt-rule
+        sb.Append("</div>");
 
-        sb.AppendFormat("<div class=\"form-group row mb-2{0}\" data-for=\"rpt-day\">", sRType == "3" ? "" : " d-none");
+        sb.AppendFormat("<div class=\"form-group row mb-1 mb-sm-2{0}\" data-for=\"rpt-day\">", sRType == "3" ? "" : " d-none");
         sb.Append("<label for=\"\" class=\"col-sm-2 col-form-label font-weight-normal\"></label>");
         sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
-        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0\" for=\"ckb031\"><input class=\"custom-control-input\" id=\"ckb031\" name=\"ckbDay\" type=\"checkbox\" value=\"sun\"{0} /><span class=\"custom-control-label\">일</span></label>", (sConDay.Substring(0, 1) == "o") ? " checked" : "");
-        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb032\"><input class=\"custom-control-input\" id=\"ckb032\" name=\"ckbDay\" type=\"checkbox\" value=\"mon\"{0} /><span class=\"custom-control-label\">월</span></label>", (sConDay.Substring(1, 1) == "o") ? " checked" : "");
-        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb033\"><input class=\"custom-control-input\" id=\"ckb033\" name=\"ckbDay\" type=\"checkbox\" value=\"tue\"{0} /><span class=\"custom-control-label\">화</span></label>", (sConDay.Substring(2, 1) == "o") ? " checked" : "");
-        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb034\"><input class=\"custom-control-input\" id=\"ckb034\" name=\"ckbDay\" type=\"checkbox\" value=\"wed\"{0} /><span class=\"custom-control-label\">수</span></label>", (sConDay.Substring(3, 1) == "o") ? " checked" : "");
-        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb035\"><input class=\"custom-control-input\" id=\"ckb035\" name=\"ckbDay\" type=\"checkbox\" value=\"thu\"{0} /><span class=\"custom-control-label\">목</span></label>", (sConDay.Substring(4, 1) == "o") ? " checked" : "");
-        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb036\"><input class=\"custom-control-input\" id=\"ckb036\" name=\"ckbDay\" type=\"checkbox\" value=\"fri\"{0} /><span class=\"custom-control-label\">금</span></label>", (sConDay.Substring(5, 1) == "o") ? " checked" : "");
-        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 ml-2\" for=\"ckb037\"><input class=\"custom-control-input\" id=\"ckb037\" name=\"ckbDay\" type=\"checkbox\" value=\"sat\"{0} /><span class=\"custom-control-label\">토</span></label>", (sConDay.Substring(6, 1) == "o") ? " checked" : "");
+        sb.Append("<label class=\"custom-control custom-checkbox m-0\" for=\"ckb031\">");
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"ckb031\" name=\"ckbDay\" type=\"checkbox\" value=\"sun\"{0} />", sConDay.Substring(0, 1) == "o" ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">일</span>");
+        sb.Append("</label>");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 {0}\" for=\"ckb032\">", sRptDayMargin);
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"ckb032\" name=\"ckbDay\" type=\"checkbox\" value=\"mon\"{0} />", sConDay.Substring(1, 1) == "o" ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">월</span>");
+        sb.Append("</label>");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 {0}\" for=\"ckb033\">", sRptDayMargin);
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"ckb033\" name=\"ckbDay\" type=\"checkbox\" value=\"tue\"{0} />", sConDay.Substring(2, 1) == "o" ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">화</span>");
+        sb.Append("</label>");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 {0}\" for=\"ckb034\">", sRptDayMargin);
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"ckb034\" name=\"ckbDay\" type=\"checkbox\" value=\"wed\"{0} />", sConDay.Substring(3, 1) == "o" ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">수</span>");
+        sb.Append("</label>");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 {0}\" for=\"ckb035\">", sRptDayMargin);
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"ckb035\" name=\"ckbDay\" type=\"checkbox\" value=\"thu\"{0} />", sConDay.Substring(4, 1) == "o" ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">목</span>");
+        sb.Append("</label>");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 {0}\" for=\"ckb036\">", sRptDayMargin);
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"ckb036\" name=\"ckbDay\" type=\"checkbox\" value=\"fri\"{0} />", sConDay.Substring(5, 1) == "o" ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">금</span>");
+        sb.Append("</label>");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 {0}\" for=\"ckb037\">", sRptDayMargin);
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"ckb037\" name=\"ckbDay\" type=\"checkbox\" value=\"sat\"{0} />", sConDay.Substring(6, 1) == "o" ? " checked" : "");
+        sb.Append("<span class=\"custom-control-label\">토</span>");
+        sb.Append("</label>");
         sb.Append("</div>");
-        sb.Append("</div>"); //pRRule -> rpt-day
+        sb.Append("</div>");
 
-        sb.AppendFormat("<div class=\"form-group row mb-2{0}\" data-for=\"rpt-end\">", sRType != "0" ? "" : " d-none");
-        sb.Append("<label for=\"txtRepeatEnd\" class=\"col-sm-2 col-form-label font-weight-normal\">반복기간</label>");
+        //DateTime dtMonthYear;
+        //string sDayOfWeek = "";
+        //if (sRType == "4" || sRType == "5")
+        //{
+        //    if (selectedDate != "x" && editOption == "after") dtMonthYear = Convert.ToDateTime(selectedDate);
+        //    else dtMonthYear = Convert.ToDateTime(j["periodfrom"]);
+
+        //    sConDate = dtMonthYear.Day.ToString();
+        //    sConWeek = DateHelper.GetWeekOfMonth(dtMonthYear.Year, dtMonthYear.Month, dtMonthYear.Day).ToString();
+        //    sConDay = "";
+        //    sDayOfWeek = dtMonthYear.DayOfWeek.ToString();
+
+        //    for (var i = 0; i < 7; i++) { sConDay += (int)dtMonthYear.DayOfWeek == i ? 'o' : 'x'; }
+        //}
+
+        sb.AppendFormat("<div class=\"form-group row mb-1 mb-sm-2{0}\" data-for=\"rpt-monthyear\">", sRType == "4" || sRType == "5" ? "" : " d-none");
+        sb.Append("<label for=\"\" class=\"col-sm-2 col-form-label font-weight-normal\"></label>");
         sb.Append("<div class=\"col-sm-10 input-group align-items-center\">");
-        sb.AppendFormat("<input class=\"form-control datepicker\" id=\"txtRepeatEnd\" value=\"{0}\" type=\"text\"{1} style=\"max-width: 115px\"><label class=\"mb-0 ml-1\">까지</label>", sREnd, (sREnd == "") ? " disabled" : "");
-        sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
-        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbRepeatEnd\" id=\"ckb04\"{0}>", (sREnd == "") ? " checked" : "");
+        sb.Append("<label class=\"custom-control custom-radio m-0\" for=\"rdo041\">");
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"rdo041\" name=\"rdoMonthYear\" type=\"radio\" value=\"A\">");
+        sb.Append("<span class=\"custom-control-label\" data-val=\"\"></span>");
+        //if (sRType == "4")
+        //{
+        //    sb.AppendFormat("<span class=\"custom-control-label\" data-val=\"{0}\">{0}일</span>", sConDate);
+        //}
+        //else if (sRType == "5")
+        //{
+        //    sb.AppendFormat("<span class=\"custom-control-label\" data-val=\"{0};{1}\">{0}월 {1}일</span>", sInterval, sConDate);
+        //}
+        sb.Append("</label>");
+        sb.Append("<label class=\"custom-control custom-radio m-0 ml-3\" for=\"rdo042\">");
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"rdo042\" name=\"rdoMonthYear\" type=\"radio\" value=\"B\">");
+        sb.Append("<span class=\"custom-control-label\" data-val=\"\"></span>");
+        //if (sRType == "4")
+        //{
+        //    sb.AppendFormat("<span class=\"custom-control-label\" data-val=\"{0};{1}\">{0}번째 {2}</span>", sConWeek, sConDay, sDayOfWeek);
+        //}
+        //else if (sRType == "5")
+        //{
+        //    sb.AppendFormat("<span class=\"custom-control-label\" data-val=\"{0};{1};{2}\">{0}월 {1}번째 {3}</span>", sInterval, sConWeek, sConDay, sDayOfWeek);
+        //}
+        sb.Append("</label>");
+        sb.Append("<label class=\"custom-control custom-radio m-0 ml-3 d-none\" for=\"rdo043\">");
+        sb.AppendFormat("<input class=\"custom-control-input\" id=\"rdo043\" name=\"rdoMonthYear\" type=\"radio\" value=\"B\">");
+        sb.Append("<span class=\"custom-control-label\" data-val=\"\"></span>");
+        //if(sRType == "4")
+        //{
+        //    sb.AppendFormat("<span class=\"custom-control-label\" data-val=\"{0};{1}\">마지막 {2}</span>", sConWeek, "9", sDayOfWeek);
+        //}
+        //else if (sRType == "5")
+        //{
+        //    sb.AppendFormat("<span class=\"custom-control-label\" data-val=\"{0};{1};{2}\">{0}월 마지막 {3}</span>", sInterval, "9", sConDay, sDayOfWeek);
+        //}
+        sb.Append("</label>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.AppendFormat("<div class=\"form-group row mb-0{0}\" data-for=\"rpt-end\">", sRType != "0" ? "" : " d-none");
+        sb.Append("<label for=\"txtRepeatEnd\" class=\"col-sm-2 col-form-label font-weight-normal\">반복기간</label>");
+        sb.Append("<div class=\"col-sm-10 form-inline align-items-center\">");
+        sb.AppendFormat("<input class=\"form-control datepicker\" id=\"txtRepeatEnd\" value=\"{0}\" type=\"text\"{1} style=\"max-width: 115px\">", sREnd, (sREnd == "") ? " disabled" : "");
+        sb.Append("<label class=\"mb-0 ml-1\">까지</label>");
+        sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2 wd-30\">");
+        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" name=\"ckbRepeatEnd\" id=\"ckb04\"{0}>", sREnd == "" ? " checked" : "");
         sb.Append("<span class=\"custom-control-label\">무한반복</span>");
         sb.Append("</label>");
         sb.Append("</div>");
+        sb.Append("</div>");
 
-        if (j != null)
-        {
-            //원 반복값
-            sb.AppendFormat("<input type=\"hidden\" data-column=\"RepeatType\" value=\"{0}\" />", (sRType == "3") ? "2" : sRType);
-            sb.AppendFormat("<input type=\"hidden\" data-column=\"Interval\" value=\"{0}\" />", sInterval);
-            sb.AppendFormat("<input type=\"hidden\" data-column=\"ConDay\" value=\"{0}\" />", sConDay);
-            sb.AppendFormat("<input type=\"hidden\" data-column=\"RepeatEnd\" value=\"{0}\" />", sREnd);
-            sb.AppendFormat("<input type=\"hidden\" data-column=\"PeriodFrom\" value=\"{0}\" />", j["periodfrom"].ToString().Trim());
-            sb.AppendFormat("<input type=\"hidden\" data-column=\"StartTime\" value=\"{0}\" />", j["start"].ToString().Trim());
-            sb.AppendFormat("<input type=\"hidden\" data-column=\"EndTime\" value=\"{0}\" />", j["end"].ToString().Trim());
-        }
-        else
-        {
-            sb.Append("<input type=\"hidden\" data-column=\"RepeatType\" value=\"0\" />");
-            sb.Append("<input type=\"hidden\" data-column=\"Interval\" value=\"\" />");
-            sb.Append("<input type=\"hidden\" data-column=\"ConDay\" value=\"\" />");
-            sb.Append("<input type=\"hidden\" data-column=\"RepeatEnd\" value=\"\" />");
-            sb.Append("<input type=\"hidden\" data-column=\"PeriodFrom\" value=\"\" />");
-            sb.Append("<input type=\"hidden\" data-column=\"StartTime\" value=\"\" />");
-            sb.Append("<input type=\"hidden\" data-column=\"EndTime\" value=\"\" />");
-        }
-        sb.Append("</div>"); //pREnd -> rpt-end
+        sb.Append("</div>"); //zc-rpt-set
 
         return sb.ToString();
     }
 
-    private string GetRepeatDesc(JObject j)
+    private string GetRepeatDesc(JObject j, string selectedDate, string editOption)
     {
-        JObject jRpt = (JObject)j["repeat"];
+        if (editOption == "this")
+        {
+            return selectedDate.Replace("-", ".") + " 일정만 수정하고 있습니다.";
+        }
+        else
+        {
+            JObject jRpt = (JObject)j["repeat"];
 
-        string sStart = j["periodfrom"].ToString().Replace("-", ".") + "부터";
-        if (jRpt["end"].ToString().Trim() != "") sStart += "&nbsp;" + jRpt["end"].ToString().Replace("-", ".") + "까지";
+            string sStart = j["periodfrom"].ToString().Replace("-", ".") + "부터";
+            if (jRpt["end"].ToString().Trim() != "") sStart += "&nbsp;" + jRpt["end"].ToString().Replace("-", ".") + "까지";
 
-        string sInterval = (jRpt["interval"].ToString().Trim() == "1") ? "매" : jRpt["interval"].ToString();
-        string sType = "";
-        if (jRpt["type"].ToString() == "1") sType = "일";
-        else if (jRpt["type"].ToString() == "2") sType = "주";
-        else if (jRpt["type"].ToString() == "3") sType = "월";
+            string sDay = "";
+            if (jRpt["conday"].ToString().Length > 0) //xxxoxxx
+            {
+                sDay = (jRpt["conday"].ToString().Substring(0, 1) == "o") ? "일" : "";
+                if (jRpt["conday"].ToString().Substring(1, 1) == "o")
+                {
+                    if (sDay != "") sDay += ",";
+                    sDay += "월";
+                }
+                if (jRpt["conday"].ToString().Substring(2, 1) == "o")
+                {
+                    if (sDay != "") sDay += ",";
+                    sDay += "화";
+                }
+                if (jRpt["conday"].ToString().Substring(3, 1) == "o")
+                {
+                    if (sDay != "") sDay += ",";
+                    sDay += "수";
+                }
+                if (jRpt["conday"].ToString().Substring(4, 1) == "o")
+                {
+                    if (sDay != "") sDay += ",";
+                    sDay += "목";
+                }
+                if (jRpt["conday"].ToString().Substring(5, 1) == "o")
+                {
+                    if (sDay != "") sDay += ",";
+                    sDay += "금";
+                }
+                if (jRpt["conday"].ToString().Substring(6, 1) == "o")
+                {
+                    if (sDay != "") sDay += ",";
+                    sDay += "토";
+                }
+                if (sDay.Length == 1) sDay += "요일";
+            }
 
-        //xxxoxxx
-        string sDay = (jRpt["conday"].ToString().Substring(0, 1) == "o") ? "일" : "";
-        if (jRpt["conday"].ToString().Substring(1, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "월";
-        }
-        if (jRpt["conday"].ToString().Substring(2, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "화";
-        }
-        if (jRpt["conday"].ToString().Substring(3, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "수";
-        }
-        if (jRpt["conday"].ToString().Substring(4, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "목";
-        }
-        if (jRpt["conday"].ToString().Substring(5, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "금";
-        }
-        if (jRpt["conday"].ToString().Substring(6, 1) == "o")
-        {
-            if (sDay != "") sDay += ",";
-            sDay += "토";
-        }
-        if (sDay.Length == 1) sDay += "요일";
+            if (jRpt["type"].ToString() == "4") //년
+            {
+                string sDesc = "매년 ";
+                if (jRpt["intervaltype"].ToString() == "A") sDesc += jRpt["interval"].ToString() + "월 " + jRpt["condate"].ToString() + "일";
+                else if (jRpt["intervaltype"].ToString() == "B")
+                {
+                    if (jRpt["conweek"].ToString() == "9") sDesc += jRpt["interval"].ToString() + "월 " + "마지막 " + sDay;
+                    else sDesc += jRpt["interval"].ToString() + "월 " + jRpt["conweek"].ToString() + "번째 " + sDay;
+                }
 
-        return sStart + "&nbsp;&nbsp;|&nbsp;&nbsp;" + sInterval + sType + "&nbsp;" + sDay + " 반복";
+                return sStart + "&nbsp;&nbsp;|&nbsp;&nbsp;" + sDesc;// + " 반복";
+            }
+            else
+            {
+                string sInterval = (jRpt["interval"].ToString().Trim() == "1") ? "매" : jRpt["interval"].ToString();
+                string sType = "";
+                if (jRpt["type"].ToString() == "1") sType = "일마다";
+                else if (jRpt["type"].ToString() == "2") sType = "주마다";
+                else if (jRpt["type"].ToString() == "3") sType = (jRpt["interval"].ToString().Trim() == "1") ? "월마다" : "개월마다";
+
+                if (jRpt["type"].ToString() == "3") //월
+                {
+                    if (jRpt["intervaltype"].ToString() == "A") sDay = jRpt["condate"].ToString() + "일";
+                    else if (jRpt["intervaltype"].ToString() == "B")
+                    {
+                        if (jRpt["conweek"].ToString() == "9") sDay = "마지막 " + sDay;
+                        else sDay = jRpt["conweek"].ToString() + "번째 " + sDay;
+                    }
+                }
+
+                return sStart + "&nbsp;&nbsp;|&nbsp;&nbsp;" + sInterval + sType + "&nbsp;" + sDay;// + " 반복";
+            }
+            //2022.05.25 일정부터 이후 일정 모두를 수정하고 있습니다.
+        }
     }
 
     private string RenderFile(string mode, JArray file)
@@ -251,7 +433,7 @@
 <div class="modal-dialog modal-dialog-scrollable" style="max-width: 40rem">
     <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
         <div class="modal-header">
-            <h5 class="modal-title">자원예약 수정</h5>
+            <h5 class="modal-title">@GetTitle(ViewBag.R.lv["cd1"].ToString(), ViewBag.R.lv["tgt"].ToString())</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
             </button>
@@ -293,7 +475,7 @@
             <div class="form-group row mb-1 mb-sm-3">
                 <label for="" class="col-sm-2 col-form-label font-weight-normal">일시</label>
                 <div class="col-sm-10 input-daterange">
-                    <div class="form-group row mb-1">
+                    @*<div class="form-group row mb-1">
                         <div class="col-sm-2 d-none d-sm-block col-form-label">시작</div>
                         <div class="col-sm-10  input-group align-items-center">
                             <input type="text" class="form-control mr-2" id="txtStart" value="@Convert.ToDateTime(jApp["periodfrom"]).ToShortDateString()" style="max-width: 110px">
@@ -318,7 +500,8 @@
                                 <span class="custom-control-label">반복</span>
                             </label>
                         </div>
-                    </div>
+                    </div>*@
+                    @Html.Raw(GetDateDesc(jApp, ViewBag.R.lv["tgt"].ToString(), ViewBag.R.lv["cd1"].ToString()))
                 </div>
             </div>
 
@@ -327,20 +510,22 @@
                 <div class="form-group row mb-1 mb-sm-3">
                     <label for="" class="col-sm-2 col-form-label font-weight-normal"></label>
                     <div class="col-sm-10 input-group align-items-center">
-                        @Html.Raw(GetRepeatDesc(jApp))
+                        @Html.Raw(GetRepeatDesc(jApp, ViewBag.R.lv["tgt"].ToString(), ViewBag.R.lv["cd1"].ToString()))
                     </div>
                 </div>
             }
+            
+            @Html.Raw(RenderRepeat(jApp, ViewBag.R.lv["tgt"].ToString(), ViewBag.R.lv["cd1"].ToString()))
 
             <div class="form-group row mb-1 mb-sm-3">
                 <div class="col-sm-2 col-form-label dropdown">
                     <label for="txtSubject" class="font-weight-normal mb-0">신청 자원</label>
                 </div>
                 <div class="col-sm-10">
-                    @foreach (JObject j in (JArray)jApp["partlist"])
-                    {
-                        <div class="col-form-label" data-val="@j["ot"].@j["partid"]">@j["partdn"]@Html.Raw(GetStateIcon(j["approval"].ToString(), j["confirmed"].ToString(), j["state"].ToString()))</div>
-                    }
+                @foreach (JObject j in (JArray)jApp["partlist"])
+                {
+                    <div class="col-form-label" data-val="@j["ot"].@j["partid"]">@j["partdn"]@Html.Raw(GetStateIcon(j["approval"].ToString(), j["confirmed"].ToString(), j["state"].ToString()))</div>
+                }
                 </div>
             </div>
             <div class="form-group row">
@@ -354,7 +539,7 @@
                 </div>
             </div>
             <div class="form-group mb-1 mb-sm-3">
-                <textarea class="form-control bootstrap-maxlength" id="txtBody" rows="5" maxlength="1000">@Html.Raw(ZumNet.Framework.Web.HtmlHandler.BodyInnerHtml(jApp["body"].ToString()))</textarea>
+                <textarea class="form-control bootstrap-maxlength" id="txtBody" rows="5" maxlength="1000">@Html.Raw(ZumNet.Framework.Web.HtmlHandler.BodyInnerText(jApp["body"].ToString()))</textarea>
             </div>
             <div class="form-group row mb-0">
                 <label for="" class="col-sm-2 col-form-label font-weight-normal">작성</label>

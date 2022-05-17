@@ -1,4 +1,5 @@
 ﻿@using System.Data;
+@using System.Globalization;
 @using System.Text;
 @using System.Threading;
 
@@ -8,6 +9,10 @@
 @using ZumNet.Framework.Util;
 @using ZumNet.Web.Bc;
 @{
+    //첨부파일 임시 저장 폴더
+    string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+    ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+
     DateTime dtStart = Convert.ToDateTime(ViewBag.R.lv.tgt + " " + (ViewBag.R.lv.cd1.ToString() == "" ? DateTime.Now.ToString("HH:mm") : ViewBag.R.lv.cd1.ToString()));
     string sRptDayMargin = Thread.CurrentThread.CurrentUICulture.Name.Substring(0, 2) == "en" ? "ml-1" : "ml-2";
 }
@@ -40,10 +45,10 @@
             sb.Append("<div class=\"col-3 font-weight-bold\">* 문서</div>");
             sb.Append("<div class=\"col-9\" data-for=\"ext\">PPT, PPTX, XLS, XLSX, DOC, DOCX, PDF, HWP, TXT</div>");
             sb.Append("</div>"); //row
-                                 //sb.Append("<div class=\"row\">");
-                                 //sb.Append("<div class=\"col-3 font-weight-bold\">* 동영상</div>");
-                                 //sb.Append("<div class=\"col-9\" data-for=\"ext\">MOV, MP4, AVI</div>");
-                                 //sb.Append("</div>"); //row
+            //sb.Append("<div class=\"row\">");
+            //sb.Append("<div class=\"col-3 font-weight-bold\">* 동영상</div>");
+            //sb.Append("<div class=\"col-9\" data-for=\"ext\">MOV, MP4, AVI</div>");
+            //sb.Append("</div>"); //row
             sb.Append("</div>");
             sb.Append("</div>"); //data-help
             sb.Append("</div>"); //ml-2
@@ -98,7 +103,7 @@
                         <input type="checkbox" class="custom-control-input" name="ckbPrioriy" id="ckb01">
                         <span class="custom-control-label">중요</span>
                     </label>
-                    <input type="text" class="form-control" id="txtSubject">
+                    <input type="text" class="form-control" id="txtSubject" value="" />
                 </div>
             </div>
             <div class="form-group row mb-2 mb-sm-3">
@@ -271,7 +276,7 @@
             <div class="form-group row">
                 <label for="rdoState" class="col-sm-2 col-form-label font-weight-normal">파일</label>
                 <div class="col-sm-10 input-group align-items-center">
-                    @Html.Raw(RenderFile("new", null))
+                    @Html.Raw(RenderFile("new", (JArray)ViewBag.R.app["attachlist"]))
                 </div>
             </div>
             <div class="form-group mb-0">

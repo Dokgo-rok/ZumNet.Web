@@ -10,8 +10,18 @@
     }
     else if (ViewBag.R.ft.ToString() == "Week")
     {
+        for (int i = 0; i < 7; i++)
+        {
+            if (dtTraget.AddDays(-i).DayOfWeek == System.DayOfWeek.Monday)
+            {
+                dtTraget = dtTraget.AddDays(-i); //해당 주의 첫 월요일 날짜 반환
+            }
+        }
+
         sDesc = (dtTraget.Year == DateTime.Now.Year ? "" : dtTraget.Year.ToString() + "년 ") + dtTraget.Month.ToString() + "월" + " " + dtTraget.Day.ToString()
-                 + "일 ~ " + (dtTraget.Month == dtTraget.AddDays(6).Month ? "" : dtTraget.AddDays(6).Month.ToString() + "월 ") + dtTraget.AddDays(6).Day.ToString() + "일";
+         + "일 ~ " + (dtTraget.Month == dtTraget.AddDays(6).Month ? "" : dtTraget.AddDays(6).Month.ToString() + "월 ") + dtTraget.AddDays(6).Day.ToString() + "일";
+
+        //ViewBag.R.lv["tgt"] = dtTraget.ToString("yyyy-MM-dd");
     }
     else //Month, Request
     {

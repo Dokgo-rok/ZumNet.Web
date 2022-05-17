@@ -404,7 +404,7 @@ namespace ZumNet.Web.Bc
                     jV["task"] = mainInfo["TaskID"].ToString();
                     jV["inherited"] = mainInfo["Inherited"].ToString();
                     jV["state"] = mainInfo["State"].ToString();
-                    jV["priority"] = mainInfo["Priority"].ToString();
+                    jV["priority"] = mainInfo["Priority"].ToString().Trim();
                     
                     jV["creur"] = mainInfo["DisplayName"].ToString();
                     jV["creurid"] = mainInfo["CreatorID"].ToString();
@@ -431,13 +431,13 @@ namespace ZumNet.Web.Bc
 
                     sPos = "320";
                     jV["repeat"]["type"] = mainInfo["RepeatType"].ToString();
-                    jV["repeat"]["end"] = mainInfo["RepeatEnd"].ToString();
+                    jV["repeat"]["end"] = mainInfo["RepeatEnd"].ToString().Trim();
                     jV["repeat"]["count"] = mainInfo["RepeatCount"].ToString();
-                    jV["repeat"]["intervaltype"] = mainInfo["IntervalType"].ToString();
-                    jV["repeat"]["interval"] = mainInfo["Interval"].ToString();
-                    jV["repeat"]["conday"] = mainInfo["Con_Day"].ToString();
-                    jV["repeat"]["conweek"] = mainInfo["Con_Week"].ToString();
-                    jV["repeat"]["condate"] = mainInfo["Con_Date"].ToString();
+                    jV["repeat"]["intervaltype"] = mainInfo["IntervalType"].ToString().Trim();
+                    jV["repeat"]["interval"] = mainInfo["Interval"].ToString().Trim();
+                    jV["repeat"]["conday"] = mainInfo["Con_Day"].ToString().Trim();
+                    jV["repeat"]["conweek"] = mainInfo["Con_Week"].ToString().Trim();
+                    jV["repeat"]["condate"] = mainInfo["Con_Date"].ToString().Trim();
                     jV["repeat"]["rsvd1"] = "";
 
                     //참여자
@@ -639,6 +639,7 @@ namespace ZumNet.Web.Bc
                 jV["act"] = oConfig.Attributes["actrole"].Value;
                 jV["wid"] = oConfig.Attributes["wid"].Value;
                 //jV["wnid"] = "";
+                jV["ft"] = xfDef.MainTable.Replace("FORM_", "");
 
                 jV["parent"] = oBizInfo.Attributes["parent_oid"].Value;
                 jV["oid"] = oBizInfo.Attributes["oid"].Value;
@@ -647,6 +648,8 @@ namespace ZumNet.Web.Bc
                 jV["priority"] = oBizInfo.Attributes["priority"].Value;
                 jV["secret"] = oBizInfo.Attributes["secret"].Value;
                 jV["docstatus"] = oBizInfo.Attributes["docstatus"].Value;
+                jV["doclevel"] = oBizInfo.Attributes["doclevel"].Value; //코드값 저장
+                jV["keepyear"] = oBizInfo.Attributes["keepyear"].Value; //코드값 저장
                 jV["tms"] = oBizInfo.Attributes["tms"].Value;
                 jV["prevwork"] = oBizInfo.Attributes["prevwork"].Value;
                 jV["nextwork"] = oBizInfo.Attributes["nextwork"].Value;
@@ -674,8 +677,8 @@ namespace ZumNet.Web.Bc
                 jV["doc"]["docname"] = oDocInfo.SelectSingleNode("docname").InnerText;
                 jV["doc"]["msgtype"] = oDocInfo.SelectSingleNode("msgtype").InnerText;
                 jV["doc"]["docnumber"] = oDocInfo.SelectSingleNode("docnumber").InnerText;
-                jV["doc"]["doclevel"] = oDocInfo.SelectSingleNode("doclevel").InnerText;
-                jV["doc"]["keepyear"] = oDocInfo.SelectSingleNode("keepyear").InnerText;
+                jV["doc"]["doclevel"] = oDocInfo.SelectSingleNode("doclevel").InnerText;  //표기값 저장
+                jV["doc"]["keepyear"] = oDocInfo.SelectSingleNode("keepyear").InnerText;  //표기값 저장
                 jV["doc"]["subject"] = oDocInfo.SelectSingleNode("subject").InnerText;
                 jV["doc"]["credate"] = oDocInfo.SelectSingleNode("createdate").InnerText;
                 jV["doc"]["pubdate"] = oDocInfo.SelectSingleNode("publishdate").InnerText;

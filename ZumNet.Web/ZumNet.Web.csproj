@@ -2676,7 +2676,6 @@
     <Folder Include="Areas\Docs\Data\" />
     <Folder Include="Areas\Docs\Views\Shared\" />
     <Folder Include="Areas\EA\Data\" />
-    <Folder Include="Areas\EA\Views\Shared\" />
     <Folder Include="Areas\ExS\Data\" />
     <Folder Include="Areas\ExS\Views\Shared\" />
     <Folder Include="Areas\TnC\Data\" />
@@ -2792,7 +2791,7 @@
     <Content Include="Content\Json\jform_knowledge.json" />
     <Content Include="Areas\Docs\Views\Kms\Read.cshtml" />
     <Content Include="Areas\Docs\Views\Kms\_Read.cshtml" />
-    <Content Include="Areas\EA\Views\Main\NewDocument.cshtml" />
+    <Content Include="Areas\EA\Views\Shared\NewDocument.cshtml" />
     <Content Include="Areas\EA\Views\Form\Index.cshtml" />
     <Content Include="Content\Json\jform_ea.json" />
     <Content Include="Areas\ExS\Views\WorkTime\_AutoNotice.cshtml" />
@@ -2896,6 +2895,9 @@
     <Content Include="Areas\ExS\Views\Lcm\_CourceView.cshtml" />
     <Content Include="Areas\ExS\Views\Lcm\_LcmInfo.cshtml" />
     <Content Include="Areas\TnC\Views\Shared\_Edit.cshtml" />
+    <Content Include="Areas\TnC\Views\Shared\_ResourceInfo.cshtml" />
+    <Content Include="Areas\EA\Views\Shared\DocProp.cshtml" />
+    <Content Include="Areas\EA\Views\Shared\SignLine.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -3001,6 +3003,7 @@
     <Content Include="Views\Shared\_NoPermissionPopup.cshtml" />
     <Content Include="Views\Report\_REGISTER_EDUTIME.cshtml" />
     <Content Include="Views\Report\_FORM_EDUSHARE.cshtml" />
+    <Content Include="Views\Account\AntiForgery.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

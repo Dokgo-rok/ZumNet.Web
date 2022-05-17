@@ -1761,6 +1761,199 @@ namespace ZumNet.Web.Bc
         }
 
         /// <summary>
+        /// 결재 양식 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <returns></returns>
+        public static string EFormInit(this Controller ctrl)
+        {
+            ZumNet.DAL.FlowDac.EApprovalDac eaDac = null;
+            ZumNet.DAL.FlowDac.ProcessDac procDac = null;
+            ZumNet.Framework.Entities.Flow.XFormDefinition xfDef = null;
+            ZumNet.Framework.Entities.Flow.ProcessInstance pi = null;
+            ZumNet.Framework.Entities.Flow.XFormInstance xfInst = null;
+            ZumNet.Framework.Entities.Flow.WorkItem actWI = null;
+            ZumNet.Framework.Entities.Flow.WorkItemList wiList = null;
+            DataRow row = null;
+
+            string strReturn = "";
+            string sPos = "";
+            string sPwdCheck = "F";
+            string sCancelButton = "";
+            string sPreApprovalWI = "";
+
+            try
+            {
+                sPos = "100";
+                eaDac = new DAL.FlowDac.EApprovalDac();
+                procDac = new DAL.FlowDac.ProcessDac();
+
+                //필수항목 체크
+                sPos = "200";
+                if ((ctrl.ViewBag.JReq["M"].ToString() == "read" || ctrl.ViewBag.JReq["M"].ToString() == "edit" || ctrl.ViewBag.JReq["M"].ToString() == "html") && StringHelper.SafeInt(ctrl.ViewBag.JReq["mi"]) == 0) throw new Exception("필수 항목[MessageID] 누락");
+                else if (ctrl.ViewBag.JReq["M"].ToString() == "new")
+                {
+                    if (ctrl.ViewBag.JReq.ContainsKey("fi") && ctrl.ViewBag.JReq["fi"].ToString() == "")
+                    {
+                        if (ctrl.ViewBag.JReq.ContainsKey("Tp") && StringHelper.SafeString(ctrl.ViewBag.JReq["Tp"].ToString()) != "" 
+                            && ctrl.ViewBag.JReq.ContainsKey("ft") && StringHelper.SafeString(ctrl.ViewBag.JReq["ft"]) != ""
+                            && ctrl.ViewBag.JReq.ContainsKey("k1") && StringHelper.SafeString(ctrl.ViewBag.JReq["k1"]) != "")
+                        {
+                            //외부에서 오는 경우(임시 처리)
+                            xfDef = eaDac.GetEAFormData(Convert.ToInt32(HttpContext.Current.Session["DNID"]), "", ctrl.ViewBag.JReq["ft"].ToString());
+                            ctrl.ViewBag.JReq["fi"] = xfDef.FormID;
+                        }
+                        else
+                        {
+                            throw new Exception("필수 항목[FormID] 누락");
+                        }
+                    }
+                }
+
+                //결재 비밀번호 사용여부
+                sPos = "300";
+                if (ZumNet.Framework.Configuration.Config.Read("EPwdCheck") == "T" && eaDac.UseEApprovalPassword(Convert.ToInt32(HttpContext.Current.Session["URID"]))) sPwdCheck = "T";
+
+                //msgid와 oid가 맞지 않게 넘어 오는 경우를 위해
+                sPos = "400";
+                if (ctrl.ViewBag.JReq["xf"].ToString() == "ea" && ctrl.ViewBag.JReq.ContainsKey("mi") && ctrl.ViewBag.JReq["mi"].ToString() != "" && ctrl.ViewBag.JReq["mi"].ToString() != "0")
+                {
+                    sPos = "410";
+                    pi = procDac.SelectProcessInstance(StringHelper.SafeInt(ctrl.ViewBag.JReq["mi"].ToString()), ctrl.ViewBag.JReq["xf"].ToString());
+                    if (ctrl.ViewBag.JReq.ContainsKey("oi") && ctrl.ViewBag.JReq["oi"].ToString() != "" && ctrl.ViewBag.JReq["oi"].ToString() != "0")
+                    {
+                        if (ctrl.ViewBag.JReq["oi"].ToString() != pi.OID.ToString()) throw new Exception("잘못된 프로세스 정보");
+                    }
+                    ctrl.ViewBag.JReq["oi"] = pi.OID.ToString();
+
+                    sPos = "420";
+                    xfInst = eaDac.SelectXFMainEntity(ctrl.ViewBag.JReq["xf"].ToString(), StringHelper.SafeInt(ctrl.ViewBag.JReq["mi"].ToString()));
+                    if (xfInst != null)
+                    {
+                        ctrl.ViewBag.JReq["wn"] = xfInst.PrevWork.ToString();
+                        ctrl.ViewBag.JReq["k1"] = xfInst.ExternalKey1;
+                        ctrl.ViewBag.JReq["k2"] = xfInst.ExternalKey2;
+                    }
+                }
+
+                //작업연결 정보
+                sPos = "500";
+                if (ctrl.ViewBag.JReq.ContainsKey("wn") && ctrl.ViewBag.JReq["wn"].ToString() != "" && ctrl.ViewBag.JReq["wn"].ToString() != "0")
+                {
+                    row = procDac.SelectWorkItemNotice(StringHelper.SafeLong(ctrl.ViewBag.JReq["wn"].ToString()()));
+                    JObject jWn = JObject.Parse("{}");
+                    jWn["wnid"] = ctrl.ViewBag.JReq["wn"].ToString();
+                    jWn["wnstate"] = row["WnState"].ToString();
+                    jWn["appalias"] = row["AppAlias"].ToString();
+                    jWn["appid"] = row["AppID"].ToString();
+                    jWn["appdn"] = row["AppDN"].ToString();
+                    jWn["appmid"] = row["AppMID"].ToString();
+                    jWn["preappalias"] = row["PreAppAlias"].ToString();
+                    jWn["preappid"] = row["PreAppID"].ToString();
+                    jWn["preappdn"] = row["PreAppDN"].ToString();
+                    jWn["prepiid"] = row["PrePIID"].ToString();
+                    jWn["premid"] = row["PreMID"].ToString();
+                    jWn["prewiid"] = row["PreWIID"].ToString();
+
+                    ctrl.ViewBag.WorkNotice = jWn;
+                }
+
+                //기안회수 및 선결 버튼
+                sPos = "600";
+                if (pi != null && pi.State == (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.ProcessInstanceState.InProgress)
+                {
+                    bool bPreApp = false; //선결재 활성화 여부
+                    wiList = procDac.SelectWorkItems(pi.OID);
+                    if (ctrl.ViewBag.JReq.ContainsKey("wi") && ctrl.ViewBag.JReq["wi"].ToString() != "")
+                    {
+                        sPos = "610";
+                        actWI = procDac.SelectWorkItem(ctrl.ViewBag.JReq["wi"].ToString());
+                        //2014-02-18 선결재 활성화 여부 : 현재 결재할 차례가 아니고 현 사용자 수신함에 있지 않은 경우
+                        if (HttpContext.Current.Session["FlowPreAppMode"].ToString() == "Y")
+                        {
+                            bPreApp = true;
+                            if (ctrl.ViewBag.JReq["wi"].ToString() == actWI.WorkItemID && actWI.State == (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.WorkItemState.InActive
+                                && (actWI.ParticipantID == HttpContext.Current.Session["URID"].ToString() || Regex.Split(actWI.ParticipantID, "__")[0] == HttpContext.Current.Session["DeptID"].ToString()))
+                            {
+                                bPreApp = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        sPos = "620";
+                        foreach (ZumNet.Framework.Entities.Flow.WorkItem w in wiList.Items)
+                        {
+                            if (w.ActRole == "_drafter" && w.ParticipantID == HttpContext.Current.Session["URID"].ToString())
+                            {
+                                actWI = w; ctrl.ViewBag.JReq["wi"] = actWI.WorkItemID; break;
+                            }
+                        }
+                    }
+
+                    if (actWI != null && actWI.ParticipantID == HttpContext.Current.Session["URID"].ToString() && actWI.ActRole == "_drafter")
+                    {
+                        sPos = "630";
+                        sCancelButton = "Y";   //진행중이고 기안자이면 버튼 활성화 가능                                    
+                        foreach (ZumNet.Framework.Entities.Flow.WorkItem w in wiList.Items)
+                        {
+                            if (w.ParentWorkItemID == "" && w.Step > actWI.Step && w.SignKind != (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.SignKind.ByPass
+                                && (w.ActRole == "_approver" || w.ActRole == "__r"))
+                            {
+                                //동서에서는 결재자가 결재하지 않으면 회수 가능
+                                if (w.State > 2)
+                                {
+                                    //처리중, 부서처리중, 완료, 에러 상태가 있으면 회수 불가
+                                    sCancelButton = "N"; break;
+                                }
+                                //if (w.State == (int)Phs.BFF.Entities.ProcessStateChart.WorkItemState.InActive && EApproval.CheckDateTiem(w.ViewDate) == "") { this._cancelButton = "Y"; }
+                                //else { this._cancelButton = "N"; break; }
+                            }
+                        }
+                    }
+
+                    //선결재 버튼 관련 : 예고함에 보여지는 경우에 버튼 활성화)
+                    if (bPreApp)
+                    {
+                        sPos = "640";
+                        foreach (ZumNet.Framework.Entities.Flow.WorkItem w in wiList.Items)
+                        {
+                            if (w.ParticipantID == HttpContext.Current.Session["URID"].ToString() && w.State == (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.WorkItemState.Penging
+                                    && w.ViewState == (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.WorkItemViewState.InProgress && w.SignStatus == (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.SignStatus.None
+                                    && w.SignKind != (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.SignKind.ByPass && w.SignKind != (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.SignKind.Post)
+                            {
+                                sPreApprovalWI = w.WorkItemID;
+                                if (w.SignKind == (int)ZumNet.Framework.Entities.Flow.ProcessStateChart.SignKind.Pre) sPreApprovalWI += "_cancel";
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                sPos = "700";
+                ctrl.ViewBag.PwdCheck = sPwdCheck;
+                ctrl.ViewBag.CancelButton = sCancelButton;
+                ctrl.ViewBag.PreApprovalWI = sPreApprovalWI;
+            }
+            catch (Exception ex)
+            {
+                strReturn = "[" + sPos + "] " + ex.Message;
+            }
+            finally
+            {
+                if (eaDac != null) eaDac.Dispose();
+                if (procDac != null) procDac.Dispose();
+                xfDef = null;
+                pi = null;
+                xfInst = null;
+                actWI = null;
+                wiList = null;
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
         /// 근무관리 초기 설정
         /// </summary>
         /// <param name="ctrl"></param>
@@ -2423,6 +2616,7 @@ namespace ZumNet.Web.Bc
             ZumNet.Framework.Core.ServiceResult svcRt = null;
 
             ctrl.ViewBag.R["xfalias"] = StringHelper.SafeString(ctrl.ViewBag.R.xfalias.ToString(), "schedule");
+            ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
             if (resView)
             {
                 ctrl.ViewBag.R["ot"] = StringHelper.SafeString(ctrl.ViewBag.R.ot.ToString(), "FD"); //대상 구분
@@ -2432,7 +2626,7 @@ namespace ZumNet.Web.Bc
             else
             {
                 //ctrl.ViewBag.R["ct"] = StringHelper.SafeString(ctrl.ViewBag.R.ct.ToString(), "112");
-                ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
+                //ctrl.ViewBag.R["fdid"] = StringHelper.SafeString(ctrl.ViewBag.R.fdid.ToString(), "0");
             }
 
             int iCategoryId = Convert.ToInt32(ctrl.ViewBag.R.ct.Value);

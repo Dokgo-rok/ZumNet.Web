@@ -221,8 +221,13 @@ namespace ZumNet.Web.Bc
 					oBizInfo.Attributes["formid"].Value = xfDef.FormID;
 					oBizInfo.Attributes["ver"].Value = xfDef.Version.ToString();
 					oBizInfo.Attributes["prevwork"].Value = workNotice;   //2011-08-09
+                    oBizInfo.Attributes["inherited"].Value = strSecurity; //2022-0512 추가 (아래 keepyear까지)
+                    oBizInfo.Attributes["priority"].Value = "N"; //기본값
+                    oBizInfo.Attributes["secret"].Value = "N"; //기본값
+                    oBizInfo.Attributes["doclevel"].Value = strDocLevel; //코드값 저장
+                    oBizInfo.Attributes["keepyear"].Value = strKeepYear; //코드값 저장
 
-					strMsg = "XML 값 할당 - 작성자";
+                    strMsg = "XML 값 할당 - 작성자";
 					oCreator.SelectSingleNode("name").InnerXml = "<![CDATA[" + HttpContext.Current.Session["URName"].ToString() + "]]>";
 					oCreator.SelectSingleNode("empno").InnerXml = HttpContext.Current.Session["EmpID"].ToString();
 					oCreator.SelectSingleNode("grade").InnerXml = HttpContext.Current.Session["Grade1"].ToString();
@@ -718,6 +723,9 @@ namespace ZumNet.Web.Bc
                     oBizInfo.Attributes["priority"].Value = xfInst.Priority;
                     oBizInfo.Attributes["secret"].Value = xfInst.Secret;
                     oBizInfo.Attributes["docstatus"].Value = xfInst.DocStatus;
+                    oBizInfo.Attributes["doclevel"].Value = xfInst.DocLevel.ToString(); //코드값 저장
+                    oBizInfo.Attributes["keepyear"].Value = xfInst.KeepYear.ToString(); //코드값 저장
+
                     //oBizInfo.Attributes["tms"].Value = xfInst.Tms;
 
                     strMsg = "XML 값 할당 - 작성자";
@@ -1214,6 +1222,11 @@ namespace ZumNet.Web.Bc
                     oBizInfo.Attributes["processid"].Value = "";
                     oBizInfo.Attributes["formid"].Value = xfDef.FormID;
                     oBizInfo.Attributes["ver"].Value = xfDef.Version.ToString();
+                    oBizInfo.Attributes["inherited"].Value = strSecurity; //2022-0512 추가 (아래 keepyear까지)
+                    oBizInfo.Attributes["priority"].Value = "N"; //기본값
+                    oBizInfo.Attributes["secret"].Value = "N"; //기본값
+                    oBizInfo.Attributes["doclevel"].Value = strDocLevel; //코드값 저장
+                    oBizInfo.Attributes["keepyear"].Value = strKeepYear; //코드값 저장
 
                     strMsg = "XML 값 할당 - 작성자";
                     oCreator.SelectSingleNode("name").InnerXml = "<![CDATA[" + HttpContext.Current.Session["URName"].ToString() + "]]>";

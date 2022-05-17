@@ -89,6 +89,15 @@ namespace ZumNet.Web.Controllers
         }
 
         /// <summary>
+        /// HttpAntiForgeryException 화면
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult AntiForgery()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="returnUrl"></param>

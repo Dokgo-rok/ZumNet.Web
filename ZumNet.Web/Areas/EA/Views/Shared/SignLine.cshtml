@@ -1,0 +1,489 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+
+@using ZumNet.Web.Bc;
+@using ZumNet.Framework.Util;
+@using ZumNet.Framework.Entities.Flow;
+
+@{
+    ViewBag.Title = "결재선 관리자";
+}
+
+@functions{
+    private string CheckAbsence(string isAbsent)
+    {
+        if (isAbsent == "Y") return "<span class=\"text-danger\">부재중</span>";
+        else return "";
+    }
+
+    private string CheckAbsence(string isAbsent, string fromDate, string toDate)
+    {
+        bool b = (isAbsent == "Y" && DateTime.Compare(DateTime.Now, Convert.ToDateTime(fromDate)) >= 0 && DateTime.Compare(DateTime.Now, Convert.ToDateTime(toDate)) <= 0) ? true : false;
+        if (b) return "<span class=\"text-danger\">부재중</span>";
+        else return "";
+    }
+
+    private string GetMemberAttr(DataRow dr)
+    {
+        JObject j = JObject.Parse("{}");
+        j["id"] = dr["UserID"].ToString();
+        j["logonid"] = dr["LogonID"].ToString();
+        j["smail"] = dr["SecondMail"].ToString();
+        j["grid"] = dr["GR_ID"].ToString();
+        j["gralias"] = dr["GRAlias"].ToString();
+        j["grdn"] = dr.Table.Columns.Contains("GRName") ? dr["GRName"].ToString() : dr["GroupName"].ToString();
+        j["empid"] = dr["EmpID"].ToString();
+        j["grade"] = dr["Grade1"].ToString();
+        j["role"] = dr["Role"].ToString();
+        j["mobile"] = dr["Mobile"].ToString();
+
+        return JsonConvert.SerializeObject(j);
+    }
+
+    private string GetUserInfo(DataSet ds)
+    {
+        DataRow dr = (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0) ? ds.Tables[0].Rows[0] : null;
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<tr>");
+        sb.AppendFormat("<td rowspan=\"4\">{0}</td>", GetOrgUserImage(dr["LogonID"].ToString()));
+        sb.Append("<th>성명</th>");
+        sb.AppendFormat("<td>{0}</td>", DataHelper.GetFieldValueToString(dr, "UserName"));
+        sb.Append("<th>직위</th>");
+        sb.AppendFormat("<td>{0} / {1}</td>", DataHelper.GetFieldValueToString(dr, "CodeName"), DataHelper.GetFieldValueToString(dr, "DeptName"));
+        sb.Append("</tr><tr>");
+        sb.Append("<th rowspan=\"3\">담당업무</th>");
+        sb.AppendFormat("<td rowspan=\"3\">{0}</td>", DataHelper.GetFieldValueToString(dr, "사무분담"));
+        sb.Append("<th>연락처</th>");
+        sb.AppendFormat("<td>{0}</td>", DataHelper.GetFieldValueToString(dr, "Mobile"));
+        sb.Append("</tr><tr>");
+        if (dr != null && dr["AbsentDate2"].ToString().Trim() != "" && Convert.ToDateTime(dr["AbsentDate2"].ToString().Trim()) >= DateTime.Today)
+        {
+            sb.Append("<th>부재</th>");
+            sb.AppendFormat("<td>{0} ~ {1}</td>", DataHelper.GetFieldValueToString(dr, "AbsentDate1"), DataHelper.GetFieldValueToString(dr, "AbsentDate2"));
+            sb.Append("</tr><tr>");
+            sb.Append("<th>대결자</th>");
+            sb.AppendFormat("<td>{0}</td>", DataHelper.GetFieldValueToString(dr, "Deputy"));
+            sb.Append("</tr>");
+        }
+        else
+        {
+            sb.Append("<th>부재</th><td></td>");
+            sb.Append("</tr><tr>");
+            sb.Append("<th>대결자</th><td></td>");
+            sb.Append("</tr>");
+        }
+
+
+        return sb.ToString();
+    }
+
+    private string GetOrgUserImage(string logonId)
+    {
+        string imagepath = "";
+        string imageFormat = "";
+        string imageOpacity = "";
+
+        if (logonId != "")
+        {
+            imagepath = Server.MapPath("~/Storage/cresyn/PersonPhoto/" + logonId + ".jpg");
+            imageFormat = "image/jpg";
+            imageOpacity = "";
+        }
+
+        if (imagepath == "" || !File.Exists(imagepath))
+        {
+            imagepath = Server.MapPath("~/images/plugins/user.png");
+            imageFormat = "image/png";
+            imageOpacity = " opacity-50";
+        }
+        FileStream fs = new FileStream(imagepath, FileMode.Open);
+        byte[] byData = new byte[fs.Length];
+        fs.Read(byData, 0, byData.Length);
+        fs.Close();
+
+        var base64 = Convert.ToBase64String(byData);
+        return String.Format("<img src=\"data:{0};base64,{1}\" alt=\"User Image\" class=\"{2}\">", imageFormat, base64, imageOpacity);
+    }
+
+    private string RenderMenuSchemaInfo(string mode, SchemaList schemaActList, Activity currentActivity, WorkItem currentWI, JArray wiList)
+    {
+        string[] vPartType = null;
+        bool bEnableSchema = false;
+        bool bViewMenu = true;
+        bool bOnlyOne = false;
+        int iCurPart = 0;
+
+        string strScopeLine = "";   // 현단계에 버튼이 보이게 될 단계를 지정 2010-10-07
+
+        string sCurrenetBizRole = "";
+        string sCurrenetActRole = "";
+        int iCurrentStep = 0;
+
+        if (currentWI != null)
+        {
+            sCurrenetBizRole = currentWI.BizRole;
+            sCurrenetActRole = currentWI.ActRole;
+        }
+
+        //2010-08-26 병렬이면 버튼 안보임(병렬 수신부서 처리는 제외) => EngineTx에서 병렬인 경우 참여자 추가가 처리 되지 않음        
+        if (currentActivity != null)
+        {
+            iCurrentStep = currentActivity.Step;
+
+            if (currentActivity.Progress == ProcessStateChart.Progress.Parallel && sCurrenetActRole.IndexOf("__") < 0) bViewMenu = false;
+            if (currentActivity.Progress == ProcessStateChart.Progress.OnlyOne) bOnlyOne = true;
+
+            if (currentActivity.Progress == ProcessStateChart.Progress.Parallel)
+            {
+                foreach (JObject w in wiList)
+                {
+                    if (w["ActivityID"].ToString() == currentActivity.ActivityID && Convert.ToInt32(w["ViewState"].ToString()) != (int)ProcessStateChart.WorkItemViewState.Cancel) iCurPart++;
+                }
+                //2010-10-20 병렬이면서 결재자가 하나인 경우 위 단계 버튼 보이기
+                if (iCurPart == 1) { bViewMenu = true; bOnlyOne = true; }
+            }
+            //Response.Write("icurp->" + iCurPart.ToString());
+            strScopeLine = currentActivity.ScopeLine;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        foreach(Schema item in schemaActList)
+        {
+            if (mode == "draft" && item.ActRole == "_drafter") { strScopeLine = item.ScopeLine; }// 현단계에 버튼이 보이게 될 단계를 지정 2010-10-07
+
+            vPartType = item.PartType.Split('_');
+            if (bViewMenu && (sCurrenetActRole.IndexOf("__") >= 0 || (sCurrenetActRole.IndexOf("__") < 0
+                && ((bOnlyOne && item.Step > iCurrentStep) || (!bOnlyOne && item.Step >= iCurrentStep)))))
+            //&& (bOnlyOne && item.Step > this._currentStep || !bOnlyOne && item.Step >= this._currentStep))))
+            {
+                if (vPartType[1] == "b" || vPartType[1] == "f" || vPartType[1] == "h" || (vPartType[1] == "g" && item.Participants != null && item.Participants.Count > 0))
+                {
+                    if (item.BizRole == "normal")
+                    {
+                        //Response.Write(":::actrole=>" + item.ActRole + "<br />");
+                        if (item.ActRole == "_reviewer") sb.Append(RenderMenuControl("검토", "addUser", "검토", item.ActivityID, vPartType[0]));
+                        if (item.ActRole == "_approver") sb.Append(RenderMenuControl("승인", "addUser", "승인", item.ActivityID, vPartType[0]));
+                    }
+                    else if (item.BizRole == "last")
+                    {
+                        //Response.Write(":::actrole=>" + item.ActRole + "<br />");
+                        if (item.ActRole == "_approver") sb.Append(RenderMenuControl("최종승인", "addUser", "최종승인", item.ActivityID, vPartType[0]));
+                        if (item.ActRole == "_reviewer") sb.Append(RenderMenuControl("검토", "addUser", "검토", item.ActivityID, vPartType[0]));
+                    }
+                    else if (item.BizRole == "receive" || item.BizRole == "distribution")
+                    {
+                        //Response.Write(":::curbiz=>" + currentWI.BizRole + " : " + item.BizRole + "<br />");
+                        //Response.Write(":::actrole=>" + item.ActRole + "<br />");
+                        if (sCurrenetBizRole == item.BizRole && item.ActRole == "_reviewer") sb.Append(RenderMenuControl("검토", "addUser", "검토", item.ActivityID, vPartType[0]));
+                        if (sCurrenetBizRole == item.BizRole && item.ActRole == "_manager") sb.Append(RenderMenuControl("담당", "addUser", "담당", item.ActivityID, vPartType[0]));
+                        if (sCurrenetBizRole == item.BizRole && item.ActRole == "_approver") sb.Append(RenderMenuControl("승인", "addUser", "승인", item.ActivityID, vPartType[0]));
+                        if (item.ActRole == "__r") sb.Append(RenderMenuControl("수신처", "addGroup", "수신처", item.ActivityID, vPartType[0]));
+                        else if (item.ActRole == "__ri") sb.Append(RenderMenuControl("수신처", "addGroup", "수신처", item.ActivityID, vPartType[0]));
+
+                        //if (vPartType[1] == "h")
+                        //{
+                        //    this.panAddress.Visible = true;
+                        //    this.phAttributePart.Visible = true;
+                        //}
+                    }
+                    else if (item.BizRole == "consent")
+                    {
+                        if (sCurrenetBizRole == item.BizRole && item.ActRole == "_approver") sb.Append(RenderMenuControl("승인", "addUser", "승인", item.ActivityID, vPartType[0]));
+                        if (item.ActRole == "__r") sb.Append(RenderMenuControl("합의", "addGroup", "합의", item.ActivityID, vPartType[0]));
+                    }
+                    else if (item.BizRole == "agree")
+                    {
+                        sb.Append(RenderMenuControl("합의", "addUser", "합의", item.ActivityID, vPartType[0]));
+                    }
+                    else if (item.BizRole == "reference")
+                    {
+                        if (vPartType[0] == "g") sb.Append(RenderMenuControl("참조", "addGroup", "참조", item.ActivityID, vPartType[0]));
+                        else sb.Append(RenderMenuControl("참조자", "addUser", "참조자", item.ActivityID, vPartType[0]));
+                    }
+                    else if (item.BizRole == "audit")
+                    {
+                        if (sCurrenetBizRole == item.BizRole && item.ActRole == "_approver") sb.Append(RenderMenuControl("결재자", "addUser", "감사결재자 추가", item.ActivityID, vPartType[0]));
+                        if (item.ActRole == "__r") sb.Append(RenderMenuControl("감사처", "addGroup", "감사부서 추가", item.ActivityID, vPartType[0]));
+                    }
+                    else if (item.BizRole == "confirm")
+                    {
+                        sb.Append(RenderMenuControl("확인", "addUser", "확인", item.ActivityID, vPartType[0]));
+                    }
+                    else if (item.BizRole == "application")
+                    {
+                        if (item.ActRole == "__r") sb.Append(RenderMenuControl("접수" + '처', "addGroup", "접수", item.ActivityID, vPartType[0]));
+                        if (item.ActRole == "_approver")
+                        {
+                            if (item.ParentActivityID != "") sb.Append(RenderMenuControl("승인", "addUser", "승인", item.ActivityID, vPartType[0]));
+                            else sb.Append(RenderMenuControl("접수", "addUser", "접수", item.ActivityID, vPartType[0]));
+                        }
+                        if (item.ActRole == "_reviewer") sb.Append(RenderMenuControl("검토", "addUser", "검토", item.ActivityID, vPartType[0]));
+                    }
+                    else if (item.BizRole == "manage")
+                    {
+                        //if (item.ActRole == "_approver") RenderMenuControl("담당", "addUser", "담당", item.ActivityID, vPartType[0]);
+
+                        //if (item.ActRole == "__r") RenderMenuControl("접수", "addGroup", "접수", item.ActivityID, vPartType[0]);
+                        if (item.ActRole == "_approver")
+                        {
+                            if (item.ParentActivityID != "") sb.Append(RenderMenuControl("승인", "addUser", "승인", item.ActivityID, vPartType[0]));
+                            else sb.Append(RenderMenuControl(item.DisplayName, "addUser", item.DisplayName, item.ActivityID, vPartType[0]));
+                            //else RenderMenuControl("접수", "addUser", "접수", item.ActivityID, vPartType[0]);
+                        }
+                        if (item.ActRole == "_reviewer") sb.Append(RenderMenuControl("검토", "addUser", "검토", item.ActivityID, vPartType[0]));
+                    }
+                    else
+                    {
+                        if (item.ActRole == "__r")
+                        {
+                            sb.Append(RenderMenuControl(item.DisplayName, "addGroup", item.DisplayName, item.ActivityID, vPartType[0]));
+                        }
+                        else
+                        {
+                            //if (item.ActRole == "_approver") RenderMenuControl("승인", "addUser", "승인", item.ActivityID, vPartType[0]);
+                            if (item.ActRole == "_reviewer") sb.Append(RenderMenuControl("검토", "addUser", "검토", item.ActivityID, vPartType[0]));
+                            else if (item.ActRole == "_confirmor") sb.Append(RenderMenuControl("확인", "addUser", "확인", item.ActivityID, vPartType[0]));
+                            else
+                            {
+                                if (item.ActRole != "_redrafter") sb.Append(RenderMenuControl(item.DisplayName, "addUser", item.DisplayName, item.ActivityID, vPartType[0]));
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (bViewMenu && vPartType[1] == "h")
+            {
+                //this.phAttributePart.Visible = true;
+                //string strAttName = ZumNet.Framework.Entities.Flow.ProcessStateChart.ParsingBizRole(item.BizRole).Substring(0, 2);
+                //if (vPartType[0] == "u") strAttName += "자";
+                //else strAttName += "처";
+                //RenderAttributeTab(item.ActivityID, strAttName);
+            }
+
+            //2010-10-07 크레신 (지정된 ScopeLine까지 결재선을 지정할 수 있게
+            if (strScopeLine != "" && strScopeLine == item.ActivityID) break;
+        }
+
+        return sb.ToString();
+    }
+
+    private string RenderMenuControl(string menuName, string methodName, string toolTip, string param1, string param2)
+    {
+        string sIcon = "";
+        if (param2 == "u") sIcon = "fas fa-user text-indigo opacity-75";
+        else if (param2 == "g") sIcon = "fas fa-user-friends text-danger opacity-75";
+        else sIcon = param2;
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("<button type=\"button\" class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" data-zm-menu=\"{1}\" data-val=\"{2}\">"
+                        , toolTip, methodName, param1);
+        sb.AppendFormat("<i class=\"{0}\"></i>", sIcon);
+        sb.AppendFormat("{0}</button>", menuName);
+
+        return sb.ToString();
+    }
+}
+
+@if (ViewBag.JPost["M"].ToString() == "draft" || ViewBag.JPost["M"].ToString() == "approval")
+{
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width: 55rem">
+        <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+            <div class="modal-header justify-content-between align-items-center bg-light pb-2 px-3" style="padding-top: 0.725rem !important">
+                <h5 class="modal-title">@ViewBag.Title</h5>
+                <div class="d-flex align-items-center">
+                    <label class="custom-control custom-checkbox m-0 mr-3" for="ckbPersonLineSave">
+                        <input type="checkbox" class="custom-control-input" id="ckbPersonLineSave" value="on" />
+                        <span class="custom-control-label">결재선 저장</span>
+                    </label>
+                    <button type="button" class="btn btn-primary my-0 px-3 py-1 mr-1" data-zm-mmenu="confirm">@Resources.Global.Confirm</button>
+                    <button type="button" class="btn btn-default my-0 px-3 py-1" data-dismiss="modal" aria-label="Close">@Resources.Global.Cancel</button>
+                </div>
+            </div>
+            <div class="zf-sl modal-body p-2">
+                <div class="d-sm-flex">
+                    <div class="wd-99 wd-lg-26 wd-xl-26">
+                        <div class="nav-tabs-top mb-1">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#orgmaptree" aria-controls="orgmaptree" aria-selected="true">@Resources.Global.OrganChart</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#orgmapsearch" aria-controls="orgmapsearch" aria-selected="false">@Resources.Global.Search</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#personline" aria-controls="personline" aria-selected="false">개인결재선</a>
+                                </li>
+                            </ul>
+                            <!-- sidebox tree -->
+                            <div class="tab-content p-1">
+                                <div class="tab-pane fade show active" id="orgmaptree" role="tabpanel" aria-labelledby="orgtree-tab">
+                                    <div id="__OrgMapTree"></div>
+                                </div>
+                                <div class="tab-pane fade show" id="orgmapsearch" role="tabpanel" aria-labelledby="orgsearch-tab">
+                                    <form id="__OrgMapSearch">
+                                        <div class="form-group row mx-0 mb-2">
+                                            <label class="col-form-label col-4 text-truncate">@Resources.Global.PersonName</label>
+                                            <div class="col-8 px-0">
+                                                <input type="text" class="form-control" placeholder="@Resources.Global.PersonName" data-for="ur">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mx-0 mb-2">
+                                            <label class="col-form-label col-4 text-truncate">@Resources.Global.ID</label>
+                                            <div class="col-8 px-0">
+                                                <input type="text" class="form-control" placeholder="@Resources.Global.ID" data-for="urcn">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mx-0 mb-2">
+                                            <label class="col-form-label col-4 text-truncate">@Resources.Global.Department</label>
+                                            <div class="col-8 px-0">
+                                                <input type="text" class="form-control" placeholder="@Resources.Global.Department" data-for="dept">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mx-0">
+                                            <label class="col-form-label col-4 text-truncate">@Resources.Global.Jikwi</label>
+                                            <div class="col-8 px-0">
+                                                <select class="custom-select" data-for="grade">
+                                                    <option value="">@Resources.Global.Select</option>
+                                                    @foreach (DataRow row in ViewBag.GradeCode)
+                                                    {
+                                                        <option value="@row["Code"]">@row["CodeName"]</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <button class="btn btn-outline-success py-1 mr-1">@Resources.Global.Search</button>
+                                            <button class="btn btn-outline-secondary py-1 ml-1" type="reset">@Resources.Global.Reset</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="tab-pane fade show" id="personline" role="tabpanel" aria-labelledby="personline-tab">
+                                    @if (ViewBag.PersonLine != null && ViewBag.PersonLine.Tables.Count > 0)
+                                    {
+                                        <ul class="nav">
+                                            @foreach (DataRow dr in ViewBag.PersonLine.Tables[0].Rows)
+                                            {
+                                            <li id="_@dr["LineID"]_@dr["ProcessID"]_@dr["FormID"]" class="nav-item">
+                                                <a href="javascript:void(0)" class="nav-link z-lnk-navy p-2" title="@Server.HtmlEncode(dr["LineName"].ToString())"><i class="fas fa-angle-right"></i> @dr["LineName"]</a>
+                                            </li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-warning text-center py-2 mt-4" role="alert">생성된 결재선 없습니다!</div>
+                                    }
+                                </div>
+                            </div>
+                            <!-- / sidebox tree -->
+                        </div>
+                        <div class="zf-sl-member">
+                            <div class="card">
+                                <div class="card-header bg-light py-1 px-2">
+                                    <div class="d-flex align-items-center">
+                                        <div class="wd-50 wd-lg-50 wd-xl-50 text-nowrap">@Resources.Global.Name</div>
+                                        <div class="wd-25 wd-lg-25 wd-xl-25 text-nowrap">@Resources.Global.Jikwi</div>
+                                        <div class="wd-25 wd-lg-25 wd-xl-25 text-nowrap">부재여부</div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-1">
+                                    @foreach (DataRow dr in ViewBag.MemberList.Tables[0].Rows)
+                                    {
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="wd-50 wd-lg-50 wd-xl-50">
+                                                <label class="flex-fill custom-control custom-checkbox mb-0">
+                                                    <input type="checkbox" class="custom-control-input" data-for="ur.@dr["UserID"]" data-attr="@GetMemberAttr(dr)">
+                                                    <span class="custom-control-label">@dr["DisplayName"]</span>
+                                                </label>
+                                            </div>
+                                            <div class="wd-25 wd-lg-25 wd-xl-25 text-muted text-nowrap">@dr["Grade1"]</div>
+                                            <div class="wd-25 wd-lg-25 wd-xl-25 text-muted text-nowrap">@Html.Raw(CheckAbsence(dr["NowAbsent"].ToString()))</div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="card d-none">
+                                <div class="card-header bg-light py-1 px-2">
+                                    <div class="d-flex align-items-center">
+                                        <div class="wd-15 wd-lg-15 wd-xl-15 text-nowrap">순번</div>
+                                        <div class="wd-35 wd-lg-35 wd-xl-35 text-nowrap">구분</div>
+                                        <div class="wd-50 wd-lg-50 wd-xl-50 text-nowrap">결재자</div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-1">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wd-99 wd-lg-9 wd-xl-9">
+                        <div class="zf-sl-add d-sm-flex flex-sm-column justify-content-center h-100">
+                            @Html.Raw(RenderMenuSchemaInfo(ViewBag.JPost["M"].ToString(), ViewBag.SchemaList, ViewBag.CurrentAct, ViewBag.CurrentWI, ViewBag.JPost["signline"]))
+                        </div>
+                    </div>
+                    <div class="wd-99 wd-lg-65 wd-xl-65">
+                        <div class="mt-2 mt-sm-0">
+                            <div class="d-flex justify-content-between align-items-center my-1 mx-1">
+                                <div class="font-weight-bold"><i class="fe-edit mr-1"></i>결재자목록</div>
+                                <div class="zf-sl-menu">
+                                    <button type="button" class="btn btn-outline-secondary icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="초기화" data-zm-menu="refresh"><i class="fe-refresh-cw font-weight-bold"></i></button>
+                                    <button type="button" class="btn btn-outline-success icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="위로" data-zm-menu="up"><i class="fas fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-outline-success icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="아래로" data-zm-menu="down"><i class="fas fa-arrow-down"></i></button>
+                                    <button type="button" class="btn btn-outline-secondary icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" data-zm-menu="delete"><i class="fe-x font-weight-bold"></i></button>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header d-flex bg-light py-1 px-0">
+                                    <div class="wd-6 wd-lg-6 wd-xl-6"></div>
+                                    <div class="wd-8 wd-lg-8 wd-xl-8">순번</div>
+                                    <div class="wd-15 wd-lg-15 wd-xl-15">구분</div>
+                                    <div class="wd-35 wd-lg-35 wd-xl-35">결재자</div>
+                                    <div class="wd-12 wd-lg-12 wd-xl-12">상태</div>
+                                    <div class="wd-12 wd-lg-12 wd-xl-12">종류</div>
+                                    <div class="wd-12 wd-lg-12 wd-xl-12">역할</div>
+                                </div>
+                                <div class="zf-sl-line card-body p-0">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="zf-sl-attr mt-1">
+                            <div class="nav-tabs-left">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#attList_xform_cf">우선확인</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#attList">참조자</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#attList-xform-dl">배포목록</a></li>
+                                </ul>
+                                <div class="tab-content p-1">
+                                    <div class="tab-pane fade active show border border-rouned h-100" id="attList-xform-cf"></div>
+                                    <div class="tab-pane fade show border border-rouned h-100" id="attList"></div>
+                                    <div class="tab-pane fade show border border-rouned h-100" id="attList-xform-dl"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="zf-sl-info d-none d-sm-block bg-light mt-1">
+                            <table class="table table-sm bg-white mb-0">
+                                <colgroup>
+                                    <col style="width: 16%" />
+                                    <col style="width: 12%" />
+                                    <col style="width: 28%" />
+                                    <col style="width: 12%" />
+                                    <col style="width: 34%" />
+                                </colgroup>
+                                <tbody>
+                                    @Html.Raw(GetUserInfo(ViewBag.UserInfo))
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex align-items-center bg-light py-2">
+
+            </div>
+        </div>
+    </div>
+}

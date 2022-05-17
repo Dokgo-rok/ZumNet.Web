@@ -638,7 +638,7 @@
         <span class="f-option2">
           <input type="checkbox" name="ckbEMAIL" value="EMAIL">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbEMAIL', this, 'CHECKEMAIL')</xsl:attribute>
+              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbEMAIL', this, 'CHECKEMAIL')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CHECKEMAIL),'EMAIL')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -658,7 +658,7 @@
         <span class="f-option2">
           <input type="checkbox" name="ckbERP" value="ERP">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbERP', this, 'CHECKERP')</xsl:attribute>
+              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbERP', this, 'CHECKERP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CHECKERP),'ERP')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -678,7 +678,7 @@
         <span class="f-option2">
           <input type="checkbox" name="ckbEKP" value="EKP">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbEKP', this, 'CHECKEKP')</xsl:attribute>
+              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbEKP', this, 'CHECKEKP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CHECKEKP),'EKP')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -698,7 +698,7 @@
         <span class="f-option2">
           <input type="checkbox" name="ckbVPN" value="VPN">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbVPN', this, 'CHECKVPN')</xsl:attribute>
+              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbVPN', this, 'CHECKVPN')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CHECKVPN),'VPN')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -718,7 +718,7 @@
         <span class="f-option2">
           <input type="checkbox" name="ckbSEC" value="SEC">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbSEC', this, 'CHECKSEC')</xsl:attribute>
+              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbSEC', this, 'CHECKSEC')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CHECKSEC),'SEC')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -738,7 +738,7 @@
         <span class="f-option2">
           <input type="checkbox" name="ckbACCU" value="ACCU">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbACCU', this, 'CHECKACCU')</xsl:attribute>
+              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbACCU', this, 'CHECKACCU')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CHECKACCU),'ACCU')">
               <xsl:attribute name="checked">true</xsl:attribute>

@@ -35,6 +35,67 @@ $(function () {
         }
     });
 
+    //$('.z-lv-cond input[data-val]').on('keyup', function () {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/EA/Main/AutoSearch",
+    //        data: _zw.V.xfalias + ',' + _zw.V.opnode.split('/')[0] + ',' + _zw.V.current.urid + ',' + $(this).attr('data-val').toLowerCase() + ',' + $(this).val(),
+    //        success: function (res) {
+    //            console.log(res.result)
+
+    //        },
+    //        beforeSend: function () {}
+    //    });
+    //});
+
+    //$('.z-lv-cond input[data-val]').autoComplete({
+    //    minLength: 1,
+    //    resolver: 'custom',
+    //    formatResult: function (item) {
+    //        console.log(item)
+    //        return {
+    //            value: item.name,
+    //            text: item.name + '(' + item.count + ')',
+    //            html: '<li>' + item.name + '(' + item.count + ')' + '</li>'
+    //        }
+    //    },
+    //    events: {
+    //        search: function (qry) {
+    //            $.ajax({
+    //                type: "POST",
+    //                url: "/EA/Main/AutoSearch",
+    //                data: _zw.V.xfalias + ',' + _zw.V.opnode.split('/')[0] + ',' + _zw.V.current.urid + ',' + 'docname' + ',' + qry,
+    //                success: function (res, callback) {
+    //                    var jRes = JSON.parse(res); //console.log(jRes)
+    //                    if (jRes.result == 'OK') {
+    //                        //callback(jRes.data);
+    //                    }
+    //                },
+    //                beforeSend: function () { }
+    //            });
+    //        }
+    //    }
+    //});
+
+    //$('.z-lv-cond input[data-val]').typeahead({
+    //    hint: true,
+    //    highlight: true,
+    //    minLength: 0
+    //}, {
+    //    name: 'AutoSearch',
+    //    source: function (query, syncResults, asyncResults) {
+    //        return $.ajax({
+    //            type: "POST",
+    //            url: "/EA/Main/AutoSearch",
+    //            data: _zw.V.xfalias + ',' + _zw.V.opnode.split('/')[0] + ',' + _zw.V.current.urid + ',' + 'docname' + ',' + query,
+    //            success: function (res) {
+    //                console.log(res.result)
+    //                return asyncResults(res.data);
+    //            }
+    //        })
+    //    }
+    //});
+
     _zw.fn.getEACount('', 'ea', 'base2', '', 'N');
 
     _zw.fn.loadList = function () {

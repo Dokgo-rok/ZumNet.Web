@@ -272,6 +272,51 @@ namespace ZumNet.Web.Areas.TnC.Controllers
             }
             return rt;
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ResourceInfo()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["fdid"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.CommonBiz comBiz = new BSL.ServiceBiz.CommonBiz())
+                    {
+                        svcRt = comBiz.GetFolderAttribute(0, 0, Convert.ToInt32(jPost["fdid"]));
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            ViewBag.ResInfo = svcRt.ResultDataRow;
+
+                            svcRt = comBiz.GetObjectACL(Convert.ToInt32(Session["DNID"]), svcRt.ResultDataRow["Inherited"].ToString(), Convert.ToInt32(jPost["fdid"]), "FD", "0");
+
+                            if (svcRt != null && svcRt.ResultCode == 0)
+                            {
+                                ViewBag.ResAcl = svcRt.ResultDataSet;
+                                ViewBag.Mode = jPost.ContainsKey("M") ? jPost["M"].ToString() : "popover"; //modal or popover
+                                ViewBag.Boundary = jPost["boundary"].ToString();
+
+                                rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ResourceInfo", ViewBag);
+                            }
+                            else rt = svcRt.ResultMessage;
+                        }
+                        else rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
         #endregion
 
         #region [달력, 현황]
@@ -669,6 +714,44 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                 catch (Exception ex)
                 {
                     rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EventDelete()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || StringHelper.SafeInt(jPost["mi"]) == 0) return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.ToDoBiz todo = new BSL.ServiceBiz.ToDoBiz())
+                    {
+                        svcRt = todo.DeleteToDo("U", jPost["ot"].ToString(), StringHelper.SafeInt(jPost["otid"]), Convert.ToInt32(jPost["mi"])
+                                            , Convert.ToInt32(Session["URID"]), jPost["opt"].ToString(), jPost["dt"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultDataString == "N") rt = "해당 일정은 삭제할 수 없는 상태입니다!";
+                        else rt = "OK" + "삭제했습니다!";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
                 }
             }
             return rt;

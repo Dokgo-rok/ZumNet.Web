@@ -41,4 +41,90 @@
 }
 /* left menu <--------------- */
 
+/* signline manager -----> */
+.zf-sl .nav-tabs .nav-link {
+    padding: .375rem .525rem .325rem;
+}
+.zf-sl .tab-content .tab-pane, .zf-sl .zf-sl-member, .zf-sl .zf-sl-line {
+    /*overflow: auto;*/
+}
+.zf-sl .nav-tabs-top > .tab-content, .zf-sl .nav-tabs-left > .tab-content, .zf-sl .card,
+.zf-sl .nav-tabs-top > .nav .nav-link.active, .zf-sl .nav-tabs-left > .nav .nav-link.active,
+.zf-sl .nav-tabs-top > .nav .nav-link:hover, .zf-sl .nav-tabs-left > .nav .nav-link:hover {
+    border-color: rgba(24,28,33,0.1);
+}
+.zf-sl .nav-tabs-top > .nav .nav-link:hover {
+    border-bottom-color: transparent;
+}
+.zf-sl .nav-tabs-left > .nav .nav-link:hover {
+    border-right-color: transparent;
+}
+.zf-sl .nav-tabs-top > .nav .nav-link.active {
+    border-bottom-color: #fff;
+}
 
+.zf-sl .nav-tabs-left > .nav .nav-link.active {
+    border-right-color: #fff;
+}
+
+.zf-sl .nav-tabs-top > .tab-content .tab-pane {
+    height: 204px;
+}
+.zf-sl .zf-sl-member .card-body {
+    height: 160px;
+}
+.zf-sl .zf-sl-line {
+    height: 160px;
+}
+.zf-sl .zf-sl-add {
+    padding: .75rem .5rem;
+}
+    .zf-sl .zf-sl-add .btn {
+        padding: .25rem .5rem !important;
+        margin: .125rem .25rem;
+    }
+    
+.zf-sl .zf-sl-info {
+    border: 1px solid rgba(24,28,33,0.06);
+    border-radius: 0.25rem;
+    padding: .275rem;
+}
+    .zf-sl .zf-sl-info img {
+        margin: 0;
+        max-width: 5rem;
+        height: 6rem;
+        border-radius: .25rem !important;
+    }
+
+    .zf-sl .zf-sl-info .table th, .zf-sl .zf-sl-info .table td {
+        padding-top: .25rem;
+        padding-bottom: .25rem;
+        border-top: 0;
+    }
+/*.zf-sl .zf-sl-info .table tr:first-child th, .zf-sl .zf-sl-info .table tr:first-child td {
+    border-top: 0;
+}*/
+
+@media (min-width: 576px) {
+    .zf-sl .nav-tabs-top > .tab-content .tab-pane {
+        height: 290px;
+    }
+    .zf-sl .zf-sl-member .card-body {
+        height: 206px;
+    }
+    .zf-sl .zf-sl-line {
+        height: 268px;
+    }
+    .zf-sl .zf-sl-attr .nav-tabs-left {
+        height: 116px;
+    }
+    .zf-sl .zf-sl-add {
+        padding: 2rem .25rem;
+    }
+        .zf-sl .zf-sl-add .btn {
+            padding: .125rem !important;
+            margin: .5rem 0;
+        }
+}
+
+/* signline manager <----- */

@@ -135,6 +135,9 @@
   <data name="AttendWork" xml:space="preserve">
     <value>Go to Work</value>
   </data>
+  <data name="Auth_AlreadyLogin" xml:space="preserve">
+    <value>Already logged in user.</value>
+  </data>
   <data name="Auth_DoubleAccount" xml:space="preserve">
     <value>One or more accounts exist. Please contact the administrator.</value>
   </data>
