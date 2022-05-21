@@ -397,7 +397,7 @@
                 </td>
                 <td colspan="3" style="border-right:0">
                   <xsl:choose>
-                    <xsl:when test="$bizrole='선행검토' and $partid!='' and phxsl:isEqual(string(//currentinfo/department),'품질보증본부')">
+                    <xsl:when test="$bizrole='선행검토' and $partid!='' and phxsl:isEqual(string(//currentinfo/department),'품질보증팀')">
                       <textarea id="__mainfield" name="SAMPLEREQUEST" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000);" style="height:75px">
                         <xsl:value-of select="//forminfo/maintable/SAMPLEREQUEST" />
                       </textarea>

@@ -1,5 +1,6 @@
 ﻿@using System.Text;
 @using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
 @{
     Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
 
@@ -10,6 +11,10 @@
         ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
     }
 
+    //결재 초기 설정
+    InitVariables();
+
+    //본문 변환
     HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
     doc.LoadHtml(ViewBag.FormHtml);
 
@@ -17,9 +22,68 @@
     HtmlAgilityPack.HtmlNode styleNode = doc.DocumentNode.SelectSingleNode("//style");
 
     //_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.JForm))}()
+
+    //string s = "".IndexOf
 }
 @functions{
+    private void InitVariables()
+    {
+        if (ViewBag.WorkNotice != null) ViewBag.JForm["wn"] = ViewBag.WorkNotice;
 
+        if (ViewBag.JForm["xfalias"].ToString() == "ea")
+        {
+            ViewBag.JForm["preapvwi"] = ViewBag.PreApprovalWI;
+            ViewBag.JForm["checkpwd"] = ViewBag.PwdCheck;
+
+            if (ViewBag.JForm["mode"].ToString() == "new" || ViewBag.JForm["mode"].ToString() == "edit" || ViewBag.JForm["mode"].ToString() == "reuse") ViewBag.JForm["apvmode"] = "draft";
+            else
+            {
+                if (ViewBag.JForm["wid"].ToString() != "" && (ViewBag.JForm["partid"].ToString().IndexOf("__") >= 0
+                    || (ViewBag.JForm["partid"].ToString().IndexOf("__") < 0 && ViewBag.JForm["partid"].ToString() == Session["URId"].ToString()))) ViewBag.JForm["apvmode"] = "approval";
+                else ViewBag.JForm["apvmode"] = "read";
+            }
+
+            if (ViewBag.JForm["apvmode"].ToString() == "draft")
+            {
+                foreach (JObject j in (JArray)ViewBag.JForm["schema"])
+                {
+                    if (j["actrole"].ToString() == "_drafter")
+                    {
+                        ViewBag.JForm["pwid"] = "";
+                        ViewBag.JForm["partid"] = Session["URId"].ToString();
+                        ViewBag.JForm["curactid"] = j["actid"].ToString();
+                        ViewBag.JForm["curbiz"] = j["bizrole"].ToString();
+                        ViewBag.JForm["curact"] = j["actrole"].ToString();
+                        ViewBag.JForm["currandom"] = j["random"].ToString();
+                        ViewBag.JForm["curprogress"] = j["progress"].ToString();
+
+                        break;
+                    }
+                }
+            }
+            else if (ViewBag.JForm["apvmode"].ToString() == "approval")
+            {
+                if (ViewBag.JForm["act"].ToString().IndexOf("__") >= 0)
+                {
+                    foreach (JObject j in (JArray)ViewBag.JForm["schema"])
+                    {
+                        if (j["actrole"].ToString() == "_redrafter")
+                        {
+                            ViewBag.JForm["pwid"] = ViewBag.JForm["wid"];
+                            //ViewBag.JForm["partid"] = Session["URId"].ToString();
+                            ViewBag.JForm["curactid"] = j["actid"].ToString();
+                            ViewBag.JForm["curbiz"] = j["bizrole"].ToString();
+                            ViewBag.JForm["curact"] = j["actrole"].ToString();
+                            ViewBag.JForm["currandom"] = j["random"].ToString();
+                            ViewBag.JForm["curprogress"] = j["progress"].ToString();
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
@@ -113,7 +177,7 @@
                                 }
                                 if (ViewBag.JForm["def"]["maintable"].ToString() != "FORM_RESIGNATION" && ViewBag.JForm["def"]["usage"].ToString() != "9" && (ViewBag.JForm["docstatus"].ToString().Substring(0, 1) == "7" || ViewBag.JForm["docstatus"].ToString().Substring(0, 1) == "8"))
                                 {
-                                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="재사용" data-zf-menu="reuse"><i class="fas fa-recycle text-third"></i><span class="d-none d-sm-inline-block ml-1">재사용</span></button>
+                                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="재사용" data-zf-menu="reuse"><i class="fas fa-redo text-third"></i><span class="d-none d-sm-inline-block ml-1">재사용</span></button>
                                 }
                             }
                             <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="결재선" data-zf-menu="signLine"><i class="fas fa-user-plus text-third"></i><span class="d-none d-sm-inline-block ml-1">결재선</span></button>

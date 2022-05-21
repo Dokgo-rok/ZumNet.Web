@@ -93,19 +93,25 @@ $(function () {
                 break;
 
             case "signLine":
-                var cmd = '';
-                if (_zw.V.mode == 'new' || _zw.V.mode == 'edit' || _zw.V.mode == 'reuse') cmd = 'draft';
-                else {
-                    if (_zw.V.wid != '' && (_zw.V.partid.indexOf("__") >= 0 || (_zw.V.partid.indexOf("__") < 0 && _zw.V.partid == _zw.V.current.urid))) cmd = 'approval';
-                    else cmd = 'read';
-                }
+                var cmd = _zw.V.apvmode;
+                //if (_zw.V.mode == 'new' || _zw.V.mode == 'edit' || _zw.V.mode == 'reuse') cmd = 'draft';
+                //else {
+                //    if (_zw.V.wid != '' && (_zw.V.partid.indexOf("__") >= 0 || (_zw.V.partid.indexOf("__") < 0 && _zw.V.partid == _zw.V.current.urid))) cmd = 'approval';
+                //    else cmd = 'read';
+                //}
                 var jPost = {};
                 jPost["M"] = cmd; jPost["multi"] = 'y'; jPost["boundary"] = _zw.V.boundary; jPost["xf"] = _zw.V.xfalias;
                 jPost["fi"] = _zw.V.def.formid; jPost["def"] = _zw.V.def.processid; jPost["oi"] = _zw.V.oid
                 jPost["wi"] = _zw.V.wid; jPost["appid"] = _zw.V.appid; jPost["tp"] = _zw.V.tp;
 
-                if (cmd != 'draft') {
-                    jPost["signline"] = _zw.V.process.signline; jPost["attributes"] = _zw.V.process.attributes;
+                if (cmd == 'approval' && _zw.V.curprogress == 'parallel') {//병렬이면서 결재자 하나 여부
+                    var iCurPart = 0;
+                    for (var i = 0; i < _zw.V.process.signline.length; i++) {
+                        var n = _zw.V.process.signline[i];
+                        if (n["activityid"] == _zw.V.curactid && n["viewstate"] != '6') iCurPart++;
+                    }
+                    jPost["curpart"] = iCurPart;
+                    //jPost["signline"] = _zw.V.process.signline; jPost["attributes"] = _zw.V.process.attributes;
                 }
 
                 _zw.signline.show(cmd, 'y', jPost);
@@ -134,7 +140,8 @@ $(function () {
 
                         if (p.find('#orgmaptree').length > 0) new PerfectScrollbar(p.find('#orgmaptree')[0]);
                         if (p.find('#personline').length > 0) new PerfectScrollbar(p.find('#personline')[0]);
-                        new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card-body')[0]);
+                        new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:first-child .card-body')[0]);
+                        new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:last-child .card-body')[0]);
                         new PerfectScrollbar(p.find('.zf-sl .zf-sl-line')[0]);
 
                         p.find('.nav-tabs-top a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -170,7 +177,7 @@ $(function () {
                                         data: '{M:"member",grid:"' + n.id + '",boundary:"' + _zw.V.boundary + '"}',
                                         success: function (res) {
                                             if (res.substr(0, 2) == "OK") {
-                                                p.find('.zf-sl .zf-sl-member .card-body').html(res.substr(2));
+                                                p.find('.zf-sl .zf-sl-member .card:first-child .card-body').html(res.substr(2));
                                                 _zw.signline.userInfo(p, multi);
                                             } else bootbox.alert(res);
                                         },
@@ -197,13 +204,36 @@ $(function () {
                                 data: JSON.stringify(j),
                                 success: function (res) {
                                     if (res.substr(0, 2) == "OK") {
-                                        p.find('.zf-sl .zf-sl-member .card-body').html(res.substr(2));
+                                        p.find('.zf-sl .zf-sl-member .card:first-child .card-body').html(res.substr(2));
                                         _zw.signline.userInfo(p, multi);
                                     } else bootbox.alert(res);
                                 },
                                 beforeSend: function () { } //로딩 X
                             });
                             return false;
+                        });
+
+                        p.find('#personline :checkbox').click(function () {
+                            var id = $(this).parent().attr('id');
+                            if ($(this).prop('checked')) {
+                                p.find('#personline :checkbox').each(function () {
+                                    if ($(this).parent().attr('id') != id) $(this).prop('checked', false);
+                                });
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/EA/Form/SignLine",
+                                    data: '{M:"personlinedetail",lineid:"' + id.split('_')[1] + '"}',
+                                    success: function (res) {
+                                        if (res.substr(0, 2) == "OK") {
+                                            p.find('.zf-sl .zf-sl-member .card:last-child .card-body').html(res.substr(2));
+                                            _zw.signline.userInfo(p, multi);
+                                        } else bootbox.alert(res);
+                                    },
+                                    beforeSend: function () { } //로딩 X
+                                });
+                            } else {
+                                p.find('.zf-sl .zf-sl-member .card:last-child .card-body').html('');
+                            }
                         });
 
                         _zw.signline.userInfo(p, multi);

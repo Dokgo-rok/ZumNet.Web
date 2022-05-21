@@ -33,15 +33,19 @@
   "nextwork": "",
   "piname": "",
   "showline": "",
-
-  "apvmode": "", //결재모드
-  "curactid": "",
   "tp": "",
   "pos": "",
-  "pwid": "", //상위 workitemid
   "preapvwi": "", //선결
   "checkpwd": "", //비밀번호 체크여부
   "boundary": "",
+
+  "apvmode": "", //결재모드
+  "pwid": "", //상위 workitemid
+  "curactid": "",
+  "curbiz": "",
+  "curact": "",
+  "currandom": "",
+  "curprogress": "",
 
   "wn": { //worknotice
     "wnid": "",

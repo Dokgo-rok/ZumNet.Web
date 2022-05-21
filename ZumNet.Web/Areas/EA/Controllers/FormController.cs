@@ -127,11 +127,6 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     if (jReq["Tp"] != null) ViewBag.JForm["tp"] = jReq["Tp"].ToString();
                     if (jReq["sj"] != null) ViewBag.JForm["doc"]["subject"] = jReq["sj"].ToString();
                 }
-
-                if (ViewBag.WorkNotice != null) ViewBag.JForm["wn"] = ViewBag.WorkNotice;
-                ViewBag.JForm["preapvwi"] = ViewBag.PreApprovalWI;
-                ViewBag.JForm["checkpwd"] = ViewBag.PwdCheck;
-
                 ViewBag.JForm["boundary"] = CommonUtils.BOUNDARY();
             }
             else
@@ -348,14 +343,6 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             else throw new Exception(svcRt.ResultMessage);
                         }
 
-                        using (ZumNet.BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
-                        {
-                            sPos = "400";
-                            svcRt = ea.GetPersonLine(0, Convert.ToInt32(Session["URID"]));
-                            if (svcRt != null && svcRt.ResultCode == 0) ViewBag.PersonLine = svcRt.ResultDataSet;
-                            else throw new Exception(svcRt.ResultMessage);
-                        }
-
                         sPos = "500";
                         Framework.Entities.Flow.SchemaList schemaActList = null;
                         string strSchemaOption = jPost["fi"].ToString() + ";" + Session["DeptID"].ToString() + ";" + Session["URID"].ToString();
@@ -400,9 +387,33 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         sPos = "590";
                         ViewBag.SchemaList = schemaActList;
 
+                        //개인결재선 관련
+                        if (jPost["M"].ToString() == "draft" || (ViewBag.CurrentWI != null && ViewBag.CurrentWI.ActRole.IndexOf("__") >= 0))
+                        {
+                            using (ZumNet.BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
+                            {
+                                sPos = "400";
+                                svcRt = ea.GetPersonLine(0, Convert.ToInt32(Session["URID"]));
+                                if (svcRt != null && svcRt.ResultCode == 0) ViewBag.PersonLine = svcRt.ResultDataSet;
+                                else throw new Exception(svcRt.ResultMessage);
+                            }
+                        }
+
                         sPos = "600";
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "SignLine", ViewBag)
                                 + jPost["boundary"].ToString() + sOrgTree;
+                    }
+                    else if (jPost["M"].ToString() == "personlinedetail")
+                    {
+                        using (ZumNet.BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
+                        {
+                            svcRt = ea.GetPersonLineDetail(0, Convert.ToInt32(jPost["lineid"]));
+                        }
+                        if (svcRt != null && svcRt.ResultCode == 0) ViewBag.PersonLineDetail = svcRt.ResultDataSet;
+                        else throw new Exception(svcRt.ResultMessage);
+
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "SignLine", ViewBag);
                     }
                 }
                 catch (Exception ex)

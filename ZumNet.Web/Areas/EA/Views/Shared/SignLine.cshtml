@@ -110,7 +110,6 @@
     private string RenderMenuSchemaInfo(string mode, SchemaList schemaActList, Activity currentActivity, WorkItem currentWI, JArray wiList)
     {
         string[] vPartType = null;
-        bool bEnableSchema = false;
         bool bViewMenu = true;
         bool bOnlyOne = false;
         int iCurPart = 0;
@@ -127,7 +126,7 @@
             sCurrenetActRole = currentWI.ActRole;
         }
 
-        //2010-08-26 병렬이면 버튼 안보임(병렬 수신부서 처리는 제외) => EngineTx에서 병렬인 경우 참여자 추가가 처리 되지 않음        
+        //2010-08-26 병렬이면 버튼 안보임(병렬 수신부서 처리는 제외) => EngineTx에서 병렬인 경우 참여자 추가가 처리 되지 않음
         if (currentActivity != null)
         {
             iCurrentStep = currentActivity.Step;
@@ -137,19 +136,19 @@
 
             if (currentActivity.Progress == ProcessStateChart.Progress.Parallel)
             {
-                foreach (JObject w in wiList)
-                {
-                    if (w["ActivityID"].ToString() == currentActivity.ActivityID && Convert.ToInt32(w["ViewState"].ToString()) != (int)ProcessStateChart.WorkItemViewState.Cancel) iCurPart++;
-                }
+                //foreach (JObject w in wiList)
+                //{
+                //    if (w["ActivityID"].ToString() == currentActivity.ActivityID && Convert.ToInt32(w["ViewState"].ToString()) != (int)ProcessStateChart.WorkItemViewState.Cancel) iCurPart++;
+                //}
                 //2010-10-20 병렬이면서 결재자가 하나인 경우 위 단계 버튼 보이기
-                if (iCurPart == 1) { bViewMenu = true; bOnlyOne = true; }
+                if (ViewBag.JPost.ContainsKey("curpart") && Convert.ToInt32(ViewBag.JPost["curpart"].ToString()) == 1) { bViewMenu = true; bOnlyOne = true; }
             }
             //Response.Write("icurp->" + iCurPart.ToString());
             strScopeLine = currentActivity.ScopeLine;
         }
 
         StringBuilder sb = new StringBuilder();
-        foreach(Schema item in schemaActList)
+        foreach (Schema item in schemaActList)
         {
             if (mode == "draft" && item.ActRole == "_drafter") { strScopeLine = item.ScopeLine; }// 현단계에 버튼이 보이게 될 단계를 지정 2010-10-07
 
@@ -267,6 +266,13 @@
             if (strScopeLine != "" && strScopeLine == item.ActivityID) break;
         }
 
+        sb.Append(RenderMenuControl("선확인", "addUser", "우선확인목록 추가", "xform_cf", "fas fa-calendar-check text-success opacity-75"));
+        sb.Append(RenderMenuControl("배포자", "addUser", "개인배포목록 추가", "xform_dl", "fas fa-tag text-success opacity-75"));
+        sb.Append(RenderMenuControl("배포처", "addGroup", "그룹배포목록 추가", "xform_dl", "fas fa-tags text-success opacity-75"));
+
+        if (ViewBag.PersonLine != null)
+            sb.Append(RenderMenuControl("결재선", "insertPersonLine", "개인결재선", "", "fas fa-project-diagram text-primary opacity-75"));
+
         return sb.ToString();
     }
 
@@ -274,13 +280,13 @@
     {
         string sIcon = "";
         if (param2 == "u") sIcon = "fas fa-user text-indigo opacity-75";
-        else if (param2 == "g") sIcon = "fas fa-user-friends text-danger opacity-75";
+        else if (param2 == "g") sIcon = "fas fa-user-friends text-primary opacity-75";
         else sIcon = param2;
 
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("<button type=\"button\" class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" data-zm-menu=\"{1}\" data-val=\"{2}\">"
                         , toolTip, methodName, param1);
-        sb.AppendFormat("<i class=\"{0}\"></i>", sIcon);
+        sb.AppendFormat("<i class=\"{0}{1}\"></i>", sIcon, menuName.Length < 4 ? " mr-1" : "");
         sb.AppendFormat("{0}</button>", menuName);
 
         return sb.ToString();
@@ -313,12 +319,15 @@
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" role="tab" href="#orgmapsearch" aria-controls="orgmapsearch" aria-selected="false">@Resources.Global.Search</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#personline" aria-controls="personline" aria-selected="false">개인결재선</a>
-                                </li>
+                                @if (ViewBag.PersonLine != null)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" role="tab" href="#personline" aria-controls="personline" aria-selected="false">개인결재선</a>
+                                    </li>
+                                }
                             </ul>
                             <!-- sidebox tree -->
-                            <div class="tab-content p-1">
+                            <div class="tab-content px-1 py-2">
                                 <div class="tab-pane fade show active" id="orgmaptree" role="tabpanel" aria-labelledby="orgtree-tab">
                                     <div id="__OrgMapTree"></div>
                                 </div>
@@ -360,23 +369,25 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="tab-pane fade show" id="personline" role="tabpanel" aria-labelledby="personline-tab">
-                                    @if (ViewBag.PersonLine != null && ViewBag.PersonLine.Tables.Count > 0)
-                                    {
-                                        <ul class="nav">
-                                            @foreach (DataRow dr in ViewBag.PersonLine.Tables[0].Rows)
+                                @if (ViewBag.PersonLine != null)
+                                {
+                                    <div class="tab-pane fade show" id="personline" role="tabpanel" aria-labelledby="personline-tab">
+                                        @if (ViewBag.PersonLine.Tables.Count > 0)
+                                        {
+                                            foreach (DataRow dr in ViewBag.PersonLine.Tables[0].Rows)
                                             {
-                                            <li id="_@dr["LineID"]_@dr["ProcessID"]_@dr["FormID"]" class="nav-item">
-                                                <a href="javascript:void(0)" class="nav-link z-lnk-navy p-2" title="@Server.HtmlEncode(dr["LineName"].ToString())"><i class="fas fa-angle-right"></i> @dr["LineName"]</a>
-                                            </li>
+                                                <label class="custom-control custom-checkbox mb-2" id="_@dr["LineID"]_@dr["ProcessID"]_@dr["FormID"]">
+                                                    <input type="checkbox" class="custom-control-input">
+                                                    <a class="custom-control-label z-lnk-navy" title="@Server.HtmlEncode(dr["LineName"].ToString())"> @dr["LineName"]</a>
+                                                </label>
                                             }
-                                        </ul>
-                                    }
-                                    else
-                                    {
-                                        <div class="alert alert-warning text-center py-2 mt-4" role="alert">생성된 결재선 없습니다!</div>
-                                    }
-                                </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="alert alert-warning text-center py-2 mt-4" role="alert">생성된 결재선 없습니다!</div>
+                                        }
+                                    </div>
+                                }
                             </div>
                             <!-- / sidebox tree -->
                         </div>
@@ -408,13 +419,13 @@
                             <div class="card d-none">
                                 <div class="card-header bg-light py-1 px-2">
                                     <div class="d-flex align-items-center">
-                                        <div class="wd-15 wd-lg-15 wd-xl-15 text-nowrap">순번</div>
-                                        <div class="wd-35 wd-lg-35 wd-xl-35 text-nowrap">구분</div>
-                                        <div class="wd-50 wd-lg-50 wd-xl-50 text-nowrap">결재자</div>
+                                        <div class="wd-15 wd-lg-15 wd-xl-15 text-nowrap text-center">순번</div>
+                                        <div class="wd-25 wd-lg-25 wd-xl-25 text-nowrap text-center">구분</div>
+                                        <div class="wd-60 wd-lg-60 wd-xl-60 text-nowrap text-center">결재자</div>
                                     </div>
                                 </div>
                                 <div class="card-body p-1">
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -486,4 +497,28 @@
             </div>
         </div>
     </div>
+}
+else if (ViewBag.JPost["M"].ToString() == "personlinedetail")
+{
+    if (ViewBag.PersonLineDetail != null && ViewBag.PersonLineDetail.Tables.Count > 0)
+    {
+        foreach (DataRow dr in ViewBag.PersonLineDetail.Tables[0].Rows)
+        {
+            <div class="d-flex align-items-center mb-2">
+                <div class="wd-15 wd-lg-15 wd-xl-15 text-nowrap text-center">@dr["Step"].ToString()</div>
+                <div class="wd-25 wd-lg-25 wd-xl-25 text-nowrap text-center">@ZumNet.Framework.Entities.Flow.ProcessStateChart.ParsingActRole(dr["ActRole"].ToString())</div>
+                <div class="wd-60 wd-lg-60 wd-xl-60 text-nowrap">@(dr["ParticipantInfo1"].ToString() + "." + dr["ParticipantName"].ToString())</div>
+            </div>
+        }
+
+        <div class="d-flex align-items-center">
+            <div class="wd-15 wd-lg-15 wd-xl-15 text-nowrap text-center">1</div>
+            <div class="wd-25 wd-lg-25 wd-xl-25 text-nowrap text-center">@ZumNet.Framework.Entities.Flow.ProcessStateChart.ParsingActRole("_drafter")</div>
+            <div class="wd-60 wd-lg-60 wd-xl-60 text-nowrap">@(Session["DeptName"].ToString() + "." + Session["URName"].ToString())</div>
+        </div>
+    }
+    else
+    {
+        <p class="text-center mt-5">@Resources.Global.NoItemShow</p>
+    }
 }
