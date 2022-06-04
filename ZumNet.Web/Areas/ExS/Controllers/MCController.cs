@@ -272,7 +272,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                         ViewBag.BoardList = svcRt.ResultDataSet;
                         ViewBag.JPost = jPost;
 
-                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_ListItem", ViewBag);
+                        rt = RazorViewToString.RenderRazorViewToString(this, "_ListItem", ViewBag);
                     }
                     else
                     {

@@ -4,6 +4,12 @@
 @using ZumNet.Framework.Web.MultiLang
 
 @{
+    //foreach(string k in HttpContext.Current.Session.Keys)
+    //{
+    //    Response.Write(k + " : " + HttpContext.Current.Session[k].ToString() + "<br />");
+    //}
+    //Response.Write("Host  => " + Request.Url.Host + ", Authority  => " + Request.Url.Authority);
+
     bool hideToggle = ViewData["LayoutNavbarHideToggle"] != null && ViewData["LayoutNavbarHideToggle"].ToString() == "True";
 
     string[,] vLocale = { { "en-US", "English (US)" }, { "ko-KR", "한국어" }, { "zh-CN", "中文(简体)" }, { "ja-JP", "日本語" } };
@@ -85,7 +91,7 @@
 }
 
 @functions {
-    private string GetNavUserImage()
+    private string GetNavUserImageEx()
     {
         string imagepath = Server.MapPath("~/Storage/cresyn/PersonPhoto/" + Session["LogonID"].ToString() + ".jpg");
         if (File.Exists(imagepath))
@@ -103,6 +109,21 @@
         {
             return "<span class=\"h2 fas fa-user-circle mr-2 mb-0 align-middle\"></span>";
         }
+    }
+
+    private string GetNavUserImage()
+    {
+        string imagepath = "/Storage/cresyn/PersonPhoto/" + Session["LogonID"].ToString() + ".jpg";
+        string imageOpacity = "";
+
+        if (!File.Exists(Server.MapPath(imagepath)))
+        {
+            imagepath = "/images/plugins/user.png";
+            imageOpacity = " opacity-50";
+        }
+
+        //return String.Format("<span><img src=\"{0}\" alt=\"User Image\" class=\"rounded-circle\" style=\"width: 30px; height: 30px\" onerror=\"this.parentNode.className='h2 fas fa-user-circle mr-2 mb-0 align-middle'\"></span>", imagepath);
+        return String.Format("<img src=\"{0}\" alt=\"User Image\" class=\"rounded-circle{1}\" style=\"width: 30px; height: 30px\">", imagepath, imageOpacity);
     }
 }
 

@@ -632,6 +632,7 @@ namespace ZumNet.Web.Bc
                 jV["root"] = oConfig.Attributes["root"].Value;
                 jV["companycode"] = oConfig.Attributes["companycode"].Value;
                 jV["web"] = oConfig.Attributes["web"].Value;
+                jV["domain"] = HttpContext.Current.Session["MainSuffix"].ToString();
 
                 jV["dnid"] = HttpContext.Current.Session["DNID"].ToString();
                 jV["partid"] = oConfig.Attributes["partid"].Value;

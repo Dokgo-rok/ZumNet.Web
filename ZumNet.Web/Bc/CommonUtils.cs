@@ -1300,6 +1300,7 @@ namespace ZumNet.Web.Bc
 
                 jV["mode"] = StringHelper.SafeString(jReq["M"]);
                 jV["wnd"] = StringHelper.SafeString(jReq["wnd"]); // 빈값(내부), popup(새창), modal(모달창)
+                jV["domain"] = HttpContext.Current.Session["MainSuffix"].ToString();
                 jV["ct"] = StringHelper.SafeString(jReq["ct"], "0");
                 jV["ctalias"] = StringHelper.SafeString(jReq["ctalias"]);
                 jV["fdid"] = StringHelper.SafeString(jReq["fdid"], "0");
@@ -1462,6 +1463,7 @@ namespace ZumNet.Web.Bc
 
                         jV["mode"] = StringHelper.SafeString(jReq["M"]);
                         jV["wnd"] = StringHelper.SafeString(jReq["wnd"]); // 빈값(내부), popup(새창), modal(모달창)
+                        jV["domain"] = HttpContext.Current.Session["MainSuffix"].ToString();
                         jV["ct"] = StringHelper.SafeString(jReq["ct"], "0");
                         jV["ctalias"] = StringHelper.SafeString(jReq["ctalias"]);
                         jV["fdid"] = StringHelper.SafeString(jReq["fdid"], "0");

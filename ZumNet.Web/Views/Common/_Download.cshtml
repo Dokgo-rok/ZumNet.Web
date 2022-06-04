@@ -46,7 +46,7 @@
     }
     else
     {
-
+        sRealPath = Server.MapPath(sRealPath);
     }
 
     //2014-06-19 크레신, pdf는 DRM 적용이 돼 있을 수 있으므로 제외
@@ -54,17 +54,17 @@
     string ext = vFile[vFile.Length - 1];
 
     //2019-05-31 첨부경로 확인
-    if (!File.Exists(Server.MapPath(sRealPath)))
+    if (!File.Exists(sRealPath))
     {
-        sRealPath = sRealPath.ToLower().Replace(@"\storage\", @"\Archive\");
+        //sRealPath = sRealPath.ToLower().Replace(@"\storage\", @"\Archive\");
         //Response.Write("여기 => " + sNewPath + " : " + File.Exists(Server.MapPath(sNewPath)).ToString());
         //DownloadWithDotNet(strRealPath, strFileName, ext);
     }
 
     //2020-10-27 스토리지 2차 추가로 인한 경로 추가확인
-    if (!File.Exists(Server.MapPath(sRealPath)))
+    if (!File.Exists(sRealPath))
     {
-        sRealPath = sRealPath.ToLower().Replace(@"\archive\", @"\ArchiveD\");
+        //sRealPath = sRealPath.ToLower().Replace(@"\archive\", @"\ArchiveD\");
     }
 
     //2020-02-04 첨부파일 클릭 로깅
@@ -83,7 +83,7 @@
         Response.End();
     }
 
-    _disableDocSecurity = true;
+    //_disableDocSecurity = true;
 
     if (ext == "tif" || ext == "tiff" || ext == "jpg" || ext == "jpeg" || ext == "bmp"
          || ext == "gif" || ext == "png" || ext == "mht" || ext == "mhtml" || ext == "htm" || ext == "html")
@@ -97,7 +97,7 @@
             try
             {
                 //2014-11-12 파일 암호화
-                sRealPath = EncrypFile(Server.MapPath(sRealPath), ext);
+                sRealPath = EncrypFile(sRealPath, ext);
             }
             catch(Exception ex)
             {
@@ -174,7 +174,7 @@
 
         Response.CacheControl = "public";
 
-        //Response.WriteFile(realPath);
+        ZumNet.Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DownloadWithDotNet", realPath, Environment.NewLine));//Response.WriteFile(realPath);
         Response.TransmitFile(realPath);
         Response.Flush();
         Response.Close();
@@ -196,9 +196,9 @@
     /// <param name="filePath"></param>
     private string EncrypFile(string filePath, string ext)
     {
-        string sEncrypServer = "192.168.100.249"; //Session["FRONTNAME"].ToString()
+        string sEncrypServer = Request.Url.Host; //Session["FRONTNAME"].ToString();
         string strVPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["URAccount"].ToString();
-        string strUrl = String.Format("http://{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
+        string strUrl = String.Format("https://{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
         string strReturn = "";
 
         System.Net.HttpWebRequest HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);

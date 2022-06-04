@@ -12,6 +12,9 @@
 }
 
 @functions{
+    private string _attrActId = ""; //참조 탭 activityid
+    private string _attrName = "";  //참조 탭 명칭
+
     private string CheckAbsence(string isAbsent)
     {
         if (isAbsent == "Y") return "<span class=\"text-danger\">부재중</span>";
@@ -157,6 +160,8 @@
                 && ((bOnlyOne && item.Step > iCurrentStep) || (!bOnlyOne && item.Step >= iCurrentStep)))))
             //&& (bOnlyOne && item.Step > this._currentStep || !bOnlyOne && item.Step >= this._currentStep))))
             {
+                //sb.AppendFormat("<div>{0}-{1}-{2}</div>", item.DisplayName, vPartType[1], item.Participants);
+
                 if (vPartType[1] == "b" || vPartType[1] == "f" || vPartType[1] == "h" || (vPartType[1] == "g" && item.Participants != null && item.Participants.Count > 0))
                 {
                     if (item.BizRole == "normal")
@@ -260,6 +265,9 @@
                 //if (vPartType[0] == "u") strAttName += "자";
                 //else strAttName += "처";
                 //RenderAttributeTab(item.ActivityID, strAttName);
+
+                _attrName = ProcessStateChart.ParsingBizRole(item.BizRole).Substring(0, 2) + (vPartType[0] == "u" ? "자" : "처");
+                _attrActId = item.ActivityID;
             }
 
             //2010-10-07 크레신 (지정된 ScopeLine까지 결재선을 지정할 수 있게
@@ -291,6 +299,255 @@
 
         return sb.ToString();
     }
+
+    private string BindingSignLinesInDraft(SchemaList schemaActList, WorkItem currentWI)
+    {
+        string[] vPartType = null;
+        bool bEnableSchema = false;
+        int iStep = 1;
+        //int iSubStep = 0;
+
+        string sCurrenetBizRole = "";
+        string sCurrenetActRole = "";
+
+        if (currentWI != null)
+        {
+            sCurrenetBizRole = currentWI.BizRole;
+            sCurrenetActRole = currentWI.ActRole;
+        }
+
+        JArray jPart = new JArray();
+        foreach (Schema item in schemaActList)
+        {
+            vPartType = item.PartType.Split('_');
+
+            if ((item.BizRole == "receive" || item.BizRole == "consent" || item.BizRole == "audit") && item.ActRole == "_approver" && sCurrenetBizRole != item.BizRole) bEnableSchema = false;
+            else bEnableSchema = true;
+
+            if (bEnableSchema)
+            {
+                if (item.ActRole == "_drafter")
+                {
+                    jPart.Add(BindSignLine("1", "", "", iStep, 0, 0
+                        , ((int)ProcessStateChart.WorkItemState.InActive).ToString()
+                        , ((int)ProcessStateChart.SignStatus.None).ToString()
+                        , ((int)ProcessStateChart.SignKind.Normal).ToString()
+                        , ((int)ProcessStateChart.WorkItemViewState.InProgress).ToString()
+                        , "", ""
+                        , item.ActivityID, item.BizRole, item.ActRole, item.PartType
+                        , Session["URID"].ToString(), Session["DeptAlias"].ToString()
+                        , "", "", "", "", ""
+                        , Session["URName"].ToString(), Session["DeptName"].ToString()
+                        , Session["LogonID"].ToString(), Session["LogonID"].ToString()
+                        , Session["URACCOUNT"].ToString(), Session["GRADE1"].ToString()
+                        , "", "", "")
+                    );
+
+                    iStep++;
+                }
+                else
+                {
+                    //if (item.Random == "N")
+                    //{
+                    //Response.Write("cnt->" + item.Participants.Count.ToString() + Environment.NewLine);
+                    if ((item.Participants != null) && (item.Participants.Count > 0))
+                    {
+                        //여기에 미리 지정된 참여자를 넣는다.f(혼합),g(담당)만 됨                    
+                        foreach (WorkItem wi in item.Participants.Items)
+                        {
+                            jPart.Add(BindSignLine("1", "", wi.ParentWorkItemID, iStep, wi.SubStep, wi.Seq
+                                , wi.State.ToString(), wi.SignStatus.ToString(), wi.SignKind.ToString(), wi.ViewDate
+                                , "", "", wi.ActivityID
+                                , wi.BizRole, wi.ActRole, wi.PartType, wi.ParticipantID
+                                , wi.ParticipantDeptCode, "", "", "", "", ""
+                                , wi.ParticipantName, wi.ParticipantInfo1, wi.ParticipantInfo2
+                                , wi.ParticipantInfo3, wi.ParticipantInfo4, wi.ParticipantInfo5
+                                , wi.ParticipantInfo6, "", "")
+                            );
+                            if (item.Progress == ProcessStateChart.Progress.Serial) iStep++;
+                        }
+                        if (item.Progress != ProcessStateChart.Progress.Serial) iStep++;
+                    }
+                    else
+                    {
+                        //빈 결재선을 막는다 : 2010-03-10 선도에서
+                        //if (item.Progress == ProcessStateChart.Progress.Parallel) iSubStep = 1;
+                        //else iSubStep = 0;
+
+                        //if ((vPartType[1] == "b") || (vPartType[1] == "f") || (vPartType[1] == "g") || (vPartType[1] == "h"))
+                        //{
+                        //    BindSignLine("1", "", "", iStep, iSubStep, 0, "", "", "", "", "", ""
+                        //        , item.ActivityID, item.BizRole, item.ActRole, item.PartType
+                        //        , "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+                        //    iStep++;
+                        //}
+                    }
+                    //}
+                }
+            }
+        }
+
+        return JsonConvert.SerializeObject(jPart);
+    }
+
+    private string BindingSignLines(SchemaList schemaActList, WorkItem currentWI)
+    {
+        string[] vPartType = null;
+        bool bEnableSchema = false;
+        int iStep = 1;
+        //int iSubStep = 0;
+
+        string sCurrenetBizRole = "";
+        string sCurrenetActRole = "";
+
+        if (currentWI != null)
+        {
+            sCurrenetBizRole = currentWI.BizRole;
+            sCurrenetActRole = currentWI.ActRole;
+        }
+
+        JArray jPart = new JArray();
+        foreach (Schema item in schemaActList)
+        {
+            vPartType = item.PartType.Split('_');
+
+            if ((item.BizRole == "receive" || item.BizRole == "consent" || item.BizRole == "audit") && item.ActRole == "_approver" && sCurrenetBizRole != item.BizRole) bEnableSchema = false;
+            else bEnableSchema = true;
+
+            if (currentWI.ActRole.IndexOf("__") >= 0)
+            {
+                //Response.Write("a->" + item.ActRole);
+                if (item.ActRole == "_redrafter")
+                {
+                    jPart.Add(BindSignLine("1", "", currentWI.WorkItemID, iStep, 0, 0
+                        , ((int)ProcessStateChart.WorkItemState.InActive).ToString()
+                        , ((int)ProcessStateChart.SignStatus.None).ToString()
+                        , ((int)ProcessStateChart.SignKind.Normal).ToString()
+                        , ((int)ProcessStateChart.WorkItemViewState.InProgress).ToString()
+                        , "", "", item.ActivityID, item.BizRole, item.ActRole, item.PartType
+                        , Session["URID"].ToString(), Session["DeptAlias"].ToString()
+                        , "", "", DateHelper.CheckDateTime(currentWI.ReceivedDate), "", ""
+                        , Session["URName"].ToString(), Session["DeptName"].ToString()
+                        , Session["LogonID"].ToString(), Session["LogonID"].ToString()
+                        , Session["URACCOUNT"].ToString(), Session["GRADE1"].ToString()
+                        , "", "", "")
+                    );
+
+                    iStep++;
+                }
+                else
+                {
+                    if ((item.Participants != null) && (item.Participants.Count > 0))
+                    {
+                        //Response.Write("actname->" + item.DisplayName + "<br />");
+                        //Response.Write("parts->" + item.Participants.Count.ToString() + "<br />");
+                        //여기에 미리 지정된 참여자를 넣는다.
+                        foreach (WorkItem wi in item.Participants.Items)
+                        {
+                            jPart.Add(BindSignLine("1", "", wi.ParentWorkItemID, iStep, wi.SubStep, wi.Seq
+                                , wi.State.ToString(), wi.SignStatus.ToString(), wi.SignKind.ToString(), wi.ViewDate
+                                , "", "", wi.ActivityID
+                                , wi.BizRole, wi.ActRole, wi.PartType, wi.ParticipantID
+                                , wi.ParticipantDeptCode, "", "", "", "", ""
+                                , wi.ParticipantName, wi.ParticipantInfo1, wi.ParticipantInfo2
+                                , wi.ParticipantInfo3, wi.ParticipantInfo4, wi.ParticipantInfo5
+                                , wi.ParticipantInfo6, "", "")
+                            );
+
+                            if (item.Progress == ProcessStateChart.Progress.Serial) iStep++;
+                        }
+                        if (item.Progress != ProcessStateChart.Progress.Serial) iStep++;
+                    }
+                    else
+                    {
+                        //빈 결재선을 막는다 : 2010-03-10 선도에서
+                        //if (item.Progress == ProcessStateChart.Progress.Parallel) iSubStep = 1;
+                        //else iSubStep = 0;
+
+                        //if ((vPartType[1] == "b") || (vPartType[1] == "f") || (vPartType[1] == "g") || (vPartType[1] == "h"))
+                        //{
+                        //    BindSignLine("1", "", this._parentWID, iStep, iSubStep, 0, "", "", "", "", "", ""
+                        //        , item.ActivityID, item.BizRole, item.ActRole, item.PartType
+                        //        , "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+                        //    iStep++;
+                        //}
+                    }
+                }
+            }
+        }
+
+        return JsonConvert.SerializeObject(jPart);
+    }
+
+    private JObject BindSignLine(string mode, string wID, string parent, int step, int subStep, int seq, string state, string signStatus, string signKind, string viewState
+                        , string flag, string designator, string activityID, string bizRole, string actRole, string partType, string partID, string deptCode
+                        , string competency, string point, string receivedDate, string viewDate, string completedDate, string partName, string part1, string part2, string part3
+                        , string part4, string part5, string part6, string comment, string signature)
+    {
+        string strInterval = "";
+        if (receivedDate != "") strInterval = (completedDate == "") ? DateHelper.CalcDateDiff(receivedDate, DateTime.Now.ToString("yyyy-MM-dd HH:mm:dd")) : DateHelper.CalcDateDiff(receivedDate, completedDate);
+
+        JObject j = JObject.Parse("{}");
+
+        j["mode"] = mode;
+        j["wid"] = wID;
+        j["parent"] = parent;
+        j["step"] = step.ToString();
+        j["substep"] = subStep.ToString();
+        j["seq"] = seq.ToString();
+        j["state"] = state;
+        j["signstatus"] = signStatus;
+        j["signkind"] = signKind;
+        j["viewstate"] = viewState;
+        j["flag"] = flag;
+        j["designator"] = designator;
+        j["activityid"] = activityID;
+        j["bizrole"] = bizRole;
+        j["actrole"] = actRole;
+        j["parttype"] = partType;
+        j["partid"] = partID;
+        j["deptcode"] = deptCode;
+        j["competency"] = competency;
+        j["point"] = point;
+        j["received"] = receivedDate;
+        j["view"] = viewDate;
+        j["completed"] = completedDate;
+        j["interval"] = strInterval;
+        j["partname"] = partName;
+        j["part1"] = part1; //부서명
+        j["part2"] = part2; //계정
+        j["part3"] = part3; //사번
+        j["part4"] = part4; //메일계정
+        j["part5"] = part5; //직위
+        j["part6"] = part6; //직급
+        j["comment"] = comment;
+        j["sign"] = signature;
+
+        return j;
+    }
+
+    private string BindAttributes(DataSet attrList)
+    {
+        JArray jAttr = new JArray();
+
+        if (attrList != null && attrList.Tables.Count > 0)
+        {
+            foreach(DataRow row in attrList.Tables[0].Rows)
+            {
+                JObject j = new JObject();
+                j["actid"] = row["Step"].ToString();
+                j["att"] = row["DLType"].ToString();
+                j["dtype"] = "D";
+                j["flag"] = "";
+                j["display"] = row["Display"].ToString();
+                j["value"] = row["Value"].ToString();
+
+                jAttr.Add(j);
+            }
+        }
+        return JsonConvert.SerializeObject(jAttr);
+    }
+
 }
 
 @if (ViewBag.JPost["M"].ToString() == "draft" || ViewBag.JPost["M"].ToString() == "approval")
@@ -424,22 +681,20 @@
                                         <div class="wd-60 wd-lg-60 wd-xl-60 text-nowrap text-center">결재자</div>
                                     </div>
                                 </div>
-                                <div class="card-body p-1">
-
-                                </div>
+                                <div class="card-body p-1"></div>
                             </div>
                         </div>
                     </div>
                     <div class="wd-99 wd-lg-9 wd-xl-9">
-                        <div class="zf-sl-add d-sm-flex flex-sm-column justify-content-center h-100">
+                        <div class="zf-sl-menu d-sm-flex flex-sm-column justify-content-center h-100">
                             @Html.Raw(RenderMenuSchemaInfo(ViewBag.JPost["M"].ToString(), ViewBag.SchemaList, ViewBag.CurrentAct, ViewBag.CurrentWI, ViewBag.JPost["signline"]))
                         </div>
                     </div>
                     <div class="wd-99 wd-lg-65 wd-xl-65">
-                        <div class="mt-2 mt-sm-0">
+                        <div class="zf-sl-list mt-2 mt-sm-0">
                             <div class="d-flex justify-content-between align-items-center my-1 mx-1">
                                 <div class="font-weight-bold"><i class="fe-edit mr-1"></i>결재자목록</div>
-                                <div class="zf-sl-menu">
+                                <div class="zf-sl-submenu">
                                     <button type="button" class="btn btn-outline-secondary icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="초기화" data-zm-menu="refresh"><i class="fe-refresh-cw font-weight-bold"></i></button>
                                     <button type="button" class="btn btn-outline-success icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="위로" data-zm-menu="up"><i class="fas fa-arrow-up"></i></button>
                                     <button type="button" class="btn btn-outline-success icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="아래로" data-zm-menu="down"><i class="fas fa-arrow-down"></i></button>
@@ -447,31 +702,53 @@
                                 </div>
                             </div>
                             <div class="card">
-                                <div class="card-header d-flex bg-light py-1 px-0">
-                                    <div class="wd-6 wd-lg-6 wd-xl-6"></div>
-                                    <div class="wd-8 wd-lg-8 wd-xl-8">순번</div>
-                                    <div class="wd-15 wd-lg-15 wd-xl-15">구분</div>
-                                    <div class="wd-35 wd-lg-35 wd-xl-35">결재자</div>
-                                    <div class="wd-12 wd-lg-12 wd-xl-12">상태</div>
-                                    <div class="wd-12 wd-lg-12 wd-xl-12">종류</div>
-                                    <div class="wd-12 wd-lg-12 wd-xl-12">역할</div>
+                                <div class="card-header d-flex bg-light">
+                                    @if (ViewBag.JPost["M"].ToString() == "draft")
+                                    {
+                                        <div class="wd-6 wd-lg-4 wd-xl-4"></div>
+                                        <div class="wd-10 wd-lg-8 wd-xl-8">순번</div>
+                                        <div class="wd-18 wd-lg-16 wd-xl-16">구분</div>
+                                        <div class="wd-36 wd-lg-32 wd-xl-32 text-left">결재자</div>
+                                        <div class="wd-15 wd-lg-13 wd-xl-13">상태</div>
+                                        <div class="wd-15 wd-lg-13 wd-xl-13">종류</div>
+                                        <div class="d-none d-sm-block wd-lg-13 wd-xl-13">역할</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="wd-5 wd-lg-5 wd-xl-5"></div>
+                                        <div class="wd-8 wd-lg-6 wd-xl-6">순번</div>
+                                        <div class="wd-12 wd-lg-11 wd-xl-11">구분</div>
+                                        <div class="wd-29 wd-lg-26 wd-xl-26 text-left">결재자</div>
+                                        <div class="wd-10 wd-lg-8 wd-xl-8">상태</div>
+                                        <div class="wd-10 wd-lg-8 wd-xl-8">종류</div>
+                                        @*<div class="wd-8 wd-lg-8 wd-xl-8">역할</div>*@
+                                        <div class="wd-11 wd-lg-11 wd-xl-11">결재</div>
+                                        <div class="d-none d-sm-block wd-lg-11 wd-xl-11">접수</div>
+                                        <div class="wd-15 wd-lg-14 wd-xl-14">소요</div>
+                                    }
                                 </div>
-                                <div class="zf-sl-line card-body p-0">
-
+                                <div class="card-body p-0">
+                                    <ul class="zf-sl-line"></ul>
                                 </div>
                             </div>
                         </div>
                         <div class="zf-sl-attr mt-1">
                             <div class="nav-tabs-left">
-                                <ul class="nav nav-tabs">
+                                <ul class="nav nav-tabs col-2 pr-0">
                                     <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#attList_xform_cf">우선확인</a></li>
-                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#attList">참조자</a></li>
-                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#attList-xform-dl">배포목록</a></li>
+                                    @if (_attrActId != "")
+                                    {
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#attList_@_attrActId">@_attrName</a></li>
+                                    }
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#attList_xform_dl">배포목록</a></li>
                                 </ul>
-                                <div class="tab-content p-1">
-                                    <div class="tab-pane fade active show border border-rouned h-100" id="attList-xform-cf"></div>
-                                    <div class="tab-pane fade show border border-rouned h-100" id="attList"></div>
-                                    <div class="tab-pane fade show border border-rouned h-100" id="attList-xform-dl"></div>
+                                <div class="tab-content col-10 p-1">
+                                    <div class="tab-pane fade active show border border-rouned h-100" id="attList_xform_cf"></div>
+                                    @if (_attrActId != "")
+                                    {
+                                        <div class="tab-pane fade show border border-rouned h-100" id="attList_@_attrActId"></div>
+                                    }
+                                    <div class="tab-pane fade show border border-rouned h-100" id="attList_xform_dl"></div>
                                 </div>
                             </div>
                         </div>
@@ -492,9 +769,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer d-flex align-items-center bg-light py-2">
-
-            </div>
+            <div class="modal-footer d-flex align-items-center bg-light py-2"></div>
         </div>
     </div>
 }
@@ -521,4 +796,43 @@ else if (ViewBag.JPost["M"].ToString() == "personlinedetail")
     {
         <p class="text-center mt-5">@Resources.Global.NoItemShow</p>
     }
+}
+
+@if (ViewBag.JPost["M"].ToString() == "draft")
+{
+    <script type="text/template" class="zf-sl-template">
+        <li class="{$class}" mode="{$mode}" wid="{$wid}" parent="{$parent}" partid="{$partid}" actid="{$actid}" step="{$step}" substep="{$substep}" seq="{$seq}" state="{$state}" signstatus="{$signstatus}" signkind="{$signkind}" bizrole="{$bizrole}" actrole="{$actrole}" parttype="{$parttype}" deptcode="{$deptcode}" part2="{$part2}" part5="{$part5}">
+            <div class="d-flex align-items-center">
+                <div class="wd-6 wd-lg-4 wd-xl-4">{$check}</div>
+                <div class="wd-10 wd-lg-8 wd-xl-8 text-truncate">{$order}</div>
+                <div class="wd-18 wd-lg-16 wd-xl-16 text-truncate">{$role}</div>
+                <div class="wd-36 wd-lg-32 wd-xl-32 text-truncate text-left">{$partname}</div>
+                <div class="wd-15 wd-lg-13 wd-xl-13 text-truncate">{$parsews}</div>
+                <div class="wd-15 wd-lg-13 wd-xl-13 text-truncate">{$parsess}</div>
+                <div class="d-none d-sm-block wd-lg-13 wd-xl-13 text-truncate">{$parsesk}</div>
+            </div>
+        </li>
+    </script>
+    <script type="text/template" class="zf-sl-template-part">@Html.Raw(BindingSignLinesInDraft(ViewBag.SchemaList, ViewBag.CurrentWI))</script>
+}
+else if (ViewBag.JPost["M"].ToString() == "approval")
+{
+    <script type="text/template" class="zf-sl-template">
+        <li class="{$class}" mode="{$mode}" wid="{$wid}" parent="{$parent}" partid="{$partid}" actid="{$actid}" step="{$step}" substep="{$substep}" seq="{$seq}" state="{$state}" signstatus="{$signstatus}" signkind="{$signkind}" bizrole="{$bizrole}" actrole="{$actrole}" parttype="{$parttype}" deptcode="{$deptcode}" part2="{$part2}" part5="{$part5}">
+            <div class="d-flex align-items-center{$margintop}">
+                <div class="wd-5 wd-lg-4 wd-xl-4">{$check}</div>
+                <div class="wd-8 wd-lg-6 wd-xl-6 text-truncate{$textalign}">{$order}</div>
+                <div class="wd-12 wd-lg-12 wd-xl-12 text-truncate">{$role}</div>
+                <div class="wd-29 wd-lg-26 wd-xl-26 text-truncate text-left">{$partname}</div>
+                <div class="wd-10 wd-lg-8 wd-xl-8 text-truncate">{$parsews}</div>
+                <div class="wd-10 wd-lg-8 wd-xl-8 text-truncate">{$parsess}</div>
+                <div class="wd-11 wd-lg-11 wd-xl-11 text-truncate" title="{$dodt}">{$dodt2}</div>
+                <div class="d-none d-sm-block wd-lg-11 wd-xl-11 text-truncate" title="{$rcvdt}">{$rcvdt2}</div>
+                <div class="wd-15 wd-lg-14 wd-xl-14 text-truncate" title="{$inv}">{$inv}</div>
+                <div class="d-none">{$cmnt}</div>
+            </div>
+        </li>
+    </script>
+    <script type="text/template" class="zf-sl-template-part">@Html.Raw(BindingSignLines(ViewBag.SchemaList, ViewBag.CurrentWI))</script>
+    <script type="text/template" class="zf-sl-template-attr">@Html.Raw(BindAttributes(ViewBag.DL))</script>
 }

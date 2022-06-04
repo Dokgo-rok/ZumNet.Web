@@ -620,7 +620,8 @@ $(function () {
                 p = $(el).parent().parent();
                 if (p.attr('xf') == undefined) p = $(el).parent().parent().parent();
 
-                var sortCol = _zw.V.lv.sort, sortType = _zw.V.lv.sortdir;
+                //var sortCol = _zw.V.lv.sort, sortType = _zw.V.lv.sortdir;
+                var sortCol = '', sortType = ''; //최근게시물 올 경우 위해
                 if (sortCol == '') {
                     if (_zw.V.xfalias == 'knowledge') sortCol = 'CreateDate';
                     else if (_zw.V.xfalias == 'doc') sortCol = 'CreateDate';
@@ -632,7 +633,7 @@ $(function () {
                     + '",fdid:"' + (p.attr('fdid') != undefined ? p.attr('fdid') : _zw.V.fdid) + '",appid:"' + p.attr('appid') + '",opnode:"",ttl:"",acl:"'
                     + '",appacl:"' + (p.attr('acl') != undefined ? p.attr('acl') : '') + '",sort:"' + sortCol + '",sortdir:"' + sortType + '",boundary:"' + _zw.V.lv.boundary + '"}';
                 tgtPage = stdPage;
-                //console.log(postData);
+                console.log(postData);
 
             } else {
                 if (m == 'prev') {
@@ -652,7 +653,7 @@ $(function () {
                 if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
 
                 postData = _zw.fn.getAppQuery(_zw.V.fdid); //alert(encodeURIComponent(postData)); return
-                //alert(postData);
+                //console.log(postData); return
                 tgtPage = _zw.V.current.page;
             }
             
@@ -1604,8 +1605,17 @@ $(function () {
             }
             return true;
         },
+        "date": function (d, f, r) {
+            if (moment(d).isValid()) {
+                return moment(d).format(f);
+            } else if (r && r != undefined && r != '' && moment(r).isValid()) {
+                return moment(r).format(f);
+            } else {
+                return '';
+            }
+        },
         "toBR": function (s) {
-            //s.replace(/\n/gi, '<br />')
+            return s.replace(/ /gim, '&nbsp;').replace(/\n/gim, '<br />');
         },
         "emSpace": function (s) {
             if (s && $.trim(s) != '') {
@@ -2147,6 +2157,120 @@ $(function () {
             return rt;
         },
         "fileSize": function (len) {
+        }
+    }
+
+    _zw.parse = {
+        "workItemState": function (n) {
+            if (n == 0) return '대기';
+            else if (n == 1) return '없음';
+            else if (n == 2) return '활성';
+            else if (n == 3) return '처리중';
+            else if (n == 4) return '부서처리중';
+            else if (n == 7) return '완료';
+            else if (n == 99) return '오류';
+        },
+        "signKind": function (n) {
+            if (n == 0) return '일반';
+            else if (n == 1) return '전결';
+            else if (n == 2) return '대결';
+            else if (n == 3) return '후열';
+            else if (n == 4) return '후결';
+            else if (n == 5) return '친전';
+            else if (n == 6) return '선결';
+            else return '';
+        },
+        "signStatus": function (n) {
+            if (n == 0) return '없음';
+            else if (n == 2) return '확인';
+            else if (n == 3) return '보류';
+            else if (n == 4) return '취소';
+            else if (n == 5) return '전달';
+            else if (n == 6) return '조건부승인';
+            else if (n == 7) return '승인';
+            else if (n == 8) return '반려';
+            else if (n == 9) return '회수';
+            else if (n == 10) return '반려';
+        },
+        "bizRole": function (s, v) {
+            s = s.toLowerCase();
+            if (s == 'normal') return '일반결재';
+            else if (s == 'receive') return '수신결재';
+            else if (s == 'agree') return '합의';
+            else if (s == 'consent') return '합의';
+            else if (s == 'audit') return '감사';
+            else if (s == 'confirm') return '확인';
+            else if (s == 'reference') return '참조';
+            else if (s == 'transfer') return '이관';
+            else if (s == 'application') return '접수';
+            else if (s == 'last') return '최종';
+            else if (s == 'distribution') return '배포';
+            else if (s == 'review') return '검토';
+            else if (s == 'manage') return '담당';
+            else if (s == 'gumae') return '구매';
+            else if (s == 'yeongeob') return '영업';
+            else if (s == 'saengsan') return '생산';
+            else if (s == 'wonga') return '원가';
+            else if (s == 'gisul') return '기술';
+            else if (s == 'gwichaek') return '귀책';
+            else return v && v != '' ? v : s;
+        },
+        "actRole": function (s) {
+            s = s.toLowerCase();
+            if (s == '_initiator') return '작성자';
+            else if (s == '_drafter') return '기안자';
+            else if (s == '_redrafter') return '재기안자';
+            else if (s == '_manager') return '담당자';
+            else if (s == '_approver') return '승인자';
+            else if (s == '_reviewer') return '검토자';
+            else if (s == '_evaluator') return '평가자';
+            else if (s == '_inspector') return '심사자';
+            else if (s == '_confirmor') return '확인자';
+            else if (s == '_last') return '최종승인자';
+            else if (s == '__r') return '수신';
+            else if (s == '__ri') return '외부';
+            else if (s == '_s') return '발신';
+            else if (s == '_a') return '품의';
+            else if (s == '_p') return '처리';
+            else if (s == '_dl') return '배포';
+            else if (s == '_re') return '참조';
+            else if (s == '_no') return '공지';
+            else if (s == '_ci') return '회람';
+            else if (s == '_os' || s == '_or') return '공문';
+            else if (s == '_ap') return '접수';
+            else if (s == '_edm') return '문서이관';
+            else if (s == '_km') return '지식이관';
+            else return s;
+        },
+        "lineBox": function (s) {
+            s = s.toLowerCase();
+            if (s == 'a') return '기안';
+            else if (s == 'b') return '담당';
+            else if (s == 'c') return '승인';
+            else if (s == 'd') return '검토';
+            else if (s == 'e') return '결재';
+            else if (s == 'f') return '수신';
+            else if (s == 'g') return '합의';
+            else if (s == 'h') return '접수';
+            else if (s == 'i') return '작성';
+            else if (s == 'j') return '배포';
+            else if (s == 'k') return '승인';
+            else if (s == 'l') return '확인';
+            else return '';
+        },
+        "header": function (s) {
+            s = s.toLowerCase();
+            if (s == 'sq') return '순번';
+            else if (s == 'ct') return '구분';
+            else if (s == 'at') return '결재자';
+            else if (s == 'ws') return '상태';
+            else if (s == 'ss') return '종류';
+            else if (s == 'sk') return '역할';
+            else if (s == 'do') return '결재시각';
+            else if (s == 'rv') return '받은시각';
+            else if (s == 'cp') return '완료시각';
+            else if (s == 'iv') return '소요시간';
+            else return '';
         }
     }
 

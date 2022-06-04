@@ -222,12 +222,10 @@ $(function () {
                             } else if ($(this).attr('data-btn') == 'fold') {
                                 _zw.fn.viewListItemChild(true, '-');
                             }
-
                         });
 
                         p.modal();
-
-                    } else bootbox.alert(res)
+                    } else bootbox.alert(res);
                 }
             });
         }
@@ -271,7 +269,7 @@ $(function () {
                                             } else if (res.substr(0, 2) == 'NE') { //하위 x
                                                 var prev = el.prev(); el.remove(); $(res.substr(2)).insertAfter(prev);
 
-                                            } //else alert(res);
+                                            } else bootbox.alert(res);
                                         }
                                     });
                                 }

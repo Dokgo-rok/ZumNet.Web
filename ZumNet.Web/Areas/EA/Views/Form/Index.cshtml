@@ -81,6 +81,32 @@
                         }
                     }
                 }
+                else
+                {
+                    foreach (JObject j in (JArray)ViewBag.JForm["process"]["signline"])
+                    {
+                        if (j["wid"].ToString() == ViewBag.JForm["wid"].ToString())
+                        {
+                            ViewBag.JForm["pwid"] = j["parent"].ToString();
+                            ViewBag.JForm["curactid"] = j["activityid"].ToString();
+                            ViewBag.JForm["curbiz"] = j["bizrole"].ToString();
+                            ViewBag.JForm["curact"] = j["actrole"].ToString();
+                            
+                            break;
+                        }
+                    }
+
+                    foreach (JObject j in (JArray)ViewBag.JForm["schema"])
+                    {
+                        if (j["actid"].ToString() == ViewBag.JForm["curactid"].ToString())
+                        {
+                            ViewBag.JForm["currandom"] = j["random"].ToString();
+                            ViewBag.JForm["curprogress"] = j["progress"].ToString();
+
+                            break;
+                        }
+                    }
+                }
             }
         }
     }

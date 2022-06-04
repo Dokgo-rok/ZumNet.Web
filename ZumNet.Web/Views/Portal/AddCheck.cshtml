@@ -164,7 +164,7 @@
                         url: "/ExS/WorkTime/StatusEvent",
                         data: '{ss:"' + (workTimeStatus == 'Z' ? 'N' : 'A') + '"}',
                         success: function (res) {
-                            if (res == "OK") $('.btn[data-menu="skipNext"]').click();
+                            if (res.substr(0, 2) == "OK") $('.btn[data-menu="skipNext"]').click();
                             else bootbox.alert(res);
                         }
                     });

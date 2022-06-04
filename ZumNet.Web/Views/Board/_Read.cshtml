@@ -122,7 +122,8 @@
                             <div class="mr-2">
                                 <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
                             </div>
-                            <div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64(j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
+                            <div class=""><a href="/Common/DownloadV?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64(j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
+                            @*<div class=""><a href="@(j["filepath"].ToString().Replace("\\", "/") + "/" + j["savedname"].ToString())" target="_blank">@j["filename"]</a></div>*@
                             <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
                         </div>
                     }

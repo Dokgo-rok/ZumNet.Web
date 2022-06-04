@@ -30,10 +30,12 @@ namespace ZumNet.Web.Bc
             if (sAuthType == "DB")
             {
                 strReturn = AuthenticateUserDB(loginId, password);
+                Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}, {4}, {5}{6}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DB", strReturn, loginId, HttpContext.Current.Request.ServerVariables["REMOTE_HOST"], Environment.NewLine));
             }
             else if (sAuthType == "AD")
             {
                 strReturn = AuthenticateUserAD(loginId, password);
+                Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}, {4}, {5}{6}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "AD", strReturn, loginId, HttpContext.Current.Request.ServerVariables["REMOTE_HOST"], Environment.NewLine));
                 if (strReturn == "NOAD" || strReturn == "FAIL") strReturn = "FAIL"; //보안상 계정이 없거나 비밀번호가 틀린 경우를 구분하면 안됨!!
             }
             else
