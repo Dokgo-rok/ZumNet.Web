@@ -139,7 +139,7 @@
     var szComment = ((node.getAttribute("state") == '2' || node.getAttribute("state") == '3') && (node.getAttribute("state") == '2' && node.getAttribute("signstatus") != '3')) ? "" : node.selectSingleNode("comment").text;
     //if (node.getAttribute("state") == '0' && node.getAttribute("signkind") == '6') szComment = ''; //2014-02-20 선결 첨언 안보이게 -> 2014-04-10 품
     if (szComment.replace(/ /gi, '') != '') szHTML = "<a href=\"javascript:\" onclick=\"var b=document.body,p=nextSibling;var st=b.scrollTop,oh=b.offsetHeight,t=40,h=140+t-st;if (h>oh){h=oh;}else if(h<0){h=t;} with(p.style){position='absolute';/*left=b.offsetWidth/2-150;*/top=h;display='block';}\"><img src=\"/Storage/" + m_company + "/pencil.gif\" border=\"0\" alt=\"" + strAlt(szComment) + "\" style=\"vertical-align:middle\" /></a>";
-    //szHTML += cmnt(szComment, node.selectSingleNode("partname").text, node.getAttribute("completed"), node.getAttribute("signstatus"));
+    szHTML += cmnt(szComment, node.selectSingleNode("partname").text, node.getAttribute("completed"), node.getAttribute("signstatus"));
     if (node.getAttribute("completed") != '') szHTML += node.getAttribute("completed").substr(3,5).replace('-','/');
     if (szHTML == '') szHTML = "&nbsp;";
     return szHTML;
@@ -299,8 +299,10 @@
     if (dn && dn != '') szHTML += "<input type=\"hidden\" " + szId + " name=\"" + dn + "\" value=\"" + dnv + "\" />";
     return szHTML;
   }
-  function linkPlate(pn) {return "<a href=\"javascript:\" onclick=\"parent.showEAPlate('A', 'approval', '');\">" + pn + "</a>";}
-  function linkPersonInfo(w, r, pn, pid, pcn) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = 'http://" + w + "/" + r + "/PortalService/Person/PersonSimpleInfo.aspx?userid=" + pid + "&logonid=" + pcn + "'; var x = 430, y = 370; var sy = window.screen.height / 2 - y / 2 - 70; var sx = window.screen.width  / 2 - x / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=0,resizable=0,top=' + sy + ',left=' + sx + ',width=' + x + ',height=' + y; window.open(url,'사용자정보', param);\">" + pn + "</a>";}}
+  //function linkPlate(pn) {return "<a href=\"javascript:\" onclick=\"parent.showEAPlate('A', 'approval', '');\">" + pn + "</a>";}
+  function linkPlate(pn) {return "<a href=\"javascript:\" onclick=\"_zw.fn.showSignPlate('approval');\">" + pn + "</a>";}
+  //function linkPersonInfo(w, r, pn, pid, pcn) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = 'http://" + w + "/" + r + "/PortalService/Person/PersonSimpleInfo.aspx?userid=" + pid + "&logonid=" + pcn + "'; var x = 430, y = 370; var sy = window.screen.height / 2 - y / 2 - 70; var sx = window.screen.width  / 2 - x / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=0,resizable=0,top=' + sy + ',left=' + sx + ',width=' + x + ',height=' + y; window.open(url,'사용자정보', param);\">" + pn + "</a>";}}
+  function linkPersonInfo(w, r, pn, pid, pcn) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = '/" + r + "/PortalService/Person/PersonSimpleInfo.aspx?userid=" + pid + "&logonid=" + pcn + "'; var x = 430, y = 370; var sy = window.screen.height / 2 - y / 2 - 70; var sx = window.screen.width  / 2 - x / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=0,resizable=0,top=' + sy + ',left=' + sx + ',width=' + x + ',height=' + y; window.open(url,'사용자정보', param);\">" + pn + "</a>";}}
   function linkCEMain(w, r, pn, pid) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = 'http://" + w + "/" + r + "/ExtensionService/CE/Grid.aspx?M=simul&app=" + pid + "&Q=lnk'; var w = window.screen.width; var h = window.screen.height; w = w >= 1400 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h; var sy = window.screen.height / 2 - h / 2 - 70; var sx = window.screen.width  / 2 - w / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,resizable=1,top=' + sy + ',left=' + sx + ',width=' + w + ',height=' + h; window.open(url,'ce_grid', param);\">" + pn + "</a>";}}
   
   function getSignImage(node) {

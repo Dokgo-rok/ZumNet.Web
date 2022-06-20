@@ -295,7 +295,7 @@
         sb.AppendFormat("<button type=\"button\" class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"{0}\" data-zm-menu=\"{1}\" data-val=\"{2}\">"
                         , toolTip, methodName, param1);
         sb.AppendFormat("<i class=\"{0}{1}\"></i>", sIcon, menuName.Length < 4 ? " mr-1" : "");
-        sb.AppendFormat("{0}</button>", menuName);
+        sb.AppendFormat("{0}</button>", menuName.Length > 4 ? menuName.Substring(0, 4) : menuName);
 
         return sb.ToString();
     }
@@ -328,7 +328,7 @@
             {
                 if (item.ActRole == "_drafter")
                 {
-                    jPart.Add(BindSignLine("1", "", "", iStep, 0, 0
+                    jPart.Add(WorkListHelper.BindJsonSignLine("1", "", "", iStep, 0, 0
                         , ((int)ProcessStateChart.WorkItemState.InActive).ToString()
                         , ((int)ProcessStateChart.SignStatus.None).ToString()
                         , ((int)ProcessStateChart.SignKind.Normal).ToString()
@@ -340,7 +340,7 @@
                         , Session["URName"].ToString(), Session["DeptName"].ToString()
                         , Session["LogonID"].ToString(), Session["LogonID"].ToString()
                         , Session["URACCOUNT"].ToString(), Session["GRADE1"].ToString()
-                        , "", "", "")
+                        , "", "", "", "", "")
                     );
 
                     iStep++;
@@ -352,17 +352,17 @@
                     //Response.Write("cnt->" + item.Participants.Count.ToString() + Environment.NewLine);
                     if ((item.Participants != null) && (item.Participants.Count > 0))
                     {
-                        //여기에 미리 지정된 참여자를 넣는다.f(혼합),g(담당)만 됨                    
+                        //여기에 미리 지정된 참여자를 넣는다.f(혼합),g(담당)만 됨
                         foreach (WorkItem wi in item.Participants.Items)
                         {
-                            jPart.Add(BindSignLine("1", "", wi.ParentWorkItemID, iStep, wi.SubStep, wi.Seq
+                            jPart.Add(WorkListHelper.BindJsonSignLine("1", "", wi.ParentWorkItemID, iStep, wi.SubStep, wi.Seq
                                 , wi.State.ToString(), wi.SignStatus.ToString(), wi.SignKind.ToString(), wi.ViewDate
                                 , "", "", wi.ActivityID
                                 , wi.BizRole, wi.ActRole, wi.PartType, wi.ParticipantID
                                 , wi.ParticipantDeptCode, "", "", "", "", ""
                                 , wi.ParticipantName, wi.ParticipantInfo1, wi.ParticipantInfo2
                                 , wi.ParticipantInfo3, wi.ParticipantInfo4, wi.ParticipantInfo5
-                                , wi.ParticipantInfo6, "", "")
+                                , wi.ParticipantInfo6, "", "", "", "")
                             );
                             if (item.Progress == ProcessStateChart.Progress.Serial) iStep++;
                         }
@@ -419,7 +419,7 @@
                 //Response.Write("a->" + item.ActRole);
                 if (item.ActRole == "_redrafter")
                 {
-                    jPart.Add(BindSignLine("1", "", currentWI.WorkItemID, iStep, 0, 0
+                    jPart.Add(WorkListHelper.BindJsonSignLine("1", "", currentWI.WorkItemID, iStep, 0, 0
                         , ((int)ProcessStateChart.WorkItemState.InActive).ToString()
                         , ((int)ProcessStateChart.SignStatus.None).ToString()
                         , ((int)ProcessStateChart.SignKind.Normal).ToString()
@@ -430,28 +430,28 @@
                         , Session["URName"].ToString(), Session["DeptName"].ToString()
                         , Session["LogonID"].ToString(), Session["LogonID"].ToString()
                         , Session["URACCOUNT"].ToString(), Session["GRADE1"].ToString()
-                        , "", "", "")
+                        , "", "", "", "", "")
                     );
 
                     iStep++;
                 }
                 else
                 {
-                    if ((item.Participants != null) && (item.Participants.Count > 0))
+                    if (item.Participants != null && item.Participants.Count > 0)
                     {
                         //Response.Write("actname->" + item.DisplayName + "<br />");
                         //Response.Write("parts->" + item.Participants.Count.ToString() + "<br />");
                         //여기에 미리 지정된 참여자를 넣는다.
                         foreach (WorkItem wi in item.Participants.Items)
                         {
-                            jPart.Add(BindSignLine("1", "", wi.ParentWorkItemID, iStep, wi.SubStep, wi.Seq
+                            jPart.Add(WorkListHelper.BindJsonSignLine("1", "", wi.ParentWorkItemID, iStep, wi.SubStep, wi.Seq
                                 , wi.State.ToString(), wi.SignStatus.ToString(), wi.SignKind.ToString(), wi.ViewDate
                                 , "", "", wi.ActivityID
                                 , wi.BizRole, wi.ActRole, wi.PartType, wi.ParticipantID
                                 , wi.ParticipantDeptCode, "", "", "", "", ""
                                 , wi.ParticipantName, wi.ParticipantInfo1, wi.ParticipantInfo2
                                 , wi.ParticipantInfo3, wi.ParticipantInfo4, wi.ParticipantInfo5
-                                , wi.ParticipantInfo6, "", "")
+                                , wi.ParticipantInfo6, "", "", "", "")
                             );
 
                             if (item.Progress == ProcessStateChart.Progress.Serial) iStep++;
@@ -532,7 +532,7 @@
 
         if (attrList != null && attrList.Tables.Count > 0)
         {
-            foreach(DataRow row in attrList.Tables[0].Rows)
+            foreach (DataRow row in attrList.Tables[0].Rows)
             {
                 JObject j = new JObject();
                 j["actid"] = row["Step"].ToString();
@@ -557,15 +557,18 @@
             <div class="modal-header justify-content-between align-items-center bg-light pb-2 px-3" style="padding-top: 0.725rem !important">
                 <h5 class="modal-title">@ViewBag.Title</h5>
                 <div class="d-flex align-items-center">
-                    <label class="custom-control custom-checkbox m-0 mr-3" for="ckbPersonLineSave">
-                        <input type="checkbox" class="custom-control-input" id="ckbPersonLineSave" value="on" />
-                        <span class="custom-control-label">결재선 저장</span>
-                    </label>
-                    <button type="button" class="btn btn-primary my-0 px-3 py-1 mr-1" data-zm-mmenu="confirm">@Resources.Global.Confirm</button>
+                    @if (ViewBag.PersonLine != null)
+                    {
+                        <label class="custom-control custom-checkbox m-0 mr-3" for="ckbPersonLineSave">
+                            <input type="checkbox" class="custom-control-input" id="ckbPersonLineSave" value="on" />
+                            <span class="custom-control-label d-none">결재선 저장</span>
+                        </label>
+                    }
+                    <button type="button" class="btn btn-primary my-0 px-3 py-1 mr-1" data-zm-menu="confirm">@Resources.Global.Confirm</button>
                     <button type="button" class="btn btn-default my-0 px-3 py-1" data-dismiss="modal" aria-label="Close">@Resources.Global.Cancel</button>
                 </div>
             </div>
-            <div class="zf-sl modal-body p-2">
+            <div class="zf-sl modal-body p-2" data-for="@ViewBag.JPost["M"].ToString()">
                 <div class="d-sm-flex">
                     <div class="wd-99 wd-lg-26 wd-xl-26">
                         <div class="nav-tabs-top mb-1">
@@ -715,9 +718,9 @@
                                     }
                                     else
                                     {
-                                        <div class="wd-5 wd-lg-5 wd-xl-5"></div>
+                                        <div class="wd-5 wd-lg-4 wd-xl-4"></div>
                                         <div class="wd-8 wd-lg-6 wd-xl-6">순번</div>
-                                        <div class="wd-12 wd-lg-11 wd-xl-11">구분</div>
+                                        <div class="wd-12 wd-lg-12 wd-xl-12">구분</div>
                                         <div class="wd-29 wd-lg-26 wd-xl-26 text-left">결재자</div>
                                         <div class="wd-10 wd-lg-8 wd-xl-8">상태</div>
                                         <div class="wd-10 wd-lg-8 wd-xl-8">종류</div>
@@ -773,6 +776,125 @@
         </div>
     </div>
 }
+else if (ViewBag.JPost["M"].ToString() == "read")
+{
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width: 50rem">
+        <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+            <div class="modal-header justify-content-between align-items-center bg-light pb-2 px-3" style="padding-top: 0.725rem !important">
+                <h5 class="modal-title">@ViewBag.Title</h5>
+                <button type="button" class="btn btn-default my-0 px-3 py-1" data-dismiss="modal" aria-label="Close">@Resources.Global.Close</button>
+            </div>
+            <div class="zf-sl modal-body p-2" data-for="@ViewBag.JPost["M"].ToString()">
+                <div class="">
+                    <div class="zf-sl-list">
+                        <div class="my-1 mx-1">
+                            <div class="font-weight-bold"><i class="fe-edit mr-1"></i>결재자목록</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header d-flex bg-light">
+                                <div class="wd-5 wd-lg-4 wd-xl-4"></div>
+                                <div class="wd-8 wd-lg-5 wd-xl-5">순번</div>
+                                <div class="wd-12 wd-lg-10 wd-xl-10">구분</div>
+                                <div class="wd-29 wd-lg-26 wd-xl-26 text-left">결재자</div>
+                                <div class="wd-10 wd-lg-8 wd-xl-8">상태</div>
+                                <div class="wd-10 wd-lg-7 wd-xl-7">종류</div>
+                                <div class="d-none d-sm-block wd-lg-7 wd-xl-7">역할</div>
+                                <div class="wd-11 wd-lg-10 wd-xl-10">결재</div>
+                                <div class="d-none d-sm-block wd-lg-10 wd-xl-10">접수</div>
+                                <div class="wd-15 wd-lg-13 wd-xl-13">소요</div>
+                            </div>
+                            <div class="card-body p-0" style="height: 350px !important">
+                                <ul class="zf-sl-line"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="zf-sl-attr mt-1">
+                        <div class="nav-tabs-left" style="height: 110px !important">
+                            <ul class="nav nav-tabs col-2 pr-0">
+                                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#attList_xform_cf">우선확인</a></li>
+                                @*<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#attList_re">참조</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#attList_xform_dl">배포목록</a></li>*@
+                            </ul>
+                            <div class="tab-content col-10 p-1">
+                                <div class="tab-pane fade active show border border-rouned h-100" id="attList_xform_cf"></div>
+                                @*<div class="tab-pane fade show border border-rouned h-100" id="attList_re"></div>
+                                    <div class="tab-pane fade show border border-rouned h-100" id="attList_xform_dl"></div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex align-items-center bg-light py-2"></div>
+        </div>
+    </div>
+}
+else if (ViewBag.JPost["M"].ToString() == "reject")
+{
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width: 50rem">
+        <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+            <div class="modal-header justify-content-between align-items-center bg-light pb-2 px-3" style="padding-top: 0.725rem !important">
+                <h5 class="modal-title">@ViewBag.Title</h5>
+                <button type="button" class="btn btn-outline-secondary my-0 px-3 py-1" data-dismiss="modal" aria-label="Close">@Resources.Global.Cancel</button>
+            </div>
+            <div class="zf-sl modal-body p-2" data-for="@ViewBag.JPost["M"].ToString()">
+                <div class="bg-light px-2 py-2">
+                    <div class="row mx-0">
+                        <div class="d-flex col-sm-6 mb-0 px-0">
+                            <label class="wd-20 wd-lg-30 wd-xl-30 pl-1 col-form-label">결재종류</label>
+                            <div class="wd-80 wd-lg-70 wd-xl-70 input-group align-items-center">
+                                <label class="custom-control custom-radio m-0" for="rdoSS_3">
+                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_3" value="reject" checked />
+                                    <span class="custom-control-label">전체반려</span>
+                                </label>
+                                <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_8">
+                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_8" value="back" />
+                                    <span class="custom-control-label">지정반려</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="d-flex col-sm-6 mb-0 px-0">
+                            <label class="wd-20 wd-lg-30 wd-xl-30 pl-1 col-form-label">결재인증</label>
+                            <div class="wd-80 wd-lg-70 wd-xl-70 input-group align-items-center">
+                                <input type="password" class="form-control" disabled id="sp_Password" />
+                                <button type="button" class="btn btn-primary my-0 px-2 px-sm-3 flex-grow-0" data-zm-menu="send"><i class="fas fa-paper-plane mr-2"></i>@Resources.EA.SS_Approval</button>
+                                @*<button type="button" class="btn btn-default my-0 px-2 px-sm-3 flex-grow-0" data-dismiss="modal">@Resources.Global.Cancel</button>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group d-flex mt-1 mb-0">
+                        <label class="wd-20 wd-lg-15 wd-xl-15 pl-1 col-form-label">의견</label>
+                        <div class="wd-80 wd-lg-85 wd-xl-85 btn-group align-items-center">
+                            <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" id="sp_Comment"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="zf-sl-list">
+                    <div class="mt-2 mb-1 mx-1">
+                        <div class="font-weight-bold"><i class="fe-edit mr-1"></i>결재자목록</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex bg-light">
+                            <div class="wd-5 wd-lg-4 wd-xl-4"></div>
+                            <div class="wd-8 wd-lg-5 wd-xl-5">순번</div>
+                            <div class="wd-12 wd-lg-10 wd-xl-10">구분</div>
+                            <div class="wd-29 wd-lg-26 wd-xl-26 text-left">결재자</div>
+                            <div class="wd-10 wd-lg-8 wd-xl-8">상태</div>
+                            <div class="wd-10 wd-lg-7 wd-xl-7">종류</div>
+                            <div class="d-none d-sm-block wd-lg-7 wd-xl-7">역할</div>
+                            <div class="wd-11 wd-lg-10 wd-xl-10">결재</div>
+                            <div class="d-none d-sm-block wd-lg-10 wd-xl-10">접수</div>
+                            <div class="wd-15 wd-lg-13 wd-xl-13">소요</div>
+                        </div>
+                        <div class="card-body p-0" style="height: 350px !important">
+                            <ul class="zf-sl-line"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex align-items-center bg-light py-2"></div>
+        </div>
+    </div>
+}
 else if (ViewBag.JPost["M"].ToString() == "personlinedetail")
 {
     if (ViewBag.PersonLineDetail != null && ViewBag.PersonLineDetail.Tables.Count > 0)
@@ -813,7 +935,9 @@ else if (ViewBag.JPost["M"].ToString() == "personlinedetail")
             </div>
         </li>
     </script>
-    <script type="text/template" class="zf-sl-template-part">@Html.Raw(BindingSignLinesInDraft(ViewBag.SchemaList, ViewBag.CurrentWI))</script>
+    <script type="text/template" class="zf-sl-template-part">
+        @Html.Raw(BindingSignLinesInDraft(ViewBag.SchemaList, ViewBag.CurrentWI))
+    </script>
 }
 else if (ViewBag.JPost["M"].ToString() == "approval")
 {
@@ -833,6 +957,36 @@ else if (ViewBag.JPost["M"].ToString() == "approval")
             </div>
         </li>
     </script>
-    <script type="text/template" class="zf-sl-template-part">@Html.Raw(BindingSignLines(ViewBag.SchemaList, ViewBag.CurrentWI))</script>
-    <script type="text/template" class="zf-sl-template-attr">@Html.Raw(BindAttributes(ViewBag.DL))</script>
+    <script type="text/template" class="zf-sl-template-part">
+        @Html.Raw(BindingSignLines(ViewBag.SchemaList, ViewBag.CurrentWI))
+    </script>
+    <script type="text/template" class="zf-sl-template-attr">
+        @Html.Raw(BindAttributes(ViewBag.DL))
+    </script>
+}
+else if (ViewBag.JPost["M"].ToString() == "read" || ViewBag.JPost["M"].ToString() == "reject")
+{
+    <script type="text/template" class="zf-sl-template">
+        <li class="{$class}" mode="{$mode}" wid="{$wid}" parent="{$parent}" partid="{$partid}" actid="{$actid}" step="{$step}" substep="{$substep}" seq="{$seq}" state="{$state}" signstatus="{$signstatus}" signkind="{$signkind}" bizrole="{$bizrole}" actrole="{$actrole}" parttype="{$parttype}" deptcode="{$deptcode}" part2="{$part2}" part5="{$part5}">
+            <div class="d-flex align-items-center{$margintop}">
+                <div class="wd-5 wd-lg-4 wd-xl-4">{$check}</div>
+                <div class="wd-8 wd-lg-5 wd-xl-5 text-truncate{$textalign}">{$order}</div>
+                <div class="wd-12 wd-lg-10 wd-xl-10 text-truncate">{$role}</div>
+                <div class="wd-29 wd-lg-26 wd-xl-26 text-truncate text-left">{$partname}</div>
+                <div class="wd-10 wd-lg-8 wd-xl-8 text-truncate">{$parsews}</div>
+                <div class="wd-10 wd-lg-7 wd-xl-7 text-truncate">{$parsess}</div>
+                <div class="d-none d-sm-block wd-lg-7 wd-xl-7 text-truncate">{$parsesk}</div>
+                <div class="wd-11 wd-lg-10 wd-xl-10 text-truncate" title="{$dodt}">{$dodt2}</div>
+                <div class="d-none d-sm-block wd-lg-10 wd-xl-10 text-truncate" title="{$rcvdt}">{$rcvdt2}</div>
+                <div class="wd-15 wd-lg-13 wd-xl-13 text-truncate" title="{$inv}">{$inv}</div>
+                <div class="d-none">{$cmnt}</div>
+            </div>
+        </li>
+    </script>
+    if (ViewBag.JPost["M"].ToString() == "reject")
+    {
+        <script type="text/template" class="zf-sl-template-part">
+            @Html.Raw(BindingSignLines(ViewBag.SchemaList, ViewBag.CurrentWI))
+        </script>
+    }
 }

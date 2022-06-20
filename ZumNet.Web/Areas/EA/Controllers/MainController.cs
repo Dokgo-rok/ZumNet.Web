@@ -393,6 +393,47 @@ namespace ZumNet.Web.Areas.EA.Controllers
         }
         #endregion
 
+        #region [WorkItem/Cabinet 문서 삭제]
+        /// <summary>
+        /// WorkItem/Cabinet 문서 삭제
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DeleteList()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0) return "전송 데이터 누락!";
+                else if (!jPost.ContainsKey("M") || !jPost.ContainsKey("tgt")) return "필수값 누락!";
+
+                try
+                {
+                    ZumNet.Framework.Core.ServiceResult svcRt = new Framework.Core.ServiceResult();
+
+                    using (BSL.FlowBiz.WorkList workList = new BSL.FlowBiz.WorkList())
+                    {
+                        if (jPost["M"].ToString() == "cabinet") svcRt = workList.DeleteWorkItemCabinet(jPost["tgt"].ToString());
+                        else svcRt = workList.DeleteWorkItem(jPost["tgt"].ToString(), false);
+                    }
+
+                    if (svcRt.ResultCode == 0) rt = "OK";
+                    else rt += " " + svcRt.ResultMessage;
+                }
+                catch (Exception ex)
+                {
+                    rt += " " + ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
+
         #region [양식 선택]
         [SessionExpireFilter]
         [HttpPost]

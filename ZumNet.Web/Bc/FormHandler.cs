@@ -636,6 +636,7 @@ namespace ZumNet.Web.Bc
 
                 jV["dnid"] = HttpContext.Current.Session["DNID"].ToString();
                 jV["partid"] = oConfig.Attributes["partid"].Value;
+                jV["actid"] = oConfig.Attributes["actid"].Value; //2022-06-07 추가
                 jV["biz"] = oConfig.Attributes["bizrole"].Value;
                 jV["act"] = oConfig.Attributes["actrole"].Value;
                 jV["wid"] = oConfig.Attributes["wid"].Value;
@@ -708,6 +709,15 @@ namespace ZumNet.Web.Bc
                 jV["creator"]["phone"] = oCreator.SelectSingleNode("phone").InnerText;
                 jV["creator"]["belong"] = oCreator.SelectSingleNode("belong").InnerText;
                 jV["creator"]["indate"] = oCreator.SelectSingleNode("indate").InnerText;
+                if (oCreator.SelectSingleNode("corp") != null)
+                {
+                    JObject corp = new JObject();
+                    foreach(XmlNode node in oCreator.SelectSingleNode("corp").ChildNodes)
+                    {
+                        corp[node.Name] = node.InnerText;
+                    }
+                    jV["creator"]["corp"] = corp;
+                }
 
                 sPos = "430";
                 jV["current"]["urid"] = oCurrentInfo.Attributes["uid"].Value;

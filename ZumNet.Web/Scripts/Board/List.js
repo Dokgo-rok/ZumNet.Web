@@ -305,8 +305,20 @@ $(function () {
                 var vInfo = vImg[i].split(_zw.T.uploader.df);
                 if (vInfo[0].toLowerCase().indexOf(rgx) != -1) {
                     var v = {};
-                    v["imgname"] = vInfo[1];
-                    v["imgpath"] = vInfo[0];
+                    var idx = vInfo[1].lastIndexOf('.');
+                    v["attachid"] = 0;
+                    v["atttype"] = "O";
+                    v["seq"] = 0;
+                    v["isfile"] = "N";
+                    v["filename"] = vInfo[1];
+                    v["savedname"] = vInfo[1];
+                    v["ext"] = vInfo[1].substr(idx + 1);
+                    v["size"] = "";
+                    v["filepath"] = vInfo[0];
+                    v["storagefolder"] = "";
+
+                    //v["imgname"] = vInfo[1];
+                    //v["imgpath"] = vInfo[0];
                     v["origin"] = location.origin;
                     jPost["imglist"].push(v);
                 }

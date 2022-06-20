@@ -78,7 +78,8 @@ namespace ZumNet.Web.Bc
 
                     foreach (JObject j in imgInfo)
                     {
-                        sFile = InlineFileToStorage(dnId, j["origin"].ToString(),  xfAlias, j["imgname"].ToString(), j["imgpath"].ToString(), "Img");
+                        //sFile = InlineFileToStorage(dnId, j["origin"].ToString(),  xfAlias, j["imgname"].ToString(), j["imgpath"].ToString(), "Img");
+                        sFile = InlineFileToStorage(dnId, j["origin"].ToString(), xfAlias, j["savedname"].ToString(), j["filepath"].ToString(), "Img");
 
                         if (sFile.Substring(0, 2) == "OK")
                         {
@@ -88,10 +89,11 @@ namespace ZumNet.Web.Bc
                             j["location"] = vFile[3];
                             j["savedname"] = vFile[1];
                             j["storagefolder"] = vFile[0];
+                            j["size"] = vFile[4];
 
                             jArr.Add(jTemp);
 
-                            strPattern = @"src\s*=\s*""" + j["imgpath"].ToString() + "\"";
+                            strPattern = @"src\s*=\s*""" + j["filepath"].ToString() + "\"";
                             rgx = new System.Text.RegularExpressions.Regex(strPattern);
                             sBody = rgx.Replace(sBody, "src=\"" + vFile[0] + "\"");
                         }
@@ -206,7 +208,8 @@ namespace ZumNet.Web.Bc
                 //http://ekp.cresyn.com/storage/cresyn/Images/ea/28/28761_twe514.gif
 
                 //결재 기준으로 저장
-                strReturn = "OK" + strServer + "\\" + strNewDirPath + cDiv + strSavedName + cDiv + iLocId.ToString() + cDiv + iFolderNum.ToString();
+                if (xfAlias == "ea" || xfAlias == "tooling" || xfAlias == "ecnplan") strReturn = "OK" + strServer + "\\" + strFileFolder + cDiv + strSavedName + cDiv + iLocId.ToString() + cDiv + iFolderNum.ToString();
+                else strReturn = "OK" + strServer + "\\" + strNewDirPath + cDiv + strSavedName + cDiv + iLocId.ToString() + cDiv + iFolderNum.ToString();
             }
             catch (Exception ex)
             {
@@ -246,6 +249,7 @@ namespace ZumNet.Web.Bc
             string strSourcePath = "";
             string strDestPath = "";
             string strSavedName = "";
+            string strImgSize = "";
 
             string strReturn = "";
             string sPos = "";
@@ -287,6 +291,7 @@ namespace ZumNet.Web.Bc
                 fi = new FileInfo(strSourcePath);
                 if (fi.Exists)
                 {
+                    strImgSize = fi.Length.ToString();
                     fi.MoveTo(strDestPath);
                 }
                 else
@@ -298,7 +303,7 @@ namespace ZumNet.Web.Bc
 
 
                 //결재 기준으로 저장
-                strReturn = "OK" + locationOrigin + "/" + strNewDirPath.Replace("\\", "/") + "/" + strSavedName + cDiv + strSavedName + cDiv + iLocId.ToString() + cDiv + iFolderNum.ToString();
+                strReturn = "OK" + locationOrigin + "/" + strNewDirPath.Replace("\\", "/") + "/" + strSavedName + cDiv + strSavedName + cDiv + iLocId.ToString() + cDiv + iFolderNum.ToString() + cDiv + strImgSize;
             }
             catch (Exception ex)
             {

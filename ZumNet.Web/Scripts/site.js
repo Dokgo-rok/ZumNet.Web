@@ -1451,6 +1451,8 @@ $(function () {
                 qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",wi:"' + (vId[2] && vId[2] != undefined ? vId[2] : '') + '",xf:"' + xfAlias + '"}';
             }
 
+            $(el).tooltip('hide');
+
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, eaWndNm, 900, 600, "resize");
         },
@@ -1552,14 +1554,14 @@ $(function () {
                 }
             }
         },
-        "maxLength": function () {
+        "maxLength": function (pos) {
             $('.bootstrap-maxlength').each(function () {
                 $(this).maxlength({
                     alwaysShow: true,
                     warningClass: 'text-muted',
                     limitReachedClass: 'text-danger',
                     validate: true,
-                    placement: 'top-right-inside',
+                    placement: pos && pos != '' ? pos : 'top-right-inside',
                     threshold: +this.getAttribute('maxlength')
                 });
             });
@@ -1707,7 +1709,12 @@ $(function () {
             var el = $(event.target); if (el.prop('tagName') == 'I') el = el.parent();
             return el;
         },
-        "ajaxLoader": function (b) {
+        "ajaxLoader": function (b, s) {
+            if (b) {
+                var ttl = s && s != '' ? s : 'Loading ...';
+                $('#ajaxLoader .modal-title').html(ttl);
+            }
+
             b ? $('#ajaxLoader').modal('show') : $('#ajaxLoader').modal('hide');
 
             //아래 구문 ajax event 미동작
@@ -2160,6 +2167,7 @@ $(function () {
         }
     }
 
+    //결재 코드값 반환 및 기타
     _zw.parse = {
         "workItemState": function (n) {
             if (n == 0) return '대기';
@@ -2271,6 +2279,194 @@ $(function () {
             else if (s == 'cp') return '완료시각';
             else if (s == 'iv') return '소요시간';
             else return '';
+        },
+        "signJson": function (mode, wid, parent, step, subStep, seq, state, signStatus, signKind, viewState
+            , flag, designator, bizRole, actRole, activityID, partID, partType, deptCode, competency, point
+            , received, view, completed, interval, partName, part1, part2, part3, part4, part5, part6, signature, comment, rsvd1, rsvd2) {
+            var j = {};
+            j["mode"] = mode;
+            j["wid"] = wid;
+            j["parent"] = parent;
+            j["step"] = step;
+            j["substep"] = subStep;
+            j["seq"] = seq;
+            j["state"] = state;
+            j["signstatus"] = signStatus;
+            j["signkind"] = signKind;
+            j["viewstate"] = viewState;
+            j["flag"] = flag;
+            j["designator"] = designator;
+            j["bizrole"] = bizRole;
+            j["actrole"] = actRole;
+            j["activityid"] = activityID;
+            j["partid"] = partID;
+            j["parttype"] = partType;
+            j["deptcode"] = deptCode;
+            j["competency"] = competency;
+            j["point"] = point;
+            j["received"] = received;
+            j["view"] = view;
+            j["completed"] = completed;
+            j["interval"] = interval;
+            j["partname"] = partName;
+            j["part1"] = part1;
+            j["part2"] = part2;
+            j["part3"] = part3;
+            j["part4"] = part4;
+            j["part5"] = part5;
+            j["part6"] = part6;
+            j["sign"] = signature;
+            j["comment"] = comment;
+            j["reserved1"] = rsvd1;
+            j["reserved2"] = rsvd2;
+            return j;
+        },
+        "signImg": function (ln) {
+            if (ln) {
+                if (ln["sign"] == '') {
+                    if (ln["actrole"] == '_drafter') return _zw.parse.lineBox('i') + '<br />';
+                    else if (ln["actrole"] == '_redrafter') return _zw.parse.lineBox('h') + '<br />';
+                    else if (ln["actrole"] == '_reviewer') return _zw.parse.lineBox('d') + '<br />';
+                    else return _zw.parse.signStatus(parseInt(ln["signstatus"])) + '<br />';
+                } else return "<img style=\"width:70;height:50;border:0;\" alt=\"\" src=\"" + ln["sign"] + "\" onload=\"var w=this.offsetWidth,h=this.offsetHeight;if((w/h).toFixed(1)>=1.4){if(w>70){this.style.width='70px';}}else{if(h>50){this.style.height='50px';}}\" />";
+            } else return "<img style=\"width:44;height:45;border:0;\" alt=\"\" src=\"/Storage/" + _zw.V.companycode + "/crossline.gif\" />";
+        },
+        "signDate": function (date) {
+            if (date != "") {
+                if (arguments.length > 1) {
+                    if (arguments[1] == '.') return date.substr(3, 5).replace(/-/gi, '. ');
+                    else return date.substr(3, 5);
+                } else {
+                    return date.substr(3, 5).replace(/-/gi, '/');
+                }
+            } else return '';
+        },
+        "signMidPart": function (ln) {
+            var sHtml = '';
+            if (ln["state"] == '7') {
+                if (ln["signstatus"] == '8' || ln["signstatus"] == '10') sHtml = _zw.parse.signStatus(8) + '<br />';
+                else sHtml = _zw.parse.signImg(ln);
+            }
+            if (ln["signkind"] != '' && ln["signkind"] != '0' && ln["signkind"] != '5') sHtml += '<br />' + _zw.parse.signKind(ln["signkind"]);
+            sHtml += '<br />';
+            if (ln["state"] == '2' && ln["partid"] == _zw.V.partid && ln["actrole"] != '__r' && ln["actrole"] != '_redrafter' && ln["actrole"] != '_manager') {
+                sHtml += "<a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"$('#popSignPlate').modal();\">" + ln["partname"] + "</a>";
+            } else {
+                sHtml += ln["partid"].indexOf('__') > 0 ? ln["partname"] : "<a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"_zw.fn.viewUserSimpleInfo('" + ln["partid"] + "')\">" + ln["partname"] + "</a>";
+            }
+            return sHtml;
+        },
+        "signPart": function (tbl, line, role) {
+            var cTop = tbl.find('.si-top'), cMid = tbl.find('.si-middle'), cBot = tbl.find('.si-bottom');
+            var iCell = cTop.length, iLine = line.length, iDiff = iCell - iLine, sBg = '';
+            //console.log(cTop); console.log(line)
+            for (var i = iCell - 1; i >= 0; i--) {
+                if (i == 0) { //기안자, 작성자
+                    if (role == '__si_Normal' || role == '__si_Complex') cTop[i].innerHTML = _zw.parse.lineBox('i');
+                    else if (role == '__si_Receive') cTop[i].innerHTML = _zw.parse.lineBox('b');
+                    else if (role == '__si_Distribution') cTop[i].innerHTML = _zw.parse.lineBox('h');
+                    else cTop[i].innerHTML = line[iLine - 1]["part5"];
+                    cMid[i].innerHTML = _zw.parse.signMidPart(line[iLine - 1]);
+                    cBot[i].innerHTML = _zw.parse.signDate(line[iLine - 1]["completed"]);
+                    sBg = '#ffffff';
+                } else {
+                    if (i - iDiff > 0) {
+                        cTop[i].innerHTML = line[iCell - 1 - i]["part5"];
+                        cMid[i].innerHTML = _zw.parse.signMidPart(line[iCell - 1 - i]);
+                        cBot[i].innerHTML = _zw.parse.signDate(line[iCell - 1 - i]["completed"]);
+                        sBg = '#ffffff';
+                    } else {
+                        cTop[i].innerHTML = '';
+                        cMid[i].innerHTML = _zw.parse.signImg();;
+                        cBot[i].innerHTML = '';
+                        sBg = '#f7f7f7';
+                    }
+                }
+                cTop[i].style.backgroundColor = sBg;
+                cMid[i].style.backgroundColor = sBg;
+                cBot[i].style.backgroundColor = sBg;
+            }
+        },
+        "signRcvPart": function (tbl, line, role) {
+            var cTop = tbl.find('.si-top'), cMid = tbl.find('.si-middle'), cBot = tbl.find('.si-bottom');
+            var iCell = cTop.length, sBg = '';
+            for (var i = 0; i < iCell; i++) {
+                if (line[iCell - 1 - i]) {
+                    cTop[i].innerHTML = '';
+                    cMid[i].innerHTML = line[iCell - 1 - i]["partname"];
+                    cBot[i].innerHTML = _zw.parse.signDate(line[iCell - 1 - i]["completed"]);
+                    sBg = '#ffffff';
+                } else {
+                    cTop[i].innerHTML = '';
+                    cMid[i].innerHTML = _zw.parse.signImg();;
+                    cBot[i].innerHTML = '';
+                    sBg = '#f7f7f7';
+                }
+                cTop[i].style.backgroundColor = sBg;
+                cMid[i].style.backgroundColor = sBg;
+                cBot[i].style.backgroundColor = sBg;
+            }
+        },
+        "signSerialPart": function (tbl, line, role, opt) {
+            var cTop = tbl.find('.si-top'), cMid = tbl.find('.si-middle'), cBot = tbl.find('.si-bottom');
+            var iCell = cTop.length, sBg = '';
+            for (var i = 0; i < iCell; i++) {
+                if (line[iCell - 1 - i]) {
+                    if (opt && opt == 'BR') cTop[i].innerHTML = _zw.parse.bizRole(line[iCell - 1 - i]["bizrole"]);
+                    else if (opt && opt == 'AR') cTop[i].innerHTML = _zw.parse.actRole(line[iCell - 1 - i]["actrole"]);
+                    else {
+                        if (role == '__si_Form' && line[iCell - 1 - i]["actrole"] == '_redrafter') cTop[i].innerHTML = _zw.parse.lineBox('b');
+                        else cTop[i].innerHTML = line[iCell - 1 - i]["part5"];
+                    }
+                    cMid[i].innerHTML = _zw.parse.signMidPart(line[iCell - 1 - i]);
+                    cBot[i].innerHTML = _zw.parse.signDate(line[iCell - 1 - i]["completed"]);
+                    sBg = '#ffffff';
+                } else {
+                    cTop[i].innerHTML = '';
+                    cMid[i].innerHTML = _zw.parse.signImg();;
+                    cBot[i].innerHTML = '';
+                    sBg = '#f7f7f7';
+                }
+                cTop[i].style.backgroundColor = sBg;
+                cMid[i].style.backgroundColor = sBg;
+                cBot[i].style.backgroundColor = sBg;
+            }
+        },
+        "signEdgePart": function (tbl, line, role, opt) {
+            var cTop = tbl.find('.si-top'), cMid = tbl.find('.si-middle'), cBot = tbl.find('.si-bottom');
+            var iCell = cTop.length, iLine = line.length, iDiff = iCell - iLine, sBg = '';
+            for (var i = iCell - 1; i >= 0; i--) {
+                if (i - iDiff >= 0) {
+                    if (opt && opt == 'BR') cTop[i].innerHTML = _zw.parse.bizRole(line[iCell - 1 - i]["bizrole"]);
+                    else if (opt && opt == 'AR') cTop[i].innerHTML = _zw.parse.actRole(line[iCell - 1 - i]["actrole"]);
+                    else cTop[i].innerHTML = line[iCell - 1 - i]["part5"];
+                    cMid[i].innerHTML = _zw.parse.signMidPart(line[iCell - 1 - i]);
+                    cBot[i].innerHTML = _zw.parse.signDate(line[iCell - 1 - i]["completed"]);
+                    sBg = '#ffffff';
+                } else {
+                    cTop[i].innerHTML = '';
+                    cMid[i].innerHTML = _zw.parse.signImg();;
+                    cBot[i].innerHTML = '';
+                    sBg = '#f7f7f7';
+                }
+                cTop[i].style.backgroundColor = sBg;
+                cMid[i].style.backgroundColor = sBg;
+                cBot[i].style.backgroundColor = sBg;
+            }
+        },
+        "signSinglePart": function (tbl, line, role) {
+            var cTop = tbl.find('.si-top'), cMid = tbl.find('.si-middle'), cBot = tbl.find('.si-bottom');
+            if (line.length > 0) {
+                cMid[0].innerHTML = _zw.parse.signMidPart(line[iLine - 1]);
+                cBot[0].innerHTML = _zw.parse.signDate(line[iLine - 1]["completed"]);
+            } else {
+                cMid[0].innerHTML = _zw.parse.signImg();;
+                cBot[0].innerHTML = '';
+                sBg = '#f7f7f7';
+            }
+            cTop[0].style.backgroundColor = sBg;
+            cMid[0].style.backgroundColor = sBg;
+            cBot[0].style.backgroundColor = sBg;
         }
     }
 
@@ -2422,10 +2618,20 @@ $(function () {
             }
         },
         "addFile": function () {
-            for (var i = 0; i < _zw.V.app.attachlist.length; i++) {
-                var f = _zw.V.app.attachlist[i];
-                console.log(i + " : " + f.filepath.replace(/\\/gi, '/') + '/' + f.savedname + " : " + f.attachid);
-                DEXT5UPLOAD.AddUploadedFile((i + 1).toString(), f.filename, f.filepath.replace(/\\/gi, '/') + '/' + f.savedname, f.size, f.attachid, _zw.T.uploader.id);
+            if (_zw.V.attachlist) {
+                for (var i = 0; i < _zw.V.attachlist.length; i++) {
+                    var f = _zw.V.attachlist[i];
+                    if (f.isfile == 'Y') {
+                        //console.log(i + " : " + f.virtualpath + '/' + f.savedname + " : " + f.attachid);
+                        DEXT5UPLOAD.AddUploadedFile((i + 1).toString(), f.filename, f.virtualpath + '/' + f.savedname, f.size, f.attachid, _zw.T.uploader.id);
+                    }
+                }
+            } else {
+                for (var i = 0; i < _zw.V.app.attachlist.length; i++) {
+                    var f = _zw.V.app.attachlist[i];
+                    //console.log(i + " : " + f.filepath.replace(/\\/gi, '/') + '/' + f.savedname + " : " + f.attachid);
+                    DEXT5UPLOAD.AddUploadedFile((i + 1).toString(), f.filename, f.filepath.replace(/\\/gi, '/') + '/' + f.savedname, f.size, f.attachid, _zw.T.uploader.id);
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
 {
     public class FormController : Controller
     {
+        #region [양식 불러오기]
         // GET: EA/Form
         [SessionExpireFilter]
         [Authorize]
@@ -54,6 +55,18 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
             string xfAlias = StringHelper.SafeString(jReq["xf"].ToString());
+            string formId = jReq.ContainsKey("fi") ? jReq["fi"].ToString() : "";
+            string oId = jReq.ContainsKey("oi") ? jReq["oi"].ToString() : "";
+            string workItemId = jReq.ContainsKey("wi") ? jReq["wi"].ToString() : "";
+            string msgId = jReq.ContainsKey("mi") ? jReq["mi"].ToString() : "";
+            string posId = jReq.ContainsKey("pi") ? jReq["pi"].ToString() : "";
+            string bizRole = jReq.ContainsKey("biz") ? jReq["biz"].ToString() : "";
+            string actRole = jReq.ContainsKey("act") ? jReq["act"].ToString() : "";
+            string externalKey1 = jReq.ContainsKey("k1") ? jReq["k1"].ToString() : "";
+            string externalKey2 = jReq.ContainsKey("k2") ? jReq["k2"].ToString() : "";
+            string tmsInfo = jReq.ContainsKey("Ba") ? jReq["Ba"].ToString() : "";
+            string workNotice = jReq.ContainsKey("wn") ? jReq["wn"].ToString() : "";
+            string tp = jReq.ContainsKey("Tp") ? jReq["Tp"].ToString() : "";
 
             using (EAFormManager fmMgr = new EAFormManager())
             {
@@ -62,18 +75,12 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     switch (jReq["M"].ToString())
                     {
                         case "new":
-                            svcRt = fmMgr.LoadNewServerForm(jReq["M"].ToString(), jReq["fi"].ToString(), StringHelper.SafeString(jReq["oi"]), StringHelper.SafeString(jReq["wi"])
-                                        , StringHelper.SafeString(jReq["mi"]), StringHelper.SafeString(jReq["pi"]), StringHelper.SafeString(jReq["biz"]), StringHelper.SafeString(jReq["act"])
-                                        , StringHelper.SafeString(jReq["k1"]), StringHelper.SafeString(jReq["k2"]), StringHelper.SafeString(jReq["Ba"])
-                                        , StringHelper.SafeString(jReq["wn"]), StringHelper.SafeString(xfAlias), StringHelper.SafeString(jReq["Tp"]));
+                            svcRt = fmMgr.LoadNewServerForm(jReq["M"].ToString(), formId, oId, workItemId, msgId, posId, bizRole, actRole, externalKey1, externalKey2, tmsInfo, workNotice, xfAlias, tp);
                             break;
 
                         case "read":
                         case "edit":
-                            svcRt = fmMgr.LoadServerForm(jReq["M"].ToString(), StringHelper.SafeString(jReq["fi"]), StringHelper.SafeString(jReq["oi"]), StringHelper.SafeString(jReq["wi"])
-                                        , StringHelper.SafeString(jReq["mi"]), StringHelper.SafeString(jReq["pi"]), StringHelper.SafeString(jReq["biz"]), StringHelper.SafeString(jReq["act"])
-                                        , StringHelper.SafeString(jReq["k1"]), StringHelper.SafeString(jReq["k2"]), StringHelper.SafeString(jReq["Ba"])
-                                        , StringHelper.SafeString(jReq["wn"]), StringHelper.SafeString(xfAlias), StringHelper.SafeString(jReq["Tp"]));
+                            svcRt = fmMgr.LoadServerForm(jReq["M"].ToString(), formId, oId, workItemId, msgId, posId, bizRole, actRole, externalKey1, externalKey2, tmsInfo, workNotice, xfAlias, tp);
                             break;
 
                         case "print":
@@ -81,7 +88,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             break;
 
                         case "reuse":
-                            //LoadReuseForm();
+                            svcRt = fmMgr.LoadReuseForm(jReq["M"].ToString(), formId, oId, workItemId, msgId, posId, bizRole, actRole, externalKey1, externalKey2, tmsInfo, workNotice, xfAlias, tp);
                             break;
 
                         case "html":
@@ -104,7 +111,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         case "read":
                         case "edit":
                         case "html":
-                            svcRt = fmMgr.LoadBFForm(jReq["M"].ToString(), xfAlias, StringHelper.SafeString(jReq["fi"]), StringHelper.SafeString(jReq["mi"]), StringHelper.SafeString(jReq["wn"]));
+                            svcRt = fmMgr.LoadBFForm(jReq["M"].ToString(), xfAlias, formId, msgId, workNotice);
                             break;
                         case "print":
                             //LoadBFPrintForm(GetPostData());
@@ -123,9 +130,9 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                 if (jReq["M"].ToString() == "new")
                 {
-                    if (jReq["ft"] != null) ViewBag.JForm["ft"] = jReq["ft"].ToString();
-                    if (jReq["Tp"] != null) ViewBag.JForm["tp"] = jReq["Tp"].ToString();
-                    if (jReq["sj"] != null) ViewBag.JForm["doc"]["subject"] = jReq["sj"].ToString();
+                    if (jReq.ContainsKey("ft")) ViewBag.JForm["ft"] = jReq["ft"].ToString();
+                    if (jReq.ContainsKey("Tp")) ViewBag.JForm["tp"] = jReq["Tp"].ToString();
+                    if (jReq.ContainsKey("sj")) ViewBag.JForm["doc"]["subject"] = jReq["sj"].ToString();
                 }
                 ViewBag.JForm["boundary"] = CommonUtils.BOUNDARY();
             }
@@ -137,7 +144,9 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
             return View();
         }
+        #endregion
 
+        #region [양식조회, 읽음/안읽음 표시]
         /// <summary>
         /// 양식 조회수 설정
         /// </summary>
@@ -247,6 +256,46 @@ namespace ZumNet.Web.Areas.EA.Controllers
             return strView;
         }
 
+        /// <summary>
+        /// 양식 읽음, 안읽음 표시
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Read()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0) return "전송 데이터 누락!";
+                else if (!jPost.ContainsKey("M") || !jPost.ContainsKey("xf") || !jPost.ContainsKey("mi")) return "필수값 누락!";
+
+                try
+                {
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = new Framework.Core.ServiceResult();
+
+                    using (BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
+                    {
+                        svcRt = ea.SetRead(jPost["M"].ToString(), jPost["x"].ToString(), Convert.ToInt32(jPost["mi"].ToString()), Convert.ToInt32(Session["URID"]));
+                    }
+
+                    if (svcRt.ResultCode == 0) rt = "OK";
+                    else rt += " " + svcRt.ResultMessage;
+                }
+                catch (Exception ex)
+                {
+                    rt += " " + ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
+
         #region [문서정보, 관련문서 등]
         [SessionExpireFilter]
         [HttpPost]
@@ -316,6 +365,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
                     if (jPost["M"].ToString() == "draft" || jPost["M"].ToString() == "approval")
                     {
+                        #region [조직도]
                         string sOrgTree = "";
                         using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                         {
@@ -342,6 +392,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             if (svcRt != null && svcRt.ResultCode == 0) ViewBag.MemberList = svcRt.ResultDataSet;
                             else throw new Exception(svcRt.ResultMessage);
                         }
+                        #endregion
 
                         sPos = "500";
                         Framework.Entities.Flow.SchemaList schemaActList = null;
@@ -402,6 +453,52 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         sPos = "600";
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "SignLine", ViewBag)
                                 + jPost["boundary"].ToString() + sOrgTree;
+                    }
+                    else if (jPost["M"].ToString() == "read")
+                    {
+                        using (BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+                        {
+                            //우선확인자
+                            svcRt = wkList.SelectWorkItemCabinet(Convert.ToInt32(jPost["appid"]), "_cf");
+                        }
+                        if (svcRt != null && svcRt.ResultCode == 0) ViewBag.CF = svcRt.ResultDataSet;
+                        else throw new Exception(svcRt.ResultMessage);
+
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "SignLine", ViewBag);
+                    }
+                    else if (jPost["M"].ToString() == "reject")
+                    {
+                        sPos = "200";
+                        Framework.Entities.Flow.SchemaList schemaActList = null;
+                        string strSchemaOption = jPost["fi"].ToString() + ";" + Session["DeptID"].ToString() + ";" + Session["URID"].ToString();
+                        if (jPost["tp"].ToString() != "") strSchemaOption += ";" + jPost["tp"].ToString();
+
+                        Framework.Entities.Flow.WorkItem curWI = null;
+                        Framework.Entities.Flow.Activity curAct = null;
+
+                        sPos = "300";
+                        using (ZumNet.DAL.FlowDac.ProcessDac procDac = new DAL.FlowDac.ProcessDac())
+                        {
+                            curWI = procDac.SelectWorkItem(jPost["wi"].ToString());
+                            curAct = procDac.GetProcessActivity(curWI.ActivityID);
+                        }
+
+                        sPos = "400";
+                        using (BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+                        {
+                            schemaActList = wkList.RetrieveSchemaList(Convert.ToInt32(jPost["def"]), curWI.OID, curAct.Step, curAct.ActivityID, curWI.ParentWorkItemID, strSchemaOption);
+                        }
+
+                        sPos = "500";
+                        ViewBag.CurrentWI = curWI;
+                        ViewBag.CurrentAct = curAct;
+
+                        sPos = "510";
+                        ViewBag.SchemaList = schemaActList;
+
+                        sPos = "600";
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "SignLine", ViewBag);
                     }
                     else if (jPost["M"].ToString() == "personlinedetail")
                     {

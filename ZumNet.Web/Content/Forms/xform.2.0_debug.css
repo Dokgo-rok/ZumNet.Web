@@ -130,6 +130,78 @@
 	border-top: 0
 }
 
+/* 결재칸 첨언표시 */
+.cmnt-popup {
+	left: 26%;
+	display: none;
+	z-index: 100;
+	width: 400px;
+	height: 140px;
+	padding: 2px;
+	background-color: #fff;
+	border: 3px double #999;
+	font-size: 12px
+}
+
+	.cmnt-popup .cmnt-btn {
+		position: relative;
+		padding: 2px;
+		text-align: left;
+		background-color: #777;
+		border: 1px solid #ccc;
+		border-bottom: 1px solid #fff;
+		color: #fff
+	}
+
+		.cmnt-popup .cmnt-btn span {
+			display: inline-block;
+			text-align: left
+		}
+
+		.cmnt-popup .cmnt-btn button {
+			position: absolute;
+			right: 5px;
+			top: 3px;
+			padding: 0;
+			text-align: center;
+			width: 16px;
+			height: 16px;
+			font-size: 10px;
+			font-weight: bold;
+			border: 1px solid #fff
+		}
+
+	.cmnt-popup .cmnt-lst {
+		height: 108px;
+		padding: 2px;
+		background-color: #fff;
+		border: 0px solid #ccc;
+		text-align: left;
+		line-height: 16px;
+		overflow: auto
+	}
+
+.cmnt-red {
+	left: 22%;
+	border: 3px double blue;
+	width: 450px;
+	font-size: 14px;
+}
+
+	.cmnt-red .cmnt-btn {
+		background-color: blue;
+		border: 1px solid blue;
+	}
+
+		.cmnt-red .cmnt-btn span {
+			font-weight: bold
+		}
+
+	.cmnt-red .cmnt-lst {
+		height: 150px;
+		border: 1px solid blue
+	}
+
 /* 버튼 */
 .m .fm-button {
 	text-align: right;
@@ -159,14 +231,15 @@
 
 /* 첨부파일 */
 .m .fm-file td.file-title {
-	width: 64px;
+	width: 70px;
+	white-space: nowrap;
 }
 .m .fm-file td.file-title, .m .fm-file td.file-info {
 	vertical-align: top
 }
 .m .fm-file td.file-end {
 	vertical-align: bottom;
-	padding: 0 0 3px 10px
+	padding-left: 20px;
 }
 
 /* 각종 필드 정의 - txt : input, txa : textarea */
@@ -246,6 +319,17 @@
 .m .tdRead_Right {
 	text-align: right
 }
+
+.m input[type="text"], .m .txaText {
+	border: 1px solid rgba(24,28,33,0.3);
+	transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
+}
+	.m input[type="text"]:focus, .m .txaText:focus {
+		background-color: #fff;
+		border-color: rgba(254,183,68,1);
+		outline: 0;
+		box-shadow: none;
+	}
 
 /* 인쇄 설정 : 맨하단으로 */
 @media print {

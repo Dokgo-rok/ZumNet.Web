@@ -80,19 +80,28 @@
             <div class="wd-92 flex-fill text-truncate d-flex align-items-center">
                 @if (ViewBag.CurBox[2] == "do")
                 {
-                    <a class="text-truncate" href="javascript:void(0)" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm('app');">@sTitle</a>
+                    <a class="text-truncate" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm('app');">@sTitle</a>
                 }
                 else
                 { 
                     if (row["Priority"].ToString() == "H")
                     {
-                        <i class="fas fa-exclamation text-pink text-small mr-1"></i>
+                        <i class="fas fa-exclamation text-pink mr-1"></i>
                     }
                     if (row["Secret"].ToString() == "Y")
                     {
-                        <i class="fas fa-unlock-alt text-secondary text-small mr-1"></i>
+                        <i class="fas fa-unlock-alt text-secondary mr-1"></i>
                     }
-                    <a class="text-truncate" href="javascript:void(0)" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm();">@sTitle</a>
+                    if ((ViewBag.CurBox[2] == "ep" || ViewBag.CurBox[2] == "av") && Convert.ToInt32(row["SignKind"]) == (int)ProcessStateChart.SignKind.Pre)
+                    {
+                        <i class="fas fa-flag text-info mr-1" data-toggle="tooltip" data-placement="bottom" title="선결"></i>
+                    }
+                    if ((row.Table.Columns.Contains("SignStatus") && Convert.ToInt32(row["SignStatus"]) == (int)ProcessStateChart.SignStatus.Reserve)
+                                || (row.Table.Columns.Contains("RsvCnt") && Convert.ToInt32(row["RsvCnt"]) > 0))
+                    {
+                        <i class="fas fa-minus-circle text-danger mr-1" data-toggle="tooltip" data-placement="bottom" title="보류"></i>
+                    }
+                    <a class="text-truncate" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm();">@sTitle</a>
                 }
             </div>
 
@@ -105,7 +114,7 @@
                     @if (row["CreatorID"].ToString() == ViewBag.PartID)
                     {
                         <div class="wd-5 wd-lg-6 wd-xl-5 text-sm-right">
-                            <a href="javascript:void(0)" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="회수"><i class="fe-rotate-ccw"></i></a>
+                            <a href="javascript:void(0)" class="text-primary" onclick="_zw.fn.cancelSend();" data-toggle="tooltip" data-placement="bottom" title="회수"><i class="fe-rotate-ccw"></i></a>
                         </div>
                     }
                     else

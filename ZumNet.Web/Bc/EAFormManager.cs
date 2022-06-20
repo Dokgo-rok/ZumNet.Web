@@ -205,14 +205,15 @@ namespace ZumNet.Web.Bc
 
 					strMsg = "XML 값 할당 - 설정정보";
 					oConfig.Attributes["mode"].Value = mode;
-					oConfig.Attributes["root"].Value = "";
-					oConfig.Attributes["js"].Value = xfDef.JsName;
+					oConfig.Attributes["root"].Value = Framework.Configuration.Config.Read("RootFolder"); //22-06-15 추가
+                    oConfig.Attributes["js"].Value = xfDef.JsName;
 					oConfig.Attributes["css"].Value = xfDef.CssName;
 					oConfig.Attributes["html"].Value = xfDef.HtmlFile;
-					oConfig.Attributes["bizrole"].Value = bizRole;
+                    oConfig.Attributes["actid"].Value = ""; //2022-06-07 추가
+                    oConfig.Attributes["bizrole"].Value = bizRole;
 					oConfig.Attributes["actrole"].Value = actRole;
 					oConfig.Attributes["companycode"].Value = HttpContext.Current.Session["CompanyCode"].ToString();
-					oConfig.Attributes["web"].Value = Framework.Configuration.Config.Read("FrontName");  //2010-07-06
+					oConfig.Attributes["web"].Value = HttpContext.Current.Session["FrontName"].ToString();  //2010-07-06
 					oConfig.InnerXml = "<![CDATA[var json={" + ProcessStateChart.JsonParse() + "}]]>";
 
 					strMsg = "XML 값 할당 - 키정보";
@@ -264,8 +265,9 @@ namespace ZumNet.Web.Bc
 					strMsg = "XML 값 할당 - 공통정보";
 					oDocInfo.SelectSingleNode("createdate").InnerXml = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 					oDocInfo.SelectSingleNode("docname").InnerText = xfDef.DocName;
+                    oDocInfo.SelectSingleNode("msgtype").InnerText = strMsgType; //22-06-14 추가
 
-					if (vEdmInfo != null)
+                    if (vEdmInfo != null)
 					{
 						strMsg = "이관정보";
 						if (vEdmInfo[1] != "" && vEdmInfo[1] != "0" && vEdmInfo[2] != "" && vEdmInfo[2] != "0")
@@ -700,16 +702,17 @@ namespace ZumNet.Web.Bc
 
                     strMsg = "XML 값 할당 - 설정정보";
                     oConfig.Attributes["mode"].Value = mode;
-                    oConfig.Attributes["root"].Value = "";
+                    oConfig.Attributes["root"].Value = Framework.Configuration.Config.Read("RootFolder");
                     oConfig.Attributes["js"].Value = xfDef.JsName;
                     oConfig.Attributes["css"].Value = xfDef.CssName;
                     oConfig.Attributes["html"].Value = xfDef.HtmlFile;
                     oConfig.Attributes["partid"].Value = strCurrentPartID;
+                    oConfig.Attributes["actid"].Value = curAct != null ? curAct.ActivityID : ""; //2022-06-07 추가
                     oConfig.Attributes["bizrole"].Value = bizRole;
                     oConfig.Attributes["actrole"].Value = actRole;
                     oConfig.Attributes["wid"].Value = workItemID; //2012-02-13 추가 (workitemid가 있는 경우, 다중부서내 동일 결재자가 존재할 경우 필요)
                     oConfig.Attributes["companycode"].Value = HttpContext.Current.Session["CompanyCode"].ToString();
-                    oConfig.Attributes["web"].Value = Framework.Configuration.Config.Read("FrontName");  //2010-07-06
+                    oConfig.Attributes["web"].Value = HttpContext.Current.Session["FrontName"].ToString();  //2010-07-06
                     oConfig.InnerXml = "<![CDATA[var json={" + ProcessStateChart.JsonParse() + "}]]>";
 
                     strMsg = "XML 값 할당 - 키정보";
@@ -1205,16 +1208,17 @@ namespace ZumNet.Web.Bc
 
                     strMsg = "XML 값 할당 - 설정정보";
                     oConfig.Attributes["mode"].Value = "edit";
-                    oConfig.Attributes["root"].Value = "";
+                    oConfig.Attributes["root"].Value = Framework.Configuration.Config.Read("RootFolder");
                     oConfig.Attributes["js"].Value = xfDef.JsName;
                     oConfig.Attributes["css"].Value = xfDef.CssName;
                     oConfig.Attributes["html"].Value = xfDef.HtmlFile;
                     oConfig.Attributes["partid"].Value = strCurrentPartID;
+                    oConfig.Attributes["actid"].Value = ""; //2022-06-07 추가
                     oConfig.Attributes["bizrole"].Value = bizRole;
                     oConfig.Attributes["actrole"].Value = actRole;
                     oConfig.Attributes["wid"].Value = workItemID; //2012-02-13 추가 (workitemid가 있는 경우)
                     oConfig.Attributes["companycode"].Value = HttpContext.Current.Session["CompanyCode"].ToString();
-                    oConfig.Attributes["web"].Value = Framework.Configuration.Config.Read("FrontName");  //2010-07-06
+                    oConfig.Attributes["web"].Value = HttpContext.Current.Session["FrontName"].ToString();  //2010-07-06
                     oConfig.InnerXml = "<![CDATA[var json={" + ProcessStateChart.JsonParse() + "}]]>";
 
                     strMsg = "XML 값 할당 - 키정보";
@@ -1222,6 +1226,7 @@ namespace ZumNet.Web.Bc
                     oBizInfo.Attributes["processid"].Value = "";
                     oBizInfo.Attributes["formid"].Value = xfDef.FormID;
                     oBizInfo.Attributes["ver"].Value = xfDef.Version.ToString();
+                    oBizInfo.Attributes["prevwork"].Value = workNotice;
                     oBizInfo.Attributes["inherited"].Value = strSecurity; //2022-0512 추가 (아래 keepyear까지)
                     oBizInfo.Attributes["priority"].Value = "N"; //기본값
                     oBizInfo.Attributes["secret"].Value = "N"; //기본값
@@ -1266,6 +1271,7 @@ namespace ZumNet.Web.Bc
                     oDocInfo.SelectSingleNode("createdate").InnerXml = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
                     oDocInfo.SelectSingleNode("docname").InnerText = xfDef.DocName;
                     oDocInfo.SelectSingleNode("subject").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.Subject);
+                    oDocInfo.SelectSingleNode("msgtype").InnerText = strMsgType; //22-06-14 추가
 
                     if (vEdmInfo != null)
                     {
@@ -1285,9 +1291,13 @@ namespace ZumNet.Web.Bc
                         if (strTransferXml != "") oCategoryInfo.InnerXml = strTransferXml;
                         //ResponseText(oCategoryInfo.InnerXml); return;
                     }
+                    oDocInfo.SelectSingleNode("externalkey1").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.ExternalKey1);
+                    oDocInfo.SelectSingleNode("externalkey2").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.ExternalKey2);
+                    oDocInfo.SelectSingleNode("reserved1").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.Reserved1);
+                    oDocInfo.SelectSingleNode("reserved2").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.Reserved2);
 
                     strMsg = "XML 값 할당 - 양식정보";
-                    if ((xfDef.SubTableCount > 0) && (xfDef.SubTableDef != String.Empty))
+                    if (xfDef.SubTableCount > 0 && xfDef.SubTableDef != String.Empty)
                     {
                         xSubTables = new XmlDocument();
                         xSubTables.LoadXml(xfDef.SubTableDef);
@@ -1594,7 +1604,10 @@ namespace ZumNet.Web.Bc
         /// <summary>
         /// 외부에서 본문 가져오기 - ERP
         /// </summary>
-        /// <param name="cn"></param>
+        /// <param name="tp"></param>
+        /// <param name="formTable"></param>
+        /// <param name="externalKey1"></param>
+        /// <param name="externalKey2"></param>
         /// <returns></returns>
         private string CallExternalFormData(string tp, string formTable, string externalKey1, string externalKey2)
         {

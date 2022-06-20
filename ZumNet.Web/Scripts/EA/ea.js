@@ -98,6 +98,37 @@ $(function () {
 
     _zw.fn.getEACount('', 'ea', 'base2', '', 'N');
 
+    _zw.fn.cancelSend = function () {
+        var evt = _zw.ut.eventBtn(); //alert(evt.prop('tagName'))
+        var row = evt.parent().parent().parent(); //alert(row.prop('tagName'))
+        var temp = row.attr('id').substr(1).split(".");
+        var cmd = '', szMsg = '', postData = ''; //alert(_zw.V.opnode + " : " + _zw.V.ft); return // opnode => go//101374
+
+        if (_zw.V.opnode.substr(0, 2) == 'wt') {
+            cmd = 'cancelservicequeue'; postData = '{M:"' + cmd + '",mi:"' + temp[0] + '",oi:"' + temp[1] + '",svc:"' + temp[2] + '"}'
+            szMsg = '해당 문서에 대한 처리 요청을 취소하시겠습니까?';
+        } else if (_zw.V.opnode.substr(0, 2) == 'go') {
+            cmd = 'canceldraft'; postData = '{M:"' + cmd + '",oi:"' + temp[1] + '",wi:"' + temp[2] + '"}';
+            szMsg = '해당 문서를 회수하시겠습니까?<br />다음 결재자가 해당 문서를 열람한 경우 회수가 되지 않습니다.';
+        }
+
+        if (cmd != '') {
+            bootbox.confirm(szMsg, function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/EA/Process",
+                        data: postData,
+                        success: function (res) {
+                            if (res == "OK") bootbox.alert('처리 하였습니다.', function () { _zw.mu.refresh(); });
+                            else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true); //console.log(postData);
         var url = '/EA/Main/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
@@ -142,6 +173,8 @@ $(function () {
                     });
 
                     _zw.ut.picker('date');
+
+                    $('#__ListView .z-lv-row [data-toggle="tooltip"][title!=""]').tooltip();
 
                     $('.z-lv-hdr a[data-val]').click(function () {
                         var t = $(this); _zw.V.lv.sort = t.attr('data-val');

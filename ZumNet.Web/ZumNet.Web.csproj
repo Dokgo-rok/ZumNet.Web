@@ -293,6 +293,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Areas\EA\Controllers\FormController.cs" />
+    <Compile Include="Areas\EA\Controllers\ProcessController.cs" />
     <Compile Include="Areas\WoA\ApprovalLine.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\JsEngineSwitcherConfig.cs" />
@@ -331,6 +332,20 @@
     <Compile Include="Bc\EAFormManager.cs" />
     <Compile Include="Bc\FormHandler.cs" />
     <Compile Include="Bc\LunisolarDate.cs" />
+    <Compile Include="BizForce\PortalService\FileDown.aspx.cs">
+      <DependentUpon>FileDown.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BizForce\PortalService\FileDown.aspx.designer.cs">
+      <DependentUpon>FileDown.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx.cs">
+      <DependentUpon>PersonSimpleInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx.designer.cs">
+      <DependentUpon>PersonSimpleInfo.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AddrController.cs" />
     <Compile Include="Controllers\BoardController.cs" />
@@ -364,6 +379,8 @@
   <ItemGroup>
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="BizForce\PortalService\FileDown.aspx" />
+    <Content Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx" />
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
     <Content Include="Content\ce.css" />
@@ -468,7 +485,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V2_back.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V3.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V3.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_DRAWING_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DRIVEMONEY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EDUINSTRUCTOR_V1.xsl" />
@@ -2021,6 +2040,19 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
+    <Content Include="Scripts\EA\Forms\FORM_AUDITRESULTREPORT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SAMPLECONTROL.js" />
+    <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_VACATION.js" />
+    <Content Include="Scripts\EA\Forms\_sample.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DRAFT.js" />
     <Content Include="Scripts\ExS\ce.js" />
     <Content Include="Scripts\ExS\voc.js" />
     <Content Include="Scripts\ExS\lcm.js" />
@@ -2676,6 +2708,7 @@
     <Folder Include="Areas\Docs\Data\" />
     <Folder Include="Areas\Docs\Views\Shared\" />
     <Folder Include="Areas\EA\Data\" />
+    <Folder Include="Areas\EA\Views\Process\" />
     <Folder Include="Areas\ExS\Data\" />
     <Folder Include="Areas\ExS\Views\Shared\" />
     <Folder Include="Areas\TnC\Data\" />
@@ -2898,6 +2931,7 @@
     <Content Include="Areas\TnC\Views\Shared\_ResourceInfo.cshtml" />
     <Content Include="Areas\EA\Views\Shared\DocProp.cshtml" />
     <Content Include="Areas\EA\Views\Shared\SignLine.cshtml" />
+    <Content Include="Content\Json\jform_ea_post.json" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

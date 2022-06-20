@@ -21,6 +21,7 @@
   "appid": "",
   "partid": "",
   "wid": "",
+  "actid": "",
   "biz": "",
   "act": "",
   "inherited": "",
@@ -102,8 +103,8 @@
     "rsvd2": ""
   },
   "form": {
-    "maintable": [],
-    "subtables": []
+    "maintable": {},
+    "subtables": {}
   },
   "creator": {
     "urid": "",

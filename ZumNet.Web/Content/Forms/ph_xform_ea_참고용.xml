@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ph_xform_ea>
-  <config mode="" submode="" css="" js="" html="" partid="" bizrole="" actrole="" wid="" root="" companycode="" web="" showline=""></config>
+  <config mode="" submode="" css="" js="" html="" partid="" actid="" bizrole="" actrole="" wid="" root="" companycode="" web="" showline=""></config>
 	<bizinfo dnid="" processid="" formid="" ver="" parent_oid="" oid="" msgid="" inherited="" priority="" secret="" docstatus="" tms="" prevwork="" nextwork="">
 		<name><!--프로세스명이 들어갑니다.--></name>
 	</bizinfo>

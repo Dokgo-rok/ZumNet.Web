@@ -736,7 +736,7 @@ namespace ZumNet.Web.Controllers
         /// <param name="filePath"></param>
         private string EncrypFile(string filePath, string ext)
         {
-            string sEncrypServer = "192.168.100.249"; //Session["FRONTNAME"].ToString()
+            string sEncrypServer = Session["FrontName"].ToString();
             string strVPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["URAccount"].ToString();
             string strUrl = String.Format("http://{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
             string strReturn = "";

@@ -70,6 +70,7 @@ namespace ZumNet.Web.Bc
                 HttpContext.Current.Session.Clear();
             }
 
+            HttpContext.Current.Session["FrontName"] = HttpContext.Current.Request.Url.Host; //22-06-15
             HttpContext.Current.Session["CompanyCode"] = Framework.Configuration.Config.Read("CompanyCode");
             HttpContext.Current.Session["Company"] = Framework.Configuration.Config.Read("Company");
 

@@ -6,9 +6,10 @@ $(function () {
         $.ajax({
             type: "POST",
             url: "/Form/ViewCount",
-            data: '{xf:"' + _zw.V.xfalias + '",mi:"' + _zw.V.appid + '",actor:"' + _zw.V.appid + '",fdid:"' + _zw.V.fdid + '",wi:"' + _zw.V.wid + '",wn:"' + _zw.V.wnid + '"}',
+            data: '{xf:"' + _zw.V.xfalias + '",mi:"' + _zw.V.appid + '",actor:"' + _zw.V.current["urid"] + '",fdid:"' + _zw.V.fdid + '",wi:"' + _zw.V.wid + '",wn:"' + _zw.V.prevwork + '"}',
             success: function (res) {
                 if (res != "OK") bootbox.alert(res);
+                else _zw.fn.reloadList();
             },
             beforeSend: function () {//pace.js 충돌
             }
@@ -93,7 +94,8 @@ $(function () {
                 break;
 
             case "signLine":
-                var cmd = _zw.V.apvmode;
+            case "reject":
+                var cmd = mn == 'reject' ? mn : _zw.V.apvmode;
                 //if (_zw.V.mode == 'new' || _zw.V.mode == 'edit' || _zw.V.mode == 'reuse') cmd = 'draft';
                 //else {
                 //    if (_zw.V.wid != '' && (_zw.V.partid.indexOf("__") >= 0 || (_zw.V.partid.indexOf("__") < 0 && _zw.V.partid == _zw.V.current.urid))) cmd = 'approval';
@@ -104,21 +106,29 @@ $(function () {
                 jPost["fi"] = _zw.V.def.formid; jPost["def"] = _zw.V.def.processid; jPost["oi"] = _zw.V.oid
                 jPost["wi"] = _zw.V.wid; jPost["appid"] = _zw.V.appid; jPost["tp"] = _zw.V.tp;
 
-                if (cmd == 'approval' && _zw.V.curprogress == 'parallel') {//병렬이면서 결재자 하나 여부
+                if (cmd == 'approval') {//SignLine.cshtml > RenderMenuSchemaInfo 위치, 병렬(curprogress) 조건 제외
                     var iCurPart = 0;
                     for (var i = 0; i < _zw.V.process.signline.length; i++) {
                         var n = _zw.V.process.signline[i];
-                        if (n["activityid"] == _zw.V.curactid && n["viewstate"] != '6') iCurPart++;
+                        if (n["activityid"] == _zw.V.actid && n["viewstate"] != '6') iCurPart++; //주의 curactid X
                     }
                     jPost["curpart"] = iCurPart;
                     //jPost["signline"] = _zw.V.process.signline; jPost["attributes"] = _zw.V.process.attributes;
                 }
-
                 _zw.signline.open(cmd, 'y', jPost);
                 break;
 
+            case "reuse":
+                var qi = '{M:"reuse",mi:"' + _zw.V.appid + '",oi:"' + _zw.V.oid + '",wi:"' + _zw.V.wid + '",xf:"' + _zw.V.xfalias + '"}';
+                //console.log(location)
+                window.location.href = '?qi=' + _zw.base64.encode(qi);
+                break;
+
             case "draft":
-                $('#popSignPlate').modal();
+            case "approval":
+            case "preApproval":
+            case "cancelPreApproval":
+                _zw.fn.showSignPlate(mn.toLowerCase());
                 break;
 
             default:
@@ -127,220 +137,436 @@ $(function () {
         $(this).tooltip('hide');
     });
 
+    _zw.fn.showSignPlate = function (cmd) {
+        if (cmd == 'draft' || cmd == 'approval') {
+            //_zw.form.make('approval', {}); return
+            //_zw.signline.make(mn, {}, ''); return;
+
+            var rt = _zw.signline.validation(cmd);
+            if (rt == 'N') { $('.zf-menu .btn[data-zf-menu="signLine"]').click(); return false; }
+            else if (rt == 'F') return false;
+
+            if (!_zw.form.validation(cmd)) return false;;
+        }
+
+        var p = $('#popSignPlate');
+
+        //console.log(p.find('.zf-sl input:radio[name="rdoSignStatus"]:first()'))
+        p.find('.zf-sl input:radio[name="rdoSignStatus"]:first()').prop('checked', true);
+
+        p.find('.zf-sl .btn[data-zm-mmenu="send"]').click(function () {
+            _zw.fn.sendForm(p, cmd); //$(this).off('click');
+        });
+
+        p.on('hide.bs.modal', function () {
+            p.find('.zf-sl .btn[data-zm-mmenu="send"]').off('click');
+        });
+        p.modal();
+    }
+
+    _zw.fn.sendForm = function (p, cmd) {
+        p = p || $('#popSignPlate');
+
+        var eStatus = p.find('.zf-sl input[name="rdoSignStatus"]:checked');
+        var eCmnt = p.find('.zf-sl #sp_Comment'), ePwd = p.find('.zf-sl #sp_Password');
+        var ss = eStatus.val(), ssText = eStatus.next().text(), szMsg = '';
+        var tgt4Back = {};
+
+        if (ss == 'back') {
+            var iCheck = p.find('.zf-sl-list input:checkbox:checked').length;
+            if (iCheck < 1) return false;
+            if (iCheck > 1) { bootbox.alert('결재선을 2개 이상 선택할 수 없습니다!'); return false; }
+
+            var row = p.find('.zf-sl-list input:checkbox:checked').parent().parent().parent().parent(); //console.log(row)
+            if (row && row.length > 0) {
+                tgt4Back["wid"] = row.attr('wid');
+                tgt4Back["partid"] = row.attr('partid').indexOf('_') > 0 ? row.attr('partid').split('_')[0] : row.attr('partid');
+
+                szMsg = _zw.parse.bizRole(row.attr('bizrole')) + ' ' + _zw.parse.actRole(row.attr('actrole')) + ' "' + row.find(' > div > div:nth-child(4)').text() + '"에게로 [' + ssText + '] 처리하시겠습니까?';
+            }
+        }
+
+        if ((ss == 'reject' || ss == 'reserve' || ss == 'disagree') && $.trim(eCmnt.val()) == '') {
+            bootbox.alert(ssText + ' 경우는 의견을 반드시 입력해야 합니다!', function () { eCmnt.focus(); }); return false;
+        }
+
+        if (!ePwd.prop('disabled') && _zw.V.checkpwd == 'T') {
+            if (ePwd.val() == '') { bootbox.alert('결재인증 암호를 입력하십시오!', function () { ePwd.focus(); }); return false; }
+            if (!_zw.fn.checkApprovalPassword(ePwd)) return false;
+        }
+        //alert(ss + " : " + ssText + " : " + eCmnt.val());
+
+        if (ss != 'back') szMsg = '[' + ssText + '] 처리하시겠습니까?';
+        bootbox.confirm(szMsg, function (rt) {
+            if (rt) {
+                var jSend = {};
+                if (cmd == 'preapproval' || cmd == 'cancelpreapproval') {
+                    jSend["M"] = "preapproval";
+                    jSend["mi"] = _zw.V.appid;
+                    jSend["fi"] = _zw.V.def["formid"];
+                    jSend["wi"] = _zw.V.wid;
+                    jSend["ss"] = ss;
+                    jSend["cmnt"] = eCmnt.val();
+                    jSend["sign"] = '';
+                    jSend["rd"] = '';
+
+                } else if (cmd == 'reject') {
+                    _zw.form.make(cmd, jSend);
+                    _zw.signline.make(cmd, jSend["process"], eCmnt.val());
+
+                    if (ss == 'back' && tgt4Back) jSend["process"]["target"] = tgt4Back;
+
+                    jSend["M"] = cmd;
+                    jSend["mi"] = _zw.V.appid;
+                    jSend["fi"] = _zw.V.def["formid"];
+                    jSend["wid"] = _zw.V.wid;
+                    jSend["ss"] = ss;
+                    jSend["cmnt"] = eCmnt.val();
+                    
+
+                } else {
+                    _zw.form.make(cmd, jSend);
+                    _zw.signline.make(cmd, jSend["process"], eCmnt.val());
+
+                    jSend["wid"] = _zw.V.wid;
+                    jSend["ss"] = ss;
+                    jSend["cmnt"] = eCmnt.val();
+                    jSend["rd"] = '';
+
+                    jSend["M"] = cmd;
+                    if (cmd == 'draft') jSend["M"] = "newdraft";
+                }
+                //console.log(jSend); return
+
+                $.ajax({
+                    type: "POST",
+                    url: "/EA/Process",
+                    data: JSON.stringify(jSend),
+                    success: function (res) {
+                        if (res.substr(0, 2) == "OK") {
+                            //interface 처리 -> agent에서
+                            if (res != 'OK') {
+                                //var r = res.substr(2).split(String.fromCharCode(8));
+                                //$.post("/EA/Process", '{M:"interface", timestamp:"' + r[0] + '"}', function (data, status) {
+                                    
+                                //});
+                            } else {                                
+                            }
+                            bootbox.alert('[' + ssText + '] 처리 하였습니다.', function () {
+                                _zw.fn.reloadList(); window.close();
+                            });
+                        } else bootbox.alert(res);
+                    },
+                    beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
+                });
+            }
+        });
+    }
+
+    _zw.fn.checkApprovalPassword = function (pwd) {
+        var rt = false;
+        $.ajax({
+            type: "POST",
+            url: "/EA/Process",
+            data: '{M:"chkpwd", pwd:"' + pwd.val() + '"}',
+            async: false,
+            success: function (res) {
+                if (res != 'T') {
+                    if (res == 'F') { bootbox.alert('인증에 실패 했습니다. 암호를 재입력 하십시오!', function () { pwd.val(''); pwd.focus(); }); }
+                    else bootbox.alert(res);
+                    rt = false;
+                } else rt = true;
+            },
+            beforeSend: function () {}
+        });
+        return rt;
+    }
+
+    _zw.fn.reloadList = function () {
+        try {
+            if (opener != null && opener._zw.mu.refresh) opener._zw.mu.refresh();
+            else opener.location.reload();
+        } catch (e) { opener.location.reload(); };
+    }
+
     _zw.signline = {
         "open": function (m, multi, postData) {
             var p = $('#popSignLine');
-            if (p.find('.zf-sl').length > 0) { //console.log('1111')
-                p.modal('show');
 
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: "/EA/Form/SignLine",
-                    data: JSON.stringify(postData),
-                    success: function (res) {
-                        if (res.substr(0, 2) == "OK") {
-                            var v = res.substr(2).split(_zw.V.boundary); //console.log(JSON.parse(v[1]))
-                            p.html(v[0]);
+            if (m == 'draft' || m == 'approval') {
+                if (p.find('.zf-sl[data-for="' + m + '"]').length > 0) { //console.log('1111')
+                    _zw.signline.render(p, m);
+                    p.modal('show');
 
-                            if (p.find('#orgmaptree').length > 0) new PerfectScrollbar(p.find('#orgmaptree')[0]);
-                            if (p.find('#personline').length > 0) new PerfectScrollbar(p.find('#personline')[0]);
-                            new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:first-child .card-body')[0]);
-                            new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:last-child .card-body')[0]);
-                            new PerfectScrollbar(p.find('.zf-sl .zf-sl-list .card-body')[0]);
+                } else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/EA/Form/SignLine",
+                        data: JSON.stringify(postData),
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                var v = res.substr(2).split(_zw.V.boundary); //console.log(JSON.parse(v[1]))
+                                p.html(v[0]);
 
-                            p.find('.nav-tabs-top a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                                var s = e.target.getAttribute('aria-controls');
-                                if (s == 'personline') {
-                                    p.find('.zf-sl .zf-sl-member .card:first-child').addClass('d-none');
-                                    p.find('.zf-sl .zf-sl-member .card:last-child').removeClass('d-none');
-                                } else {
-                                    p.find('.zf-sl .zf-sl-member .card:first-child').removeClass('d-none');
-                                    p.find('.zf-sl .zf-sl-member .card:last-child').addClass('d-none');
-                                }
-                                p.find('.zf-sl .zf-sl-member .card-body').html('');
-                            });
+                                if (p.find('#orgmaptree').length > 0) new PerfectScrollbar(p.find('#orgmaptree')[0]);
+                                if (p.find('#personline').length > 0) new PerfectScrollbar(p.find('#personline')[0]);
+                                new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:first-child .card-body')[0]);
+                                new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:last-child .card-body')[0]);
+                                new PerfectScrollbar(p.find('.zf-sl .zf-sl-list .card-body')[0]);
 
-                            $('#__OrgMapTree').jstree({
-                                core: {
-                                    data: JSON.parse(v[1]).data,
-                                    multiple: false
-                                },
-                                plugins: ["types", "wholerow"],
-                                types: {
-                                    default: { icon: "fas fa-user-friends text-secondary" },
-                                    root: { icon: "fas fa-city text-indigo" }
-                                }
-                            }).on('select_node.jstree', function (e, d) {
-                                if (d.selected.length == 1) {
-                                    var n = d.instance.get_node(d.selected[0]);
-                                    if ('7777.' + n.id == _zw.V.opnode) return false; //'7777.' => 부서명 Navigation에 사용
-                                    if (n.li_attr.hasmember == 'Y') {
-                                        $.ajax({
-                                            type: "POST",
-                                            url: "/Organ/Plate",
-                                            data: '{M:"member",grid:"' + n.id + '",boundary:"' + _zw.V.boundary + '"}',
-                                            success: function (res) {
-                                                if (res.substr(0, 2) == "OK") {
-                                                    p.find('.zf-sl .zf-sl-member .card:first-child .card-body').html(res.substr(2));
-                                                    _zw.signline.userInfo(p, multi);
-                                                } else bootbox.alert(res);
-                                            },
-                                            beforeSend: function () { } //로딩 X
+                                p.find('.nav-tabs-top a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                                    var s = e.target.getAttribute('aria-controls');
+                                    if (s == 'personline') {
+                                        p.find('.zf-sl .zf-sl-member .card:first-child').addClass('d-none');
+                                        p.find('.zf-sl .zf-sl-member .card:last-child').removeClass('d-none');
+                                    } else {
+                                        p.find('.zf-sl .zf-sl-member .card:first-child').removeClass('d-none');
+                                        p.find('.zf-sl .zf-sl-member .card:last-child').addClass('d-none');
+                                    }
+                                    p.find('.zf-sl .zf-sl-member .card-body').html('');
+                                });
+
+                                $('#__OrgMapTree').jstree({
+                                    core: {
+                                        data: JSON.parse(v[1]).data,
+                                        multiple: false
+                                    },
+                                    plugins: ["types", "wholerow"],
+                                    types: {
+                                        default: { icon: "fas fa-user-friends text-secondary" },
+                                        root: { icon: "fas fa-city text-indigo" }
+                                    }
+                                }).on('select_node.jstree', function (e, d) {
+                                    if (d.selected.length == 1) {
+                                        var n = d.instance.get_node(d.selected[0]);
+                                        if ('7777.' + n.id == _zw.V.opnode) return false; //'7777.' => 부서명 Navigation에 사용
+                                        if (n.li_attr.hasmember == 'Y') {
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "/Organ/Plate",
+                                                data: '{M:"member",grid:"' + n.id + '",boundary:"' + _zw.V.boundary + '"}',
+                                                success: function (res) {
+                                                    if (res.substr(0, 2) == "OK") {
+                                                        p.find('.zf-sl .zf-sl-member .card:first-child .card-body').html(res.substr(2));
+                                                        _zw.signline.userInfo(p, multi);
+                                                    } else bootbox.alert(res);
+                                                },
+                                                beforeSend: function () { } //로딩 X
+                                            });
+                                        }
+                                    }
+                                });
+
+                                $('#__OrgMapSearch input[data-for]').keyup(function (e) {
+                                    if (e.which == 13) $('#__OrgSearch .btn-outline-success').click();
+                                });
+
+                                $('#__OrgMapSearch .btn-outline-success').click(function () {
+                                    var j = {}; j['M'] = 'search'; j['boundary'] = _zw.V.boundary;
+                                    if ($('#orgmapsearch').hasClass('active')) {//검색창 활성화 여부
+                                        $('#__OrgMapSearch [data-for]').each(function () {
+                                            j[$(this).attr('data-for')] = $(this).val();
                                         });
                                     }
-                                }
-                            });
-
-                            $('#__OrgMapSearch input[data-for]').keyup(function (e) {
-                                if (e.which == 13) $('#__OrgSearch .btn-outline-success').click();
-                            });
-
-                            $('#__OrgMapSearch .btn-outline-success').click(function () {
-                                var j = {}; j['M'] = 'search'; j['boundary'] = _zw.V.boundary;
-                                if ($('#orgmapsearch').hasClass('active')) {//검색창 활성화 여부
-                                    $('#__OrgMapSearch [data-for]').each(function () {
-                                        j[$(this).attr('data-for')] = $(this).val();
-                                    });
-                                }
-                                $.ajax({
-                                    type: "POST",
-                                    url: "/Organ/Plate",
-                                    data: JSON.stringify(j),
-                                    success: function (res) {
-                                        if (res.substr(0, 2) == "OK") {
-                                            p.find('.zf-sl .zf-sl-member .card:first-child .card-body').html(res.substr(2));
-                                            _zw.signline.userInfo(p, multi);
-                                        } else bootbox.alert(res);
-                                    },
-                                    beforeSend: function () { } //로딩 X
-                                });
-                                return false;
-                            });
-
-                            p.find('#personline :checkbox').click(function () {
-                                var id = $(this).parent().attr('id');
-                                if ($(this).prop('checked')) {
-                                    p.find('#personline :checkbox').each(function () {
-                                        if ($(this).parent().attr('id') != id) $(this).prop('checked', false);
-                                    });
                                     $.ajax({
                                         type: "POST",
-                                        url: "/EA/Form/SignLine",
-                                        data: '{M:"personlinedetail",lineid:"' + id.split('_')[1] + '"}',
+                                        url: "/Organ/Plate",
+                                        data: JSON.stringify(j),
                                         success: function (res) {
                                             if (res.substr(0, 2) == "OK") {
-                                                p.find('.zf-sl .zf-sl-member .card:last-child .card-body').html(res.substr(2));
+                                                p.find('.zf-sl .zf-sl-member .card:first-child .card-body').html(res.substr(2));
                                                 _zw.signline.userInfo(p, multi);
                                             } else bootbox.alert(res);
                                         },
                                         beforeSend: function () { } //로딩 X
                                     });
-                                } else {
-                                    p.find('.zf-sl .zf-sl-member .card:last-child .card-body').html('');
-                                }
-                            });
+                                    return false;
+                                });
 
-                            p.find('.zf-sl .zf-sl-menu .btn[data-zm-menu]').click(function () {
-                                var mn = $(this).attr('data-zm-menu'), cmd = $(this).attr('data-val'); //alert(mn + " : " + vlu)
-                                var tab = p.find('.nav-tabs-top .tab-pane.active').attr('id');
-                                var eTargetActivity = null, vPartType = null;
-
-                                if (mn == 'addUser') {
-                                    if (tab != 'personline') {
-                                        var bDL = false;
-
-                                        if (cmd && cmd != '') {
-                                            if (cmd == "mail_dl" || cmd == "xform_dl" || cmd == "xform_cf") bDL = true;
-                                            else eTargetActivity = _zw.V.schema.find(function (element) { if (element.actid === cmd) return true; });
-                                        } else {
-                                            eTargetActivity = _zw.V.schema.find(function (element) { if (element.bizrole === _zw.V.curbiz && element.actrole === '_reviewer') return true; });
-                                        }
-
-                                        if (eTargetActivity) vPartType = eTargetActivity["parttype"].split('_');
-                                        else if (!bDL) return false;
-
-                                        p.find('.zf-sl .zf-sl-member .card:first-child .card-body input:checkbox:checked').each(function () {
-                                            var jUser = JSON.parse($(this).attr('data-attr')); //console.log(jUser); return;
-
-                                            if (bDL || vPartType[1] == 'h') { //2014-06-30 배포,참조 외 결재자 중복 가능하게
-                                                if (!_zw.signline.check(p, 'ur', eTargetActivity, jUser.id, cmd)) {
-                                                    bootbox.alert('중복된 사용자는 추가 할 수 없습니다!'); return false;
-                                                }
-                                            }
-                                            _zw.signline.add(p, bDL || vPartType[1] == 'h' ? cmd : '', 'ur', eTargetActivity, jUser, $(this).next().text());
+                                p.find('#personline :checkbox').click(function () {
+                                    var id = $(this).parent().attr('id');
+                                    if ($(this).prop('checked')) {
+                                        p.find('#personline :checkbox').each(function () {
+                                            if ($(this).parent().attr('id') != id) $(this).prop('checked', false);
                                         });
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/EA/Form/SignLine",
+                                            data: '{M:"personlinedetail",lineid:"' + id.split('_')[1] + '"}',
+                                            success: function (res) {
+                                                if (res.substr(0, 2) == "OK") {
+                                                    p.find('.zf-sl .zf-sl-member .card:last-child .card-body').html(res.substr(2));
+                                                    _zw.signline.userInfo(p, multi);
+                                                } else bootbox.alert(res);
+                                            },
+                                            beforeSend: function () { } //로딩 X
+                                        });
+                                    } else {
+                                        p.find('.zf-sl .zf-sl-member .card:last-child .card-body').html('');
                                     }
-                                } else if (mn == 'addGroup') {
-                                    if (tab == 'orgmaptree') {
-                                        var selected = $('#__OrgMapTree').jstree('get_selected', true); console.log(selected)
-                                        if (selected.length > 0) {
-                                            var info = selected[0].li_attr; //alert(selected[0].text)
-                                            //2012-01-09 3단계 아래만 선택하게, 2015-09-02 1단계부터 선택하게
-                                            if (parseInt(info["level"]) < 1) { bootbox.alert('선택된 부서는 추가 할 수 없습니다!'); return false; }
-                                            //2016-04-22 문서수신정책 적용
-                                            if (info["rcv"] && info["rcv"] == 'N') { bootbox.alert('선택된 부서는 추가 할 수 없습니다!'); return false; }
+                                });
 
-                                            var bAdd = true;
-                                            if (cmd == "mail_dl" || cmd == "xform_dl") {
-                                                if (!_zw.signline.check(p, 'gr', null, info["id"], cmd)) bAdd = false;
+                                p.find('.zf-sl .zf-sl-menu .btn[data-zm-menu]').click(function () {
+                                    var mn = $(this).attr('data-zm-menu'), cmd = $(this).attr('data-val'); //alert(mn + " : " + vlu)
+                                    var tab = p.find('.nav-tabs-top .tab-pane.active').attr('id');
+                                    var eTargetActivity = null, vPartType = null;
+
+                                    if (mn == 'addUser') {
+                                        if (tab != 'personline') {
+                                            var bDL = false;
+
+                                            if (cmd && cmd != '') {
+                                                if (cmd == "mail_dl" || cmd == "xform_dl" || cmd == "xform_cf") bDL = true;
+                                                else eTargetActivity = _zw.V.schema.find(function (element) { if (element.actid === cmd) return true; });
                                             } else {
-                                                eTargetActivity = _zw.V.schema.find(function (element) { if (element.actid === cmd) return true; });
-                                                if (eTargetActivity) vPartType = eTargetActivity["parttype"].split('_');
-                                                else return false;
-
-                                                if (info["hasmember"] == 'Y') {
-                                                    if (!_zw.signline.check(p, 'gr', eTargetActivity, info["id"], cmd)) bAdd = false;
-                                                } else bAdd = false;
+                                                eTargetActivity = _zw.V.schema.find(function (element) { if (element.bizrole === _zw.V.curbiz && element.actrole === '_reviewer') return true; });
                                             }
 
-                                            if (!bAdd) { bootbox.alert('중복된 부서는 추가 할 수 없습니다!'); return false; }
+                                            if (eTargetActivity) vPartType = eTargetActivity["parttype"].split('_');
+                                            else if (!bDL) return false;
 
-                                            _zw.signline.add(p, cmd == "mail_dl" || cmd == "xform_dl" || vPartType[1] == 'h' ? cmd : '', 'gr', eTargetActivity, info, selected[0].text);
+                                            p.find('.zf-sl .zf-sl-member .card:first-child .card-body input:checkbox:checked').each(function () {
+                                                var jUser = JSON.parse($(this).attr('data-attr')); //console.log(jUser); return;
+
+                                                if (bDL || vPartType[1] == 'h') { //2014-06-30 배포,참조 외 결재자 중복 가능하게
+                                                    if (!_zw.signline.check(p, 'ur', eTargetActivity, jUser.id, cmd)) {
+                                                        bootbox.alert('중복된 사용자는 추가 할 수 없습니다!'); return false;
+                                                    }
+                                                }
+                                                _zw.signline.add(p, bDL || vPartType[1] == 'h' ? cmd : '', 'ur', eTargetActivity, jUser, $(this).next().text());
+                                            });
+                                        }
+                                    } else if (mn == 'addGroup') {
+                                        if (tab == 'orgmaptree') {
+                                            var selected = $('#__OrgMapTree').jstree('get_selected', true); //console.log(selected)
+                                            if (selected.length > 0) {
+                                                var info = selected[0].li_attr; //alert(selected[0].text)
+                                                //2012-01-09 3단계 아래만 선택하게, 2015-09-02 1단계부터 선택하게
+                                                if (parseInt(info["level"]) < 1) { bootbox.alert('선택된 부서는 추가 할 수 없습니다!'); return false; }
+                                                //2016-04-22 문서수신정책 적용
+                                                if (info["rcv"] && info["rcv"] == 'N') { bootbox.alert('선택된 부서는 추가 할 수 없습니다!'); return false; }
+
+                                                var bAdd = true;
+                                                if (cmd == "mail_dl" || cmd == "xform_dl") {
+                                                    if (!_zw.signline.check(p, 'gr', null, info["id"], cmd)) bAdd = false;
+                                                } else {
+                                                    eTargetActivity = _zw.V.schema.find(function (element) { if (element.actid === cmd) return true; });
+                                                    if (eTargetActivity) vPartType = eTargetActivity["parttype"].split('_');
+                                                    else return false;
+
+                                                    if (info["hasmember"] == 'Y') {
+                                                        if (!_zw.signline.check(p, 'gr', eTargetActivity, info["id"], cmd)) bAdd = false;
+                                                    } else bAdd = false;
+                                                }
+
+                                                if (!bAdd) { bootbox.alert('중복된 부서는 추가 할 수 없습니다!'); return false; }
+
+                                                _zw.signline.add(p, cmd == "mail_dl" || cmd == "xform_dl" || vPartType[1] == 'h' ? cmd : '', 'gr', eTargetActivity, info, selected[0].text);
+                                            }
+                                        }
+                                    } else if (mn == 'insertPersonLine') {
+                                        if (tab == 'personline') {
+                                            bootbox.alert('준비중')
                                         }
                                     }
-                                } else if (mn == 'insertPersonLine') {
-                                    if (tab == 'personline') {
-                                        bootbox.alert('준비중')
+                                });
+
+                                p.find('.zf-sl .zf-sl-submenu .btn[data-zm-menu]').click(function () {
+                                    var mn = $(this).attr('data-zm-menu'); //alert(mn)
+                                    if (mn == 'refresh') {
+                                        _zw.signline.render(p, m);
+
+                                    } else if (mn == 'delete') {
+                                        p.find('.zf-sl-list input:checkbox:checked').each(function () {
+                                            var row = $(this).parent().parent().parent().parent(), rowParent = row.parent(); //console.log(row)
+                                            if (row.attr('wid') != '') _zw.signline.putDeleteLine(row.attr('wid'));
+                                            row.remove();
+                                            _zw.signline.setOrder(p, rowParent.find(' > li'));
+                                        });
+
+                                    } else if (mn == 'up' || mn == 'down') {
+                                        _zw.signline.move(p, mn);
                                     }
+                                });
+
+                                p.find('.modal-header .btn[data-zm-menu="confirm"]').click(function () {
+                                    _zw.V.templine["signline"] = []; //초기화
+                                    _zw.V.templine["attributes"] = []; //초기화
+
+                                    _zw.signline.composeLine(p, '.zf-sl-list .zf-sl-line > li');
+                                    _zw.signline.composeLine(p, '.zf-sl-list .zf-sl-subline > li');
+                                    _zw.signline.composeAttr(p);
+
+                                    _zw.signline.space(_zw.V.templine["signline"]); //console.log(_zw.formEx)
+                                    _zw.signline.toFormBody(_zw.V.templine["signline"]);
+
+                                    //console.log(_zw.V.templine);
+                                    p.modal('hide');
+                                });
+
+                                var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
+                                for (var i = jPart.length - 1; i >= 0; i--) _zw.V.process.signline.push(jPart[i]);
+
+                                if (p.find('.zf-sl-template-attr').length > 0) {
+                                    var jAttr = JSON.parse(p.find('.zf-sl-template-attr').text());
+                                    for (var i = 0; i < jAttr.length; i++) _zw.V.process.attributes.push(jAttr[i]);
+                                    //console.log(_zw.V.process.attributes);
                                 }
-                            });
-                            
-                            var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
-                            for (var i = 0; i < jPart.length; i++) _zw.V.process.signline.push(jPart[i]);
 
-                            if (p.find('.zf-sl-template-attr').length > 0) {
-                                var jAttr = JSON.parse(p.find('.zf-sl-template-attr').text());
-                                for (var i = 0; i < jAttr.length; i++) _zw.V.process.attributes.push(jAttr[i]);
-                                //console.log(_zw.V.process.attributes);
-                            }
+                                if (!_zw.V.templine) _zw.V["templine"] = JSON.parse('{"signline":[],"attributes":[],"deleted":""}');
+                                //console.log(_zw.V.process["signline"]);
 
-                            if (!_zw.V.templine) _zw.V["templine"] = JSON.parse('{"signline":[],"attributes":[],"deleted":""}');
-                            //console.log(_zw.V.process["signline"]);
+                                _zw.signline.render(p, m);
+                                _zw.signline.userInfo(p, multi);
 
-                            _zw.signline.render(p, m);
-                            _zw.signline.userInfo(p, multi);
+                                p.modal('show');
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
 
-                            p.modal('show');
-                        } else bootbox.alert(res);
-                    }
-                });
+            } else if (m == 'read' || m == 'reject') {
+                if (p.find('.zf-sl[data-for="' + m + '"]').length > 0) {
+                    _zw.signline.render(p, m);
+                    p.modal('show');
+
+                } else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/EA/Form/SignLine",
+                        data: JSON.stringify(postData),
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                p.html(res.substr(2));
+
+                                new PerfectScrollbar(p.find('.zf-sl .zf-sl-list .card-body')[0]);
+
+                                var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
+                                for (var i = jPart.length - 1; i >= 0; i--) _zw.V.process.signline.push(jPart[i]);
+
+                                p.find('.zf-sl .btn[data-zm-menu="send"]').click(function () {
+                                    _zw.fn.sendForm(p, m);
+                                });
+
+                                _zw.ut.maxLength('bottom-right-inside');
+                                _zw.signline.render(p, m);
+
+                                p.modal('show');
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
             }
         },
         "render": function (p, m) {
-            var signLine = _zw.V.templine.signline.length > 0 ? _zw.V.templine.signline : _zw.V.process.signline;
-            var attrList = _zw.V.templine.attributes.length > 0 ? _zw.V.templine.attributes : _zw.V.process.attributes;
-            
-            var ln = signLine.filter(function (element) {
-                if (element.parent === '') return true;
-            }); //console.log(ln);
+            p.find('.zf-sl-list .zf-sl-line').html(''); p.find('.zf-sl-attr .tab-pane').html('');
 
-            var curln = null;
-            if (_zw.V.wid != '') {
-                curln = signLine.find(function (element) {
-                    if (element.wid === _zw.V.wid) return true;
-                });
-            }
+            var signLine = _zw.V.templine && _zw.V.templine.signline.length > 0 ? _zw.V.templine.signline : _zw.V.process.signline;
+            var attrList = _zw.V.templine && _zw.V.templine.attributes.length > 0 ? _zw.V.templine.attributes : _zw.V.process.attributes;
+            
+            var ln = signLine.filter(function (element) { if (element.parent === '') return true; }); //console.log(ln);
+            var curln = _zw.V.wid != '' ? signLine.find(function (element) { if (element.wid === _zw.V.wid) return true; }) : null; //console.log(curln);
+            var pfln = _zw.V.pwid != '' ? signLine.find(function (element) { if (element.wid === _zw.V.pwid) return true; }) : null; //console.log(pfln);
 
             var temp = p.find('.zf-sl-template').html();
             for (var i = 0; i < ln.length; i++) {
@@ -348,12 +574,12 @@ $(function () {
                     if (element.parent != '' && element.parent === ln[i].wid) return true;
                 }); //console.log(sub)
 
-                p.find('.zf-sl-list .zf-sl-line').append(_zw.signline.template(m, temp, ln[i], curln, sub));
+                p.find('.zf-sl-list .zf-sl-line').append(_zw.signline.template(m, temp, ln[i], curln, pfln, sub));
 
                 if (sub && sub.length > 0) {
                     p.find('.zf-sl-list .zf-sl-line > li[wid="' + ln[i].wid + '"]').append('<ul class="zf-sl-subline pb-0"></ul>');
                     for (var j = 0; j < sub.length; j++) {
-                        p.find('.zf-sl-list .zf-sl-line > li[wid="' + ln[i].wid + '"] .zf-sl-subline').append(_zw.signline.template(m, temp, sub[j], curln, null));
+                        p.find('.zf-sl-list .zf-sl-line > li[wid="' + ln[i].wid + '"] .zf-sl-subline').append(_zw.signline.template(m, temp, sub[j], curln, pfln, null));
                     }
                 }
             }
@@ -376,7 +602,7 @@ $(function () {
                 }
             }
 
-            p.find('.zf-sl .zf-sl-read .btn[aria-expanded]').click(function () {
+            p.find('.zf-sl-list .zf-sl-line .btn[aria-expanded]').click(function () {
                 var row = $(this).parent().parent().parent();
                 if ($(this).attr('aria-expanded') == 'false') {
                     $(this).attr('aria-expanded', 'true');
@@ -412,7 +638,7 @@ $(function () {
                 $(this).remove();
             });
         },
-        "add": function (p, cmd, ot, act, info, nm) { console.log(info);
+        "add": function (p, cmd, ot, act, info, nm) { //console.log(info);
             var query = '';
             if (cmd != '') {
                 var code = ot == 'gr' ? info["gralias"] : info["logonid"];
@@ -493,18 +719,48 @@ $(function () {
                 var pwid = _zw.V.pwid != "" && act["parentactid"] == eCurActivity["parentactid"] ? _zw.V.pwid : '';
                 //s, orderNo, parent, partId, actId, bizRole, actRole, partType, part2, part5, partName, dept, deptCode
                 if (ot == 'gr') sHtml = _zw.signline.template2(temp, sOrderNo, pwid, info["id"], act["actid"], act["bizrole"], act["actrole"], act["parttype"], info["gralias"], '', nm, '', info["gralias"]);
-                else sHtml = _zw.signline.template2(temp, sOrderNo, pwid, info["id"], act["actid"], act["bizrole"], act["actrole"], act["parttype"], info["grade"], '', nm, info["grdn"], info["gralias"]);
+                else sHtml = _zw.signline.template2(temp, sOrderNo, pwid, info["id"], act["actid"], act["bizrole"], act["actrole"], act["parttype"], info["logonid"], info["grade"], nm, info["grdn"], info["gralias"]);
                 if (bClone) rowTarget.before(sHtml);
                 else rowTarget.replaceWith(sHtml);
 
                 _zw.signline.setOrder(p, p.find(query), rowTarget);
             }
         },
-        "remove": function (p) {
-
-        },
         "move": function (p, dir) {
+            var iCheck = p.find('.zf-sl-list input:checkbox:checked').length;
+            if (iCheck < 1) return false;
+            if (iCheck > 1) { bootbox.alert('결재선을 2개 이상 선택할 수 없습니다!'); return false; }
 
+            var row = p.find('.zf-sl-list input:checkbox:checked').parent().parent().parent().parent(), rowParent = row.parent();; //console.log(row)
+            var eSelectedAct = _zw.V.schema.find(function (element) { if (element.actid === row.attr('actid')) return true; });
+            if (eSelectedAct["random"] == 'N' && (eSelectedAct["progress"] == '' || eSelectedAct["parttype"].split('_')[1] == 'h')) {
+                bootbox.alert('선택된 사용자(부서)는 이동할 수 없습니다!'); return false;
+            }
+
+            var rowTarget = dir == 'up' ? row.prev() : row.next(); //console.log(rowTarget)
+            if (rowTarget == null || rowTarget == undefined || rowTarget.length == 0 || rowTarget.attr('actid') == undefined || rowTarget.hasClass('zf-sl-current')) return false;
+
+            var eTargetAct = _zw.V.schema.find(function (element) { if (element.actid === rowTarget.attr('actid')) return true; });
+            if (rowTarget.hasClass('zf-sl-read')) {
+                //랜덤이고 단계가 같은 경우는 이동 가능
+                if (eSelectedAct["random"] == 'N' || eTargetAct["random"] == 'N' || eSelectedAct["step"] != eTargetAct["step"]) return false;
+            }
+
+            if (row.attr('actid') == rowTarget.attr('actid')) {
+                //서로 같은 단계는 순차,병렬일 경우 이동 가능하다.
+                var c = row.find(' > div > div:nth-child(2) span.custom-control-label').length > 0 ? row.find(' > div > div:nth-child(2) span.custom-control-label') : row.find(' > div > div:nth-child(2)');
+                var t = rowTarget.find(' > div > div:nth-child(2) span.custom-control-label').length > 0 ? rowTarget.find(' > div > div:nth-child(2) span.custom-control-label') : rowTarget.find(' > div > div:nth-child(2)');
+                var szNo = t.text();
+                t.text(c.text()); c.text(szNo);
+                if (dir == 'up') { row.after(rowTarget); } else { row.before(rowTarget); }
+            } else {
+                //서로 다른 단계에서는 서로 Random일 경우만 이동 가능하다.
+                if (eSelectedAct["random"] == 'N' || eTargetAct["random"] == 'N') {
+                    //alert("이동할 수 없습니다!");
+                } else {
+                    //추후 적용
+                }
+            }
         },
         "check": function (p, ot, act, partid, att) {//console.log(ot + " : " + partid + " : " + att)
             var bRt = true;
@@ -527,6 +783,119 @@ $(function () {
             }
             return bRt;
         },
+        "composeLine": function (p, query) {
+            var vOrderNo = null, vDate = null, srcln = null;
+            var wid = '', sPartName = '', sPartDept = '', sPos = '', sReceived = '', sCompleted = '', sInterval = '';
+            var iStep, iSubStep = 0, iSeq = 0, iPos = 0;
+            var jLine = {};
+
+            p.find(query).each(function (idx) {
+                vOrderNo = $(this).find(' > div > div:nth-child(2)').text().split('.');
+                iStep = parseInt(vOrderNo[0]);
+                iSubStep = vOrderNo[1] ? parseInt(vOrderNo[1]) : 0;
+                iSeq = vOrderNo[2] ? parseInt(vOrderNo[2]) : parseInt($(this).attr('seq'));//2010-08-26 변경
+
+                wid = $(this).attr('wid');
+                if (wid == '') {
+                    sPartName = $(this).find(' > div > div:nth-child(4)').text();
+                    if ($(this).attr('parttype').charAt(0) == 'u') {
+                        iPos = sPartName.lastIndexOf('.');
+                        sPartDept = sPartName.substr(0, iPos); sPartName = sPartName.substr(iPos + 1);
+                    } else {
+                        sPartDept = sPartName;
+                    }
+
+                    vDate = $(this).find(' > div > div[title]');
+                    if (vDate.length > 0) {
+                        sCompleted = vDate[0].getAttribute("title"); sReceived = vDate[1].getAttribute("title"); sInterval = vDate[2].getAttribute("title");
+                    } else {
+                        sCompleted = ''; sReceived = ''; sInterval = '';
+                    }
+                    //console.log(sPartDept + " : " + sPartName + " : " + sCompleted + " : " + sReceived);
+                    jLine = _zw.parse.signJson($(this).attr('mode'), $(this).attr('wid'), $(this).attr('parent'), iStep, iSubStep, iSeq
+                        , $(this).attr('state'), $(this).attr('signstatus'), $(this).attr('signkind'), ''
+                        , '', '', $(this).attr('bizrole'), $(this).attr('actrole')
+                        , $(this).attr('actid'), $(this).attr('partid'), $(this).attr('parttype'), $(this).attr('deptcode')
+                        , '', '', sReceived, '', sCompleted, sInterval, sPartName, sPartDept, $(this).attr('part2')
+                        , '', '', $(this).attr('part5'), '', '', '', '', '');
+
+                } else {
+                    srcln = _zw.V.process.signline.find(function (element) { if (element.wid === wid) return true; });
+                    jLine = _zw.parse.signJson(srcln["mode"], srcln["wid"], srcln["parent"], iStep, iSubStep, iSeq
+                        , srcln["state"], srcln["signstatus"], srcln["signkind"], srcln["viewstate"]
+                        , srcln["flag"], srcln["designator"], srcln["bizrole"], srcln["actrole"]
+                        , srcln["activityid"], srcln["partid"], srcln["parttype"], srcln["deptcode"]
+                        , srcln["competency"], srcln["point"], srcln["received"], srcln["view"]
+                        , srcln["completed"], srcln["interval"], srcln["partname"], srcln["part1"], srcln["part2"]
+                        , srcln["part3"], srcln["part4"], srcln["part5"], srcln["part6"]
+                        , srcln["sign"], srcln["comment"], srcln["reserved1"], srcln["reserved2"]);
+                }
+                _zw.V.templine["signline"].push(jLine);
+            });
+        },
+        "composeAttr": function (p) { //console.log(_zw.V.process.attributes)
+            p.find('.zf-sl-attr .tab-pane').each(function () {
+                var att = $(this).attr("id").replace("attList_", ""), dp = '', vlu = '', dataType = '';
+                var jAttr = {}, srcAttr = null, vId = null;
+
+                if (att == 'mail_dl') {
+                    $(this).find('.btn').each(function (idx) {
+                        dp += (idx > 0 ? ', ' : '') + $(this).text();
+                        vlu += (idx > 0 ? ', ' : '') + $(this).attr('mail');
+                    });
+                    if (vlu != '') {
+                        dataType = 'M';
+                        jAttr['actid'] = _zw.V.wid; jAttr['att'] = att;
+                        jAttr['dtype'] = dataType = 'D';; jAttr['flag'] = '';
+                        jAttr['display'] = dp; jAttr['value'] = vlu;
+
+                        _zw.V.templine["attributes"].push(jAttr);
+                    }
+                } else if (att == 'xform_dl' || att == 'xform_cf') {
+                    srcAttr = _zw.V.process.attributes.find(function (element) { if (element.att === att) return true; });
+                    $(this).find('.btn').each(function (idx) {
+                        vId = $(this).attr("id").split('.');
+                        var bInsert = (srcAttr && srcAttr.length > 0 && $(srcAttr.value).find('part[partid="' + vId[1] + '"][pt="' + vId[0] + '"]').length > 0) ? false : true;
+                        if (bInsert) {
+                            vlu += '<part partid="' + vId[1] + '" pt="' + vId[0] + '" pc="' + $(this).attr("code") + '">'
+                                + '<pn>' + $(this).attr("pn") + '</pn><pm>' + $(this).attr("mail") + '</pm></part>';
+                        }
+                    });
+                    if (vlu != '') {
+                        dataType = 'D';
+                        jAttr['actid'] = _zw.V.pwid ? _zw.V.pwid : _zw.V.wid; jAttr['att'] = att;
+                        jAttr['dtype'] = dataType; jAttr['flag'] = '';
+                        jAttr['display'] = ''; jAttr['value'] = '<partinfo>' + vlu + '</partinfo>';
+
+                        _zw.V.templine["attributes"].push(jAttr);
+                    }
+                } else {
+                    srcAttr = _zw.V.process.attributes.find(function (element) { if (element.att === att) return true; });
+                    $(this).find('.btn').each(function (idx) {
+                        vId = $(this).attr("id").split('.');
+                        var bInsert = (srcAttr && srcAttr.length > 0 && $(srcAttr.value).find('part[partid="' + vId[1] + '"][type="' + vId[0] + '"]').length > 0) ? false : true;
+                        if (bInsert) {
+                            vlu += '<part seq="' + (idx + 1) + '" partid="' + vId[1] + '" type="' + vId[0] + '" code="' + $(this).attr("code") + '" dc="' + $(this).attr("dc") + '">'
+                                + '<pn>' + $(this).attr("pn") + '</pn><dn>' + $(this).text() + '</dn></part>';
+                        }
+                    });
+                    if (vlu != '') {
+                        var eAct = _zw.V.schema.find(function (element) { if (element.actid === att) return true; });
+                        var szAtt = (eAct && eAct.review == "4") ? "cabinet" : "workitem";
+                        if (eAct) {
+                            if (eAct["bizrole"] == 'receive' || eAct["bizrole"] == 'distribution') dataType = 'A';
+                            else if (eAct["bizrole"] == 'reference') dataType = 'R';
+                            else dataType = '';
+                        }
+                        if (_zw.V.pwid != '') szAtt += '_' + _zw.V.pwid;
+                        jAttr['actid'] = att; jAttr['att'] = szAtt; jAttr['dtype'] = dataType; jAttr['flag'] = '';
+                        jAttr['display'] = ''; jAttr['value'] = '<partinfo>' + vlu + '</partinfo>';
+
+                        _zw.V.templine["attributes"].push(jAttr);
+                    }
+                }
+            });
+        },
         "putDeleteLine": function (wid) {
             if (wid != '') { if (_zw.V.templine["deleted"] == '') { _zw.V.templine["deleted"] = wid; } else { _zw.V.templine["deleted"] += ',' + wid; } }
         },
@@ -535,7 +904,7 @@ $(function () {
             var curNo = '', preNo = '', orderNo = '';
             $(list.get().reverse()).each(function (idx) {
                 if (rowPrev) {
-                    curNo = $(this).find(' > div > div:nth-child(2)').text(); 
+                    curNo = $(this).find(' > div > div:nth-child(2)').text(); //console.log($(this).find(' > div > div:nth-child(2)').html())
                     preNo = rowPrev.find(' > div > div:nth-child(2)').text();
 
                     if ($(this).attr('actid') == rowPrev.attr('actid')) {
@@ -556,62 +925,126 @@ $(function () {
                             }
                         }
                     }
-                    $(this).find(' > div > div:nth-child(2)').text(orderNo);
+                    if ($(this).find(' > div > div:nth-child(2) span.custom-control-label').length > 0) $(this).find(' > div > div:nth-child(2) span.custom-control-label').text(orderNo);
+                    else $(this).find(' > div > div:nth-child(2)').text(orderNo);
                 }
                 rowPrev = $(this);
             });
         },
-        "template": function (cmd, s, v, cur, sub) {
+        "template": function (cmd, s, v, cur, pfirst, sub) { //console.log(sub)
             var sCls = '', sCheck = '', bParallel = cur != null && cur.substep != '0' ? true : false;
             var sMarginTop = '', sTextAlign = '', sOrderNo = v["step"] + (parseInt(v["substep"]) > 0 ? '.' + v["substep"] : '');
 
             if (sub && sub.length > 0) {
-                sCls = 'zf-sl-read';
                 sCheck = '<button class="btn btn-outline-secondary zf-btn-xs" aria-expanded="false"><i class="fas fa-minus"></i></button>';
                 sMarginTop = ' mt-1';
+
+                if (cmd == 'reject' && v["state"] != '2' && v["wid"] == _zw.V.pwid) {
+                    sCls = 'zf-sl-add';
+                    sOrderNo = '<label class="custom-control custom-checkbox mb-0"><input type="checkbox" class="custom-control-input"><span class="custom-control-label">' + sOrderNo + '</span></label>';
+                } else  sCls = 'zf-sl-read';
 
             } else {
                 if (v["parent"] != '') {
                     sCheck = '<span class="fe-corner-down-right font-weight-bold text-secondary"></span>';
                     sTextAlign = ' text-right';
 
-                    if (v["completed"] == '' && v["partid"] != '') {
-                        if (v["state"] == 2 && (v["wid"] == _zw.V.wid || v['actrole'] == '_redrafter')) {
-                            sCls = 'zf-sl-current';
+                    if (cmd == 'read') {
+                        if (v["viewstate"] == '6') {
+                            sCls = 'zf-sl-cancel';
                         } else {
-                            if (v["received"] == '' && v["parent"] == _zw.V.pwid && v["signkind"] != '3' && v["signkind"] != '4') {
-                                if (v["parttype"].substr(2, 1) == '' || v["parttype"].substr(2, 1) == 'g') sCls = 'zf-sl-read';
-                                else {
-                                    sCls = 'zf-sl-add'; //sTextAlign = '';
-                                    sOrderNo = '<label class="custom-control custom-checkbox mb-0"><input type="checkbox" class="custom-control-input"><span class="custom-control-label">' + sOrderNo + '</span></label>';
-                                }
+                            if (v["completed"] == '' && v["partid"] != '') {
+                                if (v["state"] == '2' && v["viewstate"] == '3') sCls = 'zf-sl-current';
+                                else sCls = 'zf-sl-read';
                             } else {
-                                sCls = 'zf-sl-read';
+                                if (v["state"] == '2' && v["signstatus"] == '3' && v["viewstate"] == '3' && v["partid"] != '') sCls = 'zf-sl-current';
+                                else sCls = 'zf-sl-read';
                             }
                         }
-                    } else {
-                        if (v["state"] == 2 && v["wid"] == _zw.V.wid && v["completed"] != '' && v["partid"] != '') sCls = 'zf-sl-current';
-                        else sCls = 'zf-sl-read';
-                    }
-                } else {
-                    if (v["completed"] == '' && v["partid"] != '') {
-                        if (v["state"] == 2 && v["wid"] == _zw.V.wid) {
-                            sCls = 'zf-sl-current';
-                        } else {
-                            if (!bParallel && v["received"] == '' && v["signkind"] != '3' && v["signkind"] != '4') {
-                                if (v["parttype"].substr(2, 1) == '' || v["parttype"].substr(0, 3) == 'u_g') sCls = 'zf-sl-read';
-                                else if (_zw.V.wid != '' && _zw.V.pwid != '') sCls = 'zf-sl-read';
+                    } else if (cmd == 'reject') {
+                        if (v["parent"] == _zw.V.pwid) {
+                            if (v["completed"] == '' && v["partid"] != '') {
+                                if (v["state"] == '2' && (v["wid"] == _zw.V.wid || v['actrole'] == '_redrafter')) sCls = 'zf-sl-current';
+                                else sCls = 'zf-sl-read';
+                            } else if (v["state"] == '2' && v["signstatus"] == '3' && v["wid"] == _zw.V.wid && v["partid"] != '') {
+                                sCls = 'zf-sl-current';
+                            } else {
+                                if (v["partid"] == '' || v["actrole"] == '_redrafter' || v["actrole"] == '_re') sCls = 'zf-sl-read';
                                 else {
                                     sCls = 'zf-sl-add';
-                                    sCheck = '<label class="custom-control custom-checkbox mb-0 ml-1"><input type="checkbox" class="custom-control-input"><span class="custom-control-label"></span></label>';
+                                    sOrderNo = '<label class="custom-control custom-checkbox mb-0"><input type="checkbox" class="custom-control-input"><span class="custom-control-label">' + sOrderNo + '</span></label>';
                                 }
+                            }
+                        } else {
+                            sCls = 'zf-sl-read';
+                        }
+                    } else {
+                        if (v["completed"] == '' && v["partid"] != '') {
+                            if (v["state"] == '2' && (v["wid"] == _zw.V.wid || v['actrole'] == '_redrafter')) {
+                                sCls = 'zf-sl-current';
                             } else {
-                                sCls = 'zf-sl-read';
+                                if (v["received"] == '' && v["parent"] == _zw.V.pwid && v["signkind"] != '3' && v["signkind"] != '4') {
+                                    if (v["parttype"].substr(2, 1) == '' || v["parttype"].substr(2, 1) == 'g') sCls = 'zf-sl-read';
+                                    else {
+                                        sCls = 'zf-sl-add'; //sTextAlign = '';
+                                        sOrderNo = '<label class="custom-control custom-checkbox mb-0"><input type="checkbox" class="custom-control-input"><span class="custom-control-label">' + sOrderNo + '</span></label>';
+                                    }
+                                } else {
+                                    sCls = 'zf-sl-read';
+                                }
+                            }
+                        } else {
+                            if (v["state"] == '2' && v["wid"] == _zw.V.wid && v["completed"] != '' && v["partid"] != '') sCls = 'zf-sl-current';
+                            else sCls = 'zf-sl-read';
+                        }
+                    }
+                } else {
+                    if (cmd == 'read') {
+                        if (v["viewstate"] == '6') {
+                            sCls = 'zf-sl-cancel';
+                        } else {
+                            if (v["completed"] == '' && v["partid"] != '') {
+                                if (v["state"] == '2' && v["viewstate"] == '3') sCls = 'zf-sl-current';
+                                else sCls = 'zf-sl-read';
+                            } else {
+                                if (v["state"] == '2' && v["signstatus"] == '3' && v["viewstate"] == '3' && v["partid"] != '') sCls = 'zf-sl-current';
+                                else sCls = 'zf-sl-read';
+                            }
+                        }
+                    } else if (cmd == 'reject') {
+                        var sStep = pfirst != null ? pfirst["step"] : (cur != null ? cur["step"] : '0'); //console.log(sStep);
+                        if (v["completed"] == '' && v["partid"] != '') {
+                            if (v["state"] == '2' && v["wid"] == _zw.V.wid) sCls = 'zf-sl-current';
+                            else sCls = 'zf-sl-read';
+                        } else if (v["state"] == '2' && v["signstatus"] == '3' && v["wid"] == _zw.V.wid && v["partid"] != '') {
+                            sCls = 'zf-sl-current';
+                        } else {
+                            if (v["actrole"] == '_drafter' || v["actrole"] == '_re' || v["step"] == sStep) sCls = 'zf-sl-read';
+                            else {
+                                sCls = 'zf-sl-add';
+                                sCheck = '<label class="custom-control custom-checkbox mb-0 ml-1"><input type="checkbox" class="custom-control-input"><span class="custom-control-label"></span></label>';
                             }
                         }
                     } else {
-                        if (v["state"] == 2 && v["wid"] == _zw.V.wid && v["completed"] != '' && v["partid"] != '') sCls = 'zf-sl-current';
-                        else sCls = 'zf-sl-read';
+                        if (v["completed"] == '' && v["partid"] != '') {
+                            if (v["state"] == '2' && v["wid"] == _zw.V.wid) {
+                                sCls = 'zf-sl-current';
+                            } else {
+                                if (!bParallel && v["received"] == '' && v["signkind"] != '3' && v["signkind"] != '4') {
+                                    if (v["parttype"].substr(2, 1) == '' || v["parttype"].substr(0, 3) == 'u_g') sCls = 'zf-sl-read';
+                                    else if (_zw.V.wid != '' && _zw.V.pwid != '') sCls = 'zf-sl-read';
+                                    else {
+                                        sCls = 'zf-sl-add';
+                                        sCheck = '<label class="custom-control custom-checkbox mb-0 ml-1"><input type="checkbox" class="custom-control-input"><span class="custom-control-label"></span></label>';
+                                    }
+                                } else {
+                                    sCls = 'zf-sl-read';
+                                }
+                            }
+                        } else {
+                            if (v["state"] == '2' && v["wid"] == _zw.V.wid && v["completed"] != '' && v["partid"] != '') sCls = 'zf-sl-current';
+                            else sCls = 'zf-sl-read';
+                        }
                     }
                 }
             }
@@ -621,8 +1054,13 @@ $(function () {
 
             var sRole = '';
             if (v["parttype"].substr(0, 1) == 'g') sRole = _zw.parse.bizRole(v["bizrole"]);
-            else if (v["bizrole"] == 'normal' || v["bizrole"] == 'receive' || v["bizrole"] == 'gwichaek' || (v["bizrole"] == 'application' && v["actrole"] == '_reviewer')) sRole = _zw.parse.actRole(v["actrole"]);
-            else sRole = _zw.parse.bizRole(v["bizrole"]);
+            else {
+                if (v["parent"] != '') sRole = _zw.parse.actRole(v["actrole"]);
+                else {
+                    if (v["bizrole"] == 'normal' || v["bizrole"] == 'receive' || v["bizrole"] == 'gwichaek' || (v["bizrole"] == 'application' && v["actrole"] == '_reviewer')) sRole = _zw.parse.actRole(v["actrole"]);
+                    else sRole = _zw.parse.bizRole(v["bizrole"]);
+                }
+            }
 
             s = s.replace("{$class}", sCls).replace("{$check}", sCheck);
             s = s.replace("{$mode}", v["mode"]).replace("{$wid}", v["wid"]).replace("{$parent}", v["parent"]).replace("{$partid}", v["partid"]).replace("{$actid}", v["activityid"]);
@@ -663,15 +1101,20 @@ $(function () {
             var sPartName = partType.substr(0, 1) == 'g' ? partName : dept + '.' + partName;
             var sRole = '';
             if (partType.substr(0, 1) == 'g') sRole = _zw.parse.bizRole(bizRole);
-            else if (bizRole == 'normal' || bizRole == 'receive' || bizRole == 'gwichaek' || (bizRole == 'application' && actRole == '_reviewer')) sRole = _zw.parse.actRole(actRole);
-            else sRole = _zw.parse.bizRole(bizRole);
+            else {
+                if (parent != '') sRole = _zw.parse.actRole(actRole);
+                else {
+                    if (bizRole == 'normal' || bizRole == 'receive' || bizRole == 'gwichaek' || (bizRole == 'application' && actRole == '_reviewer')) sRole = _zw.parse.actRole(actRole);
+                    else sRole = _zw.parse.bizRole(bizRole);
+                }
+            }
 
             s = s.replace("{$class}", 'zf-sl-add').replace("{$check}", sCheck);
             s = s.replace("{$mode}", '1').replace("{$wid}", '').replace("{$parent}", parent).replace("{$partid}", partId).replace("{$actid}", actId);
             s = s.replace("{$step}", 0).replace("{$substep}", 0).replace("{$seq}", 0).replace("{$state}", 0).replace("{$signstatus}", 0).replace("{$signkind}", 0);
             s = s.replace("{$bizrole}", bizRole).replace("{$actrole}", actRole).replace("{$parttype}", partType).replace("{$deptcode}", deptCode).replace("{$part2}", part2).replace("{$part5}", part5);
 
-            s = s.replace("{$textalign}", sTextAlign).replace("{$order}", sOrderNo);
+            s = s.replace("{$margintop}", '').replace("{$textalign}", sTextAlign).replace("{$order}", sOrderNo);
             s = s.replace("{$role}", sRole);
             s = s.replace("{$partname}", sPartName);
             s = s.replace("{$parsews}", _zw.parse.workItemState(0));
@@ -704,6 +1147,385 @@ $(function () {
                     });
                 }
             });
+        },
+        "space": function (signLine) {
+            if (signLine == null || signLine.length == 0) return false;
+            var tbl = '', biz = '', nodes = null, p = null;
+
+            $('#__FormView div.m .si-tbl').each(function () {
+                tbl = $(this).attr("id"); biz = tbl.replace('__si_', '').replace('_R', '').toLowerCase();
+
+                if (tbl == '__si_Complex') { //parent=''인 결재선만 표기
+                    nodes = signLine.filter(function (element) { if (element.parent == '' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                    if (nodes.length > 0) _zw.parse.signPart($(this), nodes, tbl);
+
+                } else if (tbl == '__si_Normal') {
+                    nodes = signLine.filter(function (element) { if (element.bizrole == biz && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                    if (nodes.length > 0) _zw.parse.signPart($(this), nodes, tbl);
+
+                } else if (tbl == '__si_Receive' || tbl == '__si_Distribution' || tbl == '__si_Application_R') { //단일수신, 배포수신, 접수수신
+                    p = signLine.filter(function (element) { if (element.bizrole == biz && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                    if (p.length > 0) {
+                        if (_zw.V.biz == biz) {
+                            if (_zw.V.act.indexOf('__') >= 0) nodes = signLine.filter(function (element) { if (element.bizrole == biz && element.parent == _zw.V.wid && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                            else nodes = signLine.filter(function (element) { if (element.bizrole == biz && element.parent == _zw.V.pwid && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                            if (nodes.length > 0) _zw.parse.signPart($(this), nodes, tbl);
+                        } else {
+                            if (p.length == 1) {
+                                nodes = signLine.filter(function (element) { if (element.bizrole == biz && element.parent != '' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                                if (nodes.length > 0) _zw.parse.signPart($(this), nodes, tbl);
+                                else _zw.parse.signRcvPart($(this), p, tbl);
+                            } else _zw.parse.signRcvPart($(this), p, tbl);
+                        }
+                    }
+
+                } else if (tbl == '__si_Agree' || tbl == '__si_Application') {
+                    nodes = signLine.filter(function (element) { if (element.bizrole == biz && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                    if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, tbl);
+
+                } else if (tbl == '__si_Last') {
+                    nodes = signLine.filter(function (element) { if (element.bizrole == biz && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                    _zw.parse.signSerialPart($(this), nodes, tbl);
+
+                } else if (tbl == '__si_Confirm') {
+                    nodes = signLine.filter(function (element) { if (element.bizrole == biz && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                    _zw.parse.signEdgePart($(this), nodes, tbl);
+
+                } else if (tbl == '__si_OnlyOne') { //하나의 결재칸
+                    var br = $(this).attr('bizrole'), ar = $(this).attr('actrole');
+                    nodes = signLine.filter(function (element) { if (element.bizrole == br && element.actrole == ar && element.partid != '' && element.viewstate != '6') return true; });
+                    _zw.parse.signSinglePart($(this), nodes);
+
+                } else if (tbl == '__si_Attr') { //2015-03-19 : BizRoe, ActRole을 지정
+                    var br = $(this).attr('bizrole'), ar = $(this).attr('actrole');
+                    nodes = signLine.filter(function (element) { if (element.bizrole == br && element.actrole == ar && element.partid != '' && element.viewstate != '6') return true; });
+                    _zw.parse.signSerialPart($(this), nodes, tbl);
+
+                } else if (tbl == '__si_Site') { //사이트별로 특정 프로세스에 맞게
+                    nodes = signLine.filter(function (element) { if (element.bizrole == 'confirm' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                    if (nodes.length > 0) _zw.parse.signPart($(this), nodes, tbl);
+
+                } else if (tbl == '__si_Form') { //양식별
+                    if (_zw.V.ft == 'NEWDEVELOPREQUEST') {
+                        nodes = signLine.filter(function (element) { if ((element.bizrole == '등급부서' || element.bizrole == 'application' || element.bizrole == 'manage') && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, '__si_Application', 'BR');
+
+                    } else if (_zw.V.ft == 'NEWDEVELOPREQUESTINDUSTRY') { //신제품개발의뢰서(크레신산업)
+                        nodes = signLine.filter(function (element) { if ((element.bizrole == 'agree' || element.bizrole == 'confirm' || element.bizrole == 'application' || element.bizrole == 'manage') && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, '__si_Application', 'BR');
+
+                    } else if (_zw.V.ft == 'LOSSREPORT' || _zw.V.ft == 'LOSSREPORTINDUSTRY') { //손실발생보고서(크레신산업)
+                        nodes = signLine.filter(function (element) { if (element.bizrole == 'gwichaek' && element.actrole != '__r' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, tbl, '');
+
+                    } else if (_zw.V.ft == 'LOSSREPORTINDUSTRY') { 
+                        nodes = signLine.filter(function (element) { if (element.bizrole == 'gwichaek' && element.actrole != '__r' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, tbl, '');
+
+                    } else if (_zw.V.ft == 'BIZTRIPPLAN') { //출장계획서(업무출장)
+                        nodes = signLine.filter(function (element) { if (element.bizrole == 'normal' && element.actrole == '_approver' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, tbl, '');
+
+                    } else if (_zw.V.ft == 'TOOLINGNEWDRAFT' || _zw.V.ft == 'TOOLINGINCREASEDRAFT') { //금형신작,증작기안
+                        nodes = signLine.filter(function (element) { if (element.bizrole == '영업수신' && element.actrole != '__r' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length == 0) nodes = signLine.filter(function (element) { if (element.bizrole == '영업수신' && element.actrole == '__r' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, tbl, '');
+                    }
+                } else if (tbl == '__si_Form2') { //2013-01-03 : 양식별
+                    if (_zw.V.ft == 'NEWDEVELOPREQUEST') {
+                        nodes = signLine.filter(function (element) { if ((element.bizrole == '생산지' || element.bizrole == 'confirm') && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, '__si_Application', 'BR');
+
+                    } else if (_zw.V.ft == 'BIZTRIPPLAN') { //출장계획서(업무출장)
+                        nodes = signLine.filter(function (element) { if (element.bizrole == '동행승인' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, tbl, '');
+
+                    } else if (_zw.V.ft == 'TOOLINGNEWDRAFT' || _zw.V.ft == 'TOOLINGINCREASEDRAFT') { //금형신작,증작기안
+                        nodes = signLine.filter(function (element) { if (element.bizrole == '제작수신' && element.actrole != '__r' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length == 0) nodes = signLine.filter(function (element) { if (element.bizrole == '제작수신' && element.actrole == '__r' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (nodes.length > 0) _zw.parse.signSerialPart($(this), nodes, tbl, '');
+                    }
+                }
+            });
+        },
+        "make": function (cmd, j, cmnt) {
+            var jSign = [], jAttr = [];
+
+            if (cmd == 'reject') {
+                var cur = {};
+                cur["wid"] = _zw.V.wid; cur["partid"] = _zw.V.partid; cur["completed"] = ''; cur["comment"] = cmnt;
+                j["current"] = cur;
+
+                if (_zw.V.pwid != '' && _zw.V.partid.indexOf('__') >= 0) {
+                    var ln = _zw.V.process.signline.find(function (element) { if (element.parent === _zw.V.pwid && element.actrole == _zw.V.curact && element.partid == _zw.V.current.urid) return true; }); //console.log(curln);
+                    ln["mode"] = '1';
+                    j["param"] = ln;
+                }
+
+            } else if (cmd == 'draft' || cmd == 'approval') {
+                var signLine = _zw.V.templine && _zw.V.templine.signline.length > 0 ? _zw.V.templine.signline : _zw.V.process.signline; //console.log(signLine);
+                var searchLine = null, tgt = null; node = null, sText = '';
+                
+                if (_zw.V.pwid != '') {
+                    //상위가 있는 경우 상위 단계까지 담는다 -> 상위단계가 병렬인 경우 다른 병렬은 제외한다.
+                    tgt = signLine.find(function (element) { if (element.wid === _zw.V.pwid) return true; });
+                    searchLine = signLine.filter(function (element) { if (element.parent === tgt["parent"] && parseInt(element.step) >= parseInt(tgt["step"])) return true; });
+                    
+                    for (var i = 0; i < searchLine.length; i++) {
+                        var srcln = searchLine[i], bInsert = true;
+                        if (tgt["activityid"] == srcln["activityid"] && tgt["step"] == srcln["step"] && parseInt(tgt["substep"]) > 0) {
+                            bInsert = tgt["wid"] == srcln["wid"] ? true : false;
+                        }
+                        if (bInsert) {
+                            var sMode = srcln["mode"];
+                            if (srcln["wid"] != '') {
+                                var temp = _zw.V.process.signline.find(function (element) { if (element.wid === srcln["wid"]) return true; });
+                                if (srcln["step"] == temp["step"] && srcln["substep"] == temp["substep"]
+                                    && srcln["seq"] == temp["seq"] && srcln["signkind"] == temp["signkind"]) {
+                                    sMode = "0";
+                                } else sMode = "3";
+
+                                if (srcln["wid"] == tgt["wid"] && srcln["partid"] == _zw.V.partid) {
+                                    sMode = "3"; sText = cmnt;
+                                } else sText = '';
+                            } else sText = '';
+
+                            node = _zw.parse.signJson(sMode, srcln["wid"], srcln["parent"], srcln["step"], srcln["substep"], srcln["seq"]
+                                , srcln["state"], srcln["signstatus"], srcln["signkind"], srcln["viewstate"]
+                                , srcln["flag"], srcln["designator"], srcln["bizrole"], srcln["actrole"]
+                                , srcln["activityid"], srcln["partid"], srcln["parttype"], srcln["deptcode"]
+                                , srcln["competency"], srcln["point"], srcln["received"], srcln["view"]
+                                , srcln["completed"], srcln["interval"], srcln["partname"], srcln["part1"], srcln["part2"]
+                                , srcln["part3"], srcln["part4"], srcln["part5"], srcln["part6"]
+                                , srcln["sign"], sText, srcln["reserved1"], srcln["reserved2"]);
+
+                            jSign.push(node);
+                        }
+                    }
+                }
+
+                //현결재자 담기
+                var curAct = _zw.V.schema.find(function (element) { if (element.actid === _zw.V.curactid) return true; }); //console.log(curAct);
+
+                if (_zw.V.act.indexOf('__') != -1) tgt = signLine.find(function (element) { if (element.bizrole == _zw.V.curbiz && element.actrole == _zw.V.curact) return true; });
+                else if (_zw.V.wid != '') tgt = signLine.find(function (element) { if (element.wid === _zw.V.wid) return true; });
+                else tgt = signLine.find(function (element) { if (element.actrole == '_drafter' && element.step == '1') return true; });
+
+                searchLine = signLine.filter(function (element) { if (element.parent === tgt["parent"] && parseInt(element.step) >= parseInt(tgt["step"])) return true; });
+                //console.log(tgt)
+
+                for (var i = 0; i < searchLine.length; i++) {
+                    var srcln = searchLine[i], bInsert = true;
+                    if (curAct != undefined && curAct["actid"] == srcln["activityid"] && curAct["progress"] == "parallel") {
+                        bInsert = tgt["wid"] == srcln["wid"] ? true : false;
+                    }
+                    if (bInsert) {
+                        var sMode = srcln["mode"];
+                        if (srcln["wid"] != '') {
+                            var temp = _zw.V.process.signline.find(function (element) { if (element.wid === srcln["wid"]) return true; });
+                            if (srcln["step"] == temp["step"] && srcln["substep"] == temp["substep"]
+                                && srcln["seq"] == temp["seq"] && srcln["signkind"] == temp["signkind"]) {
+                                sMode = "0";
+                            } else sMode = "3";
+
+                            if (srcln["wid"] == tgt["wid"] && srcln["partid"] == _zw.V.partid) {
+                                sMode = "3"; sText = cmnt;
+                            } else sText = '';
+                        } else {
+                            if (cmd == 'draft' && srcln["actrole"] == '_drafter' && srcln["partid"] == _zw.V.partid) {
+                                srcln["signstatus"] = "7"; sText = cmnt;
+                            } else sText = '';
+                        }
+                        
+                        node = _zw.parse.signJson(sMode, srcln["wid"], srcln["parent"], srcln["step"], srcln["substep"], srcln["seq"]
+                            , srcln["state"], srcln["signstatus"], srcln["signkind"], srcln["viewstate"]
+                            , srcln["flag"], srcln["designator"], srcln["bizrole"], srcln["actrole"]
+                            , srcln["activityid"], srcln["partid"], srcln["parttype"], srcln["deptcode"]
+                            , srcln["competency"], srcln["point"], srcln["received"], srcln["view"]
+                            , srcln["completed"], srcln["interval"], srcln["partname"], srcln["part1"], srcln["part2"]
+                            , srcln["part3"], srcln["part4"], srcln["part5"], srcln["part6"]
+                            , srcln["sign"], sText, srcln["reserved1"], srcln["reserved2"]);
+
+                        jSign.push(node);
+                    }
+                }
+
+                var attrList = _zw.V.templine && _zw.V.templine.attributes.length > 0 ? _zw.V.templine.attributes : _zw.V.process.attributes;
+
+                j["signline"] = jSign;
+                j["attributes"] = attrList;
+                j["deleted"] = _zw.V.templine && _zw.V.templine["deleted"] ? _zw.V.templine["deleted"] : '';
+            }
+            //console.log(j)
+        },
+        "validation": function (cmd) { //checkValidLine 결재선 유효성 검사 (return 값 = Y : 통과, N : 결재선창 띄우기, F : 양식필드 관련)
+            if (_zw.V.schema.length == 0) return 'Y';
+            if (cmd == 'draft') {
+                if (_zw.V.templine == null || _zw.V.templine.signline.length == 0) return 'N';
+            }
+
+            var signLine = _zw.V.templine && _zw.V.templine.signline.length > 0 ? _zw.V.templine.signline : _zw.V.process.signline;
+            if (signLine == null || signLine.length == 0) return 'N';
+
+            var attrList = _zw.V.templine && _zw.V.templine.attributes.length > 0 ? _zw.V.templine.attributes : _zw.V.process.attributes;
+            var curAct = _zw.V.schema.find(function (element) { if (element.actid === _zw.V.curactid) return true; }); //console.log(curAct);
+            
+            var schAct = null, curln = null, nextStep = null, parentStep = null, vPartType = null;
+            var rt = 'Y', bCheck = false;
+
+            if (curAct["parentactid"] != '') { //pwid != ''
+                schAct = _zw.V.schema.filter(function (element) { if (element.random = 'N' && (element.parentactid == '' || (element.parentactid == curAct["parentactid"] && parseInt(element.step) >= parseInt(curAct["step"])))) return true; });
+            } else { //pwid == ''
+                schAct = _zw.V.schema.filter(function (element) { if (element.random = 'N' && element.parentactid == '' && parseInt(element.step) >= parseInt(curAct["step"])) return true; });
+            }
+            //console.log(signLine)
+            if (schAct.length > 0) {
+                curln = signLine.find(function (element) { if ((_zw.V.wid != '' && element.wid === _zw.V.wid) || (_zw.V.wid == '' && element.parent == '' && element.step == '1')) return true; }); //console.log(curln);
+                //alert(_zw.V.act + " : " + curln["wid"])
+                if (_zw.V.act.indexOf('__') != -1) {
+                    nextStep = signLine.filter(function (element) { if (element.parent == curln["wid"] && element.viewstate != '6') return true; });
+                    parentStep = signLine.filter(function (element) { if (element.parent == curln["parent"] && element.viewstate != '6' && parseInt(element.step) >= parseInt(curln["step"])) return true; });
+                } else {
+                    nextStep = signLine.filter(function (element) { if (element.parent == curln["parent"] && element.viewstate != '6' && parseInt(element.step) >= parseInt(curln["step"])) return true; });
+                } //console.log(nextStep);
+
+                var sConfirm = '';
+                for (var i = 0; i < schAct.length; i++) {
+                    vPartType = schAct[i]["parttype"].split('_');
+
+                    if (vPartType[1] == "b" || vPartType[1] == "f" || vPartType[1] == "g") {
+                        for (var j = nextStep.length - 1; j >= 0; j--) {
+                            if (nextStep[j]["activityid"] == schAct[i]["actid"] && nextStep[j]["partid"] != '') { bCheck = true; break; }
+                        }
+                        if (_zw.V.act.indexOf('__') != -1 && parentStep) {
+                            for (var j = parentStep.length - 1; j >= 0; j--) {
+                                if (parentStep[j]["activityid"] == schAct[i]["actid"] && parentStep[j]["partid"] != '') { bCheck = true; break; }
+                            }
+                        }
+                        if (!bCheck) {
+                            if (schAct[i]["actrole"] == '_drafter' || schAct[i]["actrole"] == '_redrafter') { rt = 'N'; break; } //기안자, 재기안자 경우 결재선창을 바로 띄운다
+
+                            sConfirm = "[" + _zw.parse.bizRole(schAct[i]["bizrole"]) + " : " + _zw.parse.actRole(schAct[i]["actrole"]) + "]";
+                            if (schAct[i]["mandatory"] == 'Y') { bootbox.alert("필수항목 " + sConfirm + "를 지정하십시오!"); rt = 'N'; break; }
+                        }
+                        bCheck = false;
+                    } else if (vPartType[1] == "h" && schAct[i]["mandatory"] == 'Y') {
+                        attrList = attrList.find(function (element) { if (element.actid === schAct[i]["actid"]) return true; });
+                        sConfirm = "[" + _zw.parse.bizRole(schAct[i]["bizrole"]) + " : " + _zw.parse.actRole(schAct[i]["actrole"]) + "]";
+                        if (attrList.length == 0) { bootbox.alert("필수항목 " + sConfirm + "를 지정하십시오!"); rt = 'N'; break; }
+                    }
+                } //alert('rt => ' + rt)
+                //2013-04-30 특수한 경우 체크
+                if (rt == 'Y') rt = _zw.signline.validationSpc(signLine);
+            }
+            return rt;
+        },
+        "validationSpc": function (signLine) { //checkSpecialValidLine
+            var p = null, c = null, c2 = null, c3 = null, c4 = null, n = null;
+
+            if (_zw.V.ft == 'DRAFT' || _zw.V.ft == 'LEEVINDRAFT') { //크레신 - 일반기안
+                if (_zw.V.biz != "confirm" && _zw.V.biz != "last") {
+                    p = signLine.filter(function (element) { if (element.bizrole == 'confirm' && element.actrole == '_approver') return true; });
+                    c = signLine.filter(function (element) { if (element.bizrole == 'agree' && element.actrole == '_approver') return true; });
+
+                    if (_zw.V.act == '' || _zw.V.act.indexOf('__') != -1) { //2015-12-04
+                        p2 = signLine.filter(function (element) { if (element.bizrole == 'last' && element.actrole == '_approver') return true; });
+                        c2 = signLine.filter(function (element) { if (element.bizrole == '의견' && element.actrole == '_approver') return true; });
+                        c3 = signLine.filter(function (element) { if (element.bizrole == '의견' && element.partid == '101370' && (element.actrole == '_reviewer' || element.actrole == '_approver')) return true; });
+                        c4 = signLine.filter(function (element) { if (element.partid == '101559' || element.partid == '101534') return true; });
+
+                        if (c3.length == 0) {
+                            if (p2.length > 0 && c2.length == 0 && c4.length == 0) { bootbox.alert("최종승인권자는 회장님 전결 사항에만 지정 가능합니다.\n\n최종승인권자(회장님)가 지정되어 있는 경우 기획조정실장을 의견권자로 반드시 지정하시기 바랍니다"); return 'N'; }
+                            else if (c2.length > 0 && p2.length == 0) { bootbox.alert("의견권자는 최종승인권자(회장님)가 지정되어 있는 경우 만 지정 가능합니다."); return 'N'; }
+                        }
+                    }
+
+                    //if (p.length > 0 && c.length == 0) { bootbox.alert("확인자가(부문장) 지정되어 있는 경우 합의권자를(팀장) 반드시 지정하여야 합니다!"); return false; }
+
+                    if (_zw.V.ft == 'DRAFT') {
+                        if (c.length > 0) {
+                            n = $('#__subtable1 .sub_table_row:first() input[type="text"]:first()');
+                            if (n.length > 0 && $.trim(n.val()) == '') { bootbox.alert("합의권자가 지정되어 있는 경우 합의요청 관련사항을 입력하여야 합니다!", function () { n.focus(); }); return 'F'; }
+                        }
+                    }
+                }
+            } else if ((_zw.V.ft == 'SELLINGUC' && _zw.V.def.ver == '4') || (_zw.V.ft == 'EQUIPDRAFTD' && _zw.V.def.ver == '4')
+                || (_zw.V.ft == 'EQUIPMAKEPURCHASE' && _zw.V.def.ver == '5') || _zw.V.ft == 'NEWOWNDEVREQUEST' || _zw.V.ft == 'UNITDEVPLAN') { //크레신 - 판매단가결정품의서,설비
+
+                if (_zw.V.biz != "last") {
+                    p2 = signLine.filter(function (element) { if (element.bizrole == 'last') return true; });
+                    c2 = signLine.filter(function (element) { if (element.bizrole == '의견') return true; });
+                    c4 = signLine.filter(function (element) { if (element.partid == '101559' || element.partid == '101534') return true; });
+
+                    if (p2.length > 0 && c2.length == 0 && c4.length == 0) { bootbox.alert("최종승인권자는 회장님 전결 사항에만 지정 가능합니다.\n\n최종승인권자(회장님)가 지정되어 있는 경우 기획조정실장을 의견권자로 반드시 지정하시기 바랍니다"); return 'N'; }
+                }
+
+            } else if (_zw.V.ft == 'BIZTRIPPLAN') { //크레신-출장계획서(업무출장)
+                if (_zw.V.act == '' && _zw.V.wid == '' && $('#__mainfield[name="COMPANIONYN"]').val() == 'Y') { //기안경우
+                    p = signLine.filter(function (element) { if (element.bizrole == '동행자' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                    if (p.length == 0) { bootbox.alert("동행자를 지정하십시오!"); return 'N'; }
+                    else if (p.length > 7) { bootbox.alert("동행자는 7명까지 지정 할 수 있습니다!"); return 'N'; }
+                }
+            } else if (_zw.V.ft == 'TOOLINGNEWDRAFT' || _zw.V.ft == 'TOOLINGINCREASEDRAFT') { //금형신작, 증장 : 2014-04-22
+                if (_zw.V.biz == "normal" && _zw.V.act == '_reviewer') {
+                    p = signLine.filter(function (element) { if (element.bizrole == 'last' && element.actrole == '_approver') return true; });
+
+                    //$('#__mainfield[name="WHOMONEY"]').val();
+                    //$('#__mainfield[name="CONVPRODUCTCOSTSUM"]').val();
+
+                }
+
+            } else if (_zw.V.ft == 'PRODRELEASEREQ') { //자사제품출고요청서 : 2020-12-17
+
+            } else if (_zw.V.ft == 'CTCMINUTES') { //품평회회의록 : 21-11-24
+
+            }
+
+            return 'Y';
+        },
+        "toFormBody": function (signLine) {
+            var p = null, col = null;
+            if (_zw.V.ft == 'NEWOWNDEVREQUEST') { //자사신제품개발의뢰서
+                if (_zw.V.biz == "등급부서" && _zw.V.act == '_approver') {
+                    p = signLine.find(function (element) { if (element.bizrole == 'application' && element.actrole == '_approver' && element.partid != '') return true; });
+                    if (!p) { bootbox.alert("필수항목 [접수(개발주관팀)] 누락!"); return false; }
+
+
+                    return true;
+                }
+            } else if (_zw.V.ft == "NEWDEVELOPREQUEST") {//OEM신제품개발의뢰서
+                if (_zw.V.biz == "등급부서" && _zw.V.act == '_approver') {
+                    p = signLine.find(function (element) { if (element.bizrole == 'application' && element.actrole == '_approver' && element.partid != '') return true; });
+                    if (!p) { bootbox.alert("필수항목 [접수(개발주관팀)] 누락!"); return false; }
+
+
+                    return true;
+                }
+            } else if (_zw.V.ft == "CTCMINUTES") {//품평회회의록
+                if (_zw.V.biz == "" && _zw.V.act == '') {
+                    col = signLine.filter(function (element) { if (element.bizrole == 'receive' && element.actrole == '__r' && element.partid != '') return true; });
+                    p = $('#__subtable5');
+                    if (col.length > 0) {
+
+                    }
+                }
+            } else if (_zw.V.ft == "CHANGEREQUEST") {//부품사양변경요청검토서
+                if (_zw.V.biz == "" && _zw.V.act == '') {
+                    col = signLine.filter(function (element) { if (element.actrole == '__r' && element.partid != '') return true; });
+                    p = $('#__subtable1');
+                    if (p.length  > 0 && col.length > 0) {
+
+                    }
+                }
+            } else if (_zw.V.ft == "BEFORECHANGE") {//4M/1E변경사전회의진행서
+                if (_zw.V.biz == "" && _zw.V.act == '') {
+                    col = signLine.filter(function (element) { if (element.actrole == '__r' && element.partid != '') return true; });
+                    p = $('#__subtable1');
+                    if (p.length > 0 && col.length > 0) {
+
+                    }
+                }
+            }
         }
     }
 
@@ -768,6 +1590,78 @@ $(function () {
             el.find('input:checkbox, input:radio').prop('checked', false);
             el.find('select').attr('selectIndex', 0);
         },
+        "validation": function (cmd) {
+            if (cmd != null && (cmd == "reject" || cmd == "back" || cmd == "reserve" || cmd == "pre")) return true; //2013-02-21 (지정)반려, 2014-02-20 선결인 경우 체크 제외
+            if (cmd != null && cmd != "draft" && _zw.formEx.validation) return _zw.formEx.validation(cmd);
+            if (_zw.V.def["validation"] == '') return true;
+
+            var cFirstDel = String.fromCharCode(8), cSecondDel = String.fromCharCode(7);
+            var vCheck = _zw.V.def["validation"].split(cSecondDel), vField = null, el = null; //console.log(vCheck);
+            var sMsg = '필수항목 [$field] 누락!';
+            var jSub = {};
+
+            for (var i = 0; i < vCheck.length; i++) {
+                if (vCheck[i].indexOf(cFirstDel) > 0) {
+                    vField = vCheck[i].split(cFirstDel);
+                    if (vField[0] == 'C') {
+                        el = $('#' + vField[2] + '[name="__commonfield"]');
+                        if ($.trim(el.val()) == '') { bootbox.alert(sMsg.replace('$field', vField[3]), function () { try { el.focus(); } catch { } }); return false; }
+
+                    } else if (vField[0] == 'M') {
+                        el = $('#__mainfield[name="' + vField[2] + '"]');
+                        var tag = el.prop('tagName').toLowerCase();
+                        if (tag == "div" || tag == "span") {
+                            return true;
+                        } else if (tag == "input" && (el.is(":checkbox") || el.is(":radio"))) {
+                            var b = false;
+                            el.each(function () { if ($(this).prop('checked')) b = true; return false; });
+                            if (!b) { bootbox.alert(sMsg.replace('$field', vField[3]), function () { try { el[0].focus(); } catch { } }); return false; }
+                        } else if ($.trim(el.val()) == '') {
+                            bootbox.alert(sMsg.replace('$field', vField[3]), function () { try { el.focus(); } catch { } }); return false;
+                        }
+
+                    } else {
+                        if (!jSub[vField[0]]) jSub[vField[0]] = [];
+                        jSub[vField[0]].push(vField);
+                    }
+                }
+            } //for
+
+            var bReturn = true; //console.log(jSub)
+            for (var x in jSub) {
+                $('#__subtable' + x.substr(1) + ' tr.sub_table_row').each(function (idx) {
+                    var iData = 0;
+                    if (idx > 0) { //둘째줄부터 입력필드가 있는 경우 체크
+                        $(this).find('[name]').each(function () { if ($(this).attr('name') != "" && $(this).attr('name') != 'ROWSEQ' && $.trim($(this).val()) != '') { iData++; return false; } });
+                    }
+                    if (idx == 0 || iData > 0) { //첫줄 필수 체크
+                        for (var i = 0; i < jSub[x].length; i++) {
+                            var fld = jSub[x][i];
+                            el = $(this).find('[name="' + fld[2] + '"]'); //console.log(el)
+                            var tag = el.prop('tagName').toLowerCase();
+                            if (tag == "div" || tag == "span") {
+                                bReturn = true; return false;
+                            } else if (tag == "input" && (el.is(":checkbox") || el.is(":radio"))) {
+                                var b = false;
+                                el.each(function () { if ($(this).prop('checked')) b = true; return false; });
+                                if (!b) {
+                                    bootbox.alert(sMsg.replace('$field', fld[3]), function () { try { el[0].focus(); } catch { } });
+                                    bReturn = false; return false;
+                                }
+                            } else if ($.trim(el.val()) == '') {
+                                bootbox.alert(sMsg.replace('$field', fld[3]), function () { try { el.focus(); } catch { } });
+                                bReturn = false; return false;
+                            }
+                        }
+                    }
+                });
+                if (!bReturn) return bReturn;            }
+
+            if (_zw.formEx.validation) {
+                if (!_zw.formEx.validation(cmd)) return false;
+            }
+            return true;
+        },
         "checkYN": function (ckb, el, fld) {
             $(':checkbox[name="' + ckb + '"]').each(function (idx, e) {
                 if (el != e) { if (e.checked) e.checked = false; }
@@ -790,10 +1684,239 @@ $(function () {
         },
         "view": function () {
             
+        },
+        "make": function (cmd, j) {
+            if (cmd == 'reject') {
+                j["biz"] = {};
+                j["biz"]["formid"] = _zw.V.def["formid"];
+                j["biz"]["processid"] = _zw.V.def["processid"];
+                j["biz"]["oid"] = _zw.V["oid"];
+                j["biz"]["appid"] = _zw.V["appid"];
+
+                j["doc"] = _zw.V.doc;
+                j["form"] = { "maintable": {}, "subtables": {} };
+                j["process"] = { "current": {}, "target": {}, "param": {} };
+                j["attachlist"] = [];
+
+            } else {
+                _zw.body.common(cmd, j);
+
+                if (cmd == 'draft') {
+                    _zw.body.main(j["form"]); //, ["REASON", "APPLICANT", "RECEIVEDATE", "LOSSYN", "LOSSAMOUNT"]
+                    _zw.body.sub(j["form"]);
+                } else {
+                    if (_zw.formEx.make) _zw.formEx.make(j["form"]);
+                }
+
+                _zw.body.file(cmd, j["doc"], j["attachlist"], j["imglist"]);
+            //console.log(j)
+            }
         }
     }
 
-    //양식별로 선언(예:DRAFT.js)
+    _zw.body = {
+        "common": function (cmd, j) {
+            j["companycode"] = _zw.V["companycode"];
+            j["web"] = _zw.V["web"];
+            j["domain"] = _zw.V["domain"];
+            j["ct"] = _zw.V["ct"];
+            j["xfalias"] = _zw.V["xfalias"];
+            j["dnid"] = _zw.V["dnid"];
+            //j["wid"] = _zw.V["wid"];
+            //j["ss"] = _zw.V["ss"];
+            //j["cmnt"] = _zw.V["cmnt"];
+            //j["rd"] = _zw.V["rd"];
+            j["boundary"] = _zw.V["boundary"];
+
+            j["biz"] = {};
+            j["biz"]["formid"] = _zw.V.def["formid"];
+            j["biz"]["processid"] = _zw.V.def["processid"];
+            j["biz"]["oid"] = _zw.V["oid"];
+            j["biz"]["appid"] = _zw.V["appid"];
+            j["biz"]["biz"] = _zw.V["biz"];
+            j["biz"]["act"] = _zw.V["act"];
+            j["biz"]["inherited"] = _zw.V["inherited"];
+            j["biz"]["priority"] = _zw.V["priority"];
+            j["biz"]["secret"] = _zw.V["secret"];
+            j["biz"]["docstatus"] = _zw.V["docstatus"];
+            j["biz"]["doclevel"] = _zw.V["doclevel"];
+            j["biz"]["keepyear"] = _zw.V["keepyear"];
+            j["biz"]["tms"] = _zw.V["tms"];
+            j["biz"]["prevwork"] = _zw.V["prevwork"];
+            j["biz"]["piname"] = cmd == 'draft' ? _zw.V.doc["docname"] + ' - ' + _zw.V.creator["user"] : _zw.V["piname"];
+            j["biz"]["pos"] = _zw.V["pos"];
+
+            if (cmd == 'draft') {
+                j["doc"] = {};
+                j["doc"]["docname"] = _zw.V.doc["docname"];
+                j["doc"]["msgtype"] = _zw.V.doc["msgtype"];
+                j["doc"]["docnumber"] = '';
+                j["doc"]["doclevel"] = _zw.V.doc["doclevel"];
+                j["doc"]["keepyear"] = _zw.V.doc["keepyear"];
+                j["doc"]["subject"] = $('#Subject[name="__commonfield"]').val();
+                j["doc"]["credate"] = '';
+                j["doc"]["pubdate"] = '';
+                j["doc"]["expdate"] = '';
+                //j["doc"]["attachcount"] = _zw.V.doc["attachcount"];
+                //j["doc"]["attachsize"] = _zw.V.doc["attachsize"];
+                j["doc"]["linkmsg"] = _zw.V.doc["linkmsg"];
+                j["doc"]["transfer"] = _zw.V.doc["transfer"];
+                j["doc"]["key1"] = '';
+                j["doc"]["key2"] = '';
+                if (_zw.V.creator["corp"] != null) {
+                    j["doc"]["rsvd1"] = _zw.V.creator["corp"]["corpname"];
+                    j["doc"]["rsvd2"] = _zw.V.creator["corp"]["domain"];
+                }
+
+                j["creator"] = {};
+                j["creator"]["urid"] = _zw.V.creator["urid"];
+                j["creator"]["urcn"] = _zw.V.creator["urcn"];
+                j["creator"]["user"] = _zw.V.creator["user"];
+                j["creator"]["deptid"] = _zw.V.creator["deptid"];
+                j["creator"]["deptcd"] = _zw.V.creator["deptcd"];
+                j["creator"]["dept"] = _zw.V.creator["dept"];
+                j["creator"]["empno"] = _zw.V.creator["empno"];
+                j["creator"]["grade"] = _zw.V.creator["grade"];
+                j["creator"]["phone"] = _zw.V.creator["phone"];
+                j["creator"]["belong"] = _zw.V.creator["belong"];
+                j["creator"]["indate"] = _zw.V.creator["indate"];
+
+                j["category"] = _zw.V.category;
+                j["linkeddoc"] = _zw.V.linkeddoc;
+
+            } else {
+                j["doc"] = _zw.V.doc;
+            }
+
+            j["attachlist"] = [];//_zw.V.attachlist;
+            j["imglist"] = [];
+
+            j["form"] = {};
+            j["process"] = {};
+        },
+        "main": function (f, v) { //console.log($('#__FormView #__mainfield').length)
+            var p = {}
+            $('#__FormView #__mainfield').each(function () { //console.log($(this))
+                var tag = $(this).prop('tagName').toLowerCase(), nm = $(this).attr('name');
+                var b = nm == '' ? false : true;
+                if (b && v && v.length > 0) {
+                    var fld = v.find(function (element) { if (element == nm) return true; });
+                    if (fld === undefined) b = false;
+                    console.log(fld + " : " + b)
+                }
+                if (b) {
+                    //console.log($(this).attr('name') + " : " + $(this).val())
+                    if (tag == "div" || tag == "span") {
+                        p[nm] = $(this).html();
+                    } else if (tag == "input") {
+                        if ($(this).is(":checkbox") || $(this).is(":radio")) {
+                            p[nm] = $(this).prop('checked') ? $(this).val() : '';
+                        } else {
+                            p[nm] = $(this).val();
+                        }
+                    } else {
+                        p[nm] = $(this).val();
+                    }
+                }
+            });
+
+            if (_zw.V.def["webeditor"] != '' && $('#' + _zw.T.editor.holder).length > 0) p["WEBEDITOR"] = DEXT5.getBodyValue();
+            f["maintable"] = p;
+        },
+        "sub": function (f) { //console.log($('#__subtable1 tr.sub_table_row').html())
+            var s = {};
+            for (var i = 1; i <= parseInt(_zw.V.def["subtablecount"]); i++) {
+                var v = [];
+                $('#__subtable' + i.toString() + ' tr.sub_table_row').each(function () { //console.log($(this).html())
+                    var iData = 0;
+                    $(this).find('[name]').each(function () { if ($(this).attr('name') != "" && $(this).attr('name') != 'ROWSEQ' && $.trim($(this).val()) != '') { iData++; return false; } }); //alert(iData)
+                    if (iData > 0) { //ROWSEQ 이외 필드 값이 들어 있을 경우
+                        var s = {};
+                        $(this).find('[name]').each(function () {
+                            var tag = $(this).prop('tagName').toLowerCase(), nm = $(this).attr('name'); //console.log(tag + " : " + nm + " : " + $(this).val())
+                            if (nm != '') {
+                                if (tag == "div" || tag == "span") {
+                                    s[nm] = $(this).html();
+                                } else if (tag == "input") {
+                                    if (nm != 'ROWSEQ' && ($(this).is(":checkbox") || $(this).is(":radio"))) {
+                                        s[nm] = $(this).prop('checked') ? $(this).val() : '';
+                                    } else {
+                                        s[nm] = $(this).val();
+                                    }
+                                } else {
+                                    s[nm] = $(this).val();
+                                }
+                            }
+                        });
+                        v.push(s);
+                    }
+                });
+                s['subtable' + i.toString()] = v;
+                v = null;
+            }
+            f["subtables"] = s;
+        },
+        "file": function (cmd, doc, fi, img) {
+            var fileList = DEXT5UPLOAD.GetAllFileListForJson(); //console.log(fileList)
+            var imgList = DEXT5.getImagesEx(); //console.log(imgList)
+
+            if (fileList && fileList.webFile) {
+                var webFile = fileList.webFile;
+                for (var i = 0; i < webFile.originalName.length; i++) {
+                    if (webFile.customValue[i] == '' || webFile.customValue[i] == '0') {//기존 첨부는 담지 않음
+                        var v = {};
+                        var idx = webFile.uploadPath[i].lastIndexOf('/');
+                        var savedName = webFile.uploadPath[i].substr(idx + 1);
+                        idx = savedName.lastIndexOf('.');
+                        v["attachid"] = 0;
+                        v["atttype"] = "O";
+                        v["seq"] = webFile.order[i];
+                        v["isfile"] = "Y";
+                        v["filename"] = webFile.originalName[i];
+                        v["savedname"] = savedName;
+                        v["ext"] = savedName.substr(idx + 1);
+                        v["size"] = webFile.size[i];
+                        v["filepath"] = webFile.uploadPath[i];
+                        v["storagefolder"] = "";
+
+                        fi.push(v);
+                    }
+                }
+            }
+
+            doc["attachcount"] = DEXT5UPLOAD.GetTotalFileCount();
+            doc["attachsize"] = DEXT5UPLOAD.GetTotalFileSize();
+
+            if (imgList) {
+                var rgx = (location.origin + $('#upload_path').val()).toLowerCase();
+                var vImg = imgList.split(_zw.T.uploader.da);
+                for (var i = 0; i < vImg.length; i++) {
+                    var vInfo = vImg[i].split(_zw.T.uploader.df);
+                    if (vInfo[0].toLowerCase().indexOf(rgx) != -1) {
+                        var v = {};
+                        var idx = vInfo[1].lastIndexOf('.');
+                        v["attachid"] = 0;
+                        v["atttype"] = "O";
+                        v["seq"] = 0;
+                        v["isfile"] = "N";
+                        v["filename"] = vInfo[1];
+                        v["savedname"] = vInfo[1];
+                        v["ext"] = vInfo[1].substr(idx + 1);
+                        v["size"] = "";
+                        v["filepath"] = vInfo[0];
+                        v["storagefolder"] = "";
+
+                        //v["imgname"] = vInfo[1];
+                        //v["imgpath"] = vInfo[0];
+                        v["origin"] = location.origin;
+                        img.push(v);
+                    }
+                }
+            }
+        }
+    }
+
+    //양식별로 선언(예:FORM_DRAFT.js)
     _zw.formEx = {
         //checkEvent(ckb, el, fld), autoCalc(p)
     }
@@ -823,15 +1946,91 @@ function DEXT5UPLOAD_OnTransfer_Start() {
 }
 
 function DEXT5UPLOAD_OnTransfer_Complete() {
-    console.log('complete => ' + (new Date()) + " : " + DEXT5UPLOAD.GetTotalFileSize());
+    console.log('complete => ' + (new Date()) + " : " + DEXT5UPLOAD.GetTotalFileCount() + " : " + DEXT5UPLOAD.GetTotalFileSize());
     //console.log(DEXT5UPLOAD.GetNewUploadListForJson());
+    //var attachlist = _zw.V.attachlist;
     var jsonNew = DEXT5UPLOAD.GetNewUploadListForJson();
     for (var i = 0; i < jsonNew.originalName.length; i++) {
+        //var v = {};
+        //v["attachid"] = 0;
+        //v["atttype"] = "O";
+        //v["seq"] = parseInt(jsonNew.order[i]);
+        //v["isfile"] = "Y";
+        //v["filename"] = jsonNew.originalName[i];
+        //v["savedname"] = jsonNew.uploadName[i];
+        //v["size"] = jsonNew.size[i];
+        //v["ext"] = jsonNew.extension[i];
+        //v["filepath"] = jsonNew.uploadPath[i].split(':')[1]; //vInfo[4].substr(1).replace(/\//gi, '\\');
+        //v["storagefolder"] = "";
+
+        //attachlist.push(v);
+
         DEXT5UPLOAD.SetUploadedFile(jsonNew.order[i] - 1, jsonNew.order[i] - 1, jsonNew.originalName[i], jsonNew.uploadPath[i].split(':')[1], jsonNew.size[i], '', _zw.T.uploader.id);
+    }
+    //_zw.V.doc["attachcount"] = DEXT5UPLOAD.GetTotalFileCount();
+    //_zw.V.doc["attachsize"] = DEXT5UPLOAD.GetTotalFileSize();
+
+    //console.log(_zw.V.attachlist)
+}
+
+function DEXT5UPLOAD_CustomAction(uploadID, cmd) {
+    if (cmd == 'custom_remove') {
+        // 파일 삭제 전 처리할 내용
+        var fileList = DEXT5UPLOAD.GetSelectedAllFileListForText();
+        var newFile = fileList.newFile, webFile = fileList.webFile;
+        var sId = '';
+
+        //if (newFile) {
+        //    var vFile = newFile.split(_zw.T.uploader.df);
+        //    for (var i = 0; i < vFile.length; i++) {
+        //        var vInfo = vFile[i].split(_zw.T.uploader.da); console.log(vInfo)
+        //    }
+        //}
+
+        if (webFile) {
+            var vFile = webFile.split(_zw.T.uploader.df);
+            for (var i = 0; i < vFile.length; i++) {
+                var vInfo = vFile[i].split(_zw.T.uploader.da); //console.log(vInfo)
+                if (i > 0) sId += ';';
+                sId += vInfo[5];
+            }
+        }
+
+        if (newFile || webFile) {
+            var msg = '삭제 하시겠습니까?' + (sId != '' ? ' 기존 첨부파일은 복구되지 않습니다.' : '');
+            bootbox.confirm(msg, function (rt) {
+                if (rt) {
+                    var bDelete = true;
+                    if (sId != '') {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Common/DeleteAttach",
+                            data: '{xf:"' + _zw.V.xfalias + '",appid:"' + _zw.V.appid + '",fdid:"' + _zw.V.fdid + '",tgtid:"' + sId + '"}',
+                            async: false,
+                            success: function (res) {
+                                if (res == "OK") {
+                                    //console.log('200=>' + res);
+                                } else {
+                                    bDelete = false; bootbox.alert(res);
+                                }
+                            }
+                        });
+                    }
+
+                    //console.log('300=>' + bDelete.toString());
+                    if (bDelete) DEXT5UPLOAD.DeleteSelectedFile();
+                }
+            });
+        }
+
+    } else if (cmd == 'custom_up') {
+        DEXT5UPLOAD.MoveForwardFile();
+    } else if (cmd == 'custom_down') {
+        DEXT5UPLOAD.MoveBackwardFile();
     }
 }
 
 function DEXT5UPLOAD_OnError(uploadID, code, message, uploadedFileListObj) {
     //에러 발생 후 경고창 띄어줌
-    bootbox.alert("Error Code : " + code + "\nError Message : " + message);
+    alert("Error Code : " + code + "\nError Message : " + message);
 }
