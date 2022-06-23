@@ -47,20 +47,16 @@
           <div class="fh">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
-                </td>
+				  <td class="fh-l">
+					  <xsl:choose>
+						  <xsl:when test="$mode='read'">
+							  <img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						  </xsl:when>
+						  <xsl:otherwise>
+							  <img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						  </xsl:otherwise>
+					  </xsl:choose>
+				  </td>
                 <td class="fh-m">
                   <h1>
                     Request For<br />BusinessProcessingSystem
@@ -69,18 +65,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -89,11 +81,11 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td style="width:308px">
-                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', 'R&nbsp; E&nbsp; Q&nbsp; D&nbsp; E&nbsp; P&nbsp;', 'N')"/>
+                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', 'R&nbsp; E&nbsp; Q&nbsp; D&nbsp; E&nbsp; P&nbsp;')"/>
                 </td>                
                 <td style="font-size:1px">&nbsp;</td>
                 <td style="width:308px;">
-                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '4', 'S&nbsp; Y&nbsp; S&nbsp; T&nbsp; E&nbsp; M&nbsp; ')"/>
+                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '4', 'S&nbsp; Y&nbsp; S&nbsp; T&nbsp; E&nbsp; M&nbsp;')"/>
                 </td>
               </tr>
             </table>
@@ -166,13 +158,16 @@
                           <xsl:value-of select="//forminfo/maintable/LOCATION" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.centercode',200,120,130,50,'etc','LOCATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.centercode',200,120,130,50,'etc','LOCATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="Request ORG." onclick="_zw.formEx.optionWnd('external.centercode',200,120,130,50,'etc','LOCATION');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/LOCATION))" />
@@ -190,13 +185,16 @@
                           <xsl:value-of select="//forminfo/maintable/SYSTEMTYPE" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.systemtype',200,120,130,50,'etc','SYSTEMTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.systemtype',200,120,130,50,'etc','SYSTEMTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="System Type" onclick="_zw.formEx.optionWnd('external.systemtype',200,120,130,50,'etc','SYSTEMTYPE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SYSTEMTYPE))" />
@@ -216,13 +214,16 @@
                           <xsl:value-of select="//forminfo/maintable/REQUESTTYPE" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.requesttype',200,120,130,50,'etc','REQUESTTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.requesttype',200,120,130,50,'etc','REQUESTTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="Request Type" onclick="_zw.formEx.optionWnd('external.requesttype',200,120,130,50,'etc','REQUESTTYPE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/REQUESTTYPE))" />
@@ -233,15 +234,7 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="NEEDDATE" >
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:100%</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/NEEDDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="NEEDDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/NEEDDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/NEEDDATE))" />
@@ -267,9 +260,7 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="REQUEST" style="height:120px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="REQUEST" style="height:120px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/REQUEST" />
                         </xsl:if>
@@ -304,8 +295,8 @@
                 <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
               </xsl:if>
               <colgroup>
-                <col style="width:15%" />
-                <col style="width:35%" />
+                <col style="width:16%" />
+                <col style="width:34%" />
                 <col style="width:15%" />
                 <col style="width:%" />                                
               </colgroup>
@@ -314,15 +305,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$bizrole='receive' and $actrole='__r'">
-                      <input type="text" id="__mainfield" name="COMPLETIONDATE" >
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:100%</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/COMPLETIONDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="COMPLETIONDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/COMPLETIONDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COMPLETIONDATE))" />
@@ -332,11 +315,14 @@
                 <td class="f-lbl" style="">
                   Contacts
                   <xsl:if test="$bizrole='receive' and $actrole='__r'">
-                    <button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                    <!--<button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0">
                         <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_28.gif</xsl:attribute>
                       </img>
-                    </button>
+                    </button>-->
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
+						  <i class="fas fa-angle-down"></i>
+					  </button>
                   </xsl:if>
                 </td>
                 <td style="border-right:0">
@@ -360,13 +346,11 @@
                 <td colspan="4" style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$bizrole='receive' and $actrole='__r' and $partid!=''">
-                      <textarea id="__mainfield" name="PROCESSING" style="height:120px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>                                             
+                      <textarea id="__mainfield" name="PROCESSING" style="height:120px" class="txaText bootstrap-maxlength" maxlength="2000">
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="PROCESSING" style="">
+                      <div>
                         <xsl:attribute name="class">txaRead</xsl:attribute>
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PROCESSING))" />
                       </div>
@@ -397,7 +381,7 @@
                     <input type="checkbox" id="ckb21" name="ckbSATISFACTIONA" value="VERYGOOD">                              
                       <xsl:choose>
                         <xsl:when test="$bizrole='요청자' and $actrole='_approver' and $partid!='' ">
-                          <xsl:attribute name="onclick">parent.fnCheckYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
+                          <xsl:attribute name="onclick">_zw.form.checkYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
                         </xsl:when>
                         <xsl:otherwise>
                           <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/SATISFACTIONA),'VERYGOOD')">
@@ -415,7 +399,7 @@
                     <input type="checkbox" id="ckb22" name="ckbSATISFACTIONA" value="GOOD">
                       <xsl:choose>
                         <xsl:when test="$bizrole='요청자' and $actrole='_approver' and $partid!='' ">
-                          <xsl:attribute name="onclick">parent.fnCheckYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
+                          <xsl:attribute name="onclick">_zw.form.checkYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
                         </xsl:when>
                         <xsl:otherwise>
                           <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/SATISFACTIONA),'GOOD')">
@@ -433,7 +417,7 @@
                     <input type="checkbox" id="ckb23" name="ckbSATISFACTIONA" value="NORMAL">
                       <xsl:choose>
                         <xsl:when test="$bizrole='요청자' and $actrole='_approver' and $partid!='' ">
-                          <xsl:attribute name="onclick">parent.fnCheckYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
+                          <xsl:attribute name="onclick">_zw.form.checkYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
                         </xsl:when>
                         <xsl:otherwise>
                           <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/SATISFACTIONA),'NORMAL')">
@@ -451,7 +435,7 @@
                     <input type="checkbox" id="ckb24" name="ckbSATISFACTIONA" value="UNSATISFACTORY">
                       <xsl:choose>
                         <xsl:when test="$bizrole='요청자' and $actrole='_approver' and $partid!='' ">
-                          <xsl:attribute name="onclick">parent.fnCheckYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
+                          <xsl:attribute name="onclick">_zw.form.checkYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
                         </xsl:when>
                         <xsl:otherwise>
                           <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/SATISFACTIONA),'UNSATISFACTORY')">
@@ -469,7 +453,7 @@
                     <input type="checkbox" id="ckb25" name="ckbSATISFACTIONA" value="VERYUNSATISFACTORY">
                       <xsl:choose>
                         <xsl:when test="$bizrole='요청자' and $actrole='_approver' and $partid!='' ">
-                          <xsl:attribute name="onclick">parent.fnCheckYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
+                          <xsl:attribute name="onclick">_zw.form.checkYN('ckbSATISFACTIONA', this, 'SATISFACTIONA')</xsl:attribute>
                         </xsl:when>
                         <xsl:otherwise>
                           <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/SATISFACTIONA),'VERYUNSATISFACTORY')">
@@ -494,13 +478,11 @@
                 <td colspan="2" style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$bizrole='요청자' and $actrole='_approver' and $partid!=''">
-                      <textarea id="__mainfield" name="SATISFACTION" style="height:120px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>                                                
+                      <textarea id="__mainfield" name="SATISFACTION" style="height:120px" class="txaText bootstrap-maxlength" maxlength="2000">
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="SATISFACTION">                        
+                      <div>
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SATISFACTION))" />
                       </div>
                     </xsl:otherwise>

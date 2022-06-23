@@ -412,7 +412,7 @@
       p = nodes[0].selectNodes("line[@bizrole='" + role + "' and @parent='' and @partid!='' and @step!='0']");
     }
     
-    var szBorder = (arguments[6] && arguments[6] == "N") ? " style=\"border-right:1pt solid windowtext\"" : "";
+    var szBorder = (arguments[6] && arguments[6] == "N") ? " style=\"border-right:0pt solid windowtext\"" : "";
 	  var szHTML = "<table id=\"" + id + "\" class=\"si-tbl\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"" + szBorder + ">";
 	  var szTop = "", szMid = "", szBot = "";
 	  var szTopRow = "", szMidRow = "", szBotRow = "";
@@ -469,7 +469,7 @@
 	  return szHTML + szTopRow + szMidRow + szBotRow + "</table>";
   }
   function mappingSignSerialPart(c, nodes, id, cellCnt) {
-    var szBorder = (arguments[5] && arguments[5] == "N") ? " style=\"border-right:1pt solid windowtext\"" : "";
+    var szBorder = (arguments[5] && arguments[5] == "N") ? " style=\"border-right:0pt solid windowtext\"" : "";
     var szAttr = (arguments[7] && arguments[7] != "") ? " " + arguments[7] : "";
 	  var szHTML = "<table id=\"" + id + "\" class=\"si-tbl\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"" + szBorder + szAttr + ">";
 	  var szTop = "", szMid = "", szBot = "";

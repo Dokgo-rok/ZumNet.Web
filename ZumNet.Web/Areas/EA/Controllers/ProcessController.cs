@@ -1551,8 +1551,9 @@ namespace ZumNet.Web.Areas.EA.Controllers
             JObject jDoc = null;
             JObject jForm = null;
             JArray jFile = null;
-            JObject jProcess = null;
             JObject jParam = null;
+            JObject jTarget = null;
+            
 
             XFormDefinition xfDef = null;
             XFormInstance xfInst = null;
@@ -1586,9 +1587,10 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                 jBiz = (JObject)postData["biz"];
                 jDoc = (JObject)postData["doc"];
-                jProcess = (JObject)postData["process"];
                 jForm = (JObject)postData["form"];
                 jFile = (JArray)postData["attachlist"];
+                jParam = (JObject)postData["process"]["param"];
+                jTarget = (JObject)postData["process"]["target"];
 
                 //oProcInfo = xmlDoc.SelectSingleNode("//processinfo");
                 //oDocInfo = xmlDoc.SelectSingleNode("//docinfo");
@@ -1623,12 +1625,12 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         return strReturn;
                     }
 
-                    if (jProcess.ContainsKey("target"))
+                    if (jTarget.Count > 0)
                     {
                         strReturn = "[110]";
-                        if (jProcess["target"]["wid"].ToString() != "" && jProcess["target"]["partid"].ToString() != "")
+                        if (jTarget["wid"].ToString() != "" && jTarget["partid"].ToString() != "")
                         {
-                            targetWI = procDac.SelectWorkItem(jProcess["target"]["wid"].ToString());
+                            targetWI = procDac.SelectWorkItem(jTarget["wid"].ToString());
                         }
                     }
 
@@ -1711,10 +1713,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 }
                 //ResponseText(":::rsvd1->" + curWI.Signature); return;
 
-                if (jProcess.ContainsKey("param"))
+                if (jParam.Count > 0)
                 {
-                    jParam = (JObject)jProcess["param"];
-
                     strReturn = "담당자 정보 설정";
                     paramWI = new WorkItem();
                     paramWI.Mode = ProcessStateChart.SignLineModification.Insert;

@@ -292,6 +292,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Areas\EA\Controllers\CommonController.cs" />
     <Compile Include="Areas\EA\Controllers\FormController.cs" />
     <Compile Include="Areas\EA\Controllers\ProcessController.cs" />
     <Compile Include="Areas\WoA\ApprovalLine.cs" />
@@ -431,7 +432,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_CHANGPROPERTY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CLAIMDRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CLIENTREGAPPMODIFY_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_CLIENTREGAPP_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_CLIENTREGAPP_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_CODCHANGEREQUEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_COMPANYCARDREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_COMPANYSTAMP_V1.xsl" />
@@ -2041,14 +2044,21 @@
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\EA\Forms\FORM_AUDITRESULTREPORT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTD.js" />
     <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MINUTES.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLECONTROL.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SYSTEMADDREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SYSTEMREGI.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATION.js" />
     <Content Include="Scripts\EA\Forms\_sample.js" />
@@ -2708,6 +2718,7 @@
     <Folder Include="Areas\Docs\Data\" />
     <Folder Include="Areas\Docs\Views\Shared\" />
     <Folder Include="Areas\EA\Data\" />
+    <Folder Include="Areas\EA\Views\Common\" />
     <Folder Include="Areas\EA\Views\Process\" />
     <Folder Include="Areas\ExS\Data\" />
     <Folder Include="Areas\ExS\Views\Shared\" />

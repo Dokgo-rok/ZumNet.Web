@@ -248,7 +248,7 @@ namespace ZumNet.Web.Controllers
                         return "필수값 누락!";
                     }
 
-                    if (jPost["M"].ToString() == "group")
+                    if (jPost["M"].ToString() == "__group")
                     {
                         using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
                         {

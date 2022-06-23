@@ -1,5 +1,5 @@
 ﻿@using System.Text;
-@using Newtonsoft.Json;
+@using System.Threading;
 @using Newtonsoft.Json.Linq;
 @{
     Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
@@ -10,6 +10,8 @@
         string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
         ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
     }
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
     //결재 초기 설정
     InitVariables();
@@ -144,7 +146,10 @@
     @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
-
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
 
     @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
     @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
@@ -167,8 +172,9 @@
                 new Dext5Upload(_zw.T.uploader.id);
             }
         }
+        else if (_zw.V.apvmode == 'approval') _zw.dext5.view('edit'); //2014-06-11 결재자는 무조건 변경 가능하게
         else _zw.dext5.view('view');
-        
+
 
         if ($('#__DextEditor').length > 0) {
             DEXT5.config.EditorHolder = _zw.T.editor.holder;
@@ -182,21 +188,26 @@
         }
     }());
 
-    function dext_editor_loaded_event() {
+    function dext_editor_loaded_event() {// 에디터가 로드된 후
         if ($('#Subject[name="__commonfield"]').length > 0) DEXT5.config.FocusInitObjId = "Subject";
-        // 에디터가 로드된 후
         //console.log(_zw.V.def["maintable"] + " : " + _zw.V.tp + " : " + _zw.V.doc["key1"])
-        if (_zw.V.def["maintable"] == 'FORM_DRAFT' && (_zw.V.tp == 'CE' || _zw.V.tp == 'MC') && _zw.V.doc["key1"] != '') {
-            //console.log(opener._zw)
-            if (opener && (opener._zw.V.ft.toLowerCase() == 'stdexchangedetail' || opener._zw.V.ft.toLowerCase() == 'stdpaydetail')) {
-                //alert(opener._zw.V.current["ft"].toLowerCase())
-                if ($('#Subject').length > 0 && _zw.V.doc["subject"] != '') $('#Subject').val(_zw.V.doc["subject"]);
+        if (_zw.V.ft == 'DRAFT') {
+            if ((_zw.V.tp == 'CE' || _zw.V.tp == 'MC') && _zw.V.doc["key1"] != '') {
+                //console.log(opener._zw)
+                if (opener && (opener._zw.V.ft.toLowerCase() == 'stdexchangedetail' || opener._zw.V.ft.toLowerCase() == 'stdpaydetail')) {
+                    //alert(opener._zw.V.current["ft"].toLowerCase())
+                    if ($('#Subject').length > 0 && _zw.V.doc["subject"] != '') $('#Subject').val(_zw.V.doc["subject"]);
 
-                DEXT5.setBodyValue(opener.document.getElementById('_HiddenFormData').value, _zw.T.editor.id);
+                    DEXT5.setBodyValue(opener.document.getElementById('_HiddenFormData').value, _zw.T.editor.id);
+                }
             }
         } else {
             var w = _zw.V.form.maintable["WEBEDITOR"];
             if (w && w != '') DEXT5.setBodyValue(w, _zw.T.editor.id);
+        }
+
+        if (_zw.V.ft == 'MINUTES') {
+            DEXT5.loadHtmlValueExFromURL('/Content/Forms/HTML/MINUTES_1.html', _zw.T.editor.id);
         }
     }
 
@@ -370,9 +381,9 @@
                                                 }
 
                                                 @*<label class="custom-control custom-radio m-0" for="rdoSS_5">
-                                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_5" value="authorize" />
-                                                    <span class="custom-control-label">@Resources.EA.SK_Authorize</span>
-                                                </label>*@
+                                                        <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_5" value="authorize" />
+                                                        <span class="custom-control-label">@Resources.EA.SK_Authorize</span>
+                                                    </label>*@
                                                 if (Session["LogonID"].ToString() == "jblee")
                                                 {
                                                     <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_6">

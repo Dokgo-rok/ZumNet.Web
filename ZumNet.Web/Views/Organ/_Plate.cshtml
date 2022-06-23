@@ -7,6 +7,10 @@
 @{
     ViewBag.Title = Resources.Global.OrganChart;
 
+    string _widthClass_l = "wd-99 wd-lg-45 wd-xl-45";
+    string _widthClass_m = "";
+    string _widthClass_r = "wd-99 wd-lg-55 wd-xl-55";
+
     if (ViewBag.JPost["M"].ToString() == "user")
     {
         ViewBag.Title += " - 사용자 선택";
@@ -14,10 +18,15 @@
     else if (ViewBag.JPost["M"].ToString() == "group")
     {
         ViewBag.Title += " - 부서 선택";
+        _widthClass_l = "wd-99 wd-lg-42 wd-xl-42";
+        _widthClass_m = "wd-99 wd-lg-6 wd-xl-6";
+        _widthClass_r = "wd-99 wd-lg-52 wd-xl-52";
     }
-    else
+    else if (ViewBag.JPost["M"].ToString() == "all")
     {
-        //ViewBag.Title = Resources.Global.OrganChart;
+        _widthClass_l = "wd-99 wd-lg-42 wd-xl-42";
+        _widthClass_m = "wd-99 wd-lg-6 wd-xl-6";
+        _widthClass_r = "wd-99 wd-lg-52 wd-xl-52";
     }
 }
 @functions{
@@ -161,7 +170,7 @@
         <p class="text-center mt-5">@Resources.Global.NoItemShow</p>
     }
 }
-else if (ViewBag.JPost["M"].ToString() == "user")
+else if (ViewBag.JPost["M"].ToString() == "user" || ViewBag.JPost["M"].ToString() == "group" || ViewBag.JPost["M"].ToString() == "all")
 {
     <div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width: 35rem">
         <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
@@ -173,7 +182,7 @@ else if (ViewBag.JPost["M"].ToString() == "user")
             </div>
             <div class="zf-org modal-body p-2">
                 <div class="d-sm-flex">
-                    <div class="nav-tabs-top wd-99 wd-lg-45 wd-xl-45">
+                    <div class="nav-tabs-top @_widthClass_l">
                         <ul class="nav nav-tabs">
                             <li class="nav-item">
                                 <a class="nav-link py-2 active" data-toggle="tab" role="tab" href="#orgmaptree" aria-controls="orgmaptree" aria-selected="true">@Resources.Global.OrganChart</a>
@@ -228,8 +237,21 @@ else if (ViewBag.JPost["M"].ToString() == "user")
                         </div>
                         <!-- / sidebox tree -->
                     </div>
-                    <div class="wd-99 wd-lg-55 wd-xl-55">
-                        <div class="ml-sm-2 mt-2 mt-sm-0">
+                    @if (_widthClass_m != "")
+                    {
+                        <div class="@_widthClass_m">
+                            <div class="zf-org-menu d-none d-sm-flex flex-sm-column align-items-center justify-content-end h-75">
+                                <button type="button" class="btn btn-outline-success icon-btn btn-sm mb-2" data-toggle="tooltip" data-placement="bottom" title="부서 추가" data-zm-menu="addGroup"><i class=" fas fa-arrow-right"></i></button>
+                                <button type="button" class="btn btn-outline-secondary icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="부서 삭제" data-zm-menu="removeGroup"><i class=" fas fa-arrow-left"></i></button>
+                            </div>
+                            <div class="zf-org-menu d-flex d-sm-none align-items-center justify-content-center my-2">
+                                <button type="button" class="btn btn-outline-success icon-btn btn-sm mr-2" data-toggle="tooltip" data-placement="bottom" title="부서 추가" data-zm-menu="addGroup"><i class=" fas fa-arrow-down"></i></button>
+                                <button type="button" class="btn btn-outline-secondary icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="부서 삭제" data-zm-menu="removeGroup"><i class=" fas fa-arrow-up"></i></button>
+                            </div>
+                        </div>
+                    }
+                    <div class="@_widthClass_r">
+                        <div class="@(_widthClass_m == "" ? "ml-sm-2 mt-2 mt-sm-0" : "")">
                             <div class="card">
                                 <div class="card-header py-2 font-weight-bold">구성원</div>
                                 <div class="zf-org-list card-body p-2">
@@ -252,8 +274,11 @@ else if (ViewBag.JPost["M"].ToString() == "user")
                                 <div class="card-header py-2 d-flex justify-content-between">
                                     <div class="font-weight-bold">선택목록</div>
                                     <div class="zf-org-menu">
-                                        <button type="button" class="btn btn-outline-success icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" data-zm-menu="addUser"><i class="fas fa-user-plus"></i></button>
-                                        <button type="button" class="btn btn-outline-secondary icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" data-zm-menu="removeUser"><i class="fas fa-user-minus"></i></button>
+                                        @if (ViewBag.JPost["M"].ToString() != "group")
+                                        {
+                                            <button type="button" class="btn btn-outline-success icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="사용자 추가" data-zm-menu="addUser"><i class="fas fa-user-plus"></i></button>
+                                            <button type="button" class="btn btn-outline-secondary icon-btn btn-sm" data-toggle="tooltip" data-placement="bottom" title="사용자 삭제" data-zm-menu="removeUser"><i class="fas fa-user-minus"></i></button>
+                                        }
                                     </div>
                                 </div>
                                 <div class="zf-org-select card-body p-2">
@@ -285,7 +310,7 @@ else if (ViewBag.JPost["M"].ToString() == "user")
     </div>
 }
 
-@if (ViewBag.JPost["M"].ToString() == "user")
+@if (ViewBag.JPost["M"].ToString() == "user" || ViewBag.JPost["M"].ToString() == "all")
 {
     <script type="text/template" class="zf-org-template">
         <div class="d-flex align-items-center mb-2">
@@ -300,7 +325,22 @@ else if (ViewBag.JPost["M"].ToString() == "user")
         </div>
     </script>
 }
-else if (ViewBag.JPost["M"].ToString() == "userinfo")
+
+@if (ViewBag.JPost["M"].ToString() == "group" || ViewBag.JPost["M"].ToString() == "all")
+{
+    <script type="text/template" class="zf-org-template-group">
+        <div class="d-flex align-items-center mb-2">
+            <div class="">
+                <label class="flex-fill custom-control custom-checkbox mb-0">
+                    <input type="checkbox" class="custom-control-input" data-for="{$id}" data-attr="{$attr}">
+                    <span class="custom-control-label">{$group}</span>
+                </label>
+            </div>
+        </div>
+    </script>
+}
+
+@if (ViewBag.JPost["M"].ToString() == "userinfo")
 {
     @Html.Raw(GetUserInfo(ViewBag.UserInfo))
 }

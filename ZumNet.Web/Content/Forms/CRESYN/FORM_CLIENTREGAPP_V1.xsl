@@ -39,7 +39,7 @@
           .m .ft .f-option {width:47%; margin-left:2%} .m .ft .f-option1 {margin-left:4px; width:112px; font-size:9.0pt} .m .ft .f-option2 {margin-left:6%}
           .m .ft-sub .f-option {width:49%}
 
-          .m table span input[type="radio"], .m table span input[type="checkbox"] {
+          .m table.ft span input[type="radio"], .m table.ft span input[type="checkbox"] {
             margin-top: .1rem;
           }
 
@@ -150,7 +150,7 @@
                     </xsl:otherwise>
                   </xsl:choose>-->
                 <!--</td>-->
-                <td class="f-lbl" style="border-bottom:0;" >등록법인<span style="font-size:7.0pt;text-align:center"> (COMPANY)</span>
+                <td class="f-lbl" style="border-bottom:0;">등록법인<span style="font-size:7.0pt;text-align:center"> (COMPANY)</span>
               </td>
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
@@ -160,7 +160,7 @@
                       <!--<button onclick="parent.fnOption('report.ERP_FACTORY',240,200,126,70,'COMPANY','COMPANY','COMPANYCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('report.ERP_FACTORY',240,200,126,70,'COMPANY','COMPANY','COMPANYCODE');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="등록법인" onclick="_zw.formEx.optionWnd('report.ERP_FACTORY',240,200,126,70,'COMPANY','COMPANY','COMPANYCODE');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>
@@ -466,7 +466,7 @@
                       <!--<button onclick="parent.fnExternal('report.ERP_COUNTRY2',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');" id="btcc"  onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.externalWnd('report.ERP_COUNTRY2',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="국가" onclick="_zw.formEx.externalWnd('report.ERP_COUNTRY2',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>
@@ -619,7 +619,7 @@
                       <!--<button onclick="parent.fnOption('report.ERP_TAXCODE',240,250,126,70,'TAX_CODE','TAX_CODE','TAXID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('report.ERP_TAXCODE',240,250,126,70,'TAX_CODE','TAX_CODE','TAXID');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="세금구분" onclick="_zw.formEx.optionWnd('report.ERP_TAXCODE',240,250,126,70,'TAX_CODE','TAX_CODE','TAXID');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>
@@ -638,7 +638,7 @@
                       <!--<button onclick="parent.fnOption('report.ERP_PAYMENTCLT',240,250,150,70,'CUST_PAYMENT','CUST_PAYMENT','CUSTPAYMENTCODE');" name="CUSTPAYBUTTON"  onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('report.ERP_PAYMENTCLT',240,250,150,70,'CUST_PAYMENT','CUST_PAYMENT','CUSTPAYMENTCODE');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="결제조건" onclick="_zw.formEx.optionWnd('report.ERP_PAYMENTCLT',240,250,150,70,'CUST_PAYMENT','CUST_PAYMENT','CUSTPAYMENTCODE');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>
@@ -659,7 +659,7 @@
                     <!--<button onclick="parent.fnExternal('report.ERP_PRICE',240,40,126,70,'PRICE_LIST','PRICELISTCODE','PRICE_LIST');" name="PRICELISTBUTTON" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                     </button>-->
-                    <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.externalWnd('report.ERP_PRICE',240,40,126,70,'PRICE_LIST','PRICELISTCODE','PRICE_LIST');">
+                    <button type="button" class="btn btn-outline-secondary btn-18" title="" onclick="_zw.formEx.externalWnd('report.ERP_PRICE',240,40,126,70,'PRICE_LIST','PRICELISTCODE','PRICE_LIST');">
                       <i class="fas fa-angle-down"></i>
                     </button>
                   </xsl:when>
@@ -678,7 +678,7 @@
                     <!--<button onclick="parent.fnOption('external.shipmentcond',160,140,10,115,'etc','SHIPMENT_TERM');" name="SHIPMENTBUTTON"  onfocus="this.blur()" class="btn_bg" style="height:16px;">                   
                       <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                     </button>-->
-                    <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('external.shipmentcond',160,140,10,115,'etc','SHIPMENT_TERM');">
+                    <button type="button" class="btn btn-outline-secondary btn-18" title="선적조건" onclick="_zw.formEx.optionWnd('external.shipmentcond',160,140,10,115,'etc','SHIPMENT_TERM');">
                       <i class="fas fa-angle-down"></i>
                     </button>
                   </xsl:when>
@@ -701,7 +701,7 @@
                           </xsl:attribute>
                         </img>
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('external.mainbank',160,140,10,115,'etc','CUST_BANK');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="결제은행" onclick="_zw.formEx.optionWnd('external.mainbank',160,140,10,115,'etc','CUST_BANK');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>
@@ -734,7 +734,7 @@
                       <!--<button onclick="parent.fnOption('report.ERP_SALSEMAN',240,300,126,70,'SALES_PERSON','SALES_PERSON','SALESPERSONID');" name="SALESPERBUTTON"  onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('report.ERP_SALSEMAN',240,300,126,70,'SALES_PERSON','SALES_PERSON','SALESPERSONID');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="담당영업사원" onclick="_zw.formEx.optionWnd('report.ERP_SALSEMAN',240,300,126,70,'SALES_PERSON','SALES_PERSON','SALESPERSONID');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>
@@ -753,7 +753,7 @@
                       <!--<button onclick="parent.fnOption('report.ERP_ORDER',240,200,126,70,'ORDER_TYPE','ORDER_TYPE','ORDERTYPECODE');" name="ORDERTYPEBUTTON"  onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('report.ERP_ORDER',240,200,126,70,'ORDER_TYPE','ORDER_TYPE','ORDERTYPECODE');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="주문유형" onclick="_zw.formEx.optionWnd('report.ERP_ORDER',240,200,126,70,'ORDER_TYPE','ORDER_TYPE','ORDERTYPECODE');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>
@@ -802,7 +802,7 @@
                           </xsl:attribute>
                         </img>
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('external.mainbank',160,140,10,115,'etc','PAYMENT_BANK');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="지급은행" onclick="_zw.formEx.optionWnd('external.mainbank',160,140,10,115,'etc','PAYMENT_BANK');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>
@@ -834,7 +834,7 @@
                       <!--<button onclick="parent.fnOption('report.ERP_PAYMENTPROD',240,200,126,70,'PAYMENT_TERM','PAYMENT_TERM','PAYMENTTERMCODE');" name="PAYMENTTERMBUTTON"  onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.formEx.optionWnd('report.ERP_PAYMENTPROD',240,200,126,70,'PAYMENT_TERM','PAYMENT_TERM','PAYMENTTERMCODE');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="지급조건" onclick="_zw.formEx.optionWnd('report.ERP_PAYMENTPROD',240,200,126,70,'PAYMENT_TERM','PAYMENT_TERM','PAYMENTTERMCODE');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>

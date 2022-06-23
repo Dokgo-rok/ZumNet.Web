@@ -28,21 +28,21 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:700px} .m .fm-editor {height:600px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:10pt}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:700px} .m .fm-editor {height:600px;min-height:600px;border:windowtext 1pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:10pt}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:5%} .si-tbl .si-bottom {width:19%}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:5%} .si-tbl .si-bottom {width:19%}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:80px} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
-          .m .ft-sub .f-option {width:49%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:80px} .m .ft .f-lbl2 {width:?}
+			.m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
+			.m .ft-sub .f-option {width:49%}
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:700px} }
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:700px;min-height:700px;} }
+		</style>
       </head>
       <body>
         <div class="m">
@@ -217,7 +217,9 @@
                       </td>
                     </tr>
                     <tr>
-                      <td style="font-size:1px;">&nbsp;</td>
+                      <td style="font-size:1px;">
+						  <div class="ff" />
+					  </td>
                     </tr>
                     <tr>
                       <td style="height:49%">

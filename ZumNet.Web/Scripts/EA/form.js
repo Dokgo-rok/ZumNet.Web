@@ -2,6 +2,8 @@
 
 $(function () {
 
+    _zw.fn.input($('#__FormView .m'));
+
     if (_zw.V.mode == "read") {
         $.ajax({
             type: "POST",
@@ -174,8 +176,8 @@ $(function () {
 
         if (ss == 'back') {
             var iCheck = p.find('.zf-sl-list input:checkbox:checked').length;
-            if (iCheck < 1) return false;
-            if (iCheck > 1) { bootbox.alert('결재선을 2개 이상 선택할 수 없습니다!'); return false; }
+            if (iCheck < 1) { bootbox.alert('반려 대상을 지정 하십시오!'); return false; }
+            if (iCheck > 1) { bootbox.alert('반려 대상을 2개 이상 선택할 수 없습니다!'); return false; }
 
             var row = p.find('.zf-sl-list input:checkbox:checked').parent().parent().parent().parent(); //console.log(row)
             if (row && row.length > 0) {
@@ -201,7 +203,7 @@ $(function () {
             if (rt) {
                 var jSend = {};
                 if (cmd == 'preapproval' || cmd == 'cancelpreapproval') {
-                    jSend["M"] = "preapproval";
+                    jSend["M"] = 'preapproval';
                     jSend["mi"] = _zw.V.appid;
                     jSend["fi"] = _zw.V.def["formid"];
                     jSend["wi"] = _zw.V.wid;
@@ -210,31 +212,32 @@ $(function () {
                     jSend["sign"] = '';
                     jSend["rd"] = '';
 
-                } else if (cmd == 'reject') {
-                    _zw.form.make(cmd, jSend);
-                    _zw.signline.make(cmd, jSend["process"], eCmnt.val());
-
-                    if (ss == 'back' && tgt4Back) jSend["process"]["target"] = tgt4Back;
-
-                    jSend["M"] = cmd;
-                    jSend["mi"] = _zw.V.appid;
-                    jSend["fi"] = _zw.V.def["formid"];
-                    jSend["wid"] = _zw.V.wid;
-                    jSend["ss"] = ss;
-                    jSend["cmnt"] = eCmnt.val();
-                    
-
                 } else {
-                    _zw.form.make(cmd, jSend);
-                    _zw.signline.make(cmd, jSend["process"], eCmnt.val());
+                    if (ss == 'reject' || ss == 'back' || ss == 'reserve') {
+                        _zw.form.make(ss, jSend);
+                        _zw.signline.make(ss, jSend["process"], eCmnt.val()); //console.log(tgt4Back)
 
-                    jSend["wid"] = _zw.V.wid;
-                    jSend["ss"] = ss;
-                    jSend["cmnt"] = eCmnt.val();
-                    jSend["rd"] = '';
+                        if (ss == 'back' && tgt4Back) jSend["process"]["target"] = tgt4Back;
 
-                    jSend["M"] = cmd;
-                    if (cmd == 'draft') jSend["M"] = "newdraft";
+                        jSend["M"] = ss;
+                        jSend["mi"] = _zw.V.appid;
+                        jSend["fi"] = _zw.V.def["formid"];
+                        jSend["wid"] = _zw.V.wid;
+                        jSend["ss"] = ss;
+                        jSend["cmnt"] = eCmnt.val();
+
+                    } else {
+                        _zw.form.make(cmd, jSend);
+                        _zw.signline.make(cmd, jSend["process"], eCmnt.val());
+
+                        jSend["wid"] = _zw.V.wid;
+                        jSend["ss"] = ss;
+                        jSend["cmnt"] = eCmnt.val();
+                        jSend["rd"] = '';
+
+                        jSend["M"] = cmd;
+                        if (cmd == 'draft') jSend["M"] = 'newdraft';
+                    }
                 }
                 //console.log(jSend); return
 
@@ -282,10 +285,13 @@ $(function () {
         return rt;
     }
 
+    _zw.fn.orgSelect = function (p, el) { if (_zw.formEx.orgSelect) _zw.formEx.orgSelect(p, el); }
+
     _zw.fn.reloadList = function () {
         try {
-            if (opener != null && opener._zw.mu.refresh) opener._zw.mu.refresh();
-            else opener.location.reload();
+            if (opener != null && opener._zw.mu.refresh) {
+                if (opener._zw.V.ctalias == 'ea') opener._zw.mu.refresh(); //부모창이 결재인 경우만 우선 적용
+            } else opener.location.reload();
         } catch (e) { opener.location.reload(); };
     }
 
@@ -308,7 +314,7 @@ $(function () {
                                 var v = res.substr(2).split(_zw.V.boundary); //console.log(JSON.parse(v[1]))
                                 p.html(v[0]);
 
-                                if (p.find('#orgmaptree').length > 0) new PerfectScrollbar(p.find('#orgmaptree')[0]);
+                                if (p.find('#sl_orgmaptree').length > 0) new PerfectScrollbar(p.find('#sl_orgmaptree')[0]);
                                 if (p.find('#personline').length > 0) new PerfectScrollbar(p.find('#personline')[0]);
                                 new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:first-child .card-body')[0]);
                                 new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:last-child .card-body')[0]);
@@ -326,7 +332,7 @@ $(function () {
                                     p.find('.zf-sl .zf-sl-member .card-body').html('');
                                 });
 
-                                $('#__OrgMapTree').jstree({
+                                p.find('#__OrgMapTree').jstree({
                                     core: {
                                         data: JSON.parse(v[1]).data,
                                         multiple: false
@@ -357,14 +363,14 @@ $(function () {
                                     }
                                 });
 
-                                $('#__OrgMapSearch input[data-for]').keyup(function (e) {
-                                    if (e.which == 13) $('#__OrgSearch .btn-outline-success').click();
+                                p.find('#__OrgMapSearch input[data-for]').keyup(function (e) {
+                                    if (e.which == 13) p.find('#__OrgSearch .btn-outline-success').click();
                                 });
 
-                                $('#__OrgMapSearch .btn-outline-success').click(function () {
+                                p.find('#__OrgMapSearch .btn-outline-success').click(function () {
                                     var j = {}; j['M'] = 'search'; j['boundary'] = _zw.V.boundary;
-                                    if ($('#orgmapsearch').hasClass('active')) {//검색창 활성화 여부
-                                        $('#__OrgMapSearch [data-for]').each(function () {
+                                    if (p.find('#sl_orgmapsearch').hasClass('active')) {//검색창 활성화 여부
+                                        p.find('#__OrgMapSearch [data-for]').each(function () {
                                             j[$(this).attr('data-for')] = $(this).val();
                                         });
                                     }
@@ -437,8 +443,8 @@ $(function () {
                                             });
                                         }
                                     } else if (mn == 'addGroup') {
-                                        if (tab == 'orgmaptree') {
-                                            var selected = $('#__OrgMapTree').jstree('get_selected', true); //console.log(selected)
+                                        if (tab == 'sl_orgmaptree') {
+                                            var selected = p.find('#__OrgMapTree').jstree('get_selected', true); //console.log(selected)
                                             if (selected.length > 0) {
                                                 var info = selected[0].li_attr; //alert(selected[0].text)
                                                 //2012-01-09 3단계 아래만 선택하게, 2015-09-02 1단계부터 선택하게
@@ -504,8 +510,10 @@ $(function () {
                                     p.modal('hide');
                                 });
 
-                                var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
-                                for (var i = jPart.length - 1; i >= 0; i--) _zw.V.process.signline.push(jPart[i]);
+                                if (p.find('.zf-sl-template-part').length > 0) {
+                                    var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
+                                    for (var i = jPart.length - 1; i >= 0; i--) _zw.V.process.signline.push(jPart[i]);
+                                }
 
                                 if (p.find('.zf-sl-template-attr').length > 0) {
                                     var jAttr = JSON.parse(p.find('.zf-sl-template-attr').text());
@@ -541,8 +549,10 @@ $(function () {
 
                                 new PerfectScrollbar(p.find('.zf-sl .zf-sl-list .card-body')[0]);
 
-                                var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
-                                for (var i = jPart.length - 1; i >= 0; i--) _zw.V.process.signline.push(jPart[i]);
+                                if (p.find('.zf-sl-template-part').length > 0) {
+                                    var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
+                                    for (var i = jPart.length - 1; i >= 0; i--) _zw.V.process.signline.push(jPart[i]);
+                                }
 
                                 p.find('.zf-sl .btn[data-zm-menu="send"]').click(function () {
                                     _zw.fn.sendForm(p, m);
@@ -565,7 +575,7 @@ $(function () {
             var attrList = _zw.V.templine && _zw.V.templine.attributes.length > 0 ? _zw.V.templine.attributes : _zw.V.process.attributes;
             
             var ln = signLine.filter(function (element) { if (element.parent === '') return true; }); //console.log(ln);
-            var curln = _zw.V.wid != '' ? signLine.find(function (element) { if (element.wid === _zw.V.wid) return true; }) : null; //console.log(curln);
+            var curln = _zw.V.act != '' && _zw.V.wid != '' ? signLine.find(function (element) { if (element.wid === _zw.V.wid) return true; }) : null; //console.log(curln);
             var pfln = _zw.V.pwid != '' ? signLine.find(function (element) { if (element.wid === _zw.V.pwid) return true; }) : null; //console.log(pfln);
 
             var temp = p.find('.zf-sl-template').html();
@@ -617,7 +627,7 @@ $(function () {
 
             p.find('.zf-sl-list .zf-sl-line a[data-toggle="popover"]').popover({
                 html: true,
-                trigger: 'focus',
+                //trigger: 'focus',
                 title: function () { return $(this).text(); },
                 content: function () {
                     var row = $(this).parent().parent().parent(); //console.log(row.find('div[title]'))
@@ -772,7 +782,9 @@ $(function () {
                         if (ot + '.' + partid == el.id) { bRt = false; return false; }
                     });
                 } else {
-
+                    if (ot == 'gr') {
+                        if (p.find('.zf-sl-list .zf-sl-line li[bizrole="' + act.bizrole + '"][partid="' + partid.split('_')[0] + '"]').length > 0) { bRt = false; return false; }
+                    }
                 }
 
             } else if (att != null && (att == 'mail_dl' || att == 'xform_dl' || att == 'xform_cf')) {
@@ -939,7 +951,7 @@ $(function () {
                 sCheck = '<button class="btn btn-outline-secondary zf-btn-xs" aria-expanded="false"><i class="fas fa-minus"></i></button>';
                 sMarginTop = ' mt-1';
 
-                if (cmd == 'reject' && v["state"] != '2' && v["wid"] == _zw.V.pwid) {
+                if (cmd == 'reject' && v["state"] != '2' && v["viewstate"] != '6') { //v["wid"] == _zw.V.pwid
                     sCls = 'zf-sl-add';
                     sOrderNo = '<label class="custom-control custom-checkbox mb-0"><input type="checkbox" class="custom-control-input"><span class="custom-control-label">' + sOrderNo + '</span></label>';
                 } else  sCls = 'zf-sl-read';
@@ -1019,6 +1031,7 @@ $(function () {
                         } else if (v["state"] == '2' && v["signstatus"] == '3' && v["wid"] == _zw.V.wid && v["partid"] != '') {
                             sCls = 'zf-sl-current';
                         } else {
+                            
                             if (v["actrole"] == '_drafter' || v["actrole"] == '_re' || v["step"] == sStep) sCls = 'zf-sl-read';
                             else {
                                 sCls = 'zf-sl-add';
@@ -1251,10 +1264,10 @@ $(function () {
         "make": function (cmd, j, cmnt) {
             var jSign = [], jAttr = [];
 
-            if (cmd == 'reject') {
-                var cur = {};
-                cur["wid"] = _zw.V.wid; cur["partid"] = _zw.V.partid; cur["completed"] = ''; cur["comment"] = cmnt;
-                j["current"] = cur;
+            if (cmd == 'reject' || cmd == 'back') {
+                //var cur = {};
+                //cur["wid"] = _zw.V.wid; cur["partid"] = _zw.V.partid; cur["completed"] = ''; cur["comment"] = cmnt;
+                //j["current"] = cur;
 
                 if (_zw.V.pwid != '' && _zw.V.partid.indexOf('__') >= 0) {
                     var ln = _zw.V.process.signline.find(function (element) { if (element.parent === _zw.V.pwid && element.actrole == _zw.V.curact && element.partid == _zw.V.current.urid) return true; }); //console.log(curln);
@@ -1308,7 +1321,7 @@ $(function () {
                 var curAct = _zw.V.schema.find(function (element) { if (element.actid === _zw.V.curactid) return true; }); //console.log(curAct);
 
                 if (_zw.V.act.indexOf('__') != -1) tgt = signLine.find(function (element) { if (element.bizrole == _zw.V.curbiz && element.actrole == _zw.V.curact) return true; });
-                else if (_zw.V.wid != '') tgt = signLine.find(function (element) { if (element.wid === _zw.V.wid) return true; });
+                else if (_zw.V.act != '' && _zw.V.wid != '') tgt = signLine.find(function (element) { if (element.wid === _zw.V.wid) return true; });
                 else tgt = signLine.find(function (element) { if (element.actrole == '_drafter' && element.step == '1') return true; });
 
                 searchLine = signLine.filter(function (element) { if (element.parent === tgt["parent"] && parseInt(element.step) >= parseInt(tgt["step"])) return true; });
@@ -1632,8 +1645,8 @@ $(function () {
                 $('#__subtable' + x.substr(1) + ' tr.sub_table_row').each(function (idx) {
                     var iData = 0;
                     if (idx > 0) { //둘째줄부터 입력필드가 있는 경우 체크
-                        $(this).find('[name]').each(function () { if ($(this).attr('name') != "" && $(this).attr('name') != 'ROWSEQ' && $.trim($(this).val()) != '') { iData++; return false; } });
-                    }
+                        $(this).find(':text[name], :hidden[name]').each(function () { if ($(this).attr('name') != "" && $(this).attr('name') != 'ROWSEQ' && $.trim($(this).val()) != '') { iData++; return false; } });
+                    } //console.log(idx + " : " + iData)
                     if (idx == 0 || iData > 0) { //첫줄 필수 체크
                         for (var i = 0; i < jSub[x].length; i++) {
                             var fld = jSub[x][i];
@@ -1686,7 +1699,7 @@ $(function () {
             
         },
         "make": function (cmd, j) {
-            if (cmd == 'reject') {
+            if (cmd == 'reject' || cmd == 'back') {
                 j["biz"] = {};
                 j["biz"]["formid"] = _zw.V.def["formid"];
                 j["biz"]["processid"] = _zw.V.def["processid"];
@@ -1695,10 +1708,10 @@ $(function () {
 
                 j["doc"] = _zw.V.doc;
                 j["form"] = { "maintable": {}, "subtables": {} };
-                j["process"] = { "current": {}, "target": {}, "param": {} };
+                j["process"] = { "target": {}, "param": {} };
                 j["attachlist"] = [];
 
-            } else {
+            } else if (cmd == 'draft' || cmd == 'approval') {
                 _zw.body.common(cmd, j);
 
                 if (cmd == 'draft') {
@@ -1753,7 +1766,7 @@ $(function () {
                 j["doc"]["docnumber"] = '';
                 j["doc"]["doclevel"] = _zw.V.doc["doclevel"];
                 j["doc"]["keepyear"] = _zw.V.doc["keepyear"];
-                j["doc"]["subject"] = $('#Subject[name="__commonfield"]').val();
+                j["doc"]["subject"] = $('#Subject[name="__commonfield"]').length > 0 ? $('#Subject[name="__commonfield"]').val() : '';
                 j["doc"]["credate"] = '';
                 j["doc"]["pubdate"] = '';
                 j["doc"]["expdate"] = '';

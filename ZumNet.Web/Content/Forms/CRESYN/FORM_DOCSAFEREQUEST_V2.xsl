@@ -36,9 +36,15 @@
           .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
+          .m .ft .f-lbl {width:14%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
           .m .ft .f-option {width:15%} .m .ft .f-option1 {width:34%}
           .m .ft-sub .f-option {width:49%}
+		  
+		  .m table.ft span input[type="radio"], .m table.ft span input[type="checkbox"] {
+                position: inherit;
+                margin-top: 0;
+                margin-left: 0;
+          }
 
           /* 인쇄 설정 : 맨하단으로 */
           @media print {.m .fm-editor {height:450px}}
@@ -108,16 +114,16 @@
                 <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
               </xsl:if>
               <colgroup>
-                <col style="width:15%"></col>
-                <col style="width:20%"></col>
-                <col style="width:15%"></col>
-                <col style="width:15%"></col>
-                <col style="width:15%"></col>
-                <col style="width:20%"></col>
+                <col style="width:14%"></col>
+                <col style="width:21%"></col>
+                <col style="width:14%"></col>
+                <col style="width:16%"></col>
+                <col style="width:14%"></col>
+                <col style="width:21%"></col>
               </colgroup>
               <tr>
                 <td class="f-lbl">문서번호</td>
-                <td style="" colspan="2">
+                <td colspan="3">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//docinfo/docnumber))" />
                 </td>
                 <td class="f-lbl">작성일자</td>
@@ -171,7 +177,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb1" name="ckbCHECK1" value="암호화권한">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECK1', this, 'CHECK1')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECK1', this, 'CHECK1')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECK1),'암호화권한')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -185,9 +191,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="CHECKREASON1" style="height:65px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="CHECKREASON1" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/CHECKREASON1" />
                         </xsl:if>
@@ -200,13 +204,12 @@
                       </xsl:if>
                       <xsl:choose>
                         <xsl:when test="$submode='revise'">
-                          <textarea id="__mainfield" name="CHECKREASON1" class="txaText" height="65px" onkeyup="parent.checkTextAreaLength(this, 2000)">
+							<textarea id="__mainfield" name="CHECKREASON1" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                             <xsl:value-of select="//forminfo/maintable/CHECKREASON1" />
                           </textarea>
                         </xsl:when>
                         <xsl:otherwise>
-                          <div id="__mainfield" name="CHECKREASON1" style="">
-                            <xsl:attribute name="class">txaRead</xsl:attribute>
+                          <div class="txaRead">
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CHECKREASON1))" />
                           </div>
                         </xsl:otherwise>
@@ -223,7 +226,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb2" name="ckbCHECK2" value="USB권한">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECK2', this, 'CHECK2')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECK2', this, 'CHECK2')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECK2),'USB권한')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -237,9 +240,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="CHECKREASON2" style="height:65px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="CHECKREASON2" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/CHECKREASON2" />
                         </xsl:if>
@@ -252,13 +253,12 @@
                       </xsl:if>
                       <xsl:choose>
                         <xsl:when test="$submode='revise'">
-                          <textarea id="__mainfield" name="CHECKREASON2" class="txaText" height="65px" onkeyup="parent.checkTextAreaLength(this, 2000)">
+                          <textarea id="__mainfield" name="CHECKREASON2" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                             <xsl:value-of select="//forminfo/maintable/CHECKREASON2" />
                           </textarea>
                         </xsl:when>
                         <xsl:otherwise>
-                          <div id="__mainfield" name="CHECKREASON2" style="">
-                            <xsl:attribute name="class">txaRead</xsl:attribute>
+							<div class="txaRead">
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CHECKREASON2))" />
                           </div>
                         </xsl:otherwise>
@@ -278,7 +278,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb3" name="ckbCHECK3" value="모바일권한">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECK3', this, 'CHECK3')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECK3', this, 'CHECK3')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECK3),'모바일권한')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -292,9 +292,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="CHECKREASON3" style="height:65px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="CHECKREASON3" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/CHECKREASON3" />
                         </xsl:if>
@@ -307,13 +305,12 @@
                       </xsl:if>
                       <xsl:choose>
                         <xsl:when test="$submode='revise'">
-                          <textarea id="__mainfield" name="CHECKREASON3" class="txaText" height="65px" onkeyup="parent.checkTextAreaLength(this, 2000)">
+                          <textarea id="__mainfield" name="CHECKREASON3" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                             <xsl:value-of select="//forminfo/maintable/CHECKREASON3" />
                           </textarea>
                         </xsl:when>
                         <xsl:otherwise>
-                          <div id="__mainfield" name="CHECKREASON3" style="">
-                            <xsl:attribute name="class">txaRead</xsl:attribute>
+							<div class="txaRead">
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CHECKREASON3))" />
                           </div>
                         </xsl:otherwise>
@@ -331,7 +328,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb4" name="ckbCHECK4" value="기타장비권한">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECK4', this, 'CHECK4')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECK4', this, 'CHECK4')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECK4),'기타장비권한')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -345,9 +342,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="CHECKREASON4" style="height:65px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="CHECKREASON4" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/CHECKREASON4" />
                         </xsl:if>
@@ -360,15 +355,14 @@
                       </xsl:if>
                       <xsl:choose>
                         <xsl:when test="$submode='revise'">
-                          <textarea id="__mainfield" name="CHECKREASON4" class="txaText" height="65px" onkeyup="parent.checkTextAreaLength(this, 2000)">
+                          <textarea id="__mainfield" name="CHECKREASON4" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                             <xsl:value-of select="//forminfo/maintable/CHECKREASON4" />
                           </textarea>
                         </xsl:when>
                         <xsl:otherwise>
-                          <div id="__mainfield" name="CHECKREASON4" style="">
-                            <xsl:attribute name="class">txaRead</xsl:attribute>
-                            <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CHECKREASON4))" />
-                          </div>
+						    <div class="txaRead">
+                                <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CHECKREASON4))" />
+                            </div>
                         </xsl:otherwise>
                       </xsl:choose>
                     </xsl:otherwise>
@@ -381,7 +375,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb5" name="ckbCHECK5" value="화면캡쳐권한">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECK5', this, 'CHECK5')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECK5', this, 'CHECK5')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECK5),'화면캡쳐권한')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -395,9 +389,7 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="CHECKREASON5" style="height:65px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="CHECKREASON5" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/CHECKREASON5" />
                         </xsl:if>
@@ -410,13 +402,12 @@
                       </xsl:if>
                       <xsl:choose>
                         <xsl:when test="$submode='revise'">
-                          <textarea id="__mainfield" name="CHECKREASON5" class="txaText" height="65px" onkeyup="parent.checkTextAreaLength(this, 2000)">
+                          <textarea id="__mainfield" name="CHECKREASON5" style="height:65px" class="txaText bootstrap-maxlength" maxlength="2000">
                             <xsl:value-of select="//forminfo/maintable/CHECKREASON5" />
                           </textarea>
                         </xsl:when>
                         <xsl:otherwise>
-                          <div id="__mainfield" name="CHECKREASON5" style="">
-                            <xsl:attribute name="class">txaRead</xsl:attribute>
+                          <div class="txaRead">
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CHECKREASON5))" />
                           </div>
                         </xsl:otherwise>

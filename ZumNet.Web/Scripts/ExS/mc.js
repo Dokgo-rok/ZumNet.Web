@@ -403,7 +403,7 @@ $(function () {
         _zw.fn.goSearch(null, col, dir);
     }
 
-    _zw.fn.goSearch = function (page, sort, dir) {//lert(1)
+    _zw.fn.goSearch = function (page, sort, dir) {//alert(1)
         _zw.fn.initLv($('#_Target').val());
 
         sort = sort || ''; dir = dir || '';

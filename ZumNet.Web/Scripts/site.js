@@ -837,21 +837,23 @@ $(function () {
 
     //함수
     _zw.fn = {
-        "org": function (tgt, multi) {//tgt : user, group, all, multi : y, n
+        "org": function (tgt, multi, el) {//tgt : user, group, all, multi : y, n
+            var boundary = _zw.V.boundary || _zw.V.lv.boundary;
+
             $.ajax({
                 type: "POST",
                 url: "/Organ/Plate",
-                data: '{M:"' + tgt + '",multi:"' + multi + '",boundary:"' + _zw.V.lv.boundary + '"}',
+                data: '{M:"' + tgt + '",multi:"' + multi + '",boundary:"' + boundary + '"}',
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {
-                        var v = res.substr(2).split(_zw.V.lv.boundary); //console.log(JSON.parse(v[1]))
+                        var v = res.substr(2).split(boundary); //console.log(JSON.parse(v[1]))
                         var p = $('#popBlank'); p.html(v[0]); //body 없는 modal 경우 show.bs.modal 사용시 버튼 이벤트 안됨
 
                         new PerfectScrollbar(p.find('.zf-org .tab-content .tab-pane')[0]);
                         new PerfectScrollbar(p.find('.zf-org .zf-org-list')[0]);
                         new PerfectScrollbar(p.find('.zf-org .zf-org-select')[0]);
 
-                        $('#__OrgMapTree').jstree({
+                        p.find('#__OrgMapTree').jstree({
                             core: {
                                 data: JSON.parse(v[1]).data,
                                 multiple: false
@@ -870,7 +872,7 @@ $(function () {
                                     $.ajax({
                                         type: "POST",
                                         url: "/Organ/Plate",
-                                        data: '{M:"member",grid:"' + n.id + '",boundary:"' + _zw.V.lv.boundary + '"}',
+                                        data: '{M:"member",grid:"' + n.id + '",boundary:"' + boundary + '"}',
                                         success: function (res) {
                                             if (res.substr(0, 2) == "OK") {
                                                 p.find('.zf-org .zf-org-list').html(res.substr(2));
@@ -889,14 +891,14 @@ $(function () {
                         //    //console.log(e.relatedTarget)
                         //});
 
-                        $('#__OrgMapSearch input[data-for]').keyup(function (e) {
-                            if (e.which == 13) $('#__OrgSearch .btn-outline-success').click();
+                        p.find('#__OrgMapSearch input[data-for]').keyup(function (e) {
+                            if (e.which == 13) p.find('#__OrgSearch .btn-outline-success').click();
                         });
 
-                        $('#__OrgMapSearch .btn-outline-success').click(function () {
-                            var j = {}; j['M'] = 'search'; j['boundary'] = _zw.V.lv.boundary;
-                            if ($('#orgmapsearch').hasClass('active')) {//검색창 활성화 여부
-                                $('#__OrgMapSearch [data-for]').each(function () {
+                        p.find('#__OrgMapSearch .btn-outline-success').click(function () {
+                            var j = {}; j['M'] = 'search'; j['boundary'] = boundary;
+                            if (p.find('#orgmapsearch').hasClass('active')) {//검색창 활성화 여부
+                                p.find('#__OrgMapSearch [data-for]').each(function () {
                                     j[$(this).attr('data-for')] = $(this).val();
                                 });
                             }
@@ -940,16 +942,37 @@ $(function () {
                                     }
                                     $(this).prop('checked', false);
                                 });
-                            } else if (mn == 'removeUser') {
+                            } else if (mn == 'addGroup') {
+                                if (p.find('.zf-org .nav-tabs-top .tab-pane.active').attr('id') == 'orgmaptree') {
+                                    if (multi == 'n') $('.zf-org .zf-org-select div.d-flex').remove();
+
+                                    var selected = p.find('#__OrgMapTree').jstree('get_selected', true);
+                                    if (selected.length > 0) {
+                                        var info = selected[0].li_attr; //console.log(info)
+                                        if ($('.zf-org .zf-org-select input:checkbox[data-for="' + info["id"] + '"]').length > 0) {
+                                            bootbox.alert("중복된 부서 입니다!");
+                                        } else {
+                                            var s = $('.zf-org-template-group').html();
+                                            s = s.replace("{$id}", info["id"]).replace("{$group}", selected[0].text);
+
+                                            $('.zf-org .zf-org-select').append(s);
+                                            //$('.zf-org .zf-org-select input:checkbox[data-for="' + info["id"] + '"]').attr('data-attr', '{"id":"' + info["id"] + '","gralias":"' + info["gralias"] + '", "hasmember": "' + info["hasmember"] + '","level":"' + info["level"] + '"}');
+                                            $('.zf-org .zf-org-select input:checkbox[data-for="' + info["id"] + '"]').attr('data-attr', JSON.stringify(info));
+                                        }
+                                    }
+                                }
+                            } else if (mn == 'removeUser' || mn == 'removeGroup') {
                                 $('.zf-org .zf-org-select input:checkbox:checked').each(function () {
                                     $(this).parent().parent().parent().remove();
                                 });
                             } else if (mn == 'confirm') {
-                                if (_zw.fn.orgSelect) _zw.fn.orgSelect(p);
+                                if (_zw.fn.orgSelect) _zw.fn.orgSelect(p, el);
                             }
                         });
-
-                        p.modal('show');
+                        
+                        //p.find('.zf-org-menu .btn[data-toggle="tooltip"][title!=""]').tooltip(); //<--적용X
+                        p.on('hidden.bs.modal', function () { p.html(''); });
+                        p.modal();
                     } else bootbox.alert(res);
                 }
             });
@@ -1731,7 +1754,29 @@ $(function () {
         },
         "isMobile": function () {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent);
-        }        
+        },
+        "popup": function (el, option) {
+            var ttl = option.title ? option.title : '';
+            var bClose = option.close || false;
+            var footer = option.footer ? option.footer : '';
+
+            var w = option.width, h = option.height;
+            var offset = $(el).offset(); console.log(offset)
+
+            var s = '<div class="z-pop" role="modal">';
+            if (ttl != '' || bClose) {
+                s += '<div class="z-pop-header">';
+                s += '<div class="z-pop-title">' + ttl + '</div>';
+                if (bClose) s += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                s += '</div>';
+            }
+            s += '<div class="z-pop-body"><div style="overflow-y: auto; height: ' + h + 'px">' + option.content + '</div></div>';
+            if (footer != '') s += '<div class="z-pop-footer">' + footer + '</div>';
+            s += '</div>';
+
+            var p = $(s).css({ "top": offset.top + 20, "left": offset.left - w, "width": w, "height": h + 40 }).show();
+            $('body').append(p);
+        }
     };
 
     //Calendar (일정,일지,자원 관련 공통 함수)

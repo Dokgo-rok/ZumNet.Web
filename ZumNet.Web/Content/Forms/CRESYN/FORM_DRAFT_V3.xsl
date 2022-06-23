@@ -41,7 +41,7 @@
 			.m .ft-sub .f-option {width:49%}
 
 			/* 인쇄 설정 : 맨하단으로 */
-			@media print {.m .fm-editor {height:550px;min-height:500px}}
+			@media print {.m .fm-editor {height:500px;min-height:500px}}
 		</style>
       </head>
       <body>
@@ -216,9 +216,7 @@
                   <tr>
                     <td class="f-lbl" style="border-bottom:0">기획조정실<br />검토의견</td>
                     <td style="border-right:0;border-bottom:0">                      
-                      <textarea id="__mainfield" name="CONTENTS" style="height:60px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="CONTENTS" style="height:60px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/CONTENTS" />
                         </xsl:if>

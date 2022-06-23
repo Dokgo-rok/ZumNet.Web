@@ -1216,7 +1216,7 @@ namespace ZumNet.Web.Bc
                     oConfig.Attributes["actid"].Value = ""; //2022-06-07 추가
                     oConfig.Attributes["bizrole"].Value = bizRole;
                     oConfig.Attributes["actrole"].Value = actRole;
-                    oConfig.Attributes["wid"].Value = workItemID; //2012-02-13 추가 (workitemid가 있는 경우)
+                    oConfig.Attributes["wid"].Value = ""; // workItemID; //2012-02-13 추가 (workitemid가 있는 경우)
                     oConfig.Attributes["companycode"].Value = HttpContext.Current.Session["CompanyCode"].ToString();
                     oConfig.Attributes["web"].Value = HttpContext.Current.Session["FrontName"].ToString();  //2010-07-06
                     oConfig.InnerXml = "<![CDATA[var json={" + ProcessStateChart.JsonParse() + "}]]>";

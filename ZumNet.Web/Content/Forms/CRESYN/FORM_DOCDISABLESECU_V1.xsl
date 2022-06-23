@@ -26,27 +26,27 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:700px} .m .fm-editor {height:400px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:4pt}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:700px} .m .fm-editor {height:400px;border:windowtext 1pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:4pt}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:7%} .m .ft .f-lbl2 {width:8%}
-          .m .ft .f-option {width:33%} .m .ft .f-option1 {width:40%}
-          .m .ft-sub .f-option {width:49%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:7%} .m .ft .f-lbl2 {width:8%}
+			.m .ft .f-option {width:33%} .m .ft .f-option1 {width:40%}
+			.m .ft-sub .f-option {width:49%}
 
-          /* 기타 */
-          p, li, li table td  {font-size:15px;font-family:맑은 고딕;letter-spacing:1pt;line-height:24px;vertical-align:top}
-          li {margin-top: 12px}
-          ul.ft-ul {margin:0;list-style:none}
-          ul.ft-ul li {margin-bottom:10px}
+			/* 기타 */
+			.fm p, .m .fm p span, .fm li, .fm li table td {font-size:15px;font-family:맑은 고딕;letter-spacing:1pt;line-height:24px;vertical-align:top}
+			.fm li {margin-top: 12px}
+			ul.ft-ul {margin:0;list-style:none}
+			ul.ft-ul li {margin-bottom:10px}
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:650px}}
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:650px}}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -160,9 +160,7 @@
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <h5 class="text-danger mb-0">※ 첨부파일 확장자명은 반드시 소문자로 작성하여 주시기 바랍니다.</h5>
                     </xsl:when>
-                    <xsl:otherwise>
-                      &nbsp;
-                    </xsl:otherwise>
+                    <xsl:otherwise></xsl:otherwise>
                   </xsl:choose>
                 </td>
               </tr>          
@@ -211,7 +209,7 @@
             </table>
           </div>
 
-          <div style="border:1px solid windowtext;border-top:0;padding:20px;text-align:left">
+          <div class="fm" style="border:1px solid windowtext;border-top:0;padding:20px;text-align:left">
             <ol>
               <li>
                 <xsl:choose>
@@ -255,7 +253,7 @@
               </xsl:choose>
             </p>
 
-            <ul class="ft-ul" style="text-align: right">
+            <ul class="ft-ul" style="margin-left: 350px">
               <li>
                 <xsl:if test="//bizinfo/@docstatus='700'">
                   <xsl:attribute name="style">margin-bottom:-2px</xsl:attribute>

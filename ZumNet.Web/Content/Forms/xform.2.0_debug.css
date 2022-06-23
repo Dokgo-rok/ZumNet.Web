@@ -223,7 +223,7 @@
 	margin-bottom: 0;
 	margin-left: 1.15rem
 }
-.m table span input[type="radio"], .m table span input[type="checkbox"] {
+.m table.ft span > input[type="radio"], .m table.ft span > input[type="checkbox"] {
 	position: absolute;
 	margin-top: .25rem;
 	margin-left: .125rem;
@@ -250,13 +250,13 @@
 .m .txtText_m {
 	ime-mode: active;
 	width: 100%;
-	border: 1px solid red;
+	border: 1px solid red !important;
 }
 .m .txtText_u {
 	ime-mode: active;
 	width: 100%;
-	border: 0;
-	border-bottom: 1px solid #aaaaaa
+	border: 0 !important;
+	border-bottom: 1px solid rgba(24,28,33,0.3) !important;
 }
 .m .txaText {
 	ime-mode: active;
@@ -294,7 +294,7 @@
 }
 .m .txtRead {
 	width: 100%;
-	border: 0;
+	border: 0 !important;
 }
 .m .txtRead_Right {
 	width: 100%;
