@@ -103,7 +103,7 @@
 
             var base64 = Convert.ToBase64String(byData);
 
-            return String.Format("<img src=\"data:image/jpg;base64,{0}\" alt=\"User Image\" class=\"rounded-circle\" style=\"width: 30px; height: 30px\">", base64);
+            return String.Format("<img src=\"data:image/jpg;base64,{0}\" alt=\"User Image\" class=\"rounded-circle\" style=\"max-width: 36px; max-height: 36px\">", base64);
         }
         else
         {
@@ -123,7 +123,7 @@
         }
 
         //return String.Format("<span><img src=\"{0}\" alt=\"User Image\" class=\"rounded-circle\" style=\"width: 30px; height: 30px\" onerror=\"this.parentNode.className='h2 fas fa-user-circle mr-2 mb-0 align-middle'\"></span>", imagepath);
-        return String.Format("<img src=\"{0}\" alt=\"User Image\" class=\"rounded-circle{1}\" style=\"width: 30px; height: 30px\">", imagepath, imageOpacity);
+        return String.Format("<img src=\"{0}\" alt=\"User Image\" class=\"rounded-circle{1}\" style=\"max-width: 36px; max-height: 36px\">", imagepath, imageOpacity);
     }
 }
 

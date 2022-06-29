@@ -32,7 +32,7 @@
           .m .ft-sub label {font-size:13px}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:12%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
@@ -48,14 +48,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <xsl:choose>
-                    <xsl:when test="$mode='read'">
-                      <img alt="" src="{//forminfo/maintable/LOGOPATH}" />
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
-                    </xsl:otherwise>
-                  </xsl:choose>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -65,14 +65,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -80,7 +80,7 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:390px">
+                <td style="width:395px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '5', '작성부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
@@ -145,7 +145,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb11" name="ckbSETCLASS" value="신규확정">
                       <xsl:if test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbSETCLASS', this, 'SETCLASS')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbSETCLASS', this, 'SETCLASS')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/SETCLASS),'신규확정')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -159,7 +159,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb12" name="ckbSETCLASS" value="임시설정">
                       <xsl:if test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbSETCLASS', this, 'SETCLASS')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbSETCLASS', this, 'SETCLASS')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/SETCLASS),'임시설정')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -194,9 +194,12 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                       <input type="text" id="__mainfield" name="ITEMNO" style="width:87%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/ITEMNO}" />
-                      <button onclick="parent.fnExternal('erp.items3',240,40,80,70,'','ITEMNO','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('erp.items3',240,40,80,70,'','ITEMNO','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="품번" onclick="_zw.formEx.externalWnd('erp.items3',240,40,80,70,'','ITEMNO','ITEMNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ITEMNO))" />
@@ -208,9 +211,12 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                       <input type="text" id="__mainfield" name="MODELNAME" style="width:83%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/MODELNAME}" />
-                      <button onclick="parent.fnExternal('erp.items',240,40,20,70,'','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('erp.items',240,40,20,70,'','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="관련모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,20,70,'','MODELNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/MODELNAME))" />
@@ -224,9 +230,12 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                       <input type="text" id="__mainfield" name="PRODUCTCENTER" style="width:89%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/PRODUCTCENTER}" />
-                      <button onclick="parent.fnOption('external.centercode',240,140,100,120,'','PRODUCTCENTER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.centercode',240,140,100,120,'','PRODUCTCENTER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="적용사업장" onclick="_zw.formEx.optionWnd('external.centercode',240,140,100,120,'','PRODUCTCENTER');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PRODUCTCENTER))" />
@@ -238,9 +247,12 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                       <input type="text" id="__mainfield" name="COMPANY" style="width:87%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/COMPANY}" />
-                      <button onclick="parent.fnExternal('erp.vendors',240,40,80,70,'','COMPANY','COMPANYCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('erp.vendors',240,40,80,70,'','COMPANY','COMPANYCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="업체명" onclick="_zw.formEx.externalWnd('erp.vendors',240,40,80,70,'','COMPANY','COMPANYCODE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/COMPANY))" />
@@ -264,7 +276,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="UNITCOST" class="txtDollar5" style="width:187px"  maxlength="20" value="{//forminfo/maintable/UNITCOST}" />
+                      <input type="text" id="__mainfield" name="UNITCOST" class="txtDollar5" style="width:187px" maxlength="15" data-inputmask="number;10;5" value="{//forminfo/maintable/UNITCOST}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/UNITCOST))" />
@@ -286,9 +298,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="APPLYPOINT" class="txtDate" maxlength="8" value="{//forminfo/maintable/APPLYPOINT}">
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="APPLYPOINT" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/APPLYPOINT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/APPLYPOINT))" />
@@ -301,10 +311,13 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="CURRENCY" style="width:89px;height:16px" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/CURRENCY}" />
-                      <button onclick="parent.fnOption('iso.currency',160,140,100,115,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="CURRENCY" style="width:89px" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/CURRENCY}" />
+                      <!--<button onclick="parent.fnOption('iso.currency',160,140,100,115,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',160,140,100,115,'etc','CURRENCY');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY))" />&nbsp;
@@ -315,10 +328,13 @@
                 <td colspan="3" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="EXCHANGERATE" style="width:138px;height:16px" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/EXCHANGERATE}" />
-                      <button onclick="parent.fnExternal('erp.exchangerate',240,40,80,70,'KRW','EXCHANGERATE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="EXCHANGERATE" style="width:38%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/EXCHANGERATE}" />
+                      <!--<button onclick="parent.fnExternal('erp.exchangerate',240,40,80,70,'KRW','EXCHANGERATE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="적용 환율" onclick="_zw.formEx.externalWnd('erp.exchangerate',240,40,80,70,'KRW','EXCHANGERATE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EXCHANGERATE))" />&nbsp;
@@ -331,7 +347,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="PRICE1" class="txtDollar5" maxlength="20" value="{//forminfo/maintable/PRICE1}" />
+                      <input type="text" id="__mainfield" name="PRICE1" class="txtDollar5" maxlength="15" data-inputmask="number;10;5" value="{//forminfo/maintable/PRICE1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/PRICE1))" />
@@ -342,7 +358,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="PRICE2" class="txtDollar5" readonly="readonly"  value="{//forminfo/maintable/PRICE2}" />
+                      <input type="text" id="__mainfield" name="PRICE2" class="txtDollar5" readonly="readonly" maxlength="15" data-inputmask="number;10;5" value="{//forminfo/maintable/PRICE2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PRICE2))" />
@@ -353,7 +369,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="RATE1" class="txtDollar"  readonly="readonly" maxlength="20" value="{//forminfo/maintable/RATE1}" />
+                      <input type="text" id="__mainfield" name="RATE1" class="txtDollar"  readonly="readonly" maxlength="12" data-inputmask="number;10;2" value="{//forminfo/maintable/RATE1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/RATE1))" />
@@ -366,7 +382,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="PRELT" class="txtVolume" maxlength="20" value="{//forminfo/maintable/PRELT}" />
+                      <input type="text" id="__mainfield" name="PRELT" class="txtVolume" maxlength="15" data-inputmask="number;15;0" value="{//forminfo/maintable/PRELT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/PRELT))" />
@@ -377,7 +393,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="PROCLT" class="txtVolume" maxlength="20" value="{//forminfo/maintable/PROCLT}" />
+                      <input type="text" id="__mainfield" name="PROCLT" class="txtVolume" maxlength="15" data-inputmask="number;15;0" value="{//forminfo/maintable/PROCLT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PROCLT))" />
@@ -388,7 +404,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="POSTLT" class="txtVolume" maxlength="20" value="{//forminfo/maintable/POSTLT}" />
+                      <input type="text" id="__mainfield" name="POSTLT" class="txtVolume" maxlength="15" data-inputmask="number;15;0" value="{//forminfo/maintable/POSTLT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/POSTLT))" />
@@ -401,7 +417,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="TOTALLT" style="width:186px" class="txtVolume" readonly="readonly" value="{//forminfo/maintable/TOTALLT}" />
+                      <input type="text" id="__mainfield" name="TOTALLT" class="txtVolume" readonly="readonly" value="{//forminfo/maintable/TOTALLT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TOTALLT))" />
@@ -412,10 +428,13 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="BUYER" style="width:85%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/BUYER}" />
-                      <button onclick="parent.fnExternal('erp.buyer',240,40,240,70,'','BUYER','BUYERID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="BUYER" style="width:87%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/BUYER}" />
+                      <!--<button onclick="parent.fnExternal('erp.buyer',240,40,240,70,'','BUYER','BUYERID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="구매담당자" onclick="_zw.formEx.externalWnd('erp.buyer',240,40,240,70,'','BUYER','BUYERID');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/BUYER))" />&nbsp;
@@ -426,10 +445,13 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="POTYPE" style="width:90px" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/POTYPE}" />
-                      <button onclick="parent.fnOption('erp.potype',80,90,60,90,'','POTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="POTYPE" style="width:83%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/POTYPE}" />
+                      <!--<button onclick="parent.fnOption('erp.potype',80,90,60,90,'','POTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="PO TYPE" onclick="_zw.formEx.optionWnd('erp.potype',80,90,60,90,'','POTYPE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/POTYPE))" />
@@ -443,9 +465,12 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                       <input type="text" id="__mainfield" name="BPANUM" style="width:89%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/BPANUM}" />
-                      <button onclick="parent.fnOption('erp.bpanum',400,160,100,120,'','BPANUM');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('erp.bpanum',400,160,100,120,'','BPANUM');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="BPA NUM" onclick="_zw.formEx.optionWnd('erp.bpanum',400,160,100,120,'','BPANUM');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/BPANUM))" />&nbsp;
@@ -456,7 +481,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="MONTHCOUNT" class="txtDollar" maxlength="50" value="{//forminfo/maintable/MONTHCOUNT}" />
+                      <input type="text" id="__mainfield" name="MONTHCOUNT" class="txtDollar" maxlength="15" data-inputmask="number;10;5" value="{//forminfo/maintable/MONTHCOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/MONTHCOUNT))" />
@@ -467,7 +492,7 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="YEARCOUNT" class="txtDollar" readonly="readonly" value="{//forminfo/maintable/YEARCOUNT}" />
+                      <input type="text" id="__mainfield" name="YEARCOUNT" class="txtDollar" readonly="readonly" maxlength="15" data-inputmask="number;10;5" value="{//forminfo/maintable/YEARCOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/YEARCOUNT))" />
@@ -500,9 +525,7 @@
                 <td style="height:80px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT1" style="height:75px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 400)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT1" style="height:75px" class="txaText bootstrap-maxlength" maxlength="400">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT1" />
                         </xsl:if>
@@ -519,9 +542,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT2" style="height:75px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 400)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT2" style="height:75px" class="txaText bootstrap-maxlength" maxlength="400">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT2" />
                         </xsl:if>
@@ -538,9 +559,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT3" style="height:75px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 200)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT3" style="height:75px" class="txaText bootstrap-maxlength" maxlength="200">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT3" />
                         </xsl:if>
@@ -654,9 +673,7 @@
                 <td style="height:70px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT4" style="height:64px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 400)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT4" style="height:64px" class="txaText bootstrap-maxlength" maxlength="400">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT4" />
                         </xsl:if>
@@ -673,9 +690,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT5" style="height:64px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 400)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT5" style="height:64px" class="txaText bootstrap-maxlength" maxlength="400">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT5" />
                         </xsl:if>
@@ -692,9 +707,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT6" style="height:64px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 200)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT6" style="height:64px" class="txaText bootstrap-maxlength" maxlength="200">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT6" />
                         </xsl:if>
@@ -808,9 +821,7 @@
                 <td style="height:50px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT7" style="height:46px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 200)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT7" style="height:46px" class="txaText bootstrap-maxlength" maxlength="200">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT7" />
                         </xsl:if>
@@ -827,9 +838,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT8" style="height:46px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 200)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT8" style="height:46px" class="txaText bootstrap-maxlength" maxlength="200">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT8" />
                         </xsl:if>
@@ -846,9 +855,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <textarea id="__mainfield" name="COMMENT9" style="height:46px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 200)</xsl:attribute>
+                      <textarea id="__mainfield" name="COMMENT9" style="height:46px" class="txaText bootstrap-maxlength" maxlength="200">
                         <xsl:if test="$mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                           <xsl:value-of select="//forminfo/maintable/COMMENT9" />
                         </xsl:if>
@@ -1612,11 +1619,11 @@
               </tr>
               <tr>
                 <td colspan="2" class="f-lbl2" style="border-bottom:0">기타</td>
-                <td colspan="3" style="padding:0;border-right:0;border-bottom:0;height:48px">
+                <td colspan="3" style="padding:0;border:0;height:48px">
                   <table class="ft" border="0" cellspacing="0" cellpadding="0" style="border:0">
                     <tr>
-                      <td class="f-lbl2" style="width:80px">거래조건</td>
-                      <td style="border-right:0">
+                      <td class="f-lbl2" style="width:80px;border:0">거래조건</td>
+                      <td style="border-top:0;border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
                             <input type="text" id="__mainfield" name="CONDITION">
@@ -1634,7 +1641,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="f-lbl2" style="border-bottom:0">관세</td>
+                      <td class="f-lbl2" style="border-left:0;border-bottom:0">관세</td>
                       <td style="border-right:0;border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">

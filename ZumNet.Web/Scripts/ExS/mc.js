@@ -193,6 +193,7 @@ $(function () {
                 url: url,
                 data: j,
                 success: function (res) {
+                    res = $.trim(res);
                     if (res.substr(0, 2) == "OK") {
                         var p = $('#popLayer');
                         p.html(res.substr(2));

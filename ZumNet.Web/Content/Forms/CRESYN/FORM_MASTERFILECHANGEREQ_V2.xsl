@@ -26,21 +26,21 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:700px} .m .fm-editor {height:650px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:2pt}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:700px} .m .fm-editor {height:500px;min-height:500px;border:windowtext 1pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:} .m .ft .f-option1 {width:50px} .m .ft .f-option2 {width:70px}
-          .m .ft-sub .f-option {width:49%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
+			.m .ft .f-option {width:} .m .ft .f-option1 {width:50px} .m .ft .f-option2 {width:70px}
+			.m .ft-sub .f-option {width:49%}
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:650px}}
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:500px;min-height:500px}}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -48,18 +48,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -69,18 +65,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -88,11 +80,11 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:330px">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '의뢰부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
-                <td style="width:250px">
+                <td style="width:245px">
                   <!--<xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='confirm' and @partid!='' and @step!='0'], '__si_Site', '3', '처리부서')"/>-->
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '3', '처리부서')"/>
                 </td>
@@ -165,6 +157,9 @@
           <div class="ff" />
 
           <div class="fm-editor">
+			  <xsl:if test="$mode!='new' and $mode!='edit'">
+				  <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+			  </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <div name="WEBEDITOR" id="__mainfield" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">
@@ -178,16 +173,12 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no">
-                  <xsl:attribute name="src">
-                    /<xsl:value-of select="$root" />/EA/External/Editor_tagfree.aspx
-                  </xsl:attribute>
-                </iframe>
+				  <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 

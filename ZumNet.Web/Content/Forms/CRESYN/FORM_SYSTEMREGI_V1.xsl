@@ -268,7 +268,7 @@
             </font>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -406,7 +406,7 @@
       <td style="text-align:center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <select name="JOBCLASS" style="">
+            <select name="JOBCLASS" class="form-control">
               <xsl:choose>
                 <xsl:when test="phxsl:isEqual(string(JOBCLASS),'')">
                   <option value="" selected="selected">선택</option>
@@ -546,7 +546,7 @@
       <td style="text-align:center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <select name="CHECKKOREA" style="">
+            <select name="CHECKKOREA" class="form-control">
               <xsl:choose>
                 <xsl:when test="phxsl:isEqual(string(CHECKKOREA),'')">
                   <option value="" selected="selected">선택</option>

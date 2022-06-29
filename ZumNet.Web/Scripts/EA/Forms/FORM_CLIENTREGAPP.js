@@ -52,16 +52,18 @@
                 }
             } else m = 'getcodedescription';
 
+            //data body 조건 : N(modal-body 없음), F(footer 포함)
             $.ajax({
                 type: "POST",
                 url: "/EA/Common",
-                data: '{M:"' + m + '", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",fn:"",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
+                data: '{M:"' + m + '",body:"", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
                 success: function (res) {
+                    //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
                     if (res.substr(0, 2) == 'OK') {
                         var p = $('#popBlank');
                         p.html(res.substr(2)).find('.modal-title').html(el.attr('title'));
-                        if (el.attr('title') == '지급조건' || el.attr('title') == '주문유형') p.find(".modal-dialog").css("max-width", "30rem");
-                        else if (m == 'getcodedescription') p.find(".modal-dialog").css("max-width", "15rem");
+                        if (el.attr('title') == '결제조건' || el.attr('title') == '지급조건' || el.attr('title') == '주문유형') p.find(".modal-dialog").css("max-width", "30rem");
+                        else p.find(".modal-dialog").css("max-width", "15rem");
                         //p.find(".modal-content").css("height", h + "px")
 
                         p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
@@ -100,7 +102,7 @@
                 + '<span class="input-group-append"><button class="btn btn-secondary" type="button"><i class="fe-search"></i></button></span>'
                 + '</div>'
                 + '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
-                + '</div >'
+                + '</div>'
                 + '<div class="modal-body"></div>'
                 + '</div></div>';
 
@@ -119,8 +121,9 @@
                 $.ajax({
                     type: "POST",
                     url: "/EA/Common",
-                    data: '{M:"' + m + '",only:"", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",fn:"",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:"' + searchTxt.val() + '"}',
+                    data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",fn:"",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:"' + searchTxt.val() + '"}',
                     success: function (res) {
+                        //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
                         if (res.substr(0, 2) == 'OK') {
                             p.find('.modal-body').html(res.substr(2));
 

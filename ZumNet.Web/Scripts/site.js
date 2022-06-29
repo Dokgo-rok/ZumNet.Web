@@ -1484,6 +1484,12 @@ $(function () {
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, '', 900, 600, "resize");
         },
+        "openXForm": function (m, mi, oi) {
+            var qi = '{M:"' + m + '",mi:"' + mi + '",oi:"' + oi + '",wi:"",xf:"ea"}';
+            var wnd = arguments[3] && arguments[3] != '' ? arguments[3] : 'EAFormOptionRead';
+            var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+            _zw.ut.openWnd(url, wnd, 900, 600, "resize");
+        },
         "input": function (e, p) {
             if (e) {
                 if ($(e).prop('tagName').toUpperCase() == 'INPUT') {
@@ -1557,7 +1563,7 @@ $(function () {
             if (num < 10) { num = "0" + num; }
             return num;
         },
-        "picker": function (kind) {
+        "picker": function (kind, p) {
             if (kind == 'date') {
                 if ($('.input-daterange').length > 0) {
                     $('.input-daterange').datepicker({
@@ -1573,6 +1579,8 @@ $(function () {
                         autoclose: true,
                         //format: "yyyy-mm-dd",
                         language: $('#current_culture').val()
+                    }).on('changeDate', function (e) {
+                        if (_zw.fn.onblur) _zw.fn.onblur(e.target, ['date']);
                     });
                 }
             }
@@ -1591,12 +1599,13 @@ $(function () {
         },
         "maskInput": function (e) {
             var v = $(e).attr('data-inputmask').split(';');
-            if (v[0] == "number" || v[0] == "percent") {
+            if (v[0] == "number" || v[0] == "percent" || v[0] == "number-n") {
                 vanillaTextMask.maskInput({
                     inputElement: e,
                     mask: textMaskAddons.createNumberMask({
                         prefix: '',
                         suffix: v[0] == "percent" ? '%' : '',
+                        includeThousandsSeparator: v[0] == "number-n" ? false : true,
                         integerLimit: parseInt(v[1]),
                         allowDecimal: parseInt(v[2]) > 0 ? true : false,
                         decimalLimit: parseInt(v[2]) > 0 ? parseInt(v[2]) : 0,
@@ -1606,7 +1615,9 @@ $(function () {
             } else if (v[0] == "date" || v[0] == "time") {
                 var mv = [];
                 if (v[0] == "date") mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
-                else if (v[0] == "time") mv = [/\d/, /\d/, ':', /\d/, /\d/, ':', /\d/, /\d/];
+                else if (v[0] == "time") {
+                    mv = v[1] == 'HH:MM' ? [/\d/, /\d/, ':', /\d/, /\d/] : [/\d/, /\d/, ':', /\d/, /\d/, ':', /\d/, /\d/];
+                }
                 vanillaTextMask.maskInput({
                     inputElement: e,
                     mask: mv,
@@ -1637,6 +1648,11 @@ $(function () {
                 return moment(r).format(f);
             } else {
                 return '';
+            }
+        },
+        "diff": function (f, s, e) {
+            if (f == 'day') {//console.log(s + " : " + e)
+                if (moment(s).isValid() && moment(e).isValid()) return moment(s).diff(moment(e), 'days');
             }
         },
         "toBR": function (s) {
@@ -1755,14 +1771,30 @@ $(function () {
         "isMobile": function () {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent);
         },
-        "popup": function (el, option) {
+        "popup": function (el, option) {// p : 팝업창 기준 요소(예: $('#__FormView .z-list-scroll'))
             var ttl = option.title ? option.title : '';
             var bClose = option.close || false;
             var footer = option.footer ? option.footer : '';
 
-            var w = option.width, h = option.height;
-            var offset = $(el).offset(); console.log(offset)
+            var w = option.width, h = option.height + 40;
+            var offset = $(el).offset(); //console.log($(el).offsetParent())
+            var p = $('body');
+            var iST = p.scrollTop(), iSL = p.scrollLeft();
+            var iBH = p.outerHeight(), iBW = p.outerWidth();
+            //var iT = offset.top, iL = offset.left;
 
+            //var iH = iT + iST - 20, iW = iL + iSL - 8;
+            //iH = iBH - 40 - h + iST; iW = iW = iBW - 16 - w;
+            //if (iT + h > iBH) { iH = iBH - 40 - h; } //else if (iH < 0) { iH = iT; }
+            //if (iL + w > iBW) { iW = iBW - 16 - w + iSL; } //else if (iW < 0) { iW = iL; }
+
+            var iT = offset.top + $(el).outerHeight() - iST, iL = offset.left - iSL;
+            if (iT + h > iBH) { iT = iBH - h; } else if (iT < 0) { iT = 0; }
+            if (iL + w > iBW) { iL = iBW - w; } else if (iL < 0) { iW = 0; }
+            //iH -= h / 2; iW -= w / 2;
+
+            //console.log(iST + " : " + iSL + " : " + iBH + " : " + iBW + " : " + iT + " : " + iL + " : " + iH + " : " + iW)
+            var back = '<div class="modal-backdrop fade show"></div>';
             var s = '<div class="z-pop" role="modal">';
             if (ttl != '' || bClose) {
                 s += '<div class="z-pop-header">';
@@ -1770,12 +1802,16 @@ $(function () {
                 if (bClose) s += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
                 s += '</div>';
             }
-            s += '<div class="z-pop-body"><div style="overflow-y: auto; height: ' + h + 'px">' + option.content + '</div></div>';
+            s += '<div class="z-pop-body"><div style="overflow-y: auto; height: ' + (h - 40) + 'px">' + option.content + '</div></div>';
             if (footer != '') s += '<div class="z-pop-footer">' + footer + '</div>';
             s += '</div>';
 
-            var p = $(s).css({ "top": offset.top + 20, "left": offset.left - w, "width": w, "height": h + 40 }).show();
-            $('body').append(p);
+            var m = $(s).css({ "top": iT, "left": iL, "width": w, "height": h }).show();
+            m.find('.close[data-dismiss="modal"]').click(function () { $('.modal-backdrop').remove(); m.remove(); });
+
+            p.append(back).append(m);
+            m.draggable();
+            return m;
         }
     };
 

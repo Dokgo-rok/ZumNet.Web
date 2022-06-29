@@ -447,7 +447,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_CONAPPLICATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CONSTRUCTDRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CONTRACTRE_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_COOPERATION_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_COOPERATION_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_CORPMANMOVE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CORRECTIVEPREVENTIVACTION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CORRECTIVEPREVENTIVACTION_V1_0529.xsl" />
@@ -481,7 +483,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_DOCCAREER_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DOCDISABLESECU_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DOCSAFEREQUEST_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_DOCSAFEREQUEST_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_DOCSAFEREQUEST_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_DOCUMENTREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DOCWORKSTATE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DOCWORKSTATE_V2.xsl" />
@@ -491,7 +495,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V3.xsl">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Content\Forms\CRESYN\FORM_DRAWING_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_DRAWING_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_DRIVEMONEY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EDUINSTRUCTOR_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EDUREPORTA_V1.xsl" />
@@ -521,7 +527,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPDRAFTD_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPDRAFTD_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPDRAFTD_V3.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_EQUIPDRAFTD_V4.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_EQUIPDRAFTD_V4.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPMAKEPURCHASEINDUSTRY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPMAKEPURCHASE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPMAKEPURCHASE_V2.xsl" />
@@ -529,7 +537,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPMAKEPURCHASE_V4.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPMAKEPURCHASE_V5.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPPURCHASEREQINDUSTRY_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_EQUIPPURCHASEREQ_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_EQUIPPURCHASEREQ_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPPURCHASE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPRENTDOCA_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EQUIPRENTDOCB_V1.xsl" />
@@ -568,7 +578,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_HOLIWORK_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_HOMEWORKWEEK_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_HOMEWORK_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_HOMEWORK_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_HOMEWORK_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_INDUSTRIALDRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_INDUSTRIALPRO_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_INFORMATIONHB_V1.xsl" />
@@ -606,7 +618,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_MEMORANDUM_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MEMORANDUM_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MFINNOVATIONDEFINE_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_MINUTES_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_MINUTES_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_MODELTRANSF_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MOLDDRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MOLDREQUEST_V1.xsl" />
@@ -709,7 +723,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASESAMPLE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCAINDUSTRY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCALEEVIN_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCA_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCA_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCBLEEVIN_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCB_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCB_V2.xsl" />
@@ -724,7 +740,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_REPAIRREQUEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_REPORTREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_REPORT_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_REQUESTBPS_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_REQUESTBPS_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_REQUESTDOCUMENTESRI_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_REQUESTDOCUMENT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_RESIGNATIONHR_V1.xsl" />
@@ -738,7 +756,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_SAFEFINDTABLE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SAFERESULTTABLE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLEDRAFT_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_SAMPLEDRAFT_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_SAMPLEDRAFT_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLESHIPREQUESTWAN_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLESHIPREQUESTWAN_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLESHIPREQUESTWAN_V3.xsl" />
@@ -785,9 +805,15 @@
     <Content Include="Content\Forms\CRESYN\FORM_SUPPLYRECORDCARD_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SWSPECIFICATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SYSTEMADDREQ_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_SYSTEMADDREQ_V2.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_SYSTEMDELETE_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_SYSTEMREGI_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_SYSTEMADDREQ_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Forms\CRESYN\FORM_SYSTEMDELETE_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Forms\CRESYN\FORM_SYSTEMREGI_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_TECHOUTSOURCING_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TESTFORM_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TESTREPORT_V1.xsl" />
@@ -821,12 +847,16 @@
     <Content Include="Content\Forms\CRESYN\FORM_UNITDEVPLAN_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_UNITSPECIFICATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_USEITEMMASTERCHART_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_VACATIONCHANGE_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_VACATIONCHANGE_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_VACATIONHR_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_VACATIONNOTUSE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_VACATIONUSE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_VACATION_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_VACATION_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_VACATION_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_VEHICLEJOURNAL_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_WASTEPRODUCTREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_WEEKQUALITYREPORT_V1.xsl" />
@@ -2049,18 +2079,43 @@
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DRAWING.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTD.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EQUIPMAKEPURCHASE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EQUIPPURCHASEREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_FIRSTVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_HOLIWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_HOMEWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_ITEMMASTERCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MANPT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MASTERFILECHANGEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_MINUTES.js" />
+    <Content Include="Scripts\EA\Forms\FORM_NEWPARTSREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_NIGHTWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PERSONNELAPPOINTMENTS.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCA.js" />
     <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />
+    <Content Include="Scripts\EA\Forms\FORM_RESIGNATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLECONTROL.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SAMPLEDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUESTWAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMADDREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SYSTEMDELETE.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMREGI.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_VACATIONCHANGE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_VACATIONHR.js" />
+    <Content Include="Scripts\EA\Forms\FORM_VACATIONUSE.js" />
     <Content Include="Scripts\EA\Forms\_sample.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAFT.js" />
     <Content Include="Scripts\ExS\ce.js" />
@@ -2718,7 +2773,6 @@
     <Folder Include="Areas\Docs\Data\" />
     <Folder Include="Areas\Docs\Views\Shared\" />
     <Folder Include="Areas\EA\Data\" />
-    <Folder Include="Areas\EA\Views\Common\" />
     <Folder Include="Areas\EA\Views\Process\" />
     <Folder Include="Areas\ExS\Data\" />
     <Folder Include="Areas\ExS\Views\Shared\" />
@@ -2943,6 +2997,9 @@
     <Content Include="Areas\EA\Views\Shared\DocProp.cshtml" />
     <Content Include="Areas\EA\Views\Shared\SignLine.cshtml" />
     <Content Include="Content\Json\jform_ea_post.json" />
+    <Content Include="Areas\EA\Views\Common\_CodeDesc.cshtml" />
+    <Content Include="Areas\EA\Views\Common\_ReportSearch.cshtml" />
+    <Content Include="Areas\EA\Views\Common\_OracleERP.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

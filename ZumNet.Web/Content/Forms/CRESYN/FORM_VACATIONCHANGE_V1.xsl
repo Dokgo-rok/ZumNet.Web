@@ -31,7 +31,7 @@
           .fh h1 {font-size:20.0pt;letter-spacing:10pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
@@ -48,14 +48,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <xsl:choose>
-                    <xsl:when test="$mode='read'">
-                      <img alt="" src="{//forminfo/maintable/LOGOPATH}" />
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
-                    </xsl:otherwise>
-                  </xsl:choose>
+					<xsl:choose>
+					    <xsl:when test="$mode='read'">
+						    <img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+					    </xsl:when>
+					    <xsl:otherwise>
+						    <img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+					    </xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -80,11 +80,11 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:325">
+                <td style="width:320">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '신청부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
-                <td style="width:325px">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '4', '주관부서')"/>
                 </td>
               </tr>
@@ -134,9 +134,12 @@
                 <td class="f-lbl" style="border-bottom:0"  rowspan="2">
                   신청자
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                    <!--<button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}/EA/Images/ico_28.gif" />
-                    </button>
+                    </button>-->
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
+						  <i class="fas fa-angle-down"></i>
+					  </button>
                   </xsl:if>
                 </td>
                 <td class="f-lbl1">소속</td>
@@ -222,23 +225,35 @@
             </table>
           </div>
 
+			<div class="ff" />
+			<div class="ff" />
+			<div class="ff" />
+			<div class="ff" />
+			<div class="ff" />
+
           <div class="fm">
             <table border="0" cellspacing="0" cellpadding="0">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
                   <tr>
                     <td>
-                      <span style="font-size:13px">1. 사전 신청 내용&nbsp;&nbsp;&nbsp;<a onclick="parent.fnView('report.FORM_VACATIONCHANGE',550,200,250,-20,'','lnkReport');" id="lnkReport" style="text-decoration:none;font-weight:bold" href="javascript:">변경할 항목찾기</a>
+                      <span style="font-size:13px">1. 사전 신청 내용&nbsp;&nbsp;&nbsp;<a onclick="_zw.formEx.optionWnd('report.FORM_VACATIONCHANGE',550,200,250,-20,'','lnkReport');" id="lnkReport" style="text-decoration:none;font-weight:bold" href="javascript:">변경할 항목찾기</a>
                         &nbsp;&nbsp;<font color="red" style="font-weight:bold" >※ 휴가일 이후 사후 변경신청은 불가합니다.</font>
                       </span>                      
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable2');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable2');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -298,7 +313,7 @@
                 <td colspan="4" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="REASON" class="txaText" style="height:80px" onkeyup="parent.checkTextAreaLength(this, 1000);">
+                      <textarea id="__mainfield" name="REASON" style="height:80px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:value-of select="//forminfo/maintable/REASON" />
                       </textarea>
                     </xsl:when>
@@ -315,7 +330,7 @@
                 <td colspan="4" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="FROMDATE" class="txtDate" maxlength="8" style="width:80px" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/FROMDATE}" />
+                      <input type="text" id="__mainfield" name="FROMDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width: 100px" value="{//forminfo/maintable/FROMDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/FROMDATE))" />
@@ -324,7 +339,7 @@
                   &nbsp;&nbsp;~&nbsp;&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="TODATE" class="txtDate" maxlength="8" style="width:80px" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/TODATE}" />
+                      <input type="text" id="__mainfield" name="TODATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width: 100px" value="{//forminfo/maintable/TODATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TODATE))" />
@@ -378,12 +393,18 @@
                   <tr>
                     <td><span style="font-size:13px">2. 휴가 변경 내역</span></td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -432,14 +453,14 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0" style="border-top:0">
               <tr>
-                <td style="border-bottom:0;border-right:0;height:80px">
+                <td style="border:0;height:80px">
                   <span style="width:100%;text-align:center">위와 같이 휴가를 변경신청하오니 허락하여 주시기 바랍니다.</span>
                 </td>
               </tr>
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -549,7 +570,7 @@
       <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="LEAVEDATE" class="txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{LEAVEDATE}" />
+            <input type="text" name="LEAVEDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{LEAVEDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(LEAVEDATE))" />
@@ -559,7 +580,7 @@
       <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="FROMTIME" class="txtHHmm" readonly="readonly" maxlength="4" value="{FROMTIME}" />
+            <input type="text" name="FROMTIME" class="txtHHmm" readonly="readonly" maxlength="5" data-inputmask="time;HH:MM" value="{FROMTIME}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(FROMTIME))" />
@@ -569,7 +590,7 @@
       <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TOTIME" class="txtHHmm" readonly="readonly" maxlength="4" value="{TOTIME}" />
+            <input type="text" name="TOTIME" class="txtHHmm" readonly="readonly" maxlength="5" data-inputmask="time;HH:MM" value="{TOTIME}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(TOTIME))" />
@@ -605,7 +626,7 @@
       <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TGVACCLASSDN" class="txtRead" readonly="readonly"  value="{TGVACCLASSDN}" />
+            <input type="text" name="TGVACCLASSDN" class="txtRead_Center" readonly="readonly"  value="{TGVACCLASSDN}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TGVACCLASSDN))" />
@@ -619,7 +640,7 @@
       <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TGLEAVEDATE" class="txtRead"  readonly="readonly" value="{TGLEAVEDATE}" />
+            <input type="text" name="TGLEAVEDATE" class="txtRead_Center"  readonly="readonly" value="{TGLEAVEDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TGLEAVEDATE))" />
@@ -629,7 +650,7 @@
       <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TGFROMTIME" class="txtRead"  readonly="readonly" value="{TGFROMTIME}" />
+            <input type="text" name="TGFROMTIME" class="txtRead_Center"  readonly="readonly" value="{TGFROMTIME}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TGFROMTIME))" />
@@ -639,7 +660,7 @@
       <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TGCOUNT" class="txtRead"  readonly="readonly" value="{TGCOUNT}" />
+            <input type="text" name="TGCOUNT" class="txtRead_Center"  readonly="readonly" value="{TGCOUNT}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TGCOUNT))" />
@@ -650,8 +671,8 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit' or string(TGMSG)=''">&nbsp;</xsl:when>
           <xsl:otherwise>
-            <a target="_blank">
-              <xsl:attribute name="href">
+            <a href="javascript:void(0)" >
+              <xsl:attribute name="onclick">
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:linkForm(string(//config/@web), string($root), string(TGMSG))" />
               </xsl:attribute>
               <xsl:value-of disable-output-escaping="yes" select="phxsl:convertDate(string(TGDATE), '')" />

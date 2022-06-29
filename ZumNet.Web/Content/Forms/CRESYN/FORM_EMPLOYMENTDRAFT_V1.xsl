@@ -27,15 +27,15 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:720px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
+          .m {width:740px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:10pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:72px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:12%} .m .ft .f-lbl1 {width:6%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
+          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:6%} .m .ft .f-lbl2 {width:?}
+          .m .ft .f-option {width:33%} .m .ft .f-option1 {display: block}
           .m .ft-sub .f-option {width:100%}
 
           /* 인쇄 설정 : 맨하단으로 */
@@ -48,18 +48,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -69,18 +65,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -88,15 +80,15 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:380px">
+                <td style="width:395px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '5', '의뢰부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
-                <td style="width:236">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '3', '검토부서')"/>
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
-                <td style="width:92px">
+                <td style="width:95px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='last' and @partid!='' and @step!='0'], '__si_Last', '1', '승인')"/>
                 </td>
               </tr>
@@ -181,17 +173,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="REASON" style="height:60px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="REASON" style="height:60px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/REASON" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="REASON" style="height:60px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="height:60px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/REASON))" />
                       </div>
                     </xsl:otherwise>
@@ -214,8 +203,8 @@
                     <td>
                       <span>3. 채용대상자 인적사항</span>
                     </td>
-                    <td style="text-align:right">
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+                    <td class="fm-button">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_26.gif
@@ -228,7 +217,13 @@
                             /<xsl:value-of select="$root"/>/EA/Images/ico_27.gif
                           </xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -253,16 +248,16 @@
                       <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
                     </xsl:if>
                     <colgroup>
-                      <col style="width:25px"></col>
-                      <col style="width:65px"></col>
-                      <col style="width:80px"></col>
-                      <col style="width:40px"></col>
-                      <col style="width:40px"></col>
-                      <col style="width:60px"></col>
-                      <col style="width:120px"></col>
-                      <col style="width:100px"></col>
-                      <col style="width:60px"></col>
-                      <col style="width:"></col>
+                      <col style="width:4%"></col>
+                      <col style="width:10%"></col>
+                      <col style="width:12%"></col>
+                      <col style="width:7%"></col>
+                      <col style="width:7%"></col>
+                      <col style="width:10%"></col>
+                      <col style="width:14%"></col>
+                      <col style="width:14%"></col>
+                      <col style="width:8%"></col>
+                      <col style="width:14%"></col>
                     </colgroup>
                     <tr style="height:24px">
                       <td class="f-lbl-sub" style="border-top:0">NO</td>
@@ -296,8 +291,8 @@
                     <td>
                       <span>4. 처우조건</span>
                     </td>
-                    <td style="text-align:right">
-                      <button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
+					  <td class="fm-button">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_26.gif
@@ -310,7 +305,13 @@
                             /<xsl:value-of select="$root"/>/EA/Images/ico_27.gif
                           </xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable2');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable2');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -335,14 +336,14 @@
                       <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
                     </xsl:if>
                     <colgroup>
-                      <col style="width:25px"></col>
-                      <col style="width:80px"></col>
-                      <col style="width:70px"></col>
-                      <col style="width:70px"></col>
-                      <col style="width:80px"></col>
-                      <col style="width:80px"></col>
-                      <col style="width:80px"></col>
-                      <col style="width:"></col>
+                      <col style="width:4%"></col>
+                      <col style="width:15%"></col>
+                      <col style="width:12%"></col>
+                      <col style="width:12%"></col>
+                      <col style="width:12%"></col>
+                      <col style="width:12%"></col>
+                      <col style="width:12%"></col>
+                      <col style="width:21%"></col>
                     </colgroup>
                     <tr style="height:24px">
                       <td class="f-lbl-sub" style="border-top:0" rowspan="2">NO</td>
@@ -380,17 +381,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="DESCRIPTION" style="height:200px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="DESCRIPTION" style="height:100px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/DESCRIPTION" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="DESCRIPTION" style="height:200px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="height:100px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DESCRIPTION))" />
                       </div>
                     </xsl:otherwise>
@@ -400,7 +398,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -462,10 +460,9 @@
 
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <xsl:attribute name="style">height:62px</xsl:attribute>
             <input type="checkbox" name="ROWSEQ">
               <xsl:attribute name="value">
                 <xsl:value-of select="ROWSEQ" />
@@ -473,19 +470,18 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td>
-        <span class="f-option">
+		<td style="padding-left: 4px">
+        <span class="f-option1">
           <input type="checkbox" name="ckbEMPLOYCLASS" value="신입">
             <xsl:attribute name="id">
               ckb.<xsl:value-of select="ROWSEQ" />.1
             </xsl:attribute>
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbEMPLOYCLASS', this, 'EMPLOYCLASS')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbEMPLOYCLASS', this, 'EMPLOYCLASS')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(EMPLOYCLASS),'신입')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -494,20 +490,19 @@
               <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
           </input>
-          <label>
+          <label class="ml-1">
             <xsl:attribute name="for">
               ckb.<xsl:value-of select="ROWSEQ" />.1
             </xsl:attribute>신입
           </label>
         </span>
-        <br />
-        <span class="f-option">
+        <span class="f-option1">
           <input type="checkbox" name="ckbEMPLOYCLASS" value="경력">
             <xsl:attribute name="id">
               ckb.<xsl:value-of select="ROWSEQ" />.2
             </xsl:attribute>
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbEMPLOYCLASS', this, 'EMPLOYCLASS')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbEMPLOYCLASS', this, 'EMPLOYCLASS')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(EMPLOYCLASS),'경력')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -516,20 +511,19 @@
               <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
           </input>
-          <label>
+			<label class="ml-1">
             <xsl:attribute name="for">
               ckb.<xsl:value-of select="ROWSEQ" />.2
             </xsl:attribute>경력
           </label>
         </span>
-        <br />
-        <span class="f-option">
+        <span class="f-option1">
           <input type="checkbox" name="ckbEMPLOYCLASS" value="파견직">
             <xsl:attribute name="id">
               ckb.<xsl:value-of select="ROWSEQ" />.3
             </xsl:attribute>
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbEMPLOYCLASS', this, 'EMPLOYCLASS')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbEMPLOYCLASS', this, 'EMPLOYCLASS')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(EMPLOYCLASS),'파견직')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -538,7 +532,7 @@
               <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
           </input>
-          <label>
+			<label class="ml-1">
             <xsl:attribute name="for">
               ckb.<xsl:value-of select="ROWSEQ" />.3
             </xsl:attribute>파견직
@@ -583,14 +577,14 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td>
-        <span class="f-option">
+      <td class="tdRead_Center">
+        <span class="f-option1">
           <input type="checkbox" name="ckbGENDER" value="남">
             <xsl:attribute name="id">
               ckb.<xsl:value-of select="ROWSEQ" />.A
             </xsl:attribute>
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbGENDER', this, 'GENDER')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbGENDER', this, 'GENDER')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(GENDER),'남')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -599,20 +593,19 @@
               <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
           </input>
-          <label>
+          <label class="ml-1">
             <xsl:attribute name="for">
               ckb.<xsl:value-of select="ROWSEQ" />.A
             </xsl:attribute>남
           </label>
         </span>
-        <br />
-        <span class="f-option">
+        <span class="f-option1">
           <input type="checkbox" name="ckbGENDER" value="여">
             <xsl:attribute name="id">
               ckb.<xsl:value-of select="ROWSEQ" />.B
             </xsl:attribute>
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbGENDER', this, 'GENDER')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbGENDER', this, 'GENDER')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(GENDER),'여')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -621,7 +614,7 @@
               <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
           </input>
-          <label>
+			<label class="ml-1">
             <xsl:attribute name="for">
               ckb.<xsl:value-of select="ROWSEQ" />.B
             </xsl:attribute>여
@@ -729,7 +722,7 @@
   </xsl:template>
   <xsl:template match="//forminfo/subtables/subtable2/row">
     <tr class="sub_table_row">
-      <td>
+		<td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ">
@@ -739,7 +732,6 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>

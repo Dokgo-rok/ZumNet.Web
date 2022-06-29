@@ -26,21 +26,21 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:1100px} .m .fm-editor {height:350px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:2pt}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:1100px} .m .fm-editor {height:350px;min-height:350px;border:windowtext 1pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:8%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:} .m .ft .f-option1 {width:50px} .m .ft .f-option2 {width:70px}
-          .m .ft-sub .f-option {width:49%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:8%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
+			.m .ft .f-option {width:} .m .ft .f-option1 {width:50px} .m .ft .f-option2 {width:70px}
+			.m .ft-sub .f-option {width:49%}
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:350px}}
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:350px;min-height:350px}}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -48,18 +48,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -70,16 +66,12 @@
               </tr>
             </table>
             <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
+				<xsl:when test="$mode='read'">
+					<input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				</xsl:when>
+				<xsl:otherwise>
+					<input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				</xsl:otherwise>
             </xsl:choose>
           </div>
 
@@ -124,11 +116,11 @@
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:convertDate(string(//docinfo/createdate), '')" />
                 </td>
                 <td class="f-lbl" style="border-bottom:0">작성부서</td>
-                <td style="width:15%;border-bottom:0">
+                <td style="border-bottom:0">
                   <xsl:value-of select="//creatorinfo/department" />
                 </td>
                 <td class="f-lbl" style="border-bottom:0">작성자</td>
-                <td style="border-bottom:0;border-right:0">
+                <td style="width:15%;border-bottom:0;border-right:0">
                   <xsl:value-of select="//creatorinfo/name" />
                 </td>
               </tr>
@@ -183,17 +175,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="REASON" style="height:60px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="REASON" style="height:60px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/REASON" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="REASON" style="height:60px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="height:60px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/REASON))" />
                       </div>
                     </xsl:otherwise>
@@ -219,17 +208,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="USAGE" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 500)</xsl:attribute>
+                      <textarea id="__mainfield" name="USAGE" style="height:40px" class="txaText bootstrap-maxlength" maxlength="500">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/USAGE" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="USAGE" style="height:40px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/USAGE))" />
                       </div>
                     </xsl:otherwise>
@@ -261,7 +247,7 @@
                           <xsl:value-of select="//forminfo/maintable/CURRENCY" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('iso.currency',160,140,10,115,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+						<!--<button onclick="parent.fnOption('iso.currency',160,140,10,115,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
@@ -281,7 +267,16 @@
                             /<xsl:value-of select="$root"/>/EA/Images/ico_27.gif
                           </xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',160,140,10,115,'etc','CURRENCY');">
+							<i class="fas fa-angle-down"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -414,17 +409,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="SCHEDULE" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 500)</xsl:attribute>
+                      <textarea id="__mainfield" name="SCHEDULE" style="height:40px" class="txaText bootstrap-maxlength" maxlength="500">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/SCHEDULE" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="SCHEDULE" style="height:40px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SCHEDULE))" />
                       </div>
                     </xsl:otherwise>
@@ -446,6 +438,9 @@
           <div class="ff" />
 
           <div class="fm-editor">
+			  <xsl:if test="$mode!='new' and $mode!='edit'">
+				  <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+			  </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <div name="WEBEDITOR" id="__mainfield" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">
@@ -459,16 +454,12 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no">
-                  <xsl:attribute name="src">
-                    /<xsl:value-of select="$root" />/EA/External/Editor_tagfree.aspx
-                  </xsl:attribute>
-                </iframe>
+				  <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -530,7 +521,7 @@
 
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ">
@@ -549,7 +540,6 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -607,22 +597,10 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="COUNT">
-              <xsl:attribute name="class">txtVolume</xsl:attribute>
-              <xsl:attribute name="maxlength">10</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="COUNT" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="COUNT" class="txtVolume" data-inputmask="number;10;0" maxlength="10" value="{COUNT}" />
           </xsl:when>
           <xsl:when test="$bizrole='agree' and $partid!='' ">
-            <input type="text" name="COUNT">
-              <xsl:attribute name="class">txtRead</xsl:attribute>
-              <xsl:attribute name="readonly">readonly</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="COUNT" />
-              </xsl:attribute>
-            </input>
+			  <input type="text" name="COUNT" class="txtRead" readonly="readonly" value="{COUNT}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -659,22 +637,10 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="UNITCOST1">
-              <xsl:attribute name="class">txtDollar</xsl:attribute>
-              <xsl:attribute name="maxlength">20</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="UNITCOST1" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="UNITCOST1" class="txtDollar" maxlength="14" data-inputmask="number;10;4" value="{UNITCOST1}" />
           </xsl:when>
           <xsl:when test="$bizrole='agree' and $partid!='' ">
-            <input type="text" name="UNITCOST1">
-              <xsl:attribute name="class">txtRead</xsl:attribute>
-              <xsl:attribute name="readonly">readonly</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="UNITCOST1" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="UNITCOST1" class="txtRead" readonly="readonly" value="{UNITCOST1}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -685,22 +651,10 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="UNITCOST2">
-              <xsl:attribute name="class">txtDollar</xsl:attribute>
-              <xsl:attribute name="maxlength">20</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="UNITCOST2" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="UNITCOST2" class="txtDollar" maxlength="14" data-inputmask="number;10;4" value="{UNITCOST2}" />
           </xsl:when>
           <xsl:when test="$bizrole='agree' and $partid!='' ">
-            <input type="text" name="UNITCOST2">
-              <xsl:attribute name="class">txtRead</xsl:attribute>
-              <xsl:attribute name="readonly">readonly</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="UNITCOST2" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="UNITCOST2" class="txtRead" readonly="readonly" value="{UNITCOST2}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -784,12 +738,12 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td>
+      <td class="tdRead_Center">
         <span class="f-option">
           <input type="checkbox" name="ckbCHARGE" value="고객">
             <xsl:attribute name="id">ckb.<xsl:value-of select="ROWSEQ" />.1</xsl:attribute>
             <xsl:if test="$mode='new' or $mode='edit' or ($bizrole='agree' and $partid!='')" >
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbCHARGE', this, 'CHARGE')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbCHARGE', this, 'CHARGE')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CHARGE),'고객')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -798,13 +752,13 @@
               <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
           </input>
-          <label><xsl:attribute name="for">ckb.<xsl:value-of select="ROWSEQ" />.1</xsl:attribute>고객</label>
+          <label class="ml-1"><xsl:attribute name="for">ckb.<xsl:value-of select="ROWSEQ" />.1</xsl:attribute>고객</label>
         </span>
         <span class="f-option">
           <input type="checkbox" name="ckbCHARGE" value="당사">
             <xsl:attribute name="id">ckb.<xsl:value-of select="ROWSEQ" />.2</xsl:attribute>
             <xsl:if test="$mode='new' or $mode='edit' or ($bizrole='agree' and $partid!='')">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbCHARGE', this, 'CHARGE')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbCHARGE', this, 'CHARGE')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CHARGE),'당사')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -813,7 +767,7 @@
               <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
           </input>
-          <label><xsl:attribute name="for">ckb.<xsl:value-of select="ROWSEQ" />.2</xsl:attribute>당사</label>
+			<label class="ml-1"><xsl:attribute name="for">ckb.<xsl:value-of select="ROWSEQ" />.2</xsl:attribute>당사</label>
         </span>
         <input type="hidden" name="CHARGE" value="{CHARGE}" />
       </td>

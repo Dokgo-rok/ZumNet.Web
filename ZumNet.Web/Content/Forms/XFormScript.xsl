@@ -45,7 +45,8 @@
   function fileDown(w, r, v, s, f) {return "http://" + w + "/" + r + "/PortalService/FileDown.aspx?xf=ea&sn=" + escape(s);}  
   function linkDown(w, r, v, f) {return "http://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v) + "&fn=" + escape(f);}
   function linkDown2(w, r, t, p) {if (t == "pdmpd") {return "http://" + w + "/" + r + "/SSOpdm.aspx?target=prodview&oid=" + p;}else{return '';}}
-  function linkForm(w, r, m) {return "http://" + w + "/" + r + "/EA/Forms/XFormMain.aspx?M=read&mi=" + m;}
+  //function linkForm(w, r, m) {return "http://" + w + "/" + r + "/EA/Forms/XFormMain.aspx?M=read&mi=" + m;}
+  function linkForm(w, r, m) {return "_zw.fn.openEAFormSimple('" + m + "')";}
   function cvtMonth(s) {if(s.length > 1 && s.toString().charAt(0) == '0'){return s.charAt(1);} else {return s;}}
   function rate(c, p, n) {if (c=="" || c=="0" || p=="" || p=="0") {return "&nbsp;"} else {return (parseFloat(c)/parseFloat(p)*100).toFixed(n);}}
   function rate2(c, p, n) {if (c=="" || c=="0" || p=="" || p=="0") {return "&nbsp;"} else {return "$" + addComma(c) + "<br />(" + (parseFloat(c)/parseFloat(p)*100).toFixed(n) + ")";}}
@@ -174,7 +175,8 @@
       if (node) {
         if (opt == 'A' || opt == 'C') {rt = (node.selectSingleNode("pistart").text.indexOf('2999') >= 0) ? "" : node.selectSingleNode("pistart").text;} //2014-07-18 piend->pistart
         else if (opt == 'B' || opt == 'D') {rt = (node.selectSingleNode("state").text != "") ? "O" : "";}
-        if (rt != '' && arguments[4] && arguments[4] != '') {rt = "<a href=\"javascript:parent.openXForm('" + arguments[4] + "','" + node.selectSingleNode("mi").text + "','" + node.selectSingleNode("oi").text + "');\">" + rt + "</a>";}
+        //if (rt != '' && arguments[4] && arguments[4] != '') {rt = "<a href=\"javascript:parent.openXForm('" + arguments[4] + "','" + node.selectSingleNode("mi").text + "','" + node.selectSingleNode("oi").text + "');\">" + rt + "</a>";}
+		if (rt != '' && arguments[4] && arguments[4] != '') {rt = "<a href=\"javascript:_zw.fn.openXForm('" + arguments[4] + "','" + node.selectSingleNode("mi").text + "','" + node.selectSingleNode("oi").text + "');\">" + rt + "</a>";}
       }
     }
     return isEmpty(rt);
@@ -198,7 +200,7 @@
   
   function fieldValue3(opt, s, v1, v2) {  
     var rt = "";
-    if (opt == 'B') {if (v1 != '') rt = "<a href=\"javascript:parent.openXForm('read', '" + v1 + "','" + v2 + "');\">" + s + "</a>";}
+    if (opt == 'B') {if (v1 != '') rt = "<a href=\"javascript:_zw.fn.openXForm('read', '" + v1 + "','" + v2 + "');\">" + s + "</a>";}
     return isEmpty(rt);
   }
   function fieldValue4(p, comp, nm) {//2012-02-28
@@ -287,7 +289,8 @@
     var iW = (w && w!='' && w!='0') ? w : "100%";
     var tab = (arguments[6] && arguments[6]!='' && arguments[6]!='0') ? "tabindex=\"" + arguments[6] + "\"" : "";
     var szId = (arguments[7] && arguments[7]!='') ? "id=\"" + arguments[7] + "\"" : "";
-    var szHTML = "<select " + szId + " name=\"" + fld + "\" onchange=\"parent.fnSelectChange(this);\" " + tab + " style=\"width:" + iW + "\"><option value=\"\">선택</option>";
+    //var szHTML = "<select " + szId + " name=\"" + fld + "\" onchange=\"parent.fnSelectChange(this);\" " + tab + " style=\"width:" + iW + "\"><option value=\"\">선택</option>";
+	var szHTML = "<select " + szId + " name=\"" + fld + "\" onchange=\"_zw.formEx.change(this);\" " + tab + " style=\"width:" + iW + "\" class=\"form-control\"><option value=\"\">선택</option>";
     if (p.length > 0) {
       for(var i=0; i<p.length; i++) {
         szHTML += "<option value=\"" + p[i].selectSingleNode("Item2").text + "\""

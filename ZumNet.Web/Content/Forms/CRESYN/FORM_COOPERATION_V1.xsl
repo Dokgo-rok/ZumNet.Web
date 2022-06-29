@@ -41,7 +41,7 @@
 			.m .ft-sub .f-option {width:49%}
 
 			/* 인쇄 설정 : 맨하단으로 */
-			@media print {.m .fm-editor {height:700px;min-height:700px;} }
+			@media print {.m .fm-editor {height:6700px;min-height:600px;} }
 		</style>
       </head>
       <body>
@@ -306,7 +306,7 @@
             </xsl:choose>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 

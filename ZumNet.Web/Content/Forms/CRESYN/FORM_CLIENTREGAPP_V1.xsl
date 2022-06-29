@@ -560,8 +560,8 @@
                     <td style="font-size:12px;text-align:right">
                       <xsl:choose>
                         <xsl:when test="$mode='new' or $mode='edit'">
-                          <span class="f-option">
-                            <input id="ckb73" name="ckbBILLTO"  type="checkbox" value="BILL" class="mt-1">
+                          <span class="d-flex align-items-center justify-content-end mt-1">
+                            <input id="ckb73" name="ckbBILLTO"  type="checkbox" value="BILL">
                               <xsl:if test="$mode='new' or $mode='edit'">
                                 <xsl:attribute name="onclick">_zw.form.checkYN('ckbBILLTO', this, 'BILLTO')</xsl:attribute>
                               </xsl:if>
@@ -572,7 +572,7 @@
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
                             </input>
-                            <label for="ckb73" class="small">Bill to 정보와 Ship to 정보를 동일하게 합니다.</label>
+                            <label for="ckb73" class="small ml-1">Bill to 정보와 Ship to 정보를 동일하게 합니다.</label>
                           </span>
                         </xsl:when>
                         <xsl:otherwise>
@@ -968,7 +968,7 @@
               </tr>
             </table>
           </div>
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
             <div class="fm-file">

@@ -172,7 +172,7 @@
               <div class="fm">
                 <table class="ft" border="0" cellspacing="0" cellpadding="0">
                   <tr>
-                    <td class="f-lbl" style="border-bottom:0;width:104px">
+                    <td class="f-lbl" style="border-bottom:0;">
                       기획조정실<br />검토의견
                     </td>
                     <td style="border-right:0;border-bottom:0">
@@ -190,7 +190,7 @@
               <div class="fm">
                 <table class="ft" border="0" cellspacing="0" cellpadding="0">
                   <tr>
-                    <td class="f-lbl" style="border-bottom:0;width:104px">
+                    <td class="f-lbl" style="border-bottom:0;">
                       기획조정실<br />검토의견
                     </td>
                     <td style="border-right:0;border-bottom:0">
@@ -333,7 +333,7 @@
           <div class="ff" />
 
           <div class="fm">
-            <span>4. 사업계획/투자계획
+			  <span>4. 사업계획/투자계획
             (
               <input type="checkbox" id="ckb31" name="ckbBUSINESSCHECK" value="유">
                 <xsl:if test="$mode='new' or $mode='edit'">
@@ -346,7 +346,7 @@
                   <xsl:attribute name="disabled">disabled</xsl:attribute>
                 </xsl:if>
               </input>
-              <label class="ml-2 mr-3" for="ckb31">유</label>
+              <label class="ml-1 mr-3" for="ckb31">유</label>
             
               <input type="checkbox" id="ckb32" name="ckbBUSINESSCHECK" value="무">
                 <xsl:if test="$mode='new' or $mode='edit'">
@@ -359,7 +359,7 @@
                   <xsl:attribute name="disabled">disabled</xsl:attribute>
                 </xsl:if>
               </input>
-              <label class="ml-2" for="ckb32">무</label>)
+              <label class="ml-1" for="ckb32">무</label>)
             </span>            
           </div>
 
@@ -788,7 +788,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 

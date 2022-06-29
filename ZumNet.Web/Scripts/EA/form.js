@@ -11,7 +11,7 @@ $(function () {
             data: '{xf:"' + _zw.V.xfalias + '",mi:"' + _zw.V.appid + '",actor:"' + _zw.V.current["urid"] + '",fdid:"' + _zw.V.fdid + '",wi:"' + _zw.V.wid + '",wn:"' + _zw.V.prevwork + '"}',
             success: function (res) {
                 if (res != "OK") bootbox.alert(res);
-                else _zw.fn.reloadList();
+                //else _zw.fn.reloadList();
             },
             beforeSend: function () {//pace.js 충돌
             }
@@ -286,11 +286,15 @@ $(function () {
     }
 
     _zw.fn.orgSelect = function (p, el) { if (_zw.formEx.orgSelect) _zw.formEx.orgSelect(p, el); }
+    _zw.fn.onblur = function (e, v) {
+        if (v[0] == "number" || v[0] == "percent") { if (_zw.formEx.calc) _zw.formEx.calc(e, v); }
+        else if (v[0] == "date" || v[0] == "time") { if (_zw.formEx.date) _zw.formEx.date(e, v); }
+    }
 
     _zw.fn.reloadList = function () {
         try {
-            if (opener != null && opener._zw.mu.refresh) {
-                if (opener._zw.V.ctalias == 'ea') opener._zw.mu.refresh(); //부모창이 결재인 경우만 우선 적용
+            if (opener != null && opener._zw.mu.search) {
+                if (opener._zw.V.ctalias == 'ea') opener._zw.mu.search(opener._zw.V.lv.page); //부모창이 결재인 경우만 우선 적용
             } else opener.location.reload();
         } catch (e) { opener.location.reload(); };
     }
@@ -1562,8 +1566,8 @@ $(function () {
             });
             //if (iCnt == 0) tgtRow = p.find('tr.sub_table_row:last-child');
             if (iCnt < 2) {
-                newRow = tgtRow.clone(); _zw.form.resetField(newRow); tgtRow.after(newRow);
-                _zw.form.orderRow(p);
+                newRow = tgtRow.clone(); _zw.form.resetField(newRow); tgtRow.after(newRow); _zw.fn.input(newRow);
+                _zw.form.orderRow(p); 
             }
         },
         "removeRow": function (sub) {
@@ -1588,8 +1592,8 @@ $(function () {
                 if (iCnt == 0) tgtRow = $(this);
             });
             if (iCnt < 2) {
-                newRow = tgtRow.clone(); tgtRow.after(newRow);
-                _zw.form.orderRow(p);
+                newRow = tgtRow.clone(); tgtRow.after(newRow); _zw.fn.input(newRow);
+                _zw.form.orderRow(p); 
                 if (_zw.formEx.autoCalc) _zw.formEx.autoCalc(p);
             }
         },
@@ -1622,17 +1626,18 @@ $(function () {
 
                     } else if (vField[0] == 'M') {
                         el = $('#__mainfield[name="' + vField[2] + '"]');
-                        var tag = el.prop('tagName').toLowerCase();
-                        if (tag == "div" || tag == "span") {
-                            return true;
-                        } else if (tag == "input" && (el.is(":checkbox") || el.is(":radio"))) {
-                            var b = false;
-                            el.each(function () { if ($(this).prop('checked')) b = true; return false; });
-                            if (!b) { bootbox.alert(sMsg.replace('$field', vField[3]), function () { try { el[0].focus(); } catch { } }); return false; }
-                        } else if ($.trim(el.val()) == '') {
-                            bootbox.alert(sMsg.replace('$field', vField[3]), function () { try { el.focus(); } catch { } }); return false;
+                        if (el && el.length > 0) {
+                            var tag = el.prop('tagName').toLowerCase();
+                            if (tag == "div" || tag == "span") {
+                                return true;
+                            } else if (tag == "input" && (el.is(":checkbox") || el.is(":radio"))) {
+                                var b = false;
+                                el.each(function () { if ($(this).prop('checked')) b = true; return false; });
+                                if (!b) { bootbox.alert(sMsg.replace('$field', vField[3]), function () { try { el[0].focus(); } catch { } }); return false; }
+                            } else if ($.trim(el.val()) == '') {
+                                bootbox.alert(sMsg.replace('$field', vField[3]), function () { try { el.focus(); } catch { } }); return false;
+                            }
                         }
-
                     } else {
                         if (!jSub[vField[0]]) jSub[vField[0]] = [];
                         jSub[vField[0]].push(vField);
@@ -1651,19 +1656,21 @@ $(function () {
                         for (var i = 0; i < jSub[x].length; i++) {
                             var fld = jSub[x][i];
                             el = $(this).find('[name="' + fld[2] + '"]'); //console.log(el)
-                            var tag = el.prop('tagName').toLowerCase();
-                            if (tag == "div" || tag == "span") {
-                                bReturn = true; return false;
-                            } else if (tag == "input" && (el.is(":checkbox") || el.is(":radio"))) {
-                                var b = false;
-                                el.each(function () { if ($(this).prop('checked')) b = true; return false; });
-                                if (!b) {
-                                    bootbox.alert(sMsg.replace('$field', fld[3]), function () { try { el[0].focus(); } catch { } });
+                            if (el && el.length > 0) {
+                                var tag = el.prop('tagName').toLowerCase();
+                                if (tag == "div" || tag == "span") {
+                                    bReturn = true; return false;
+                                } else if (tag == "input" && (el.is(":checkbox") || el.is(":radio"))) {
+                                    var b = false;
+                                    el.each(function () { if ($(this).prop('checked')) b = true; return false; });
+                                    if (!b) {
+                                        bootbox.alert(sMsg.replace('$field', fld[3]), function () { try { el[0].focus(); } catch { } });
+                                        bReturn = false; return false;
+                                    }
+                                } else if ($.trim(el.val()) == '') {
+                                    bootbox.alert(sMsg.replace('$field', fld[3]), function () { try { el.focus(); } catch { } });
                                     bReturn = false; return false;
                                 }
-                            } else if ($.trim(el.val()) == '') {
-                                bootbox.alert(sMsg.replace('$field', fld[3]), function () { try { el.focus(); } catch { } });
-                                bReturn = false; return false;
                             }
                         }
                     }
@@ -1774,11 +1781,15 @@ $(function () {
                 //j["doc"]["attachsize"] = _zw.V.doc["attachsize"];
                 j["doc"]["linkmsg"] = _zw.V.doc["linkmsg"];
                 j["doc"]["transfer"] = _zw.V.doc["transfer"];
-                j["doc"]["key1"] = '';
-                j["doc"]["key2"] = '';
+
+                _zw.body.externalKey(cmd, j["doc"]);
+
                 if (_zw.V.creator["corp"] != null) {
                     j["doc"]["rsvd1"] = _zw.V.creator["corp"]["corpname"];
                     j["doc"]["rsvd2"] = _zw.V.creator["corp"]["domain"];
+                } else {
+                    j["doc"]["rsvd1"] = '';
+                    j["doc"]["rsvd2"] = '';
                 }
 
                 j["creator"] = {};
@@ -1842,7 +1853,7 @@ $(function () {
                 var v = [];
                 $('#__subtable' + i.toString() + ' tr.sub_table_row').each(function () { //console.log($(this).html())
                     var iData = 0;
-                    $(this).find('[name]').each(function () { if ($(this).attr('name') != "" && $(this).attr('name') != 'ROWSEQ' && $.trim($(this).val()) != '') { iData++; return false; } }); //alert(iData)
+                    $(this).find('[name]').each(function () { if ($(this).attr('name') != "" && $(this).prop('tagName').toLowerCase() != 'checkbox' && $(this).attr('name') != 'ROWSEQ' && $.trim($(this).val()) != '') { iData++; return false; } }); //alert(iData)
                     if (iData > 0) { //ROWSEQ 이외 필드 값이 들어 있을 경우
                         var s = {};
                         $(this).find('[name]').each(function () {
@@ -1924,6 +1935,26 @@ $(function () {
                         v["origin"] = location.origin;
                         img.push(v);
                     }
+                }
+            }
+        },
+        "externalKey": function (cmd, doc) {
+            var k1 = doc["key1"] || '', k2 = doc["key2"] || '';
+
+            if (_zw.V.ft == 'MONTHFAULTYGOODS' || _zw.V.ft == 'MONTHFAULTYGOODSCTISM' || _zw.V.ft == 'MONTHLOSSCHART') { //작업불량품발생기안, 작업불량품발생기안CT(ISM), 월손실비용발생현황
+                doc["key1"] = $('#__mainfield[name="CORPORATION"]').val() + '-' + $('#__mainfield[name="STATSYEAR"]').val() + $('#__mainfield[name="STATSMONTH"]').val();
+
+            } else if (_zw.V.ft == 'BIZTRIPDAILYREPORT') { //출장계획서, 해외출장일보
+                doc["key1"] = _zw.V.current.user + '-' + _zw.V.current.dept + '-' + $('#__mainfield[name="CORPORATION"]').val()
+
+            } else {
+                doc["key1"] = k1;
+                doc["key2"] = k2;
+
+                var f1 = $('#__mainfield[name="MODELNAME"]'), f2 = $('#__mainfield[name="CUSTOMER"]'), f3 = $('#__mainfield[name="STEP"]');
+                if (f1.length == 1) {
+                    doc["key1"] = $.trim(f1.val());
+                    if (f3.length == 1) doc["key2"] = $.trim(f3.val());
                 }
             }
         }

@@ -592,7 +592,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                                     if (jSub.ContainsKey("subtable" + vSub[0].Substring(1)))
                                     {
                                         JObject j = (JObject)jSub["subtable" + vSub[0].Substring(1)][0];
-                                        if (j.ContainsKey(vSub[1])) pi.Name = j[vSub[1]].ToString();
+                                        if (j.ContainsKey(vSub[1])) pi.Name += j[vSub[1]].ToString();
                                         else pi.Name += vSub[1];
                                     }
                                     else pi.Name += vSub[1];
@@ -924,7 +924,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                                     if (jSub.ContainsKey("subtable" + vSub[0].Substring(1)))
                                     {
                                         JObject j = (JObject)jSub["subtable" + vSub[0].Substring(1)][0];
-                                        if (j.ContainsKey(vSub[1])) pi.Name = j[vSub[1]].ToString();
+                                        if (j.ContainsKey(vSub[1])) pi.Name += j[vSub[1]].ToString();
                                         else pi.Name += vSub[1];
                                     }
                                     else pi.Name += vSub[1];

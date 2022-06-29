@@ -1,0 +1,143 @@
+﻿@using System;
+@using System.Collections;
+@using System.Collections.Generic;
+@using System.Data;
+@using System.IO;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.BSL.ServiceBiz;
+@using ZumNet.BSL.InterfaceBiz;
+@using ZumNet.Web.Bc;
+@using ZumNet.Framework.Core;
+@using ZumNet.Framework.Exception;
+@using ZumNet.Framework.Util;
+@functions{
+    private string GetOracleERP(JObject postData)
+    {
+        ServiceResult svcRt = new ServiceResult();
+        string strBodyMode = postData.ContainsKey("body") ? postData["body"].ToString() : ""; // S(문자열반환), N(modal-body 없음), F(footer 포함)
+        string strReturn = "";
+
+        char cDel = (char)8;
+        int iTotal = 0;
+        int iTotalPage = 0;
+        int iPage = 1;
+        int iPageCount = 50;
+
+        try
+        {
+            if (postData.ContainsKey("page")) iPage = Convert.ToInt32(postData["page"].ToString());
+            if (postData.ContainsKey("iPageCount")) iPage = Convert.ToInt32(postData["count"].ToString());
+
+            if (strBodyMode == "S")
+            {
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+
+                if (strBodyMode != "N")
+                {
+                    sb.Append("<div class=\"zf-modal modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm\">");
+                    sb.AppendFormat("<div class=\"modal-content\" data-for=\"{0}\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)\">", postData["k2"].ToString());
+                    sb.Append("<div class=\"modal-header\">");
+                    sb.Append("<h6 class=\"modal-title\"></h6>");
+                    sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+                    //sb.AppendFormat("<input type=\"hidden\" data-for=\"param\" value=\"{0}\" />", postData["param"].ToString());
+                    sb.Append("</div>");
+                    sb.Append("<div class=\"modal-body\">"); //modal-body
+                }
+
+                if (postData["k2"].ToString() == "items")
+                {
+                    if (postData["etc"].ToString().IndexOf("pdm") >= 0)
+                    {
+                        using (ReportBiz rptBiz = new ReportBiz())
+                        {
+                            svcRt = rptBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["etc"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                        }
+                    }
+                    else
+                    {
+                        using (OracleBiz oraBiz = new OracleBiz())
+                        {
+                            svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["search"].ToString(), iPageCount, iPage);
+                        }
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"40%\" /><col width=\"60%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>품번</th><th>품명</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}{2}\">{0}</a></td>", row["SEGMENT1"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim()
+                                    , postData["etc"].ToString().IndexOf("pdm") >= 0 ? "^" + row["PDMOID"].ToString().Trim() : "");
+                                sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString().Trim());
+                                sb.AppendFormat("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                }
+                else
+                {
+                    strReturn = "해당 조건이 누락됐습니다!";
+                }
+
+                if (strBodyMode != "N")
+                {
+                    sb.Append("</div>");
+
+                    if (strBodyMode == "F")
+                    {
+                        sb.Append("<div class=\"modal-footer\">"); //modal-footer
+                        sb.Append("<button type=\"button\" class=\"btn btn-default btn-sm\" data-dismiss=\"modal\">닫기</button>");
+                        sb.Append("<button type=\"button\" class=\"btn btn-primary btn-sm\" data-zm-menu=\"confirm\">확인</button>");
+                        sb.Append("</div>");
+                    }
+
+                    sb.Append("</div>"); //content
+                    sb.Append("</div>");
+                }
+                if (strReturn == "") strReturn = "OK" + sb.ToString();
+            }
+        }
+        catch (Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "GetReportSearch");
+            strReturn = (strReturn != "" ? "[" + strReturn + "] " : "") + ex.Message;
+        }
+        finally
+        {
+        }
+        return strReturn;
+    }
+}
+@Html.Raw(GetOracleERP(ViewBag.JPost))

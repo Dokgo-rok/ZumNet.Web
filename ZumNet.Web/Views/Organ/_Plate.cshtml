@@ -56,6 +56,8 @@
         j["grade"] = dr["Grade1"].ToString();
         j["role"] = dr["Role"].ToString();
         j["mobile"] = dr["Mobile"].ToString();
+        j["belong"] = dr["Belong"].ToString();
+        j["indate"] = dr["InDate"].ToString();
 
         return JsonConvert.SerializeObject(j);
     }

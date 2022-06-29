@@ -42,16 +42,17 @@
                 m = 'getreportsearch';
             } else m = 'getcodedescription';
 
+            //data body 조건 : N(modal-body 없음), F(footer 포함)
             $.ajax({
                 type: "POST",
                 url: "/EA/Common",
-                data: '{M:"' + m + '", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",fn:"",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
+                data: '{M:"' + m + '",body:"", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",fn:"",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
                 success: function (res) {
+                    //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
                     if (res.substr(0, 2) == 'OK') {
                         var p = $('#popBlank');
                         p.html(res.substr(2)).find('.modal-title').html(el.attr('title'));
-                        if (el.attr('title') == '지급조건' || el.attr('title') == '주문유형') p.find(".modal-dialog").css("max-width", "30rem");
-                        else if (m == 'getcodedescription') p.find(".modal-dialog").css("max-width", "15rem");
+                        if (m == 'getcodedescription') p.find(".modal-dialog").css("max-width", "15rem");
                         //p.find(".modal-content").css("height", h + "px")
 
                         p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
@@ -72,6 +73,16 @@
 
                         p.on('hidden.bs.modal', function () { p.html(''); });
                         p.modal();
+
+                        //var j = { "close": true, "width": 200, "height": 160 }
+                        //j["title"] = el.attr('title'); j["content"] = res.substr(2);
+
+                        //var pop = _zw.ut.popup(el[0], j);
+                        //pop.find('a[data-val]').click(function () {
+                        //    var v = $(this).attr('data-val').split('^');
+                        //    c2.val(v[0]); c3.val(v[1]);
+                        //    pop.find('.close[data-dismiss="modal"]').click();
+                        //});
 
                     } else bootbox.alert(res);
                 }

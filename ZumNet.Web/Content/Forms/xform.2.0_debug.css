@@ -1,4 +1,5 @@
 ﻿/* 레이아웃 */
+body {overflow: hidden}
 .m {
 	margin-left: auto !important;
 	margin-right: auto !important;
@@ -298,12 +299,12 @@
 }
 .m .txtRead_Right {
 	width: 100%;
-	border: 0;
+	border: 0 !important;
 	text-align: right
 }
 .m .txtRead_Center {
 	width: 100%;
-	border: 0;
+	border: 0 !important;
 	text-align: center
 }
 .m .txaRead {
@@ -320,16 +321,20 @@
 	text-align: right
 }
 
-.m input[type="text"], .m .txaText {
+.m input[type="text"], .m .txaText, .m select.z-select {
 	border: 1px solid rgba(24,28,33,0.3);
 	transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
 }
-	.m input[type="text"]:focus, .m .txaText:focus {
+	.m input[type="text"]:focus, .m .txaText:focus, .m select.z-select:focus {
 		background-color: #fff;
 		border-color: rgba(254,183,68,1);
 		outline: 0;
 		box-shadow: none;
 	}
+.m .ft td > select.form-control, .m .ft-sub td > select.form-control {
+	height: 1.725rem;
+	padding: .125rem .525rem
+}
 
 /* 인쇄 설정 : 맨하단으로 */
 @media print {

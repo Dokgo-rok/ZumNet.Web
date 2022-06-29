@@ -26,20 +26,20 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:700px} .m .fm-editor {height:500px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:1pt;}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:700px} .m .fm-editor {height:500px;min-height:500px;border:windowtext 1pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:1pt;}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:6%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:6%} .m .ft .f-lbl2 {width:?}
+			.m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:540px}}
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:500px;min-height:500px}}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -79,7 +79,7 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:325px">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '작성부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
@@ -133,10 +133,13 @@
                 <td style="width:35%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="MODELNAME" class="txtText" style="width:92%" value="{//forminfo/maintable/MODELNAME}" />
-                      <button onclick="parent.fnExternal('erp.items',240,40,124,70,'pdmproduct','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="MODELNAME" class="txtText" style="width:90%" value="{//forminfo/maintable/MODELNAME}" />
+                      <!--<button onclick="parent.fnExternal('erp.items',240,40,124,70,'pdmproduct','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18 ml-1" title="모델명" onclick="_zw.formEx.externalWnd('erp.items',240,40,124,70,'pdmproduct','MODELNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
@@ -160,10 +163,13 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="UNITNAME" class="txtText" style="width:92%" value="{//forminfo/maintable/UNITNAME}" />
-                      <button onclick="parent.fnExternal('erp.items',240,40,124,24,'','UNITNAME', 'ITEMNAME2');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="UNITNAME" class="txtText" style="width:90%" value="{//forminfo/maintable/UNITNAME}" />
+                      <!--<button onclick="parent.fnExternal('erp.items',240,40,124,24,'','UNITNAME', 'ITEMNAME2');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18 ml-1" title="유니트" onclick="_zw.formEx.externalWnd('erp.items',240,40,124,24,'','UNITNAME', 'ITEMNAME2');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/UNITNAME))" />
@@ -187,10 +193,13 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PARTNUM" class="txtText" style="width:92%" value="{//forminfo/maintable/PARTNUM}" />
-                      <button onclick="parent.fnExternal('erp.items',240,40,124,24,'pdm','PARTNUM', 'PARTNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="PARTNUM" class="txtText" style="width:90%" value="{//forminfo/maintable/PARTNUM}" />
+                      <!--<button onclick="parent.fnExternal('erp.items',240,40,124,24,'pdm','PARTNUM', 'PARTNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18 ml-1" title="유니트" onclick="_zw.formEx.externalWnd('erp.items',240,40,124,24,'pdm','PARTNUM', 'PARTNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/PARTNUM))" />
@@ -223,6 +232,9 @@
           <div class="ff" />
 
           <div class="fm-editor">
+			  <xsl:if test="$mode!='new' and $mode!='edit'">
+				  <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+			  </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <div name="WEBEDITOR" id="__mainfield" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">
@@ -236,12 +248,12 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" src="/{$root}/EA/External/Editor_tagfree.aspx"></iframe>
+				  <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
             <div class="ff" />
