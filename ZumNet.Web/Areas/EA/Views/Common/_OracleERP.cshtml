@@ -49,8 +49,9 @@
                     sb.Append("<div class=\"modal-body\">"); //modal-body
                 }
 
-                if (postData["k2"].ToString() == "items")
+                if (postData["k2"].ToString() == "items" || postData["k2"].ToString() == "items1" || postData["k2"].ToString() == "items3")
                 {
+                    #region [items, items1, items3]
                     if (postData["etc"].ToString().IndexOf("pdm") >= 0)
                     {
                         using (ReportBiz rptBiz = new ReportBiz())
@@ -62,7 +63,9 @@
                     {
                         using (OracleBiz oraBiz = new OracleBiz())
                         {
-                            svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["search"].ToString(), iPageCount, iPage);
+                            if (postData["k2"].ToString() == "items") svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["search"].ToString(), iPageCount, iPage);
+                            else if (postData["k2"].ToString() == "items1") svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_C(postData["search"].ToString(), iPageCount, iPage, postData["query"].ToString());
+                            else if (postData["k2"].ToString() == "items3") svcRt = oraBiz.Cresyn_Get_CBO_EKP_BPA_ITEM_V(postData["search"].ToString(), iPageCount, iPage, postData["query"].ToString());
                         }
                     }
 
@@ -90,7 +93,7 @@
                                 sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}{2}\">{0}</a></td>", row["SEGMENT1"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim()
                                     , postData["etc"].ToString().IndexOf("pdm") >= 0 ? "^" + row["PDMOID"].ToString().Trim() : "");
                                 sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString().Trim());
-                                sb.AppendFormat("</tr>");
+                                sb.Append("</tr>");
                             }
                             sb.Append("</tbody>");
                             sb.Append("</table>");
@@ -105,6 +108,1042 @@
                     {
                         strReturn = svcRt.ResultMessage;
                     }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "vendors")
+                {
+                    #region [vendors]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_PO_VENDORS(postData["searchcol"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"60%\" /><col width=\"40%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>업체명</th><th>업체코드</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["VENDOR_NAME"].ToString().Trim(), row["SEGMENT1"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["SEGMENT1"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "vendors2")
+                {
+                    #region [vendors2]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_PO_VENDORS2(postData["searchcol"].ToString(), postData["search"].ToString(), postData["query"].ToString(), iPageCount, iPage);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"60%\" /><col width=\"40%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>업체명</th><th>업체코드</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["CUSTOMER_NAME"].ToString().Trim(), row["CUSTOMER_NUMBER"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["CUSTOMER_NUMBER"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "saleitems")
+                {
+                    #region [saleitems]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_PO_SALEITEMS(postData["searchcol"].ToString(), postData["search"].ToString(), postData["query"].ToString(), iPageCount, iPage);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"60%\" /><col width=\"40%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>품번</th><th>품명</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["SEGMENT1"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "customers")
+                {
+                    #region [customers]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_RA_CUSTOMERS(postData["search"].ToString(), iPageCount, iPage);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>고객명</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["customer_name"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "vendorcustomer")
+                {
+                    #region [vendorcustomer]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_PO_VENDORS_CUSTOMERS(postData["etc"].ToString(), postData["searchcol"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"60%\" /><col width=\"40%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>업체명</th><th>업체코드</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}\">{0}</a></td>", row["VENDOR_NAME"].ToString().Trim(), row["VENDOR_ID"].ToString().Trim(), row["VENDOR_SITE_ID"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["VENDOR_NUMBER"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "exchangerate")
+                {
+                    #region [exchangerate]
+                    if (postData["k3"].ToString() == "detail")
+                    {
+                        using (OracleBiz oraBiz = new OracleBiz())
+                        {
+                            svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES_V(postData["fc"].ToString(), postData["tc"].ToString(), postData["ct"].ToString(), postData["cd"].ToString());
+                        }
+
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (svcRt.ResultItemCount > 0) sb.AppendFormat("Y{0}{1}", cDel, svcRt.ResultDataTable.Rows[0]["INV_RATE"].ToString());
+                            else sb.AppendFormat("N{0}{1}", cDel, Resources.Global.NoItemShow);
+                        }
+                        else strReturn = svcRt.ResultMessage;
+                    }
+                    else
+                    {
+                        using (OracleBiz oraBiz = new OracleBiz())
+                        {
+                            svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES_V(postData["etc"].ToString(), postData["page"].ToString(), postData["search"].ToString());
+                        }
+
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (svcRt.ResultItemCount > 0)
+                            {
+                                sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                                sb.Append("<colgroup><col width=\"50%\" /><col width=\"50%\" /></colgroup>");
+                                sb.Append("<tbody>");
+                                foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                                {
+                                    sb.Append("<tr>");
+                                    sb.AppendFormat("<td>{0}</td>", row["TO_CURRENCY"].ToString().Trim());
+                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["TO_FROM_CON_RATE"].ToString().Trim());
+
+                                    sb.Append("</tr>");
+                                }
+                                sb.Append("</tbody>");
+                                sb.Append("</table>");
+                            }
+                            else
+                            {
+                                sb.Append(cDel);
+                                sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                            }
+                        }
+                        else
+                        {
+                            strReturn = svcRt.ResultMessage;
+                        }
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "monfaulty")
+                {
+                    #region [monfaulty 불용제품처리기안]
+                    if (postData["k3"].ToString() == "detail")
+                    {
+                        string strValue1 = "";
+                        string strValue2 = "";
+                        using (OracleBiz oraBiz = new OracleBiz())
+                        {
+                            if (postData["ct"].ToString() != "" && postData["cd"].ToString() != "")
+                            {
+                                svcRt = oraBiz.Cresyn_Get_MONTH_FAULTY(postData["fc"].ToString(), postData["tc"].ToString(), postData["ct"].ToString(), postData["cd"].ToString());
+                                if (svcRt.ResultCode == 0 && svcRt.ResultDataTable.Rows.Count > 0)
+                                {
+                                    DataRow row = svcRt.ResultDataTable.Rows[0];
+                                    strValue1 = row["작업불량시점재고"].ToString() + ";" + row["당월작업불량입고수량"].ToString() + ";" + row["자재시점재고"].ToString() + ";" + row["당월자재불량입고수량"].ToString() + ";" + row["반제시점재고"].ToString() + ";" + row["당월반제불량입고수량"].ToString() + ";" + row["제품시점재고"].ToString() + ";" + row["당월제품불량입고수량"].ToString();
+                                }
+                            }
+                            if (postData["ct"].ToString() != "")
+                            {
+                                svcRt = oraBiz.Cresyn_Get_MONTH_FAULTY_GONGSU(postData["fc"].ToString(), postData["tc"].ToString(), postData["ct"].ToString());
+                                if (svcRt.ResultCode == 0 && svcRt.ResultDataTable.Rows.Count > 0)
+                                {
+                                    DataRow row = svcRt.ResultDataTable.Rows[0];
+                                    strValue1 = strValue2 = ";" + row["NG_TIME"].ToString() + ";" + ""; //공정불량(NG_TIME), 재작업('')
+                                }
+                            }
+                        }
+
+                        if (strValue1 == "" && strValue2 == "")
+                        {
+                            sb.AppendFormat("N{0}{1}", cDel, Resources.Global.NoItemShow);
+                        }
+                        else
+                        {
+                            sb.Append("Y");
+                            if (strValue1 != "") sb.Append(cDel + strValue1);
+                            else sb.Append(cDel + ";;;;;;;");
+
+                            if (strValue2 != "") sb.Append(strValue2);
+                            else sb.Append(";;");
+                        }
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "specchange")
+                {
+                    #region [specchange 불용제품처리기안]
+                    if (postData["k3"].ToString() == "detail")
+                    {
+                        string strValue1 = "";
+                        using (OracleBiz oraBiz = new OracleBiz())
+                        {
+                            svcRt = oraBiz.Cresyn_Get_SPEC_CHANGE(postData["fc"].ToString());
+                            if (svcRt.ResultCode == 0 && svcRt.ResultDataTable.Rows.Count > 0)
+                            {
+                                DataRow row = svcRt.ResultDataTable.Rows[0];
+                                strValue1 = row["CH_QTY"].ToString() + ";" + row["CT_QTY"].ToString() + ";" + row["CD_QTY"].ToString() + ";" + row["IC_QTY"].ToString() + ";" + row["VH_QTY"].ToString() + ";" + row["IS_QTY"].ToString();
+                            }
+                        }
+
+                        if (strValue1 == "") sb.AppendFormat("N{0}{1}", cDel, Resources.Global.NoItemShow);
+                        else
+                        {
+                            sb.Append("Y");
+                            if (strValue1 != "") sb.Append(cDel + strValue1);
+                            else sb.Append(cDel + ";;;;;;;");
+                        }
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "organization")
+                {
+                    #region [organization]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_AP_GWARE_INFO_V("ORG ID", "");
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            ArrayList rowList;
+                            using (ZumNet.DAL.ServiceDac.CodeDac cdDac = new ZumNet.DAL.ServiceDac.CodeDac())
+                            {
+                                rowList = cdDac.SelectCodeDescription("external", "centercode", "");
+                            }
+                            string strCurrency = "";
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><co /></colgroup>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                foreach (object[] o in rowList)
+                                {
+                                    if (o[5].ToString() == row["ORG_ID"].ToString())
+                                    {
+                                        strCurrency = o[6].ToString();
+                                        break;
+                                    }
+                                }
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}^{2}\">{0} ({2})</a></td>"
+                                            , row["CODE"].ToString().Trim(), row["ORG_ID"].ToString().Trim(), strCurrency);
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "currency")
+                {
+                    #region [currency, 기타 항목 포함]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_AP_GWARE_INFO_V("CURRENCY CODE", postData["query"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><co /></colgroup>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0} ({1})</a></td>", row["CODE"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            if (postData["etc"].ToString() == "etc")
+                            {
+                                sb.Append("<tr><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "ratetype")
+                {
+                    #region [ratetype]
+                    //js에서 구현
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "supplier")
+                {
+                    #region [supplier]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_AP_GWARE_VENDOR_INFO_V(postData["query"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"80%\" /><col width=\"20%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>업체명</th><th>업체코드</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}^{3}^{4}^{5}^{6}^{7}^{8}^{9}^{10}^{11}^{5}.{7}.{9}^{4}.{6}.{8}\">{0}</a></td>"
+                                                , row["DESCRIPTION"].ToString().Trim(), row["VENDOR_ID"].ToString().Trim()
+                                                , row["VENDOR_SITE_ID"].ToString().Trim(), row["VENDOR_SITE_CODE"].ToString().Trim(), row["SEGMENT1"].ToString().Trim(), row["SEG1_DESC"].ToString().Trim()
+                                                , row["SEGMENT2"].ToString().Trim(), row["SEG2_DESC"].ToString().Trim(), row["SEGMENT3"].ToString().Trim(), row["SEG3_DESC"].ToString().Trim()
+                                                , row["TERMS_NAME"].ToString().Trim(), row["TERMS_ID"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["VENDOR_SITE_ID"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "buyer")
+                {
+                    #region [buyer]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_EKP_BUYER(postData["search"].ToString(), iPageCount, iPage);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"70%\" /><col width=\"30%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>구매담당자</th><th>담당자ID</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["DESCRIPTION"].ToString().Trim(), row["BUYER_ID"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["BUYER_ID"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "potype")
+                {
+                    #region [potype, 기타 항목 포함]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_EKP_PO_TYPE();
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col /></colgroup>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["PO_TYPE"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            if (postData["etc"].ToString() == "etc") sb.Append("<tr><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "bpanum")
+                {
+                    #region [bpanum]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_EKP_PO_BPA(postData["query"].ToString(), postData["v1"].ToString(), postData["v2"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"25%\" /><col width=\"65%\" /><col width=\"10%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>BPA NUM</th><th>업체</th><th>상태</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["PO_NUM"].ToString().Trim(), row["APPROVED_FLAG"].ToString());
+                                sb.AppendFormat("<td>{0}</td>", row["VENDOR_NAME"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["APPROVED_FLAG"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            if (postData["k3"].ToString() == "PURCHASEUCA" || postData["k3"].ToString() == "PURCHASEUCC" || postData["k3"].ToString() == "PURCHASEUCD" || postData["k3"].ToString() == "OUTSOURCINGUC"
+                                || postData["k3"].ToString() == "OUTSOURCINGUCC" || postData["k3"].ToString() == "OUTSOURCINGUCD" || postData["k3"].ToString() == "PURCHASEUCB")
+
+                            {
+                                sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                                sb.Append("<colgroup><col width=\"25%\" /><col width=\"65%\" /><col width=\"10%\" /></colgroup>");
+                                sb.Append("<thead>");
+                                sb.Append("<tr><th>BPA NUM</th><th>업체</th><th>상태</th></tr>");
+                                sb.Append("</thead>");
+                                sb.Append("<tbody>");
+                                foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                                {
+                                    sb.Append("<tr>");
+                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", "New BPA", "Y");
+                                    sb.AppendFormat("<td>{0}</td>", "신규");
+                                    sb.AppendFormat("<td>{0}</td>", "Y");
+                                    sb.Append("</tr>");
+                                }
+                                sb.Append("</tbody>");
+                                sb.Append("</table>");
+                            }
+                            else sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "salecenter")
+                {
+                    #region [salecenter]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_EKP_SALECENTER(postData["query"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"12%\" /><col width=\"58%\" /><col width=\"30%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>판매처</th><th>생산지법인명</th><th>생산지법인코드</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}\">{0}</a></td>", row["SELL_ORG_CODE"].ToString().Trim(), row["VENDOR_NAME"].ToString(), row["VENDOR_CODE"].ToString());
+                                sb.AppendFormat("<td>{0}</td>", row["VENDOR_NAME"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["VENDOR_CODE"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "pricelist" || postData["k2"].ToString() == "midpricelist")
+                {
+                    #region [pricelist, midpricelist]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_EKP_PRICELIST(postData["query"].ToString(), postData["v1"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"40%\" /><col width=\"60%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>PRICELIST</th><th>설명</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["PRICE_LIST_NAME"].ToString().Trim(), row["PRICE_LIST_DESC"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["PRICE_LIST_DESC"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "salebpanum")
+                {
+                    #region [salebpanum]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_EKP_SALEBPANUM(postData["query"].ToString(), postData["v1"].ToString(), postData["v2"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"50%\" /><col width=\"50%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>BPANUM</th><th>SUPPLIER</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["BPA_NUMBER"].ToString().Trim(), row["VENDOR_NAME"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["VENDOR_NAME"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "termname")
+                {
+                    #region [termname, 기타 항목 포함]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_AP_GWARE_INFO_V("TERM NAME", postData["query"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col /></colgroup>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["CODE"].ToString().Trim(), row["ID"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            if (postData["etc"].ToString() == "etc") sb.Append("<tr><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "paymentmethod")
+                {
+                    #region [paymentmethod, 기타 항목 포함]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_AP_GWARE_INFO_V("PAYMENT METHOD", postData["query"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col /></colgroup>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["DESCRIPTION"].ToString().Trim(), row["CODE"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            if (postData["etc"].ToString() == "etc") sb.Append("<tr><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "department")
+                {
+                    #region [department]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_AP_GWARE_INFO_V("DEPARTMENT", postData["query"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"75%\" /><col width=\"25%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>부서</th><th>부서코드</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1\">{1}</a></td>", row["CODE"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["CODE"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "account")
+                {
+                    #region [account]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_AP_GWARE_INFO_V("ACCOUNT", postData["query"].ToString(), postData["searchcol"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        iTotal = svcRt.ResultItemCount;
+                        iTotalPage = iTotal / iPageCount + 1;
+
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+                            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                            sb.Append(cDel); //페이징과 테이블 구분
+
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"70%\" /><col width=\"30%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>ACCOUNT</th><th>CODE</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{1}</a></td>", row["CODE"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["CODE"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.Append(cDel);
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "taxcode")
+                {
+                    #region [taxcode, 기타 항목 포함]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_CBO_AP_GWARE_INFO_V("TAX CODE", postData["query"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col /></colgroup>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}.{3}.{4}^{2}^{5}^{3}^{6}^{4}^{7}^{5}.{6}.{7}\">{0}</a></td>"
+                                    , row["CODE"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim(), row["ATTRIBUTE1"].ToString().Trim(), row["ATTRIBUTE2"].ToString().Trim()
+                                    , row["ATTRIBUTE3"].ToString().Trim(), row["ATTRIBUTE4"].ToString().Trim(), row["ATTRIBUTE5"].ToString().Trim(), row["ATTRIBUTE6"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            if (postData["etc"].ToString() == "etc") sb.Append("<tr><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "attribute")
+                {
+                    #region [attribute]
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "valueset")
+                {
+                    #region [valueset]
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "inven")
+                {
+                    #region [inven 본사창고]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_MTL_SECONDARY_INVENTORIES("");
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col width=\"40%\" /><col width=\"60%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>창고명</th><th>설명</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["SECONDARY_INVENTORY_NAME"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString().Trim());
+                                sb.Append("</tr>");
+                            }
+                            if (postData["etc"].ToString() == "etc") sb.Append("<tr><td colspan=\"2\"><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "onhand")
+                {
+                    #region [onhand 본사 on-hand 조회]
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_MTL_ONHAND_TOTAL_MWB_V(postData["v1"].ToString(), postData["v2"].ToString());
+                    }
+
+                    if (svcRt.ResultCode == 0) sb.Append(svcRt.ResultDataString);
+                    else strReturn = svcRt.ResultMessage;
+                    #endregion
                 }
                 else
                 {

@@ -719,6 +719,47 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             }
             return strView;
         }
+
+        /// <summary>
+        /// 퇴근 처리
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public string OffWork()
+        {
+            string rt = "필수 정보 누락!";
+
+            if (Request["ss"] != null && Request["ss"].ToString() == "Z"
+                && Request["off"] != null && Request["off"].ToString() == "Y")
+            {
+                try
+                {
+                    string sIP = Request.ServerVariables["REMOTE_ADDR"];
+                    bool bValid = CommonUtils.WorkIPBand(sIP);
+
+                    if (bValid)
+                    {
+                        string sUA = CommonUtils.UserAgent(Request.ServerVariables["HTTP_USER_AGENT"]);
+
+                        ZumNet.Framework.Core.ServiceResult svcRt = new Framework.Core.ServiceResult();
+                        using (ZumNet.BSL.ServiceBiz.WorkTimeBiz wtBiz = new BSL.ServiceBiz.WorkTimeBiz())
+                        {
+                            svcRt = wtBiz.SetWorkTimeStatus(Convert.ToInt32(Session["URID"]), DateTime.Now.ToString("yyyy-MM-dd")
+                                                        , Request["ss"].ToString(), Request.ServerVariables["REMOTE_HOST"], sUA, true);
+                        }
+                        if (svcRt != null && svcRt.ResultCode == 0) rt = "OK";
+                        else rt = svcRt.ResultMessage;
+                    }
+                    else rt = "요청 처리를 위한 비허용 IP 대역대";
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
         #endregion
 
         #region [근무시간 계산]

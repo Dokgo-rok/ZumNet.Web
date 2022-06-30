@@ -267,5 +267,31 @@ namespace ZumNet.Web.Controllers
 
             return rt;
         }
+
+        /// <summary>
+        /// 간단 집계 조회
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Modal()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+                if (jPost == null || jPost.Count == 0 || jPost["ft"].ToString() == "") return "필수값 누락!";
+
+                string formTable = jPost["ft"].ToString();
+
+                ViewBag.Modal = "Y";
+                ViewBag.JPost = jPost;
+                rt = RazorViewToString.RenderRazorViewToString(this, "_" + formTable, ViewBag);
+            }
+
+            return rt.TrimStart();
+        }
     }
 }

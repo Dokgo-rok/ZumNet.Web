@@ -122,23 +122,25 @@ namespace ZumNet.Web.Controllers
 
             try
             {
-                if (Session["LogonID"].ToString() != "byrlee") //개발자 제외
+                if (Session["LogonID"].ToString() != "___byrlee") //개발자 제외
                 {
-                    //허용IP : 10.212.134.1 - 10.212.134.250
-                    //         "192.168" 대역대 중 아래
-                    string[] vIP = sIP.Split('.');
-                    string[] vAllowIP = { "4", "10", "20", "30", "50", "60", "70", "80", "200" };
-                    //bool bIp = false;
+                    ////허용IP : 10.212.134.1 - 10.212.134.250
+                    ////         "192.168" 대역대 중 아래
+                    //string[] vIP = sIP.Split('.');
+                    //string[] vAllowIP = { "4", "10", "20", "30", "50", "60", "70", "80", "200" };
+                    ////bool bIp = false;
 
-                    if (vIP[0] == "192" && vIP[1] == "168")
-                    {
-                        if (Array.IndexOf(vAllowIP, vIP[2]) >= 0) bWorkTimeCheck = true;
-                        else bWorkTimeCheck = false;
-                    }
-                    else if (vIP[0] == "10" && vIP[1] == "212" && vIP[2] == "134")
-                    {
-                        bWorkTimeCheck = false;
-                    }
+                    //if (vIP[0] == "192" && vIP[1] == "168")
+                    //{
+                    //    if (Array.IndexOf(vAllowIP, vIP[2]) >= 0) bWorkTimeCheck = true;
+                    //    else bWorkTimeCheck = false;
+                    //}
+                    //else if (vIP[0] == "10" && vIP[1] == "212" && vIP[2] == "134")
+                    //{
+                    //    bWorkTimeCheck = false;
+                    //}
+
+                    bWorkTimeCheck = CommonUtils.WorkIPBand(sIP); //22-06-30
 
                     if (bWorkTimeCheck)
                     {
@@ -177,6 +179,8 @@ namespace ZumNet.Web.Controllers
 
                 //0시~6시 사이는 기준 근무일자를 하루전으로
                 string sWorkDate = (DateTime.Now.Hour < 6) ? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd");
+
+                //ZumNet.Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "AddCheck", bWorkTimeCheck.ToString(), Environment.NewLine));
 
                 if (bWorkTimeCheck)
                 {

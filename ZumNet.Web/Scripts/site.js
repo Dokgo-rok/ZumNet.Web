@@ -191,7 +191,7 @@ $(function () {
                 _zw.fn.openWorkStatus();
                 break;
             case "phonenum": //전화번호 찾기
-                bootbox.alert('준비중!');
+                _zw.mu.searchPhoneNum();
                 break;
             case "myinfo": //개인정보
                 bootbox.alert('준비중!');
@@ -822,8 +822,10 @@ $(function () {
                 if (rt) {
                     $.ajax({
                         type: "POST",
-                        url: "/ExS/WorkTime/StatusEvent",
-                        data: '{ss:"Z",off:"Y"}',
+                        //url: "/ExS/WorkTime/StatusEvent",
+                        url: "/ExS/WorkTime/OffWork",
+                        //data: '{ss:"Z",off:"Y"}',
+                        data: 'ss=Z&off=Y',
                         success: function (res) {
                             if (res.substr(0, 2) == "OK") {
                                 window.location.href = "/Account/Logout";
@@ -832,6 +834,64 @@ $(function () {
                     });
                 }
             });
+        },
+        "searchPhoneNum": function () {
+            var s = '<div class="zf-modal modal-dialog modal-lg modal-dialog-scrollable">'
+                + '<div class="modal-content" style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)">'
+                + '<div class="modal-header">'
+                + '<div class="d-flex align-items-center w-100">'
+                + '<div class="input-group w-50">'
+                + '<div class="input-group-prepend">'
+                + '<select class="form-control">'
+                + '<option value="Grade1">직위</option>'
+                + '<option value="DisplayName" selected>성명</option>'
+                + '<option value="GroupName">부서</option>'
+                //+ '<option value="Corporation">법인</option>'
+                + '</select>'
+                + '</div>'
+                + '<input type="text" class="form-control" placeholder="전화번호 찾기" value="">'
+                + '<span class="input-group-append"><button class="btn btn-secondary" type="button"><i class="fe-search"></i></button></span>'
+                + '</div>' //input-group
+                + '<div class="ml-2 d-flex align-items-center zf-modal-page"></div>'
+                + '</div>' //d-flex
+                + '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+                + '</div>' //modal-header
+                + '<div class="modal-body"></div>'
+                + '</div></div>';
+
+            var p = $('#popBlank');
+            p.html(s).find(".modal-content").css("min-height", "20rem");
+
+            var searchBtn = p.find('.zf-modal .modal-header .input-group .btn');
+            var searchTxt = $('.zf-modal .modal-header .input-group :text');
+
+            searchTxt.keyup(function (e) { if (e.which == 13) { searchBtn.click(); } });
+            searchBtn.click(function () {
+                if ($.trim(searchTxt.val()) == '' || searchTxt.val().length < 1) { bootbox.alert('검색어를 입력하십시오!', function () { searchTxt.focus(); }); return false; }
+                var exp = "['\\%^&\"*]", reg = new RegExp(exp, 'gi');
+                if (searchTxt.val().search(reg) >= 0) { bootbox.alert(exp + ' 문자는 사용될 수 없습니다!', function () { searchTxt.focus(); }); return false; }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Report/Modal",
+                    data: '{ft:"TELLNUMLIST",cd1:"' + p.find('.modal-header select').val() + '",cd2:"' + searchTxt.val() + '"}',
+                    success: function (res) {
+                        //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
+                        if (res.substr(0, 2) == 'OK') {
+                            var cDel = String.fromCharCode(8);
+                            var vRes = res.substr(2).split(cDel);
+
+                            p.find('.modal-header .zf-modal-page').html(vRes[0]);
+                            p.find('.modal-body').html(vRes[1]);
+
+                        } else bootbox.alert(res);
+                    }
+                });
+            });
+
+            p.on('shown.bs.modal', function () { searchTxt.focus(); });
+            p.on('hidden.bs.modal', function () { p.html(''); });
+            p.modal();
         }
     };
 

@@ -620,7 +620,7 @@ namespace ZumNet.Web.Controllers
                     if (!_disableDocSecurity)
                     {
                         //2014-11-12 파일 암호화
-                        sRealPath = EncrypFile(sRealPath, ext);
+                        //sRealPath = EncrypFile(sRealPath, ext);
                         //Response.Write("PATH ==> " + HttpContext.Current.Server.MapPath(strRealPath) + " : " + Session["FRONTNAME"].ToString());
                         //Response.End();
                     }

@@ -52,6 +52,8 @@ namespace ZumNet.Web.Bc
                 {
                     foreach (JObject j in fileInfo)
                     {
+                        //string rt = DecrypFile(xfAlias, j["filepath"].ToString()); //오류 반환해도 그냥 통과
+
                         string sFileOrImg = j["isfile"].ToString() == "N" ? "Img" : "File";
                         sFile = TempToStorage(dnId, xfAlias, j["savedname"].ToString(), j["filepath"].ToString(), sFileOrImg);
                         if (sFile.Substring(0, 2) == "OK")
@@ -341,6 +343,41 @@ namespace ZumNet.Web.Bc
             sb.Append("</fileinfo>");
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// DRM 복호화
+        /// </summary>
+        /// <param name="xfAlias"></param>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        private string DecrypFile(string xfAlias, string filePath)
+        {
+            string strReturn = "";
+
+            if (Framework.Configuration.Config.Read("UseDRM") == "Y" && (xfAlias == "ea" || xfAlias == "doc" || xfAlias == "tooling" || xfAlias == "ecnplan"))
+            {
+                string sEncrypServer = HttpContext.Current.Session["FrontName"].ToString();
+                string strUrl = String.Format("https://{0}/DocSecurity/?cvt={1}&rp={2}", sEncrypServer, "dec", HttpContext.Current.Server.UrlEncode(filePath));
+
+                System.Net.HttpWebRequest HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+                System.Net.HttpWebResponse HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
+                {
+                    strReturn = sr.ReadToEnd();
+                }
+                HttpWResp.Close();
+
+                if (strReturn.Substring(0, 2) == "OK")
+                {
+                    strReturn = strReturn.Substring(2);
+                }
+                else
+                {
+                    ExceptionManager.Publish(new Exception(strReturn), ExceptionManager.ErrorLevel.Error, "DecrypFile");
+                }
+            }
+            return strReturn;
         }
     }
 }

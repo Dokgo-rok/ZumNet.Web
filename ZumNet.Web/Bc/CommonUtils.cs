@@ -1017,6 +1017,35 @@ namespace ZumNet.Web.Bc
 
             return (b.IsMatch(userAgent) || v.IsMatch(userAgent.Substring(0, 4)));
         }
+
+        /// <summary>
+        /// 근무관리 인정을 위한 IP 대역대
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
+        public static bool WorkIPBand(string ip)
+        {
+            string sIP = ip != null && ip.Length > 0 ? ip : HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            bool bValid = true;
+
+            //허용IP : 10.212.134.1 - 10.212.134.250
+            //         "192.168" 대역대 중 아래
+            string[] vIP = sIP.Split('.');
+            string[] vAllowIP = { "4", "10", "20", "30", "50", "60", "70", "80", "200" };
+            //bool bIp = false;
+
+            if (vIP[0] == "192" && vIP[1] == "168")
+            {
+                if (Array.IndexOf(vAllowIP, vIP[2]) >= 0) bValid = true;
+                else bValid = false;
+            }
+            else if (vIP[0] == "10" && vIP[1] == "212" && vIP[2] == "134")
+            {
+                bValid = false;
+            }
+
+            return bValid;
+        }
         #endregion
 
         #region [구 버전 비밀번호 암복호화]

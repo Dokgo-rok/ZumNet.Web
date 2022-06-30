@@ -2074,6 +2074,7 @@
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\EA\Forms\FORM_AUDITRESULTREPORT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_BIZDOMTRIPEXPENSE.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
@@ -3106,6 +3107,7 @@
     <Content Include="Views\Report\_REGISTER_EDUTIME.cshtml" />
     <Content Include="Views\Report\_FORM_EDUSHARE.cshtml" />
     <Content Include="Views\Account\AntiForgery.cshtml" />
+    <Content Include="Views\Report\_TELLNUMLIST.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

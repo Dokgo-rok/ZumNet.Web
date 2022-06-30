@@ -28,7 +28,7 @@
         string imagepath = "/Storage/cresyn/PersonPhoto/" + logonId + ".jpg";
         string imageOpacity = "";
 
-        ZumNet.Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "GetOrgUserImageEx", Server.MapPath("~/Storage/cresyn/PersonPhoto/" + logonId + ".jpg"), Environment.NewLine));//Response.WriteFile(realPath);
+        //ZumNet.Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "GetOrgUserImageEx", Server.MapPath("~/Storage/cresyn/PersonPhoto/" + logonId + ".jpg"), Environment.NewLine));//Response.WriteFile(realPath);
 
         if (!File.Exists(Server.MapPath(imagepath)))
         {

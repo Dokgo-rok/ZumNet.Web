@@ -19,8 +19,20 @@ namespace ZumNet.Web.BizForce.PortalService
             bool _disableDocSecurity = false; //기본 보안설정
 
             string sUserAgent = Request.ServerVariables["HTTP_USER_AGENT"].ToString();
-            string sRealPath = Request["fp"] != null ? SecurityHelper.Base64Decode(Request["fp"].ToString()).Replace(@"\", "/") : "";
-            string sFileName = Request["fn"] != null ? SecurityHelper.Base64Decode(Request["fn"].ToString()) : "";
+            string sRealPath = Request["fp"] != null ? Request["fp"].ToString() : "";
+            string sFileName = Request["fn"] != null ? Request["fn"].ToString() : "";
+
+            try
+            {
+                sRealPath = SecurityHelper.Base64Decode(sRealPath).Replace(@"\", "/");
+                sFileName = SecurityHelper.Base64Decode(sFileName);
+            }
+            catch
+            {
+                sRealPath = Server.UrlDecode(sRealPath);
+                sFileName = Server.UrlDecode(sFileName);
+            }
+
             string sXFAlias = StringHelper.SafeString(Request["xf"]);
             string sSavedName = StringHelper.SafeString(Request["sn"]);
 
@@ -108,7 +120,7 @@ namespace ZumNet.Web.BizForce.PortalService
                     try
                     {
                         //2014-11-12 파일 암호화
-                        sRealPath = EncrypFile(sRealPath, ext);
+                        //sRealPath = EncrypFile(sRealPath, ext);
                     }
                     catch (Exception ex)
                     {
@@ -185,6 +197,7 @@ namespace ZumNet.Web.BizForce.PortalService
             Response.TransmitFile(realPath);
             Response.Flush();
             Response.Close();
+            //Response.WriteFile(realPath);
             Response.End();
         }
 

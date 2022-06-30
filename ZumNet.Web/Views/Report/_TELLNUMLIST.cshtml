@@ -1,0 +1,98 @@
+﻿@using System;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+
+@using ZumNet.BSL.ServiceBiz;
+@using ZumNet.BSL.InterfaceBiz;
+@using ZumNet.Web.Bc;
+@using ZumNet.Framework.Core;
+@using ZumNet.Framework.Exception;
+@using ZumNet.Framework.Util;
+@{
+    //전화번호 검색
+
+}
+@functions {
+    private string GetReportSearch(JObject postData)
+    {
+        ServiceResult svcRt = new ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        string strReturn = "";
+        char cDel = (char)8;
+
+        string mode = "";
+        int iTarget = 0;
+
+        try
+        {
+            if (Session["Admin"].ToString() == "Y")
+            {
+                mode = "dn"; iTarget = 0;
+            }
+            else
+            {
+                mode = "ur"; iTarget = Convert.ToInt32(Session["URID"]);
+            }
+
+            using (ReportBiz rpBiz = new ReportBiz())
+            {
+                svcRt = rpBiz.GetReport(mode, iTarget, postData["ft"].ToString(), "", "", postData["cd1"].ToString(), postData["cd2"].ToString(), "", "", "");
+            }
+
+            if (svcRt.ResultCode == 0)
+            {
+                if (svcRt.ResultItemCount > 0)
+                {
+                    sb.AppendFormat("<span class=\"mr-2\">총 {0} 항목</span>", svcRt.ResultItemCount.ToString());
+                    sb.Append(cDel); //페이징과 테이블 구분
+
+                    sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                    sb.Append("<colgroup><col width=\"10%\" /><col width=\"10%\" /><col width=\"17%\" /><col width=\"18%\" /><col width=\"15%\" /><col width=\"15%\" /><col width=\"15%\" /></colgroup>");
+                    sb.Append("<thead>");
+                    sb.Append("<tr><th>직위</th><th>성명</th><th>법인</th><th>부서</th><th>사내연락처</th><th>개인비상연락처</th><th>연락처</th></tr>");
+                    sb.Append("</thead>");
+                    sb.Append("<tbody>");
+                    foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0}</td>", row["Grade1"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["DisplayName"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["Corporation"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["GroupName"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["Telephone"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["Mobile"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["Telephone2"].ToString());
+                        sb.Append("</tr>");
+                    }
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                }
+                else
+                {
+                    sb.Append(cDel);
+                    sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                }
+            }
+            else
+            {
+                strReturn = svcRt.ResultMessage;
+            }
+            if (strReturn == "") strReturn = "OK" + sb.ToString();
+        }
+        catch (Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "GetReportSearch");
+            strReturn = (strReturn != "" ? "[" + strReturn + "] " : "") + ex.Message;
+        }
+        finally
+        {
+        }
+        return strReturn;
+    }
+}
+@if (ViewBag.Modal != null && ViewBag.Modal == "Y")
+{
+    @Html.Raw(GetReportSearch(ViewBag.JPost))
+}

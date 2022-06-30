@@ -59,7 +59,7 @@
                                 sb.AppendFormat("<td><input type=\"checkbox\" name=\"ckbMultiOption\" value=\"{0}\" /></td>", row["item1"].ToString());
                                 sb.AppendFormat("<td>{0}</td>", row["item2"].ToString());
                                 sb.AppendFormat("<td>{0}</td>", row["item1"].ToString());
-                                sb.AppendFormat("</tr>");
+                                sb.Append("</tr>");
                             }
                             if (postData["etc"].ToString() == "etc")
                             {
@@ -76,7 +76,7 @@
                                 sb.Append("<tr>");
                                 sb.AppendFormat("<td>{0}</td>", row["item2"].ToString());
                                 sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["item1"].ToString());
-                                sb.AppendFormat("</tr>");
+                                sb.Append("</tr>");
                             }
                             if (postData["etc"].ToString() == "etc")
                             {
