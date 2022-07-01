@@ -1026,22 +1026,39 @@ namespace ZumNet.Web.Bc
         public static bool WorkIPBand(string ip)
         {
             string sIP = ip != null && ip.Length > 0 ? ip : HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-            bool bValid = true;
+            ////bool bValid = true;
 
-            //허용IP : 10.212.134.1 - 10.212.134.250
-            //         "192.168" 대역대 중 아래
+            //////허용IP : 10.212.134.1 - 10.212.134.250
+            //////         "192.168" 대역대 중 아래
+            ////string[] vIP = sIP.Split('.');
+            ////string[] vAllowIP = { "4", "10", "20", "30", "50", "60", "70", "80", "200" };
+            //////bool bIp = false;
+
+            ////if (vIP[0] == "192" && vIP[1] == "168")
+            ////{
+            ////    if (Array.IndexOf(vAllowIP, vIP[2]) >= 0) bValid = true;
+            ////    else bValid = false;
+            ////}
+            ////else if (vIP[0] == "10" && vIP[1] == "212" && vIP[2] == "134")
+            ////{
+            ////    bValid = false;
+            ////}
+
+            //22-07-01 방식 변경 : 허용 IP 대역 체크
+            bool bValid = false;
+
+            //허용IP : "192.168" 대역대 중 아래
             string[] vIP = sIP.Split('.');
-            string[] vAllowIP = { "4", "10", "20", "30", "50", "60", "70", "80", "200" };
-            //bool bIp = false;
+            string[] vAllowIP = { "4", "10", "20", "30", "40", "50", "60", "70", "80" };
 
-            if (vIP[0] == "192" && vIP[1] == "168")
+            if (sIP == "::1")
+            {
+                bValid = true; //localhost
+            }
+            else if (vIP[0] == "192" && vIP[1] == "168")
             {
                 if (Array.IndexOf(vAllowIP, vIP[2]) >= 0) bValid = true;
                 else bValid = false;
-            }
-            else if (vIP[0] == "10" && vIP[1] == "212" && vIP[2] == "134")
-            {
-                bValid = false;
             }
 
             return bValid;
@@ -1871,7 +1888,7 @@ namespace ZumNet.Web.Bc
                 sPos = "500";
                 if (ctrl.ViewBag.JReq.ContainsKey("wn") && ctrl.ViewBag.JReq["wn"].ToString() != "" && ctrl.ViewBag.JReq["wn"].ToString() != "0")
                 {
-                    row = procDac.SelectWorkItemNotice(StringHelper.SafeLong(ctrl.ViewBag.JReq["wn"].ToString()()));
+                    row = procDac.SelectWorkItemNotice(StringHelper.SafeLong(ctrl.ViewBag.JReq["wn"].ToString()));
                     JObject jWn = JObject.Parse("{}");
                     jWn["wnid"] = ctrl.ViewBag.JReq["wn"].ToString();
                     jWn["wnstate"] = row["WnState"].ToString();

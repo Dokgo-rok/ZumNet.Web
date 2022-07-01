@@ -337,6 +337,50 @@
                     }
                     #endregion
                 }
+                else if (postData["k2"].ToString() == "SEARCH_ECNNO")
+                {
+                    #region [SEARCH_ECNNO]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("", 0, postData["k2"].ToString(), "", "", postData["search"].ToString(), "", "", "", "");
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                            sb.Append("<colgroup><col style=\"width:20%\" /><col style=\"width:20%\" /><col style=\"width:40%\" /><col style=\"width:20%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>ECN No.</th><th>문서명</th><th>제목</th><th>직성일자</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            //foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            for (int i = svcRt.ResultDataSet.Tables[0].Rows.Count - 1; i >= 0; i--)
+                            {
+                                DataRow row = svcRt.ResultDataSet.Tables[0].Rows[i];
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td class=\"\"><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["CERTINO"].ToString());
+                                sb.AppendFormat("<td class=\"\">{0}</td>", row["DocName"].ToString());
+                                sb.AppendFormat("<td class=\"\"><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" onclick=\"_zw.fn.openEAFormSimple('{0}')\">{1}</a></td>"
+                                            , row["MessageID"].ToString(), row["Subject"].ToString());
+                                sb.AppendFormat("<td class=\"\">{0}</td>", DateHelper.CheckDateTime(row["PublishDate"].ToString(), "yyyy-MM-dd HH:mm"));
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    }
+                    #endregion
+                }
                 else if (postData["k2"].ToString().IndexOf("ERP_") != -1)
                 {
                     #region ["ERP_" 시작]

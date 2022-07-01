@@ -1534,7 +1534,7 @@ $(function () {
                 qi = '{M:"read",mi:"' + vId[0] + '",oi:"' + vId[1] + '",wi:"' + (vId[2] && vId[2] != undefined ? vId[2] : '') + '",xf:"' + xfAlias + '"}';
             }
 
-            $(el).tooltip('hide');
+            $(el).tooltip('hide'); //alert(qi)
 
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, eaWndNm, 900, 600, "resize");

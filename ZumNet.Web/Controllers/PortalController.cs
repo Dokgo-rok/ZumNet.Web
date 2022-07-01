@@ -118,7 +118,7 @@ namespace ZumNet.Web.Controllers
         {
             string sIP = Request.ServerVariables["REMOTE_ADDR"];
             string sUA = CommonUtils.UserAgent(Request.ServerVariables["HTTP_USER_AGENT"]);
-            bool bWorkTimeCheck = true;
+            bool bWorkTimeCheck = false;
 
             try
             {

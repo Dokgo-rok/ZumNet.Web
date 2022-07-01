@@ -39,7 +39,7 @@
     <div id="__LeftMenu" class="sidenav-vertical z-lm">
         <ul class="sidenav-inner">
 
-            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "M")) //마킹권한
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M")) //마킹권한
             {
                 <li class="sidenav-item@(currentPage == "" || currentPage.ToLower().IndexOf(vBox[0, 0].ToLower()) != -1 ? " active" : "")">
                     <a href="@GetQueryString(vBox[0, 0], vBox[0, 1])" class="sidenav-link@(vBox[0, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[0, 1])">
@@ -48,7 +48,7 @@
                 </li>
             }
 
-            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W")) //작성권한
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W")) //작성권한
             {
                 <li class="sidenav-item@(currentPage.ToLower().IndexOf(vBox[1, 0].ToLower()) != -1 ? " active" : "")">
                     <a href="@GetQueryString(vBox[1, 0], vBox[1, 1])" class="sidenav-link@(vBox[1, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[1, 1])">
@@ -57,7 +57,7 @@
                 </li>
             }
   
-            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S")) //보안권한
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S")) //보안권한
             {
                 <li class="sidenav-item open">
                     <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fe-check-square sidenav-icon"></i><span>기준정보</span></a>

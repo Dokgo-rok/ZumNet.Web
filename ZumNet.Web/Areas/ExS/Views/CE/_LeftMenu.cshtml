@@ -39,7 +39,7 @@
     <div id="__LeftMenu" class="sidenav-vertical z-lm">
         <ul class="sidenav-inner">
 
-            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W")) //작성권한
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W")) //작성권한
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -60,7 +60,7 @@
                 }
             }
 
-            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "R")) //읽기권한
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R")) //읽기권한
             {
                 <li class="sidenav-item@(currentPage == "" || currentPage.ToLower() == vBox[3, 0].ToLower() ? " active" : "")">
                     <a href="@GetQueryString(vBox[3, 0], vBox[0, 1])" class="sidenav-link@(vBox[3, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[3, 1])">
@@ -74,7 +74,7 @@
                 </li>
             }
 
-            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "R")) //읽기권한
+            @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R")) //읽기권한
             {
                 <li class="sidenav-item open">
                     <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fe-check-square sidenav-icon"></i><span>기준정보</span></a>

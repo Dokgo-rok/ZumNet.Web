@@ -52,7 +52,8 @@ $(function () {
                 break;
 
             case "showHelp":
-                console.log(DEXT5UPLOAD.GetAllFileListForJson());
+                var url = '/Storage/' + _zw.V.companycode + '/Help/' + _zw.V.ft + '_help.html';
+                _zw.ut.openWnd(url, 'EAHelp', 700, 550, 'resize');
                 break;
 
             case "docProp":

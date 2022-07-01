@@ -27,7 +27,7 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
 			/* 화면 넓이, 에디터 높이, 양식명크기 */
-			.m {width:770px} .m .fm-editor {height:450px;min-height:450px;border:windowtext 1pt solid}
+			.m {width:770px} .m .fm-editor {height:350px;min-height:350px;border:windowtext 1pt solid}
 			.fh h1 {font-size:18.0pt;letter-spacing:2pt}
 
 			/* 결재칸 넓이 */
@@ -39,7 +39,7 @@
 			.m .ft-sub .f-option {width:49%}
 
 			/* 인쇄 설정 : 맨하단으로 */
-			@media print {.m .fm-editor {height:450px;min-height:450px}}
+			@media print {.m .fm-editor {height:350px;min-height:350px}}
 		</style>
       </head>
       <body>

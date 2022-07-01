@@ -96,7 +96,7 @@
         {
             sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-backward\"></i> {2}</a></li>", GetQueryString("", "StdExchange", "", "0"), "되돌아가기", Resources.Global.List);
 
-            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S"))
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S"))
             {
                 if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
                 {
@@ -125,7 +125,7 @@
         {
             sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-backward\"></i> {2}</a></li>", GetQueryString("", "StdPay", "", "0"), "되돌아가기", Resources.Global.List);
 
-            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S"))
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S"))
             {
                 if (ViewBag.Mode == "new" || ViewBag.Mode == "reuse" || ViewBag.Mode == "edit")
                 {
@@ -155,7 +155,7 @@
         {
             sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-backward\"></i> {2}</a></li>", GetQueryString("", "OutPay", "", "0"), "되돌아가기", Resources.Global.List);
 
-            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S"))
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S"))
             {
                 if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
                 {

@@ -44,15 +44,24 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             }
 
             rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
-            if (ViewBag.R.current["operator"].ToString() == "N" && (
-                    ViewBag.R.current["acl"].ToString() == ""
-                    || (formTable.ToLower() == "costlist" && !StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "M")) //마킹권한
-                    || (formTable.ToLower() == "stdtime" && !StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "W")) //쓰기권한
-                    || !StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S") //그외 페이지 보안권한
-                ))
+            //if (ViewBag.R.current["operator"].ToString() == "N" && (
+            //        ViewBag.R.current["acl"].ToString() == ""
+            //        || (formTable.ToLower() == "costlist" && !StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M")) //마킹권한
+            //        || (formTable.ToLower() == "stdtime" && !StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W")) //쓰기권한
+            //        || (formTable.ToLower() != "costlist" && formTable.ToLower() != "stdtime" && !StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S")) //그외 페이지 보안권한
+            //    ))
+            //{
+            //    return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            //}
+            bool bPer = true;
+            if (ViewBag.R.current["operator"].ToString() == "N")
             {
-                return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
+                if (ViewBag.R.current["acl"].ToString() == "") bPer = false;
+                else if (formTable.ToLower() == "costlist") { if (!StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M")) bPer = false; }//마킹권한
+                else if (formTable.ToLower() == "stdtime") { if (!StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W")) bPer = false; } //쓰기권한
+                else if (!StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S")) bPer = false; //그외 페이지 보안권한
+            } 
+            if (!bPer) return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
 
             ViewBag.R.lv["page"] = "1";
             ViewBag.R.lv["count"] = StringHelper.SafeString(Bc.CommonUtils.GetLvCookie("cost").ToString(), "20");
@@ -154,15 +163,24 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     if (rt != "") return "[" + sPos + "] " + rt;
 
                     sPos = "310";
-                    if (jPost["current"]["operator"].ToString() == "N" && (
-                            jPost["current"]["acl"].ToString() == ""
-                            || (formTable.ToLower() == "costlist" && !StringHelper.HasAcl(jPost["current"]["acl"].ToString().Substring(0, 6), "M")) //마킹권한
-                            || (formTable.ToLower() == "stdtime" && !StringHelper.HasAcl(jPost["current"]["acl"].ToString().Substring(0, 6), "W")) //쓰기권한
-                            || !StringHelper.HasAcl(jPost["corrent"]["acl"].ToString().Substring(0, 6), "S") //그외 페이지 보안권한
-                        ))
+                    //if (jPost["current"]["operator"].ToString() == "N" && (
+                    //        jPost["current"]["acl"].ToString() == ""
+                    //        || (formTable.ToLower() == "costlist" && !StringHelper.HasAcl(jPost["current"]["acl"].ToString(), "M")) //마킹권한
+                    //        || (formTable.ToLower() == "stdtime" && !StringHelper.HasAcl(jPost["current"]["acl"].ToString(), "W")) //쓰기권한
+                    //        || (formTable.ToLower() != "costlist" && formTable.ToLower() != "stdtime" && !StringHelper.HasAcl(jPost["corrent"]["acl"].ToString(), "S")) //그외 페이지 보안권한
+                    //    ))
+                    //{
+                    //    return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                    //}
+                    bool bPer = true;
+                    if (jPost["current"]["operator"].ToString() == "N")
                     {
-                        return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                        if (jPost["current"]["acl"].ToString() == "") bPer = false;
+                        else if (formTable.ToLower() == "costlist") { if (!StringHelper.HasAcl(jPost["current"]["acl"].ToString(), "M")) bPer = false; } //마킹권한
+                        else if (formTable.ToLower() == "stdtime") { if (!StringHelper.HasAcl(jPost["current"]["acl"].ToString(), "W")) bPer = false; } //쓰기권한
+                        else if (!StringHelper.HasAcl(jPost["corrent"]["acl"].ToString(), "S")) bPer = false; //그외 페이지 보안권한
                     }
+                    if (!bPer) return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
 
                     sPos = "400";
                     ZumNet.Framework.Core.ServiceResult svcRt = null;

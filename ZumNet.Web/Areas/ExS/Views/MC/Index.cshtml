@@ -82,7 +82,7 @@
 
             sb.AppendFormat("<li class=\"nav-item\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-backward\"></i> {2}</a></li>", GetQueryString("", "StdPay", "", ""), "되돌아가기", "목록");
 
-            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "S"))
+            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S"))
             {
                 if (ViewBag.Mode == "new" || ViewBag.Mode == "reuse" || ViewBag.Mode == "edit")
                 {

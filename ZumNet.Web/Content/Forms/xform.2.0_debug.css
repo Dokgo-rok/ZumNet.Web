@@ -309,7 +309,8 @@ body {overflow: hidden}
 }
 .m .txaRead {
 	width: 100%;
-	text-align: left
+	text-align: left;
+	height: auto!important;
 }
 .m .ddlSelect {
 	width: 100%

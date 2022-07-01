@@ -26,21 +26,21 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:714px} .m .fm-editor {height:450px;border:windowtext 1pt solid;border-top:0}
-          .fh h1 {font-size:20.0pt;letter-spacing:1pt}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:720px} .m .fm-editor {height:450px;min-height:450px;border:windowtext 1pt solid;border-top:0}
+			.fh h1 {font-size:20.0pt;letter-spacing:1pt}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:72px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:8%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
-          .m .ft-sub .f-option {width:50%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:8%} .m .ft .f-lbl2 {width:?}
+			.m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
+			.m .ft-sub .f-option {width:50%}
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:450px}}
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:450px;min-height:450px}}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -62,7 +62,7 @@
                     <!--<xsl:value-of select="//docinfo/docname" />-->
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <select id="__mainfield" name="FMCLS" style="font-size:16pt;font-weight:bold">
+                        <select id="__mainfield" name="FMCLS" class="form-control d-inline-block" style="width: 150px;font-size:16pt;font-weight:bold">
                           <xsl:choose>
                             <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/FMCLS),'')">
                               <option value="" selected="selected">선택</option>
@@ -182,10 +182,13 @@
                 <td colspan="5" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="CORPORATION" class="txtText_u" readonly="readonly"  style="width:95%" value="{//forminfo/maintable/CORPORATION}" />
-                      <button onclick="parent.fnView('external.prodlawname',200,204,400,140,'','CORPORATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="CORPORATION" class="txtText_u" readonly="readonly"  style="width:96%" value="{//forminfo/maintable/CORPORATION}" />
+                      <!--<button onclick="parent.fnView('external.prodlawname',200,204,400,140,'','CORPORATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="해당법인" onclick="_zw.formEx.optionWnd('external.prodlawname',200,204,400,140,'','CORPORATION');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CORPORATION))" />
@@ -198,10 +201,13 @@
                 <td colspan="2" style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="MODELNAME" class="txtText" style="width:95%" value="{//forminfo/maintable/MODELNAME}" />
-                      <button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="MODELNAME" class="txtText" style="width:91%; margin-right: 2px" value="{//forminfo/maintable/MODELNAME}" />
+                      <!--<button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="MODEL" onclick="_zw.formEx.externalWnd('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
@@ -231,9 +237,12 @@
                     </xsl:otherwise>
                   </xsl:choose>
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <button onclick="parent.fnOrgmap('ur','N','NEXTWORKER');" onfocus="this.blur()" class="btn_bg" style="">
+                    <!--<button onclick="parent.fnOrgmap('ur','N','NEXTWORKER');" onfocus="this.blur()" class="btn_bg" style="">
                       <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}/EA/Images/ico_28.gif" />
-                    </button>
+                    </button>-->
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n','NEXTWORKER');">
+						  <i class="fas fa-angle-down"></i>
+					  </button>
                   </xsl:if>
                 </td>
               </tr>
@@ -260,7 +269,7 @@
                 <td colspan="2" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PARTNUM" style="width:90%" >
+                      <input type="text" id="__mainfield" name="PARTNUM" style="width:91%; margin-right: 2px" >
                         <xsl:attribute name="class">txtText</xsl:attribute>
                         <!--<xsl:attribute name="class">txtText_u</xsl:attribute>
                         <xsl:attribute name="readonly">readonly</xsl:attribute>-->
@@ -268,9 +277,12 @@
                           <xsl:value-of select="//forminfo/maintable/PARTNUM" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnExternal('erp.items',240,40,120,70,'','PARTNUM','PARTNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','PARTNUM','PARTNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="MODEL" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','PARTNUM','PARTNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PARTNUM))" />
@@ -283,10 +295,13 @@
                 <td colspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="ECNNUM" class="txtText_u" readonly="readonly"  style="width:91%"  value="{//forminfo/maintable/ECNNUM}" />
-                      <button onclick="parent.fnExternal('report.SEARCH_ECNNO',240,40,130,70,'','ECNNUM');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="ECNNUM" class="txtText_u" readonly="readonly"  style="width:92%"  value="{//forminfo/maintable/ECNNUM}" />
+                      <!--<button onclick="parent.fnExternal('report.SEARCH_ECNNO',240,40,130,70,'','ECNNUM');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="요청서NO" onclick="_zw.formEx.externalWnd('report.SEARCH_ECNNO',240,40,130,70,'','ECNNUM');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ECNNUM))" />
@@ -316,7 +331,7 @@
                 <td style="text-align:center">
                   <input type="checkbox" id="ckb11" name="ckbCHECKUSE" value="사용가능">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKUSE', this, 'CHECKUSE')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKUSE', this, 'CHECKUSE')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKUSE),'사용가능')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -325,7 +340,7 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb11">사용가능</label>
+                  <label class="ml-1" for="ckb11">사용가능</label>
                 </td>
                 <td colspan="4" rowspan="2" style="border-right:0">
                   <xsl:choose>
@@ -351,7 +366,7 @@
                 <td style="text-align:center">
                   <input type="checkbox" id="ckb12" name="ckbCHECKUSE" value="사용불가">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKUSE', this, 'CHECKUSE')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKUSE', this, 'CHECKUSE')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKUSE),'사용불가')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -360,7 +375,7 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb12">사용불가</label>
+					<label class="ml-1" for="ckb12">사용불가</label>
                 </td>
               </tr>
               <tr>
@@ -449,7 +464,7 @@
                 <td style="text-align:center">
                   <input type="checkbox" id="ckb13" name="ckbCHECKLOT" value="잠 정">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKLOT', this, 'CHECKLOT')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKLOT', this, 'CHECKLOT')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKLOT),'잠 정')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -458,22 +473,19 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb13">잠&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;정</label>
+					<label class="ml-1" for="ckb13">잠&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;정</label>
                 </td>
                 <td colspan="4" rowspan="2" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="APPLYLOT" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 500)</xsl:attribute>
+                      <textarea id="__mainfield" name="APPLYLOT" style="height:40px" class="txaText bootstrap-maxlength" maxlength="500">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/APPLYLOT" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="APPLYLOT" style="height:40px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/APPLYLOT))" />
                       </div>
                     </xsl:otherwise>
@@ -484,7 +496,7 @@
                 <td style="text-align:center">
                   <input type="checkbox" id="ckb14" name="ckbCHECKLOT" value="지 속">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKLOT', this, 'CHECKLOT')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKLOT', this, 'CHECKLOT')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKLOT),'지 속')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -493,7 +505,7 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb14">지&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;속</label>
+					<label class="ml-1" for="ckb14">지&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;속</label>
                 </td>
               </tr>
               <tr>
@@ -514,7 +526,7 @@
                 <td colspan="5" style="text-align:center;border-right:0">
                   <input type="checkbox" id="ckb15" name="ckbCHANGEDETAIL1" value="재질">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHANGEDETAIL1', this, 'CHANGEDETAIL1')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEDETAIL1', this, 'CHANGEDETAIL1')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEDETAIL1),'재질')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -523,10 +535,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb15">재질</label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="ml-1" for="ckb15">재질</label>&nbsp;&nbsp;&nbsp;&nbsp;
                   <input type="checkbox" id="ckb16" name="ckbCHANGEDETAIL2" value="표면처리">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHANGEDETAIL2', this, 'CHANGEDETAIL2')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEDETAIL2', this, 'CHANGEDETAIL2')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEDETAIL2),'표면처리')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -535,10 +547,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb16">표면처리</label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="ml-1" for="ckb16">표면처리</label>&nbsp;&nbsp;&nbsp;&nbsp;
                   <input type="checkbox" id="ckb17" name="ckbCHANGEDETAIL3" value="색상">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHANGEDETAIL3', this, 'CHANGEDETAIL3')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEDETAIL3', this, 'CHANGEDETAIL3')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEDETAIL3),'색상')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -547,10 +559,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb17">색상</label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="ml-1" for="ckb17">색상</label>&nbsp;&nbsp;&nbsp;&nbsp;
                   <input type="checkbox" id="ckb18" name="ckbCHANGEDETAIL4" value="형상">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHANGEDETAIL4', this, 'CHANGEDETAIL4')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEDETAIL4', this, 'CHANGEDETAIL4')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEDETAIL4),'형상')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -559,10 +571,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb18">형상</label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="ml-1" for="ckb18">형상</label>&nbsp;&nbsp;&nbsp;&nbsp;
                   <input type="checkbox" id="ckb19" name="ckbCHANGEDETAIL5" value="치수">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHANGEDETAIL5', this, 'CHANGEDETAIL5')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEDETAIL5', this, 'CHANGEDETAIL5')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEDETAIL5),'치수')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -571,10 +583,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb19">치수</label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="ml-1" for="ckb19">치수</label>&nbsp;&nbsp;&nbsp;&nbsp;
                   <input type="checkbox" id="ckb20" name="ckbCHANGEDETAIL6" value="제조조건">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHANGEDETAIL6', this, 'CHANGEDETAIL6')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEDETAIL6', this, 'CHANGEDETAIL6')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEDETAIL6),'제조조건')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -583,10 +595,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb20">제조조건</label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="ml-1" for="ckb20">제조조건</label>&nbsp;&nbsp;&nbsp;&nbsp;
                   <input type="checkbox" id="ckb21" name="ckbCHANGEDETAIL7" value="기타">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHANGEDETAIL7', this, 'CHANGEDETAIL7')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEDETAIL7', this, 'CHANGEDETAIL7')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEDETAIL7),'기타')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -595,7 +607,7 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb21">기타</label>
+					<label class="ml-1" for="ckb21">기타</label>
                 </td>
               </tr>
               <tr>
@@ -614,6 +626,9 @@
             <input type="hidden" id="__mainfield" name="CHANGEDETAIL7" value="{//forminfo/maintable/CHANGEDETAIL7}" />
           </div>
           <div class="fm-editor">
+			  <xsl:if test="$mode!='new' and $mode!='edit'">
+				  <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+			  </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <div name="WEBEDITOR" id="__mainfield" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">
@@ -627,11 +642,7 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no">
-                  <xsl:attribute name="src">
-                    /<xsl:value-of select="$root" />/EA/External/Editor_tagfree.aspx
-                  </xsl:attribute>
-                </iframe>
+				  <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>
@@ -647,10 +658,10 @@
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="f-lbl2" style="width:100px">가격변동</td>
-                <td>                  
-                    <input type="checkbox" id="ckb21" name="ckbCHECKYES1" value="있음">
+                <td class="pl-2">                  
+                    <input type="checkbox" id="ckb221" name="ckbCHECKYES1" value="있음">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES1', this, 'CHECKYES1')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES1', this, 'CHECKYES1')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES1),'있음')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -659,10 +670,10 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                    <label for="ckb21">있음</label>                  
+					<label class="ml-1 mr-2" for="ckb221">있음</label>                  
                     <input type="checkbox" id="ckb22" name="ckbCHECKYES1" value="없음">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES1', this, 'CHECKYES1')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES1', this, 'CHECKYES1')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES1),'없음')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -671,7 +682,7 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                    <label for="ckb22">없음</label>                  
+					<label class="ml-1" for="ckb22">없음</label>                  
                   <input type="hidden" id="__mainfield" name="CHECKYES1">
                     <xsl:attribute name="value">
                       <xsl:value-of select="//forminfo/maintable/CHECKYES1"></xsl:value-of>
@@ -679,10 +690,10 @@
                   </input>
                 </td>
                 <td class="f-lbl2" style="width:100px">금형변경</td>
-                <td>
+                <td class="pl-2">
                     <input type="checkbox" id="ckb23" name="ckbCHECKYES2" value="있음">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES2', this, 'CHECKYES2')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES2', this, 'CHECKYES2')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES2),'있음')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -691,10 +702,10 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                    <label for="ckb23">있음</label>                  
+					<label class="ml-1 mr-2" for="ckb23">있음</label>                  
                     <input type="checkbox" id="ckb24" name="ckbCHECKYES2" value="없음">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES2', this, 'CHECKYES2')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES2', this, 'CHECKYES2')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES2),'없음')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -703,7 +714,7 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                    <label for="ckb24">없음</label>                  
+					<label class="ml-1" for="ckb24">없음</label>                  
                   <input type="hidden" id="__mainfield" name="CHECKYES2">
                     <xsl:attribute name="value">
                       <xsl:value-of select="//forminfo/maintable/CHECKYES2"></xsl:value-of>
@@ -711,10 +722,10 @@
                   </input>
                 </td>
                 <td class="f-lbl2" style="width:100px">설계문서수정</td>
-                <td style="border-right:0">                  
+                <td class="pl-2" style="border-right:0">                  
                     <input type="checkbox" id="ckb25" name="ckbCHECKYES3" value="완료">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES3', this, 'CHECKYES3')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES3', this, 'CHECKYES3')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES3 ),'완료')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -723,10 +734,10 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                    <label for="ckb25">완료</label>                                    
+					<label class="ml-1 mr-2" for="ckb25">완료</label>                                    
                     <input type="checkbox" id="ckb26" name="ckbCHECKYES3" value="미완료">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES3', this, 'CHECKYES3')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES3', this, 'CHECKYES3')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES3),'미완료')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -735,7 +746,7 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                    <label for="ckb26">미완료</label>
+					<label class="ml-1" for="ckb26">미완료</label>
                     <input type="hidden" id="__mainfield" name="CHECKYES3">
                       <xsl:attribute name="value">
                         <xsl:value-of select="//forminfo/maintable/CHECKYES3"></xsl:value-of>
@@ -745,10 +756,10 @@
               </tr>
               <tr>
                 <td class="f-lbl2" >작업표준수정</td>
-                <td >
+                <td class="pl-2">
                   <input type="checkbox" id="ckb27" name="ckbCHECKYES4" value="완료">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES4', this, 'CHECKYES4')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES4', this, 'CHECKYES4')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES4),'완료')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -757,10 +768,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb27">완료</label>
+					<label class="ml-1 mr-2" for="ckb27">완료</label>
                   <input type="checkbox" id="ckb28" name="ckbCHECKYES4" value="미완료">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES4', this, 'CHECKYES4')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES4', this, 'CHECKYES4')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES4),'미완료')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -769,7 +780,7 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb28">미완료</label>
+					<label class="ml-1" for="ckb28">미완료</label>
                   <input type="hidden" id="__mainfield" name="CHECKYES4">
                     <xsl:attribute name="value">
                       <xsl:value-of select="//forminfo/maintable/CHECKYES4"></xsl:value-of>
@@ -777,10 +788,10 @@
                   </input>
                 </td>              
                 <td class="f-lbl2">검사규격수정</td>
-                <td >
+                <td class="pl-2">
                   <input type="checkbox" id="ckb29" name="ckbCHECKYES5" value="완료">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES5', this, 'CHECKYES5')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES5', this, 'CHECKYES5')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES5),'완료')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -789,10 +800,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb29">완료</label>
+					<label class="ml-1 mr-2" for="ckb29">완료</label>
                   <input type="checkbox" id="ckb30" name="ckbCHECKYES5" value="미완료">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES5', this, 'CHECKYES5')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES5', this, 'CHECKYES5')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES5),'미완료')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -801,7 +812,7 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb30">미완료</label>
+					<label class="ml-1" for="ckb30">미완료</label>
                   <input type="hidden" id="__mainfield" name="CHECKYES5">
                     <xsl:attribute name="value">
                       <xsl:value-of select="//forminfo/maintable/CHECKYES5"></xsl:value-of>
@@ -809,10 +820,10 @@
                   </input>
                 </td>
                 <td class="f-lbl2">설변문제점</td>
-                <td style="border-right:0">
+                <td class="pl-2" style="border-right:0">
                   <input type="checkbox" id="ckb31" name="ckbCHECKYES6" value="있음">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES6', this, 'CHECKYES6')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES6', this, 'CHECKYES6')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES6),'있음')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -821,10 +832,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb31">있음</label>
+                  <label class="ml-1 mr-2" for="ckb31">있음</label>
                   <input type="checkbox" id="ckb32" name="ckbCHECKYES6" value="없음">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES2', this, 'CHECKYES6')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES2', this, 'CHECKYES6')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES6),'없음')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -833,7 +844,7 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb32">없음</label>
+					<label class="ml-1" for="ckb32">없음</label>
                   <input type="hidden" id="__mainfield" name="CHECKYES6">
                     <xsl:attribute name="value">
                       <xsl:value-of select="//forminfo/maintable/CHECKYES6"></xsl:value-of>
@@ -843,10 +854,10 @@
               </tr>
               <tr>
                 <td style="border-bottom:0" class="f-lbl2" >마스터변경</td>
-                <td style="border-bottom:0">
+                <td class="pl-2" style="border-bottom:0">
                   <input type="checkbox" id="ckb33" name="ckbCHECKYES7" value="있음">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES7', this, 'CHECKYES7')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES7', this, 'CHECKYES7')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES7),'있음')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -855,10 +866,10 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb33">있음</label>
+					<label class="ml-1 mr-2" for="ckb33">있음</label>
                   <input type="checkbox" id="ckb34" name="ckbCHECKYES7" value="없음">
                     <xsl:if test="$mode='new' or $mode='edit'">
-                      <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKYES7', this, 'CHECKYES7')</xsl:attribute>
+                      <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKYES7', this, 'CHECKYES7')</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKYES7),'없음')">
                       <xsl:attribute name="checked">true</xsl:attribute>
@@ -867,7 +878,7 @@
                       <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                   </input>
-                  <label for="ckb34">없음</label>
+					<label class="ml-1" for="ckb34">없음</label>
                   <input type="hidden" id="__mainfield" name="CHECKYES7">
                     <xsl:attribute name="value">
                       <xsl:value-of select="//forminfo/maintable/CHECKYES7"></xsl:value-of>
@@ -897,17 +908,14 @@
           <div class="ft">
             <xsl:choose>
               <xsl:when test="$mode='new' or $mode='edit'">
-                <textarea id="__mainfield" name="ETC" style="height:80px">
-                  <xsl:attribute name="class">txaText</xsl:attribute>
-                  <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                <textarea id="__mainfield" name="ETC" style="height:80px" class="txaText bootstrap-maxlength" maxlength="1000">
                   <xsl:if test="$mode='edit'">
                     <xsl:value-of select="//forminfo/maintable/ETC" />
                   </xsl:if>
                 </textarea>
               </xsl:when>
               <xsl:otherwise>
-                <div id="__mainfield" name="ETC" style="height:80px">
-                  <xsl:attribute name="class">txaRead</xsl:attribute>
+                <div class="txaRead" style="height:80px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ETC))" />
                 </div>
               </xsl:otherwise>
@@ -917,7 +925,7 @@
           <div class="ff" />
           <div class="ff" />
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 

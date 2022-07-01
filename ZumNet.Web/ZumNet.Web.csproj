@@ -2096,6 +2096,8 @@
     <Content Include="Scripts\EA\Forms\FORM_MASTERFILECHANGEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_MINUTES.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPARTSREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTPLAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTREVIEW.js" />
     <Content Include="Scripts\EA\Forms\FORM_NIGHTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
@@ -2108,6 +2110,7 @@
     <Content Include="Scripts\EA\Forms\FORM_SAMPLEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUESTWAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMADDREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMDELETE.js" />

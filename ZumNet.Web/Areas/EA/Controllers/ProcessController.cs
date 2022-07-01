@@ -1314,10 +1314,12 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         //{
                         strReturn = "[510]";
                         //ResponseText("formid->" + xfInst.FormID); return;
-                        xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
+                        //xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
                         //}
                         //ResponseText("formid=>" + xfInst.FormID); return;
                     }
+                    strReturn = "[520]"; // 22-0701 서비스 모드 상관 없이 생성
+                    xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
                 }
                 strReturn = "외부키 처리";
                 if (curWI.ActRole == "__ri") xfInst.ExternalKey2 = jDoc["key2"].ToString();
@@ -1688,11 +1690,13 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 using (EApprovalDac eaDac = new EApprovalDac())
                 {
                     xfInst = eaDac.SelectXFMainEntity(this._xfAlias, Convert.ToInt32(this._msgID));
-                    if (!bSvcMode)
-                    {
-                        strReturn = "[510]";
-                        xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
-                    }
+                    //if (!bSvcMode)
+                    //{
+                    //    strReturn = "[510]";
+                    //    xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
+                    //}
+                    strReturn = "[520]"; // 22-0701 서비스 모드 상관 없이 생성
+                    xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
                 }
 
                 strReturn = "현 결재자 정보 설정";
@@ -2128,11 +2132,13 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 using (EApprovalDac eaDac = new EApprovalDac())
                 {
                     xfInst = eaDac.SelectXFMainEntity(this._xfAlias, pi.MessageID);
-                    if (!bSvcMode)
-                    {
-                        strReturn = "[510]";
-                        xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
-                    }
+                    //if (!bSvcMode)
+                    //{
+                    //    strReturn = "[510]";
+                    //    xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
+                    //}
+                    strReturn = "[520]"; // 22-0701 서비스 모드 상관 없이 생성
+                    xfDef = eaDac.GetEAFormData(Convert.ToInt32(Session["DNID"]), xfInst.FormID);
                 }
 
                 strReturn = "[600]";

@@ -14,7 +14,7 @@
 
     SqlParameter[] parameters = new SqlParameter[]
     {
-        ParamSet.Add4Sql("@urid", SqlDbType.Int, 4, 101374)
+        ParamSet.Add4Sql("@urid", SqlDbType.Int, 4, Convert.ToInt32(Session["URID"]))
     };
 
     ParamData pData = new ParamData(strQuery, "text", parameters);
@@ -25,18 +25,25 @@
     }
 
     string stgrPwd = Request.ServerVariables["AUTH_PASSWORD"];
+    //Response.Write(ZumNet.Framework.Configuration.Config.Read("erpUrl"));
 }
 
 <div style="margin-top: 100px; text-align: center; font-weight: bold">
     <h4>잠시만 기다려 주십시오!</h4>
 </div>
 
-<form id="ssoForm" method="post" action="http://erpap.cresyn.com:8000/OA_HTML/Ssl_Login.jsp">
+<form id="ssoForm" name="ssoForm" method="post" action="@ZumNet.Framework.Configuration.Config.Read("erpUrl")OA_HTML/Ssl_Login.jsp">
     <input type="hidden" name="username" value="@strReturn" />
     <input type="hidden" name="password" value="@stgrPwd" />
     <input type="hidden" name="langCode" value="US" />
 </form>
 
 @section Scripts {
-    <script type="text/javascript">$(function () { $('ssoForm').submit(); });</script>
+    <script type="text/javascript">
+        //$(function () { $('ssoForm').submit(); });
+        
+        (function () {
+            ssoForm.submit();
+        }());
+    </script>
 }

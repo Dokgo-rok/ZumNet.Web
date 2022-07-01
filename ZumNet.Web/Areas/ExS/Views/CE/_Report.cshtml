@@ -221,13 +221,13 @@
 
                                 if (dr["XCLS"].ToString() == "ALL")
                                 {
-                                    if (dr["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "M"))) strValue = String.Format("<input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" style=\"\" />", iSeq.ToString(), dr["CEID"].ToString(), "reqApproval");
+                                    if (dr["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M"))) strValue = String.Format("<input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" style=\"\" />", iSeq.ToString(), dr["CEID"].ToString(), "reqApproval");
                                     else if (dr["STATE"].ToString() == "8") strValue = "<span class=\"text-danger\"><i class=\"glyphicon glyphicon-repeat\" style=\"top: 3px\"></i></span>";
                                     else strValue = "<span class=\"text-danger\"><i class=\"fe-send\" style=\"top: 3px\"></i></span>";
                                 }
                                 else
                                 {
-                                    if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "M")) strValue = String.Format("<input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" style=\"\" />", iSeq.ToString(), dr["CEID"].ToString(), "reportGrid");
+                                    if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M")) strValue = String.Format("<input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" style=\"\" />", iSeq.ToString(), dr["CEID"].ToString(), "reportGrid");
                                     else strValue = "";
                                 }
                             }
