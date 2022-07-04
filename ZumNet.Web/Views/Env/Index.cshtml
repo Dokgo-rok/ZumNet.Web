@@ -1,0 +1,55 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = ViewBag.R["ttl"] != null ? ViewBag.R["ttl"] : Resources.Global.MyInfo;
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+    if (ViewBag.R["ft"] == null || ViewBag.R["ft"].ToString() == "")
+    {
+        ViewBag.R["ft"] = "PersonInfo";
+    }
+    string sPatialView = "_" + ViewBag.R.ft.ToString();
+}
+@functions{
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+    @Styles.Render("~/Content/env.css")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+    @Scripts.Render("~/Scripts/Env/env.js")
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+    <!-- sidebox -->
+    @Html.Partial("_LeftMenu")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100 bg-white">
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="flex-grow-1 position-relative">
+                @Html.Partial(sPatialView)
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+</div>
+

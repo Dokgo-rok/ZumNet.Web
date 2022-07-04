@@ -367,7 +367,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','UNITNAME3','ITEMNAME4');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="使用 UNIT" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','UNITNAME3','ITEMNAME4');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="적용유니트" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','UNITNAME3','ITEMNAME4');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>

@@ -1,0 +1,213 @@
+﻿@using System;
+@using System.Data;
+@using System.Globalization;
+@using System.Text;
+@using System.Threading;
+@using ZumNet.Framework.Util;
+@{
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+
+}
+@functions {
+    private string GetOrgUserImage(string logonId)
+    {
+        string imagepath = "/Storage/cresyn/PersonPhoto/" + logonId + ".jpg";
+        string imageOpacity = "";
+
+        if (!File.Exists(Server.MapPath(imagepath)))
+        {
+            imagepath = "/images/plugins/user.png";
+            imageOpacity = " opacity-50";
+        }
+        return String.Format("<img src=\"{0}\" alt=\"User Image\" class=\"contact-content-img{1}\">", imagepath, imageOpacity);
+    }
+    private string CultureDate(string d)
+    {
+        if (d == null || d == "") return "";
+        string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+        if (sCurrentLocale.Substring(0, 2).ToLower() != "ko" && sCurrentLocale.Substring(0, 2).ToLower() != "zh" && sCurrentLocale.Substring(0, 2).ToLower() != "ja") sCurrentLocale = "en-US";
+        DateTime dt = Convert.ToDateTime(d);
+        return dt.ToString("D", CultureInfo.CreateSpecificCulture(sCurrentLocale));
+    }
+    private string RenderData()
+    {
+        DataRow row = null;
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+
+        using (ZumNet.BSL.ServiceBiz.OfficePortalBiz opBiz = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+        {
+            svcRt = opBiz.GetUserPersonalInfo(Convert.ToInt32(Session["URID"]));
+        }
+        if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0) row = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+
+        StringBuilder sb = new StringBuilder();
+        //기본정보
+        sb.Append("<div class=\"col-12 col-sm-6 px-0\">");
+        sb.Append("<div class=\"card border-0\">");
+
+        sb.Append("<div class=\"card-header with-elements px-3\">");
+        sb.AppendFormat("<div class=\"card-header-title\"><i class=\"fas fa-chevron-circle-right mr-1\"></i>{0}</div>", "기본 정보");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"card-body p-3\">");
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">메일</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control bg-white border-0\" readonly data-for=\"{0}\" value=\"{1}\" /></div>", "MainMail", FieldValue(row, "MainMail"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">영문명</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "EnName", FieldValue(row, "EnName"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">한자</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "ChName", FieldValue(row, "ChName"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">생년월일</label>");
+        sb.Append("<div class=\"col-md-9 d-flex align-items-center\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" data-for=\"{0}\" value=\"{1}\" />", "BirthDay", FieldValue(row, "BirthDay"));
+        sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
+        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", FieldValue(row, "BirthType") == "1" ? "" : "  checked");
+        sb.Append("</label>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">결혼일자</label>");
+        sb.Append("<div class=\"col-md-9 d-flex align-items-center\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" data-for=\"{0}\" value=\"{1}\" />", "MarriedDate", FieldValue(row, "MarriedDate"));
+        //sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
+        //sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", FieldValue(row, "BirthType") == "1" ? "" : "  checked");
+        //sb.Append("</label>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">핸드폰</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "Mobile", FieldValue(row, "Mobile"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">※입력규칙</label>");
+        sb.Append("<code for=\"\" class=\"col-md-9\">1) 해외법인 핸드폰 입력시 국가번호 입력<br />2) 번호 자리수 3자리,4자리, 4자리 단위로\"-\"표시 구분 ex) +82 186-3456-8973</code>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">사내전화</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "DirectPhone", FieldValue(row, "DirectPhone"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">비상연락처</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "InterPhone", FieldValue(row, "InterPhone"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">닉네임</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "NickName", FieldValue(row, "NickName"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">FAX</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "FAX", FieldValue(row, "FAX"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">우편번호</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control w-50\" data-for=\"{0}\" value=\"{1}\" /></div>", "ZipCode1", FieldValue(row, "ZipCode1"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">주소</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "Address1", FieldValue(row, "Address1"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">상세주소</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "DetailAddress1", FieldValue(row, "DetailAddress1"));
+        sb.Append("</div>");
+
+        sb.Append("</div>"); //card-body
+        sb.Append("</div>"); //card
+        sb.Append("</div>");
+
+        //업무정보
+        sb.Append("<div class=\"col-12 col-sm-6 px-0\">");
+        sb.Append("<div class=\"card border-0\">");
+
+        sb.Append("<div class=\"card-header with-elements px-3\">");
+        sb.AppendFormat("<div class=\"card-header-title\"><i class=\"fas fa-chevron-circle-right mr-1\"></i>{0}</div>", "업무 정보");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"card-body p-3\">");
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">부서명</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control bg-white border-0\" readonly data-for=\"{0}\" value=\"{1} (2)\" /></div>", "TeamName", FieldValue(row, "TeamName"), FieldValue(row, "TeamNum"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">직위</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control bg-white border-0\" readonly data-for=\"{0}\" value=\"{1}\" /></div>", "Position", FieldValue(row, "Position"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">직책</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control bg-white border-0\" readonly data-for=\"{0}\" value=\"{1}\" /></div>", "PositionNum", FieldValue(row, "PositionNum"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">담당업무</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "BusinessMain", FieldValue(row, "BusinessMain"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">소개글</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><textarea class=\"form-control\" row=\"3\" data-for=\"{0}\" style=\"height: 100px\">{1}</textarea></div>", "Description", FieldValue(row, "Description"));
+        sb.Append("</div>");
+
+        sb.Append("</div>"); //card-body
+        sb.Append("</div>"); //card
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+
+    private string FieldValue(DataRow row, string fieldName)
+    {
+        return row != null && row[fieldName] != null ? row[fieldName].ToString() : "";
+    }
+}
+<div class="container-p-x pt-3">
+    <div class="d-flex p-3 bg-light border wd-99 wd-md-99 wd-lg-50 wd-xl-50">
+        <div class="">
+            @Html.Raw(GetOrgUserImage(Session["LogonID"].ToString()))
+        </div>
+        <div class="media-body ml-4 fs-14 font-weight-bold">
+            <div class="row my-2">
+                <div class="col-4 opacity-75">@Resources.Global.Name</div>
+                <div class="col-8">@Session["URName"]</div>
+            </div>
+            <div class="row my-2">
+                <div class="col-4 opacity-75">계정</div>
+                <div class="col-8">@Session["LogonID"]</div>
+            </div>
+            <div class="row my-2">
+                <div class="col-4 opacity-75">사번</div>
+                <div class="col-8">@Session["EmpID"]</div>
+            </div>
+            <div class="row my-2">
+                <div class="col-4 opacity-75">입사일자</div>
+                @*<div class="col-8">@DateHelper.CheckDateTime(Session["InDate"].ToString(), "yyyy년 M월 d일", "")</div>*@
+                <div class="col-8">@CultureDate(Session["InDate"].ToString())</div>
+            </div>
+        </div>
+    </div>
+    <div class="row mx-0 mt-2">
+        @Html.Raw(RenderData())
+    </div>
+</div>

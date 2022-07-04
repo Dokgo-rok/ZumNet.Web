@@ -78,6 +78,37 @@
                 c2.prop('readonly', false); c3.prop('readonly', false);
                 _zw.fn.input(c2[0]); _zw.fn.input(c3[0]);
             }
+        },
+        "optionWnd": function (pos, w, h, m, n, etc, x) {
+            var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(arguments)
+            var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]); //console.log(param);
+            var m = '', v1 = '', v2 = '', v3 = '';
+            if (vPos[0] == 'report') m = 'getreportsearch';
+            else m = 'getcodedescription';
+
+            if (vPos[1] == "REGISTER_LEAVE") v1 = _zw.V.current.urid;
+
+            //data body 조건 : N(modal-body 없음), F(footer 포함)
+            $.ajax({
+                type: "POST",
+                url: "/EA/Common",
+                data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
+                success: function (res) {
+                    //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
+                    if (res.substr(0, 2) == 'OK') {
+                        //var p = $('#popBlank');
+                        //p.html(res.substr(2)).find('.modal-title').html(el.attr('title'));
+                        //p.find(".modal-dialog").css("max-width", "30rem");
+
+                        //p.on('hidden.bs.modal', function () { p.html(''); });
+                        //p.modal();
+                        //alert(res.substr(2))
+                        var j = { "title": el.attr('title'),"close": true, "width": 500, "height": 64, "content": res.substr(2) };
+                        var pop = _zw.ut.popup(el, j);
+
+                    } else bootbox.alert(res);
+                }
+            });
         }
     }
 });

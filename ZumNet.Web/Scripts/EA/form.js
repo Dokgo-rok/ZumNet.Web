@@ -11,7 +11,7 @@ $(function () {
             data: '{xf:"' + _zw.V.xfalias + '",mi:"' + _zw.V.appid + '",actor:"' + _zw.V.current["urid"] + '",fdid:"' + _zw.V.fdid + '",wi:"' + _zw.V.wid + '",wn:"' + _zw.V.prevwork + '"}',
             success: function (res) {
                 if (res != "OK") bootbox.alert(res);
-                //else _zw.fn.reloadList();
+                else _zw.fn.reloadList();
             },
             beforeSend: function () {//pace.js 충돌
             }
@@ -288,7 +288,7 @@ $(function () {
 
     _zw.fn.orgSelect = function (p, el) { if (_zw.formEx.orgSelect) _zw.formEx.orgSelect(p, el); }
     _zw.fn.onblur = function (e, v) {
-        if (v[0] == "number" || v[0] == "percent") { if (_zw.formEx.calc) _zw.formEx.calc(e, v); }
+        if (v[0] == "number" || v[0] == "number-n" || v[0] == "percent") { if (_zw.formEx.calc) _zw.formEx.calc(e, v); }
         else if (v[0] == "date" || v[0] == "time") { if (_zw.formEx.date) _zw.formEx.date(e, v); }
     }
 
@@ -296,8 +296,10 @@ $(function () {
         try {
             if (opener != null && opener._zw.mu.search) {
                 if (opener._zw.V.ctalias == 'ea') opener._zw.mu.search(opener._zw.V.lv.page); //부모창이 결재인 경우만 우선 적용
-            } else opener.location.reload();
-        } catch (e) { opener.location.reload(); };
+            } //else opener.location.reload();
+        } catch (e) {
+            //opener.location.reload();
+        };
     }
 
     _zw.signline = {
@@ -1507,16 +1509,14 @@ $(function () {
                 if (_zw.V.biz == "등급부서" && _zw.V.act == '_approver') {
                     p = signLine.find(function (element) { if (element.bizrole == 'application' && element.actrole == '_approver' && element.partid != '') return true; });
                     if (!p) { bootbox.alert("필수항목 [접수(개발주관팀)] 누락!"); return false; }
-
-
+                    $('#__mainfield[name="SUPERVISION"]').val(p["part1"]);
                     return true;
                 }
             } else if (_zw.V.ft == "NEWDEVELOPREQUEST") {//OEM신제품개발의뢰서
                 if (_zw.V.biz == "등급부서" && _zw.V.act == '_approver') {
                     p = signLine.find(function (element) { if (element.bizrole == 'application' && element.actrole == '_approver' && element.partid != '') return true; });
                     if (!p) { bootbox.alert("필수항목 [접수(개발주관팀)] 누락!"); return false; }
-
-
+                    $('#__mainfield[name="SUPERVISION"]').val(p["part1"]);
                     return true;
                 }
             } else if (_zw.V.ft == "CTCMINUTES") {//품평회회의록
@@ -1567,7 +1567,7 @@ $(function () {
             });
             //if (iCnt == 0) tgtRow = p.find('tr.sub_table_row:last-child');
             if (iCnt < 2) {
-                newRow = tgtRow.clone(); _zw.form.resetField(newRow); tgtRow.after(newRow); _zw.fn.input(newRow);
+                newRow = tgtRow.clone(); _zw.form.resetField(newRow); tgtRow.after(newRow); _zw.fn.input(newRow); _zw.ut.picker('date');
                 _zw.form.orderRow(p); 
             }
         },

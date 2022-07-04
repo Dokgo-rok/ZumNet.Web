@@ -370,7 +370,7 @@
                     {
                         using (OracleBiz oraBiz = new OracleBiz())
                         {
-                            svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES_V(postData["etc"].ToString(), postData["page"].ToString(), postData["search"].ToString());
+                            svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES_V(postData["etc"].ToString(), postData["v1"].ToString(), postData["search"].ToString());
                         }
 
                         if (svcRt.ResultCode == 0)
@@ -384,7 +384,7 @@
                                 {
                                     sb.Append("<tr>");
                                     sb.AppendFormat("<td>{0}</td>", row["TO_CURRENCY"].ToString().Trim());
-                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["TO_FROM_CON_RATE"].ToString().Trim());
+                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", StringHelper.CvtCurrency(row["TO_FROM_CON_RATE"].ToString(), 4));
 
                                     sb.Append("</tr>");
                                 }
@@ -393,7 +393,6 @@
                             }
                             else
                             {
-                                sb.Append(cDel);
                                 sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
                             }
                         }

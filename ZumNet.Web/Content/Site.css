@@ -699,8 +699,17 @@ a.z-lnk-navy-n {
         border-bottom-right-radius: calc(0.25rem - 1px);
         border-bottom-left-radius: calc(0.25rem - 1px);
     }
+    .z-pop a.z-lnk-navy {
+        color: #337ab7;
+        text-decoration: none;
+    }
+        .z-pop a.z-lnk-navy:focus, .z-pop a.z-lnk-navy:hover {
+            color: #23527c;
+            text-decoration: underline;
+        }
 
-.zf-modal {}
+.zf-modal {
+}
     .zf-modal .modal-content {
         max-height: 32rem !important;
     }

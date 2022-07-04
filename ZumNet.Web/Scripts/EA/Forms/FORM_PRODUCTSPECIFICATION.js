@@ -11,50 +11,6 @@
         },
         "autoCalc": function (p) {
         },
-        "orgSelect": function (p, x) {
-            p.find('.zf-org .zf-org-select input:checkbox[data-for]').each(function () {
-                var info = JSON.parse($(this).attr('data-attr')); console.log(info)
-                var dn = $(this).next().text();
-                $('#__mainfield[name="NEXTWORKER"]').val(dn);
-                $('#__mainfield[name="NEXTWORKERID"]').val(info["id"]);
-                $('#__mainfield[name="NEXTWORKERDEPT"]').val(info["grdn"]);
-                $('#__mainfield[name="NEXTWORKERDEPTID"]').val(info["grid"]);
-            });
-            p.modal('hide');
-        },
-        "optionWnd": function (pos, w, h, m, n, etc, x) {
-            var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(arguments)
-            var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]); //console.log(param);
-            var m = 'getcodedescription', v1 = '', v2 = '', v3 = '';
-
-            //data body 조건 : N(modal-body 없음), F(footer 포함)
-            $.ajax({
-                type: "POST",
-                url: "/EA/Common",
-                data: '{M:"' + m + '",body:"F", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",query:"",fn:"checkbox",search:""}',
-                success: function (res) {
-                    //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
-                    if (res.substr(0, 2) == 'OK') {
-                        var p = $('#popBlank');
-                        p.html(res.substr(2)).find('.modal-title').html(el.attr('title'));
-                        p.find(".modal-dialog").css("max-width", "15rem");
-
-                        p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
-                            var rt = '';
-                            p.find('.modal-body :checkbox[name="ckbMultiOption"]').each(function () {
-                                if ($(this).prop('checked')) rt += (rt != '' ? ',' : '') + $(this).parent().next().next().text();
-                            });
-                            $('#__mainfield[name="' + param[0] + '"]').val(rt);
-                            p.modal('hide');
-                        });
-
-                        p.on('hidden.bs.modal', function () { p.html(''); });
-                        p.modal();
-
-                    } else bootbox.alert(res);
-                }
-            });
-        },
         "externalWnd": function (pos, w, h, m, n, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(arguments)
             var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]); //console.log(param);
@@ -115,32 +71,6 @@
                                 var v = $(this).attr('data-val').split('^');
                                 for (var i = 0; i < param.length; i++) {
                                     $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
-                                }
-
-                                if (vPos[1] == 'items' && param[0] == 'PARTNUM') {
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "/EA/Common",
-                                        data: '{M:"' + m + '",body:"N",k1:"erp",k2:"specchange",k3:"detail",fc:"' + v[0] + '"}',
-                                        success: function (res) {
-                                            if (res.substr(0, 2) == 'OK') {
-                                                res = res.substr(2); var iPos = res.indexOf(cDel);
-                                                var v = res.substr(iPos + 1).split(';'); //console.log(v)
-                                                var fld = ['CCH', 'CCT', 'CCD', 'CIC', 'CVH', 'CIS'];
-                                                //var f = '0,0.[0000]';
-                                                if (res.substr(0, 1) == 'Y') {
-                                                    for (var i = 0; i < fld.length; i++) {
-                                                        $('#__mainfield[name="' + fld[i] + '"]').val(numeral(v[i]).format('0,0.[0000]'));
-                                                    }
-                                                } else {
-                                                    for (var i = 0; i < fld.length; i++) {
-                                                        $('#__mainfield[name="' + fld[i] + '"]').val('0');
-                                                    }
-                                                }
-                                            } else bootbox.alert(res);
-                                        },
-                                        beforeSend: function () { }
-                                    });
                                 }
 
                                 p.modal('hide');

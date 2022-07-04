@@ -247,7 +247,14 @@
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
-                <td class="f-lbl1">사번</td>
+                <td class="f-lbl1">
+					<xsl:choose>
+						<xsl:when test="$mode='new' or $mode='edit'">
+							<a href="javascript:void(0)" class="z-lnk-navy" title="연차조회" onclick="_zw.formEx.optionWnd('report.REGISTER_LEAVE',400,70,20,90,'','')">사번</a>
+						</xsl:when>
+						<xsl:otherwise>사번</xsl:otherwise>
+					</xsl:choose>
+				</td>
                 <td style="width:;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">

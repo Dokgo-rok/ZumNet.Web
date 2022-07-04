@@ -1,0 +1,56 @@
+﻿@using System.Data;
+@using ZumNet.Framework.Util;
+
+@{
+    string currentPage = ViewBag.R.ft.ToString();
+
+    string[,] vBox = {
+        //page, title, bold, count
+        { "PersonInfo", "개인 정보", "", "" }, { "AbsenceSet", "부재 설정", "", "" }, { "EnvironmentSet", "환경 설정", "", "" },
+        { "AnniversaryMgr", "기념일 설정", "", "" },{ "HistoryInfo", "접속이력", "", "" }, { "HRInfo", "연차 및 승진포인트", "", "" }
+    };
+    //StdPayDetail : 생산지별 실적율
+
+    //Response.Write("======" + currentPage);
+}
+
+@functions {
+    private string GetQueryString(string page, string ttl)
+    {
+        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{ct:\"\",ctalias:\"\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\"}");
+    }
+}
+
+<div class="messages-sidebox messages-scroll bg-body border-right">
+    <div class="z-mobile-navbar"></div>
+
+    <div class="pt-3 px-4">
+        <div class="media align-items-center px-1">
+            <div class="media-body">
+            </div>
+            <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
+        </div>
+    </div>
+
+    @Html.Partial("~/Views/Common/_WorkTime.cshtml")
+
+    <!-- sidebox tree -->
+    <div id="__LeftMenu" class="sidenav-vertical z-lm">
+        <ul class="sidenav-inner">
+            @for (int i = 0; i < vBox.GetLength(0); i++)
+            {
+                var bActive = currentPage == "" || currentPage.ToLower().IndexOf(vBox[i, 0].ToLower()) != -1 ? true : false;
+                <li class="sidenav-item@(bActive ? " active" : "")">
+                    <a href="@GetQueryString(vBox[i, 0], vBox[i, 1])" class="sidenav-link @(bActive ? " text-primary" : " opacity-75")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
+                        <span class="fs-14 font-weight-bold">@Html.Raw(vBox[i, 1])</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+    <!-- / sidebox tree -->
+</div>
+
+
+
+

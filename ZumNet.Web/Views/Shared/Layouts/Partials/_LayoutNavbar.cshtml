@@ -294,7 +294,7 @@
                     <span class="px-0 mr-lg-0 ml-2 ml-lg-1">@Session["URName"]</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right mt-0">
-                    <a class="dropdown-item" href="javascript:void(0)" data-navmenu="myinfo"><i class="fe-user mr-2"></i>@Resources.Global.MyInfo</a>
+                    <a class="dropdown-item" href="@Url.Action("Index", "Env", new { Area = ""})"><i class="fe-user mr-2"></i>@Resources.Global.MyInfo</a>
                     @*<a class="dropdown-item" href="javascript:void(0)"><i class="fe-clock mr-2"></i>@Resources.Global.WorkCond</a>*@
                     <a class="dropdown-item" href="@Url.Action("Index", "Organ", new { Area = "", qi = @vOrganQuery[1] })"><i class="fe-users mr-2"></i>@vOrganQuery[0]</a>
                     <div class="dropdown-divider"></div>
@@ -345,7 +345,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-2">
-                    <a class="btn text-big" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.MyInfo" data-navmenu="myinfo"><i class="fe-user"></i></a>
+                    <a class="btn text-big" href="@Url.Action("Index", "Env", new { Area = ""})" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.MyInfo"><i class="fe-user"></i></a>
                     @if (Session["UseWorkTime"].ToString() == "Y")
                     {
                         <a class="btn text-big" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.WorkCond" data-navmenu="workstatus"><i class="fe-clock"></i></a>

@@ -284,6 +284,49 @@
                     }
                     #endregion
                 }
+                else if (postData["k2"].ToString() == "REGISTER_LEAVE")
+                {
+                    #region [근태, 연차 관련]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("ur", Convert.ToInt32(postData["v1"].ToString()), postData["k2"].ToString(), "", "", "", "", "", "", "");
+                    }
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                            sb.Append("<colgroup><col style=\"width:20%\" /><col style=\"width:20%\" /><col style=\"width:20%\" /><col style=\"width:20%\" /><col style=\"width:20%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>입사일</th><th>발생일수</th><th>사용가능연차</th><th>사용일</th><th>잔여일수</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            //foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+
+                            DataRow row = svcRt.ResultDataSet.Tables[0].Rows[0];
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td>{0}</td>", row["InDate"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", row["NumberA"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", row["NumberB"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", row["UseSum"].ToString());
+                            if (row["UseSum"].ToString() == "" || row["UseSum"].ToString() == "0") sb.AppendFormat("<td>{0}</td>", "0");
+                            else sb.AppendFormat("<td>{0}</td>", (Convert.ToDecimal(row["NumberB"]) - Convert.ToDecimal(row["UseSum"])).ToString());
+                            sb.Append("</tr>");
+
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    }
+                    #endregion
+                }
                 else if (postData["k2"].ToString() == "FORM_VACATIONCHANGE")
                 {
                     #region [사전휴가신청 목록]

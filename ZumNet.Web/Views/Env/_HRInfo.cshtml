@@ -1,0 +1,192 @@
+﻿@using System;
+@using System.Data;
+@using System.Globalization;
+@using System.Text;
+@using System.Threading;
+@using ZumNet.Framework.Util;
+@{
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+
+}
+@functions {
+    private string RenderData()
+    {
+        DataRow rowLeave = null;
+        DataSet dsPoint = null;
+        DataRow rowEdu = null;
+
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+
+        using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+        {
+            svcRt = rptBiz.GetReport("ur", Convert.ToInt32(Session["URID"]), "REGISTER_LEAVE", "", "", "", "", "", "", "");
+            if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0) rowLeave = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+            svcRt = rptBiz.GetReport("ur", Convert.ToInt32(Session["URID"]), "REGISTER_PROMOTIONPOINT", "", "", "", "", "", "", "");
+            if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null) dsPoint = svcRt.ResultDataSet;
+
+            svcRt = rptBiz.GetReport("ur", Convert.ToInt32(Session["URID"]), "REGISTER_EDUCATIONPOINT", "", "", "", "", "", "", "");
+            if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0) rowEdu = svcRt.ResultDataSet.Tables[0].Rows[0];
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        //연차
+        sb.Append("<div class=\"col-12 px-0\">");
+        sb.Append("<div class=\"border-0\">");
+
+        sb.Append("<div class=\"px-3 pt-3\">");
+        sb.AppendFormat("<div class=\"\"><i class=\"fas fa-chevron-circle-right mr-1\"></i>{0}</div>", "연차");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"p-3\">");
+        sb.Append("<table class=\"table table-bordered table-sm text-center mb-0\">");
+
+        sb.Append("<thead>");
+        sb.Append("<tr>");
+        sb.Append("<th>입사일</th><th>발생일수</th><th>사용가능연차</th><th>사용일</th><th>잔여일수</th>");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+
+        sb.Append("<tbody>");
+        sb.Append("<tr>");
+        sb.AppendFormat("<td>{0}</td>", FieldValue(rowLeave, "InDate"));
+        sb.AppendFormat("<td>{0}</td>", FieldValue(rowLeave, "NumberA"));
+        sb.AppendFormat("<td>{0}</td>", FieldValue(rowLeave, "NumberB"));
+        sb.AppendFormat("<td>{0}</td>", FieldValue(rowLeave, "UseSum"));
+        if (rowLeave == null || rowLeave["UseSum"].ToString() == "" || rowLeave["UseSum"].ToString() == "0") sb.AppendFormat("<td>{0}</td>", "0");
+        else sb.AppendFormat("<td>{0}</td>", (Convert.ToDecimal(rowLeave["NumberB"]) - Convert.ToDecimal(rowLeave["UseSum"])).ToString());
+        sb.Append("</tr>");
+        sb.Append("</tbody>");
+
+        sb.Append("</table>");
+        sb.Append("</div>"); //card-body
+        sb.Append("</div>"); //card
+        sb.Append("</div>");
+
+        //승진포인트 
+        sb.Append("<div class=\"col-12 px-0\">");
+        sb.Append("<div class=\"border-0\">");
+
+        sb.Append("<div class=\"px-3 pt-3\">");
+        sb.AppendFormat("<div class=\"\"><i class=\"fas fa-chevron-circle-right mr-1\"></i>{0}</div>", "승진포인트 ");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"p-3\">");
+        if (dsPoint != null && dsPoint.Tables.Count > 0 && dsPoint.Tables[0].Rows.Count > 0)
+        {
+            string strHeader = dsPoint.Tables[0].Rows[0]["HeaderName"].ToString();
+
+            sb.Append("<table class=\"table table-bordered table-sm text-center mb-0\">");
+            sb.Append("<thead>");
+            string[] vHeader = null;
+            if (strHeader != "")
+            {
+                vHeader = strHeader.Split(',');
+                sb.Append("<tr>");
+                for (int i = 0; i < vHeader.Length; i++)
+                {
+                    sb.AppendFormat("<th>{0}</th>", vHeader[i]);
+                }
+                sb.Append("</tr>");
+            }
+            sb.Append("</thead>");
+
+            sb.Append("<tbody>");
+            if (dsPoint.Tables.Count == 2 && dsPoint.Tables[1].Rows.Count > 0)
+            {
+                DataRow row = dsPoint.Tables[1].Rows[0];
+                string strFieldCnt = "";
+                string strValue = "";
+                sb.Append("<tr>");
+                for (int j = 0; j < vHeader.Length; j++)
+                {
+                    strFieldCnt = (j <= 9) ? "0" + (j + 1).ToString() : (j + 1).ToString();
+                    strValue = row["Attribute" + strFieldCnt].ToString();
+                    strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
+                    sb.AppendFormat("<td>{0}</td>", strValue);
+                }
+                sb.Append("</tr>");
+            }
+            sb.Append("</tbody>");
+
+            sb.Append("</table>");
+            sb.Append("</div>"); //card-body
+            sb.Append("</div>"); //card
+            sb.Append("</div>");
+        }
+
+        //교육포인트
+        sb.Append("<div class=\"col-12 px-0\">");
+        sb.Append("<div class=\"border-0\">");
+
+        sb.Append("<div class=\"px-3 pt-3\">");
+        sb.AppendFormat("<div class=\"\"><i class=\"fas fa-chevron-circle-right mr-1\"></i>{0}</div>", "교육포인트");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"p-3\">");
+
+        if (rowEdu != null)
+        {
+            int total = 0;
+            foreach (DataColumn col in rowEdu.Table.Columns)
+            {
+                total = total + Convert.ToInt32(rowEdu[col.ColumnName].ToString());
+                if (col.ColumnName.ToString() == "Attribute01" || col.ColumnName.ToString() == "Attribute11")
+                {
+                    string strClsdn1 = (col.ColumnName.ToString() == "Attribute01") ? "사내" : "사외";
+                    sb.AppendFormat("<table class=\"table table-bordered table-sm text-center mb-0{0}\">", strClsdn1 == "사외" ? " mt-2" : "");
+                    sb.Append("<colgroup><col style=\"width:9%\"/><col style=\"width:9%\"/><col style=\"width:9%\"/><col style=\"width:9%\"/><col style=\"width:9%\"/>");
+                    sb.Append("<col style=\"width:9%\"/><col style=\"width:9%\"/><col style=\"width:9%\"/><col style=\"width:9%\"/><col style=\"width:9%\"/><col style=\"width:10%\"/> <colgroup>");
+                    sb.Append("<thead>");
+                    sb.AppendFormat("<tr><th colspan=\"10\">{0}</th><th rowspan=\"3\">총계</th></tr>", strClsdn1);
+                    sb.Append("<tr><th colspan=\"5\">집합</th><th colspan=\"5\">사이버</th></tr>");
+                    sb.Append("<tr><th>어학</th><th>직무</th><th>직급별</th><th>법정이수</th><th>공통</th>");
+                    sb.Append("<th>어학</th><th>직무</th><th>절차서</th><th>법정이수</th><th>공통</th></tr>");
+                    sb.Append("<tbody>");
+                    sb.AppendFormat("<tr><td>{0}</td>", rowEdu[col.ColumnName].ToString()); //  각테이블 첫번째 컬럼시작 
+                }
+                else if (col.ColumnName.ToString() == "Attribute10" || col.ColumnName.ToString() == "Attribute20")
+                {
+                    sb.AppendFormat("<td>{0}</td>", rowEdu[col.ColumnName].ToString());
+                    sb.AppendFormat("<td>{0}</td>", Convert.ToString(total));
+                    sb.Append("</tr></tbody></table>");//사내테이블 종료 
+                    total = 0;
+                }
+                else if (col.ColumnName.ToString() == "TOTAL")
+                {
+                    sb.Append("<table class=\"table table-bordered text-center mt-2 mb-0\">");
+                    sb.Append("<colgroup><col style=\"width:90%\"/><col style=\"width:10%\"/></colgroup>");
+                    sb.Append("<tbody>");
+                    sb.AppendFormat("<tr><th>총계</th><td>{0}</td></tr>", rowEdu[col.ColumnName].ToString());
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");//사내테이블 종료 
+                }
+
+                else
+                {
+                    sb.AppendFormat("<td>{0}</td>", rowEdu[col.ColumnName].ToString());
+                }
+            }
+
+        }
+
+        sb.Append("</div>"); //card-body
+        sb.Append("</div>"); //card
+        sb.Append("</div>");
+
+
+        return sb.ToString();
+    }
+
+    private string FieldValue(DataRow row, string fieldName)
+    {
+        return row != null && row[fieldName] != null ? row[fieldName].ToString() : "";
+    }
+}
+<div class="container-p-x pt-3">
+    <div class="row mx-0 z-hrinfo">
+        @Html.Raw(RenderData())
+    </div>
+</div>

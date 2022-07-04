@@ -1600,10 +1600,10 @@ $(function () {
             return val / Math.pow(10, precision);
         },
         "percent": function (c, p, n) {
-            return (parseFloat(c) * parseFloat(p) / 100).toFixed(n);
+            return (parseFloat(_zw.ut.empty(c)) * parseFloat(_zw.ut.empty(p)) / 100).toFixed(n);
         },
         "rate": function (c, p, n) {
-            return (c / p * 100).toFixed(n);
+            return (parseFloat(_zw.ut.empty(c)) / parseFloat(_zw.ut.empty(p)) * 100).toFixed(n);
         },
         "empty": function (f) {
             f = f || '';
@@ -1836,7 +1836,7 @@ $(function () {
             var bClose = option.close || false;
             var footer = option.footer ? option.footer : '';
 
-            var w = option.width, h = option.height + 40;
+            var w = option.width, h = option.height + 40, l = option.left || 0;
             var offset = $(el).offset(); //console.log($(el).offsetParent())
             var p = $('body');
             var iST = p.scrollTop(), iSL = p.scrollLeft();
@@ -1866,7 +1866,7 @@ $(function () {
             if (footer != '') s += '<div class="z-pop-footer">' + footer + '</div>';
             s += '</div>';
 
-            var m = $(s).css({ "top": iT, "left": iL, "width": w, "height": h }).show();
+            var m = $(s).css({ "top": iT, "left": iL + l, "width": w, "height": h }).show();
             m.find('.close[data-dismiss="modal"]').click(function () { $('.modal-backdrop').remove(); m.remove(); });
 
             p.append(back).append(m);

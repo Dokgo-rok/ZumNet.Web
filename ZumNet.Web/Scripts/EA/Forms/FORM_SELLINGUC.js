@@ -11,42 +11,55 @@
         },
         "autoCalc": function (p) {
         },
-        "optionWnd": function (pos, w, h, m, n, etc, x) {
-            var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(el.attr('title'))
-            var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]); //console.log(param);
-            var m = 'getcodedescription', v1 = '', v2 = '', v3 = '';
-            var ttl = el.attr('data-original-title') && el.attr('data-original-title') != '' ? el.attr('data-original-title') : el.attr('title');
+        "optionWnd": function (pos, w, h, l, t, etc, x) {
+            var el = _zw.ut.eventBtn(), vPos = pos.split('.');
+            var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]);
+            var m = '', v1 = '', v2 = '', v3 = '';
+            if (vPos[0] == 'erp') m = 'getoracleerp';
+            else if (vPos[0] == 'report') m = 'getreportsearch';
+            else m = 'getcodedescription';
 
             //data body 조건 : N(modal-body 없음), F(footer 포함)
             $.ajax({
                 type: "POST",
                 url: "/EA/Common",
-                data: '{M:"' + m + '",body:"", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",fn:"",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
+                data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",fn:"",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
                 success: function (res) {
                     //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
                     if (res.substr(0, 2) == 'OK') {
-                        var p = $('#popBlank');
-                        p.html(res.substr(2)).find('.modal-title').html(ttl);
-                        p.find(".modal-dialog").css("max-width", "15rem");
-                        //p.find(".modal-content").css("height", h + "px")
+                        //var p = $('#popBlank');
+                        //p.html(res.substr(2)).find('.modal-title').html(el.attr('title'));
+                        //if (m == 'getcodedescription') p.find(".modal-dialog").css("max-width", "15rem");
 
-                        p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
+                        //p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
+                        //    var v = $(this).attr('data-val').split('^');
+                        //    for (var i = 0; i < param.length; i++) {
+                        //        $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
+                        //    }
+                        //    p.modal('hide');
+                        //});
+
+                        //$('.zf-modal input:text.z-input-in').keyup(function (e) {
+                        //    if (e.which == 13) {
+                        //        $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
+                        //        p.modal('hide');
+                        //    }
+                        //});
+
+                        //p.on('hidden.bs.modal', function () { p.html(''); });
+                        //p.modal();
+
+                        var j = { "close": true, "width": w, "height": h, "left": l, "top": t }
+                        j["title"] = el.attr('title'); j["content"] = res.substr(2);
+
+                        var pop = _zw.ut.popup(el[0], j);
+                        pop.find('a[data-val]').click(function () {
                             var v = $(this).attr('data-val').split('^');
                             for (var i = 0; i < param.length; i++) {
                                 $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
                             }
-                            p.modal('hide');
+                            pop.find('.close[data-dismiss="modal"]').click();
                         });
-
-                        $('.zf-modal input:text.z-input-in').keyup(function (e) {
-                            if (e.which == 13) {
-                                $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
-                                p.modal('hide');
-                            }
-                        });
-
-                        p.on('hidden.bs.modal', function () { p.html(''); });
-                        p.modal();
 
                     } else bootbox.alert(res);
                 }
@@ -56,11 +69,15 @@
             var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(arguments)
             var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]); //console.log(param);
             var m = '', v1 = '', v2 = '', v3 = '';
-            if (vPos[0] == 'erp') {
-                m = 'getoracleerp';
-            } else if (vPos[0] == 'report') {
-                m = 'getreportsearch';
+            if (vPos[0] == 'erp') m = 'getoracleerp';
+            else if (vPos[0] == 'report') m = 'getreportsearch';
+            else m = 'getcodedescription';
+
+            if (pos == 'erp.exchangerate') { //환율
+                if ($('#__mainfield[name="CURRENCY"]').val() == '') { bootbox.alert('통화를 선택하십시오!', function () { }); return false; }
+                v1 = $('#__mainfield[name="CURRENCY"]').val();
             }
+
             var s = '<div class="zf-modal modal-dialog modal-dialog-centered modal-dialog-scrollable">'
                 + '<div class="modal-content" data-for="' + vPos[1] + '" style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)">'
                 + '<div class="modal-header">'
@@ -77,13 +94,15 @@
                 + '<div class="modal-body"></div>'
                 + '</div></div>';
 
-            var p = $('#popBlank');
-            p.html(s).find(".modal-content").css("min-height", "20rem");
-            if (vPos[1] == 'SEARCH_ECNNO') p.find(".modal-dialog").css("max-width", "42rem")
-            else p.find(".modal-dialog").css("max-width", "30rem")
-
+            var p = $('#popBlank'); p.html(s);
             var searchBtn = p.find('.zf-modal .modal-header .input-group .btn');
             var searchTxt = $('.zf-modal .modal-header .input-group :text');
+
+            if (pos == "erp.exchangerate") {
+                p.find(".modal-dialog").css("max-width", "20rem").find(".modal-content").css("min-height", "6rem");
+                searchTxt.prop('readonly', true).val(moment(_zw.V.current.date).format('YYYY-MM-DD'));
+
+            } else p.find(".modal-dialog").css("max-width", "30rem").find(".modal-content").css("min-height", "20rem");
 
             searchTxt.keyup(function (e) { if (e.which == 13) { searchBtn.click(); } });
             searchBtn.click(function () {
@@ -94,18 +113,17 @@
                 $.ajax({
                     type: "POST",
                     url: "/EA/Common",
-                    data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",search:"' + searchTxt.val() + '",searchcol:"",page:"' + p.find('.modal-header :hidden[data-for="page"]').val() + '",count:"' + p.find('.modal-header :hidden[data-for="page-count"]').val() + '"}',
+                    data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",search:"' + searchTxt.val() + '",searchcol:"",page:"' + p.find('.modal-header :hidden[data-for="page"]').val() + '",count:"' + p.find('.modal-header :hidden[data-for="page-count"]').val() + '",v1:"' + v1 + '"}',
                     success: function (res) {
                         //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
                         if (res.substr(0, 2) == 'OK') {
                             var cDel = String.fromCharCode(8);
-                            var vRes = res.substr(2).split(cDel);
-
-                            if (res.substr(2).indexOf(cDel) > 0) {
+                            if (res.substr(2).indexOf(cDel) != -1) {
+                                var vRes = res.substr(2).split(cDel);
                                 p.find('.modal-header .zf-modal-page').html(vRes[0]);
                                 p.find('.modal-body').html(vRes[1]);
                             } else {
-                                p.find('.modal-body').html(vRes[0]);
+                                p.find('.modal-body').html(res.substr(2));
                             }
 
                             p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
@@ -113,7 +131,6 @@
                                 for (var i = 0; i < param.length; i++) {
                                     $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
                                 }
-
                                 p.modal('hide');
                             });
 
@@ -121,12 +138,16 @@
                                 p.find('.modal-header :hidden[data-for="page"]').val($(this).attr('data-for'));
                                 searchBtn.click();
                             });
+
                         } else bootbox.alert(res);
                     }
                 });
             });
 
-            p.on('shown.bs.modal', function () { searchTxt.focus(); });
+            p.on('shown.bs.modal', function () {
+                if (pos == "erp.exchangerate") searchTxt.datepicker({ autoclose: true, language: $('#current_culture').val() });
+                else searchTxt.focus();
+            });
             p.on('hidden.bs.modal', function () { p.html(''); });
             p.modal();
         }

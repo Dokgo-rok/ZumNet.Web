@@ -915,7 +915,7 @@
                 </textarea>
               </xsl:when>
               <xsl:otherwise>
-                <div class="txaRead" style="height:80px">
+                <div class="txaRead" style="min-height:60px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ETC))" />
                 </div>
               </xsl:otherwise>

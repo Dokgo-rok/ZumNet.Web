@@ -385,6 +385,7 @@
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
     <Content Include="Content\ce.css" />
+    <Content Include="Content\env.css" />
     <Content Include="Content\voc.css" />
     <Content Include="Content\todo.css" />
     <Content Include="Content\lcm.css" />
@@ -695,7 +696,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_OWNPRODUCTSPECIFICATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_OWNSELLINGUC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PARTSACKSPEC_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PARTSACKSPEC_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PARTSACKSPEC_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PARTSACKTEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PARTSINDITESTSTD_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PASSPORTLIST_V1.xsl" />
@@ -714,8 +717,12 @@
     <Content Include="Content\Forms\CRESYN\FORM_PRODRELEASEREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PRODUCERCHANGEINFO_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PRODUCERCHANGINFO_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PRODUCTREGICHART_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PRODUCTSPECIFICATION_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PRODUCTREGICHART_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Forms\CRESYN\FORM_PRODUCTSPECIFICATION_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PROJECTBUDGET_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PROJECTIDREGISTRATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEBILL_V1.xsl" />
@@ -779,7 +786,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEINFO_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEINFO_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEINFO_V3.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEINFO_V4.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEINFO_V4.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEREPORTINDUSTRY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEREPORT_V2.xsl" />
@@ -2073,14 +2082,21 @@
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
+    <Content Include="Scripts\EA\Forms\FORM_AFTERCHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_AUDITRESULTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZDOMTRIPEXPENSE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_BIZTRIPEXPENSE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_BIZTRIPPLAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CREIBILITYREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DEVPRODUCTLIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAWING.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DRIVEMONEY.js" />
     <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTD.js" />
@@ -2090,38 +2106,51 @@
     <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOLIWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOMEWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_ITEMMASTERCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANPT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MASTERFILECHANGEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_MINUTES.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MONTHFAULTYGOODS.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MONTHLOSSCHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_NEWDEVELOPREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_NEWOWNDEVREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPARTSREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTREVIEW.js" />
     <Content Include="Scripts\EA\Forms\FORM_NIGHTWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OPERATIONMANUAL.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PERSONNELAPPOINTMENTS.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PRODUCTSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCA.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCC.js" />
     <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />
     <Content Include="Scripts\EA\Forms\FORM_RESIGNATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLECONTROL.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUESTWAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SELLINGUC.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SPECIALCONFIRM.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SWSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMADDREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMDELETE.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMREGI.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONCHANGE.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONHR.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONUSE.js" />
     <Content Include="Scripts\EA\Forms\_sample.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAFT.js" />
+    <Content Include="Scripts\Env\env.js" />
     <Content Include="Scripts\ExS\ce.js" />
     <Content Include="Scripts\ExS\voc.js" />
     <Content Include="Scripts\ExS\lcm.js" />
@@ -2785,7 +2814,6 @@
     <Folder Include="bin\" />
     <Folder Include="Content\Forms\IMPORT\" />
     <Folder Include="Views\Addr\" />
-    <Folder Include="Views\Env\" />
     <Folder Include="Views\External\" />
     <Folder Include="Views\Search\" />
   </ItemGroup>
@@ -3111,6 +3139,14 @@
     <Content Include="Views\Report\_FORM_EDUSHARE.cshtml" />
     <Content Include="Views\Account\AntiForgery.cshtml" />
     <Content Include="Views\Report\_TELLNUMLIST.cshtml" />
+    <Content Include="Views\Env\Index.cshtml" />
+    <Content Include="Views\Env\_LeftMenu.cshtml" />
+    <Content Include="Views\Env\_PersonInfo.cshtml" />
+    <Content Include="Views\Env\_AbsenceSet.cshtml" />
+    <Content Include="Views\Env\_EnvironmentSet.cshtml" />
+    <Content Include="Views\Env\_AnniversaryMgr.cshtml" />
+    <Content Include="Views\Env\_HRInfo.cshtml" />
+    <Content Include="Views\Env\_HistoryInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
