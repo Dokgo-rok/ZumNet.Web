@@ -49,6 +49,10 @@ $(function () {
                 break;
 
             case "preview":
+                if (_zw.V.mode == 'read') {
+                    var url = "/EA/Form/Preview";
+                    _zw.ut.openWnd(url, "preview", $('body').outerWidth(), $('body').outerHeight(), "resize");
+                }
                 break;
 
             case "showHelp":

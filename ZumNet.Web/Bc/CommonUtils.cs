@@ -1872,7 +1872,7 @@ namespace ZumNet.Web.Bc
                     {
                         if (ctrl.ViewBag.JReq["oi"].ToString() != pi.OID.ToString()) throw new Exception("잘못된 프로세스 정보");
                     }
-                    ctrl.ViewBag.JReq["oi"] = pi.OID.ToString();
+                    ctrl.ViewBag.JReq["oi"] = pi != null ? pi.OID.ToString() : "0";
 
                     sPos = "420";
                     xfInst = eaDac.SelectXFMainEntity(ctrl.ViewBag.JReq["xf"].ToString(), StringHelper.SafeInt(ctrl.ViewBag.JReq["mi"].ToString()));
@@ -2705,7 +2705,11 @@ namespace ZumNet.Web.Bc
                 }
 
                 if (iFolderId > 0 && ctrl.ViewBag.R.current["appacl"].ToString() == "")
-                    ctrl.ViewBag.R.current["appacl"] = ctrl.ViewBag.R.current["acl"].ToString().Substring(6, 4) + ctrl.ViewBag.R.current["acl"].ToString().Substring(ctrl.ViewBag.R.current["acl"].ToString().Length - 2);
+                {
+                    //ctrl.ViewBag.R.current["appacl"] = ctrl.ViewBag.R.current["acl"].ToString().Substring(6, 4) + ctrl.ViewBag.R.current["acl"].ToString().Substring(ctrl.ViewBag.R.current["acl"].ToString().Length - 2);
+                    ctrl.ViewBag.R.current["appacl"] = ctrl.ViewBag.R.current["acl"].ToString().Substring(6);
+                }
+
             }
 
             if (resView)

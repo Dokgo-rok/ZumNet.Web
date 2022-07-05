@@ -135,7 +135,8 @@
     });
 
     _zw.mu.writeEvent = function (ca, dt, hm, pt, partid) { //일정, 자원예약
-        //alert(ca + " : " + dt + " : " + hm + " : " + pt + " : " + partid)
+        //alert(ca + " : " + dt + " : " + hm + " : " + pt + " : " + partid + " : " + _zw.V.current.appacl)
+        //if (_zw.V.current.appacl == '') { bootbox.alert('예약하려는 자원을 선택하시기 바랍니다!'); return false; }
         ca = ca || ''; dt = dt || ''; hm = hm || ''; pt = pt || ''; partid = partid || '0';
         if (dt == '' && _zw.V.lv.tgt != '') dt = _zw.V.lv.tgt;
 
@@ -177,7 +178,7 @@
                     });
 
                     p.modal();
-                }
+                } else bootbox.alert(res);
             }
         });
     }
@@ -288,7 +289,7 @@
                     
                     if (opt != null && opt.length > 0) opt[0].find("button[data-dismiss='modal']").click();
                     p.modal();
-                }
+                } else bootbox.alert(res);
             }
         });
     }

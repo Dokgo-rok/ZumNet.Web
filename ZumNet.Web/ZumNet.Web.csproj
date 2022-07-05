@@ -647,7 +647,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_MONTHVAC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MONTHWORKPAY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_NEWDEVELOPREQUESTINDUSTRY_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_NEWDEVELOPREQUEST_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_NEWDEVELOPREQUEST_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_NEWOWNDEVREQUEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_NEWPARTSREQUEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_NEWPARTSREQUEST_V2.xsl" />
@@ -2097,6 +2099,8 @@
     <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAWING.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRIVEMONEY.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EDUREPORTB.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EDUREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTD.js" />
@@ -2137,6 +2141,7 @@
     <Content Include="Scripts\EA\Forms\FORM_SELLINGUC.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALCONFIRM.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SQANEWVERIFREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_SWSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMADDREQ.js" />
@@ -3032,6 +3037,7 @@
     <Content Include="Areas\EA\Views\Common\_CodeDesc.cshtml" />
     <Content Include="Areas\EA\Views\Common\_ReportSearch.cshtml" />
     <Content Include="Areas\EA\Views\Common\_OracleERP.cshtml" />
+    <Content Include="Areas\EA\Views\Form\Preview.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

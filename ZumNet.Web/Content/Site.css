@@ -726,6 +726,11 @@ a.z-lnk-navy-n {
     .zf-modal .table > colgroup + thead > tr:first-child > td, .zf-modal .table > colgroup + thead > tr:first-child > th, .zf-modal .table > thead:first-child > tr:first-child > td, .zf-modal .table > thead:first-child > tr:first-child > th {
         border-top: 0;
     }
+    .zf-modal .table td > span, .zf-modal .table td > a {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 98%;
+    }
     .zf-modal a.z-lnk-navy {
         color: #337ab7;
         text-decoration: none;

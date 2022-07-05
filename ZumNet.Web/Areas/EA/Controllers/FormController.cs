@@ -144,6 +144,17 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
             return View();
         }
+
+        /// <summary>
+        /// 양식 미리보기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Preview()
+        {
+            return View();
+        }
         #endregion
 
         #region [양식조회, 읽음/안읽음 표시]

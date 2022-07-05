@@ -1,75 +1,31 @@
 ﻿$(function () {
     _zw.formEx = {
         "validation": function (cmd) {
-            var el = null;
-            if (cmd == "draft") { //기안
-
-            } else { //결재
-                if (_zw.V.biz == "의견") {
-                    el = $('#__mainfield[name="CONTENTS"]');
-                    if (el.length > 0 && $.trim(el.val()) == '') {
-                        bootbox.alert("필수항목 [기획조정실의견] 누락!", function () { el.focus(); }); return false;
-                    }
-                }
-            }
             return true;
         },
         "make": function (f) {
-            if (_zw.V.biz == "의견" && _zw.V.act == "_approver") _zw.body.main(f, ["CONTENTS"]);
         },
         "checkEvent": function (ckb, el, fld) {
-            var t;
-            if (fld == 'JASCO1' || fld == 'JASCO2') {
-                t = fld == 'JASCO1' ? $('#__mainfield[name="PRICE3"]') : $('#__mainfield[name="PRICE4"]'); t.val('');
-                if (el.checked) t.removeClass("txtRead").addClass("txtText").prop("readonly", false);
-                else t.removeClass("txtText").addClass("txtRead").prop("readonly", true);
-            } else if (fld == 'MOLDRECOVER2') {
-                t = $('#__mainfield[name="PRICE8"]'); t.val('');
-                if (el.checked) {
-                    t.removeClass("txtRead").addClass("txtDollar").prop("readonly", false);
-                    t.attr('maxlength', '20').attr('data-inputmask', 'number;16;4'); _zw.fn.input(t[0]);
-                } else {
-                    t.removeClass("txtDollar").addClass("txtRead").prop("readonly", true);
-                    t.removeAttr('maxlength').removeAttr('data-inputmask')
-                }
-            }
         },
         "calc": function (el) {
-            if (el.name == "PRICE1" || el.name == "PRICE5" || el.name == "PRICE6" || el.name == "PRICE8" || el.name == "COMMISION" || el.name == "PLANCNT") _zw.formEx.calcForm(el);
         },
         "autoCalc": function (p) {
         },
-        "calcForm": function (el) {
-            var el1 = $('#__mainfield[name="PRICE1"]'), el2 = $('#__mainfield[name="PRICE5"]'), el3 = $('#__mainfield[name="PRICE6"]'),
-                el4 = $('#__mainfield[name="PRICE8"]'), el5 = $('#__mainfield[name="RATE1"]'), el6 = $('#__mainfield[name="RATE2"]'),
-                el7 = $('#__mainfield[name="COMMISION"]'), el8 = $('#__mainfield[name="EACHPRICE1"]'), el9 = $('#__mainfield[name="PREPRICE1"]'),
-                el10 = $('#__mainfield[name="EACHPRICE2"]'), el11 = $('#__mainfield[name="PREPRICE2"]'), el12 = $('#__mainfield[name="PLANCNT"]'),
-                f = '0,0.[0000]', s, v1, v2;
-
-            if (el1.val() != '') {
-                if (el.name == "PRICE1" || el.name == "PRICE8" || el.name == "PRICE5" || el.name == "COMMISION" || el.name == "PLANCNT") {
-                    if (el2.val() == '') el5.val('');
-                    else {
-                        v1 = _zw.ut.sub(4, el1.val(), el2.val(), el4.val(), el7.val()); el8.val(numeral(v1).format(f));
-                        s = _zw.ut.rate(v1, el1.val(), 4); el5.val(numeral(s).format(f));
-
-                        v1 = numeral(v1).value(); v2 = numeral(el12.val()).value(); v1 = v1 || 0; v2 = v2 || 0; s = numeral(v1).multiply(v2);
-                        el9.val(numeral(s).format(f));
-                    }
-                }
-                if (el.name == "PRICE1" || el.name == "PRICE8" || el.name == "PRICE6" || el.name == "COMMISION" || el.name == "PLANCNT") {
-                    if (el3.val() == '') el6.val('');
-                    else {
-                        v1 = _zw.ut.sub(4, el1.val(), el3.val(), el4.val(), el7.val()); el10.val(numeral(v1).format(f));
-                        s = _zw.ut.rate(v1, el1.val(), 4); el6.val(numeral(s).format(f));
-
-                        v1 = numeral(v1).value(); v2 = numeral(el12.val()).value(); v1 = v1 || 0; v2 = v2 || 0; s = numeral(v1).multiply(v2);
-                        el11.val(numeral(s).format(f));
-                    }
-                }
-            } else {
-                el5.val(''); el6.val('');
-            }
+        "date": function (el) {
+            var from = $('#__mainfield[name="REQSD"]'), to = $('#__mainfield[name="REQED"]');
+            var dif = _zw.ut.diff('day', from.val(), to.val()); //console.log(dif + " : " + !(dif))
+            if (dif && dif > 0) { bootbox.alert('날짜 범위 입력 오류!', function () { to.val(''); to.focus(); }); return false; }
+        },
+        "orgSelect": function (p, x) {
+            p.find('.zf-org .zf-org-select input:checkbox[data-for]').each(function () {
+                var info = JSON.parse($(this).attr('data-attr')); //console.log(info)
+                var dn = $(this).next().text();
+                $('#__mainfield[name="CHARGEUSER"]').val(dn);
+                $('#__mainfield[name="CHARGEUSERID"]').val(info["id"]);
+                $('#__mainfield[name="CHARGEDEPT"]').val(info["grdn"]);
+                $('#__mainfield[name="CHARGEDEPTID"]').val(info["grid"]);
+            });
+            p.modal('hide');
         },
         "optionWnd": function (pos, w, h, l, t, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.');
@@ -87,28 +43,6 @@
                 success: function (res) {
                     //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
                     if (res.substr(0, 2) == 'OK') {
-                        //var p = $('#popBlank');
-                        //p.html(res.substr(2)).find('.modal-title').html(el.attr('title'));
-                        //if (m == 'getcodedescription') p.find(".modal-dialog").css("max-width", "15rem");
-
-                        //p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
-                        //    var v = $(this).attr('data-val').split('^');
-                        //    for (var i = 0; i < param.length; i++) {
-                        //        $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
-                        //    }
-                        //    p.modal('hide');
-                        //});
-
-                        //$('.zf-modal input:text.z-input-in').keyup(function (e) {
-                        //    if (e.which == 13) {
-                        //        $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
-                        //        p.modal('hide');
-                        //    }
-                        //});
-
-                        //p.on('hidden.bs.modal', function () { p.html(''); });
-                        //p.modal();
-
                         var j = { "close": true, "width": w, "height": h, "left": l, "top": t }
                         j["title"] = el.attr('title'); j["content"] = res.substr(2);
 
@@ -119,6 +53,13 @@
                                 $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
                             }
                             pop.find('.close[data-dismiss="modal"]').click();
+                        });
+
+                        pop.find('input:text.z-input-in').keyup(function (e) {
+                            if (e.which == 13) {
+                                $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
+                                pop.find('.close[data-dismiss="modal"]').click();
+                            }
                         });
 
                     } else bootbox.alert(res);

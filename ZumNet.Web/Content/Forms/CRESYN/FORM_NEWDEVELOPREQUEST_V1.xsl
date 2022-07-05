@@ -657,7 +657,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL1');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL1');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL1');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -673,7 +673,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL2');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL2');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL2');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -689,7 +689,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL3');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL3');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL3');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -705,7 +705,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,80,70,'','EXMODEL4');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL4');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL4');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -723,7 +723,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL5');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL5');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL5');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -739,7 +739,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL6');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL6');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL6');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -755,7 +755,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL7');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL7');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL7');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -771,7 +771,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,80,70,'','EXMODEL8');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL8');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL8');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -789,7 +789,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL9');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL9');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL9');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -805,7 +805,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL10');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL10');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL10');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -821,7 +821,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL11');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL11');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL11');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -837,7 +837,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,80,70,'','EXMODEL12');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL12');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL12');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -855,7 +855,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL13');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL13');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL13');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -871,7 +871,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL14');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL14');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL14');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -887,7 +887,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL15');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL15');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL15');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -903,7 +903,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,80,70,'','EXMODEL16');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL16');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL16');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -921,7 +921,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL17');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL17');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL17');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -937,7 +937,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL18');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL18');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL18');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -953,7 +953,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','EXMODEL19');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL19');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL19');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -969,7 +969,7 @@
                       <!--<button onclick="parent.fnExternal('erp.items',240,40,80,70,'','EXMODEL20');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="추가" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL20');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="전개모델" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','EXMODEL20');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>

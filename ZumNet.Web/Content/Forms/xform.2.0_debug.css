@@ -110,7 +110,7 @@ body {overflow: hidden}
 	border-bottom: 1px solid #343a40
 }
 .m .si-list tbody td {
-	border-top: 1px solid #343a40
+	border-top: 1px solid #343a40;
 }
 .m .si-list .si-cur td {
 	background-color: #f7f3c1
@@ -125,7 +125,8 @@ body {overflow: hidden}
 	padding-left: .5rem
 }
 .m .si-list .si-subtd .si-sublist {
-	border-left: 1px dotted #343a40
+	border-left: 1px dotted #343a40;
+	border-right: 0;
 }
 .m .si-list .si-subtd .si-sublist tr:nth-child(1) td {
 	border-top: 0

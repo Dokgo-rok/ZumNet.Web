@@ -1,0 +1,26 @@
+﻿@using System;
+@using System.Web;
+
+@{
+    ViewBag.Title = Resources.Global.Preview;
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+}
+@section Styles {
+    @Styles.Render("~/Content/ea.css")
+    @Styles.Render("~/Content/Forms/xform.2.0_debug.css")
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        (function () {
+            var style = $(opener.document).find('style')[1].outerHTML; //console.log(style)
+            $('head').append(style);
+
+            $('#__Preview').html($(opener.document).find('#__FormView .z-list-scroll').html());
+
+            window.print();
+        }());
+    </script>
+}
+
+<div class="" id="__Preview"></div>

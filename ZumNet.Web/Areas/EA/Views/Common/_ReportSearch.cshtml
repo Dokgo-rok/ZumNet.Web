@@ -424,6 +424,147 @@
                     }
                     #endregion
                 }
+                else if (postData["k2"].ToString() == "LCM_COURSE")
+                {
+                    #region [교육과정목록 - 첨부파일 보기 제외]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("CS", 0, postData["k2"].ToString(), "", "", postData["v1"].ToString(), postData["v2"].ToString(), postData["v3"].ToString(), postData["v4"].ToString(), postData["v5"].ToString());
+                    }
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                            sb.Append("<colgroup><col width=\"9%\" /><col width=\"9%\" /><col width=\"22%\" /><col width=\"8%\" /><col width=\"10%\" /><col width=\"18%\" /><col width=\"24%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            if (postData["v2"].ToString() == "A10") //2019-06-26 사내교육경우
+                                sb.Append("<tr><th>교육시작</th><th>교육종료</th><th>과정명</th><th>교육유형</th><th>교육분야</th><th>교육장소</th><th>강사</th></tr>");
+                            else
+                                sb.Append("<tr><th>교육시작</th><th>교육종료</th><th>과정명</th><th>교육유형</th><th>교육분야</th><th>교육기관</th><th>교육장소</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+
+                            string strParam = "";
+                            sb.Append("<tr><td></td><td></td>");
+                            sb.AppendFormat("<td class=\"text-left text-break\"><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{1}\">{0}</a></td>", ":::::::::: 직접입력 ::::::::::", "{}");
+                            sb.Append("<td></td><td></td><td></td><td></td></tr>");
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                strParam = "";
+                                foreach (DataColumn col in svcRt.ResultDataSet.Tables[0].Columns)
+                                {
+                                    if (col.ColumnName != "rownum")
+                                    {
+                                        strParam += String.Format(",\"{0}\":\"{1}\"", col.ColumnName.ToUpper(), StringHelper.JsonDecode(row[col.ColumnName].ToString()));
+                                    }
+                                }
+                                strParam = "{\"rownum\":\"" + row["rownum"].ToString() + "\"" + strParam + "}";
+
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", DateHelper.CheckDateTime(row["FromDate"].ToString(), "yy-MM-dd"));
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", DateHelper.CheckDateTime(row["ToDate"].ToString(), "yy-MM-dd"));
+                                sb.AppendFormat("<td class=\"text-left text-break\"><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{1}\">{0}</a></td>", row["CourseDN"].ToString(), StringHelper.JsonDecode(strParam));
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", row["ClsDN3"].ToString());
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", row["ClsDN4"].ToString());
+                                if (postData["v2"].ToString() == "A10")
+                                {
+                                    sb.AppendFormat("<td class=\"text-left text-break\"><span>{0}</span></td>", row["Place"].ToString());
+                                    sb.AppendFormat("<td class=\"text-left text-break\"><span>{0}</span></td>", row["InstructorInfo1"].ToString() + ". " + row["InstructorInfo2"].ToString() + ". " + row["Instructor"].ToString());
+                                }
+                                else
+                                {
+                                    sb.AppendFormat("<td class=\"text-left text-break\"><span>{0}</span></td>", row["InstDN"].ToString());
+                                    sb.AppendFormat("<td class=\"text-left text-break\"><span>{0}</span></td>", row["Place"].ToString());
+                                }
+                                sb.Append("</tr>");
+                            }
+
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "LCM_MAIN")
+                {
+                    #region [교육신청목록]
+                    string strMode = (postData["k3"].ToString() == "PRECLSDN1") ? "CL" : "RS";
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport(strMode, Convert.ToInt32(postData["query"].ToString()), postData["k2"].ToString(), "", "", postData["v1"].ToString(), postData["v2"].ToString(), postData["v3"].ToString(), postData["v4"].ToString(), postData["v5"].ToString());
+                    }
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                            sb.Append("<colgroup><col width=\"12%\" /><col width=\"7%\" /><col width=\"7%\" /><col width=\"20%\" /><col width=\"7%\" /><col width=\"9%\" /><col width=\"11%\" /><col width=\"19%\" /><col width=\"8%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            if (postData["v2"].ToString() == "A10") //2019-06-26 사내교육경우
+                                sb.Append("<tr><th>신청일</th><th>시작</th><th>종료</th><th>과정명</th><th>유형</th><th>분야</th><th>교육장소</th><th>강사</th><th>신청자</th></tr>");
+                            else
+                                sb.Append("<tr><th>신청일</th><th>시작</th><th>종료</th><th>과정명</th><th>유형</th><th>분야</th><th>교육기관</th><th>교육장소</th><th>신청자</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+
+                            string strParam = "";
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                strParam = "";
+                                foreach (DataColumn col in svcRt.ResultDataSet.Tables[0].Columns)
+                                {
+                                    if (col.ColumnName != "rownum")
+                                    {
+                                        if (col.ColumnName == "LcmID") strParam += String.Format(",\"{0}\":\"{1}\"", "PREID", row[col.ColumnName].ToString());
+                                        else strParam += String.Format(",\"{0}\":\"{1}\"", (postData["k3"].ToString() == "PRECLSDN1" ? "PRE" : "") + col.ColumnName.ToUpper(), StringHelper.JsonDecode(row[col.ColumnName].ToString()));
+                                    }
+                                }
+                                strParam = "{\"rownum\":\"" + row["rownum"].ToString() + "\"" + strParam + "}";
+
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", DateHelper.CheckDateTime(row["CreateDate"].ToString()));
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", DateHelper.CheckDateTime(row["FromDate"].ToString(), "yy-MM-dd"));
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", DateHelper.CheckDateTime(row["ToDate"].ToString(), "yy-MM-dd"));
+                                sb.AppendFormat("<td class=\"text-left text-break\"><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{1}\">{0}</a></td>", row["CourseDN"].ToString(), StringHelper.JsonDecode(strParam));
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", row["ClsDN3"].ToString());
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", row["ClsDN4"].ToString());
+                                if (postData["v2"].ToString() == "A10")
+                                {
+                                    sb.AppendFormat("<td class=\"text-break text-break\"><span>{0}</span></td>", row["Place"].ToString());
+                                    sb.AppendFormat("<td class=\"text-break text-break\"><span>{0}</span></td>", row["InstructorInfo1"].ToString() + ". " + row["InstructorInfo2"].ToString() + ". " + row["Instructor"].ToString());
+                                }
+                                else
+                                {
+                                    sb.AppendFormat("<td class=\"text-break text-break\"><span>{0}</span></td>", row["InstDN"].ToString());
+                                    sb.AppendFormat("<td class=\"text-break text-break\"><span>{0}</span></td>", row["Place"].ToString());
+                                }
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", row["Creator"].ToString());
+                                sb.Append("</tr>");
+                            }
+
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    }
+                    #endregion
+                }
                 else if (postData["k2"].ToString().IndexOf("ERP_") != -1)
                 {
                     #region ["ERP_" 시작]
@@ -496,5 +637,5 @@
         }
         return strReturn;
     }
-}
-@Html.Raw(GetReportSearch(ViewBag.JPost))
+    }
+    @Html.Raw(GetReportSearch(ViewBag.JPost))

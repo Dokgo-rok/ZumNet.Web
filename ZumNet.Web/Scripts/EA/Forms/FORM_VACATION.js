@@ -86,7 +86,7 @@
             if (vPos[0] == 'report') m = 'getreportsearch';
             else m = 'getcodedescription';
 
-            if (vPos[1] == "REGISTER_LEAVE") v1 = _zw.V.current.urid;
+            if (vPos[1] == "REGISTER_LEAVE") v1 = $('#__mainfield[name="APPLICANTID"]').val();
 
             //data body 조건 : N(modal-body 없음), F(footer 포함)
             $.ajax({

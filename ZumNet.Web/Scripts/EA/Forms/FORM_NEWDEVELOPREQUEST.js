@@ -184,6 +184,13 @@
                             pop.find('.close[data-dismiss="modal"]').click();
                         });
 
+                        pop.find('input:text.z-input-in').keyup(function (e) {
+                            if (e.which == 13) {
+                                $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
+                                pop.find('.close[data-dismiss="modal"]').click();
+                            }
+                        });
+
                     } else bootbox.alert(res);
                 }
             });

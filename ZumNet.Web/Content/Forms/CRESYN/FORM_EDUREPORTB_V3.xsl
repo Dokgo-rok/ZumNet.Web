@@ -133,13 +133,13 @@
             <span>
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <a href="javascript:parent.fnOption('report.LCM_MAIN',800,200,250,-20,'','STDYEAR');">* 신청 내역</a>
+                  <a href="javascript:void(0)" title="교육 신청 내역" onclick="_zw.formEx.optionWnd('report.LCM_MAIN',800,200,250,-20,'','STDYEAR');">* 신청 내역</a>
                 </xsl:when>
                 <xsl:otherwise>* 신청 내역</xsl:otherwise>
               </xsl:choose>
             </span>
 
-            <table class="ft" border="0" cellspacing="0" cellpadding="0">
+            <table class="ft" border="0" cellspacing="0" cellpadding="0" style="border-bottom:0">
               <tr>
                 <td class="f-lbl" rowspan="3" style="border-bottom:0">
                   신청자
@@ -366,7 +366,7 @@
                 <td colspan="3" style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="COST" class="txtCurrency" maxlength="20" style="width:80px" value="{phxsl:addCommaAndDotMinus(string(//forminfo/maintable/COST), 0)}" />
+                      <input type="text" id="__mainfield" name="COST" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" style="width:80px" value="{phxsl:addCommaAndDotMinus(string(//forminfo/maintable/COST), 0)}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:addComma(string(//forminfo/maintable/COST))" />
@@ -424,12 +424,12 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="CONTENTS" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000);" style="height:80px">
+                      <textarea id="__mainfield" name="CONTENTS" class="txaText bootstrap-maxlength" maxlength="2000" style="height:80px">
                         <xsl:value-of select="//forminfo/maintable/CONTENTS" />
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div name="CONTENTS" style="height:50px">
+                      <div name="CONTENTS" style="min-height:50px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CONTENTS))" />
                       </div>
                     </xsl:otherwise>
@@ -452,12 +452,12 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="SUMMARY" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000);" style="height:80px">
+                      <textarea id="__mainfield" name="SUMMARY" class="txaText bootstrap-maxlength" maxlength="1000" style="height:80px">
                         <xsl:value-of select="//forminfo/maintable/SUMMARY" />
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div name="SUMMARY" style="height:50px">
+                      <div name="SUMMARY" style="min-height:50px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SUMMARY))" />
                       </div>
                     </xsl:otherwise>
@@ -478,7 +478,7 @@
               <span class="f-option" style="width:10%">
                 <input type="checkbox" id="ckb11" name="ckbTRANSYN" value="Y">
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <xsl:attribute name="onclick">parent.fnCheckYN('ckbTRANSYN', this, 'TRANSYN')</xsl:attribute>
+                    <xsl:attribute name="onclick">_zw.form.checkYN('ckbTRANSYN', this, 'TRANSYN')</xsl:attribute>
                   </xsl:if>
                   <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/TRANSYN),'Y')">
                     <xsl:attribute name="checked">true</xsl:attribute>
@@ -487,12 +487,12 @@
                     <xsl:attribute name="disabled">disabled</xsl:attribute>
                   </xsl:if>
                 </input>
-                <label for="ckb11">실시</label>
+                <label class="ml-1" for="ckb11">실시</label>
               </span>
               <span class="f-option" style="width:10%">
                 <input type="checkbox" id="ckb12" name="ckbTRANSYN" value="N">
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <xsl:attribute name="onclick">parent.fnCheckYN('ckbTRANSYN', this, 'TRANSYN')</xsl:attribute>
+                    <xsl:attribute name="onclick">_zw.form.checkYN('ckbTRANSYN', this, 'TRANSYN')</xsl:attribute>
                   </xsl:if>
                   <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/TRANSYN),'N')">
                     <xsl:attribute name="checked">true</xsl:attribute>
@@ -501,7 +501,7 @@
                     <xsl:attribute name="disabled">disabled</xsl:attribute>
                   </xsl:if>
                 </input>
-                <label for="ckb12">미실시</label>
+				  <label class="ml-1" for="ckb12">미실시</label>
               </span>
               <input type="hidden" id="__mainfield" name="TRANSYN" value="{//forminfo/maintable/TRANSYN}" />
             </div>
@@ -525,7 +525,7 @@
                 <td style="width:20%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="TRANSDATE" class="txtDate" maxlength="8" style="width:80px" value="{//forminfo/maintable/TRANSDATE}" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" />
+                      <input type="text" id="__mainfield" name="TRANSDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width:80px" value="{//forminfo/maintable/TRANSDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/TRANSDATE))" />
@@ -549,12 +549,12 @@
                 <td colspan="3" style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="TRANSNOTE" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000);" style="height:60px">
+                      <textarea id="__mainfield" name="TRANSNOTE" class="txaText bootstrap-maxlength" maxlength="1000" style="height:60px">
                         <xsl:value-of select="//forminfo/maintable/TRANSNOTE" />
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div name="TRANSNOTE" style="height:50px">
+                      <div name="TRANSNOTE" style="min-height:50px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/TRANSNOTE))" />
                       </div>
                     </xsl:otherwise>
@@ -579,7 +579,7 @@
                   <span class="f-option" style="width:20%">
                     <input type="checkbox" id="ckb21" name="ckbPOLLA" value="매우만족">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLA),'매우만족')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -593,7 +593,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb22" name="ckbPOLLA" value="만족">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLA),'만족')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -607,7 +607,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb23" name="ckbPOLLA" value="보통">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLA),'보통')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -621,7 +621,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb24" name="ckbPOLLA" value="미흡">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLA),'미흡')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -635,7 +635,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb25" name="ckbPOLLA" value="매우미흡">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLA', this, 'POLLA')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLA),'매우미흡')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -655,7 +655,7 @@
                   <span class="f-option" style="width:20%">
                     <input type="checkbox" id="ckb31" name="ckbPOLLB" value="매우만족">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLB),'매우만족')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -669,7 +669,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb32" name="ckbPOLLB" value="만족">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLB),'만족')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -683,7 +683,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb33" name="ckbPOLLB" value="보통">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLB),'보통')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -697,7 +697,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb34" name="ckbPOLLB" value="미흡">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLB),'미흡')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -711,7 +711,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb35" name="ckbPOLLB" value="매우미흡">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLB', this, 'POLLB')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLB),'매우미흡')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -731,7 +731,7 @@
                   <span class="f-option" style="width:20%">
                     <input type="checkbox" id="ckb41" name="ckbPOLLC" value="매우만족">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLC),'매우만족')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -745,7 +745,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb42" name="ckbPOLLC" value="만족">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLC),'만족')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -759,7 +759,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb43" name="ckbPOLLC" value="보통">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLC),'보통')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -773,7 +773,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb44" name="ckbPOLLC" value="미흡">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLC),'미흡')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -787,7 +787,7 @@
                   <span class="f-option" style="width:15%">
                     <input type="checkbox" id="ckb45" name="ckbPOLLC" value="매우미흡">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPOLLC', this, 'POLLC')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/POLLC),'매우미흡')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -817,12 +817,12 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="DESCRIPTION" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000);" style="height:80px">
+                      <textarea id="__mainfield" name="DESCRIPTION" class="txaText bootstrap-maxlength" maxlength="2000" style="height:80px">
                         <xsl:value-of select="//forminfo/maintable/DESCRIPTION" />
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div name="DESCRIPTION" style="height:50px">
+                      <div name="DESCRIPTION" style="min-height:50px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DESCRIPTION))" />
                       </div>
                     </xsl:otherwise>
@@ -832,7 +832,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
