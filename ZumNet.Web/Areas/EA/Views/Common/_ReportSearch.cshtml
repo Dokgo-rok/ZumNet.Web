@@ -137,7 +137,57 @@
                     else strReturn = svcRt.ResultMessage;
                     #endregion
                 }
-                else if (postData["k2"].ToString() == "REGISTER_OUTWORK" || postData["k2"].ToString() == "REGISTER_INANDOUT")
+                else if (postData["k2"].ToString() == "REGISTER_INANDOUT")
+                {
+                    #region [REGISTER_INANDOUT]
+                    if (postData["query"].ToString() == "")
+                    {
+                        strReturn = "NE" + "출장자ID가 누락됐습니다!";
+                    }
+                    else
+                    {
+                        using (ReportBiz rptBiz = new ReportBiz())
+                        {
+                            svcRt = rptBiz.GetReport("ua", Convert.ToInt32(postData["query"].ToString()), postData["k2"].ToString(), postData["v1"].ToString(), "", "", "", "", "", "");
+                        }
+
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (svcRt.ResultItemCount > 0) strRt = svcRt.ResultDataSet.Tables[0].Rows[0]["STDTIME"].ToString();
+                            if (strRt == "") strReturn = "NO" + "퇴근기록이 업데이트 되지 않았습니다.\n\r* 문의 인사총무팀 나종문(615번)";
+                            else strReturn = "OK" + strRt;
+                        }
+                        else strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "REGISTER_GAS")
+                {
+                    #region [REGISTER_GAS]
+                    string cmd = "";
+                    if (postData["v1"].ToString() == "휘발유") cmd = "ua";
+                    else if (postData["v1"].ToString() == "경유") cmd = "ub";
+                    else if (postData["v1"].ToString() == "LPG") cmd = "uc";
+                    else strReturn = "유류정보가 누락됐습니다!";
+
+                    if (strReturn == "")
+                    {
+                        using (ReportBiz rptBiz = new ReportBiz())
+                        {
+                            svcRt = rptBiz.GetReport(cmd, Convert.ToInt32(postData["k3"].ToString()), postData["k2"].ToString(), postData["query"].ToString(), "", "", "", "", "", "");
+                        }
+
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (svcRt.ResultItemCount > 0) strRt = svcRt.ResultDataSet.Tables[0].Rows[0][0].ToString();
+                            if (strRt == "") strReturn = "유류정보가 업데이트 되지 않았습니다.\n\r* 문의 인사총무팀 나종문(615번)";
+                            else strReturn = "OK" + strRt;
+                        }
+                        else strReturn = svcRt.ResultMessage;
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "REGISTER_OUTWORK")
                 {
                     #region [야근신청서]
                     if (postData["query"].ToString() == "")

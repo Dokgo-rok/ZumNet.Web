@@ -27,15 +27,15 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:714px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
+          .m {width:720px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:72px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:13%} .m .ft .f-lbl1 {width:6%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:15%} .m .ft .f-option1 {width:34%}   .m .ft .f-option2 {width:40%}
+          .m .ft .f-option {width:15%} .m .ft .f-option1 {width:34%}   .m .ft .f-option2 {width:100px}
           .m .ft-sub .f-option {width:49%}
 
           /* 인쇄 설정 : 맨하단으로 */
@@ -48,18 +48,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -69,18 +65,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -88,15 +80,15 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:300px">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '작성부서')"/>
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
-                <td style="width:300px">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '4', '주관부서')"/>
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
-                <td style="width:92px">
+                <td style="width:95px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='last' and @partid!='' and @step!='0'], '__si_Last', '1', '승인')"/>
                 </td>
               </tr>
@@ -147,13 +139,16 @@
                 <td class="f-lbl" rowspan="2">
                   출장자
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                    <!--<button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0">
                         <xsl:attribute name="src">
                           /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                         </xsl:attribute>
                       </img>
-                    </button>
+                    </button>-->
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
+						  <i class="fas fa-angle-down"></i>
+					  </button>
                   </xsl:if>
                 </td>
                 <td class="f-lbl1">법인</td>
@@ -338,10 +333,10 @@
                     </xsl:otherwise>
                   </xsl:choose>-->
 
-                  <span class="f-option1">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb51" name="ckbLOCATION" value="KH">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbLOCATION', this, 'LOCATION')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbLOCATION', this, 'LOCATION')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/LOCATION),'KH')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -352,10 +347,10 @@
                     </input>
                     <label for="ckb51">본사휴가</label>
                   </span>
-                  <span class="f-option1">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb52" name="ckbLOCATION" value="현지휴가">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbLOCATION', this, 'LOCATION')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbLOCATION', this, 'LOCATION')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/LOCATION),'현지휴가')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -376,15 +371,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="TRIPFROM">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:70px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/TRIPFROM" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="TRIPFROM" class="datepicker txtDate" maxlength="10" style="width:72px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/TRIPFROM}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TRIPFROM))" />
@@ -393,31 +380,15 @@
                   &nbsp;~&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="TRIPTO">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:70px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/TRIPTO" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="TRIPTO" class="datepicker txtDate" maxlength="10" style="width:72px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/TRIPTO}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TRIPTO))" />
                     </xsl:otherwise>
                   </xsl:choose>
-                  &nbsp;(
-                  <xsl:choose>
+					&nbsp;(<xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="STAY">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="style">width:18px</xsl:attribute>
-                        <xsl:attribute name="maxlength">3</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/STAY" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="STAY" class="txtNumberic" maxlength="3" style="width:20px" data-inputmask="number;3;0" value="{//forminfo/maintable/STAY}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/STAY))" />
@@ -426,29 +397,22 @@
                   &nbsp;박&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="DAY">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="style">width:18px</xsl:attribute>
-                        <xsl:attribute name="maxlength">3</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/DAY" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="DAY" class="txtNumberic" maxlength="3" style="width:20px" data-inputmask="number;3;0" value="{//forminfo/maintable/DAY}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DAY))" />
                     </xsl:otherwise>
                   </xsl:choose>
-                  &nbsp;일&nbsp;)
+                  &nbsp;일)
                 </td>
               </tr>
               <tr>
                 <td class="f-lbl" style="">이전출장여부</td>
                 <td colspan="6" style="border-right:0">
-                  <span class="f-option">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb31" name="ckbLASTCHECK" value="전출장무">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbLASTCHECK', this, 'LASTCHECK')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbLASTCHECK', this, 'LASTCHECK')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/LASTCHECK),'전출장무')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -459,10 +423,10 @@
                     </input>
                     <label for="ckb31">전출장무</label>
                   </span>
-                  <span class="f-option">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb32" name="ckbLASTCHECK" value="전출장유">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbLASTCHECK', this, 'LASTCHECK')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbLASTCHECK', this, 'LASTCHECK')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/LASTCHECK),'전출장유')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -480,16 +444,7 @@
                   </input>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="LASTTRIPFROM">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="style">display:none;width:100px</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/LASTTRIPFROM" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="LASTTRIPFROM" class="datepicker txtDate" maxlength="10" readonly="readonly" style="display:none;width:100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/LASTTRIPFROM}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/LASTTRIPFROM))" />
@@ -498,16 +453,7 @@
                   &nbsp;~&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="LASTTRIPTO">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="style">display:none;width:100px</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/LASTTRIPTO" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="LASTTRIPTO" class="datepicker txtDate" maxlength="10" readonly="readonly" style="display:none;width:100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/LASTTRIPTO}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/LASTTRIPTO))" />
@@ -516,15 +462,7 @@
                   &nbsp;(
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="LASTSTAY">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="style">display:none;width:18px</xsl:attribute>
-                        <xsl:attribute name="maxlength">3</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/LASTSTAY" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="LASTSTAY" class="txtNumberic" maxlength="3" readonly="readonly" style="display:none;width:22px" data-inputmask="number;3;0" value="{//forminfo/maintable/LASTSTAY}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/LASTSTAY))" />
@@ -533,15 +471,7 @@
                   &nbsp;박&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="LASTDAY">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="style">display:none;width:18px</xsl:attribute>
-                        <xsl:attribute name="maxlength">3</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/LASTDAY" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="LASTDAY" class="txtNumberic" maxlength="3" readonly="readonly" style="display:none;width:22px" data-inputmask="number;3;0" value="{//forminfo/maintable/LASTDAY}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/LASTDAY))" />
@@ -556,7 +486,7 @@
                   <span class="f-option2">
                     <input type="checkbox" id="ckb11" name="ckbOUTBUDGET" value="불필요">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbOUTBUDGET', this, 'OUTBUDGET')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbOUTBUDGET', this, 'OUTBUDGET')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/OUTBUDGET),'불필요')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -570,7 +500,7 @@
                   <span class="f-option2">
                     <input type="checkbox" id="ckb12" name="ckbOUTBUDGET" value="필요">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbOUTBUDGET', this, 'OUTBUDGET')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbOUTBUDGET', this, 'OUTBUDGET')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/OUTBUDGET),'필요')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -592,7 +522,7 @@
                   <span class="f-option2">
                     <input type="checkbox" id="ckb21" name="ckbUSEMONEY" value="회사부담">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbUSEMONEY', this, 'USEMONEY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbUSEMONEY', this, 'USEMONEY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/USEMONEY),'회사부담')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -606,7 +536,7 @@
                   <span class="f-option2">
                     <input type="checkbox" id="ckb22" name="ckbUSEMONEY" value="개인부담">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbUSEMONEY', this, 'USEMONEY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbUSEMONEY', this, 'USEMONEY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/USEMONEY),'개인부담')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -646,14 +576,7 @@
                  <td style="border-right:0;border-bottom:0">
                    <xsl:choose>
                      <xsl:when test="$mode='new' or $mode='edit'">
-                       <input type="text" id="__mainfield" name="TRIPFROM1">
-                         <xsl:attribute name="class">txtDate</xsl:attribute>
-                         <xsl:attribute name="maxlength">8</xsl:attribute>
-                         <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                         <xsl:attribute name="value">
-                           <xsl:value-of select="//forminfo/maintable/TRIPFROM1" />
-                         </xsl:attribute>
-                       </input>
+                       <input type="text" id="__mainfield" name="TRIPFROM1" class="datepicker txtDate" maxlength="10" style="width:100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/TRIPFROM1}" />
                      </xsl:when>
                      <xsl:otherwise>
                        <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TRIPFROM1))" />
@@ -664,11 +587,14 @@
              </table>
            </div>
 
-          <div class="fm">
-            <spna>
+			<div class="ff" />
+			<div class="ff" />
+
+			<div class="fm text-center">
+            <span>
               <font color="red">한국에서 병원진료 예정이신 분은 E-ticket을 별도 전달바랍니다.</font>
               <font color="black">(담당자:고선일)</font>
-            </spna>
+            </span>
           </div>
           <div class="ff" />
           <div class="ff" />
@@ -692,7 +618,7 @@
                       <span>규정 외 지출예상 내역</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_26.gif</xsl:attribute>
                         </img>추가
@@ -701,7 +627,13 @@
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_27.gif</xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -726,11 +658,11 @@
                       <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
                     </xsl:if>
                     <colgroup>
-                      <col style="width:25px"></col>
-                      <col style="width:200px"></col>
-                      <col style="width:120px"></col>
-                      <col style="width:100px"></col>
-                      <col style="width:267px"></col>
+					    <col style="width:4%"></col>
+					    <col style="width:30%"></col>
+					    <col style="width:15%"></col>
+					    <col style="width:14%"></col>
+					    <col style="width:47%"></col>
                     </colgroup>
                     <tr style="height:24px">
                       <td class="f-lbl-sub" style="border-top:0">&nbsp;</td>
@@ -744,6 +676,11 @@
                 </td>
               </tr>
             </table>
+
+			  <div class="ff" />
+			  <div class="ff" />
+			  <div class="ff" />
+			  <div class="ff" />
           </div>
 
           <div class="fm">
@@ -773,15 +710,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="SECONDDATE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>                        
-                        <xsl:attribute name="style">width:100px</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SECONDDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SECONDDATE" class="datepicker txtDate" maxlength="10" style="width: 100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/SECONDDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SECONDDATE))" />
@@ -792,10 +721,10 @@
                   주재구분
                 </td>
                 <td style="border-right:0">
-                  <span class="f-option1">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb500" name="ckbCHECKTYPE" value="가족동반">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKTYPE', this, 'CHECKTYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKTYPE', this, 'CHECKTYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKTYPE),'가족동반')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -806,10 +735,10 @@
                     </input>
                     <label for="ckb500">가족동반</label>
                   </span>
-                  <span class="f-option1">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb510" name="ckbCHECKTYPE" value="단신부임">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHECKTYPE', this, 'CHECKTYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHECKTYPE', this, 'CHECKTYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHECKTYPE),'단신부임')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -834,15 +763,7 @@
                 <td style="border-right:0"  colspan="3">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="SECONDFROM">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:100px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SECONDFROM" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SECONDFROM" class="datepicker txtDate" maxlength="10" style="width: 100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/SECONDFROM}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SECONDFROM))" />
@@ -851,24 +772,16 @@
                   &nbsp;~&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="SECONDTO">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:100px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SECONDTO" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SECONDTO" class="datepicker txtDate" maxlength="10" style="width: 100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/SECONDTO}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SECONDTO))" />
                     </xsl:otherwise>
                   </xsl:choose>&nbsp;&nbsp;&nbsp;(
-                  <span class="f-option">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb100" name="ckbSECONDTYPE" value="본사휴가">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbSECONDTYPE', this, 'SECONDTYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbSECONDTYPE', this, 'SECONDTYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/SECONDTYPE),'본사휴가')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -879,10 +792,10 @@
                     </input>
                     <label for="ckb100">본사휴가</label>
                   </span>
-                  <span class="f-option">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb110" name="ckbSECONDTYPE" value="현지휴가">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbSECONDTYPE', this, 'SECONDTYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbSECONDTYPE', this, 'SECONDTYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/SECONDTYPE),'현지휴가')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -907,15 +820,7 @@
                 <td style="border-right:0"  colspan="3">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="THIRDFROM">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:100px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/THIRDFROM" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="THIRDFROM" class="datepicker txtDate" maxlength="10" style="width: 100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/THIRDFROM}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/THIRDFROM))" />
@@ -924,24 +829,16 @@
                   &nbsp;~&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="THIRDTO">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:100px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/THIRDTO" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="THIRDTO" class="datepicker txtDate" maxlength="10" style="width: 100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/THIRDTO}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/THIRDTO))" />
                     </xsl:otherwise>
                   </xsl:choose>&nbsp;&nbsp;&nbsp;(
-                  <span class="f-option">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb200" name="ckbTHIRDTYPE" value="본사휴가">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbTHIRDTYPE', this, 'THIRDTYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbTHIRDTYPE', this, 'THIRDTYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/THIRDTYPE),'본사휴가')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -952,10 +849,10 @@
                     </input>
                     <label for="ckb200">본사휴가</label>
                   </span>
-                  <span class="f-option">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb210" name="ckbTHIRDTYPE" value="현지휴가">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbTHIRDTYPE', this, 'THIRDTYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbTHIRDTYPE', this, 'THIRDTYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/THIRDTYPE),'현지휴가')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -980,15 +877,7 @@
                 <td style="border-right:0;border-bottom:0"  colspan="3">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="FORTHFROM">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:100px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/FORTHFROM" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="FORTHFROM" class="datepicker txtDate" maxlength="10" style="width: 100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/FORTHFROM}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/FORTHFROM))" />
@@ -997,24 +886,16 @@
                   &nbsp;~&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="FORTHTO">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:100px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/FORTHTO" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="FORTHTO" class="datepicker txtDate" maxlength="10" style="width: 100px" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/FORTHTO}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/FORTHTO))" />
                     </xsl:otherwise>
                   </xsl:choose>&nbsp;&nbsp;&nbsp;(
-                  <span class="f-option">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb300" name="ckbFORTHTYPE" value="본사휴가">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbFORTHTYPE', this, 'FORTHTYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbFORTHTYPE', this, 'FORTHTYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/FORTHTYPE),'본사휴가')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -1025,10 +906,10 @@
                     </input>
                     <label for="ckb300">본사휴가</label>
                   </span>
-                  <span class="f-option">
+                  <span class="f-option2">
                     <input type="checkbox" id="ckb310" name="ckbFORTHTYPE" value="현지휴가">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbFORTHTYPE', this, 'FORTHTYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbFORTHTYPE', this, 'FORTHTYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/FORTHTYPE),'현지휴가')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -1093,14 +974,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="WORKDATE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>                        
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/WORKDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="WORKDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/WORKDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/WORKDATE))" />
@@ -1158,14 +1032,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="WORKDATE2">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>                        
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/WORKDATE2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="WORKDATE2" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/WORKDATE2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/WORKDATE2))" />
@@ -1301,17 +1168,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="DESCRIPTION" style="height:380px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="DESCRIPTION" style="height:200px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/DESCRIPTION" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="DESCRIPITON" style="height:380px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:200px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DESCRIPTION))" />
                       </div>
                     </xsl:otherwise>
@@ -1326,7 +1190,7 @@
           <div class="ff" />
           <div class="ff" />
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -1388,7 +1252,7 @@
  
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ">
@@ -1398,7 +1262,6 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -1422,13 +1285,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="AMOUNT">
-              <xsl:attribute name="class">txtCurrency</xsl:attribute>
-              <xsl:attribute name="maxlength">20</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="AMOUNT" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="AMOUNT" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{AMOUNT}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1439,20 +1296,23 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="CURRENCY" style="width:76px;height:16px">
+            <input type="text" name="CURRENCY" style="width:79%">
               <xsl:attribute name="class">txtText_u</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="CURRENCY" />
               </xsl:attribute>
             </input>
-            <button onclick="parent.fnOption('iso.currency',160,140,60,100,'etc',this);" onfocus="this.blur()" class="btn_bg" style="height:16px">
+            <!--<button onclick="parent.fnOption('iso.currency',160,140,60,100,'etc',this);" onfocus="this.blur()" class="btn_bg" style="height:16px">
               <img alt="" class="blt01" style="margin:0 0 2px 0">
                 <xsl:attribute name="src">
                   /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                 </xsl:attribute>
               </img>
-            </button>
+            </button>-->
+			  <button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,274,-100,0,'etc','CURRENCY');">
+				  <i class="fas fa-angle-down"></i>
+			  </button>
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1480,7 +1340,7 @@
   </xsl:template>
   <xsl:template match="//forminfo/subtables/subtable2/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ">
@@ -1490,7 +1350,6 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -1498,14 +1357,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TRIPDAY">
-              <xsl:attribute name="class">txtDate</xsl:attribute>
-              <xsl:attribute name="maxlength">8</xsl:attribute>
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="TRIPDAY" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="TRIPDAY" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{TRIPDAY}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
