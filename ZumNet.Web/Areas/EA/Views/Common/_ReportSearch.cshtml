@@ -161,6 +161,76 @@
                     }
                     #endregion
                 }
+                else if (postData["k2"].ToString() == "BIZTRIP_EXPENSERULE")
+                {
+                    #region [출장여비규정]
+                    strWhere = "SELECT Grade2, Code1, Keyword2 FROM admin.ph_VIEW_OBJECT_UR_LIST (NOLOCK) WHERE UserID = @userid AND GR_ID = @grid";
+                    System.Data.SqlClient.SqlParameter[] parameters = new System.Data.SqlClient.SqlParameter[]
+                    {
+                        ZumNet.Framework.Data.ParamSet.Add4Sql("@userid", SqlDbType.Int, 4, Convert.ToInt32(postData["v1"].ToString())),
+                        ZumNet.Framework.Data.ParamSet.Add4Sql("@grid", SqlDbType.Int, 4, Convert.ToInt32(postData["v2"].ToString()))
+                    };
+                    using (ExecuteBiz exBiz = new ExecuteBiz())
+                    {
+                        svcRt = exBiz.ExecuteQuery(strWhere, 15, parameters);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        DataRow row = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+                        if (postData["v3"].ToString() == "1")
+                        {
+                            switch (row["Grade2"].ToString())
+                            {
+
+                                case "회장": strReturn = "100"; break;
+                                case "사장":
+                                case "부사장":
+                                case "상임감사":
+                                case "전무": strReturn = "50"; break;
+                                case "상무":
+                                case "이사":
+                                case "실장": strReturn = "30"; break;
+                                case "부장":
+                                case "수석연구원":
+                                case "차장": strReturn = "20"; break;
+                                case "과장":
+                                case "선임연구원":
+                                case "대리": strReturn = "15"; break;
+                                case "책임연구원": strReturn = (row["Keyword2"].ToString() == "차장") ? "20" : "15"; break;
+                                case "현지관리자": strReturn = "5"; break;
+                                default: strReturn = "10"; break;
+
+                            }
+                        }
+                        else if (postData["v3"].ToString() == "2")
+                        {
+                            switch (row["Grade2"].ToString())
+                            {
+                                case "회장": strReturn = "100"; break;
+                                case "사장": strReturn = "40"; break;
+                                case "부사장":
+                                case "전무": strReturn = "30"; break;
+                                case "상무":
+                                case "이사":
+                                case "실장": strReturn = "25"; break;
+                                case "부장":
+                                case "수석연구원":
+                                case "차장": strReturn = "20"; break;
+                                case "과장":
+                                case "선임연구원":
+                                case "대리": strReturn = "15"; break;
+                                case "책임연구원": strReturn = (row["Keyword2"].ToString() == "차장") ? "20" : "15"; break;
+                                case "현지관리자": strReturn = "5"; break;
+                                default: strReturn = "10"; break;
+                            }
+                        }
+                        strReturn = "OK" + strReturn;
+                    }
+                    else strReturn = svcRt.ResultMessage;
+                    #endregion
+                }
                 else
                 {
                     strReturn = "해당 조건이 누락됐습니다!";

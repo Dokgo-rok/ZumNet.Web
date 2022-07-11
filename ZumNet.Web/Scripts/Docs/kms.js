@@ -22,7 +22,7 @@ $(function () {
 
         var postData = _zw.fn.getAppQuery(_zw.V.fdid);
         var url = '/Docs/Kms/Write?qi=' + encodeURIComponent(_zw.base64.encode(postData));
-        _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
+        _zw.ut.openWnd(url, "popupform_kms", 800, 800, "resize");
     }
 
     _zw.mu.editMsg = function (xf, m) { //alert(_zw.V.appid)
@@ -316,7 +316,7 @@ $(function () {
                 jPost["attachlist"].push(v);
             }
 
-            jPost["attachcount"] = fileList.length;
+            jPost["attachcount"] = vFile.length;
             jPost["attachsize"] = DEXT5UPLOAD.GetTotalFileSize();
         }
         else {

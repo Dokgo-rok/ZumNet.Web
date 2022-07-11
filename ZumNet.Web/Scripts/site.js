@@ -168,8 +168,14 @@ $(function () {
                 _zw.ut.openWnd(url, "externalWin");
                 break;
             case "edm.new":
-                _zw.mu.writeMsg('doc');
+                //_zw.mu.writeMsg('doc');
                 //bootbox.alert("문서관리 신규 문서 등록", function () { _zw.ut.ajaxLoader(false) });
+                if (_zw.mu.writeMsg) _zw.mu.writeMsg('doc');
+                else {
+                    var postData = '{"M":"","wnd": "popup","ct":"108","ctalias": "kdoc","xfalias": "doc","tgt":"0","boundary": "__Ym91bmRhcnlfMXB0eXZpbmd6dG1qazJ4YTMzZW4zdmt1__"}';
+                    var url = '/Docs/Edm/Write?qi=' + encodeURIComponent(_zw.base64.encode(postData));
+                    _zw.ut.openWnd(url, "newform_doc", 640, 600, "resize");
+                }
                 break;
             case "ea.newdoc":
                 _zw.fn.newEAForm();
@@ -223,7 +229,7 @@ $(function () {
             _zw.fn.newEAForm();
 
         } else if (ct == 'kdoc') {
-            bootbox.alert('준비중')
+            _zw.mu.writeMsg('doc');
 
         } else if (ct == 'kms') {
             _zw.mu.writeMsg('knowledge');
@@ -311,13 +317,14 @@ $(function () {
     //폴더선택 모달 창
     $('.btn[data-zf-menu="openClassWnd"]').click(function () {
         var p = $('#popLayer'), ttl = $(this).prev().html();
+        //if (ttl == '') ttl = $(this).parent().prev().find('span').html();
         
         p.find('.modal-title').html(ttl);
         p.find('.modal-body').html('<div id="__ClassTree"></div>');
         var pAdd = p.find('.modal-footer div[data-for="zf-addinfo"]');
         pAdd.html('<input type="text" class="form-control text-danger" data-for="addinfo" value="" /><input type="hidden" data-for="addinfo2" value="" /><input type="hidden" data-for="addinfo3" value="" />');
 
-        if (p.attr("data-width") && parseInt(p.attr("data-width")) > 0) p.find(".modal-dialog").css("width", p.attr("data-width") + "px");
+        //if (p.attr("data-width") && parseInt(p.attr("data-width")) > 0) p.find(".modal-dialog").css("width", p.attr("data-width") + "px");
 
         var cSelect = pAdd.find('input[data-for="addinfo"]'), cSelect2 = pAdd.find('input[data-for="addinfo2"]'), cSelect3 = pAdd.find('input[data-for="addinfo3"]');
 
@@ -328,11 +335,9 @@ $(function () {
 
             //console.log(vPath + " : " + n.li_attr.objecttype + " : " + n.li_attr.acl.substr(10, 1) + " : " + n.li_attr.xfalias)
 
-            if (n.li_attr.objecttype == 'G' && n.li_attr.acl.substr(10, 1) == 'W'
-                && ((_zw.V.xfalias == '' && (n.li_attr.xfalias == 'notice' || n.li_attr.xfalias == 'bbs'))
-                    || (_zw.V.xfalias == n.li_attr.xfalias)
+            if (n.li_attr.objecttype == 'G' && ((_zw.V.xfalias == n.li_attr.xfalias) 
+                    || (_zw.V.xfalias == '' && (n.li_attr.xfalias == 'notice' || n.li_attr.xfalias == 'bbs'))
                 )) {
-
                 if (_zw.V.current.operator == 'Y' || n.li_attr.acl.substr(10, 1) == 'W') {
                     cSelect.val(vPath); cSelect2.val(vId[vId.length - 1]); cSelect3.val(n.li_attr.xfalias);
                 } else {
@@ -633,7 +638,7 @@ $(function () {
                     + '",fdid:"' + (p.attr('fdid') != undefined ? p.attr('fdid') : _zw.V.fdid) + '",appid:"' + p.attr('appid') + '",opnode:"",ttl:"",acl:"'
                     + '",appacl:"' + (p.attr('acl') != undefined ? p.attr('acl') : '') + '",sort:"' + sortCol + '",sortdir:"' + sortType + '",boundary:"' + _zw.V.lv.boundary + '"}';
                 tgtPage = stdPage;
-                console.log(postData);
+                //console.log(postData);
 
             } else {
                 if (m == 'prev') {
@@ -660,7 +665,8 @@ $(function () {
             var url = tgtPage + '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
             if (m == 'popup') {
-                _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
+                if (_zw.V.xfalias == 'doc') _zw.ut.openWnd(url, "popupform" + (_zw.V.xfalias != '' ? '_' + _zw.V.xfalias : ''), 500, 500, "resize");
+                else _zw.ut.openWnd(url, "popupform" + (_zw.V.xfalias != '' ? '_' + _zw.V.xfalias : ''), 800, 800, "resize");
 
             } else if (tgtPage.toLowerCase() == stdPage.toLowerCase()) {
                 $.ajax({
@@ -2770,8 +2776,11 @@ $(function () {
             } else {
                 for (var i = 0; i < _zw.V.app.attachlist.length; i++) {
                     var f = _zw.V.app.attachlist[i];
-                    //console.log(i + " : " + f.filepath.replace(/\\/gi, '/') + '/' + f.savedname + " : " + f.attachid);
-                    DEXT5UPLOAD.AddUploadedFile((i + 1).toString(), f.filename, f.filepath.replace(/\\/gi, '/') + '/' + f.savedname, f.size, f.attachid, _zw.T.uploader.id);
+                    var savedName = f.filepath.replace(/\\/gi, '/') + '/' + f.savedname;
+                    if (savedName.substr(0, 1) != '/') savedName = '/' + savedName;
+                    console.log(i + " : " + savedName + " : " + f.attachid);
+
+                    DEXT5UPLOAD.AddUploadedFile((i + 1).toString(), f.filename, savedName, f.size, f.attachid, _zw.T.uploader.id);
                 }
             }
         }

@@ -410,8 +410,12 @@
     <Content Include="Content\Forms\CRESYN\FORM_BIZEXPENSEHB_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPDAILYREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPDAILYREPORT_V2.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPEXPENSE_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPPLAN_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPEXPENSE_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPPLAN_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPREPORT_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPREPORT_V3.xsl" />
@@ -2089,6 +2093,7 @@
     <Content Include="Scripts\EA\Forms\FORM_BIZDOMTRIPEXPENSE.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPEXPENSE.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPPLAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_BIZVACPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
@@ -2110,9 +2115,11 @@
     <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOLIWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOMEWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_INTERNALAUDITRESULT.js" />
     <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_ITEMMASTERCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MANMOVESEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANPT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MASTERFILECHANGEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_MINUTES.js" />
@@ -3038,6 +3045,13 @@
     <Content Include="Areas\EA\Views\Common\_ReportSearch.cshtml" />
     <Content Include="Areas\EA\Views\Common\_OracleERP.cshtml" />
     <Content Include="Areas\EA\Views\Form\Preview.cshtml" />
+    <Content Include="Content\Json\jform_doc.json" />
+    <Content Include="Areas\Docs\Views\Edm\Read.cshtml" />
+    <Content Include="Areas\Docs\Views\Edm\_Read.cshtml" />
+    <Content Include="Areas\Docs\Views\Edm\Write.cshtml" />
+    <Content Include="Areas\Docs\Views\Edm\_Write.cshtml" />
+    <Content Include="Areas\Docs\Views\Edm\Edit.cshtml" />
+    <Content Include="Areas\Docs\Views\Edm\_Edit.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

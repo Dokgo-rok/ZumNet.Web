@@ -22,7 +22,7 @@ namespace ZumNet.Web.Bc
     /// </summary>
     public static class FormHandler
     {
-        #region [양식 JSON 변환 : 게시판, 문서관리, 지식관리]
+        #region [양식 JSON 변환 : 게시판, 지식관리]
         /// <summary>
         /// Form Data Binding
         /// </summary>
@@ -49,7 +49,7 @@ namespace ZumNet.Web.Bc
             //}
 
             if (ctrl.ViewBag.R.xfalias == "bbs" || ctrl.ViewBag.R.xfalias == "notice" || ctrl.ViewBag.R.xfalias == "file") sJsonPath = "~/Content/Json/jform_bbs.json";
-            else if (ctrl.ViewBag.R.xfalias == "doc") sJsonPath = "~/Content/Json/jform_doc.json";
+            //else if (ctrl.ViewBag.R.xfalias == "doc") sJsonPath = "~/Content/Json/jform_doc.json";
             else if (ctrl.ViewBag.R.xfalias == "knowledge") sJsonPath = "~/Content/Json/jform_knowledge.json";
             //else if (ctrl.ViewBag.R.xfalias == "ea") sJsonPath = "~/Content/Json/jform_ea.json";
             else sJsonPath = "~/Content/Json/jform_bbs.json"; //xfalias='' 인 경우 일반게시 또는 공지사항으로 적용
@@ -263,6 +263,217 @@ namespace ZumNet.Web.Bc
                 if (fileInfo != null) fileInfo.Dispose();
                 if (cmntInfo != null) cmntInfo.Dispose();
                 if (replyInfo != null) replyInfo.Dispose();
+            }
+
+            return strReturn;
+        }
+        #endregion
+
+        #region [문서관리 JSON 변환]
+        public static string BindDocToJson(this Controller ctrl, ZumNet.Framework.Core.ServiceResult formData)
+        {
+            string strReturn = "";
+            JObject jV;
+            DataRow mainInfo = null;
+            DataTable fileInfo = null;
+            DataTable aclInfo = null;
+            DataTable cmntInfo = null;
+
+            XmlDocument xmlDoc = null;
+
+            string sJsonPath = "~/Content/Json/jform_doc.json";
+            string sPos = "";
+
+            try
+            {
+                sPos = "100";
+                using (StreamReader reader = File.OpenText(HttpContext.Current.Server.MapPath(sJsonPath)))
+                {
+                    jV = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+                }
+
+                if (formData != null)
+                {
+                    if (formData.ResultDataSet != null && formData.ResultDataSet.Tables.Count > 0)
+                    {
+                        sPos = "210";
+                        mainInfo = formData.ResultDataSet.Tables["TBL_BOARD"].Rows[0];
+                        fileInfo = formData.ResultDataSet.Tables["TBL_FILE"];
+                        aclInfo = formData.ResultDataSet.Tables["TBL_ACL"];
+                        cmntInfo = formData.ResultDataSet.Tables["TBL_COMMENT"];
+
+                        //MessageID, FD_ID, MsgType, Subject, CreatorID, CoCreateGR, CreatorDept, ISNULL(D.EditDate, CreateDate) AS DocDate
+                        //HasAttachFile, Creator AS CreatorName, B.DisplayName, C.Body, ProcessState AS State, E.Reserved1, E.Reserved2, AttType, Inherited
+                        //ParentMsgID, SeqID, Step, Depth, State, CommentCount, ViewCount, EvalCount
+
+                        sPos = "300";
+                        jV["parent"] = mainInfo["ParentMsgID"].ToString();
+                        jV["att"] = mainInfo["AttType"].ToString();
+                        jV["msg"] = mainInfo["MsgType"].ToString();
+                        jV["priority"] = "";
+                        jV["state"] = mainInfo["State"].ToString();
+
+                        jV["creur"] = mainInfo["CreatorName"].ToString();
+                        jV["creurid"] = mainInfo["CreatorID"].ToString();
+                        jV["creurcn"] = "";
+                        jV["cremail"] = "";
+                        jV["creempid"] = "";
+                        jV["cregrade"] = "";
+                        jV["credept"] = mainInfo["CreatorDept"].ToString();
+                        jV["credpid"] = "";
+                        jV["credpcd"] = "";
+                        jV["docdate"] = mainInfo["DocDate"].ToString();
+                        jV["pubdate"] = "";
+
+                        jV["subject"] = mainInfo["Subject"].ToString();
+                        jV["body"] = mainInfo["Body"].ToString();
+                        jV["seqid"] = mainInfo["SeqID"].ToString();
+                        jV["depth"] = mainInfo["Depth"].ToString();
+                        jV["topline"] = "";
+                        jV["ispopup"] = "";
+                        jV["replymail"] = "";
+                        jV["rsvd1"] = mainInfo["Reserved1"].ToString();
+                        jV["rsvd2"] = mainInfo["Reserved2"].ToString();
+                        jV["viewcount"] = mainInfo["ViewCount"].ToString();
+
+                        //권한
+                        sPos = "500";
+                        if (aclInfo != null && aclInfo.Rows.Count > 0)
+                        {
+                            var jArr = new JArray();
+                            foreach (DataRow dr in aclInfo.Rows)
+                            {
+                                JObject jTemp = JObject.Parse("{}");
+                                jTemp["tgtid"] = dr["TargetID"].ToString();
+                                jTemp["tgttype"] = dr["TargetType"].ToString();
+                                jTemp["tgtname"] = dr["TargetName"].ToString();
+                                jTemp["acl"] = dr["AclKind"].ToString();
+                                jTemp["desc"] = dr["Description"].ToString();
+                                jTemp["tgtalias"] = dr["TargetAlias"].ToString();
+
+                                jArr.Add(jTemp);
+                            }
+                            jV["acllist"] = jArr;
+                        }
+
+                        //첨부파일
+                        sPos = "600";
+                        if (fileInfo != null && fileInfo.Rows.Count > 0)
+                        {
+                            decimal dSum = 0;
+                            var jArr = new JArray();
+                            foreach (DataRow dr in fileInfo.Rows)
+                            {
+                                dSum += Convert.ToDecimal(StringHelper.SafeDecimal(dr["FileSize"]));
+
+                                sPos = "610";
+                                JObject jTemp = JObject.Parse("{}");
+                                jTemp["attachid"] = dr["AttachID"].ToString();
+                                jTemp["filename"] = dr["FileName"].ToString();
+                                jTemp["savedname"] = dr["SavedName"].ToString();
+                                jTemp["size"] = dr["FileSize"].ToString();
+                                jTemp["ext"] = dr["FileType"].ToString();
+                                jTemp["filepath"] = dr["FilePath"].ToString();
+                                jTemp["storagefolder"] = "";
+
+                                sPos = "620";
+                                //B.IsOriginal, B.Ver, B.IsBase, B.AutoDeleted, B.IsLocked, B.DocLevel, B.KeepYear, B.DocNumber
+                                //, DATEADD(yy, B.KeepYear, B.RegisteredDate) AS ExhaustDate, B.RegisteredDate
+                                //, C.DisplayName AS DocLevelName, D.DisplayName AS KeepYearName
+                                jTemp["isoriginal"] = dr["IsOriginal"].ToString().Trim();
+                                jTemp["ver"] = dr["Ver"].ToString();
+                                jTemp["isbase"] = dr["IsBase"].ToString().Trim();
+                                jTemp["autodeleted"] = dr["AutoDeleted"].ToString().Trim();
+                                jTemp["islocked"] = dr["IsLocked"].ToString().Trim();
+                                jTemp["doclevel"] = dr["DocLevel"].ToString();
+                                jTemp["keepyear"] = dr["KeepYear"].ToString();
+                                jTemp["docnumber"] = dr["DocNumber"].ToString().Trim();
+                                jTemp["exhdate"] = dr["ExhaustDate"].ToString();
+                                jTemp["regdate"] = dr["RegisteredDate"].ToString();
+                                jTemp["docleveltext"] = dr["DocLevelName"].ToString();
+                                jTemp["keepyeartext"] = dr["KeepYearName"].ToString();
+
+                                jArr.Add(jTemp);
+
+                            }
+                            jV["attachlist"] = jArr;
+                            jV["attachcount"] = fileInfo.Rows.Count.ToString();
+                            jV["attachsize"] = CommonUtils.StrFileSize(dSum.ToString());
+                        }
+                        else
+                        {
+                            jV["attachcount"] = "0";
+                            jV["attachsize"] = "";
+                        }
+
+                        //댓글
+                        sPos = "700";
+                        if (cmntInfo != null && cmntInfo.Rows.Count > 0)
+                        {
+                            var jArr = new JArray();
+                            foreach (DataRow dr in cmntInfo.Rows)
+                            {
+                                JObject jTemp = JObject.Parse("{}");
+                                jTemp["msgid"] = dr["MessageID"].ToString();
+                                jTemp["xfalias"] = dr["XFAlias"].ToString();
+                                jTemp["seqid"] = dr["SeqID"].ToString();
+                                jTemp["creurid"] = dr["CreatorID"].ToString();
+                                jTemp["creurcn"] = dr["CreatorCN"].ToString();
+                                jTemp["creur"] = dr["Creator"].ToString();
+                                jTemp["credate"] = dr["CreateDate"].ToString();
+                                jTemp["comment"] = dr["Comment"].ToString();
+                                jTemp["rsvd1"] = dr["Reserved1"].ToString();
+
+                                jArr.Add(jTemp);
+                            }
+                            jV["cmntlist"] = jArr;
+                            jV["cmntcount"] = mainInfo["CommentCount"].ToString();
+                        }
+                        else
+                        {
+                            jV["cmntcount"] = "0";
+                        }
+
+                        //결재선 정보
+                        sPos = "800";
+                        if (formData.ResultDataDetail["eaSignLIne"] != null && formData.ResultDataDetail["eaSignLIne"].ToString() != "")
+                        {
+                            xmlDoc = new XmlDocument();
+                            xmlDoc.LoadXml("<lines>" + formData.ResultDataDetail["eaSignLIne"].ToString() + "</lines>");
+
+                            sPos = "810";
+                            JArray jLine = new JArray();
+                            foreach (XmlNode line in xmlDoc.SelectNodes("line"))
+                            {
+                                JObject jData = new JObject();
+                                foreach (XmlAttribute attr in line.Attributes)
+                                {
+                                    jData[attr.Name] = attr.Value;
+                                }
+
+                                foreach (XmlNode node in line.ChildNodes)
+                                {
+                                    jData[node.Name] = node.InnerText;
+                                }
+                                jLine.Add(jData);
+                            }
+                            jV["ealine"] = jLine;
+                        }
+                    }
+                }
+
+                sPos = "900";
+                ctrl.ViewBag.R.app = jV;
+            }
+            catch (Exception ex)
+            {
+                strReturn = "[" + sPos + "] " + ex.Message;
+            }
+            finally
+            {
+                if (aclInfo != null) aclInfo.Dispose();
+                if (fileInfo != null) fileInfo.Dispose();
+                if (cmntInfo != null) cmntInfo.Dispose();
             }
 
             return strReturn;

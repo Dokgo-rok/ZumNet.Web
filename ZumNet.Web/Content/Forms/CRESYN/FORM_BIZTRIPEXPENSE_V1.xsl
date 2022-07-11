@@ -132,9 +132,12 @@
                       <td class="f-lbl2" rowspan="3">
                         출장자
                         <xsl:if test="$mode='new' or $mode='edit'">
-                          <button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                          <!--<button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                             <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                          </button>
+                          </button>-->
+						    <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
+						        <i class="fas fa-angle-down"></i>
+					        </button>
                         </xsl:if>
                       </td>
                       <td class="f-lbl2">부서</td>
@@ -188,9 +191,12 @@
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="LOCATION" style="width:94%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/LOCATION}" />
-                            <button onclick="parent.fnView('external.centercode2',300,180,80,140,'etc','LOCATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                            <!--<button onclick="parent.fnView('external.centercode2',300,180,80,140,'etc','LOCATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                            </button>
+                            </button>-->
+						  <button type="button" class="btn btn-outline-secondary btn-18" title="출장지" onclick="_zw.formEx.optionWnd('external.centercode2',300,180,80,140,'etc','LOCATION');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/LOCATION))" />
@@ -203,9 +209,7 @@
                       <td colspan="4" style="border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="TRIPFROM" class="txtDate" style="width:80px" maxlength="8" value="{//forminfo/maintable/TRIPFROM}">
-                              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="TRIPFROM" style="width:80px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/TRIPFROM}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TRIPFROM))" />
@@ -214,9 +218,7 @@
                         &nbsp;~&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="TRIPTO" class="txtDate" style="width:80px" maxlength="8" value="{//forminfo/maintable/TRIPTO}">
-                              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="TRIPTO" style="width:80px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/TRIPTO}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/TRIPTO))" />
@@ -225,7 +227,7 @@
                         &nbsp;(
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="STAY" class="txtNumberic" readonly="readonly" style="width:25px" maxlength="3" value="{//forminfo/maintable/STAY}" />
+                            <input type="text" id="__mainfield" name="STAY" class="txtNumberic" readonly="readonly" style="width:25px" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/STAY}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/STAY))" />
@@ -234,7 +236,7 @@
                         &nbsp;박&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="DAY" class="txtNumberic" readonly="readonly" style="width:25px" maxlength="3" value="{//forminfo/maintable/DAY}" />
+                            <input type="text" id="__mainfield" name="DAY" class="txtNumberic" readonly="readonly" style="width:25px" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/DAY}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DAY))" />
@@ -248,9 +250,7 @@
                       <td colspan="4" style="border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="JPTRIPFROM" class="txtDate" style="width:80px" maxlength="8" value="{//forminfo/maintable/JPTRIPFROM}">
-                              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="JPTRIPFROM" style="width:80px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/JPTRIPFROM}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/JPTRIPFROM))" />
@@ -259,9 +259,7 @@
                         &nbsp;~&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="JPTRIPTO" class="txtDate" style="width:80px" maxlength="8" value="{//forminfo/maintable/JPTRIPTO}">
-                              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="JPTRIPTO" style="width:80px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/JPTRIPTO}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/JPTRIPTO))" />
@@ -270,7 +268,7 @@
                         &nbsp;(
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="JPSTAY" class="txtNumberic"  readonly="readonly" style="width:25px" maxlength="3" value="{//forminfo/maintable/JPSTAY}" />
+                            <input type="text" id="__mainfield" name="JPSTAY" class="txtNumberic"  readonly="readonly" style="width:25px" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/JPSTAY}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/JPSTAY))" />
@@ -279,7 +277,7 @@
                         &nbsp;박&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="JPDAY" class="txtNumberic"  readonly="readonly" style="width:25px" maxlength="3" value="{//forminfo/maintable/JPDAY}" />
+                            <input type="text" id="__mainfield" name="JPDAY" class="txtNumberic"  readonly="readonly" style="width:25px" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/JPDAY}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/JPDAY))" />
@@ -293,9 +291,9 @@
                       </td>
                       <td colspan="4" style="border-bottom:0;border-right:0">
                         <span class="f-option2">
-                          <input type="checkbox" id="ckb31" name="ckbPAYCHECK" value="일비있음">
+                          <input type="checkbox" id="ckb31" name="ckbPAYCHECK" class="mt-0" value="일비있음">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbPAYCHECK', this, 'PAYCHECK')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbPAYCHECK', this, 'PAYCHECK')</xsl:attribute>
                             </xsl:if>
                             <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/PAYCHECK),'일비있음')">
                               <xsl:attribute name="checked">true</xsl:attribute>
@@ -307,9 +305,9 @@
                           <label for="ckb31">일비있음</label>
                         </span>
                         <span class="f-option2">
-                          <input type="checkbox" id="ckb31" name="ckbPAYCHECK" value="일비50">
+                          <input type="checkbox" id="ckb31" name="ckbPAYCHECK" class="mt-0" value="일비50">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbPAYCHECK', this, 'PAYCHECK')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbPAYCHECK', this, 'PAYCHECK')</xsl:attribute>
                             </xsl:if>
                             <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/PAYCHECK),'일비50')">
                               <xsl:attribute name="checked">true</xsl:attribute>
@@ -321,9 +319,9 @@
                           <label for="ckb31">일비 50%</label>
                         </span>
                         <span class="f-option2">
-                          <input type="checkbox" id="ckb32" name="ckbPAYCHECK" value="일비없음">
+                          <input type="checkbox" id="ckb32" name="ckbPAYCHECK" class="mt-0" value="일비없음">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbPAYCHECK', this, 'PAYCHECK')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbPAYCHECK', this, 'PAYCHECK')</xsl:attribute>
                             </xsl:if>
                             <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/PAYCHECK),'일비없음')">
                               <xsl:attribute name="checked">true</xsl:attribute>
@@ -706,9 +704,12 @@
                                 </xsl:choose>
                               </xsl:attribute>
                             </input>
-                            <button onclick="parent.fnOption('iso.currency',160,140,60,115,'etc','CURRENCY4');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                            <!--<button onclick="parent.fnOption('iso.currency',160,140,60,115,'etc','CURRENCY4');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                            </button>
+                            </button>-->
+						    <button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,274,-100,0,'etc','CURRENCY4');">
+		                        <i class="fas fa-angle-down"></i>
+	                        </button>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY4))" />
@@ -728,9 +729,12 @@
                                 </xsl:choose>
                               </xsl:attribute>
                             </input>
-                            <button onclick="parent.fnOption('iso.currency',160,140,60,115,'etc','CURRENCY5');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                            <!--<button onclick="parent.fnOption('iso.currency',160,140,60,115,'etc','CURRENCY5');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                            </button>
+                            </button>-->
+						    <button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,274,-100,0,'etc','CURRENCY5');">
+		                        <i class="fas fa-angle-down"></i>
+	                        </button>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY5))" />
@@ -750,9 +754,12 @@
                                 </xsl:choose>
                               </xsl:attribute>
                             </input>
-                            <button onclick="parent.fnOption('iso.currency',160,140,20,115,'etc','CURRENCY6');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                            <!--<button onclick="parent.fnOption('iso.currency',160,140,20,115,'etc','CURRENCY6');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                            </button>
+                            </button>-->
+						    <button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,274,-100,0,'etc','CURRENCY6');">
+		                        <i class="fas fa-angle-down"></i>
+	                        </button>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY6))" />
@@ -772,9 +779,12 @@
                                 </xsl:choose>
                               </xsl:attribute>
                             </input>
-                            <button onclick="parent.fnOption('iso.currency',160,140,20,115,'etc','CURRENCY7');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                            <!--<button onclick="parent.fnOption('iso.currency',160,140,20,115,'etc','CURRENCY7');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                            </button>
+                            </button>-->
+						    <button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,274,-100,0,'etc','CURRENCY7');">
+		                        <i class="fas fa-angle-down"></i>
+	                        </button>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY7))" />
@@ -794,9 +804,12 @@
                                 </xsl:choose>
                               </xsl:attribute>
                             </input>
-                            <button onclick="parent.fnOption('iso.currency',160,140,20,115,'etc','CURRENCY8');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                            <!--<button onclick="parent.fnOption('iso.currency',160,140,20,115,'etc','CURRENCY8');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                            </button>
+                            </button>-->
+						    <button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,274,-30,0,'etc','CURRENCY8');">
+		                        <i class="fas fa-angle-down"></i>
+	                        </button>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY8))" />
@@ -808,7 +821,7 @@
                       <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="EXCHANGE2" class="txtDollar" value="{//forminfo/maintable/EXCHANGE2}" />
+                            <input type="text" id="__mainfield" name="EXCHANGE2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE2}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -819,7 +832,7 @@
                       <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="EXCHANGE3" class="txtDollar" value="{//forminfo/maintable/EXCHANGE3}" />
+                            <input type="text" id="__mainfield" name="EXCHANGE3" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE3}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -830,7 +843,7 @@
                       <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="EXCHANGE4" class="txtDollar" value="{//forminfo/maintable/EXCHANGE4}" />
+                            <input type="text" id="__mainfield" name="EXCHANGE4" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE4}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -841,7 +854,7 @@
                       <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="EXCHANGE5" class="txtDollar" value="{//forminfo/maintable/EXCHANGE5}" />
+                            <input type="text" id="__mainfield" name="EXCHANGE5" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE5}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -852,7 +865,7 @@
                       <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="EXCHANGE6" class="txtDollar" value="{//forminfo/maintable/EXCHANGE6}" />
+                            <input type="text" id="__mainfield" name="EXCHANGE6" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE6}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -863,7 +876,7 @@
                       <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="EXCHANGE7" class="txtDollar" value="{//forminfo/maintable/EXCHANGE7}" />
+                            <input type="text" id="__mainfield" name="EXCHANGE7" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE7}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -874,7 +887,7 @@
                       <td style="border-bottom:0;border-right:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="EXCHANGE8" class="txtDollar" value="{//forminfo/maintable/EXCHANGE8}" />
+                            <input type="text" id="__mainfield" name="EXCHANGE8" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE8}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -903,12 +916,18 @@
                       <span>1. 숙박비</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+					    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+		                    <i class="fas fa-plus"></i>
+	                    </button>
+	                    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+		                    <i class="fas fa-minus"></i>
+	                    </button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -1271,12 +1290,18 @@
                       <span>2. 교통비</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+					    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable2');">
+		                    <i class="fas fa-plus"></i>
+	                    </button>
+	                    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable2');">
+		                    <i class="fas fa-minus"></i>
+	                    </button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -1636,12 +1661,18 @@
                       <span>3. 식비 (1식한도 갑지1 $24, 갑지2 $12, 을지 $10, 일본 1,500엔) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(*갑지1: 미국, 유럽 &nbsp;&nbsp;&nbsp;갑지2: 홍콩, 싱가폴, 중국, 베트남 &nbsp;&nbsp;&nbsp;을지: 동남아, 인도네시아)</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+					    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable3');">
+		                    <i class="fas fa-plus"></i>
+	                    </button>
+	                    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable3');">
+		                    <i class="fas fa-minus"></i>
+	                    </button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -1669,9 +1700,9 @@
                       <col style="width:2%"></col>
                       <col style="width:8%"></col>
                       <col style="width:11%"></col>
-                      <col style="width:4%"></col>
+                      <col style="width:5%"></col>
                       <col style="width:3%"></col>
-                      <col style="width:10%"></col>
+                      <col style="width:9%"></col>
                       <col style="width:6%"></col>
                       <col style="width:6%"></col>
                       <col style="width:6%"></col>
@@ -2005,12 +2036,18 @@
                       <span>4. 접대비</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable4');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable4');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable4');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+					    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable4');">
+		                    <i class="fas fa-plus"></i>
+	                    </button>
+	                    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable4');">
+		                    <i class="fas fa-minus"></i>
+	                    </button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -2371,12 +2408,18 @@
                       <span style="width:95%;padding-left:10px"><input type="hidden" id="__mainfield" name="DAILYPAY" class="txtText_u" readonly="readonly" style="width:60px" value="{//forminfo/maintable/DAILYPAY}" /></span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable5');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable5');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable5');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+					    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable5');">
+		                    <i class="fas fa-plus"></i>
+	                    </button>
+	                    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable5');">
+		                    <i class="fas fa-minus"></i>
+	                    </button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -2728,7 +2771,7 @@
           <div class="ff" />
           <div class="ff" />
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -2849,13 +2892,12 @@
 
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -2863,9 +2905,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="FROMDATE" class="txtDate" maxlength="8" value="{FROMDATE}">
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-            </input>
+            <input type="text" name="FROMDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{FROMDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -2876,9 +2916,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TODATE" class="txtDate" maxlength="8" value="{TODATE}">
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-            </input>
+            <input type="text" name="TODATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{TODATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -2923,10 +2961,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="string(EXPENSETYPECODE)=''">
-                <input type="text" name="AEXPENSE1" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="AEXPENSE1" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:when>
               <xsl:otherwise>                
-                <input type="text" name="AEXPENSE1" class="txtDollar" maxlength="20" value="{AEXPENSE1}" />
+                <input type="text" name="AEXPENSE1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE1}" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -2941,10 +2979,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="AEXPENSE2" class="txtDollar" maxlength="20" value="{AEXPENSE2}" />
+                <input type="text" name="AEXPENSE2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE2}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="AEXPENSE2" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="AEXPENSE2" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -2959,10 +2997,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="AEXPENSE3" class="txtDollar" maxlength="20" value="{AEXPENSE3}" />
+                <input type="text" name="AEXPENSE3" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE3}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="AEXPENSE3" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="AEXPENSE3" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -2977,10 +3015,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="AEXPENSE4" class="txtDollar" maxlength="20" value="{AEXPENSE4}" />
+                <input type="text" name="AEXPENSE4" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE4}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="AEXPENSE4" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="AEXPENSE4" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -2995,10 +3033,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="AEXPENSE5" class="txtDollar" maxlength="20" value="{AEXPENSE5}" />
+                <input type="text" name="AEXPENSE5" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE5}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="AEXPENSE5" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="AEXPENSE5" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3013,10 +3051,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="AEXPENSE6" class="txtDollar" maxlength="20" value="{AEXPENSE6}" />
+                <input type="text" name="AEXPENSE6" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE6}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="AEXPENSE6" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="AEXPENSE6" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3031,10 +3069,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="AEXPENSE7" class="txtDollar" maxlength="20" value="{AEXPENSE7}" />
+                <input type="text" name="AEXPENSE7" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE7}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="AEXPENSE7" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="AEXPENSE7" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3049,10 +3087,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="AEXPENSE8" class="txtDollar" maxlength="20" value="{AEXPENSE8}" />
+                <input type="text" name="AEXPENSE8" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE8}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="AEXPENSE8" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="AEXPENSE8" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3076,13 +3114,12 @@
   </xsl:template>
   <xsl:template match="//forminfo/subtables/subtable2/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -3090,9 +3127,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSEDATE" class="txtDate" maxlength="8" value="{EXPENSEDATE}">
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-            </input>
+            <input type="text" name="EXPENSEDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{EXPENSEDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -3112,9 +3147,12 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="VEHICLES" style="width:85%" class="txtText_u" readonly="readonly" value="{VEHICLES}" />
-            <button onclick="parent.fnOption('external.vehicle',100,120,50,105,'etc',this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+            <!--<button onclick="parent.fnOption('external.vehicle',100,120,50,105,'etc',this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-            </button>
+            </button>-->
+		    <button type="button" class="btn btn-outline-secondary btn-18" title="교통수단" onclick="_zw.formEx.optionWnd('external.vehicle',160,184,-136,0,'etc','VEHICLES');">
+		        <i class="fas fa-angle-down"></i>
+	        </button>
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(VEHICLES))" />
@@ -3148,10 +3186,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="string(EXPENSETYPECODE)=''">
-                <input type="text" name="BEXPENSE1" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="BEXPENSE1" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="BEXPENSE1" class="txtDollar" maxlength="20" value="{BEXPENSE1}" />
+                <input type="text" name="BEXPENSE1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE1}" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3166,10 +3204,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="BEXPENSE2" class="txtDollar" maxlength="20" value="{BEXPENSE2}" />
+                <input type="text" name="BEXPENSE2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE2}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="BEXPENSE2" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="BEXPENSE2" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3184,10 +3222,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="BEXPENSE3" class="txtDollar" maxlength="20" value="{BEXPENSE3}" />
+                <input type="text" name="BEXPENSE3" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE3}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="BEXPENSE3" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="BEXPENSE3" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3202,10 +3240,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="BEXPENSE4" class="txtDollar" maxlength="20" value="{BEXPENSE4}" />
+                <input type="text" name="BEXPENSE4" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE4}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="BEXPENSE4" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="BEXPENSE4" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3220,10 +3258,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="BEXPENSE5" class="txtDollar" maxlength="20" value="{BEXPENSE5}" />
+                <input type="text" name="BEXPENSE5" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE5}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="BEXPENSE5" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="BEXPENSE5" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3238,10 +3276,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="BEXPENSE6" class="txtDollar" maxlength="20" value="{BEXPENSE6}" />
+                <input type="text" name="BEXPENSE6" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE6}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="BEXPENSE6" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="BEXPENSE6" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3256,10 +3294,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="BEXPENSE7" class="txtDollar" maxlength="20" value="{BEXPENSE7}" />
+                <input type="text" name="BEXPENSE7" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE7}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="BEXPENSE7" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="BEXPENSE7" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3274,10 +3312,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="BEXPENSE8" class="txtDollar" maxlength="20" value="{BEXPENSE8}" />
+                <input type="text" name="BEXPENSE8" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE8}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="BEXPENSE8" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="BEXPENSE8" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3301,13 +3339,12 @@
   </xsl:template>
   <xsl:template match="//forminfo/subtables/subtable3/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -3315,9 +3352,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSEDATE" class="txtDate" maxlength="8" value="{EXPENSEDATE}">
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-            </input>
+            <input type="text" name="EXPENSEDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{EXPENSEDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -3370,9 +3405,12 @@
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="COMMENT" style="width:80%" class="txtText_u" readonly="readonly" value="{COMMENT}" />
-            <button onclick="parent.fnOption('external.comment',100,120,50,105,'etc',this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+            <!--<button onclick="parent.fnOption('external.comment',100,120,50,105,'etc',this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-            </button>
+            </button>-->
+		    <button type="button" class="btn btn-outline-secondary btn-18" title="교통수단" onclick="_zw.formEx.optionWnd('external.comment',130,124,-105,0,'etc','COMMENT');">
+		        <i class="fas fa-angle-down"></i>
+	        </button>
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(COMMENT))" />
@@ -3396,10 +3434,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="string(EXPENSETYPECODE)=''">
-                <input type="text" name="CEXPENSE1" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="CEXPENSE1" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="CEXPENSE1" class="txtDollar" maxlength="20" value="{CEXPENSE1}" />
+                <input type="text" name="CEXPENSE1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE1}" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3414,10 +3452,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="CEXPENSE2" class="txtDollar" maxlength="20" value="{CEXPENSE2}" />
+                <input type="text" name="CEXPENSE2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE2}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="CEXPENSE2" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="CEXPENSE2" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3432,10 +3470,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="CEXPENSE3" class="txtDollar" maxlength="20" value="{CEXPENSE3}" />
+                <input type="text" name="CEXPENSE3" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE3}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="CEXPENSE3" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="CEXPENSE3" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3450,10 +3488,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="CEXPENSE4" class="txtDollar" maxlength="20" value="{CEXPENSE4}" />
+                <input type="text" name="CEXPENSE4" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE4}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="CEXPENSE4" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="CEXPENSE4" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3468,10 +3506,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="CEXPENSE5" class="txtDollar" maxlength="20" value="{CEXPENSE5}" />
+                <input type="text" name="CEXPENSE5" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE5}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="CEXPENSE5" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="CEXPENSE5" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3486,10 +3524,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="CEXPENSE6" class="txtDollar" maxlength="20" value="{CEXPENSE6}" />
+                <input type="text" name="CEXPENSE6" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE6}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="CEXPENSE6" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="CEXPENSE6" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3504,10 +3542,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="CEXPENSE7" class="txtDollar" maxlength="20" value="{CEXPENSE7}" />
+                <input type="text" name="CEXPENSE7" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE7}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="CEXPENSE7" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="CEXPENSE7" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3522,10 +3560,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="CEXPENSE8" class="txtDollar" maxlength="20" value="{CEXPENSE8}" />
+                <input type="text" name="CEXPENSE8" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE8}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="CEXPENSE8" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="CEXPENSE8" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3549,13 +3587,12 @@
   </xsl:template>
   <xsl:template match="//forminfo/subtables/subtable4/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -3563,9 +3600,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSEDATE" class="txtDate" maxlength="8" value="{EXPENSEDATE}">
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-            </input>
+            <input type="text" name="EXPENSEDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{EXPENSEDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -3610,10 +3645,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="string(EXPENSETYPECODE)=''">
-                <input type="text" name="DEXPENSE1" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="DEXPENSE1" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="DEXPENSE1" class="txtDollar" maxlength="20" value="{DEXPENSE1}" />
+                <input type="text" name="DEXPENSE1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE1}" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3628,10 +3663,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="DEXPENSE2" class="txtDollar" maxlength="20" value="{DEXPENSE2}" />
+                <input type="text" name="DEXPENSE2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE2}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="DEXPENSE2" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="DEXPENSE2" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3646,10 +3681,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="DEXPENSE3" class="txtDollar" maxlength="20" value="{DEXPENSE3}" />
+                <input type="text" name="DEXPENSE3" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE3}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="DEXPENSE3" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="DEXPENSE3" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3664,10 +3699,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="DEXPENSE4" class="txtDollar" maxlength="20" value="{DEXPENSE4}" />
+                <input type="text" name="DEXPENSE4" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE4}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="DEXPENSE4" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="DEXPENSE4" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3682,10 +3717,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="DEXPENSE5" class="txtDollar" maxlength="20" value="{DEXPENSE5}" />
+                <input type="text" name="DEXPENSE5" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE5}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="DEXPENSE5" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="DEXPENSE5" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3700,10 +3735,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="DEXPENSE6" class="txtDollar" maxlength="20" value="{DEXPENSE6}" />
+                <input type="text" name="DEXPENSE6" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE6}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="DEXPENSE6" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="DEXPENSE6" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3718,10 +3753,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="DEXPENSE7" class="txtDollar" maxlength="20" value="{DEXPENSE7}" />
+                <input type="text" name="DEXPENSE7" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE7}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="DEXPENSE7" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="DEXPENSE7" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3736,10 +3771,10 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                <input type="text" name="DEXPENSE8" class="txtDollar" maxlength="20" value="{DEXPENSE8}" />
+                <input type="text" name="DEXPENSE8" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE8}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="DEXPENSE8" class="txtRead" maxlength="20" readonly="readonly" />
+                <input type="text" name="DEXPENSE8" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3763,12 +3798,12 @@
   </xsl:template>
   <xsl:template match="//forminfo/subtables/subtable5/row">
     <tr class="sub_table_row">
-      <td>
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="ROWSEQ" value="{ROWSEQ}" readonly="readonly" style="padding-left:8px;border:0" />
+                <input type="text" name="ROWSEQ" value="{ROWSEQ}" readonly="readonly" style="text-align:center;border:0;width:100%" />
               </xsl:when>
               <xsl:otherwise>
                 <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
@@ -3776,7 +3811,6 @@
             </xsl:choose>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -3789,9 +3823,7 @@
                 <input type="text" name="EXPENSEDATE" class="txtRead" readonly="readonly" value="{EXPENSEDATE}" />
               </xsl:when>
               <xsl:otherwise>
-                <input type="text" name="EXPENSEDATE" class="txtDate" maxlength="8" value="{EXPENSEDATE}">
-                  <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                </input>
+                <input type="text" name="EXPENSEDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{EXPENSEDATE}" />
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -3852,15 +3884,15 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="EEXPENSE1" class="txtRead_Right" readonly="readonly" value="{EEXPENSE1}" />
+                <input type="text" name="EEXPENSE1" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE1}" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="string(EXPENSETYPECODE)=''">
-                    <input type="text" name="EEXPENSE1" class="txtRead" maxlength="20" readonly="readonly" />
+                    <input type="text" name="EEXPENSE1" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
                   </xsl:when>
                   <xsl:otherwise>
-                    <input type="text" name="EEXPENSE1" class="txtDollar" maxlength="20" value="{EEXPENSE1}" />
+                    <input type="text" name="EEXPENSE1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE1}" />
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>
@@ -3877,15 +3909,15 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="EEXPENSE2" class="txtRead_Right" readonly="readonly" value="{EEXPENSE2}" />
+                <input type="text" name="EEXPENSE2" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE2}" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                    <input type="text" name="EEXPENSE2" class="txtDollar" maxlength="20" value="{EEXPENSE2}" />
+                    <input type="text" name="EEXPENSE2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE2}" />
                   </xsl:when>
                   <xsl:otherwise>
-                    <input type="text" name="EEXPENSE2" class="txtRead" maxlength="20" readonly="readonly" />
+                    <input type="text" name="EEXPENSE2" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>
@@ -3902,15 +3934,15 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="EEXPENSE3" class="txtRead_Right" readonly="readonly" value="{EEXPENSE3}" />
+                <input type="text" name="EEXPENSE3" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE3}" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                    <input type="text" name="EEXPENSE3" class="txtDollar" maxlength="20" value="{EEXPENSE3}" />
+                    <input type="text" name="EEXPENSE3" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE3}" />
                   </xsl:when>
                   <xsl:otherwise>
-                    <input type="text" name="EEXPENSE3" class="txtRead" maxlength="20" readonly="readonly" />
+                    <input type="text" name="EEXPENSE3" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>
@@ -3927,15 +3959,15 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="EEXPENSE4" class="txtRead_Right" readonly="readonly" value="{EEXPENSE4}" />
+                <input type="text" name="EEXPENSE4" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE4}" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                    <input type="text" name="EEXPENSE4" class="txtDollar" maxlength="20" value="{EEXPENSE4}" />
+                    <input type="text" name="EEXPENSE4" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE4}" />
                   </xsl:when>
                   <xsl:otherwise>
-                    <input type="text" name="EEXPENSE4" class="txtRead" maxlength="20" readonly="readonly" />
+                    <input type="text" name="EEXPENSE4" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>
@@ -3952,15 +3984,15 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="EEXPENSE5" class="txtRead_Right" readonly="readonly" value="{EEXPENSE5}" />
+                <input type="text" name="EEXPENSE5" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE5}" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                    <input type="text" name="EEXPENSE5" class="txtDollar" maxlength="20" value="{EEXPENSE5}" />
+                    <input type="text" name="EEXPENSE5" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE5}" />
                   </xsl:when>
                   <xsl:otherwise>
-                    <input type="text" name="EEXPENSE5" class="txtRead" maxlength="20" readonly="readonly" />
+                    <input type="text" name="EEXPENSE5" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>
@@ -3977,15 +4009,15 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="EEXPENSE6" class="txtRead_Right" readonly="readonly" value="{EEXPENSE6}" />
+                <input type="text" name="EEXPENSE6" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE6}" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                    <input type="text" name="EEXPENSE6" class="txtDollar" maxlength="20" value="{EEXPENSE6}" />
+                    <input type="text" name="EEXPENSE6" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE6}" />
                   </xsl:when>
                   <xsl:otherwise>
-                    <input type="text" name="EEXPENSE6" class="txtRead" maxlength="20" readonly="readonly" />
+                    <input type="text" name="EEXPENSE6" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>
@@ -4002,15 +4034,15 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="EEXPENSE7" class="txtRead_Right" readonly="readonly" value="{EEXPENSE7}" />
+                <input type="text" name="EEXPENSE7" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE7}" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                    <input type="text" name="EEXPENSE7" class="txtDollar" maxlength="20" value="{EEXPENSE7}" />
+                    <input type="text" name="EEXPENSE7" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE7}" />
                   </xsl:when>
                   <xsl:otherwise>
-                    <input type="text" name="EEXPENSE7" class="txtRead" maxlength="20" readonly="readonly" />
+                    <input type="text" name="EEXPENSE7" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>
@@ -4027,15 +4059,15 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <xsl:choose>
               <xsl:when test="position()=1">
-                <input type="text" name="EEXPENSE8" class="txtRead_Right" readonly="readonly" value="{EEXPENSE8}" />
+                <input type="text" name="EEXPENSE8" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE8}" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:choose>
                   <xsl:when test="EXPENSETYPECODE[.='CASH']">
-                    <input type="text" name="EEXPENSE8" class="txtDollar" maxlength="20" value="{EEXPENSE8}" />
+                    <input type="text" name="EEXPENSE8" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE8}" />
                   </xsl:when>
                   <xsl:otherwise>
-                    <input type="text" name="EEXPENSE8" class="txtRead" maxlength="20" readonly="readonly" />
+                    <input type="text" name="EEXPENSE8" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:otherwise>

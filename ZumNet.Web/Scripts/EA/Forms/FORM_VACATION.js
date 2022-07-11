@@ -59,7 +59,7 @@
                             + '</ul></div>';
                     } else if (x.value == 'I') {
                         j["content"] = '<div><ul class="list-group list-group-flush">'
-                            + '<li class="list-group-item list-group-item-action"><a href="javascript:" class="z-lnk-navy-n" data-val="13:30^17:30">반차A&nbsp;&nbsp;3:30 ~ 17:30</a></li>'
+                            + '<li class="list-group-item list-group-item-action"><a href="javascript:" class="z-lnk-navy-n" data-val="13:30^17:30">반차A&nbsp;&nbsp;13:30 ~ 17:30</a></li>'
                             + '<li class="list-group-item list-group-item-action"><a href="javascript:" class="z-lnk-navy-n" data-val="14:00^18:00">반차B&nbsp;&nbsp;14:00 ~ 18:00</a></li>'
                             + '</ul></div>';
                     }

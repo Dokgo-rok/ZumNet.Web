@@ -40,12 +40,12 @@
   function isDiff(x, y) {log(x!=y); return (x != y) ? true : false;}
   function isExist(x, y) {return (x.indexOf(y)!=-1) ? true : false;}
   function isGt(x, y) {if(!x || x=='') {x=0;} else {x=parseInt(x);}if(!y || y=='') {y=0;} else {y=parseInt(y);} if(x>y){return true;}else{return false;}}
-  function down(w, r, x, s) {return "http://" + w + "/" + r + "/PortalService/FileDown.aspx?xf=" + x + "&sn=" + escape(s);}
-  function down2(w, r, v, s, f) {return "http://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v + "/" + s) + "&fn=" + escape(f);}
-  function fileDown(w, r, v, s, f) {return "http://" + w + "/" + r + "/PortalService/FileDown.aspx?xf=ea&sn=" + escape(s);}  
-  function linkDown(w, r, v, f) {return "http://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v) + "&fn=" + escape(f);}
-  function linkDown2(w, r, t, p) {if (t == "pdmpd") {return "http://" + w + "/" + r + "/SSOpdm.aspx?target=prodview&oid=" + p;}else{return '';}}
-  //function linkForm(w, r, m) {return "http://" + w + "/" + r + "/EA/Forms/XFormMain.aspx?M=read&mi=" + m;}
+  function down(w, r, x, s) {return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?xf=" + x + "&sn=" + escape(s);}
+  function down2(w, r, v, s, f) {return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v + "/" + s) + "&fn=" + escape(f);}
+  function fileDown(w, r, v, s, f) {return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?xf=ea&sn=" + escape(s);}  
+  function linkDown(w, r, v, f) {return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v) + "&fn=" + escape(f);}
+  function linkDown2(w, r, t, p) {if (t == "pdmpd") {return "https://" + w + "/" + r + "/SSOpdm.aspx?target=prodview&oid=" + p;}else{return '';}}
+  //function linkForm(w, r, m) {return "https://" + w + "/" + r + "/EA/Forms/XFormMain.aspx?M=read&mi=" + m;}
   function linkForm(w, r, m) {return "_zw.fn.openEAFormSimple('" + m + "')";}
   function cvtMonth(s) {if(s.length > 1 && s.toString().charAt(0) == '0'){return s.charAt(1);} else {return s;}}
   function rate(c, p, n) {if (c=="" || c=="0" || p=="" || p=="0") {return "&nbsp;"} else {return (parseFloat(c)/parseFloat(p)*100).toFixed(n);}}
@@ -304,9 +304,9 @@
   }
   //function linkPlate(pn) {return "<a href=\"javascript:\" onclick=\"parent.showEAPlate('A', 'approval', '');\">" + pn + "</a>";}
   function linkPlate(pn) {return "<a href=\"javascript:\" onclick=\"_zw.fn.showSignPlate('approval');\">" + pn + "</a>";}
-  //function linkPersonInfo(w, r, pn, pid, pcn) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = 'http://" + w + "/" + r + "/PortalService/Person/PersonSimpleInfo.aspx?userid=" + pid + "&logonid=" + pcn + "'; var x = 430, y = 370; var sy = window.screen.height / 2 - y / 2 - 70; var sx = window.screen.width  / 2 - x / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=0,resizable=0,top=' + sy + ',left=' + sx + ',width=' + x + ',height=' + y; window.open(url,'사용자정보', param);\">" + pn + "</a>";}}
+  //function linkPersonInfo(w, r, pn, pid, pcn) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = 'https://" + w + "/" + r + "/PortalService/Person/PersonSimpleInfo.aspx?userid=" + pid + "&logonid=" + pcn + "'; var x = 430, y = 370; var sy = window.screen.height / 2 - y / 2 - 70; var sx = window.screen.width  / 2 - x / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=0,resizable=0,top=' + sy + ',left=' + sx + ',width=' + x + ',height=' + y; window.open(url,'사용자정보', param);\">" + pn + "</a>";}}
   function linkPersonInfo(w, r, pn, pid, pcn) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = '/" + r + "/PortalService/Person/PersonSimpleInfo.aspx?userid=" + pid + "&logonid=" + pcn + "'; var x = 430, y = 370; var sy = window.screen.height / 2 - y / 2 - 70; var sx = window.screen.width  / 2 - x / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=0,resizable=0,top=' + sy + ',left=' + sx + ',width=' + x + ',height=' + y; window.open(url,'사용자정보', param);\">" + pn + "</a>";}}
-  function linkCEMain(w, r, pn, pid) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = 'http://" + w + "/" + r + "/ExtensionService/CE/Grid.aspx?M=simul&app=" + pid + "&Q=lnk'; var w = window.screen.width; var h = window.screen.height; w = w >= 1400 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h; var sy = window.screen.height / 2 - h / 2 - 70; var sx = window.screen.width  / 2 - w / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,resizable=1,top=' + sy + ',left=' + sx + ',width=' + w + ',height=' + h; window.open(url,'ce_grid', param);\">" + pn + "</a>";}}
+  function linkCEMain(w, r, pn, pid) {if (pid.indexOf('_') > 0) {return pn;} else {return "<a href=\"javascript:\" onclick=\"var url = 'https://" + w + "/" + r + "/ExtensionService/CE/Grid.aspx?M=simul&app=" + pid + "&Q=lnk'; var w = window.screen.width; var h = window.screen.height; w = w >= 1400 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h; var sy = window.screen.height / 2 - h / 2 - 70; var sx = window.screen.width  / 2 - w / 2; if (sy < 0) {sy = 0;} var param = 'toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,resizable=1,top=' + sy + ',left=' + sx + ',width=' + w + ',height=' + h; window.open(url,'ce_grid', param);\">" + pn + "</a>";}}
   
   function getSignImage(node) {
 	  if (node) {

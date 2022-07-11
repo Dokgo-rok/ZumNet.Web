@@ -179,6 +179,9 @@ namespace ZumNet.Web.Bc
                                 else
                                 {
                                     //DisplaySelectPortal(ds.Tables[2]);
+                                    DataRow dr2 = svcRt.ResultDataSet.Tables[2].Rows[0];
+
+                                    HttpContext.Current.Session["OPGroupID"] = dr2["OP_ID"].ToString();
                                 }
                             }
                             else

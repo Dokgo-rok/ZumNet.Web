@@ -225,6 +225,300 @@ namespace ZumNet.Web.Areas.Docs.Controllers
         #endregion
 
         #region [게시물 작성, 조회]
+        // GET: Board
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Read(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath; //"잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
+            {
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+            int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
+            int iAppId = Convert.ToInt32(ViewBag.R.appid.Value); //messageid
+
+            //권한체크
+            if (Session["Admin"].ToString() == "Y")
+            {
+                ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+
+                    ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                    ViewBag.R.current["acl"] = iFolderId > 0 ? svcRt.ResultDataDetail["acl"].ToString() : "____RV_____RV";
+                    if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
+                }
+            }
+
+            bool bOwner = ViewBag.R.current["urid"].ToString() == Session["URID"].ToString() ? true : false;
+
+            rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+            if (!bOwner && ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["appacl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
+            {
+                return View("~/Views/Shared/_NoPermissionPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+            if (rt != "")
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            using (ZumNet.BSL.ServiceBiz.DocBiz docBiz = new BSL.ServiceBiz.DocBiz())
+            {
+                svcRt = docBiz.GetDocProperty(Convert.ToInt32(Session["DNID"]), iFolderId, Convert.ToInt32(Session["URID"]), iAppId, "0", ViewBag.R.xfalias.ToString());
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                rt = FormHandler.BindDocToJson(this, svcRt);
+                if (rt != "") return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Write(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath; //"잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null)
+            {
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            if (ViewBag.R.ct.Value == "" || ViewBag.R.ct.Value == "0") ViewBag.R["ct"] = 108;
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+            int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
+            string sObjectType = iFolderId == 0 ? "" : "O";
+
+            //권한체크, 폴더환경정보
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+            {
+                if (Session["Admin"].ToString() == "Y")
+                {
+                    ViewBag.R.current["operator"] = "Y";
+                }
+                else
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, sObjectType, "0");
+
+                    ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                    ViewBag.R.current["acl"] = iFolderId > 0 ? svcRt.ResultDataDetail["acl"].ToString() : "____RV_____RV";
+                    if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
+                }
+            }
+
+            if (iFolderId > 0)
+            {
+                rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W")))
+                {
+                    return View("~/Views/Shared/_NoPermissionPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+
+                rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+                if (rt != "")
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+
+            using (ZumNet.BSL.ServiceBiz.DocBiz docBiz = new BSL.ServiceBiz.DocBiz())
+            {
+                svcRt = docBiz.GetDocLevelKeepYear(Convert.ToInt32(Session["DNID"]));
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.DocLevel = svcRt.ResultDataDetail["DocLevel"];
+                    ViewBag.KeepYear = svcRt.ResultDataDetail["KeepYear"];
+                }
+                else
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+
+            rt = FormHandler.BindDocToJson(this, null);
+            if (rt != "") return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+
+            return View();
+        }
+
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Edit(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Resources.Global.Auth_InvalidPath; //"잘못된 경로로 접근했습니다!!";
+            if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct.ToString() == "0")
+            {
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
+            int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
+            int iAppId = Convert.ToInt32(ViewBag.R.appid.Value); //messageid
+
+            //권한체크
+            if (Session["Admin"].ToString() == "Y")
+            {
+                ViewBag.R.current["operator"] = "Y";
+            }
+            else
+            {
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(Session["DNID"]), iCategoryId, Convert.ToInt32(Session["URID"]), iFolderId, "O", "0");
+
+                    ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                    ViewBag.R.current["acl"] = iFolderId > 0 ? svcRt.ResultDataDetail["acl"].ToString() : "____RV_____RV";
+                    if (ViewBag.R.current["appacl"].ToString() == "") ViewBag.R.current["appacl"] = ViewBag.R.current["acl"].ToString().Substring(6, 4) + ViewBag.R.current["acl"].ToString().Substring(ViewBag.R.current["acl"].ToString().Length - 2);
+                }
+            }
+
+            bool bOwner = ViewBag.R.current["urid"].ToString() == Session["URID"].ToString() ? true : false;
+
+            rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+            if (!bOwner && ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["appacl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E")))
+            {
+                return View("~/Views/Shared/_NoPermissionPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
+            if (rt != "")
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            using (ZumNet.BSL.ServiceBiz.DocBiz docBiz = new BSL.ServiceBiz.DocBiz())
+            {
+                svcRt = docBiz.GetDocLevelKeepYear(Convert.ToInt32(Session["DNID"]));
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.DocLevel = svcRt.ResultDataDetail["DocLevel"];
+                    ViewBag.KeepYear = svcRt.ResultDataDetail["KeepYear"];
+                }
+                else
+                {
+                    rt = svcRt.ResultMessage;
+                    return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+
+                svcRt = docBiz.GetDocProperty(Convert.ToInt32(Session["DNID"]), iFolderId, Convert.ToInt32(Session["URID"]), iAppId, "0", ViewBag.R.xfalias.ToString());
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                rt = FormHandler.BindDocToJson(this, svcRt);
+                if (rt != "") return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+        #endregion
+
+        #region [게시물 등록]
+        /// <summary>
+        /// 게시물 등록
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Send()
+        {
+            string strView = "";
+            string strMsg = "등록 하였습니다";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0)
+                    {
+                        return "전송 데이터 누락!";
+                    }
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    AttachmentsHandler attachHdr = new AttachmentsHandler();
+                    svcRt = attachHdr.TempToStorage(Convert.ToInt32(Session["DNID"]), jPost["xfalias"].ToString(), (JArray)jPost["attachlist"], null, null);
+                    if (svcRt.ResultCode != 0)
+                    {
+                        strView = svcRt.ResultMessage;
+                    }
+                    else
+                    {
+                        jPost["attachlist"] = (JArray)svcRt.ResultDataDetail["FileInfo"];
+                    }
+
+                    //jPost["attachxml"] = attachHdr.ConvertFileInfoToXml((JArray)jPost["attachlist"]);
+                    //권한정보 -> xml 변환
+                    string sAclInfo = "";
+
+                    using (ZumNet.BSL.ServiceBiz.DocBiz docBiz = new BSL.ServiceBiz.DocBiz())
+                    {
+                        svcRt = docBiz.SetDocMessage(Convert.ToInt32(Session["DNID"]), jPost, sAclInfo);
+                    }
+
+                    if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                    else strView = "OK" + strMsg;
+                }
+                catch (Exception ex)
+                {
+                    strView = ex.Message;
+                }
+            }
+
+            return strView;
+        }
         #endregion
     }
 }

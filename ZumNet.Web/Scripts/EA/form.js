@@ -1582,8 +1582,8 @@ $(function () {
                     if ($(this).find('input:checkbox[name="ROWSEQ"]').prop('checked')) {
                         $(this).remove(); iCnt++;
                     }
-                });
-                if (iCnt == 0) p.find('tr.sub_table_row:last-child').remove();
+                }); //console.log(p.find('tr.sub_table_row').last())
+                if (iCnt == 0) p.find('tr.sub_table_row').last().remove();
                 _zw.form.orderRow(p);
                 if (_zw.formEx.autoCalc) _zw.formEx.autoCalc(p);
             }
@@ -1680,7 +1680,7 @@ $(function () {
                         }
                     }
                 });
-                if (!bReturn) return bReturn;            }
+                if (!bReturn) return bReturn;}
 
             if (_zw.formEx.validation) {
                 if (!_zw.formEx.validation(cmd)) return false;
@@ -1884,6 +1884,37 @@ $(function () {
                 v = null;
             }
             f["subtables"] = s;
+        },
+        "subPart": function (f, subInfo) { //테이블구분^, 필드구분;
+            var vSub = subInfo.split('^'), p = {}; console.log(vSub)
+            for (var i = 0; i < vSub.length; i++) {
+                var fld = vSub[i].split(';');
+                var v = [];
+                $('#__subtable' + fld[0] + ' tr.sub_table_row').each(function () {
+                    var s = {};
+                    s["ROWSEQ"] = $(this).find('[name="ROWSEQ"]').val();
+                    for (var x = 1; x < fld.length; x++) {
+                        var node = $(this).find('[name="' + fld[x] + '"]');
+                        if (node.length > 0) {
+                            if (node.prop('tagName').toLowerCase() == 'div' || node.prop('tagName').toLowerCase() == 'span') {
+                                s[fld[x]] = node.html();
+                            } else if (node.prop('tagName').toLowerCase() == 'input') {
+                                if (node.is(":checkbox") || node.is(":radio")) {
+                                    s[fld[x]] = node.prop('checked') ? node.val() : '';
+                                } else {
+                                    s[fld[x]] = node.val();
+                                }
+                            } else {
+                                s[fld[x]] = node.val();
+                            }
+                        }
+                    }
+                    v.push(s);
+                });
+                p['subtable' + fld[0]] = v;
+                v = null;
+            }
+            f["subtables"] = p;
         },
         "file": function (cmd, doc, fi, img) {
             var fileList = DEXT5UPLOAD.GetAllFileListForJson(); //console.log(fileList)

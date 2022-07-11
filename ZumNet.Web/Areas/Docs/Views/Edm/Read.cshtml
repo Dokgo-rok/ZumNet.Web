@@ -1,0 +1,87 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = ViewBag.R.app["subject"];
+
+    if (ViewBag.R.wnd.ToString() == "popup")
+    {
+        Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+    }
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+}
+@section Styles {
+    @if (ViewBag.R.wnd.ToString() == "")
+    {
+        @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+        @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+        @Styles.Render("~/bundle/vendor/css/pages/messages")
+    }
+}
+
+@section Scripts {
+    @if (ViewBag.R.wnd.ToString() == "")
+    {
+        @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+        @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    }
+
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/Scripts/Docs/edm.js")
+
+    @if (ViewBag.R.wnd.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
+    @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
+
+    <script type="text/javascript">
+        $(function () {
+            _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
+            _zw.dext5.view('view');
+
+            _zw.fn.view();
+        });
+
+        function DEXT5UPLOAD_OnCreationComplete(uploadID) {
+            // 업로드 생성 후 처리내용
+            _zw.dext5.addFile();
+        }
+    </script>
+}
+
+@if (ViewBag.R.wnd.ToString() == "popup")
+{
+    <div class="" id="__FormView">
+        @Html.Partial("_Read")
+    </div>
+}
+else
+{
+    <!--
+    =================================================================
+    **************************** CONTENT ****************************
+    -->
+    <!-- `.messages-wrapper` fills all available space of container -->
+    <div class="messages-wrapper">
+
+        <!-- sidebox -->
+        @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+        <!-- / sidebox -->
+        <!-- content -->
+        <div class="d-flex flex-column w-100" id="__FormView">
+            @Html.Partial("_Read")
+        </div>
+        <!-- / content -->
+
+    </div><!-- / .messages-wrapper -->
+}
+

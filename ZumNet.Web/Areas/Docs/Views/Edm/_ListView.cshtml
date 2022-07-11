@@ -60,7 +60,7 @@
                 {
                     <i class="far fa-copy text-secondary text-big  mr-1"></i>
                 }
-                <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg();">@(Html.Raw(sLock))@row["Subject"].ToString()</a>
+                <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg('popup');">@(Html.Raw(sLock))@row["Subject"].ToString()</a>
                 @if (Convert.ToInt32(row["CommentCount"]) > 0)
                 {
                     <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>

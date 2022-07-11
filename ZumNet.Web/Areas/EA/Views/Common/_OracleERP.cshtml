@@ -32,6 +32,37 @@
 
             if (strBodyMode == "S")
             {
+                #region [환율정보 가져오기]
+                if (postData["k2"].ToString() == "exchangeinfo")
+                {
+                    string strConver = postData.ContainsKey("conver") ? postData["conver"].ToString() : "1000";
+                    using (OracleBiz oraBiz = new OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES(postData["v1"].ToString(), postData["v2"].ToString(), postData["v3"].ToString(), strConver);
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                        {
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                if (row["FROM_CURRENCY"].ToString() == "IDR" || row["FROM_CURRENCY"].ToString() == "VND" || row["FROM_CURRENCY"].ToString() == "JPY")
+                                {
+                                    strReturn += "\"" + row["FROM_CURRENCY"].ToString() + "\":\"" + Convert.ToString(float.Parse(row["CONVERSION_RATE"].ToString()) / 100) + "\",";
+                                }
+                                else
+                                {
+                                    strReturn += "\"" + row["FROM_CURRENCY"].ToString() + "\":\"" + row["CONVERSION_RATE"].ToString() + "\",";
+                                }
+                            }
+                            strReturn = "OK{" + strReturn.Substring(0, strReturn.LastIndexOf(',')) + "}";
+                        }
+                        else strReturn = "해당 일자 환율정보가 없습니다!";
+                    }
+                    else strReturn = svcRt.ResultMessage;
+                }
+                #endregion
             }
             else
             {

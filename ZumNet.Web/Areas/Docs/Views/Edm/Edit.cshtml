@@ -1,0 +1,103 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = ViewBag.R.app["subject"];
+
+    if (ViewBag.R.wnd.ToString() == "popup")
+    {
+        Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+    }
+
+    //첨부파일 임시 저장 폴더
+    string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+    ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+}
+
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @if (ViewBag.R.wnd.ToString() == "")
+    {
+        @Styles.Render("~/bundle/vendor/css/jstree/themes/default/style")
+        @Styles.Render("~/bundle/vendor/css/pages/messages")
+    }
+}
+
+@section Scripts {
+    @if (ViewBag.R.wnd.ToString() == "")
+    {
+        @Scripts.Render("~/bundle/vendor/js/jstree/jstree")
+    }
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-maxlength/bootstrap-maxlength")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
+    @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
+
+    @Scripts.Render("~/Scripts/Docs/edm.js")
+
+    @if (ViewBag.R.wnd.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+
+    @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
+
+    <script type="text/javascript">
+        $(function () {
+            _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
+
+            //editor, uploader
+            if ($('#' + _zw.T.uploader.holder).length > 0) {
+                _zw.dext5.view('edit');
+            }
+        });
+
+        function DEXT5UPLOAD_OnCreationComplete(uploadID) {
+            // 업로드 생성 후 처리내용
+            _zw.dext5.addFile();
+        }
+    </script>
+}
+
+@if (ViewBag.R.wnd.ToString() == "popup")
+{
+    <div class="" id="__FormView">
+        @Html.Partial("_Edit")
+    </div>
+}
+else
+{
+    <!--
+    =================================================================
+    **************************** CONTENT ****************************
+    -->
+    <!-- `.messages-wrapper` fills all available space of container -->
+    <div class="messages-wrapper">
+
+        <!-- sidebox -->
+        @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+        <!-- / sidebox -->
+        <!-- content -->
+        <div class="d-flex flex-column w-100" id="__FormView">
+            @Html.Partial("_Edit")
+        </div>
+        <!-- / content -->
+
+    </div><!-- / .messages-wrapper -->
+}
+
+<script type="text/template" class="zf-coreg-template">
+    <li class="nav-item bg-info rounded d-flex align-items-center pl-2 pr-1 mt-1 mr-1" data-val="_1_{$id}">
+        <a class="text-white" href="javascript:void(0)" onclick="_zw.fn.viewUserSimpleInfo('{$id}');">{$coreg}</a>
+        <button class="btn btn-sm btn-18 ml-2 text-white"><span aria-hidden="true">×</span></button>
+    </li>
+</script>
+
