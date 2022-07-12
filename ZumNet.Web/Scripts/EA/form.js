@@ -954,7 +954,7 @@ $(function () {
                 rowPrev = $(this);
             });
         },
-        "template": function (cmd, s, v, cur, pfirst, sub) { //console.log(sub)
+        "template": function (cmd, s, v, cur, pfirst, sub) { //console.log(cmd + " : " + sub)
             var sCls = '', sCheck = '', bParallel = cur != null && cur.substep != '0' ? true : false;
             var sMarginTop = '', sTextAlign = '', sOrderNo = v["step"] + (parseInt(v["substep"]) > 0 ? '.' + v["substep"] : '');
 
@@ -1054,9 +1054,9 @@ $(function () {
                             if (v["state"] == '2' && v["wid"] == _zw.V.wid) {
                                 sCls = 'zf-sl-current';
                             } else {
-                                if (!bParallel && v["received"] == '' && v["signkind"] != '3' && v["signkind"] != '4') {
+                                if (!bParallel && v["received"] == '' && v["signkind"] != '3' && v["signkind"] != '4') { //console.log(_zw.V.wid + " : " + _zw.V.pwid)
                                     if (v["parttype"].substr(2, 1) == '' || v["parttype"].substr(0, 3) == 'u_g') sCls = 'zf-sl-read';
-                                    else if (_zw.V.wid != '' && _zw.V.pwid != '') sCls = 'zf-sl-read';
+                                    else if (_zw.V.pwid != '' && _zw.V.wid != _zw.V.pwid) sCls = 'zf-sl-read';
                                     else {
                                         sCls = 'zf-sl-add';
                                         sCheck = '<label class="custom-control custom-checkbox mb-0 ml-1"><input type="checkbox" class="custom-control-input"><span class="custom-control-label"></span></label>';
@@ -1508,7 +1508,7 @@ $(function () {
             return 'Y';
         },
         "toFormBody": function (signLine) {
-            var p = null, col = null;
+            var p = null, col = null, row = null, len = 0;
             if (_zw.V.ft == 'NEWOWNDEVREQUEST') { //자사신제품개발의뢰서
                 if (_zw.V.biz == "등급부서" && _zw.V.act == '_approver') {
                     p = signLine.find(function (element) { if (element.bizrole == 'application' && element.actrole == '_approver' && element.partid != '') return true; });
@@ -1527,16 +1527,30 @@ $(function () {
                 if (_zw.V.biz == "" && _zw.V.act == '') {
                     col = signLine.filter(function (element) { if (element.bizrole == 'receive' && element.actrole == '__r' && element.partid != '') return true; });
                     p = $('#__subtable5');
-                    if (col.length > 0) {
+                    if (p.length > 0 && col.length > 0) {
+                        len = p.find('tr.sub_table_row').length;
+                        if (col.length > len) { for (var i = 0; i < col.length - len; i++) _zw.form.addRow('__subtable5'); }
 
+                        for (var i = 0; i < col.length; i++) {
+                            row = p.find('tr.sub_table_row')[i];
+                            $(row).find('td :text[name="PTDP"]').val(col[col.length - i - 1]["partname"]);
+                            $(row).find('td :hidden[name="PTDPID"]').val(col[col.length - i - 1]["partid"]);
+                        }
                     }
                 }
             } else if (_zw.V.ft == "CHANGEREQUEST") {//부품사양변경요청검토서
                 if (_zw.V.biz == "" && _zw.V.act == '') {
-                    col = signLine.filter(function (element) { if (element.actrole == '__r' && element.partid != '') return true; });
+                    col = signLine.filter(function (element) { if (element.actrole == '__r' && element.partid != '') return true; }); //console.log(col)
                     p = $('#__subtable1');
                     if (p.length  > 0 && col.length > 0) {
+                        len = p.find('tr.sub_table_row').length;
+                        if (col.length > len) { for (var i = 0; i < col.length - len; i++) _zw.form.addRow('__subtable1'); }
 
+                        for (var i = 0; i < col.length; i++) {
+                            row = p.find('tr.sub_table_row')[i];
+                            $(row).find('td :text[name="PTDP"]').val(col[col.length - i - 1]["partname"]);
+                            $(row).find('td :hidden[name="PTDPID"]').val(col[col.length - i - 1]["partid"]);
+                        }
                     }
                 }
             } else if (_zw.V.ft == "BEFORECHANGE") {//4M/1E변경사전회의진행서
@@ -1544,7 +1558,14 @@ $(function () {
                     col = signLine.filter(function (element) { if (element.actrole == '__r' && element.partid != '') return true; });
                     p = $('#__subtable1');
                     if (p.length > 0 && col.length > 0) {
+                        len = p.find('tr.sub_table_row').length;
+                        if (col.length > len) { for (var i = 0; i < col.length - len; i++) _zw.form.addRow('__subtable1'); }
 
+                        for (var i = 0; i < col.length; i++) {
+                            row = p.find('tr.sub_table_row')[i];
+                            $(row).find('td :text[name="PTDP"]').val(col[col.length - i - 1]["partname"]);
+                            $(row).find('td :hidden[name="PTDPID"]').val(col[col.length - i - 1]["partid"]);
+                        }
                     }
                 }
             }
@@ -1886,30 +1907,32 @@ $(function () {
             f["subtables"] = s;
         },
         "subPart": function (f, subInfo) { //테이블구분^, 필드구분;
-            var vSub = subInfo.split('^'), p = {}; console.log(vSub)
+            var vSub = subInfo.split('^'), p = {}; //console.log(vSub)
             for (var i = 0; i < vSub.length; i++) {
                 var fld = vSub[i].split(';');
                 var v = [];
                 $('#__subtable' + fld[0] + ' tr.sub_table_row').each(function () {
                     var s = {};
-                    s["ROWSEQ"] = $(this).find('[name="ROWSEQ"]').val();
-                    for (var x = 1; x < fld.length; x++) {
-                        var node = $(this).find('[name="' + fld[x] + '"]');
-                        if (node.length > 0) {
-                            if (node.prop('tagName').toLowerCase() == 'div' || node.prop('tagName').toLowerCase() == 'span') {
-                                s[fld[x]] = node.html();
-                            } else if (node.prop('tagName').toLowerCase() == 'input') {
-                                if (node.is(":checkbox") || node.is(":radio")) {
-                                    s[fld[x]] = node.prop('checked') ? node.val() : '';
+                    if ($(this).find('[name="ROWSEQ"]').length > 0) {
+                        s["ROWSEQ"] = $(this).find('[name="ROWSEQ"]').val();
+                        for (var x = 1; x < fld.length; x++) {
+                            var node = $(this).find('[name="' + fld[x] + '"]');
+                            if (node.length > 0) {
+                                if (node.prop('tagName').toLowerCase() == 'div' || node.prop('tagName').toLowerCase() == 'span') {
+                                    s[fld[x]] = node.html();
+                                } else if (node.prop('tagName').toLowerCase() == 'input') {
+                                    if (node.is(":checkbox") || node.is(":radio")) {
+                                        s[fld[x]] = node.prop('checked') ? node.val() : '';
+                                    } else {
+                                        s[fld[x]] = node.val();
+                                    }
                                 } else {
                                     s[fld[x]] = node.val();
                                 }
-                            } else {
-                                s[fld[x]] = node.val();
                             }
                         }
+                        v.push(s);
                     }
-                    v.push(s);
                 });
                 p['subtable' + fld[0]] = v;
                 v = null;

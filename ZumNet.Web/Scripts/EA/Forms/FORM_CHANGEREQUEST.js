@@ -1,9 +1,48 @@
 ﻿$(function () {
     _zw.formEx = {
         "validation": function (cmd) {
+            var el = null, row = null;
+            if (cmd == "draft") { //기안
+            } else {
+                if ((_zw.V.biz == "영업검토" || _zw.V.biz == "해설접수" || _zw.V.biz == "구매검토" || _zw.V.biz == "해품샘플" || _zw.V.biz == "본품샘플") && _zw.V.act == '__r') {
+                    $('#__subtable1 tr.sub_table_row').each(function () {
+                        if ($(this).find('td :hidden[name="PTDPID"]').val() == _zw.V.current.deptid) {
+                            row = $(this); return false;
+                        }
+                    });
+                    if (row.length > 0) {
+                        if (row.find('td :hidden[name="S5DCN1"]').val() == '') { bootbox.alert('부서 내/외부 4M진행 선택하십시오!', function () { }); return false; }
+                        el = row.find('td textarea[name="S5OPN1"]');
+                        if (el.val() == '') { bootbox.alert('부서 내/외부 4M진행 의견을 입력하십시오!', function () { el.focus(); }); return false; }
+                    }
+
+                } else if ((_zw.V.biz == "영업검토" || _zw.V.biz == "본설접수" || _zw.V.biz == "해설접수" || _zw.V.biz == "구매검토" || _zw.V.biz == "해품샘플" || _zw.V.biz == "본품샘플") && _zw.V.act == '_approver') {
+                    $('#__subtable1 tr.sub_table_row').each(function () {
+                        if ($(this).find('td :hidden[name="PTDPID"]').val() == _zw.V.current.deptid) {
+                            row = $(this); return false;
+                        }
+                    });
+                    if (row.length > 0) {
+                        if (row.find('td :hidden[name="S5DCN2"]').val() == '') { bootbox.alert('부서 내/외부 4M진행 선택하십시오!', function () { }); return false; }
+                        el = row.find('td textarea[name="S5OPN2"]');
+                        if (el.val() == '') { bootbox.alert('부서 내/외부 4M진행 의견을 입력하십시오!', function () { el.focus(); }); return false; }
+                    }
+
+                } else if (_zw.V.biz == "품보검토") {
+                    el = $('#__mainfield[name="SAMPLEREQUEST"]');
+                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [본사품보검토사항] 누락!', function () { el.focus(); }); return false; }
+                }
+            }
             return true;
         },
         "make": function (f) {
+            if (_zw.V.biz == "선행검토" && _zw.V.current.deptcd == 'A7100') {
+                _zw.body.main(f, ["SAMPLEREQUEST"]);
+            }
+
+            if (_zw.V.biz != "normal") {
+                _zw.body.subPart(f, "1;S5DCN1;S5DCN2;S5OPN1;S5OPN2");
+            }
         },
         "checkEvent": function (ckb, el, fld) {
             var t;

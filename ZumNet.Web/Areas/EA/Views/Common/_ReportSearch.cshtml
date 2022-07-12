@@ -154,7 +154,7 @@
                         if (svcRt.ResultCode == 0)
                         {
                             if (svcRt.ResultItemCount > 0) strRt = svcRt.ResultDataSet.Tables[0].Rows[0]["STDTIME"].ToString();
-                            if (strRt == "") strReturn = "NO" + "퇴근기록이 업데이트 되지 않았습니다.\n\r* 문의 인사총무팀 나종문(615번)";
+                            if (strRt == "") strReturn = "NO" + "퇴근기록이 업데이트 되지 않았습니다.<br />* 문의 인사총무팀 나종문(615번)";
                             else strReturn = "OK" + strRt;
                         }
                         else strReturn = svcRt.ResultMessage;
@@ -180,7 +180,7 @@
                         if (svcRt.ResultCode == 0)
                         {
                             if (svcRt.ResultItemCount > 0) strRt = svcRt.ResultDataSet.Tables[0].Rows[0][0].ToString();
-                            if (strRt == "") strReturn = "유류정보가 업데이트 되지 않았습니다.\n\r* 문의 인사총무팀 나종문(615번)";
+                            if (strRt == "") strReturn = "유류정보가 업데이트 되지 않았습니다.<br />* 문의 인사총무팀 나종문(615번)";
                             else strReturn = "OK" + strRt;
                         }
                         else strReturn = svcRt.ResultMessage;
