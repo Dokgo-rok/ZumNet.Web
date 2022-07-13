@@ -1719,6 +1719,18 @@ $(function () {
                 return '';
             }
         },
+        "dateLocale": function (d, f) {
+            var rt = '';
+            if (moment(d).isValid()) {
+                if (f == 'ko') rt = _zw.ut.date(d, 'YYYY년 MM월 DD일');
+                else if (f == 'en') {
+                    moment.locale('en');
+                    rt = _zw.ut.date(d, 'MMMM DD, YYYY');
+                    moment.locale($('#current_culture').val());
+                } else rt = _zw.ut.date(d, f);
+            }
+            return rt;
+        },
         "diff": function (f, s, e) {
             if (f == 'day') {//console.log(s + " : " + e)
                 if (moment(s).isValid() && moment(e).isValid()) return moment(s).diff(moment(e), 'days');

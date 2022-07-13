@@ -451,7 +451,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_COMPLETEPRODUCTTEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CONAPPLICATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CONSTRUCTDRAFT_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_CONTRACTRE_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_CONTRACTRE_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_COOPERATION_V1.xsl">
       <SubType>Designer</SubType>
     </Content>
@@ -2107,6 +2109,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CONTRACTRE.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_CREIBILITYREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CTCMINUTES.js" />
@@ -2114,6 +2117,7 @@
     <Content Include="Scripts\EA\Forms\FORM_DEVPRODUCTLIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DOCWORKSTATE.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAWING.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRIVEMONEY.js" />
     <Content Include="Scripts\EA\Forms\FORM_EDUREPORTB.js" />
@@ -2124,9 +2128,11 @@
     <Content Include="Scripts\EA\Forms\FORM_EQUIPMAKEPURCHASE.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPPURCHASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_FIRSTVACATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_FLOWERMONEY.js" />
     <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOLIWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOMEWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_INDUSTRIALPRO.js" />
     <Content Include="Scripts\EA\Forms\FORM_INTERNALAUDITRESULT.js" />
     <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_ITEMMASTERCHART.js" />
@@ -2162,6 +2168,7 @@
     <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALCONFIRM.js" />
     <Content Include="Scripts\EA\Forms\FORM_SQANEWVERIFREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_STAMPRECORD.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_SWSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMADDREQ.js" />
@@ -2173,6 +2180,7 @@
     <Content Include="Scripts\EA\Forms\FORM_VACATIONCHANGE.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONHR.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONUSE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_WITHHOLDINGRECEIPT.js" />
     <Content Include="Scripts\EA\Forms\_sample.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAFT.js" />
     <Content Include="Scripts\Env\env.js" />

@@ -187,6 +187,31 @@
                     }
                     #endregion
                 }
+                else if (postData["k2"].ToString() == "DOCWORKSTATE" || postData["k2"].ToString() == "VACATIONNOTUSE")
+                {
+                    #region [DOCWORKSTATE, VACATIONNOTUSE]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("", Convert.ToInt32(postData["v1"].ToString()), "DOCWORKSTATE", "", "", "", "", "", "", "");
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0 && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                        {
+                            DataRow row = svcRt.ResultDataSet.Tables[0].Rows[0];
+                            foreach (DataColumn col in row.Table.Columns)
+                            {
+                                strRt = strRt + col.ColumnName.ToString() + ":" + row[col.ColumnName].ToString() + ",";
+                            }
+                        }
+
+                        if (strRt == "") strReturn = "ND" + "증명내역이없습니다";
+                        else strReturn = "OK" + strRt.Substring(0, strRt.LastIndexOf(',')); ;
+                    }
+                    else strReturn = svcRt.ResultMessage;
+                    #endregion
+                }
                 else if (postData["k2"].ToString() == "REGISTER_OUTWORK")
                 {
                     #region [야근신청서]

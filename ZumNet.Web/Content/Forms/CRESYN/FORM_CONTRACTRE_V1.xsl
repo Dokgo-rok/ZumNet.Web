@@ -31,7 +31,7 @@
           .fh h1 {font-size:19.0pt;letter-spacing:0}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:12%} .m .ft .f-lbl2 {width:?}
@@ -80,12 +80,12 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:250px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '3', '작성부서')"/>
                 </td>
                 <td style="width:50px;font-size:1px">&nbsp;</td>
-                <td style="width:250px">
-                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='receive' and @partid!='' and @step!='0'], '__si_Receive', '3', '합의부서', 'N')"/>
+                <td style="width:245px">
+                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='receive' and @partid!='' and @step!='0'], '__si_Receive', '3', '합의부서')"/>
                 </td>               
                 <td style="width:50px;font-size:1px">&nbsp;</td>
                 <td style="width:95px">
@@ -171,7 +171,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb15" name="ckbSECRETOPEN" value="공개">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbSECRETOPEN', this, 'SECRETOPEN')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbSECRETOPEN', this, 'SECRETOPEN')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/SECRETOPEN),'공개')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -185,7 +185,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb16" name="ckbSECRETOPEN" value="비공개">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbSECRETOPEN', this, 'SECRETOPEN')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbSECRETOPEN', this, 'SECRETOPEN')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/SECRETOPEN),'비공개')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -248,16 +248,13 @@
 
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
-              <xsl:if test="$mode='new' or $mode='edit'">
-                <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
-              </xsl:if>
               <tr>
                 <td class="f-lbl" style="width: 15%;border-bottom: 0">전자계약</td>
                 <td style="width: 65%; border-bottom: 0; border-right: 0">
                   <span class="f-option1">
                     <input type="checkbox" id="ckb11" name="ckbECONTYN" value="진행">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbECONTYN', this, 'ECONTYN')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbECONTYN', this, 'ECONTYN')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/ECONTYN),'진행')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -271,7 +268,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb12" name="ckbECONTYN" value="미진행">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbECONTYN', this, 'ECONTYN')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbECONTYN', this, 'ECONTYN')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/ECONTYN),'미진행')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -284,9 +281,10 @@
                   </span>
                   <input type="hidden" id="__mainfield" name="ECONTYN" value="{//forminfo/maintable/ECONTYN}" />
                 </td>
-                <td style="text-align: ; border-bottom: 0; border-right: 0">
+                <td style="border-left: 0; border-right: 0; border-bottom: 0">
                   <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/ECONTYN),'진행') and $bizrole='receive' and $actrole='__r' and $partid!=''">
-                    <a href="javascript:" onclick="parent.searchExternal(1, 'api.eformio', '', '', 'ECONTFID^ECONTFNM')" style="text-decoration: none">계약서 선택</a>
+                    <!--<a href="javascript:" onclick="parent.searchExternal(1, 'api.eformio', '', '', 'ECONTFID^ECONTFNM')" style="text-decoration: none">계약서 선택</a>-->
+				    <a onclick="_zw.formEx.optionWnd('api.eformio',550,200,250,-20,'','ECONTFID^ECONTFNM');" style="text-decoration: none" href="javascript:">계약서 선택</a>
                   </xsl:if>
                   <xsl:if test="//bizinfo/@docstatus='700' and phxsl:isEqual(string(//forminfo/maintable/ECONTYN),'진행')">
                     <xsl:choose>
@@ -309,6 +307,8 @@
               <xsl:attribute name="style">display: none</xsl:attribute>
             </xsl:if>
 
+			<div class="ff" />
+			  
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
@@ -374,7 +374,7 @@
                 <td style="border-bottom: 0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($bizrole='receive' and $actrole='__r' and $partid!='')">
-                      <input type="text" id="__mainfield" name="ECONTEXPIRED" class="txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/ECONTEXPIRED}" />
+                      <input type="text" id="__mainfield" name="ECONTEXPIRED" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/ECONTEXPIRED}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ECONTEXPIRED))" />
@@ -386,7 +386,7 @@
                 <td colspan="" style="border-bottom: 0;border-right: 0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($bizrole='receive' and $actrole='__r' and $partid!='')">
-                      <input type="text" id="__mainfield" name="ECONTPWD" class="txtNumberic" maxlength="10" style="direction:ltr" value="{//forminfo/maintable/ECONTPWD}" />
+                      <input type="text" id="__mainfield" name="ECONTPWD" class="txtNumberic" maxlength="10" data-inputmask="number-n;10;0" value="{//forminfo/maintable/ECONTPWD}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ECONTPWD))" />
@@ -397,7 +397,8 @@
               </tr>
             </table>
             
-            <div style="height: 2px; font-size: 1px">&nbsp;</div>
+            <!--<div style="height: 2px; font-size: 1px">&nbsp;</div>-->
+			  <div class="ff"></div>
             
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <xsl:if test="$mode='new' or $mode='edit'">
@@ -431,9 +432,9 @@
                 </td>
                 <td style="text-align:center">                  
                   <span class="f-option">
-                    <input type="checkbox" id="ckb11" name="ckbGENDER" value="남">
+                    <input type="checkbox" id="ckb11" name="ckbGENDER" value="남" style="position: relative">
                       <xsl:if test="$mode='new' or $mode='edit' or ($bizrole='receive' and $actrole='__r' and $partid!='') ">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbGENDER', this, 'GENDER')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbGENDER', this, 'GENDER')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/GENDER),'남')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -504,9 +505,9 @@
                 </td>
                 <td style="border-bottom: 0;text-align:center">
                   <span class="f-option">
-                    <input type="checkbox" id="ckb11" name="ckbGENDER" value="여">
+                    <input type="checkbox" id="ckb11" name="ckbGENDER" value="여" style="position: relative">
                       <xsl:if test="$mode='new' or $mode='edit' or ($bizrole='receive' and $actrole='__r' and $partid!='') ">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbGENDER', this, 'GENDER')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbGENDER', this, 'GENDER')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/GENDER),'여')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -583,17 +584,14 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="OBJECT" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="OBJECT" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/OBJECT" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="OBJECT" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/OBJECT))" />
                       </div>
                     </xsl:otherwise>
@@ -624,17 +622,14 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="MAINCON" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="MAINCON" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/MAINCON" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="MAINCON" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:100px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/MAINCON))" />
                       </div>
                     </xsl:otherwise>
@@ -650,7 +645,7 @@
           <div class="ff" />
 
           <div class="fm">
-            <span>&nbsp;2.업체 정보</span>
+            <span>&nbsp;2. 업체 정보</span>
           </div>
 
           <div class="ff" />
@@ -729,7 +724,7 @@
           <div class="ff" />
 
           <div class="fm">
-            <span>&nbsp;3.계약 기간</span>
+            <span>&nbsp;3. 계약 기간</span>
           </div>
 
           <div class="ff" />
@@ -745,14 +740,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text"  id="__mainfield" name="STDATE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/STDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text"  id="__mainfield" name="STDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width: 120px" value="{//forminfo/maintable/STDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/STDATE))" />                      
@@ -765,14 +753,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="FIDATE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/FIDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="FIDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width: 120px" value="{//forminfo/maintable/FIDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/FIDATE))" />                    
@@ -785,17 +766,14 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="MAINCON1" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="MAINCON1" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/MAINCON" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="MAINCON1" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/MAINCON1))" />
                       </div>
                     </xsl:otherwise>
@@ -887,17 +865,14 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="DEMAND" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="DEMAND" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/DEMAND" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="DEMAND" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DEMAND))" />
                       </div>
                     </xsl:otherwise>
@@ -909,17 +884,14 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="PAY" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="PAY" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/PAY" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="PAY" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PAY))" />
                       </div>
                     </xsl:otherwise>
@@ -972,17 +944,14 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="DEPLACE" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="DEPLACE" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/DEPLACE" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="DEPLACE" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DEPLACE))" />
                       </div>
                     </xsl:otherwise>
@@ -1036,17 +1005,14 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="CLOSE1" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="CLOSE1" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/CLOSE1" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="CLOSE1" style="height:40px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CLOSE1))" />
                       </div>
                     </xsl:otherwise>
@@ -1058,17 +1024,14 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="LOSSIND" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="LOSSIND" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/LOSSIND" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="LOSSIND" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/LOSSIND))" />
                       </div>
                     </xsl:otherwise>
@@ -1080,17 +1043,14 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="LOSSMONEY" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="LOSSMONEY" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/LOSSMONEY" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="LOSSMONEY" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/LOSSMONEY))" />
                       </div>
                     </xsl:otherwise>
@@ -1121,17 +1081,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="PROPERTY" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="PROPERTY" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/PROPERTY" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="PROPERTY" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PROPERTY))" />
                       </div>
                     </xsl:otherwise>
@@ -1181,17 +1138,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="GUARANTEE" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="GUARANTEE" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/GUARANTEE" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="GUARANTEE" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/GUARANTEE))" />
                       </div>
                     </xsl:otherwise>
@@ -1242,17 +1196,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="SPECIAL" style="height:40px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="SPECIAL" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/SPECIAL" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="SPECIAL" style="height:100px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:40px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SPECIAL))" />
                       </div>
                     </xsl:otherwise>
@@ -1272,9 +1223,7 @@
             <span>10. 체크리스트</span>
           </div>
           <div class="ff" />
-          <div class="ff" />
-
-       
+          <div class="ff" />       
 
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
@@ -1311,7 +1260,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X">
+                      <select id="__mainfield"  name="CHECK0X" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X),'')">
                             <option value="" selected="selected">선택</option>
@@ -1377,7 +1326,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X2">
+                      <select id="__mainfield"  name="CHECK0X2" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X2),'')">
                             <option value="" selected="selected">선택</option>
@@ -1443,7 +1392,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X3">
+                      <select id="__mainfield"  name="CHECK0X3" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X3),'')">
                             <option value="" selected="selected">선택</option>
@@ -1512,7 +1461,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X4">
+                      <select id="__mainfield"  name="CHECK0X4" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X4),'')">
                             <option value="" selected="selected">선택</option>
@@ -1577,7 +1526,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X5">
+                      <select id="__mainfield"  name="CHECK0X5" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X5),'')">
                             <option value="" selected="selected">선택</option>
@@ -1642,7 +1591,7 @@
               <td style="">
                 <xsl:choose>
                   <xsl:when test="$mode='new' or $mode='edit'">
-                    <select id="__mainfield"  name="CHECK0X6">
+                    <select id="__mainfield"  name="CHECK0X6" class="form-control">
                       <xsl:choose>
                         <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X6),'')">
                           <option value="" selected="selected">선택</option>
@@ -1718,7 +1667,7 @@
               <td style="">
                 <xsl:choose>
                   <xsl:when test="$mode='new' or $mode='edit'">
-                    <select id="__mainfield"  name="CHECK0X7">
+                    <select id="__mainfield"  name="CHECK0X7" class="form-control">
                       <xsl:choose>
                         <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X7),'')">
                           <option value="" selected="selected">선택</option>
@@ -1788,7 +1737,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X8">
+                      <select id="__mainfield"  name="CHECK0X8" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X8),'')">
                             <option value="" selected="selected">선택</option>
@@ -1854,7 +1803,7 @@
                   <td style="">
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <select id="__mainfield"  name="CHECK0X9">
+                        <select id="__mainfield"  name="CHECK0X9" class="form-control">
                           <xsl:choose>
                             <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X9),'')">
                               <option value="" selected="selected">선택</option>
@@ -1921,7 +1870,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X10">
+                      <select id="__mainfield"  name="CHECK0X10" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X10),'')">
                             <option value="" selected="selected">선택</option>
@@ -1987,7 +1936,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X11">
+                      <select id="__mainfield"  name="CHECK0X11" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X11),'')">
                             <option value="" selected="selected">선택</option>
@@ -2056,7 +2005,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X12">
+                      <select id="__mainfield"  name="CHECK0X12" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X12),'')">
                             <option value="" selected="selected">선택</option>
@@ -2121,7 +2070,7 @@
                   <td style="">
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <select id="__mainfield"  name="CHECK0X13">
+                        <select id="__mainfield"  name="CHECK0X13" class="form-control">
                           <xsl:choose>
                             <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X13),'')">
                               <option value="" selected="selected">선택</option>
@@ -2186,7 +2135,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X14">
+                      <select id="__mainfield"  name="CHECK0X14" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X14),'')">
                             <option value="" selected="selected">선택</option>
@@ -2251,7 +2200,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X15">
+                      <select id="__mainfield"  name="CHECK0X15" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X15),'')">
                             <option value="" selected="selected">선택</option>
@@ -2321,7 +2270,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X16">
+                      <select id="__mainfield"  name="CHECK0X16" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X16),'')">
                             <option value="" selected="selected">선택</option>
@@ -2388,7 +2337,7 @@
                   <td style="">
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <select id="__mainfield"  name="CHECK0X17">
+                        <select id="__mainfield"  name="CHECK0X17" class="form-control">
                           <xsl:choose>
                             <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X17),'')">
                               <option value="" selected="selected">선택</option>
@@ -2455,7 +2404,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X18">
+                      <select id="__mainfield"  name="CHECK0X18" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X18),'')">
                             <option value="" selected="selected">선택</option>
@@ -2521,7 +2470,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X19">
+                      <select id="__mainfield"  name="CHECK0X19" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X19),'')">
                             <option value="" selected="selected">선택</option>
@@ -2590,7 +2539,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X20">
+                      <select id="__mainfield"  name="CHECK0X20" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X20),'')">
                             <option value="" selected="selected">선택</option>
@@ -2655,7 +2604,7 @@
                   <td style="">
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <select id="__mainfield"  name="CHECK0X21">
+                        <select id="__mainfield"  name="CHECK0X21" class="form-control">
                           <xsl:choose>
                             <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X21),'')">
                               <option value="" selected="selected">선택</option>
@@ -2724,7 +2673,7 @@
                   <td style="">
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <select id="__mainfield"  name="CHECK0X22">
+                        <select id="__mainfield"  name="CHECK0X22" class="form-control">
                           <xsl:choose>
                             <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X22),'')">
                               <option value="" selected="selected">선택</option>
@@ -2791,7 +2740,7 @@
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X23">
+                      <select id="__mainfield"  name="CHECK0X23" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X23),'')">
                             <option value="" selected="selected">선택</option>
@@ -2858,7 +2807,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0X24">
+                      <select id="__mainfield"  name="CHECK0X24" class="form-control">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0X24),'')">
                             <option value="" selected="selected">선택</option>
@@ -2920,7 +2869,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
