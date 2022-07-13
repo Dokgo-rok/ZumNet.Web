@@ -523,7 +523,12 @@ $(function () {
 
                                 if (p.find('.zf-sl-template-part').length > 0) {
                                     var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
-                                    for (var i = jPart.length - 1; i >= 0; i--) _zw.V.process.signline.push(jPart[i]);
+                                    for (var i = jPart.length - 1; i >= 0; i--) {
+                                        //22-07-13 조건 추가 (크레신 "마스터파일변경의뢰서" 프로세스 처리에 필요)
+                                        var ln = _zw.V.process.signline.find(function (element) { if (element.activityid == jPart[i]["activityid"] && element.partid.split('_')[0] == jPart[i]["partid"] && element.viewstate == '3') return true; })
+                                        //console.log(jPart[i]["activityid"] + " : " + jPart[i]["partid"]); console.log(ln);
+                                        if (typeof ln === 'undefined') _zw.V.process.signline.push(jPart[i]);
+                                    }
                                 }
 
                                 if (p.find('.zf-sl-template-attr').length > 0) {

@@ -2114,6 +2114,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CREIBILITYREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CTCMINUTES.js" />
     <Content Include="Scripts\EA\Forms\FORM_CUSTOMERORDER.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DELIVERYSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_DEVPRODUCTLIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCCAREER.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />

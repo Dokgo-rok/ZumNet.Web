@@ -27,18 +27,18 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:700px} .m .fm-editor {height:350px;border:windowtext 1pt solid}
+          .m {width:700px} .m .fm-editor {height:350px;min-height:350px;border:windowtext 1pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:1pt;}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:6%} .m .ft .f-lbl2 {width:?}
           .m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
 
           /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:300px}}
+          @media print {.m .fm-editor {height:350px;min-height:350px}}
         </style>
       </head>
       <body>
@@ -47,18 +47,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -68,18 +64,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -87,11 +79,11 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:250px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '3', '작성부서')"/>
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
-                <td style="width:250px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='confirm' and @partid!='' and @step!='0'], '__si_Site', '3', '처리부서')"/>
                 </td>
               </tr>
@@ -180,10 +172,13 @@
                 <td colspan="2"  style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="MODELNAME" class="txtText" style="width:92%" value="{//forminfo/maintable/MODELNAME}" />
-                      <button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="MODELNAME" class="txtText" style="width:91%; margin-right: 2px" value="{//forminfo/maintable/MODELNAME}" />
+                      <!--<button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+					    <button type="button" class="btn btn-outline-secondary btn-18" title="모델명" onclick="_zw.formEx.externalWnd('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME','ITEMNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
@@ -196,20 +191,23 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="STEP" style="width:80%">
+                      <input type="text" id="__mainfield" name="STEP" style="width:86%">
                         <xsl:attribute name="class">txtText_u</xsl:attribute>
                         <xsl:attribute name="readonly">readonly</xsl:attribute>
                         <xsl:attribute name="value">
                           <xsl:value-of select="//forminfo/maintable/STEP" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.devstep',140,120,130,70,'etc','STEP');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.devstep',140,120,130,70,'etc','STEP');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+					    <button type="button" class="btn btn-outline-secondary btn-18" title="개발단계" onclick="_zw.formEx.optionWnd('external.devstep',140,214,-120,0,'etc','STEP');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/STEP))" />
@@ -237,14 +235,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="REVIEWDAY">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/REVIEWDAY" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="REVIEWDAY" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/REVIEWDAY}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/REVIEWDAY))" />
@@ -257,20 +248,23 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PRODUCTCENTER" style="width:80%">
+                      <input type="text" id="__mainfield" name="PRODUCTCENTER" style="width:86%">
                         <xsl:attribute name="class">txtText_u</xsl:attribute>
                         <xsl:attribute name="readonly">readonly</xsl:attribute>
                         <xsl:attribute name="value">
                           <xsl:value-of select="//forminfo/maintable/PRODUCTCENTER" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.centercode',200,140,50,90,'','PRODUCTCENTER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.centercode',200,140,50,90,'','PRODUCTCENTER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+					    <button type="button" class="btn btn-outline-secondary btn-18" title="생산지" onclick="_zw.formEx.optionWnd('external.centercode',240,274,-130,0,'','PRODUCTCENTER');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PRODUCTCENTER))" />
@@ -281,13 +275,7 @@
                 <td>
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <input type="text" id="__mainfield" name="COUNT1">
-                          <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                          <xsl:attribute name="maxlength">100</xsl:attribute>
-                          <xsl:attribute name="value">
-                            <xsl:value-of select="//forminfo/maintable/COUNT1" />
-                          </xsl:attribute>
-                        </input>
+                        <input type="text" id="__mainfield" name="COUNT1" class="txtNumberic" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/COUNT1}" />
                       </xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT1))" />
@@ -298,13 +286,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="COUNT2">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">100</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/COUNT2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="COUNT2" class="txtNumberic" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/COUNT2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT2))" />
@@ -316,13 +298,16 @@
                 <td class="f-lbl4" style="border-bottom:0">
                   검토부서
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                    <!--<button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0">
                         <xsl:attribute name="src">
                           /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                         </xsl:attribute>
                       </img>
-                    </button>
+                    </button>-->
+				    <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="검토부서" onclick="_zw.fn.org('user','n');">
+						  <i class="fas fa-angle-down"></i>
+					  </button>
                   </xsl:if>
                 </td>
                 <td colspan="2" style="border-bottom:0">
@@ -405,13 +390,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="A1">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/A1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="A1" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/A1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -422,13 +401,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="A2">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/A2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="A2" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/A2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -439,13 +412,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="A3">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/A3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="A3" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/A3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -456,13 +423,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="A4">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/A4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="A4" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/A4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -473,13 +434,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="A5">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/A5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="A5" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/A5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -490,13 +445,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="A6">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/A6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="A6" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/A6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -527,13 +476,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="B1">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/B1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="B1" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/B1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -544,13 +487,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="B2">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/B2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="B2" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/B2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -561,13 +498,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="B3">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/B3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="B3" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/B3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -578,13 +509,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="B4">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/B4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="B4" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/B4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -595,13 +520,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="B5">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/B5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="B5" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/B5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -612,13 +531,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="B6">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/B6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="B6" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/B6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -894,13 +807,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="E1">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/E1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="E1" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/E1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -911,13 +818,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="E2">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/E2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="E2" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/E2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -928,13 +829,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="E3">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/E3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="E3" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/E3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -945,13 +840,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="E4">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/E4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="E4" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/E4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -962,13 +851,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="E5">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/E5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="E5" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/E5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -979,13 +862,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="E6">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/E6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="E6" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/E6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1016,13 +893,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="F1">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/F1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="F1" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/F1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1033,13 +904,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="F2">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/F2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="F2" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/F2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1050,13 +915,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="F3">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/F3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="F3" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/F3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1067,13 +926,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="F4">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/F4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="F4" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/F4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1084,13 +937,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="F5">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/F5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="F5" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/F5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1101,13 +948,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="F6">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/F6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="F6" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/F6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1383,13 +1224,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="I1">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/I1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="I1" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/I1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1400,13 +1235,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="I2">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/I2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="I2" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/I2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1417,13 +1246,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="I3">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/I3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="I3" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/I3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1434,13 +1257,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="I4">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/I4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="I4" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/I4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1451,13 +1268,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="I5">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/I5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="I5" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/I5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1468,13 +1279,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="I6">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/I6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="I6" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/I6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1505,13 +1310,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="J1">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/J1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="J1" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/J1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1522,13 +1321,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="J2">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/J2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="J2" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/J2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1539,13 +1332,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="J3">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/J3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="J3" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/J3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1556,13 +1343,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="J4">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/J4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="J4" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/J4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1573,13 +1354,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="J5">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/J5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="J5" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/J5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1590,13 +1365,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($partid!='' and $bizrole='confirm' and $actrole='_approver')">
-                      <input type="text" id="__mainfield" name="J6">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/J6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="J6" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/J6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1881,6 +1650,9 @@
           <div class="ff" />
 
           <div class="fm-editor">
+            <xsl:if test="$mode!='new' and $mode!='edit'">
+                <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+            </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <div name="WEBEDITOR" id="__mainfield" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">
@@ -1894,16 +1666,17 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no">
+                <!--<iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no">
                   <xsl:attribute name="src">
                     /<xsl:value-of select="$root" />/EA/External/Editor_tagfree.aspx
                   </xsl:attribute>
-                </iframe>
+                </iframe>-->
+			  <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
