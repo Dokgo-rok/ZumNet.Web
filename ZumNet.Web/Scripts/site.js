@@ -1466,6 +1466,9 @@ $(function () {
                 }
             );
             //console.log(JSON.stringify(v))
+            var clsName = '';
+            if (v) clsName = '(' + $('#__ClassTree li[tgt="class_' + v["cid"] + '"]').text() + ')';
+            p.find('.z-lv-forminfo .card-header span').html(clsName);
             
             var sGR = '', sUR = '';
             if (v && v["chargelist"].length > 0) {
