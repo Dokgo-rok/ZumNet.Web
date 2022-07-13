@@ -1941,7 +1941,7 @@ $(function () {
         },
         "file": function (cmd, doc, fi, img) {
             var fileList = DEXT5UPLOAD.GetAllFileListForJson(); //console.log(fileList)
-            var imgList = DEXT5.getImagesEx(); //console.log(!imgList)
+            var imgList = DEXT5.getImagesEx(); console.log(imgList)
 
             if (fileList && fileList.webFile) {
                 var webFile = fileList.webFile;
@@ -1975,7 +1975,7 @@ $(function () {
                 var vImg = imgList.split(_zw.T.uploader.da);
                 for (var i = 0; i < vImg.length; i++) {
                     var vInfo = vImg[i].split(_zw.T.uploader.df); //console.log(location.host + " : " + vInfo[0] + " : " + rgx)
-                    //if (vInfo[0].toLowerCase().indexOf(rgx) != -1) {
+                    if (vInfo[0].toLowerCase().indexOf(rgx) != -1) {
                         var v = {};
                         var idx = vInfo[1].lastIndexOf('.');
                         v["attachid"] = 0;
@@ -1993,7 +1993,7 @@ $(function () {
                         //v["imgpath"] = vInfo[0];
                         v["origin"] = location.origin; //console.log(v)
                         img.push(v);
-                    //}
+                    }
                 }
             }
         },

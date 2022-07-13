@@ -31,7 +31,7 @@
           .fh h1 {font-size:20.0pt;letter-spacing:5pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
@@ -48,18 +48,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -78,18 +74,14 @@
                 </td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -97,11 +89,11 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:250px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '3', '신청부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
-                <td style="width:250px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '3', '처리부서')"/>
                 </td>
               </tr>
@@ -163,13 +155,7 @@
                         (&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="COUNT1" style="width:40px">
-                              <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                              <xsl:attribute name="maxlength">3</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/COUNT1" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="COUNT1" style="width:40px" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT1}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT1))" />
@@ -183,13 +169,7 @@
                         (&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="COUNT2" style="width:40px">
-                              <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                              <xsl:attribute name="maxlength">3</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/COUNT2" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="COUNT2" style="width:40px" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT2}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT2))" />
@@ -203,13 +183,7 @@
                         (&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="COUNT3" style="width:40px">
-                              <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                              <xsl:attribute name="maxlength">3</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/COUNT3" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="COUNT3" style="width:40px" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT3}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT3))" />
@@ -258,13 +232,7 @@
                         (&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="COUNT4" style="width:40px">
-                              <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                              <xsl:attribute name="maxlength">3</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/COUNT4" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="COUNT4" style="width:40px" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT4}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT4))" />
@@ -305,13 +273,7 @@
                         (&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="COUNT6" style="width:40px">
-                              <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                              <xsl:attribute name="maxlength">3</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/COUNT6" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="COUNT6" style="width:40px" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT6}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT6))" />
@@ -325,13 +287,7 @@
                         (&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="COUNT7" style="width:40px">
-                              <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                              <xsl:attribute name="maxlength">3</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/COUNT7" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="COUNT7" style="width:40px" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT7}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT7))" />
@@ -361,13 +317,7 @@
                         (&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="COUNT8" style="width:40px">
-                              <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                              <xsl:attribute name="maxlength">3</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/COUNT8" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="COUNT8" style="width:40px" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT8}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT8))" />
@@ -382,13 +332,16 @@
                 <td class="f-lbl" style="height:30px;">
                   성명
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                    <!--<button onclick="parent.fnOrgmap('ur','N');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0">
                         <xsl:attribute name="src">
                           /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                         </xsl:attribute>
                       </img>
-                    </button>
+                    </button>-->
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
+						  <i class="fas fa-angle-down"></i>
+					  </button>
                   </xsl:if>
                 </td>
                 <td style="width:20%">
@@ -446,13 +399,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="JUMINNO">
-                        <xsl:attribute name="class">txtJuminDash</xsl:attribute>
-                        <xsl:attribute name="maxlength">6</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/JUMINNO" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="JUMINNO" class="txtJuminDash" maxlength="6" data-inputmask="number-n;6;0" value="{//forminfo/maintable/JUMINNO}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/JUMINNO))" />
@@ -520,14 +467,7 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="DEADLINE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/DEADLINE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="DEADLINE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/DEADLINE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DEADLINE))" />
@@ -554,17 +494,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="DESCRIPTION" style="height:150px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                      <textarea id="__mainfield" name="DESCRIPTION" style="height:120px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/DESCRIPTION" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="DESCRIPITON" style="height:150px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:120px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DESCRIPTION))" />
                       </div>
                     </xsl:otherwise>

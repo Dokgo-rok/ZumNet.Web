@@ -192,27 +192,32 @@
     function dext_editor_loaded_event() {// 에디터가 로드된 후
         if ($('#Subject[name="__commonfield"]').length > 0) DEXT5.config.FocusInitObjId = "Subject";
         //console.log(_zw.V.def["maintable"] + " : " + _zw.V.tp + " : " + _zw.V.doc["key1"])
-        if (_zw.V.ft == 'DRAFT') {
-            if ((_zw.V.tp == 'CE' || _zw.V.tp == 'MC') && _zw.V.doc["key1"] != '') {
-                //console.log(opener._zw)
-                if (opener && (opener._zw.V.ft.toLowerCase() == 'stdexchangedetail' || opener._zw.V.ft.toLowerCase() == 'stdpaydetail')) {
-                    //alert(opener._zw.V.current["ft"].toLowerCase())
-                    if ($('#Subject').length > 0 && _zw.V.doc["subject"] != '') $('#Subject').val(_zw.V.doc["subject"]);
+        if (_zw.V.mode == 'new') {
+            if (_zw.V.ft == 'DRAFT') {
+                if ((_zw.V.tp == 'CE' || _zw.V.tp == 'MC') && _zw.V.doc["key1"] != '') {
+                    //console.log(opener._zw)
+                    if (opener && (opener._zw.V.ft.toLowerCase() == 'stdexchangedetail' || opener._zw.V.ft.toLowerCase() == 'stdpaydetail')) {
+                        //alert(opener._zw.V.current["ft"].toLowerCase())
+                        if ($('#Subject').length > 0 && _zw.V.doc["subject"] != '') $('#Subject').val(_zw.V.doc["subject"]);
 
-                    DEXT5.setBodyValue(opener.document.getElementById('_HiddenFormData').value, _zw.T.editor.id);
+                        DEXT5.setBodyValue(opener.document.getElementById('_HiddenFormData').value, _zw.T.editor.id);
+                    }
                 }
+            } else {
+                //var w = _zw.V.form.maintable["WEBEDITOR"];
+                //if (w && w != '') DEXT5.setBodyValue(w, _zw.T.editor.id);
             }
-        } else {
-            var w = _zw.V.form.maintable["WEBEDITOR"];
-            if (w && w != '') DEXT5.setBodyValue(w, _zw.T.editor.id);
-        }
 
-        if (_zw.V.ft == 'MINUTES') {
-            DEXT5.loadHtmlValueExFromURL('/Content/Forms/HTML/MINUTES_1.html', _zw.T.editor.id);
-        } else if (_zw.V.ft == 'RESIGNATION') {
-            DEXT5.loadHtmlValueExFromURL('/Content/Forms/HTML/RESIGNATION.html', _zw.T.editor.id);
-        } else if (_zw.V.ft == 'INDUSTRIALPRO') {
-            DEXT5.loadHtmlValueExFromURL('/Content/Forms/HTML/INDUSTRIALPRO_1.html', _zw.T.editor.id);
+            if (_zw.V.ft == 'MINUTES') {
+                DEXT5.loadHtmlValueExFromURL('/Content/Forms/HTML/MINUTES_1.html', _zw.T.editor.id);
+            } else if (_zw.V.ft == 'RESIGNATION') {
+                DEXT5.loadHtmlValueExFromURL('/Content/Forms/HTML/RESIGNATION.html', _zw.T.editor.id);
+            } else if (_zw.V.ft == 'INDUSTRIALPRO') {
+                DEXT5.loadHtmlValueExFromURL('/Content/Forms/HTML/INDUSTRIALPRO_1.html', _zw.T.editor.id);
+            }
+        } else if (_zw.V.mode == 'edit') {
+            if ($('#bodytext').length > 0 && $('#bodytext').val() != '') DEXT5.setBodyValue($('#bodytext').val(), _zw.T.editor.id);
+            else if (_zw.V.form.maintable["WEBEDITOR"] && _zw.V.form.maintable["WEBEDITOR"] != '') DEXT5.setBodyValue(_zw.V.form.maintable["WEBEDITOR"], _zw.T.editor.id);
         }
     }
 

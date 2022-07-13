@@ -2115,8 +2115,10 @@
     <Content Include="Scripts\EA\Forms\FORM_CTCMINUTES.js" />
     <Content Include="Scripts\EA\Forms\FORM_CUSTOMERORDER.js" />
     <Content Include="Scripts\EA\Forms\FORM_DEVPRODUCTLIST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DOCCAREER.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DOCUMENTREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCWORKSTATE.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAWING.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRIVEMONEY.js" />
@@ -2140,6 +2142,7 @@
     <Content Include="Scripts\EA\Forms\FORM_MANMOVESEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANPT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MASTERFILECHANGEREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MEALTICKET.js" />
     <Content Include="Scripts\EA\Forms\FORM_MINUTES.js" />
     <Content Include="Scripts\EA\Forms\FORM_MONTHFAULTYGOODS.js" />
     <Content Include="Scripts\EA\Forms\FORM_MONTHLOSSCHART.js" />

@@ -26,13 +26,12 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-
           /* 화면 넓이, 에디터 높이, 양식명크기 */
           .m {width:700px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:5pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:18%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:}
@@ -40,6 +39,7 @@
           .m .ft-sub .f-option {width:49%}
 
           .m .ft td,.m .ft td span {font-family:맑은 고딕}
+		  
           .etctxt{display:none}/*승인문구*/
           /* 인쇄 설정 : 맨하단으로  , 결재권자창 인쇄 시 안보임 */
           @media print {.m .fm-editor {height:450px} .fb,.si-tbl,.fh-l img {display:none} .fm-lines {display:none} .m .fh {padding-top:40px} .etctxt{display:block}}
@@ -51,18 +51,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>&nbsp;</h1>
@@ -81,28 +77,24 @@
                 </td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:250px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '3', '신청부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
-                <td style="width:250px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '3', '처리부서')"/>
                 </td>
               </tr>
@@ -139,13 +131,16 @@
                 <td class="f-lbl2" style="text-align:center;font-size:16; vertical-align:middle;" rowspan="3"  >
                   Personal <br/>Identification <br/>(인적사항)
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <button onclick="parent.fnExternal('report.DOCCAREER',240,80,320,400,'','');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                    <!--<button onclick="parent.fnExternal('report.DOCCAREER',240,80,320,400,'','');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0">
                         <xsl:attribute name="src">
                           /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                         </xsl:attribute>
                       </img>
-                    </button>
+                    </button>-->
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="인적사항" onclick="_zw.fn.org('user','n');">
+						  <i class="fas fa-angle-down"></i>
+					  </button>
                   </xsl:if>
                 </td>
                 <td class="f-lbl" style="height:40px;font-size:17px ; display:none">사 번</td>
@@ -410,45 +405,40 @@
                   </xsl:choose>
                 </td>                
               </tr>-->
-              <tr>
-                <td colspan="4" style=" height:120px;border-bottom:0;border-right:0;text-align:center;font-size:20; vertical-align:top; padding-top:50px">
-                  <strong>
-                    This is to certify that above mentioned facts are true and correct.<br/> (위와 같이 증명합니다.)
-                  </strong>
-                </td>
-              </tr>
-              <xsl:if test="//bizinfo/@docstatus!='700'">
-              <tr>
-                <td colspan="4" class="etctxt"  style=" height:40px;border-bottom:0;border-right:0;text-align:center;font-size:24; vertical-align:top;">
-                  <strong>
-                   승인 되지 않은 문서입니다
-                  </strong>
-                </td>
-              </tr>
-              </xsl:if>
-              <tr>
-                <td colspan="4" style="border-bottom;0;text-align:center;border-right:0;height:180px;font-size:17px">
+			<tr>
+				<td colspan="4" style="border-bottom:0">
+					<p style="font-size: 1.25rem; font-weight: bold; text-align: center;  padding-top: 3rem;">
+						This is to certify that above mentioned facts are true and correct.<br />(위와 같이 증명합니다.)
+					</p>
 
-                  <xsl:choose>
-                    <xsl:when test="$mode='new'">
-                      Issued Date: <xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'en')" /> <br/>
-                     (발급일&nbsp;:&nbsp;<xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'ko')" />)
-                    <input type="hidden" id="__mainfield" name="REQUESTDATE" value="{//docinfo/createdate}"/>
-                  </xsl:when>
-                  <xsl:when test="$mode='edit'">
-                    Issued Date: <xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'en')" /> <br/>
-                    (발급일&nbsp;:&nbsp;<xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'ko')" />)
-                    <input type="hidden" id="__mainfield" name="REQUESTDATE" value="{//docinfo/createdate}"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                    Issued Date&nbsp;:&nbsp; <xsl:value-of select="phxsl:convertDate(string(//forminfo/maintable/REQUESTDATE),'en')" /><br/>
-                      (발급일:<xsl:value-of select="phxsl:convertDate(string(//forminfo/maintable/REQUESTDATE),'ko')" />)
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-              </tr>
+					<xsl:if test="//bizinfo/@docstatus!='700'">
+						<p class="etctxt" style="font-size: 1.25rem; font-weight: bold; text-align: center; padding-top: 1rem; color: #ec4a3b">
+							승인되지 않은 문서입니다.
+						</p>
+					</xsl:if>
+
+					<p style="font-size:1.05rem;  text-align: center; padding-top: 2rem; height: 8rem">
+						<xsl:choose>
+							<xsl:when test="$mode='new'">
+								Issued Date: <xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'en')" /> <br/>
+								(발급일&nbsp;:&nbsp;<xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'ko')" />)
+								<input type="hidden" id="__mainfield" name="REQUESTDATE" value="{//docinfo/createdate}"/>
+							</xsl:when>
+							<xsl:when test="$mode='edit'">
+								Issued Date&nbsp;:&nbsp; <xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'en')" /> <br/>
+								(발급일&nbsp;:&nbsp;<xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'ko')" />)
+								<input type="hidden" id="__mainfield" name="REQUESTDATE" value="{//docinfo/createdate}"/>
+							</xsl:when>
+							<xsl:otherwise>
+								Issued Date&nbsp;:&nbsp; <xsl:value-of select="phxsl:convertDate(string(//forminfo/maintable/REQUESTDATE),'en')" /><br/>
+								(발급일&nbsp;:&nbsp;<xsl:value-of select="phxsl:convertDate(string(//forminfo/maintable/REQUESTDATE),'ko')" />)
+							</xsl:otherwise>
+						</xsl:choose>
+					</p>
+				</td>
+			</tr>
               <tr>
-                <td colspan="3" style=" padding-left:10px; border-bottom;0;text-align:left;border-right:0;font-size:16.5;height:170px; line-height:25px; padding-top:10px">
+                <td colspan="3" style=" padding-left:10px; border-top: 0; border-bottom;0;text-align:left;border-right:0;font-size:1rem;height:170px; line-height:25px; padding-top:10px">
                   <strong>
                     Jong Bae, Lee  <br/>
                     Representative of CRESYN Co.,Ltd<br/>
@@ -460,11 +450,7 @@
                 <td style ="border:0; padding-left:25px;padding-top:20px">
                   <xsl:if test="//bizinfo/@docstatus='700'">
                     <span style="width:84px;border:0px solid green">
-                      <img alt="회사인장" width="84px" style="margin:0;vertical-align:top">
-                        <xsl:attribute name="src">
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/cresyn_stamp.gif
-                        </xsl:attribute>
-                      </img>
+                      <img alt="회사인장" width="84px" style="margin:0;vertical-align:top" src="/Storage/{//config/@companycode}/CI/cresyn_stamp.gif" />
                     </span>
                   </xsl:if>
                 </td>
@@ -489,7 +475,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
