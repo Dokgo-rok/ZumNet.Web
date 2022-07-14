@@ -61,4 +61,35 @@
     });
 
     _zw.fn.getEACount('webpart', 'ea', 'base2', '', 'N');
+
+    _zw.fn.reloadList = function (pos) {
+        try {
+            var partId = '';
+
+            if (pos == 'ea' || pos == 'count') {
+                if (pos == 'count') _zw.fn.getEACount('webpart', 'ea', 'base', '', 'N');
+                partId = '_EA_INBOX';
+
+            } else if (pos == 'notice') {
+                partId = '_RECENT_NOTICE';
+
+            } else if (pos == 'bbs') {
+                partId = '_RECENT_BOARD';
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/Portal/Webpart/" + partId,
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') {
+                        $('#' + partId)[0].outerHTML = res.substr(2);
+                    }
+                    else console.log(res);
+                },
+                beforeSend: function () { }
+            });
+
+        } catch (e) {
+        };
+    }
 });

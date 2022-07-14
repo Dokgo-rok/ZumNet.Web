@@ -30,38 +30,38 @@
                 <option value="">@Resources.Global.Select...</option>
                 @if (ViewBag.CurBox[2] == "ep" || ViewBag.CurBox[2] == "av" || ViewBag.CurBox[2] == "go")
                 {
-                    <option value="MsgType">@Resources.Global.Division</option>
-                    <option value="PIName">@Resources.Global.Title</option>
-                    <option value="CreatorDept">@Resources.Global.WriteDept</option>
-                    <option value="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]</option>
+                    <option value="MsgType"@(ViewBag.R.lv.search == "MsgType" ? " selected" : "")>@Resources.Global.Division</option>
+                    <option value="PIName"@(ViewBag.R.lv.search == "PIName" ? " selected" : "")>@Resources.Global.Title</option>
+                    <option value="CreatorDept"@(ViewBag.R.lv.search == "CreatorDept" ? " selected" : "")>@Resources.Global.WriteDept</option>
+                    <option value="@ViewBag.CurBox[5]"@(ViewBag.R.lv.search == ViewBag.CurBox[5] ? " selected" : "")>@ViewBag.CurBox[7]</option>
                 }
                 else if (ViewBag.CurBox[2] == "do")
                 {
-                    <option value="WnDisplay">@Resources.Global.Title</option>
+                    <option value="WnDisplay"@(ViewBag.R.lv.search == "WnDisplay" ? " selected" : "")>@Resources.Global.Title</option>
                 }
                 else if (ViewBag.CurBox[2] == "te")
                 {
-                    <option value="DocName">@Resources.Global.DocName</option>
-                    <option value="Subject">@Resources.Global.Title</option>
-                    <option value="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]</option>
+                    <option value="DocName"@(ViewBag.R.lv.search == "DocName" ? " selected" : "")>@Resources.Global.DocName</option>
+                    <option value="Subject"@(ViewBag.R.lv.search == "Subject" ? " selected" : "")>@Resources.Global.Title</option>
+                    <option value="@ViewBag.CurBox[5]"@(ViewBag.R.lv.search == ViewBag.CurBox[5] ? " selected" : "")>@ViewBag.CurBox[7]</option>
                 }
                 else if (ViewBag.CurBox[2] == "wd")
                 {
-                    <option value="DocName">@Resources.Global.DocName</option>
-                    <option value="PIName">@Resources.Global.Title</option>
-                    <option value="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]</option>
+                    <option value="DocName"@(ViewBag.R.lv.search == "DocName" ? " selected" : "")>@Resources.Global.DocName</option>
+                    <option value="PIName"@(ViewBag.R.lv.search == "PIName" ? " selected" : "")>@Resources.Global.Title</option>
+                    <option value="@ViewBag.CurBox[5]"@(ViewBag.R.lv.search == ViewBag.CurBox[5] ? " selected" : "")>@ViewBag.CurBox[7]</option>
                 }
                 else
                 {
                     if (ViewBag.CurBox[2] != "dl" && ViewBag.CurBox[2] != "cf")
                     {
-                        <option value="MsgType">@Resources.Global.Division</option>
+                        <option value="MsgType"@(ViewBag.R.lv.search == "MsgType" ? " selected" : "")>@Resources.Global.Division</option>
                     }
-                    <option value="DocName">@Resources.Global.DocName</option>
-                    <option value="PIName">@Resources.Global.Title</option>
-                    <option value="Creator">@Resources.Global.Writer</option>
-                    <option value="CreatorDept">@Resources.Global.WriteDept</option>
-                    <option value="@ViewBag.CurBox[5]">@ViewBag.CurBox[7]</option>
+                    <option value="DocName"@(ViewBag.R.lv.search == "DocName" ? " selected" : "")>@Resources.Global.DocName</option>
+                    <option value="PIName"@(ViewBag.R.lv.search == "PIName" ? " selected" : "")>@Resources.Global.Title</option>
+                    <option value="Creator"@(ViewBag.R.lv.search == "Creator" ? " selected" : "")>@Resources.Global.Writer</option>
+                    <option value="CreatorDept"@(ViewBag.R.lv.search == "CreatorDept" ? " selected" : "")>@Resources.Global.WriteDept</option>
+                    <option value="@ViewBag.CurBox[5]"@(ViewBag.R.lv.search == ViewBag.CurBox[5] ? " selected" : "")>@ViewBag.CurBox[7]</option>
                 }
             </select>
             <input type="text" class="form-control search-text" placeholder="@Resources.Global.Search" value="@ViewBag.R.lv.searchtext">

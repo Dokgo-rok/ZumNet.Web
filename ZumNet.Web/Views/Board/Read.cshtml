@@ -72,8 +72,9 @@
             //    new Dext5Upload(_zw.T.uploader.id);
 
             //}
-
             _zw.fn.view();
+
+            if (opener && opener._zw.fn.reloadList) opener._zw.fn.reloadList(_zw.V.xfalias);
         }());
 
         function DEXT5UPLOAD_OnCreationComplete(uploadID) {

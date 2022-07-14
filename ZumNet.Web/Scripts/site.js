@@ -582,7 +582,7 @@ $(function () {
             _zw.fn.initLv(_zw.V.fdid);
             _zw.fn.loadList();
         },
-        "search": function (page) {
+        "search": function (page, opt) {
             var e1 = $('.z-lv-date .start-date');
             var e2 = $('.z-lv-date .end-date');
             var e3 = $('.z-lv-search select');
@@ -602,6 +602,8 @@ $(function () {
             _zw.V.lv.end = e2.val();
             _zw.V.lv.search = e3.val();
             _zw.V.lv.searchtext = ($.trim(e4.val()) == '') ? '' : e4.val();
+
+            if (opt && opt == 'count') _zw.fn.getEACount('', 'ea', 'base', '', 'N');
 
             _zw.fn.loadList();
         },
@@ -1639,6 +1641,7 @@ $(function () {
                         autoclose: true,
                         inputs: $('.input-daterange input[type="text"]'),
                         //format: "yyyy-mm-dd",
+                        //todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     });
                 }
@@ -1647,6 +1650,7 @@ $(function () {
                     $('.datepicker').datepicker({
                         autoclose: true,
                         //format: "yyyy-mm-dd",
+                        //todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     }).on('changeDate', function (e) {
                         if (_zw.fn.onblur) _zw.fn.onblur(e.target, ['date']);

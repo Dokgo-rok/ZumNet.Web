@@ -83,6 +83,7 @@
                 <td style="width:770px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@parent='' and @partid!='' and @step!='0' and @viewstate!='6' and @bizrole!='reference'], '__si_Complex', '10')"/>
                 </td>
+				  <td style="width:"></td>
               </tr>
             </table>
           </div>

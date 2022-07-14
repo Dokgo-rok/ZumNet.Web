@@ -105,6 +105,36 @@ namespace ZumNet.Web.Controllers
             return View();
         }
 
+        #region [웹파트 관련]
+        /// <summary>
+        /// 특정 웹파트 새로고침
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Webpart(string id)
+        {
+            string rt = "";
+            try
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    if (id == "") return "필수값 누락!";
+                    string sWebpart = "~/Views/Portal/Webpart/" + id + ".cshtml";
+
+                    rt = "OK" + RazorViewToString.RenderRazorViewToString(this, sWebpart, ViewBag);
+                }
+            }
+            catch (Exception ex)
+            {
+                rt = ex.Message;
+            }
+            return rt;
+        }
+        #endregion
+
         #region [세션생성 이후 추가 확인 작업]
         /// <summary>
         /// 출근 체크 및 비밀번호 변경

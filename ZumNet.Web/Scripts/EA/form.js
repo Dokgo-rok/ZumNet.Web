@@ -260,9 +260,10 @@ $(function () {
                                 //});
                             } else {                                
                             }
-                            bootbox.alert('[' + ssText + '] 처리 하였습니다.', function () {
-                                _zw.fn.reloadList(); window.close();
-                            });
+                            //bootbox.alert('[' + ssText + '] 처리 하였습니다.', function () {
+                            //    _zw.fn.reloadList('count'); window.close();
+                            //});
+                            _zw.fn.reloadList('count'); window.close();
                         } else bootbox.alert(res);
                     },
                     beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
@@ -296,10 +297,15 @@ $(function () {
         else if (v[0] == "date" || v[0] == "time") { if (_zw.formEx.date) _zw.formEx.date(e, v); }
     }
 
-    _zw.fn.reloadList = function () {
+    _zw.fn.reloadList = function (opt) {
         try {
-            if (opener != null && opener._zw.mu.search) {
-                if (opener._zw.V.ctalias == 'ea') opener._zw.mu.search(opener._zw.V.lv.page); //부모창이 결재인 경우만 우선 적용
+            if (opener != null) {
+                if (opener._zw.fn.reloadList) {
+                    opt = opt || 'ea'; opener._zw.fn.reloadList(opt);
+
+                } else if (opener._zw.mu.search) {
+                    if (opener._zw.V.ctalias == 'ea') opener._zw.mu.search(opener._zw.V.lv.page, 'count'); //부모창이 결재인 경우만 우선 적용
+                }
             } //else opener.location.reload();
         } catch (e) {
             //opener.location.reload();
