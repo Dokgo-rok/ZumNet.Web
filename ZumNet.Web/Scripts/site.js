@@ -1646,10 +1646,19 @@ $(function () {
                     });
                 }
 
-                if ($('.datepicker').length > 0) {
+                if ($('.datepicker, .datepicker-ko').length > 0) {
                     $('.datepicker').datepicker({
                         autoclose: true,
                         //format: "yyyy-mm-dd",
+                        //todayHighlight: true, //22-07-14 보류
+                        language: $('#current_culture').val()
+                    }).on('changeDate', function (e) {
+                        if (_zw.fn.onblur) _zw.fn.onblur(e.target, ['date']);
+                    });
+
+                    $('.datepicker-ko').datepicker({
+                        autoclose: true,
+                        format: "yyyy년 mm월 dd일",
                         //todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     }).on('changeDate', function (e) {

@@ -15,7 +15,7 @@
   <xsl:variable name="bizrole" select="//config/@bizrole" />
   <xsl:variable name="actrole" select="//config/@actrole" />
   <xsl:variable name="root" select="//config/@root" />
-  <xsl:variable name="displaylog">true</xsl:variable>
+  <xsl:variable name="displaylog">false</xsl:variable>
 
   <!--<xsl:strip-space elements="*"/>-->
   <xsl:template match="/">
@@ -26,29 +26,29 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          .m {width:700px;margin:0;margin-top:30px}
-          .m .fm1 {width:100%;padding:0;border:windowtext 2pt solid}
-          .m .ff {height:20px}
-          .m .fh {height:10px}
+			.m {width:700px;margin:0;margin-top:30px}
+			.m .fm1 {width:100%;padding:0;border:windowtext 2pt solid}
+			.m .ff {height:20px}
+			.m .fh {height:10px}
 
-          .fm-editor {height:500px;border:0;border-top:windowtext 2pt solid;border-bottom:windowtext 2pt solid}
-          .fm2 table,.m .fm3 table {width:100%}
+			.fm-editor {height:500px;min-height:500px;border:0;border-top:windowtext 2pt solid;border-bottom:windowtext 2pt solid}
+			.fm2 table,.m .fm3 table {width:100%}
 
-          .fh h1 {margin:0;font-size:30pt;letter-spacing:5pt;font-family:돋움}
-          .fh h2 {margin:0;font-size:20pt;letter-spacing:0pt;font-family:돋움}
-          .fm td,.fm input {font-size:15px;font-family:Arial}
-          .fm2 td,.fm2 input,.fm3 td {font-size:16px;font-family:돋움}
+			.fm h1 {margin:0;font-size:30pt;letter-spacing:5pt;font-family:돋움}
+			.fm h2 {margin:0;font-size:20pt;letter-spacing:0pt;font-family:돋움}
+			.fm td,.fm input {font-size:15px;font-family:Arial}
+			.fm2 td,.fm2 input,.fm3 td {font-size:16px;font-family:돋움}
 
-          .fm td {height:30px;padding:1px}
-          .fm2 td,.fm3 td {height:30px;padding:2px;border-right:1px solid windowtext;border-bottom:1px solid windowtext}
+			.fm td {height:30px;padding:1px}
+			.fm2 td,.fm3 td {height:30px;padding:2px;border-right:1px solid windowtext;border-bottom:1px solid windowtext}
 
-          /* 특별 결재판 */
-          .si-onlyone {width:100%;height:100%}
-          .si-onlyone td {font-size:16px;font-family:맑은 고딕;text-align:center;border:0}
-          .si-onlyone .si-top {height:25px;border-bottom:1px solid windowtext}
-          .si-onlyone .si-middle {height:90px;border-bottom:1px solid windowtext}
-          .si-onlyone .si-bottom {height:25px}
-        </style>
+			/* 특별 결재판 */
+			.si-onlyone {width:100%;height:100%}
+			.si-onlyone td {font-size:16px;font-family:맑은 고딕;text-align:center;border:0}
+			.si-onlyone .si-top {height:25px;border-bottom:1px solid windowtext}
+			.si-onlyone .si-middle {height:90px;border-bottom:1px solid windowtext}
+			.si-onlyone .si-bottom {height:25px}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -102,10 +102,10 @@
 
           <div class="fm1">
             <div class="ff" />
-            <div class="fh">
-              <h1>
-                <xsl:value-of select="//docinfo/docname" />
-              </h1>
+            <div class="fm text-center">
+				<h1>
+					<xsl:value-of select="//docinfo/docname" />
+				</h1>
             </div>
             <div class="ff" />
 
@@ -169,19 +169,16 @@
                   <td style="border-right:0">
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <textarea id="__mainfield" name="PCBASSY" style="height:">
-                          <xsl:attribute name="class">txaText</xsl:attribute>
-                          <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 50)</xsl:attribute>
+                        <textarea id="__mainfield" name="PCBASSY" style="height:30px" class="txaText bootstrap-maxlength" maxlength="50">
                           <xsl:if test="$mode='edit'">
                             <xsl:value-of select="//forminfo/maintable/PCBASSY" />
                           </xsl:if>
                         </textarea>
                       </xsl:when>
                       <xsl:otherwise>
-                        <div id="__mainfield" name="PCBASSY" style="height:">
-                          <xsl:attribute name="class">txaRead</xsl:attribute>
-                          <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PCBASSY))" />
-                        </div>
+						  <div class="txaRead">
+							  <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PCBASSY))" />
+						  </div>
                       </xsl:otherwise>
                     </xsl:choose>
                   </td>
@@ -192,9 +189,12 @@
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
                         <input type="text" id="__mainfield" name="MODELNAME" class="txtRead" readonly="readonly"  style="width:92%" value="{//forminfo/maintable/MODELNAME}" />
-                        <button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                        <!--<button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                           <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                        </button>
+                        </button>-->
+						  <button type="button" class="btn btn-outline-secondary btn-18" title="모델명" onclick="_zw.formEx.externalWnd('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');">
+							  <i class="fas fa-angle-down"></i>
+						  </button>
                       </xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
@@ -205,17 +205,14 @@
                   <td style="border-right:0">
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <textarea id="__mainfield" name="SMTASSY" style="height:">
-                          <xsl:attribute name="class">txaText</xsl:attribute>
-                          <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 50)</xsl:attribute>
+                        <textarea id="__mainfield" name="SMTASSY" style="height:30px" class="txaText bootstrap-maxlength" maxlength="50">
                           <xsl:if test="$mode='edit'">
                             <xsl:value-of select="//forminfo/maintable/SMTASSY" />
                           </xsl:if>
                         </textarea>
                       </xsl:when>
                       <xsl:otherwise>
-                        <div id="__mainfield" name="SMTASSY" style="height:">
-                          <xsl:attribute name="class">txaRead</xsl:attribute>
+						  <div class="txaRead">
                           <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SMTASSY))" />
                         </div>
                       </xsl:otherwise>
@@ -227,14 +224,7 @@
                   <td style="border-bottom:0">
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <input type="text" id="__mainfield" name="DODATE">
-                          <xsl:attribute name="class">txtDateKo</xsl:attribute>
-                          <xsl:attribute name="maxlength">8</xsl:attribute>
-                          <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                          <xsl:attribute name="value">
-                            <xsl:value-of select="//forminfo/maintable/DODATE" />
-                          </xsl:attribute>
-                        </input>
+                        <input type="text" id="__mainfield" name="DODATE" class="datepicker-ko txtDateKo" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/DODATE}" />
                       </xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DODATE))" />
@@ -263,7 +253,7 @@
             </div>
 
             <div class="ff" />
-            <div class="fh">
+            <div class="fm text-center">
               <h2>
                 Electrical Design Team
               </h2>
@@ -271,9 +261,12 @@
             <div class="ff" />
 
             <div class="fm-editor">
+				<xsl:if test="$mode!='new' and $mode!='edit'">
+					<xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+				</xsl:if>
               <xsl:choose>
                 <xsl:when test="$mode='read'">
-                  <div name="WEBEDITOR" id="__mainfield" style="width:100%;height:100%;padding:0;position:relative">
+                  <div name="WEBEDITOR" id="__mainfield" style="width:100%;height:100%;padding:2px;position:relative">
                     <xsl:attribute name="class">txaRead</xsl:attribute>
                     <xsl:value-of disable-output-escaping="yes" select="//forminfo/maintable/WEBEDITOR" />
                   </div>
@@ -284,11 +277,7 @@
                       <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                     </textarea>
                   </xsl:if>
-                  <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no">
-                    <xsl:attribute name="src">
-                      /<xsl:value-of select="$root" />/EA/External/Editor_tagfree.aspx
-                    </xsl:attribute>
-                  </iframe>
+					<div class="h-100" id="__DextEditor"></div>
                 </xsl:otherwise>
               </xsl:choose>
             </div>
@@ -310,7 +299,7 @@
             </div>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 

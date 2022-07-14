@@ -28,21 +28,21 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:700px} .m .fm-editor {height:450px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:1pt;}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:700px} .m .fm-editor {height:450px;min-height:450px;border:windowtext 1pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:1pt;}
 
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:6%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:6%} .m .ft .f-lbl2 {width:?}
+			.m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:500px}}
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:450px;min-height:450px}}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -50,18 +50,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -71,18 +67,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -93,11 +85,10 @@
                 <td style="width:395px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '5', '작성부서')"/>
                 </td>
-                <td style="width:210px;font-size:1px">&nbsp;</td>              
+                <td style="font-size:1px">&nbsp;</td>              
                 <td style="width:95px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='last' and @partid!='' and @step!='0'], '__si_Last', '1', '승인')"/>
                 </td>
-                <td style="width:;font-size:1px">&nbsp;</td>
               </tr>
             </table>
           </div>
@@ -181,9 +172,12 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <input type="text" id="__mainfield" name="MODELNAME" class="txtText_u" readonly="readonly"  style="width:92%" value="{//forminfo/maintable/MODELNAME}" />
-                      <button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="모델명" onclick="_zw.formEx.externalWnd('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME','ITEMNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
@@ -341,9 +335,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl1">
-                  업무협조전
-                </td>
+                <td class="f-lbl1">업무협조전</td>
                 <td style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
@@ -379,9 +371,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl1" style="border-bottom:0">
-                  결제방법
-                </td>
+                <td class="f-lbl1" style="border-bottom:0">결제방법</td>
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
@@ -433,13 +423,16 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <input type="text" id="__mainfield" name="CERTICHASU" class="txtText_u" readonly="readonly" style="width:92%"   value="{//forminfo/maintable/CERTICHASU}" />
-                      <button onclick="parent.fnOption('external.certichasu',100,160,150,50,'','CERTICHASU');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.certichasu',100,160,150,50,'','CERTICHASU');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="갱신차수" onclick="_zw.formEx.optionWnd('external.certichasu',160,214,-140,0,'','CERTICHASU');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CERTICHASU))" />
@@ -525,6 +518,9 @@
             </xsl:choose>
           </div>-->
           <div class="fm-editor">
+			  <xsl:if test="$mode!='new' and $mode!='edit'">
+				  <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+			  </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <xsl:if test="$mlvl='A' or $mlvl='B'">
@@ -535,7 +531,7 @@
                     <textarea id="bodytext" style="display:none">
                       <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                     </textarea>
-                    <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" src="/{$root}/EA/External/Editor_tagfree.aspx"></iframe>
+					  <div class="h-100" id="__DextEditor"></div>
                   </xsl:when>
                   <xsl:otherwise>
                     <div name="WEBEDITOR" id="__mainfield" class="txaRead" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">
@@ -550,7 +546,7 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="100%" marginheight="0" marginwidth="0" scrolling="no" src="/{$root}/EA/External/Editor_tagfree.aspx"></iframe>
+				  <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>
@@ -564,16 +560,16 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td style="font-size:1px">&nbsp;</td>
-                <td style="width:380px">
+                <td style="width:395px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'confirm', '__si_Confirm', '5', '확인권자')"/>
                 </td>
               </tr>
             </table>
           </div>
 
-          
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 

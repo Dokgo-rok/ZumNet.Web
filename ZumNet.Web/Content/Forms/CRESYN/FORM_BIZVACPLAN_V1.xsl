@@ -151,7 +151,7 @@
 					  </button>
                   </xsl:if>
                 </td>
-                <td class="f-lbl1">법인</td>
+                <td class="f-lbl1">부문</td>
                 <td colspan="3" style="width:31%">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">

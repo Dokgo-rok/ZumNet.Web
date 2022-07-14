@@ -6,6 +6,10 @@
 		"make": function (f) {
 		},
 		"checkEvent": function (ckb, el, fld) {
+			if (fld == 'CLASS') {
+				if (el.checked && el.value == '기타') $('#__mainfield[name="CLASSETC"]').removeClass('txtRead').addClass('txtText').prop('readonly', false);
+				else $('#__mainfield[name="CLASSETC"]').removeClass('txtText').addClass('txtRead').prop('readonly', true).val('');
+			}
 		},
 		"calc": function (el) {
 		},

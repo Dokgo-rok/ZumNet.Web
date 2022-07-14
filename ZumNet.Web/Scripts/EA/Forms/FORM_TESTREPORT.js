@@ -1,16 +1,16 @@
 ﻿$(function () {
-	_zw.formEx = {
-		"validation": function (cmd) {
-			return true;
-		},
-		"make": function (f) {
-		},
-		"checkEvent": function (ckb, el, fld) {
-		},
-		"calc": function (el) {
-		},
-		"autoCalc": function (p) {
-		},
+    _zw.formEx = {
+        "validation": function (cmd) {
+            return true;
+        },
+        "make": function (f) {
+        },
+        "checkEvent": function (ckb, el, fld) {
+        },
+        "calc": function (el) {
+        },
+        "autoCalc": function (p) {
+        },
 		"optionWnd": function (pos, w, h, l, t, etc, x) {
 			var el = _zw.ut.eventBtn(), vPos = pos.split('.');
 			var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]);
@@ -127,5 +127,5 @@
 			p.on('hidden.bs.modal', function () { p.html(''); });
 			p.modal();
 		}
-	}
+    }
 });

@@ -1640,7 +1640,7 @@ $(function () {
             });
         },
         "resetField": function (el) {
-            el.find('input:text, input:hidden').val('');
+            el.find('input:text, input:hidden textarea').val('');
             el.find('input:checkbox, input:radio').prop('checked', false);
             el.find('select').attr('selectIndex', 0);
         },

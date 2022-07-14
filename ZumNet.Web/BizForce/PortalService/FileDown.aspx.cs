@@ -149,6 +149,8 @@ namespace ZumNet.Web.BizForce.PortalService
             string strContentType = "";
             string strContentDispos = "";
 
+            fileName = fileName.Replace(",", "_"); //22-07-14 "," 오류로 인해 임시로 처리
+
             if (ext == "pdf" || ext == "tif" || ext == "tiff" || ext == "jpg" || ext == "jpeg"
                  || ext == "bmp" || ext == "gif" || ext == "png" || ext == "mht" || ext == "mhtml")
             {
