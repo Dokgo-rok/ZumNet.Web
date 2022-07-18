@@ -1,0 +1,308 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@using ZumNet.Web.Filter;
+@{
+    //REGISTER_PRODUCT_PALNT
+    InitConfig();
+
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+    {
+        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+    }
+
+    if (ViewBag.R.mode == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+        Response.End();
+    }
+
+    //if (Request.IsAjaxRequest())
+    //{
+    //    StringBuilder sb = new StringBuilder();
+    //    sb.Append(ViewList("ajax", svcRt.ResultDataSet));
+    //    sb.Append(ViewBag.R.lv.boundary);
+    //    sb.Append(ViewChart("ajax", svcRt.ResultDataSet));
+
+    //    Response.Write("OK");
+    //    Response.Write(sb.ToString().Trim());
+    //    Response.End();
+    //}
+}
+@functions {
+    string[,] _columnConfig = null;
+    string _tblWidth = "";
+
+    private void InitConfig()
+    {
+        //초기 설정
+        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.Year.ToString();
+        if (ViewBag.R.lv.end == "") ViewBag.R.lv["end"] = DateTime.Now.Month.ToString();
+        if (ViewBag.R.lv.cd1 == "") ViewBag.R.lv["cd1"] = "VH";
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "일 생산현황(공장)-챠트";
+    }
+
+    private string RenderColumnHeader(DataSet data)
+    {
+        StringBuilder sb = new StringBuilder();
+        int iWidth = 150;
+
+        sb.Append("<colgroup>");
+        sb.AppendFormat("<col style=\"width:{0}\" />", "150px");
+        for (int i = 0; i < data.Tables[3].Rows.Count; i++)
+        {
+            sb.AppendFormat("<col style=\"width:{0}\" />", "90px");
+            iWidth += 90;
+        }
+        sb.Append("</colgroup>");
+
+        _tblWidth = iWidth.ToString() + "px";
+        sb.Append("</thead>");
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strHeader = RenderColumnHeader(data);
+            string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("<div data-for=\"list\">");
+            sb.Append("<div class=\"\">");
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            sb.Append(strHeader);
+            sb.Append("<tbody>");
+
+            StringBuilder sb1 = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
+            StringBuilder sb3 = new StringBuilder();
+            StringBuilder sb4 = new StringBuilder();
+
+            sb1.AppendFormat("<tr class=\"table-success\"><td{0}>일자</td>", sClassExcel);
+            sb2.AppendFormat("<tr><td{0}>계획대수</td>", sClassExcel);
+            sb3.AppendFormat("<tr><td{0}>실적대수</td>", sClassExcel);
+            sb4.AppendFormat("<tr><td{0}>달성률(%)</td>", sClassExcel);
+
+            foreach (DataRow row in data.Tables[3].Rows)
+            {
+                sb1.AppendFormat("<td{0}>{1}</td>", sClassExcel, row["TRX_DATE"]);
+                sb2.AppendFormat("<td>{0}</td>", row["QTY_PLAN"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["QTY_PLAN"].ToString()));
+                sb3.AppendFormat("<td>{0}</td>", row["QTY_OUTPUT"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["QTY_OUTPUT"].ToString()));
+                sb4.AppendFormat("<td>{0}</td>", row["RATE_PROD"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["RATE_PROD"].ToString()));
+            }
+
+            sb1.Append("</tr>");
+            sb2.Append("</tr>");
+            sb3.Append("</tr>");
+            sb4.Append("</tr>");
+
+            sb.AppendFormat("{0}{1}{2}{3}", sb1, sb2, sb3, sb4);
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"mt-3\">");
+            sb.Append("<table style=\"border: 0\"><thead><tr><th style=\"font-size: 14px; padding-left: 4px; border: 0\">Worst 10</th></tr></thead></table>");
+
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", "400px");
+            sb.Append("<colgroup><col style=\"width:300px\" /><col style=\"width:100px\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.AppendFormat("<tr class=\"table-success\"><th{0}>모델명</th><th{0}>달성률(%)</th></tr>", mode == "xls" ? " class=\"xls_th\"" : "");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+            foreach (DataRow row in data.Tables[4].Rows)
+            {
+                sb.Append("<tr>");
+                sb.AppendFormat("<td>{0}</td>", row["MODEL"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["RATE_PROD"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["RATE_PROD"].ToString()));
+                sb.Append("</tr>");
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</div>");
+
+            sb.Append("</div>"); //data-for="list"
+            return sb.ToString();
+        }
+        return "";
+    }
+
+    private string ViewChart(string mode, DataSet data)
+    {
+        StringBuilder sb = new StringBuilder();
+        if (data != null && data.Tables.Count > 0)
+        {
+            //if (mode != "ajax")
+            //{
+            sb.AppendFormat("<div class=\"\" id=\"{0}\"></div>", "chart__report");
+            sb.Append("<script type='text/javascript'>");
+            sb.Append("FusionCharts.ready(function() {");
+            sb.Append("fchart_report = new FusionCharts({");
+            sb.AppendFormat("type: \"{0}\",", "mscombidy2d");
+            sb.AppendFormat("renderAt: \"{0}\",", "chart__report");
+            sb.AppendFormat("width: \"{0}\",", "100%");
+            sb.AppendFormat("height: \"{0}\",", "300px");
+            sb.AppendFormat("dataFormat: \"{0}\",", "xml");
+            sb.Append("dataSource:'");
+            //}
+
+            int x = 0;
+            string[] sColor = { "AFD8F8", "F6BD0F", "8BBA00", "888FFF", "0984B2", "C984A1", "7984A1", "5CD1E5", "FAED7D", "0F3900", "5B58A5", "664B00", "5CD1E5", "FAED7D", "0F3900", "888FFF", "F12345" };
+            string[] sColor2 = { "B2EBF4", "CCA63D", "1DDB16", "8041D9", "005766", "FFB2F5", "A6A6A6", "00D8FF", "DBC000", "476600", "918EDB", "C0A55A", "5CD1E5", "FAED7D", "0F3900", "888FFF", "F12345" };
+            //sbXml.Append("<chart palette='3' caption='' subcaption='' xaxisname='' yaxisname='' numdivlines='3' numberprefix='' numbersuffix='' showsum='1' showValues='1' useroundedges='1' bgcolor='FFFFFF,FFFFFF' showborder='0' animation='1' legendPosition='TOP'>");
+            DataRow[] rows = null;
+            DataRow[] rows2 = null;
+            sb.Append("<chart caption=\"\" baseFontSize=\"12\" labelFontSize=\"12\" drawcrossline=\"1\" yaxisname=\"\" syaxisname=\"\" showvalues=\"0\" showanchors=\"0\" numberprefix=\"\"");
+            sb.Append(" plothighlighteffect=\"fadeout\" chartTopMargin=\"\" chartLeftMargin=\"4\" chartBottomMargin=\"8\" chartRightMargin=\"4\" theme=\"fusion\">");
+            sb.Append("<categories>");
+            foreach (DataRow row in data.Tables[1].Rows)
+            {
+                sb.AppendFormat("<category label=\"{0}\" fontsize=\"12\" />", row["TRX_DATE"].ToString());
+            }
+            sb.Append("</categories>");
+
+            sb.Append("<dataset>");
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                rows = data.Tables[2].Select("ITEM_TYPE = '" + row["ITEM_TYPE"].ToString() + "'");
+                sb.AppendFormat("<dataset seriesname=\"{0}\" color=\"{1}\" showvalues=\"1\">", row["ITEM_TYPE"].ToString() + "(계획)", sColor2[x]);
+                for (int m = 0; m < rows.Length; m++)
+                {
+                    sb.AppendFormat("<set value=\"{0}\" />", rows[m]["QTY_PLAN"].ToString());
+                }
+                sb.Append("</dataset>");
+                x++;
+            }
+            sb.Append("</dataset>");
+            x = 0;
+
+            sb.Append("<dataset>");
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                rows = data.Tables[2].Select("ITEM_TYPE = '" + row["ITEM_TYPE"].ToString() + "'");
+                sb.AppendFormat("<dataset seriesname=\"{0}\" color=\"{1}\" showvalues=\"1\">", row["ITEM_TYPE"].ToString() + "(실적)", sColor[x]);
+                for (int m = 0; m < rows.Length; m++)
+                {
+                    sb.AppendFormat("<set value=\"{0}\" />", rows[m]["QTY_OUTPUT"].ToString());
+                }
+                sb.Append("</dataset>");
+                x++;
+            }
+            sb.Append("</dataset>");
+            sb.Append("<lineset seriesname=\"달성율\" showvalues=\"1\" color=\"F12345\" linethickness=\"4\">");
+            foreach (DataRow row in data.Tables[1].Rows)
+            {
+                rows = data.Tables[3].Select("TRX_DATE = '" + row["TRX_DATE"].ToString() + "'");
+                for (int m = 0; m < rows.Length; m++)
+                {
+                    sb.AppendFormat("<set value=\"{0}\" />", rows[m]["RATE_PROD"].ToString());
+                }
+            }
+            sb.Append("</lineset>");
+            sb.Append("</chart>");
+
+            //if (mode != "ajax")
+            //{
+            //sb.Append("'}).render();"); //function
+            sb.Append("'});");
+            sb.Append("});"); //ready
+            sb.Append("</script>");
+            //}
+        }
+        return sb.ToString();
+    }
+
+    private string ListCond()
+    {
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-65 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+
+        StringBuilder sb = new StringBuilder();
+
+        //sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
+        sb.Append("<div class=\"z-list-search input-group\">");
+        sb.Append("<select class=\"custom-select\" data-for=\"year\">");
+        sb.Append(CommonUtils.OptionYear(2017, DateTime.Now.Year, Convert.ToInt32(ViewBag.R.lv["start"].ToString())));
+        sb.Append("</select>");
+
+        sb.Append("<select class=\"custom-select\" data-for=\"month\">");
+        sb.Append(CommonUtils.OptionMonth(Convert.ToInt32(ViewBag.R.lv["end"].ToString())));
+        sb.Append("</select>");
+
+        sb.Append("<select class=\"custom-select\" data-for=\"cond1\">");
+        sb.AppendFormat("<option value=\"{0}\"{1}>{0}</option>", "CD", ViewBag.R.lv["cd1"].ToString() == "CD" ? " selected" : "");
+        sb.AppendFormat("<option value=\"{0}\"{1}>{0}</option>", "IC", ViewBag.R.lv["cd1"].ToString() == "IC" ? " selected" : "");
+        sb.AppendFormat("<option value=\"{0}\"{1}>{0}</option>", "IS", ViewBag.R.lv["cd1"].ToString() == "IS" ? " selected" : "");
+        sb.AppendFormat("<option value=\"{0}\"{1}>{0}</option>", "VH", ViewBag.R.lv["cd1"].ToString() == "VH" ? " selected" : "");
+        sb.Append("</select>");
+
+        sb.Append("<span class=\"input-group-append\">");
+        sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+        sb.Append("</span>");
+        sb.Append("</div>");
+
+        //sb.Append("</div>"); //z-list-cond
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = ViewBag.R.ft.ToString() + "_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    public string ExcelStyle()
+    {
+        return @"
+            body {width: 100%}
+            table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+            td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+            .xls_warning {background-color: #fcf8e3}
+            .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+            .text-center {text-align: center}
+            .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+            .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+        ";
+    }
+}
+@if (svcRt == null || svcRt.ResultCode != 0)
+{
+    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+}
+else
+{
+    @*<script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
+    <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>*@
+
+    <div class="z-list-head d-flex justify-content-between my-2 pl-0">
+        @Html.Raw(ListCond())
+    </div>
+
+    <div class="z-list-body" id="__ListView">
+        @Html.Raw(ViewChart(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+    </div>
+}

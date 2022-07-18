@@ -12,6 +12,8 @@ $(function () {
         $('#_SearchText').keyup(function (e) {
             if (e.which == 13) _zw.fn.goSearch();
         });
+
+        if (FusionCharts && fchart_report) fchart_report.render();
     }
 
     _zw.fn.bindCtrl();
@@ -39,9 +41,26 @@ $(function () {
                     $('.z-ttl span').html(_zw.V.ttl);
 
                     var v = res.substr(2).split(_zw.V.lv.boundary);
+                    //if ($('#__ListView [data-for="list"]').length > 0) { //_zw.V.ft == 'REGISTER_EMPLOYEE_PALNT'
+                    //    $('#__ListView [data-for="list"]').html(v[0]); //console.log(v[1])
+                    //    fchart_report.setXMLData(v[1]);
+                    //    fchart_report.render();
+
+                    //} else {
+                    //    $('#__List').html(v[0]);
+                    //    $('.z-list-menu').html(v[1]);
+                    //    $('#__ListPage').html(v[2]);
+
+                    //    _zw.fn.bindCtrl();
+                    //}
+
                     $('#__List').html(v[0]);
                     $('.z-list-menu').html(v[1]);
                     $('#__ListPage').html(v[2]);
+
+                    if (fchart_report) {
+                        fchart_report.render();
+                    }
 
                     _zw.fn.bindCtrl();
 
@@ -70,27 +89,36 @@ $(function () {
     }
 
     _zw.fn.goSearch = function (page, sort, dir) {
-        _zw.fn.initLv(_zw.V.current.urid);
+        if (_zw.V.ft == 'REGISTER_PRODUCT_PALNT' || _zw.V.ft == 'REGISTER_EMPLOYEE_PALNT') {
+            _zw.V.lv.start = $('.z-list-search select[data-for="year"]').val();
+            _zw.V.lv.end = $('.z-list-search select[data-for="month"]').val();
+            _zw.V.lv.cd1 = $('.z-list-search select[data-for="cond1"]').val();
 
-        sort = sort || ''; dir = dir || '';
-        _zw.V.lv.sort = sort;
-        _zw.V.lv.sortdir = dir;
-        _zw.V.lv.page = (page) ? page : 1;
+            //var postData = _zw.fn.getLvQuery(); //console.log(postData)
+            //window.location.href = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
-        _zw.V.lv.start = $('.z-list-cond .start-date').val();
-        _zw.V.lv.end = $('.z-list-cond .end-date').val();
+        } else {
+            _zw.fn.initLv(_zw.V.current.urid);
 
-        _zw.V.lv.cd1 = $('#_SearchSelect').val();
+            sort = sort || ''; dir = dir || '';
+            _zw.V.lv.sort = sort;
+            _zw.V.lv.sortdir = dir;
+            _zw.V.lv.page = (page) ? page : 1;
 
-        if ($('#_SearchText').length > 0) {
-            var e = $('#_SearchText');
-            var s = "['\\%^&\"*]";
-            var reg = new RegExp(s, 'g');
-            if (e.val().search(reg) >= 0) { alert(s + " 문자는 사용될 수 없습니다!"); e.val(''); return; }
+            _zw.V.lv.start = $('.z-list-cond .start-date').val();
+            _zw.V.lv.end = $('.z-list-cond .end-date').val();
 
-            _zw.V.lv.cd2 = e.val();
+            _zw.V.lv.cd1 = $('#_SearchSelect').val();
+
+            if ($('#_SearchText').length > 0) {
+                var e = $('#_SearchText');
+                var s = "['\\%^&\"*]";
+                var reg = new RegExp(s, 'g');
+                if (e.val().search(reg) >= 0) { alert(s + " 문자는 사용될 수 없습니다!"); e.val(''); return; }
+
+                _zw.V.lv.cd2 = e.val();
+            }
         }
-
         _zw.fn.loadList();
     }
 

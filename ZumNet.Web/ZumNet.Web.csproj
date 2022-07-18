@@ -3215,6 +3215,8 @@
     <Content Include="Views\Report\_FORM_CONTRACTRE.cshtml" />
     <Content Include="Views\Report\_REGISTER_EXCHANGEINFO.cshtml" />
     <Content Include="Views\Report\_OUTSIDERAPP.cshtml" />
+    <Content Include="Views\Report\_REGISTER_EMPLOYEE_PALNT.cshtml" />
+    <Content Include="Views\Report\_REGISTER_PRODUCT_PALNT.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
