@@ -6,7 +6,6 @@ using System.Web.Mvc;
 
 using Newtonsoft.Json.Linq;
 using ZumNet.Framework.Util;
-
 using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
 
@@ -47,7 +46,7 @@ namespace ZumNet.Web.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
-            rt = rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+            rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
             if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString().Substring(0, 6), "V")))
             {
                 return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
@@ -65,77 +64,137 @@ namespace ZumNet.Web.Controllers
             }
 
             //검색 조건
-            string strWhere = "";
-            if (formTable == "REGISTER_TOOLING")
-            {
-                if (ViewBag.R.lv.cd1.ToString() != "") strWhere += " AND DIVISION = '" + ViewBag.R.lv.cd1.ToString() + "'";             //제작구분
-                if (ViewBag.R.lv.cd2.ToString() != "") strWhere += " AND CLASSIFICATION_ID = '" + ViewBag.R.lv.cd2.ToString() + "'";    //금형분류
-                if (ViewBag.R.lv.cd3.ToString() != "") strWhere += " AND WHO_MONEY = N'" + ViewBag.R.lv.cd3.ToString() + "'";           //금형비부담
-                if (ViewBag.R.lv.cd4.ToString() != "") strWhere += " AND TOOLING_NUMBER LIKE '" + ViewBag.R.lv.cd4.ToString() + "%'";   //금형번호
-                if (ViewBag.R.lv.cd5.ToString() != "") strWhere += " AND MODELNO LIKE '%" + ViewBag.R.lv.cd5.ToString() + "%'";         //적용모델
-                if (ViewBag.R.lv.cd6.ToString() != "")
-                {
-                    strWhere += " AND USAGE_TYPE = '" + ViewBag.R.lv.cd6.ToString() + "'";  //2016-04-27 USAGE_TYPE 필드값 정리 이후
-                }
+            //string strWhere = "";
+            //if (formTable == "REGISTER_TOOLING")
+            //{
+            //    if (ViewBag.R.lv.cd1.ToString() != "") strWhere += " AND DIVISION = '" + ViewBag.R.lv.cd1.ToString() + "'";             //제작구분
+            //    if (ViewBag.R.lv.cd2.ToString() != "") strWhere += " AND CLASSIFICATION_ID = '" + ViewBag.R.lv.cd2.ToString() + "'";    //금형분류
+            //    if (ViewBag.R.lv.cd3.ToString() != "") strWhere += " AND WHO_MONEY = N'" + ViewBag.R.lv.cd3.ToString() + "'";           //금형비부담
+            //    if (ViewBag.R.lv.cd4.ToString() != "") strWhere += " AND TOOLING_NUMBER LIKE '" + ViewBag.R.lv.cd4.ToString() + "%'";   //금형번호
+            //    if (ViewBag.R.lv.cd5.ToString() != "") strWhere += " AND MODELNO LIKE '%" + ViewBag.R.lv.cd5.ToString() + "%'";         //적용모델
+            //    if (ViewBag.R.lv.cd6.ToString() != "")
+            //    {
+            //        strWhere += " AND USAGE_TYPE = '" + ViewBag.R.lv.cd6.ToString() + "'";  //2016-04-27 USAGE_TYPE 필드값 정리 이후
+            //    }
 
-                if (ViewBag.R.lv.cd7.ToString() != "") strWhere += " AND TOOLING_TAGNO LIKE '%" + ViewBag.R.lv.cd7.ToString() + "%'";           //고객금형번호
-                if (ViewBag.R.lv.cd8.ToString() != "") strWhere += " AND PARTNO LIKE '%" + ViewBag.R.lv.cd8.ToString() + "%'";                  //품번
-                if (ViewBag.R.lv.cd9.ToString() != "") strWhere += " AND ORG_NAME = '" + ViewBag.R.lv.cd9.ToString() + "'";                     //사업장
-                if (ViewBag.R.lv.cd10.ToString() != "") strWhere += " AND BUYER_NAME LIKE N'%" + ViewBag.R.lv.cd10.ToString() + "%'";           //BUYER
-                if (ViewBag.R.lv.cd12.ToString() != "") strWhere += " AND MAKE_SUPPLIER_NAME LIKE N'%" + ViewBag.R.lv.cd12.ToString() + "%'";   //제작처
-                if (ViewBag.R.lv.cd11.ToString() != "") strWhere += " AND (DEPT_NAME LIKE N'%" + ViewBag.R.lv.cd11.ToString() + "%' OR CHARGE_USER LIKE N'%" + ViewBag.R.lv.cd11.ToString() + "%')"; //영업부서, 담당자
+            //    if (ViewBag.R.lv.cd7.ToString() != "") strWhere += " AND TOOLING_TAGNO LIKE '%" + ViewBag.R.lv.cd7.ToString() + "%'";           //고객금형번호
+            //    if (ViewBag.R.lv.cd8.ToString() != "") strWhere += " AND PARTNO LIKE '%" + ViewBag.R.lv.cd8.ToString() + "%'";                  //품번
+            //    if (ViewBag.R.lv.cd9.ToString() != "") strWhere += " AND ORG_NAME = '" + ViewBag.R.lv.cd9.ToString() + "'";                     //사업장
+            //    if (ViewBag.R.lv.cd10.ToString() != "") strWhere += " AND BUYER_NAME LIKE N'%" + ViewBag.R.lv.cd10.ToString() + "%'";           //BUYER
+            //    if (ViewBag.R.lv.cd12.ToString() != "") strWhere += " AND MAKE_SUPPLIER_NAME LIKE N'%" + ViewBag.R.lv.cd12.ToString() + "%'";   //제작처
+            //    if (ViewBag.R.lv.cd11.ToString() != "") strWhere += " AND (DEPT_NAME LIKE N'%" + ViewBag.R.lv.cd11.ToString() + "%' OR CHARGE_USER LIKE N'%" + ViewBag.R.lv.cd11.ToString() + "%')"; //영업부서, 담당자
 
-                if (ViewBag.R.lv.start.ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + ViewBag.R.lv.start.ToString() + "', ORDER_CREATE_DATE) >= 0 "; //2014-04-16 CREATE_DATE=>ORDER_CREATE_DATE
-                if (ViewBag.R.lv.end.ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, ORDER_CREATE_DATE, '" + ViewBag.R.lv.end.ToString() + "') >= 0 ";
-            }
-            else if (formTable == "FORM_NEWDEVELOPREQUEST" || formTable == "REPORT_DEVPRODUCTSTATE" || formTable == "REGISTER_FOURMAFTERSERVICE")
-            {
-                if (formTable == "REPORT_DEVPRODUCTSTATE") ViewBag.R.lv["cd3"] = "DSESTART";
-                else if (formTable == "REGISTER_FOURMAFTERSERVICE") ViewBag.R.lv["cd3"] = "S_CDT"; //작성일
-                else ViewBag.R.lv["cd3"] = "PublishDate";
+            //    if (ViewBag.R.lv.start.ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + ViewBag.R.lv.start.ToString() + "', ORDER_CREATE_DATE) >= 0 "; //2014-04-16 CREATE_DATE=>ORDER_CREATE_DATE
+            //    if (ViewBag.R.lv.end.ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, ORDER_CREATE_DATE, '" + ViewBag.R.lv.end.ToString() + "') >= 0 ";
+            //}
+            //else if (formTable == "SEARCH_TOOLING_STATE")
+            //{
 
-                ViewBag.R.lv["cd4"] = ViewBag.R.lv.sort.ToString();
-                ViewBag.R.lv["cd5"] = ViewBag.R.lv.sortdir.ToString();
-            }
-            else
-            {
-                if (formTable == "REGISTER_ECNPLAN" || formTable == "REGISTER_ECNPLAN_DELAY" || formTable == "BFFLOW_MONITORING_DEPT")
-                {
-                    ViewBag.R.lv["cd4"] = ViewBag.R.lv.sort.ToString();
-                    ViewBag.R.lv["cd5"] = ViewBag.R.lv.sortdir.ToString();
-                }
-            }
+            //}
+            //else if (formTable == "SEARCH_EADOC")
+            //{
+            //    if (ViewBag.R.lv.cd2.ToString() != "") strWhere += " AND Subject LIKE N'%" + ViewBag.R.lv.cd2.ToString() + "%'";        //제목
+            //    if (ViewBag.R.lv.cd3.ToString() != "") strWhere += " AND (DocName LIKE N'%" + ViewBag.R.lv.cd3.ToString() + "%' OR FDName LIKE N'%" + ViewBag.R.lv.cd3.ToString() + "%')";      //문서(폴더)명
+            //    if (ViewBag.R.lv.cd4.ToString() != "") strWhere += " AND DocNumber LIKE '%" + ViewBag.R.lv.cd4.ToString() + "%'";   //문서번호
+            //    if (ViewBag.R.lv.cd5.ToString() != "") strWhere += " AND UserName LIKE N'%" + ViewBag.R.lv.cd5.ToString() + "%'";        //작성자
+            //    if (ViewBag.R.lv.cd6.ToString() != "") strWhere += " AND CreatorDept LIKE N'%" + ViewBag.R.lv.cd6.ToString() + "%'";    //작성부서
+            //    if (ViewBag.R.lv.start.ToString().Trim().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + ViewBag.R.lv.start.ToString().Trim() + "', CreateDate) >= 0 ";
+            //    if (ViewBag.R.lv.end.ToString().Trim().Trim() != "") strWhere += " AND DATEDIFF(DD, CreateDate, '" + ViewBag.R.lv.end.ToString().Trim() + "') >= 0 ";
+            //}
+            //else if (formTable == "FORM_NEWDEVELOPREQUEST" || formTable == "REPORT_DEVPRODUCTSTATE" || formTable == "REGISTER_FOURMAFTERSERVICE")
+            //{
+            //    if (formTable == "REPORT_DEVPRODUCTSTATE") ViewBag.R.lv["cd3"] = "DSESTART";
+            //    else if (formTable == "REGISTER_FOURMAFTERSERVICE") ViewBag.R.lv["cd3"] = "S_CDT"; //작성일
+            //    else ViewBag.R.lv["cd3"] = "PublishDate";
 
-            using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
-            {
-                if (formTable == "REGISTER_TOOLING")
-                {
-                    svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), formTable, ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
-                                    , "", "", "", "", ""
-                                    , StringHelper.SafeInt(ViewBag.R.lv.page.Value), StringHelper.SafeInt(ViewBag.R.lv.count.Value), ViewBag.R.lv.basesort.ToString()
-                                    , ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), ViewBag.R.lv.searchtext.ToString());
-                }
-                else if (formTable == "SEARCH_EADOC")
-                {
+            //    ViewBag.R.lv["cd4"] = ViewBag.R.lv.sort.ToString();
+            //    ViewBag.R.lv["cd5"] = ViewBag.R.lv.sortdir.ToString();
+            //}
+            //else
+            //{
+            //    if (formTable == "REGISTER_ECNPLAN" || formTable == "REGISTER_ECNPLAN_DELAY" || formTable == "BFFLOW_MONITORING_DEPT")
+            //    {
+            //        ViewBag.R.lv["cd4"] = ViewBag.R.lv.sort.ToString();
+            //        ViewBag.R.lv["cd5"] = ViewBag.R.lv.sortdir.ToString();
+            //    }
+            //}
 
-                }
-                else
-                {
-                    svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), formTable, ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
-                                    , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
-                }
-            }
+            //if (formTable == "FORM_DRAWING")
+            //{
+            //    if (ViewBag.R.lv.cd1.ToString() == "A")
+            //    {
+            //        using (BSL.InterfaceBiz.OracleBiz oraBiz = new BSL.InterfaceBiz.OracleBiz())
+            //        {
+            //            svcRt = oraBiz.Cresyn_Get_CBO_BOM_ITEMS("107", ViewBag.R.lv.cd2.ToString());
+            //        }
+            //    }
+            //    else if (ViewBag.R.lv.cd1.ToString() == "B")
+            //    {
+            //        using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+            //        {
+            //            svcRt = rpBiz.GetReport("", 0, formTable, "", "", ViewBag.R.lv.cd2.ToString(), "", "", "", "");
+            //        }
+            //    }
+            //}
+            //else if (formTable == "FORM_UNITJAEGO" || formTable == "FORM_WIREJAEGO" || formTable == "REGISTER_EXCHANGEINFO")
+            //{
+            //    //오라클
+            //    using (BSL.InterfaceBiz.OracleBiz oraBiz = new BSL.InterfaceBiz.OracleBiz())
+            //    {
+            //        if (formTable == "FORM_UNITJAEGO") svcRt = oraBiz.Cresyn_Get_GL_UNITJAEGO(ViewBag.R.lv.cd2.ToString());
+            //        else if (formTable == "FORM_WIREJAEGO") svcRt = oraBiz.Cresyn_Get_GL_WIREJAEGO(ViewBag.R.lv.cd2.ToString());
+            //        else if (formTable == "REGISTER_EXCHANGEINFO") svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES("KRW", ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString(), "1000");
+            //    }
+            //}
+            //else if (formTable.IndexOf("PQM_") >= 0)
+            //{
+            //    //PQM
+            //    using (BSL.InterfaceBiz.PQmBiz pqmBiz = new BSL.InterfaceBiz.PQmBiz())
+            //    {
 
-            if (svcRt != null && svcRt.ResultCode == 0)
-            {
-                ViewBag.BoardList = svcRt.ResultDataSet;
-                ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
-            }
-            else
-            {
-                rt = svcRt.ResultMessage;
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
+            //    }
+            //}
+            //else if (formTable == "SEARCH_EADOC")
+            //{
+            //    //문서관리 이관 목록
+            //    using (BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+            //    {
+            //        svcRt = wkList.ViewListTransfer(Convert.ToInt32(Session["DNID"]), Session["Admin"].ToString(), Convert.ToInt32(Session["URID"])
+            //                    , StringHelper.SafeInt(ViewBag.R.lv.page.Value), StringHelper.SafeInt(ViewBag.R.lv.count.Value), ViewBag.R.lv.basesort.ToString()
+            //                    , ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), strWhere);
+            //    }
+            //}
+            //else
+            //{
+            //    //집계
+            //    using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+            //    {
+            //        if (formTable == "REGISTER_TOOLING")
+            //        {
+            //            svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), formTable, ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+            //                            , "", "", "", "", ""
+            //                            , StringHelper.SafeInt(ViewBag.R.lv.page.Value), StringHelper.SafeInt(ViewBag.R.lv.count.Value), ViewBag.R.lv.basesort.ToString()
+            //                            , ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), strWhere);
+            //        }
+                    
+            //        else
+            //        {
+            //            svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), formTable, ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+            //                            , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+            //        }
+            //    }
+            //}
+
+            //if (svcRt != null && svcRt.ResultCode == 0)
+            //{
+            //    ViewBag.BoardList = svcRt.ResultDataSet;
+            //    ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+            //}
+            //else
+            //{
+            //    rt = svcRt.ResultMessage;
+            //    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            //}
 
             return View();
         }
@@ -170,75 +229,139 @@ namespace ZumNet.Web.Controllers
                         return "[" + sPos + "] " + rt;
                     }
 
-                    //검색 조건
-                    sPos = "400";
-                    string strWhere = "";
-                    if (formTable == "REGISTER_TOOLING")
-                    {
-                        if (jPost["lv"]["cd1"].ToString() != "") strWhere += " AND DIVISION = '" + jPost["lv"]["cd1"].ToString() + "'";             //제작구분
-                        if (jPost["lv"]["cd2"].ToString() != "") strWhere += " AND CLASSIFICATION_ID = '" + jPost["lv"]["cd2"].ToString() + "'";    //금형분류
-                        if (jPost["lv"]["cd3"].ToString() != "") strWhere += " AND WHO_MONEY = N'" + jPost["lv"]["cd3"].ToString() + "'";           //금형비부담
-                        if (jPost["lv"]["cd4"].ToString() != "") strWhere += " AND TOOLING_NUMBER LIKE '" + jPost["lv"]["cd4"].ToString() + "%'";   //금형번호
-                        if (jPost["lv"]["cd5"].ToString() != "") strWhere += " AND MODELNO LIKE '%" + jPost["lv"]["cd5"].ToString() + "%'";         //적용모델
-                        if (jPost["lv"]["cd6"].ToString() != "")
-                        {
-                            strWhere += " AND USAGE_TYPE = '" + jPost["lv"]["cd6"].ToString() + "'";  //2016-04-27 USAGE_TYPE 필드값 정리 이후
-                        }
+                    ////검색 조건
+                    //sPos = "400";
+                    //string strWhere = "";
+                    //if (formTable == "REGISTER_TOOLING")
+                    //{
+                    //    if (jPost["lv"]["cd1"].ToString() != "") strWhere += " AND DIVISION = '" + jPost["lv"]["cd1"].ToString() + "'";             //제작구분
+                    //    if (jPost["lv"]["cd2"].ToString() != "") strWhere += " AND CLASSIFICATION_ID = '" + jPost["lv"]["cd2"].ToString() + "'";    //금형분류
+                    //    if (jPost["lv"]["cd3"].ToString() != "") strWhere += " AND WHO_MONEY = N'" + jPost["lv"]["cd3"].ToString() + "'";           //금형비부담
+                    //    if (jPost["lv"]["cd4"].ToString() != "") strWhere += " AND TOOLING_NUMBER LIKE '" + jPost["lv"]["cd4"].ToString() + "%'";   //금형번호
+                    //    if (jPost["lv"]["cd5"].ToString() != "") strWhere += " AND MODELNO LIKE '%" + jPost["lv"]["cd5"].ToString() + "%'";         //적용모델
+                    //    if (jPost["lv"]["cd6"].ToString() != "")
+                    //    {
+                    //        strWhere += " AND USAGE_TYPE = '" + jPost["lv"]["cd6"].ToString() + "'";  //2016-04-27 USAGE_TYPE 필드값 정리 이후
+                    //    }
 
-                        if (jPost["lv"]["cd7"].ToString() != "") strWhere += " AND TOOLING_TAGNO LIKE '%" + jPost["lv"]["cd7"].ToString() + "%'";           //고객금형번호
-                        if (jPost["lv"]["cd8"].ToString() != "") strWhere += " AND PARTNO LIKE '%" + jPost["lv"]["cd8"].ToString() + "%'";                  //품번
-                        if (jPost["lv"]["cd9"].ToString() != "") strWhere += " AND ORG_NAME = '" + jPost["lv"]["cd9"].ToString() + "'";                     //사업장
-                        if (jPost["lv"]["cd10"].ToString() != "") strWhere += " AND BUYER_NAME LIKE N'%" + jPost["lv"]["cd10"].ToString() + "%'";           //BUYER
-                        if (jPost["lv"]["cd12"].ToString() != "") strWhere += " AND MAKE_SUPPLIER_NAME LIKE N'%" + jPost["lv"]["cd12"].ToString() + "%'";   //제작처
-                        if (jPost["lv"]["cd11"].ToString() != "") strWhere += " AND (DEPT_NAME LIKE N'%" + jPost["lv"]["cd11"].ToString() + "%' OR CHARGE_USER LIKE N'%" + jPost["lv"]["cd11"].ToString() + "%')"; //영업부서, 담당자
+                    //    if (jPost["lv"]["cd7"].ToString() != "") strWhere += " AND TOOLING_TAGNO LIKE '%" + jPost["lv"]["cd7"].ToString() + "%'";           //고객금형번호
+                    //    if (jPost["lv"]["cd8"].ToString() != "") strWhere += " AND PARTNO LIKE '%" + jPost["lv"]["cd8"].ToString() + "%'";                  //품번
+                    //    if (jPost["lv"]["cd9"].ToString() != "") strWhere += " AND ORG_NAME = '" + jPost["lv"]["cd9"].ToString() + "'";                     //사업장
+                    //    if (jPost["lv"]["cd10"].ToString() != "") strWhere += " AND BUYER_NAME LIKE N'%" + jPost["lv"]["cd10"].ToString() + "%'";           //BUYER
+                    //    if (jPost["lv"]["cd12"].ToString() != "") strWhere += " AND MAKE_SUPPLIER_NAME LIKE N'%" + jPost["lv"]["cd12"].ToString() + "%'";   //제작처
+                    //    if (jPost["lv"]["cd11"].ToString() != "") strWhere += " AND (DEPT_NAME LIKE N'%" + jPost["lv"]["cd11"].ToString() + "%' OR CHARGE_USER LIKE N'%" + jPost["lv"]["cd11"].ToString() + "%')"; //영업부서, 담당자
 
-                        if (jPost["lv"]["start"].ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + jPost["lv"]["start"].ToString() + "', ORDER_CREATE_DATE) >= 0 "; //2014-04-16 CREATE_DATE=>ORDER_CREATE_DATE
-                        if (jPost["lv"]["end"].ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, ORDER_CREATE_DATE, '" + jPost["lv"]["end"].ToString() + "') >= 0 ";
-                    }
-                    else if (formTable == "FORM_NEWDEVELOPREQUEST" || formTable == "REPORT_DEVPRODUCTSTATE" || formTable == "REGISTER_FOURMAFTERSERVICE")
-                    {
-                        if (formTable == "REPORT_DEVPRODUCTSTATE") jPost["lv"]["cd3"] = "DSESTART";
-                        else if (formTable == "REGISTER_FOURMAFTERSERVICE") jPost["lv"]["cd3"] = "S_CDT"; //작성일
-                        else jPost["lv"]["cd3"] = "PublishDate";
+                    //    if (jPost["lv"]["start"].ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + jPost["lv"]["start"].ToString() + "', ORDER_CREATE_DATE) >= 0 "; //2014-04-16 CREATE_DATE=>ORDER_CREATE_DATE
+                    //    if (jPost["lv"]["end"].ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, ORDER_CREATE_DATE, '" + jPost["lv"]["end"].ToString() + "') >= 0 ";
+                    //}
+                    //else if (formTable == "SEARCH_TOOLING_STATE")
+                    //{
 
-                        jPost["lv"]["cd4"] = jPost["lv"]["sort"].ToString();
-                        jPost["lv"]["cd5"] = jPost["lv"]["sortdir"].ToString();
-                    }
-                    else
-                    {
-                        if (formTable == "REGISTER_ECNPLAN" || formTable == "REGISTER_ECNPLAN_DELAY" || formTable == "BFFLOW_MONITORING_DEPT")
-                        {
-                            jPost["lv"]["cd4"] = jPost["lv"]["sort"].ToString();
-                            jPost["lv"]["cd5"] = jPost["lv"]["sortdir"].ToString();
-                        }
-                    }
+                    //}
+                    //else if (formTable == "SEARCH_EADOC")
+                    //{
+                    //    if (jPost["lv"]["cd2"].ToString() != "") strWhere += " AND Subject LIKE N'%" + jPost["lv"]["cd2"].ToString() + "%'";        //제목
+                    //    if (jPost["lv"]["cd3"].ToString() != "") strWhere += " AND (DocName LIKE N'%" + jPost["lv"]["cd3"].ToString() + "%' OR FDName LIKE N'%" + jPost["lv"]["cd3"].ToString() + "%')";      //문서(폴더)명
+                    //    if (jPost["lv"]["cd4"].ToString() != "") strWhere += " AND DocNumber LIKE '%" + jPost["lv"]["cd4"].ToString() + "%'";   //문서번호
+                    //    if (jPost["lv"]["cd5"].ToString() != "") strWhere += " AND UserName LIKE N'%" + jPost["lv"]["cd5"].ToString() + "%'";        //작성자
+                    //    if (jPost["lv"]["cd6"].ToString() != "") strWhere += " AND CreatorDept LIKE N'%" + jPost["lv"]["cd6"].ToString() + "%'";    //작성부서
+                    //    if (jPost["lv"]["start"].ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + jPost["lv"]["start"].ToString().Trim() + "', CreateDate) >= 0 ";
+                    //    if (jPost["lv"]["end"].ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, CreateDate, '" + jPost["lv"]["end"].ToString().Trim() + "') >= 0 ";
+                    //}
+                    //else if (formTable == "FORM_NEWDEVELOPREQUEST" || formTable == "REPORT_DEVPRODUCTSTATE" || formTable == "REGISTER_FOURMAFTERSERVICE")
+                    //{
+                    //    if (formTable == "REPORT_DEVPRODUCTSTATE") jPost["lv"]["cd3"] = "DSESTART";
+                    //    else if (formTable == "REGISTER_FOURMAFTERSERVICE") jPost["lv"]["cd3"] = "S_CDT"; //작성일
+                    //    else jPost["lv"]["cd3"] = "PublishDate";
 
-                    sPos = "500";
-                    using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
-                    {
-                        if (formTable == "REGISTER_TOOLING")
-                        {
-                            svcRt = rpBiz.GetReport(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["lv"]["tgt"].ToString()), formTable, jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
-                                            , "", "", "", "", ""
-                                            , StringHelper.SafeInt(jPost["lv"]["page"].ToString()), StringHelper.SafeInt(jPost["lv"]["count"].ToString()), jPost["lv"]["basesort"].ToString()
-                                            , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["searchtext"].ToString());
-                        }
-                        else if (formTable == "SEARCH_EADOC")
-                        {
+                    //    jPost["lv"]["cd4"] = jPost["lv"]["sort"].ToString();
+                    //    jPost["lv"]["cd5"] = jPost["lv"]["sortdir"].ToString();
+                    //}
+                    //else
+                    //{
+                    //    if (formTable == "REGISTER_ECNPLAN" || formTable == "REGISTER_ECNPLAN_DELAY" || formTable == "BFFLOW_MONITORING_DEPT")
+                    //    {
+                    //        jPost["lv"]["cd4"] = jPost["lv"]["sort"].ToString();
+                    //        jPost["lv"]["cd5"] = jPost["lv"]["sortdir"].ToString();
+                    //    }
+                    //}
 
-                        }
-                        else
-                        {
-                            svcRt = rpBiz.GetReport(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["lv"]["tgt"].ToString()), formTable, jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
-                                            , jPost["lv"]["cd1"].ToString(), jPost["lv"]["cd2"].ToString(), jPost["lv"]["cd3"].ToString(), jPost["lv"]["cd4"].ToString(), jPost["lv"]["cd5"].ToString());
-                        }
-                    }
+                    
+                    //if (formTable == "FORM_DRAWING")
+                    //{
+                    //    sPos = "500";
+                    //    if (ViewBag.R.lv.cd1.ToString() == "A")
+                    //    {
+                    //        using (BSL.InterfaceBiz.OracleBiz oraBiz = new BSL.InterfaceBiz.OracleBiz())
+                    //        {
+                    //            svcRt = oraBiz.Cresyn_Get_CBO_BOM_ITEMS("107", jPost["lv"]["cd2"].ToString());
+                    //        }
+                    //    }
+                    //    else if (ViewBag.R.lv.cd1.ToString() == "B")
+                    //    {
+                    //        using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+                    //        {
+                    //            svcRt = rpBiz.GetReport("", 0, formTable, "", "", jPost["lv"]["cd2"].ToString(), "", "", "", "");
+                    //        }
+                    //    }
+                    //}
+                    //else if (formTable == "FORM_UNITJAEGO" || formTable == "FORM_WIREJAEGO" || formTable == "REGISTER_EXCHANGEINFO")
+                    //{
+                    //    sPos = "510";
+                    //    //오라클
+                    //    using (BSL.InterfaceBiz.OracleBiz oraBiz = new BSL.InterfaceBiz.OracleBiz())
+                    //    {
+                    //        if (formTable == "FORM_UNITJAEGO") svcRt = oraBiz.Cresyn_Get_GL_UNITJAEGO(jPost["lv"]["cd2"].ToString());
+                    //        else if (formTable == "FORM_WIREJAEGO") svcRt = oraBiz.Cresyn_Get_GL_WIREJAEGO(jPost["lv"]["cd2"].ToString());
+                    //        else if (formTable == "REGISTER_EXCHANGEINFO") svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES("KRW", jPost["lv"]["start"].ToString().Trim(), jPost["lv"]["end"].ToString().Trim(), "1000");
+                    //    }
+                    //}
+                    //else if (formTable.IndexOf("PQM_") >= 0)
+                    //{
+                    //    sPos = "520";
+                    //    //PQM
+                    //    using (BSL.InterfaceBiz.PQmBiz pqmBiz = new BSL.InterfaceBiz.PQmBiz())
+                    //    {
 
-                    if (svcRt != null && svcRt.ResultCode == 0)
-                    {
-                        sPos = "510";
-                        ViewBag.BoardList = svcRt.ResultDataSet;
-                        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+                    //    }
+                    //}
+                    //else if (formTable == "SEARCH_EADOC")
+                    //{
+                    //    sPos = "530";
+                    //    //문서관리 이관 목록
+                    //    using (BSL.FlowBiz.WorkList wkList = new BSL.FlowBiz.WorkList())
+                    //    {
+                    //        svcRt = wkList.ViewListTransfer(Convert.ToInt32(Session["DNID"]), Session["Admin"].ToString(), Convert.ToInt32(Session["URID"])
+                    //                    , StringHelper.SafeInt(jPost["lv"]["page"].ToString()), StringHelper.SafeInt(jPost["lv"]["count"].ToString()), jPost["lv"]["basesort"].ToString()
+                    //                    , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), strWhere);
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    sPos = "540";
+                    //    using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+                    //    {
+                    //        if (formTable == "REGISTER_TOOLING")
+                    //        {
+                    //            svcRt = rpBiz.GetReport(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["lv"]["tgt"].ToString()), formTable, jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
+                    //                            , "", "", "", "", ""
+                    //                            , StringHelper.SafeInt(jPost["lv"]["page"].ToString()), StringHelper.SafeInt(jPost["lv"]["count"].ToString()), jPost["lv"]["basesort"].ToString()
+                    //                            , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), strWhere);
+                    //        }
+                    //        else
+                    //        {
+                    //            svcRt = rpBiz.GetReport(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["lv"]["tgt"].ToString()), formTable, jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
+                    //                            , jPost["lv"]["cd1"].ToString(), jPost["lv"]["cd2"].ToString(), jPost["lv"]["cd3"].ToString(), jPost["lv"]["cd4"].ToString(), jPost["lv"]["cd5"].ToString());
+                    //        }
+                    //    }
+                    //}
+                    
+
+                    //if (svcRt != null && svcRt.ResultCode == 0)
+                    //{
+                    //    sPos = "510";
+                    //    ViewBag.BoardList = svcRt.ResultDataSet;
+                    //    ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
 
                         sPos = "520";
                         string sPatialView = "_" + formTable;
@@ -252,12 +375,12 @@ namespace ZumNet.Web.Controllers
                                 + RazorViewToString.RenderRazorViewToString(this, "_ListMenu", ViewBag)
                                 +jPost["lv"]["boundary"].ToString()
                                 + RazorViewToString.RenderRazorViewToString(this, "_ListPagination", ViewBag);
-                    }
-                    else
-                    {
-                        //에러페이지
-                        rt = svcRt.ResultMessage;
-                    }
+                    //}
+                    //else
+                    //{
+                    //    //에러페이지
+                    //    rt = svcRt.ResultMessage;
+                    //}
                 }
                 catch (Exception ex)
                 {

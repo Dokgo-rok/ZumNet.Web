@@ -522,7 +522,14 @@ namespace ZumNet.Web.Bc
                 eaBiz = new EApproval();
 
                 //2014-02-27 열람권한체크 추가
-                if (!eaBiz.CheckAppAcl(xfAlias, Convert.ToInt32(msgID), Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(HttpContext.Current.Session["DeptID"]))) throw new Exception("열람 권한이 없습니다!");
+                if (!eaBiz.CheckAppAcl(xfAlias, Convert.ToInt32(msgID), Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(HttpContext.Current.Session["DeptID"]))) 
+                {
+                    strMsg = "열람 권한이 없습니다!"; //throw new Exception("열람 권한이 없습니다!");
+                    svcRt.ResultCode = -1;
+                    svcRt.ResultMessage = strMsg;
+
+                    return svcRt; //22-07-15 오류 아닌 알림으로 변경
+                } 
 
                 strMsg = "양식 공통 데이타 가져오기";
                 xfInst = eaDac.SelectXFMainEntity(xfAlias, Convert.ToInt32(msgID));
@@ -1127,7 +1134,14 @@ namespace ZumNet.Web.Bc
                 eaBiz = new EApproval();
 
                 //2014-02-27 열람권한체크 추가
-                if (!eaBiz.CheckAppAcl(xfAlias, Convert.ToInt32(msgID), Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(HttpContext.Current.Session["DeptID"]))) throw new Exception("열람 권한이 없습니다!");
+                if (!eaBiz.CheckAppAcl(xfAlias, Convert.ToInt32(msgID), Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(HttpContext.Current.Session["DeptID"])))
+                {
+                    strMsg = "열람 권한이 없습니다!"; //throw new Exception("열람 권한이 없습니다!");
+                    svcRt.ResultCode = -1;
+                    svcRt.ResultMessage = strMsg;
+
+                    return svcRt; //22-07-15 오류 아닌 알림으로 변경
+                }
 
                 strMsg = "양식 공통 데이타 가져오기";
                 xfInst = eaDac.SelectXFMainEntity(xfAlias, Convert.ToInt32(msgID));

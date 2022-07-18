@@ -3212,6 +3212,9 @@
     <Content Include="Views\Env\_AnniversaryMgr.cshtml" />
     <Content Include="Views\Env\_HRInfo.cshtml" />
     <Content Include="Views\Env\_HistoryInfo.cshtml" />
+    <Content Include="Views\Report\_FORM_CONTRACTRE.cshtml" />
+    <Content Include="Views\Report\_REGISTER_EXCHANGEINFO.cshtml" />
+    <Content Include="Views\Report\_OUTSIDERAPP.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

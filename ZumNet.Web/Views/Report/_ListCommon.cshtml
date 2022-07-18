@@ -1,29 +1,54 @@
 ﻿@using System.Collections;
 @using System.Data;
 @using System.Text;
-@using Newtonsoft.Json;
-
+@using System.Threading;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@using ZumNet.Web.Filter;
 @{
     //뷰 파일이 없는 경우
+    InitConfig();
 
-    ConfigColumn();
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+    {
+        int iTarget = ViewBag.R.lv.tgt != null ? StringHelper.SafeInt(ViewBag.R.lv.tgt.Value) : 0;
+        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), iTarget, ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+    }
 
+    //Response.Write("--------------------");
+    //Response.End();
+
+    if (svcRt != null && svcRt.ResultCode == 0)
+    {
+        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+    }
+    else
+    {
+        ViewBag.R.lv["total"] = 0;
+    }
+
+    if (ViewBag.R.mode == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+        Response.End();
+    }
 }
-
 @functions {
-
     string[,] _columnConfig = null;
     string _tblWidth = "";
 
-    private void ConfigColumn()
+    private void InitConfig()
     {
         this._tblWidth = "100%";
     }
 
     private string RenderColumnHeader(string mode)
     {
-        string strValue = "";
         StringBuilder sb = new StringBuilder();
+        string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
 
         if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
         {
@@ -35,14 +60,16 @@
             sb.Append("</colgroup>");
 
             sb.Append("<thead>");
-
             sb.Append("<tr class=\"table-success\">");
-            for (int i = 1; i < _columnConfig.GetLength(0); i++)
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
             {
-                if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y") strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort();\">{0}</a>", _columnConfig[i, 1].ToString());
-                else strValue = _columnConfig[i, 1].ToString();
-
-                sb.AppendFormat("<th id=\"f_{0}\">{1}</th>", _columnConfig[i, 0].ToString(), strValue);
+                if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
+                {
+                    sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"</a></th>"
+                                     , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
+                                    , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
+                }
+                else sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
             }
             sb.Append("</tr>");
             sb.Append("</thead>");
@@ -53,37 +80,15 @@
 
     private string ViewList(string mode, DataSet data)
     {
-        if (data != null && data.Tables.Count > 0)
-        {
-            string strHeader = RenderColumnHeader(mode);
-            string strID = "";
-            string strValue = "";
-            int iRow = 1;
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+        sb.Append(RenderColumnHeader(mode));
+        sb.Append("<tbody>");
+        sb.AppendFormat("<tr><th>{0}</th></tr>", "뷰 정보가 없습니다.");
+        sb.Append("</tbody>");
+        sb.Append("</table>");
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
-            sb.Append(strHeader);
-            sb.Append("<tbody>");
-
-            if (strHeader == "")
-            {
-                sb.AppendFormat("<tr><th>{0}</th></tr>", "뷰 정보가 없습니다.");
-            }
-            else
-            {
-                DataTable dt = data.Tables[0];
-                foreach (DataRow row in dt.Rows)
-                {
-                    iRow++;
-                }
-                dt = null;
-            }
-            sb.Append("</tbody>");
-            sb.Append("</table>");
-
-            return sb.ToString();
-        }
-        return "";
+        return sb.ToString();
     }
 
     private string ListCount()
@@ -115,11 +120,11 @@
 
     private string ListCond()
     {
-        string swidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wwd-md-80 wd-lg-70 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-65 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
 
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", swidth);
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
 
         sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
         sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
@@ -141,12 +146,12 @@
             {
                 if (_columnConfig[i, 4].ToString() == "Y")
                 {
-                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == ViewBag.R.lv.search.ToString() ? " selected" : "");
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == ViewBag.R.lv.cd1.ToString() ? " selected" : "");
                 }
 
             }
             sb.Append("</select>");
-            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, ViewBag.R.lv.searchtext.ToString());
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, ViewBag.R.lv.cd2.ToString());
 
             sb.Append("<span class=\"input-group-append\">");
             sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
@@ -157,18 +162,58 @@
         sb.Append("</div>"); //z-list-cond
         return sb.ToString();
     }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = ViewBag.R.ft.ToString() + "_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    public string ExcelStyle()
+    {
+        return @"
+            body {width: 100%}
+            table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+            td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+            .xls_warning {background-color: #fcf8e3}
+            .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+            .text-center {text-align: center}
+            .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+            .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+            ";
+    }
 }
-
-<div class="z-list-head d-flex justify-content-between my-2">
-    <div class="z-list-page d-flex align-items-center d-none d-sm-block" id="__ListCount">
-        <div class="z-list-total mt-2 mr-1">
-            <i class="fe-chevron-right"></i> @ListCount()
+@if (svcRt == null || svcRt.ResultCode != 0)
+{
+    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+}
+else
+{
+    <div class="z-list-head d-flex justify-content-between my-2">
+        <div class="z-list-page d-flex align-items-center" id="__ListCount">
+            <div class="z-list-total mt-1 mr-1">
+                <i class="fe-chevron-right"></i> @ListCount()
+            </div>
         </div>
+        @Html.Raw(ListCond())
     </div>
-    @Html.Raw(ListCond())
-</div>
 
-<div class="z-list-body" id="__ListView">
-    @Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))
-</div>
-
+    <div class="z-list-body" id="__ListView">
+        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+    </div>
+}

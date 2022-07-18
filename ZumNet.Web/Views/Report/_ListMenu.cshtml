@@ -1,7 +1,13 @@
-﻿@if (ViewBag.R.ft == "REGISTER_TOOLING")
+﻿@{
+    bool bView = true;
+    if (!System.IO.File.Exists(Server.MapPath("~/Views/Report/_" + ViewBag.R.ft.ToString() + ".cshtml")))
+    {
+        bView = false;
+    }
+}
+@if (ViewBag.R.ft == "REGISTER_TOOLING")
 {
     <a class="text-blue mr-3" href="javascript:void();"><i class="fas fa-tools"></i> 금형작성</a>
-    <a class="text-success" href="javascript:void();"><i class="fe-download"></i> 엑셀</a>
 }
 else if (ViewBag.R.ft == "FORM_BIZTRIPPLAN")
 {
@@ -10,10 +16,18 @@ else if (ViewBag.R.ft == "FORM_BIZTRIPPLAN")
         <span class="mr-1"><i class="fas fa-circle text-danger"></i> 출장중</span>
         <span><i class="fas fa-circle"></i> 출장완료</span>
     </div>
-    <a class="text-success" href="javascript:void();"><i class="fe-download"></i> 엑셀</a>
 }
 else if (ViewBag.R.ft == "FORM_LEAVEUPDATE" || ViewBag.R.ft == "REGISTER_EDUTIME" || ViewBag.R.ft == "FORM_EDUSHARE")
 {
-    <a class="text-success" href="javascript:void();"><i class="fe-download"></i> 엑셀</a>
 }
+else if (ViewBag.R.ft == "REGISTER_EXCHANGEINFO")
+{
+    <div class="mr-3">** 표시는 100 단위 기준임</div>
+}
+@if (bView)
+{
+    <a class="text-success mr-3" href="javascript:void();" onclick="_zw.fn.exportExcel();"><i class="fe-download"></i> 엑셀</a>
+    <button class="btn icon-btn btn-outline-secondary m-0 btn-sm" aria-controls="vw-full-fill" onclick="_zw.ut.ctrls();"><i class="fas fa-expand"></i></button>
+}
+
 

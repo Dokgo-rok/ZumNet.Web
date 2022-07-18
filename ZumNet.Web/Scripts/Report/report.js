@@ -16,8 +16,16 @@ $(function () {
 
     _zw.fn.bindCtrl();
 
+    _zw.fn.exportExcel = function () {
+        //var encQi = '{M:"xls",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",fdid:"' + _zw.V.fdid + '",opnode:"",ttl:"' + _zw.V.ttl + '"}';
+        //window.open('?qi=' + encodeURIComponent(_zw.base64.encode(encQi)), 'ifrView');
+
+        var postData = _zw.fn.getLvQuery('xls'); //console.log(postData)
+        window.open('?qi=' + encodeURIComponent(_zw.base64.encode(postData)), 'ifrView');
+    }
+
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery(true); //console.log(postData)
+        var postData = _zw.fn.getLvQuery(); //console.log(postData)
         var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({
@@ -43,9 +51,22 @@ $(function () {
     }
 
     _zw.fn.sort = function (col) {
-        var el = event.target ? event.target : event.srcElement;
-        var dir = $(el).find('i').hasClass('fe-arrow-up') ? 'DESC' : 'ASC';
-        _zw.fn.goSearch(null, col, dir);
+        var t = $(event.target); sortCol = t.attr('data-val'), sortDir = '';
+
+        t.parent().parent().find('a[data-val]').each(function () {
+            if ($(this).attr('data-val') == sortCol) {
+                var c = $(this).find('i');
+                if (c.hasClass('fe-arrow-up')) {
+                    c.removeClass('fe-arrow-up').addClass('fe-arrow-down'); sortDir = 'DESC';
+                } else {
+                    c.removeClass('fe-arrow-down').addClass('fe-arrow-up'); sortDir = 'ASC';
+                }
+            } else {
+                $(this).find('i').removeClass();
+            }
+        });
+
+        _zw.fn.goSearch(null, sortCol, sortDir);
     }
 
     _zw.fn.goSearch = function (page, sort, dir) {
@@ -73,8 +94,9 @@ $(function () {
         _zw.fn.loadList();
     }
 
-    _zw.fn.getLvQuery = function () {
-        var j = {};
+    _zw.fn.getLvQuery = function (m) {
+        var j = {}; m = m || '';
+        j["M"] = m;
         j["ct"] = _zw.V.ct;
         j["ctalias"] = _zw.V.ctalias;
         j["ot"] = _zw.V.ot;
@@ -122,6 +144,4 @@ $(function () {
         _zw.V.lv.cd1 = ''; _zw.V.lv.cd2 = ''; _zw.V.lv.cd3 = ''; _zw.V.lv.cd4 = ''; _zw.V.lv.cd5 = ''; _zw.V.lv.cd6 = '';
         _zw.V.lv.cd7 = ''; _zw.V.lv.cd8 = ''; _zw.V.lv.cd9 = ''; _zw.V.lv.cd10 = ''; _zw.V.lv.cd11 = ''; _zw.V.lv.cd12 = '';
     }
-    
-
 });

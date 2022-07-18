@@ -41,17 +41,17 @@
 			.m .l_pos {display: none}
 
 			/* 기타 */
-			p, li, li table td  {font-size:14px;font-family:맑은 고딕;letter-spacing:1pt;line-height:22px;vertical-align:top}
-			ol, ul {margin-left:0;text-align:left}
-			ul.ft-ul {margin:0;list-style:none}
-			ul.ft-ul li {margin-bottom:10px}
+			.m p, .m li, .m li table td  {font-size:14px;font-family:맑은 고딕;letter-spacing:1pt;line-height:22px;vertical-align:top}
+			.m ol, .m ul {margin-left:0;text-align:left}
+			.m ul.ft-ul {margin:0;list-style:none}
+			.m ul.ft-ul li {margin-bottom:10px}
 
 			/* 인쇄 설정 : 맨하단으로 */
 			@media print {
-			    .m .fm-editor {height:350px;min-height:350px}
-				#panStatement, #panHandover, #panCheckout {page-break-before:always}
-				.m .l_pos {display:block}
-				.m .l_pos2 {display:none}
+			.m .fm-editor {height:350px;min-height:350px}
+			#panStatement, #panHandover, #panCheckout {page-break-before:always}
+			.m .l_pos {display:block}
+			.m .l_pos2 {display:none}
 			}
 		</style>
       </head>

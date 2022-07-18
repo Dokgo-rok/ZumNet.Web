@@ -1641,7 +1641,7 @@ $(function () {
                         autoclose: true,
                         inputs: $('.input-daterange input[type="text"]'),
                         //format: "yyyy-mm-dd",
-                        //todayHighlight: true, //22-07-14 보류
+                        todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     });
                 }
@@ -1650,7 +1650,7 @@ $(function () {
                     $('.datepicker').datepicker({
                         autoclose: true,
                         //format: "yyyy-mm-dd",
-                        //todayHighlight: true, //22-07-14 보류
+                        todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     }).on('changeDate', function (e) {
                         if (_zw.fn.onblur) _zw.fn.onblur(e.target, ['date']);
@@ -1659,7 +1659,7 @@ $(function () {
                     $('.datepicker-ko').datepicker({
                         autoclose: true,
                         format: "yyyy년 mm월 dd일",
-                        //todayHighlight: true, //22-07-14 보류
+                        todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     }).on('changeDate', function (e) {
                         if (_zw.fn.onblur) _zw.fn.onblur(e.target, ['date']);

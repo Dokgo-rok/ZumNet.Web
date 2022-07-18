@@ -7,19 +7,24 @@
 @using ZumNet.Web.Bc;
 @using ZumNet.Web.Filter;
 @{
-    //교육시간집계대장 , REGISTER_EDUTIME
+    //환율정보
     InitConfig();
 
+    string viewList = "";
+    string listCount = "";
+
+    //Response.Write("=======" + ViewBag.R.lv.start.ToString());
+
     ZumNet.Framework.Core.ServiceResult svcRt = null;
-    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+    using (ZumNet.BSL.InterfaceBiz.OracleBiz oraBiz = new ZumNet.BSL.InterfaceBiz.OracleBiz())
     {
-        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
-                , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+        svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES("KRW", ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString(), "1000");
     }
 
     if (svcRt != null && svcRt.ResultCode == 0)
     {
-        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+        viewList = ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet);
+        listCount = ListCount();
     }
     else
     {
@@ -32,91 +37,105 @@
         Response.End();
     }
 }
+
 @functions {
 
     string[,] _columnConfig = null;
     string _tblWidth = "";
+    string _totalCount = "0";
 
     private void InitConfig()
     {
         //초기 설정
-        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.Year.ToString();
-        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "교육시간집계대장";
+        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.ToString("yyyy-MM-") + "01";
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "환율정보";
 
-        //컬럼 : id,표기,넓이,정렬,검색여부
-        string[,] arr = { { "stdyear", "구분년도", "11%", "", "" }, { "ApplDept", "신청부서/구분", "34%", "L", "" }
-                            , { "DisplayName", "신청자", "11%", "", "" }, { "ClsDN1", "사내외", "11%", "", "" },{ "clsdn2", "교육방식", "11%", "", "" }
-                            , { "Item1", "교육유형", "11%", "", "" },{ "Time", "교육시간", "11%", "", "" }
+        //크레신 : 환율정보
+        string[,] arr = { { "EXDATE", "기준일", "10%", "", "" }, { "EXTYPEDESC", "기준율", "20%", "", "" }, { "USD", "USD", "10%", "", "" }
+                            , { "EUR", "EUR", "10%", "", "" }, { "JPY", "JPY**", "10%", "", "" }, { "CNY", "CNY", "10%", "", "" }
+                            , { "HKD", "HKD", "10%", "", "" }, { "IDR", "IDR**", "10%", "", "" }, { "VND", "VND**", "10%", "", "" }
             };
         this._columnConfig = arr;
+        this._tblWidth = "100%";
     }
 
     private string RenderColumnHeader(string mode)
     {
         StringBuilder sb = new StringBuilder();
-        string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
+        string strValue = "";
 
-        if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
+        sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
         {
-            sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
-            for (int i = 0; i < _columnConfig.GetLength(0); i++)
-            {
-                sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
-            }
-            sb.Append("</colgroup>");
-
-            sb.Append("<thead>");
-            sb.Append("<tr class=\"table-success\">");
-            for (int i = 0; i < _columnConfig.GetLength(0); i++)
-            {
-                if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
-                {
-                    sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"</a></th>"
-                                     , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
-                                    , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
-                }
-                else sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
-            }
-            sb.Append("</tr>");
-            sb.Append("</thead>");
+            sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
         }
+        sb.Append("</colgroup>");
 
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"table-success\">");
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y") strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort();\">{0}</a>", _columnConfig[i, 1].ToString());
+            else strValue = _columnConfig[i, 1].ToString();
+
+            if (mode != "xls")
+                sb.AppendFormat("<th id=\"f_{0}\">{1}</th>", _columnConfig[i, 0].ToString(), strValue);
+            else
+                sb.AppendFormat("<th id=\"f_{0}\" style=\"text-align:center;background:#d1dae7;color:#175d7f\">{1}</th>", _columnConfig[i, 0].ToString(), strValue);
+        }
+        sb.Append("</tr>");
+        sb.Append("</thead>");
         return sb.ToString();
     }
 
     private string ViewList(string mode, DataSet data)
     {
-        if (data != null && data.Tables.Count > 0)
+        int iRow = 0;
+        if (data != null && data.Tables.Count > 0l && data.Tables[0].Rows.Count > 0)
         {
-            string strID = "";
-            string strValue = "";
-            int iRow = 1;
-
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            //foreach(DataColumn col in data.Tables[0].Columns)
+            //{
+            //    sb.AppendFormat("<td>{0}</td>", col.ColumnName);
+            //}
             sb.Append(RenderColumnHeader(mode));
             sb.Append("<tbody>");
 
             DataTable dt = data.Tables[0];
+            string convDate = dt.Rows[0]["CONVERSION_DATE"].ToString();
+
+            sb.Append("<tr>");
+            sb.AppendFormat("<td class=\"text-center\">{0}</td>", convDate);
+            sb.AppendFormat("<td class=\"text-center\">{0}</td>", "한국은행기준율");
+
             foreach (DataRow row in dt.Rows)
             {
-                sb.Append("<tr>");
-
-                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                if (convDate == row["CONVERSION_DATE"].ToString())
                 {
-                    strID = _columnConfig[i, 0].ToString();
-                    strValue = row[strID].ToString();
-
-                    sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
+                    if (row["FROM_CURRENCY"].ToString() != "GBP") sb.AppendFormat("<td class=\"text-center\">{0}</td>", row["CONVERSION_RATE"].ToString());
                 }
-                sb.Append("</tr>");
+                else
+                {
+                    sb.Append("</tr><tr>");
+                    sb.AppendFormat("<td class=\"text-center\">{0}</td>", row["CONVERSION_DATE"].ToString());
+                    sb.AppendFormat("<td class=\"text-center\">{0}</td>", "한국은행기준율");
+
+                    sb.AppendFormat("<td class=\"text-center\">{0}</td>", row["CONVERSION_RATE"].ToString());
+                }
+
+                convDate = row["CONVERSION_DATE"].ToString();
                 iRow++;
             }
             sb.Append("</tbody>");
             sb.Append("</table>");
             dt = null;
+
+            _totalCount = iRow.ToString();
+
             return sb.ToString();
         }
+        _totalCount = iRow.ToString();
         return "";
     }
 
@@ -136,12 +155,11 @@
             if (pageIndex > totalPage) { pageIndex = totalPage; }
 
             sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
-
         }
         else
         {
-            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
-            sPage = String.Format("{0} {1} {2}", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count);
+            //totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            sPage = String.Format("{0} {1} {2}", Resources.Global.Total, _totalCount, Resources.Global.Count);
         }
 
         return sPage;
@@ -149,17 +167,23 @@
 
     private string ListCond()
     {
-        int iYear = ViewBag.R.lv.start != "" && Convert.ToInt32(ViewBag.R.lv.start) > 0 ? Convert.ToInt32(ViewBag.R.lv.start) : DateTime.Now.Year;
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-60 wd-lg-45 wd-xl-30" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+
         StringBuilder sb = new StringBuilder();
 
-        sb.Append("<div class=\"input-group z-list-cond d-flex justify-content-end\">");
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-60{0}\">", sWidth);
 
-        sb.Append("<select class=\"custom-select ml-1 start-date\">");
-        sb.Append(ZumNet.Web.Bc.CommonUtils.OptionYear(2009, DateTime.Now.Year, iYear));
-        sb.Append("</select>");
-        sb.Append("<span class=\"input-group-append\">");
+        sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.Append("<span class=\"input-group-text\">~</span>");
+        sb.Append("</div>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control end-date px-1\" value=\"{0}\">", ViewBag.R.lv.end);
+        sb.AppendFormat("<div class=\"input-group-append{0}\">", _columnConfig != null && _columnConfig.GetLength(0) > 0 ? "" : "");
         sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
-        sb.Append("</span>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
         sb.Append("</div>"); //z-list-cond
         return sb.ToString();
     }
@@ -196,7 +220,7 @@
             .text-center {text-align: center}
             .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
             .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
-            ";
+        ";
     }
 }
 @if (svcRt == null || svcRt.ResultCode != 0)
@@ -208,14 +232,15 @@ else
     <div class="z-list-head d-flex justify-content-between my-2">
         <div class="z-list-page d-flex align-items-center" id="__ListCount">
             <div class="z-list-total mt-1 mr-1">
-                <i class="fe-chevron-right"></i> @ListCount()
+                <i class="fe-chevron-right"></i> @listCount
             </div>
         </div>
         @Html.Raw(ListCond())
     </div>
 
     <div class="z-list-body" id="__ListView">
-        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+        @Html.Raw(viewList)
     </div>
 }
+
 

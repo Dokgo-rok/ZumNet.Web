@@ -2,23 +2,48 @@
 @using System.Data;
 @using System.Text;
 @using System.Threading;
-@using Newtonsoft.Json;
-
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@using ZumNet.Web.Filter;
 @{
-    //4M변경관리현황, FORM_BIZTRIPPLAN
+    //FORM_BIZTRIPPLAN
+    InitConfig();
 
-    ConfigColumn();
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+    {
+        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+    }
 
-    //Response.Write("=======" + ViewBag.R.lv.cd1.ToString());
+    if (svcRt != null && svcRt.ResultCode == 0)
+    {
+        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+    }
+    else
+    {
+        ViewBag.R.lv["total"] = 0;
+    }
+
+    if (ViewBag.R.mode == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+        Response.End();
+    }
 }
-
 @functions {
-
     string[,] _columnConfig = null;
     string _tblWidth = "";
 
-    private void ConfigColumn()
+    private void InitConfig()
     {
+        //초기 설정
+        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "해외출장자현황";
+
+        //검색조건 설정
+
         //크레신 : 해외출장계획서 -> 2016-05-20 수정
         //string[,] arr = { { "SEQ", "NO", "3%", "center", "" }, { "TRIPPERSONCORP", "법인", "4%", "center", "Y" }, { "TRIPPERSONORG", "부서", "9%", "center", "Y" }
         //                , { "TRIPPERSONGRADE", "직급", "6%", "center", "Y" }, { "TRIPPERSON", "성명", "6%", "center", "Y" }, { "COMPANION", "동행자", "13%", "center", "Y" }
@@ -38,6 +63,7 @@
     private string RenderColumnHeader(string mode)
     {
         StringBuilder sb = new StringBuilder();
+        string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
 
         sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
         for (int i = 0; i < _columnConfig.GetLength(0); i++)
@@ -47,8 +73,8 @@
         sb.Append("</colgroup>");
 
         sb.Append("<thead>");
-        sb.AppendFormat("<tr class=\"table-success\"><th rowspan=\"2\">{0}</th><th colspan=\"4\">{1}</th><th rowspan=\"2\">{2}</th><th rowspan=\"2\">{3}</th><th colspan=\"2\">{4}</th><th colspan=\"2\">{5}</th><th rowspan=\"2\">{6}</th><th rowspan=\"2\">{7}</th><th rowspan=\"2\" style=\"border-right:0\">{8}</th></tr><tr class=\"table-success\"><td>{9}</th><th>{10}</th><th>{11}</th><th>{12}</th><th>{13}</th><th>{14}</th><th>{15}</th><th>{16}</th></tr>"
-                            , _columnConfig[0, 1].ToString(), "출장자", _columnConfig[5, 1].ToString(), _columnConfig[6, 1].ToString(), "출장기간", "출장기간(변경)", _columnConfig[11, 1].ToString(), _columnConfig[12, 1].ToString(), _columnConfig[13, 1].ToString(), _columnConfig[1, 1].ToString(), _columnConfig[2, 1].ToString(), _columnConfig[3, 1].ToString(), _columnConfig[4, 1].ToString(), _columnConfig[7, 1].ToString(), _columnConfig[8, 1].ToString(), _columnConfig[9, 1].ToString(), _columnConfig[10, 1].ToString());
+        sb.AppendFormat("<tr class=\"table-success\"><th{0} rowspan=\"2\">{1}</th><th{0} colspan=\"4\">{2}</th><th{0} rowspan=\"2\">{3}</th><th{0} rowspan=\"2\">{4}</th><th{0} colspan=\"2\">{5}</th><th{0} colspan=\"2\">{6}</th><th{0} rowspan=\"2\">{7}</th><th{0} rowspan=\"2\">{8}</th><th{0} rowspan=\"2\" style=\"border-right:0\">{9}</th></tr><tr class=\"table-success\"><th{0}>{10}</th><th{0}>{11}</th><th{0}>{12}</th><th{0}>{13}</th><th{0}>{14}</th><th{0}>{15}</th><th{0}>{16}</th><th{0}>{17}</th></tr>"
+                            , sClassExcel, _columnConfig[0, 1].ToString(), "출장자", _columnConfig[5, 1].ToString(), _columnConfig[6, 1].ToString(), "출장기간", "출장기간(변경)", _columnConfig[11, 1].ToString(), _columnConfig[12, 1].ToString(), _columnConfig[13, 1].ToString(), _columnConfig[1, 1].ToString(), _columnConfig[2, 1].ToString(), _columnConfig[3, 1].ToString(), _columnConfig[4, 1].ToString(), _columnConfig[7, 1].ToString(), _columnConfig[8, 1].ToString(), _columnConfig[9, 1].ToString(), _columnConfig[10, 1].ToString());
 
         sb.Append("</thead>");
         return sb.ToString();
@@ -93,7 +119,7 @@
                     else if (strID == "LOCATION" || strID == "TRIPPERSON")
                     {
                         strValue = row[strID].ToString();
-                        if (strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">" + row[strID].ToString() + "</a>";
+                        if (mode != "xls" && strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">" + row[strID].ToString() + "</a>";
                     }
                     else if (strID == "STATE")
                     {
@@ -137,12 +163,12 @@
                         }
                         else
                         {
-                            sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "", strValue);
+                            sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
                         }
                     }
                     else
                     {
-                        sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "", strValue);
+                        sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
                     }
                 }
                 sb.Append("</tr>");
@@ -215,11 +241,11 @@
 
     private string ListCond()
     {
-        string swidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-70 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-65 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
 
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", swidth);
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
 
         sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
         sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
@@ -257,18 +283,60 @@
         sb.Append("</div>"); //z-list-cond
         return sb.ToString();
     }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = ViewBag.R.ft.ToString() + "_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    public string ExcelStyle()
+    {
+        return @"
+            body {width: 100%}
+            table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+            td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+    
+            .xls_warning {background-color: #fcf8e3}
+            .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+    
+            .text-center {text-align: center}
+            .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+            .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+        ";
+    }
+}
+@if (svcRt == null || svcRt.ResultCode != 0)
+{
+    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+}
+else
+{
+    <div class="z-list-head d-flex justify-content-between my-2">
+        <div class="z-list-page d-flex align-items-center" id="__ListCount">
+            <div class="z-list-total mt-1 mr-1">
+                <i class="fe-chevron-right"></i> @ListCount()
+            </div>
+        </div>
+        @Html.Raw(ListCond())
+    </div>
+
+    <div class="z-list-body" id="__ListView">
+        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+    </div>
 }
 
-<div class="z-list-head d-flex justify-content-between my-2">
-    <div class="z-list-page d-flex align-items-center" id="__ListCount">
-        <div class="z-list-total mt-1 mr-1">
-            <i class="fe-chevron-right"></i> @ListCount()
-        </div>
-    </div>
-    @Html.Raw(ListCond())
-</div>
-
-<div class="z-list-body" id="__ListView">
-    @Html.Raw(ViewList(ViewBag.R.mode.ToString(), ViewBag.BoardList))
-</div>
 

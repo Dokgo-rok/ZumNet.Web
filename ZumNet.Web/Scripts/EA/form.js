@@ -1303,7 +1303,7 @@ $(function () {
                 
                 if (_zw.V.pwid != '') {
                     //상위가 있는 경우 상위 단계까지 담는다 -> 상위단계가 병렬인 경우 다른 병렬은 제외한다.
-                    tgt = signLine.find(function (element) { if (element.wid === _zw.V.pwid) return true; });
+                    tgt = signLine.find(function (element) { if (element.wid === _zw.V.pwid) return true; }); //console.log(tgt)
                     searchLine = signLine.filter(function (element) { if (element.parent === tgt["parent"] && parseInt(element.step) >= parseInt(tgt["step"])) return true; });
                     
                     for (var i = 0; i < searchLine.length; i++) {
@@ -1311,6 +1311,7 @@ $(function () {
                         if (tgt["activityid"] == srcln["activityid"] && tgt["step"] == srcln["step"] && parseInt(tgt["substep"]) > 0) {
                             bInsert = tgt["wid"] == srcln["wid"] ? true : false;
                         }
+                        //console.log(i.toString() + " : " + bInsert + " : " + srcln["partname"])
                         if (bInsert) {
                             var sMode = srcln["mode"];
                             if (srcln["wid"] != '') {
@@ -1342,12 +1343,20 @@ $(function () {
                 //현결재자 담기
                 var curAct = _zw.V.schema.find(function (element) { if (element.actid === _zw.V.curactid) return true; }); //console.log(curAct);
 
-                if (_zw.V.act.indexOf('__') != -1) tgt = signLine.find(function (element) { if (element.bizrole == _zw.V.curbiz && element.actrole == _zw.V.curact) return true; });
-                else if (_zw.V.act != '' && _zw.V.wid != '') tgt = signLine.find(function (element) { if (element.wid === _zw.V.wid) return true; });
-                else tgt = signLine.find(function (element) { if (element.actrole == '_drafter' && element.step == '1') return true; });
+                //if (_zw.V.act.indexOf('__') != -1) tgt = signLine.find(function (element) { if (element.bizrole == _zw.V.curbiz && element.actrole == _zw.V.curact) return true; });
+                //else if (_zw.V.act != '' && _zw.V.wid != '') tgt = signLine.find(function (element) { if (element.wid === _zw.V.wid) return true; });
+                //else tgt = signLine.find(function (element) { if (element.actrole == '_drafter' && element.step == '1') return true; });
 
-                searchLine = signLine.filter(function (element) { if (element.parent === tgt["parent"] && parseInt(element.step) >= parseInt(tgt["step"])) return true; });
+                //22-07-15 위를 막고 아래 조건식으로 찾기 추가
+                if (_zw.V.pwid != '') {
+                    if (_zw.V.wid == _zw.V.pwid) tgt = signLine.find(function (element) { if (element.parent == _zw.V.pwid && element.actrole == _zw.V.curact) return true; }); //재기안자
+                    else tgt = signLine.find(function (element) { if (element.wid == _zw.V.wid) return true; }); //상위부서 속하는 결재자
+                } else {
+                    if (_zw.V.wid != '') tgt = signLine.find(function (element) { if (element.wid == _zw.V.wid) return true; }); //상위부서 속하지 않는 결재자
+                    else tgt = signLine.find(function (element) { if (element.bizrole == _zw.V.curbiz && element.actrole == _zw.V.curact) return true; }); //기안자
+                }
                 //console.log(tgt)
+                searchLine = signLine.filter(function (element) { if (element.parent === tgt["parent"] && parseInt(element.step) >= parseInt(tgt["step"])) return true; });
 
                 for (var i = 0; i < searchLine.length; i++) {
                     var srcln = searchLine[i], bInsert = true;
@@ -1456,7 +1465,7 @@ $(function () {
             return rt;
         },
         "validationSpc": function (signLine) { //checkSpecialValidLine
-            var p = null, c = null, c2 = null, c3 = null, c4 = null, n = null;
+            var p = null, p2 = null, c = null, c2 = null, c3 = null, c4 = null, n = null;
 
             if (_zw.V.ft == 'DRAFT' || _zw.V.ft == 'LEEVINDRAFT') { //크레신 - 일반기안
                 if (_zw.V.biz != "confirm" && _zw.V.biz != "last") {
@@ -1466,7 +1475,7 @@ $(function () {
                     if (_zw.V.act == '' || _zw.V.act.indexOf('__') != -1) { //2015-12-04
                         p2 = signLine.filter(function (element) { if (element.bizrole == 'last' && element.actrole == '_approver') return true; });
                         c2 = signLine.filter(function (element) { if (element.bizrole == '의견' && element.actrole == '_approver') return true; });
-                        c3 = signLine.filter(function (element) { if (element.bizrole == '의견' && element.partid == '101370' && (element.actrole == '_reviewer' || element.actrole == '_approver')) return true; });
+                        c3 = signLine.filter(function (element) { if (element.bizrole != '의견' && element.partid == '101370' && (element.actrole == '_reviewer' || element.actrole == '_approver')) return true; });
                         c4 = signLine.filter(function (element) { if (element.partid == '101559' || element.partid == '101534') return true; });
 
                         if (c3.length == 0) {
