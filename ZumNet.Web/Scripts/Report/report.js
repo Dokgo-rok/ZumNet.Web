@@ -15,9 +15,17 @@ $(function () {
         //console.log(fchart_report)
         //if (FusionCharts && fchart_report) fchart_report.render();
 
+        $('#__ListView div[data-for="multiple-chart"]').each(function () {
+            var j = $(this).next().text(), d = $(this).next().next().text();
+            //console.log(j)
+            var fchart = new FusionCharts(JSON.parse(j));
+            fchart.setXMLData(d);
+            fchart.render();
+        });
+
         if ($('.chart-cfg-template').length > 0 && $('.chart-data-template').length > 0) {
             var j = $('.chart-cfg-template').text(), d = $('.chart-data-template').text();
-            console.log(JSON.parse(j)); console.log(d)
+            //console.log(JSON.parse(j)); console.log(d)
 
             //var fchart = new FusionCharts({
             //    type: 'mscombidy2d',
@@ -106,7 +114,8 @@ $(function () {
     }
 
     _zw.fn.goSearch = function (page, sort, dir) {
-        if (_zw.V.ft == 'REGISTER_PRODUCT_PALNT' || _zw.V.ft == 'REGISTER_EMPLOYEE_PALNT') {
+        if (_zw.V.ft == 'REGISTER_PRODUCT_PALNT' || _zw.V.ft == 'REGISTER_EMPLOYEE_PALNT' || _zw.V.ft == 'REGISTER_PRODUCT_PALNT_MODEL'
+            || _zw.V.ft == 'REGISTER_EMPLOYEE_PALNT_MODEL' || _zw.V.ft == 'REGISTER_PROCESS_PALNT_MODEL') {
             _zw.V.lv.start = $('.z-list-search select[data-for="year"]').val();
             _zw.V.lv.end = $('.z-list-search select[data-for="month"]').val();
             _zw.V.lv.cd1 = $('.z-list-search select[data-for="cond1"]').val();

@@ -7,7 +7,7 @@
 @using ZumNet.Web.Bc;
 @using ZumNet.Web.Filter;
 @{
-    //REGISTER_PRODUCT_PALNT
+    //REGISTER_PROCESS_PALNT
     InitConfig();
 
     ZumNet.Framework.Core.ServiceResult svcRt = null;
@@ -33,7 +33,7 @@
         if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.Year.ToString();
         if (ViewBag.R.lv.end == "") ViewBag.R.lv["end"] = DateTime.Now.Month.ToString();
         if (ViewBag.R.lv.cd1 == "") ViewBag.R.lv["cd1"] = "VH";
-        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "일 생산현황(공장)-챠트";
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "품질 현황 (공장) ";
     }
 
     private string RenderColumnHeader(DataSet data)
@@ -43,7 +43,7 @@
 
         sb.Append("<colgroup>");
         sb.AppendFormat("<col style=\"width:{0}\" />", "150px");
-        for (int i = 0; i < data.Tables[3].Rows.Count; i++)
+        for (int i = 0; i < data.Tables[0].Rows.Count; i++)
         {
             sb.AppendFormat("<col style=\"width:{0}\" />", "90px");
             iWidth += 90;
@@ -75,16 +75,16 @@
             StringBuilder sb4 = new StringBuilder();
 
             sb1.AppendFormat("<tr class=\"table-success\"><td{0}>일자</td>", sClassExcel);
-            sb2.AppendFormat("<tr><td{0}>계획대수</td>", sClassExcel);
-            sb3.AppendFormat("<tr><td{0}>실적대수</td>", sClassExcel);
-            sb4.AppendFormat("<tr><td{0}>달성률(%)</td>", sClassExcel);
+            sb2.AppendFormat("<tr><td{0}>취급수</td>", sClassExcel);
+            sb3.AppendFormat("<tr><td{0}>불량수</td>", sClassExcel);
+            sb4.AppendFormat("<tr><td{0}>불량률(ppm)</td>", sClassExcel);
 
-            foreach (DataRow row in data.Tables[3].Rows)
+            foreach (DataRow row in data.Tables[0].Rows)
             {
                 sb1.AppendFormat("<td{0}>{1}</td>", sClassExcel, row["TRX_DATE"]);
-                sb2.AppendFormat("<td>{0}</td>", row["QTY_PLAN"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["QTY_PLAN"].ToString()));
-                sb3.AppendFormat("<td>{0}</td>", row["QTY_OUTPUT"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["QTY_OUTPUT"].ToString()));
-                sb4.AppendFormat("<td>{0}</td>", row["RATE_PROD"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["RATE_PROD"].ToString()));
+                sb2.AppendFormat("<td>{0}</td>", row["QTY_OUTPUT"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["QTY_OUTPUT"].ToString()));
+                sb3.AppendFormat("<td>{0}</td>", row["QTY_NG"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["QTY_NG"].ToString()));
+                sb4.AppendFormat("<td>{0}</td>", row["RATE_NG"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["RATE_NG"].ToString()));
             }
 
             sb1.Append("</tr>");
@@ -104,14 +104,14 @@
             sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", "400px");
             sb.Append("<colgroup><col style=\"width:300px\" /><col style=\"width:100px\" /></colgroup>");
             sb.Append("<thead>");
-            sb.AppendFormat("<tr class=\"table-success\"><th{0}>모델명</th><th{0}>달성률(%)</th></tr>", mode == "xls" ? " class=\"xls_th\"" : "");
+            sb.AppendFormat("<tr class=\"table-success\"><th{0}>모델명</th><th{0}>불량률(ppm)</th></tr>", mode == "xls" ? " class=\"xls_th\"" : "");
             sb.Append("</thead>");
             sb.Append("<tbody>");
-            foreach (DataRow row in data.Tables[4].Rows)
+            foreach (DataRow row in data.Tables[1].Rows)
             {
                 sb.Append("<tr>");
                 sb.AppendFormat("<td>{0}</td>", row["MODEL"].ToString());
-                sb.AppendFormat("<td>{0}</td>", row["RATE_PROD"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["RATE_PROD"].ToString()));
+                sb.AppendFormat("<td>{0}</td>", row["RATE_NG"].ToString() == "0" ? "0" : CommonUtils.CvtNumeric(row["RATE_NG"].ToString()));
                 sb.Append("</tr>");
             }
             sb.Append("</tbody>");
@@ -140,61 +140,34 @@
             sb.Append("}");
             sb.Append("</script>");
 
-            int x = 0;
-            string[] sColor = { "AFD8F8", "F6BD0F", "8BBA00", "888FFF", "0984B2", "C984A1", "7984A1", "5CD1E5", "FAED7D", "0F3900", "5B58A5", "664B00", "5CD1E5", "FAED7D", "0F3900", "888FFF", "F12345" };
-            string[] sColor2 = { "B2EBF4", "CCA63D", "1DDB16", "8041D9", "005766", "FFB2F5", "A6A6A6", "00D8FF", "DBC000", "476600", "918EDB", "C0A55A", "5CD1E5", "FAED7D", "0F3900", "888FFF", "F12345" };
-            //sbXml.Append("<chart palette='3' caption='' subcaption='' xaxisname='' yaxisname='' numdivlines='3' numberprefix='' numbersuffix='' showsum='1' showValues='1' useroundedges='1' bgcolor='FFFFFF,FFFFFF' showborder='0' animation='1' legendPosition='TOP'>");
-            DataRow[] rows = null;
-            DataRow[] rows2 = null;
-
             sb.Append("<script type=\"text/template\" class=\"chart-data-template\">"); //chart-data
             sb.Append("<chart caption=\"\" baseFontSize=\"12\" labelFontSize=\"12\" legendItemFontSize=\"13\" drawcrossline=\"1\" showvalues=\"0\" showanchors=\"0\" numberprefix=\"\"");
             sb.Append(" plothighlighteffect=\"fadeout\" chartTopMargin=\"\" chartLeftMargin=\"4\" chartBottomMargin=\"8\" chartRightMargin=\"4\" theme=\"fusion\">");
             sb.Append("<categories>");
-            foreach (DataRow row in data.Tables[1].Rows)
+            foreach (DataRow row in data.Tables[0].Rows)
             {
-                sb.AppendFormat("<category label=\"{0}\" fontsize=\"12\" />", row["TRX_DATE"].ToString());
+                sb.AppendFormat("<category label=\"{0}\" />", row["TRX_DATE"].ToString());
             }
+            //sb.Append("]");
             sb.Append("</categories>");
-
-            //sb.Append("<dataset>");
+            //sb.Append("<dataset seriesname=\"취급수\">");
+            //foreach (DataRow row in data.Tables[0].Rows)
+            //{
+            //    sb.AppendFormat("<set value=\"{0}\" />", row["QTY_OUTPUT"].ToString());
+            //}
+            //sb.Append("</dataset>"); //접수건수
+            sb.Append("<dataset seriesname=\"불량수\">");
             foreach (DataRow row in data.Tables[0].Rows)
             {
-                rows = data.Tables[2].Select("ITEM_TYPE = '" + row["ITEM_TYPE"].ToString() + "'");
-                sb.AppendFormat("<dataset seriesname=\"{0}\" color=\"{1}\">", row["ITEM_TYPE"].ToString() + "(계획)", sColor2[x]);
-                for (int m = 0; m < rows.Length; m++)
-                {
-                    sb.AppendFormat("<set value=\"{0}\" />", rows[m]["QTY_PLAN"].ToString());
-                }
-                sb.Append("</dataset>");
-                x++;
+                sb.AppendFormat("<set value=\"{0}\" />", row["QTY_NG"].ToString());
             }
-            //sb.Append("</dataset>");
-            x = 0;
-
-            //sb.Append("<dataset>");
+            sb.Append("</dataset>"); //유효
+            sb.Append("<dataset seriesname=\"불량률(ppm)\" parentyaxis=\"S\" renderas=\"line\" showvalues=\"0\">");
             foreach (DataRow row in data.Tables[0].Rows)
             {
-                rows = data.Tables[2].Select("ITEM_TYPE = '" + row["ITEM_TYPE"].ToString() + "'");
-                sb.AppendFormat("<dataset seriesname=\"{0}\" color=\"{1}\">", row["ITEM_TYPE"].ToString() + "(실적)", sColor[x]);
-                for (int m = 0; m < rows.Length; m++)
-                {
-                    sb.AppendFormat("<set value=\"{0}\" />", rows[m]["QTY_OUTPUT"].ToString());
-                }
-                sb.Append("</dataset>");
-                x++;
+                sb.AppendFormat("<set value=\"{0}\" />", CommonUtils.CvtNumeric(row["RATE_NG"].ToString()));
             }
-            //sb.Append("</dataset>");
-            sb.Append("<dataset seriesname=\"달성율\" parentyaxis=\"S\" renderas=\"line\" showvalues=\"0\" color=\"#ed1d0a\">");
-            foreach (DataRow row in data.Tables[1].Rows)
-            {
-                rows = data.Tables[3].Select("TRX_DATE = '" + row["TRX_DATE"].ToString() + "'");
-                for (int m = 0; m < rows.Length; m++)
-                {
-                    sb.AppendFormat("<set value=\"{0}\" />", CommonUtils.CvtNumeric(rows[m]["RATE_PROD"].ToString()));
-                }
-            }
-            sb.Append("</dataset>");
+            sb.Append("</dataset>"); //평균
             sb.Append("</chart>");
             sb.Append("</script>");
         }
@@ -265,7 +238,7 @@
             .text-center {text-align: center}
             .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
             .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
-        ";
+            ";
     }
 }
 @if (svcRt == null || svcRt.ResultCode != 0)

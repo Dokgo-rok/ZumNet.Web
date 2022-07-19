@@ -377,11 +377,11 @@ $(function () {
                     else if (page == 'STATISTICS') _zw.ut.openWnd('/ExS/Voc/Statistics?qi=' + encQi, 'VocStatistics', w, h, 'resize');
 
                 } else {
-                    //alert(n.li_attr.alias + " : " + n.a_attr.url)
+                    //console.log(n.li_attr.alias + " : " + n.a_attr.url)
                     if (n.li_attr.alias == "ea.form.select") {
                         _zw.fn.openNewEAForm(n.a_attr.url);
 
-                    } else if (n.li_attr.alias == "ea.form.report") {
+                    } else if (n.li_attr.alias.indexOf("ea.form.report") >= 0) {
                         //console.log(ttl);
                         if (_zw.V.current.page.toLowerCase() == '/report') {
                             _zw.V.ot = n.li_attr.objecttype;

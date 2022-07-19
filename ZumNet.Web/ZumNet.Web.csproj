@@ -3217,6 +3217,10 @@
     <Content Include="Views\Report\_OUTSIDERAPP.cshtml" />
     <Content Include="Views\Report\_REGISTER_EMPLOYEE_PALNT.cshtml" />
     <Content Include="Views\Report\_REGISTER_PRODUCT_PALNT.cshtml" />
+    <Content Include="Views\Report\_REGISTER_PRODUCT_PALNT_MODEL.cshtml" />
+    <Content Include="Views\Report\_REGISTER_EMPLOYEE_PALNT_MODEL.cshtml" />
+    <Content Include="Views\Report\_REGISTER_PROCESS_PALNT.cshtml" />
+    <Content Include="Views\Report\_REGISTER_PROCESS_PALNT_MODEL.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

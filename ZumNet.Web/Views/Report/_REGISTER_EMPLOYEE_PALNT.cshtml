@@ -175,9 +175,9 @@
             sb.AppendFormat("\"dataFormat\": \"{0}\"", "xml");
             sb.Append("}");
             sb.Append("</script>");
-            
+
             sb.Append("<script type=\"text/template\" class=\"chart-data-template\">"); //chart-data
-            sb.Append("<chart caption=\"\" baseFontSize=\"12\" labelFontSize=\"12\" drawcrossline=\"1\" yaxisname=\"\" syaxisname=\"\" showvalues=\"0\" showanchors=\"0\" numberprefix=\"\"");
+            sb.Append("<chart caption=\"\" baseFontSize=\"12\" labelFontSize=\"12\" legendItemFontSize=\"13\" drawcrossline=\"1\" showvalues=\"0\" showanchors=\"0\" numberprefix=\"\"");
             sb.Append(" plothighlighteffect=\"fadeout\" chartTopMargin=\"\" chartLeftMargin=\"4\" chartBottomMargin=\"8\" chartRightMargin=\"4\" theme=\"fusion\">");
             sb.Append("<categories>");
             foreach (DataRow row in data.Tables[0].Rows)
