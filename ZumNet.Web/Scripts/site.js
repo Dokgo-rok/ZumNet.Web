@@ -2525,7 +2525,8 @@ $(function () {
             if (ln["signkind"] != '' && ln["signkind"] != '0' && ln["signkind"] != '5') sHtml += '<br />' + _zw.parse.signKind(ln["signkind"]);
             sHtml += '<br />';
             if (ln["state"] == '2' && ln["partid"] == _zw.V.partid && ln["actrole"] != '__r' && ln["actrole"] != '_redrafter' && ln["actrole"] != '_manager') {
-                sHtml += "<a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"$('#popSignPlate').modal();\">" + ln["partname"] + "</a>";
+                //sHtml += "<a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"$('#popSignPlate').modal();\">" + ln["partname"] + "</a>";
+                sHtml += "<a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"if (_zw.fn.showSignPlate) { _zw.fn.showSignPlate('" + _zw.V.apvmode + "'); }\">" + ln["partname"] + "</a>";
             } else {
                 sHtml += ln["partid"].indexOf('__') > 0 ? ln["partname"] : "<a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"_zw.fn.viewUserSimpleInfo('" + ln["partid"] + "')\">" + ln["partname"] + "</a>";
             }

@@ -165,21 +165,18 @@
         StringBuilder sb = new StringBuilder();
         if (data != null && data.Tables.Count > 0)
         {
-            //if (mode != "ajax")
-            //{
-                sb.AppendFormat("<div class=\"\" id=\"{0}\"></div>", "chart__report");
-                sb.Append("<script type='text/javascript'>");
-                sb.Append("var fchart_report;");
-                sb.Append("FusionCharts.ready(function() {");
-                sb.Append("fchart_report = new FusionCharts({");
-                sb.AppendFormat("type: \"{0}\",", "mscombidy2d");
-                sb.AppendFormat("renderAt: \"{0}\",", "chart__report");
-                sb.AppendFormat("width: \"{0}\",", "100%");
-                sb.AppendFormat("height: \"{0}\",", "300px");
-                sb.AppendFormat("dataFormat: \"{0}\",", "xml");
-                sb.Append("dataSource:'");
-            //}
-
+            sb.AppendFormat("<div class=\"\" id=\"{0}\"></div>", "chart-container");
+            sb.Append("<script type=\"text/template\" class=\"chart-cfg-template\">"); //char config
+            sb.Append("{");
+            sb.AppendFormat("\"type\": \"{0}\",", "mscombidy2d");
+            sb.AppendFormat("\"renderAt\": \"{0}\",", "chart-container");
+            sb.AppendFormat("\"width\": \"{0}\",", "100%");
+            sb.AppendFormat("\"height\": \"{0}\",", "300px");
+            sb.AppendFormat("\"dataFormat\": \"{0}\"", "xml");
+            sb.Append("}");
+            sb.Append("</script>");
+            
+            sb.Append("<script type=\"text/template\" class=\"chart-data-template\">"); //chart-data
             sb.Append("<chart caption=\"\" baseFontSize=\"12\" labelFontSize=\"12\" drawcrossline=\"1\" yaxisname=\"\" syaxisname=\"\" showvalues=\"0\" showanchors=\"0\" numberprefix=\"\"");
             sb.Append(" plothighlighteffect=\"fadeout\" chartTopMargin=\"\" chartLeftMargin=\"4\" chartBottomMargin=\"8\" chartRightMargin=\"4\" theme=\"fusion\">");
             sb.Append("<categories>");
@@ -208,14 +205,7 @@
             }
             sb.Append("</dataset>"); //평균
             sb.Append("</chart>");
-
-            //if (mode != "ajax")
-            //{
-                //sb.Append("'}).render();"); //function
-                sb.Append("'});");
-                sb.Append("});"); //ready
-                sb.Append("</script>");
-            //}
+            sb.Append("</script>");
         }
         return sb.ToString();
     }
@@ -274,34 +264,25 @@
     public string ExcelStyle()
     {
         return @"
-body {width: 100%}
-table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
-td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+            body {width: 100%}
+            table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+            td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
 
-.xls_warning {background-color: #fcf8e3}
-.xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+            .xls_warning {background-color: #fcf8e3}
+            .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
 
-.text-center {text-align: center}
-.xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
-.xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
-";
+            .text-center {text-align: center}
+            .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+            .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+            ";
     }
 }
 @if (svcRt == null || svcRt.ResultCode != 0)
 {
     @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
 }
-@*else if (Request.IsAjaxRequest())
-{
-    @Html.Raw(ViewList("ajax", svcRt.ResultDataSet))
-    @ViewBag.R.lv.boundary
-    @Html.Raw(ViewChart("ajax", svcRt.ResultDataSet))
-}*@
 else
 {
-    @*<script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
-    <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>*@
-
     <div class="z-list-head d-flex justify-content-between my-2 pl-0">
         @Html.Raw(ListCond())
     </div>

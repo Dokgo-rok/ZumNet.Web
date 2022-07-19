@@ -120,7 +120,8 @@ $(function () {
                         url: "/EA/Process",
                         data: postData,
                         success: function (res) {
-                            if (res == "OK") bootbox.alert('처리 하였습니다.', function () { _zw.mu.refresh(); });
+                            //if (res == "OK") bootbox.alert('처리 하였습니다.', function () { _zw.fn.getEACount('', 'ea', 'base2', '', 'N'); _zw.mu.refresh(); });
+                            if (res == "OK") { _zw.mu.refresh(); _zw.fn.getEACount('', 'ea', 'base2', '', 'N'); }
                             else bootbox.alert(res);
                         }
                     });

@@ -29,6 +29,9 @@
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
 
+    <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
+    <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>
+
     @Scripts.Render("~/Scripts/Report/report.js")
 
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
@@ -37,7 +40,6 @@
     }
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
 }
-
 <!--
 =================================================================
 **************************** CONTENT ****************************
@@ -71,9 +73,6 @@
             <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
             <div class="px-3@(sListScroll)">
                 <div>
-                    <script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
-                    <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>
-
                     <div class="z-list" id="__List">
                         @Html.Partial(sPatialView)
                     </div>

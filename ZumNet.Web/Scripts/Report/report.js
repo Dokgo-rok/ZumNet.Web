@@ -12,8 +12,25 @@ $(function () {
         $('#_SearchText').keyup(function (e) {
             if (e.which == 13) _zw.fn.goSearch();
         });
+        //console.log(fchart_report)
+        //if (FusionCharts && fchart_report) fchart_report.render();
 
-        if (FusionCharts && fchart_report) fchart_report.render();
+        if ($('.chart-cfg-template').length > 0 && $('.chart-data-template').length > 0) {
+            var j = $('.chart-cfg-template').text(), d = $('.chart-data-template').text();
+            console.log(JSON.parse(j)); console.log(d)
+
+            //var fchart = new FusionCharts({
+            //    type: 'mscombidy2d',
+            //    renderAt: 'chart-container',
+            //    width: '100%',
+            //    height: '300px',
+            //    dataFormat: 'xml'
+            //});
+            var fchart = new FusionCharts(JSON.parse(j));
+
+            fchart.setXMLData(d);
+            fchart.render();
+        }
     }
 
     _zw.fn.bindCtrl();
@@ -58,9 +75,9 @@ $(function () {
                     $('.z-list-menu').html(v[1]);
                     $('#__ListPage').html(v[2]);
 
-                    if (fchart_report) {
-                        fchart_report.render();
-                    }
+                    //if (fchart_report) {
+                    //    fchart_report.render();
+                    //}
 
                     _zw.fn.bindCtrl();
 
