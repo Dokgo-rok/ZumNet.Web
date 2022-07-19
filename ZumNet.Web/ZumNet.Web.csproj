@@ -3221,6 +3221,15 @@
     <Content Include="Views\Report\_REGISTER_EMPLOYEE_PALNT_MODEL.cshtml" />
     <Content Include="Views\Report\_REGISTER_PROCESS_PALNT.cshtml" />
     <Content Include="Views\Report\_REGISTER_PROCESS_PALNT_MODEL.cshtml" />
+    <Content Include="Views\Report\_FORM_PRODRELEASEREQ.cshtml" />
+    <Content Include="Views\Report\_FORM_DEVPRODUCTLIST.cshtml" />
+    <Content Include="Views\Report\_NEWPRODUCTTESTREPORT.cshtml" />
+    <Content Include="Views\Report\_PRODUCTISO.cshtml" />
+    <Content Include="Views\Report\_FORM_MASTER.cshtml" />
+    <Content Include="Views\Report\_FORM_DESIGNMONEYDATE.cshtml" />
+    <Content Include="Views\Report\_FORM_RPUSEAPP.cshtml" />
+    <Content Include="Views\Report\_FORM_NEWPARTSREQUEST.cshtml" />
+    <Content Include="Views\Report\_FORM_PURCHASEUCLIST.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

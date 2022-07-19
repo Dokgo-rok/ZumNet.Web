@@ -52,7 +52,7 @@ $(function () {
     }
 
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery(); //console.log(postData)
+        var postData = _zw.fn.getLvQuery(); console.log(postData)
         var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({
