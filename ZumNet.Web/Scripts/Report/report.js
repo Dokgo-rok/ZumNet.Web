@@ -47,12 +47,12 @@ $(function () {
         //var encQi = '{M:"xls",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",fdid:"' + _zw.V.fdid + '",opnode:"",ttl:"' + _zw.V.ttl + '"}';
         //window.open('?qi=' + encodeURIComponent(_zw.base64.encode(encQi)), 'ifrView');
 
-        var postData = _zw.fn.getLvQuery('xls'); //console.log(postData)
+        var postData = _zw.fn.getLvQuery('xls'); console.log(postData)
         window.open('?qi=' + encodeURIComponent(_zw.base64.encode(postData)), 'ifrView');
     }
 
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery(); console.log(postData)
+        var postData = _zw.fn.getLvQuery(); //console.log(postData)
         var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({

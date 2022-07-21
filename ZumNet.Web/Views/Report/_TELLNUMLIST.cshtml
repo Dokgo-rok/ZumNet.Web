@@ -11,10 +11,224 @@
 @using ZumNet.Framework.Exception;
 @using ZumNet.Framework.Util;
 @{
-    //전화번호 검색
+    //TELLNUMLIST, 전화번호 검색
 
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+    if (ViewBag.Modal != null && ViewBag.Modal == "Y")
+    {
+    }
+    else
+    { 
+        InitConfig();
+
+        using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+        {
+            svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                    , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+        }
+
+        if (svcRt != null && svcRt.ResultCode == 0)
+        {
+            ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+        }
+        else
+        {
+            ViewBag.R.lv["total"] = 0;
+        }
+    }
+
+    if (ViewBag.R.mode == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+        Response.End();
+    }
 }
 @functions {
+    string[,] _columnConfig = null;
+    string _tblWidth = "";
+
+    private void InitConfig()
+    {
+        //초기 설정
+        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "전화번호관리대장 ";
+
+        //검색조건 설정
+
+        string[,] arr = { { "Grade1", "직위", "10%", "", "Y" }, { "DisplayName", "성명", "10%", "", "Y" }, { "Corporation", "부문", "15%", "", "" }, { "GroupName", "부서", "20%", "", "Y" }
+                            ,{ "Telephone", "사내연락처", "15%", "", "" },{ "Mobile", "개인연락처", "15%", "", "" },{ "Telephone2", "비상연락처", "15%", "", "" }};
+        this._columnConfig = arr;
+
+        if (Session["Admin"].ToString() == "N" || ViewBag.R.current["operator"].ToString() != "Y")
+        {
+            if (ViewBag.R.current["acl"].ToString() == 0) ViewBag.R["mode"] = "ur";
+            else if (ViewBag.R.current["acl"].ToString().Substring(6, 1) == "_") ViewBag.R["mode"] = "ur";//____RVS____RV <= S가 6번째
+
+            if (ViewBag.R["mode"] == "ur") ViewBag.R.lv["tgt"] = Convert.ToInt32(Session["URID"]);
+        }
+        else
+        {
+            ViewBag.R["mode"] = "dn";
+            ViewBag.R.lv["tgt"] = "0";
+
+        }
+        this._tblWidth = "100%";
+    }
+
+    private string RenderColumnHeader(string mode)
+    {
+        StringBuilder sb = new StringBuilder();
+        string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
+
+        sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+        }
+        sb.Append("</colgroup>");
+
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"table-success\">");
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
+        }
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            int iRow = 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            sb.Append(RenderColumnHeader(mode));
+            sb.Append("<tbody>");
+
+            DataTable dt = data.Tables[0];
+            DataRow[] rowCol = null;
+
+            foreach (DataRow row in dt.Rows)
+            {
+                sb.Append("<tr>");
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+                    strValue = row[strID].ToString();
+                    sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
+                }
+                sb.Append("</tr>");
+                iRow++;
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            dt = null;
+            return sb.ToString();
+        }
+        return "";
+    }
+
+    private string ListCount()
+    {
+        string sPage = "";
+        int totalCount = 0;
+        if (ViewBag.R.ft.ToString() == "___")
+        {
+            int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+            int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+            int totalPage = totalCount / pageCount;
+
+            if (totalCount % pageCount > 0) { totalPage++; }
+            if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+            sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+
+        }
+        else
+        {
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            sPage = String.Format("{0} {1} {2}", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count);
+        }
+
+        return sPage;
+    }
+
+    private string ListCond()
+    {
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-60 wd-lg-50 wd-xl-40" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
+
+        if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
+        {
+            sb.Append("<div class=\"z-list-search input-group d-flex\">");
+            sb.Append("<select class=\"custom-select ml-1\" id=\"_SearchSelect\">");
+            sb.AppendFormat("<option value=\"\">{0}..</option>", Resources.Global.Select);
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 4].ToString() == "Y")
+                {
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == ViewBag.R.lv.cd1.ToString() ? " selected" : "");
+                }
+            }
+            sb.Append("</select>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, ViewBag.R.lv.cd2.ToString());
+
+            sb.Append("<span class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</span>");
+            sb.Append("</div>");
+        }
+
+        sb.Append("</div>"); //z-list-cond
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = ViewBag.R.ft.ToString() + "_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    public string ExcelStyle()
+    {
+        return @"
+body {width: 100%}
+table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+.xls_warning {background-color: #fcf8e3}
+.xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+.text-center {text-align: center}
+.xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+.xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+";
+    }
+
     private string GetReportSearch(JObject postData)
     {
         ServiceResult svcRt = new ServiceResult();
@@ -95,4 +309,23 @@
 @if (ViewBag.Modal != null && ViewBag.Modal == "Y")
 {
     @Html.Raw(GetReportSearch(ViewBag.JPost))
+}
+else if (svcRt == null || svcRt.ResultCode != 0)
+{
+    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+}
+else
+{
+    <div class="z-list-head d-flex justify-content-between my-2">
+        <div class="z-list-page d-flex align-items-center" id="__ListCount">
+            <div class="z-list-total mt-1 mr-1">
+                <i class="fe-chevron-right"></i> @ListCount()
+            </div>
+        </div>
+        @Html.Raw(ListCond())
+    </div>
+
+    <div class="z-list-body" id="__ListView">
+        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+    </div>
 }

@@ -3230,6 +3230,14 @@
     <Content Include="Views\Report\_FORM_RPUSEAPP.cshtml" />
     <Content Include="Views\Report\_FORM_NEWPARTSREQUEST.cshtml" />
     <Content Include="Views\Report\_FORM_PURCHASEUCLIST.cshtml" />
+    <Content Include="Views\Report\_FORM_VACATION.cshtml" />
+    <Content Include="Views\Report\_FORM_VACATIONTWO.cshtml" />
+    <Content Include="Views\Report\_REGISTER_PROMOTIONPOINT.cshtml" />
+    <Content Include="Views\Report\_FORM_MONEYDATE.cshtml" />
+    <Content Include="Views\Report\_REGISTER_CARSTATE.cshtml" />
+    <Content Include="Views\Report\_INTIMEREPORT.cshtml" />
+    <Content Include="Views\Report\_FORM_WORKSTATUS.cshtml" />
+    <Content Include="Views\Report\_FORM_EDUREPORTB.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

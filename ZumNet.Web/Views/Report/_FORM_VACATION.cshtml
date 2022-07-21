@@ -7,7 +7,7 @@
 @using ZumNet.Web.Bc;
 @using ZumNet.Web.Filter;
 @{
-    //FORM_PRODRELEASEREQ
+    //FORM_VACATION
     InitConfig();
 
     ZumNet.Framework.Core.ServiceResult svcRt = null;
@@ -39,15 +39,16 @@
     private void InitConfig()
     {
         //초기 설정
-        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
-        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "자사제품 출고요청 현황";
+        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.ToString("yyyy-MM") + "-01"; //현재달
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "휴가자현황";
 
         //검색조건 설정
 
-        //크레신 : 자사제품출고요청현황 20-12-17
-        string[,] arr = { { "SEQ", "NO", "4%", "", "" }, { "RELDATE", "출고요청일", "8%", "", "" }, { "CUSTOMER", "고객", "25%", "L", "" }
-                            , { "ITEMNO", "품목번호", "13%", "", "" }, { "ITEMNAME", "품목명칭", "20%", "L", "" }, { "FROMINVEN", "FROM 창고", "9%", "", "" }
-                            , { "TOINVEN", "TO 창고", "9%", "", "" }, { "RELCNT", "수량", "5%", "", "" }, { "DocStatus", "구분", "7%", "", "" }};
+        //크레신 : 휴가자 현황
+        string[,] arr = { { "SEQ", "NO", "6%", "", "" }, { "OrgInfo", "부서정보", "20%", "", "" }, { "UserDN", "성명", "10%", "", "" }
+                            , { "LeaveDate", "휴가일", "10%", "", "" }, { "LeaveDN", "휴가구분", "10%", "", "" }, { "LeaveFromTime", "시작시각", "10%", "", "" }
+                            , {"MessageID", "비고", "19%", "", ""}, { "EventDate", "등록일", "15%", "", "" }
+            };
         this._columnConfig = arr;
         this._tblWidth = "100%";
     }
@@ -101,7 +102,6 @@
             {
                 sb.AppendFormat("<tr id=\"_{0}\">", row["MessageID"].ToString());
 
-
                 for (int i = 0; i < _columnConfig.GetLength(0); i++)
                 {
                     strID = _columnConfig[i, 0].ToString();
@@ -110,19 +110,16 @@
                     {
                         strValue = iRow.ToString();
                     }
-                    else if (strID == "RELDATE")
+                    else if (strID == "EventDate")
                     {
-                        strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
+                        if (mode == "xls") strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row[strID].ToString(), "yyyy-MM-dd", "");
+                        else strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
                     }
-                    else if (strID == "ITEMNO")
+                    else if (strID == "MessageID")
                     {
                         strValue = row[strID].ToString();
-                        if (mode != "xls" && strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">" + strValue + "</a>";
-                    }
-                    else if (strID == "DocStatus")
-                    {
-                        if (ViewBag.DocStatus == null) strValue = row[strID].ToString();
-                        else strValue = StrDocStatus(row[strID].ToString());
+                        if (mode != "xls" && strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + strValue + "');\">관련문서</a>";
+                        else strValue = "";
                     }
                     else
                     {

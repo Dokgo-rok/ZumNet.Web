@@ -7,7 +7,7 @@
 @using ZumNet.Web.Bc;
 @using ZumNet.Web.Filter;
 @{
-    //FORM_PRODRELEASEREQ
+    //REGISTER_PROMOTIONPOINT
     InitConfig();
 
     ZumNet.Framework.Core.ServiceResult svcRt = null;
@@ -19,7 +19,7 @@
 
     if (svcRt != null && svcRt.ResultCode == 0)
     {
-        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+        ViewBag.R.lv["total"] = svcRt.ResultDataSet.Tables[1].Rows.Count.ToString();
     }
     else
     {
@@ -39,16 +39,29 @@
     private void InitConfig()
     {
         //초기 설정
-        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
-        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "자사제품 출고요청 현황";
+        //if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "승진포인트관리대장";
 
         //검색조건 설정
 
-        //크레신 : 자사제품출고요청현황 20-12-17
-        string[,] arr = { { "SEQ", "NO", "4%", "", "" }, { "RELDATE", "출고요청일", "8%", "", "" }, { "CUSTOMER", "고객", "25%", "L", "" }
-                            , { "ITEMNO", "품목번호", "13%", "", "" }, { "ITEMNAME", "품목명칭", "20%", "L", "" }, { "FROMINVEN", "FROM 창고", "9%", "", "" }
-                            , { "TOINVEN", "TO 창고", "9%", "", "" }, { "RELCNT", "수량", "5%", "", "" }, { "DocStatus", "구분", "7%", "", "" }};
+        //크레신 : 개인승진포인트 관리대장 , 교육이수포인트 관리대장
+        string[,] arr = { { "Seq", "NO", "5%", "", "" }, { "MailAccount", "Email ID", "10%", "", "" }, { "OrgInfo", "부서정보", "15%", "", "" }
+                            , { "UserDN", "성명", "10%", "", "" }, { "__ATT__", "", "60%", "L", "" }};
         this._columnConfig = arr;
+
+        if (Session["Admin"].ToString() == "N" || ViewBag.R.current["operator"].ToString() != "Y")
+        {
+            if (ViewBag.R.current["acl"].ToString() == 0) ViewBag.R["mode"] = "ur";
+            else if (ViewBag.R.current["acl"].ToString().Substring(6, 1) == "_") ViewBag.R["mode"] = "ur";//____RVS____RV <= S가 6번째
+
+            if (ViewBag.R["mode"] == "ur") ViewBag.R.lv["tgt"] = Convert.ToInt32(Session["URID"]);
+        }
+        else
+        {
+            ViewBag.R["mode"] = "dn";
+            ViewBag.R.lv["tgt"] = "0";
+
+        }
         this._tblWidth = "100%";
     }
 
@@ -68,13 +81,7 @@
         sb.Append("<tr class=\"table-success\">");
         for (int i = 0; i < _columnConfig.GetLength(0); i++)
         {
-            if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
-            {
-                sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"</a></th>"
-                                 , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
-                                , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
-            }
-            else sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
+            sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
         }
         sb.Append("</tr>");
         sb.Append("</thead>");
@@ -94,12 +101,12 @@
             sb.Append(RenderColumnHeader(mode));
             sb.Append("<tbody>");
 
-            DataTable dt = data.Tables[0];
+            DataTable dt = data.Tables[1];
             DataRow[] rowCol = null;
 
             foreach (DataRow row in dt.Rows)
             {
-                sb.AppendFormat("<tr id=\"_{0}\">", row["MessageID"].ToString());
+                sb.AppendFormat("<tr id=\"_{0}\">", row["Seq"].ToString());
 
 
                 for (int i = 0; i < _columnConfig.GetLength(0); i++)
@@ -110,25 +117,14 @@
                     {
                         strValue = iRow.ToString();
                     }
-                    else if (strID == "RELDATE")
+                    else if (strID == "__ATT__")
                     {
-                        strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
-                    }
-                    else if (strID == "ITEMNO")
-                    {
-                        strValue = row[strID].ToString();
-                        if (mode != "xls" && strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">" + strValue + "</a>";
-                    }
-                    else if (strID == "DocStatus")
-                    {
-                        if (ViewBag.DocStatus == null) strValue = row[strID].ToString();
-                        else strValue = StrDocStatus(row[strID].ToString());
+                        strValue = row["Attribute01"].ToString();
                     }
                     else
                     {
                         strValue = row[strID].ToString();
                     }
-                    //strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
                     sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
                 }
                 sb.Append("</tr>");
@@ -140,22 +136,6 @@
             return sb.ToString();
         }
         return "";
-    }
-
-    private string StrDocStatus(string ss)
-    {
-        foreach (DataRow row in ViewBag.DocStatus)
-        {
-            if (row["ItemSubHandler"].ToString() == ss)
-            {
-                string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
-
-                if (sCurrentLocale.ToLower().IndexOf("ko") >= 0) return row["Item1"].ToString();
-                else if (sCurrentLocale.ToLower().IndexOf("zh") >= 0) return row["Item3"].ToString();
-                else return row["Item2"].ToString();
-            }
-        }
-        return ss;
     }
 
     private string ListCount()
@@ -187,22 +167,13 @@
 
     private string ListCond()
     {
-        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-60 wd-lg-50 wd-xl-40" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-65 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
 
         StringBuilder sb = new StringBuilder();
 
         sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
 
-        sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
-        sb.Append("<div class=\"input-group-prepend\">");
-        sb.Append("<span class=\"input-group-text\">~</span>");
-        sb.Append("</div>");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control end-date px-1\" value=\"{0}\">", ViewBag.R.lv.end);
-        sb.AppendFormat("<div class=\"input-group-append\">");
-        sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
-        sb.Append("</div>");
-        sb.Append("</div>");
+        sb.AppendFormat("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i> {0}</button>", Resources.Global.Search);
 
         sb.Append("</div>"); //z-list-cond
         return sb.ToString();
