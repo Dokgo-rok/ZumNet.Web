@@ -267,6 +267,42 @@ namespace ZumNet.Web.Controllers
         }
         #endregion
 
+        #region [세션 변경]
+        /// <summary>
+        /// 겸직관련 부서 변경
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DeptChange()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+                if (jPost == null || jPost.Count == 0) return "전송 데이터 누락!";
+
+                try
+                {
+                    Session["DeptName"] = jPost["deptnm"].ToString();
+                    Session["DeptID"] = jPost["deptid"].ToString();
+                    Session["DeptAlias"] = jPost["deptcd"].ToString();
+                    Session["CodeName1"] = jPost["grade1"].ToString();
+                    Session["Grade1"] = jPost["grade1"].ToString();
+                    Session["CodeName2"] = jPost["grade2"].ToString();
+                    
+                    rt = "OK";
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
+
         #region [기타 + 유틸함수]
         /// <summary>
         /// SSO

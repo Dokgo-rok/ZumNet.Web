@@ -199,8 +199,21 @@ $(function () {
             case "phonenum": //전화번호 찾기
                 _zw.mu.searchPhoneNum();
                 break;
-            case "myinfo": //개인정보
-                bootbox.alert('준비중!');
+            case "changedept": //소속부서 변경
+                var j = JSON.parse($(this).attr('data-attr')); //console.log(j);
+                bootbox.confirm(j["deptnm"] + ' 소속으로 변경하시겠습니까?', function (rt) {
+                    if (rt) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Portal/DeptChange",
+                            data: JSON.stringify(j),
+                            success: function (res) {
+                                if (res == "OK") window.location.reload();
+                                else bootbox.alert(res);
+                            }
+                        });
+                    }
+                });
                 break;
             case "alarm": //알람
                 bootbox.alert('준비중!');
@@ -380,40 +393,45 @@ $(function () {
 
 $(function () {
     // logon page
-    var userId = _zw.ut.getCookie("accountField"); //console.log('cookie -> ' + userId)
-    if (userId && userId != 'null' && userId != '') {
-        $("#LoginId").val(userId);
-        $("#RememberMe").prop('checked', true);
-        $("#Password").focus();
-    } else {
-        $("#LoginId").focus();
+    if ($("#loginForm").length > 0) {
+        var userId = _zw.ut.getCookie("accountField"); //console.log('cookie -> ' + userId)
+        if (userId && userId != 'null' && userId != '') {
+            $("#LoginId").val(userId);
+            $("#RememberMe").prop('checked', true);
+            $("#Password").focus();
+        } else {
+            $("#LoginId").focus();
+        }
+
+        $("#loginForm").submit(function () {
+            //console.log(event);
+
+            if ($("#RememberMe").prop('checked')) {
+                _zw.ut.setCookie("accountField", $("#LoginId").val(), 30); //30일
+            } else {
+                _zw.ut.deleteCookie("accountField");
+            }
+
+            var el = $("#LoginId");
+            if ($.trim(el.val()) == '') el.val('');
+            //console.log($(this).valid())
+            //event.cancelBubble = true;
+            //event.preventDefault();
+            if ($(this).valid()) $('.btn[type="submit"]').prop('disabled', true);
+        });
+
+        $("[data-password]").on('click', function () {
+            if ($(this).attr('data-password') == "false") {
+                $(this).siblings("input").attr("type", "text");
+                $(this).attr('data-password', 'true');
+                $(this).addClass("show-password");
+            } else {
+                $(this).siblings("input").attr("type", "password");
+                $(this).attr('data-password', 'false');
+                $(this).removeClass("show-password");
+            }
+        });
     }
-
-    $("#loginForm").submit(function() {
-        //console.log(event);
-
-        if ($("#RememberMe").prop('checked')) {
-            _zw.ut.setCookie("accountField", $("#LoginId").val(), 30); //30일
-        } else {
-            _zw.ut.deleteCookie("accountField");
-        }
-        //console.log($(this).valid())
-        //event.cancelBubble = true;
-        //event.preventDefault();
-        if ($(this).valid()) $('.btn[type="submit"]').prop('disabled', true);
-    });
-
-    $("[data-password]").on('click', function() {
-        if ($(this).attr('data-password') == "false") {
-            $(this).siblings("input").attr("type", "text");
-            $(this).attr('data-password', 'true');
-            $(this).addClass("show-password");
-        } else {
-            $(this).siblings("input").attr("type", "password");
-            $(this).attr('data-password', 'false');
-            $(this).removeClass("show-password");
-        }
-    });
 });
 
 (function () {
@@ -2189,6 +2207,7 @@ $(function () {
                             }
                         }
                     }
+                    p.find('.zf-upload-bar').removeClass('d-none');
                     fm.submit();
                 });
 
@@ -2244,7 +2263,9 @@ $(function () {
 
                     _zw.fu.fileList.push(v);
                 }
+                $('.zf-upload .zf-upload-bar').addClass('d-none');
             } else {
+                $('.zf-upload .zf-upload-bar').addClass('d-none');
                 bootbox.alert(rt); return false;
             }
             //console.log(_zw.fu.fileList)

@@ -485,7 +485,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_DHLUSE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DISCONRISKMODEL_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DISCONTINUENOTICE_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_DISCONTINUENOTICE_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_DISCONTINUENOTICE_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_DISTRIBUTIONEXP_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DOCCAREER_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DOCDISABLESECU_V1.xsl" />
@@ -763,7 +765,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_RESIGNATIONHR_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_RESIGNATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_RESIGNATION_V2.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_RESIGNATION_V3.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_RESIGNATION_V3.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_RETIREDOC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_RISKFINDTABLE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_RISKRESULTTABLE_V1.xsl" />
@@ -2111,6 +2115,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CERTIFICATIONDOCUMENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
+    <Content Include="Scripts\EA\Forms\FORM_COMPLAINTREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONTRACTRE.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
@@ -2122,6 +2127,7 @@
     <Content Include="Scripts\EA\Forms\FORM_DESIGNFMEAREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_DESIGNREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_DEVPRODUCTLIST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DISCONTINUENOTICE.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCCAREER.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
@@ -2171,10 +2177,12 @@
     <Content Include="Scripts\EA\Forms\FORM_PERSONNELAPPOINTMENTS.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRIMECOSTESTIMATECHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_PROCESSFMEAREPORT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PRODRELEASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCA.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCF.js" />
     <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />
     <Content Include="Scripts\EA\Forms\FORM_RESIGNATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_RPUSEAPP.js" />
@@ -2182,6 +2190,8 @@
     <Content Include="Scripts\EA\Forms\FORM_SAMPLEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUESTWAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SAMPLESUGGESTREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SECONDMODELREG.js" />
     <Content Include="Scripts\EA\Forms\FORM_SELLINGUC.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALCONFIRM.js" />
@@ -3097,6 +3107,8 @@
     <Content Include="Areas\Docs\Views\Edm\_Write.cshtml" />
     <Content Include="Areas\Docs\Views\Edm\Edit.cshtml" />
     <Content Include="Areas\Docs\Views\Edm\_Edit.cshtml" />
+    <Content Include="Areas\EA\Views\Shared\DocLink.cshtml" />
+    <Content Include="Areas\EA\Views\Shared\DocLinkFile.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

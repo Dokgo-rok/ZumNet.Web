@@ -287,12 +287,11 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                 try
                 {
-
                     ZumNet.Framework.Core.ServiceResult svcRt = new Framework.Core.ServiceResult();
 
                     using (BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
                     {
-                        svcRt = ea.SetRead(jPost["M"].ToString(), jPost["x"].ToString(), Convert.ToInt32(jPost["mi"].ToString()), Convert.ToInt32(Session["URID"]));
+                        svcRt = ea.SetRead(jPost["M"].ToString(), jPost["xf"].ToString(), Convert.ToInt32(Session["URID"]), jPost["mi"].ToString());
                     }
 
                     if (svcRt.ResultCode == 0) rt = "OK";
@@ -353,6 +352,102 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 }
             }
             return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DocLink()
+        {
+            string sPos = "";
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    sPos = "110"; //초기값 설정
+                    if (jPost["page"].ToString() == "") jPost["page"] = "1";
+                    if (jPost["count"].ToString() == "") jPost["count"] = "10"; //고정
+                    if (jPost["sort"].ToString() == "") jPost["sort"] = "CreateDate";
+                    if (jPost["search"].ToString() == "") jPost["search"] = "CreatorID";
+                    if (jPost["searchtext"].ToString() == "") jPost["searchtext"] = Session["URID"].ToString();
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (BSL.ServiceBiz.OfficePortalBiz opBiz = new BSL.ServiceBiz.OfficePortalBiz())
+                    {
+                        sPos = "200";
+                        svcRt = opBiz.SearchTotalXFormList(Convert.ToInt16(Session["DNID"]), 0, 0, "", Convert.ToInt32(Session["URID"]), Convert.ToInt32(jPost["ct"]), "N"
+                                            , Convert.ToInt32(jPost["page"]), Convert.ToInt32(jPost["count"]), jPost["sort"].ToString(), jPost["sortdir"].ToString()
+                                            , jPost["search"].ToString(), jPost["searchtext"].ToString(), jPost["start"].ToString(), jPost["end"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        sPos = "300";
+                        ViewBag.JPost = jPost;
+                        ViewBag.BoardList = svcRt.ResultDataTable;
+                        ViewBag.Total = svcRt.ResultItemCount.ToString();
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "DocLink", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DocLinkFile()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0) return "전송 데이터 누락!";
+                else if (jPost["xf"].ToString() == "" || jPost["mi"].ToString() == "") return "필수값 누락!";
+
+                ViewBag.JPost = jPost;
+                rt = RazorViewToString.RenderRazorViewToString(this, "DocLinkFile", ViewBag);
+
+                //ZumNet.Framework.Core.ServiceResult svcRt = null;
+                //using (BSL.ServiceBiz.CommonBiz comBiz = new BSL.ServiceBiz.CommonBiz())
+                //{
+                //    sPos = "200";
+                //    svcRt = comBiz.GetAttachFileInfo(Convert.ToInt16(Session["DNID"]), Convert.ToInt32(jPost["mi"].ToString()), jPost["xf"].ToString());
+                //}
+
+                //if (svcRt != null && svcRt.ResultCode == 0)
+                //{
+                //    sPos = "300";
+                //    ViewBag.JPost = jPost;
+                //    ViewBag.BoardList = svcRt.ResultDataTable;
+
+                //    rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "DocLinkFile", ViewBag);
+                //}
+                //else
+                //{
+                //    //에러페이지
+                //    rt = svcRt.ResultMessage;
+                //}
+                
+            }
+            return rt.TrimStart();
         }
         #endregion
 

@@ -224,7 +224,7 @@
                 beforeSend: function () { }
             });
 
-            var c1, c2, s = 0, f = '0,0.[0000]';
+            var c1, c2, s = 0, f = '0,0';
             $('#__subtable10 tr.sub_table_row').each(function (idx) {
                 c1 = $(this).find('> td:nth-child(2) input');
                 c2 = nm[0] != '' ? $(this).find('> td:nth-child(5) input') : $(this).find('> td:nth-child(3) input'); //console.log(c2)
@@ -251,11 +251,12 @@
                             else jptrip = 0;
 
                             if (dur < 15) s = parseInt(dur * jptrip * 11);
-                            else s = _zw.ut.round((parseInt(14 * jptrip * 11) + parseFloat((dur - 14) * jptrip * 0.9 * 11).toFixed(4)), 0);
+                            else s = parseInt(14 * jptrip * 11) + parseFloat((dur - 14) * jptrip * 0.9 * 11);
                         } else {
                             v = v == '' ? 0 : parseInt(v); //console.log(v + " : " + dur)
                             if (dur < 15) s = parseInt(dur * v * 1127); 
-                            else s = _zw.ut.round((parseInt(14 * v * 1127) + parseFloat((dur - 14) * v * 0.9 * 1127).toFixed(4)), 0);
+                            //else s = _zw.ut.round((parseInt(14 * v * 1127) + parseFloat((dur - 14) * v * 0.9 * 1127).toFixed(4)), 0);
+                            else s = parseInt(14 * v * 1127) + parseFloat((dur - 14) * v * 0.9 * 1127);
                         }
                         c2.val(numeral(s).format(f));
 

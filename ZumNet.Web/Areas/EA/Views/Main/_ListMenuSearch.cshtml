@@ -1,6 +1,18 @@
-﻿<div class="z-lv-menu btn-group-sm">
-    <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
+﻿<div class="z-lv-menu d-flex">
+    <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" data-zv-menu="refresh"><i class="fe-refresh-cw"></i></button>
     @*<button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ComposeForm" data-zv-menu="write"><i class="fe-edit-2"></i></button>*@
+    @if (ViewBag.CurBox[2] != "te" || ViewBag.CurBox[2] != "wd" || ViewBag.CurBox[2] != "wt" || ViewBag.CurBox[2] != "do")
+    {
+        <div class="dropdown ml-1">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                @Resources.Global.MaskRead
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="javascript:void(0);" onclick="_zw.fn.readMask('I');">@Resources.Global.MaskRead</a>
+                <a class="dropdown-item" href="javascript:void(0);" onclick="_zw.fn.readMask('D');">@Resources.Global.MaskUnRead</a>
+            </div>
+        </div>
+    }
 </div>
 
 <div class="px-1 flex-grow-1"></div>

@@ -39,8 +39,13 @@
     /*color: #245580;*/
     color: rgba(24,28,33,0.7);
 }
-/* left menu <--------------- */
 
+.modal-body .list-group .list-group-item {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+}
+/* left menu <--------------- */
 /* signline manager -----> */
 .zf-sl .nav-tabs .nav-link {
     padding: .375rem .525rem .325rem;

@@ -1,6 +1,5 @@
 ﻿@using System.Data;
 @using System.Text;
-
 @{
     int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
     int totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
@@ -66,7 +65,6 @@
     //sb.Append("</ul>");
 
 }
-
 @if (totalPage > 1)
 {
     if (pageIndex > 1)

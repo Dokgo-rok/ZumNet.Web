@@ -246,14 +246,21 @@
             sb.Append("<div class=\"col-3 font-weight-bold\">* 문서</div>");
             sb.Append("<div class=\"col-9\" data-for=\"ext\">PPT, PPTX, XLS, XLSX, DOC, DOCX, PDF, HWP, TXT</div>");
             sb.Append("</div>"); //row
-                                 //sb.Append("<div class=\"row\">");
-                                 //sb.Append("<div class=\"col-3 font-weight-bold\">* 동영상</div>");
-                                 //sb.Append("<div class=\"col-9\" data-for=\"ext\">MOV, MP4, AVI</div>");
-                                 //sb.Append("</div>"); //row
+            //sb.Append("<div class=\"row\">");
+            //sb.Append("<div class=\"col-3 font-weight-bold\">* 동영상</div>");
+            //sb.Append("<div class=\"col-9\" data-for=\"ext\">MOV, MP4, AVI</div>");
+            //sb.Append("</div>"); //row
             sb.Append("</div>");
             sb.Append("</div>"); //data-help
             sb.Append("</div>"); //ml-2
-            sb.Append("</div>"); //d-flex
+            sb.Append("</div>"); ///zf-upload-select
+
+            sb.Append("<div class=\"zf-upload-bar mt-1 d-none\">");
+            sb.Append("<button class=\"btn btn-sm btn-primary px-5\" type=\"button\" disabled=\"\">");
+            sb.Append("<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>");
+            sb.Append("<span class=\"ml-2\">uploading...</span>");
+            sb.Append("</button>");
+            sb.Append("</div>"); //zf-upload-bar
         }
 
         sb.AppendFormat("<div class=\"zf-upload-list border rounded mt-1 px-2 pt-2 pb-0{0}\">", file == null || file.Count == 0 ? " d-none" : "");

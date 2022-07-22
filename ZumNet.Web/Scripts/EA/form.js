@@ -94,6 +94,63 @@ $(function () {
                 break;
 
             case "linkDoc":
+                var jPost = {};
+                jPost["M"] = ''; jPost["ct"] = 108; jPost["page"] = 1; jPost["count"] = 10; jPost["sort"] = ''; jPost["sortdir"] = '';
+                jPost["search"] = ''; jPost["searchtext"] = ''; jPost["start"] = ''; jPost["end"] = '';
+
+                $.ajax({
+                    type: "POST",
+                    url: "/EA/Form/DocLink",
+                    data: JSON.stringify(jPost),
+                    success: function (res) {
+                        if (res.substr(0, 2) == "OK") {
+                            var p = $('#popBlank');
+                            p.html(res.substr(2));
+
+                            _zw.ut.picker('date');
+
+                            p.find('.z-lv-cond input.search-text').keyup(function (e) {
+                                if (e.which == 13) _zw.fn.searchLinkedDoc(p, jPost);
+                            });
+
+                            p.find('.z-lv-cond .btn[data-zm-menu="search"]').click(function () {
+                                _zw.fn.searchLinkedDoc(p, jPost);
+                            });
+
+                            p.find('.pagination li a.page-link').click(function () {
+                                _zw.fn.searchLinkedDoc(p, jPost, $(this).attr('data-for'));
+                            });
+
+                            p.find('.z-lv-hdr a[data-val]').click(function () {
+                                var t = $(this); jPost["sort"] = t.attr('data-val');
+                                $('.z-lv-hdr a[data-val]').each(function () {
+                                    if ($(this).attr('data-val') == jPost["sort"]) {
+                                        var c = t.find('i');
+                                        if (c.hasClass('fe-arrow-up')) {
+                                            c.removeClass('fe-arrow-up').addClass('fe-arrow-down'); jPost["sortdir"] = 'DESC';
+                                        } else {
+                                            c.removeClass('fe-arrow-down').addClass('fe-arrow-up'); jPost["sortdir"] = 'ASC';
+                                        }
+                                    } else {
+                                        $(this).find('i').removeClass();
+                                    }
+                                });
+                                _zw.fn.searchLinkedDoc(p, jPost);
+                            });
+
+                            p.find('.z-lv-row a[href]').click(function () {
+                                _zw.fn.getLinkedDocFile(p, $(this));
+                            });
+                            
+                            p.find('.btn[data-zm-menu="confirm"]').click(function () {
+                                
+                            });
+
+                            p.on('hidden.bs.modal', function () { p.html(''); });
+                            p.modal();
+                        } else bootbox.alert(res);
+                    }
+                });
                 break;
 
             case "fileAttach":
@@ -143,6 +200,97 @@ $(function () {
         }
         $(this).tooltip('hide');
     });
+
+    _zw.fn.searchLinkedDoc = function (p, j, page) {
+        j["M"] = 'search';
+
+        var e1 = p.find('.z-lv-cond .start-date');
+        var e2 = $('.z-lv-cond .end-date');
+        var e3 = $('.z-lv-cond select');
+        var e4 = $('.z-lv-cond .search-text');
+
+        if (!page && e1.val() == '' && e2.val() == '' && $.trim(e4.val()) == '') {
+            bootbox.alert("검색 조건이 누락됐습니다!"); return;
+        }
+        var s = "['\\%^&\"*]";
+        var reg = new RegExp(s, 'g');
+        if (e3.val() != '' && e4.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e4.val(''); e4.focus(); }); return; }
+
+        j["page"] = page || 1; j["start"] = e1.val(); j["end"] = e2.val();
+        j["search"] = $.trim(e4.val()) != '' ? e3.val() : ''; j["searchtext"] = $.trim(e4.val()) != '' ? e4.val() : '';
+
+        $.ajax({
+            type: "POST",
+            url: "/EA/Form/DocLink",
+            data: JSON.stringify(j),
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    p.find('.modal-body').html(res.substr(2));
+
+                    _zw.ut.picker('date');
+
+                    p.find('.z-lv-cond input.search-text').keyup(function (e) {
+                        if (e.which == 13) _zw.fn.searchLinkedDoc(p, j);
+                    });
+
+                    p.find('.z-lv-cond .btn[data-zm-menu="search"]').click(function () {
+                        _zw.fn.searchLinkedDoc(p, j);
+                    });
+
+                    p.find('.pagination li a.page-link').click(function () {
+                        _zw.fn.searchLinkedDoc(p, j, $(this).attr('data-for'));
+                    });
+
+                    p.find('.z-lv-hdr a[data-val]').click(function () {
+                        var t = $(this); j["sort"] = t.attr('data-val');
+                        $('.z-lv-hdr a[data-val]').each(function () {
+                            if ($(this).attr('data-val') == j["sort"]) {
+                                var c = t.find('i');
+                                if (c.hasClass('fe-arrow-up')) {
+                                    c.removeClass('fe-arrow-up').addClass('fe-arrow-down'); j["sortdir"] = 'DESC';
+                                } else {
+                                    c.removeClass('fe-arrow-down').addClass('fe-arrow-up'); j["sortdir"] = 'ASC';
+                                }
+                            } else {
+                                $(this).find('i').removeClass();
+                            }
+                        });
+                        _zw.fn.searchLinkedDoc(p, j);
+                    });
+
+                    p.find('.z-lv-row a[href]').click(function () {
+                        _zw.fn.getLinkedDocFile(p, $(this));
+                    });
+                } else bootbox.alert(res);
+            }
+        });
+    }
+
+    _zw.fn.getLinkedDocFile = function (p, el) {
+        if (el.attr('acl').charAt(4) != "R") { bootbox.alert('권한이 없습니다!'); return; }
+        if (el.attr('sys') == 'PDM') return;
+        
+        $.ajax({
+            type: "POST",
+            url: "/EA/Form/DocLinkFile",
+            data: '{M:"",xf:"' + el.attr('xf') + '",mi:"' + el.attr('mi') + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    var cDel = String.fromCharCode(8);
+                    var v = res.substr(2).split(cDel);
+
+                    var j = { "close": true, "width": 450, "height": (parseInt(v[0]) > 5 ? 175 : parseInt(v[0]) * 35), "left": -50, "top": 0 }
+                    j["title"] = ''; j["content"] = v[1];
+
+                    var pop = _zw.ut.popup(el[0], j);
+                    pop.find('.btn[data-zm-menu="select"]').click(function () {
+                        
+                        pop.find('.close[data-dismiss="modal"]').click();
+                    });
+                } else bootbox.alert(res);
+            }
+        });
+    }
 
     _zw.fn.showSignPlate = function (cmd) {
         if (cmd == 'draft' || cmd == 'approval') {

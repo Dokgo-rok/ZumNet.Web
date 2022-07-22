@@ -18,7 +18,7 @@
     {
     }
     else
-    { 
+    {
         InitConfig();
 
         using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
@@ -35,12 +35,12 @@
         {
             ViewBag.R.lv["total"] = 0;
         }
-    }
 
-    if (ViewBag.R.mode == "xls")
-    {
-        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
-        Response.End();
+        if (ViewBag.R.mode == "xls")
+        {
+            ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+            Response.End();
+        }
     }
 }
 @functions {
