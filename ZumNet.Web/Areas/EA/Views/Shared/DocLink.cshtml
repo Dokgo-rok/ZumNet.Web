@@ -63,12 +63,13 @@
                 sb.Append("<tbody>");
                 sb.Append("<tr>");
                 sb.AppendFormat("<td class=\"bg-light\" style=\"font-weight: bold; text-align: center; vertical-align: middle\">{0}</td>", "첨부목록");
-                sb.Append("<td>");
-                sb.Append("<ul class=\"list-group\"></ul>");
+                sb.Append("<td style=\"height: 5.5rem; padding:0\">");
+                sb.Append("<div class=\"zf-linked-list overflow-auto h-100 p-2\"></div>");
+                sb.AppendFormat("<textarea id=\"__LINKEDINFO\" style=\"display:none\"></textarea>");
                 sb.Append("</td>");
-                sb.Append("<td class=\"bg-light py-2\">");
-                sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary btn-block py-0\" data-zm-menu=\"confirm\">{0}</button>", Resources.Global.Confirm);
-                sb.AppendFormat("<button type=\"button\" class=\"btn btn-secondary btn-block py-0 mt-1\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+                sb.Append("<td class=\"bg-light py-2 align-middle\">");
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary btn-block py-1\" data-zm-menu=\"confirm\">{0}</button>", Resources.Global.Confirm);
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-secondary btn-block py-1 mt-1\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
                 sb.Append("</td>");
                 sb.Append("</tr>");
                 sb.Append("</tbody>");

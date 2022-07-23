@@ -284,7 +284,7 @@
                         {
                             if (ViewBag.JForm["mode"].ToString() == "read" && ViewBag.JForm["docstatus"].ToString() != "840")
                             {
-                                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="배포목록" data-zf-menu="sendDL"><i class="fas fa-envelope-open-text"></i><span class="d-none d-sm-inline-block ml-1">배포목록</span></button>
+                                @*<button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="배포목록" data-zf-menu="sendDL"><i class="fas fa-envelope-open-text"></i><span class="d-none d-sm-inline-block ml-1">배포목록</span></button>*@
                             }
                             if (ViewBag.JForm["apvmode"].ToString() == "draft" || ViewBag.JForm["linkeddoc"].Count > 0)
                             {

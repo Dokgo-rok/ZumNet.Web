@@ -94,63 +94,119 @@ $(function () {
                 break;
 
             case "linkDoc":
-                var jPost = {};
-                jPost["M"] = ''; jPost["ct"] = 108; jPost["page"] = 1; jPost["count"] = 10; jPost["sort"] = ''; jPost["sortdir"] = '';
-                jPost["search"] = ''; jPost["searchtext"] = ''; jPost["start"] = ''; jPost["end"] = '';
+                if (_zw.V.mode == 'new' || _zw.V.mode == 'edit') {
+                    var jPost = {};
+                    jPost["M"] = ''; jPost["ct"] = 108; jPost["page"] = 1; jPost["count"] = 10; jPost["sort"] = ''; jPost["sortdir"] = '';
+                    jPost["search"] = ''; jPost["searchtext"] = ''; jPost["start"] = ''; jPost["end"] = '';
 
-                $.ajax({
-                    type: "POST",
-                    url: "/EA/Form/DocLink",
-                    data: JSON.stringify(jPost),
-                    success: function (res) {
-                        if (res.substr(0, 2) == "OK") {
-                            var p = $('#popBlank');
-                            p.html(res.substr(2));
+                    $.ajax({
+                        type: "POST",
+                        url: "/EA/Form/DocLink",
+                        data: JSON.stringify(jPost),
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                var p = $('#popBlank');
+                                p.html(res.substr(2));
 
-                            _zw.ut.picker('date');
-
-                            p.find('.z-lv-cond input.search-text').keyup(function (e) {
-                                if (e.which == 13) _zw.fn.searchLinkedDoc(p, jPost);
-                            });
-
-                            p.find('.z-lv-cond .btn[data-zm-menu="search"]').click(function () {
-                                _zw.fn.searchLinkedDoc(p, jPost);
-                            });
-
-                            p.find('.pagination li a.page-link').click(function () {
-                                _zw.fn.searchLinkedDoc(p, jPost, $(this).attr('data-for'));
-                            });
-
-                            p.find('.z-lv-hdr a[data-val]').click(function () {
-                                var t = $(this); jPost["sort"] = t.attr('data-val');
-                                $('.z-lv-hdr a[data-val]').each(function () {
-                                    if ($(this).attr('data-val') == jPost["sort"]) {
-                                        var c = t.find('i');
-                                        if (c.hasClass('fe-arrow-up')) {
-                                            c.removeClass('fe-arrow-up').addClass('fe-arrow-down'); jPost["sortdir"] = 'DESC';
-                                        } else {
-                                            c.removeClass('fe-arrow-down').addClass('fe-arrow-up'); jPost["sortdir"] = 'ASC';
-                                        }
-                                    } else {
-                                        $(this).find('i').removeClass();
-                                    }
+                                p.find('.z-lv-cond input.search-text').keyup(function (e) {
+                                    if (e.which == 13) _zw.fn.searchLinkedDoc(p, jPost);
                                 });
-                                _zw.fn.searchLinkedDoc(p, jPost);
-                            });
 
-                            p.find('.z-lv-row a[href]').click(function () {
-                                _zw.fn.getLinkedDocFile(p, $(this));
-                            });
-                            
-                            p.find('.btn[data-zm-menu="confirm"]').click(function () {
-                                
-                            });
+                                p.find('.z-lv-cond .btn[data-zm-menu="search"]').click(function () {
+                                    _zw.fn.searchLinkedDoc(p, jPost);
+                                });
 
-                            p.on('hidden.bs.modal', function () { p.html(''); });
-                            p.modal();
-                        } else bootbox.alert(res);
+                                p.find('.pagination li a.page-link').click(function () {
+                                    _zw.fn.searchLinkedDoc(p, jPost, $(this).attr('data-for'));
+                                });
+
+                                p.find('.z-lv-hdr a[data-val]').click(function () {
+                                    var t = $(this); jPost["sort"] = t.attr('data-val');
+                                    $('.z-lv-hdr a[data-val]').each(function () {
+                                        if ($(this).attr('data-val') == jPost["sort"]) {
+                                            var c = t.find('i');
+                                            if (c.hasClass('fe-arrow-up')) {
+                                                c.removeClass('fe-arrow-up').addClass('fe-arrow-down'); jPost["sortdir"] = 'DESC';
+                                            } else {
+                                                c.removeClass('fe-arrow-down').addClass('fe-arrow-up'); jPost["sortdir"] = 'ASC';
+                                            }
+                                        } else {
+                                            $(this).find('i').removeClass();
+                                        }
+                                    });
+                                    _zw.fn.searchLinkedDoc(p, jPost);
+                                });
+
+                                p.find('.z-lv-row a[href]').click(function () {
+                                    _zw.fn.getLinkedDocFile(p, $(this));
+                                });
+
+                                p.find('.btn[data-zm-menu="confirm"]').click(function () {
+                                    p.find('.zf-linked-list > div[fi]').each(function () {
+                                        var fi = $(this);
+                                        var lnk = _zw.V.linkeddoc.find(function (element) { if (element.xfalias == fi.attr('xf') && element.msgid == fi.attr('fi')) return true; });
+                                        if (lnk == undefined) {
+                                            var temp = {};
+                                            temp["xfalias"] = fi.attr('xf'); temp["msgid"] = fi.attr('fi');
+                                            temp["reserved1"] = decodeURIComponent(fi.attr('fp')); temp["reserved2"] = decodeURIComponent(fi.attr('fn'));
+                                            temp["subject"] = fi.find('a[href]').html();
+
+                                            _zw.V.linkeddoc.push(temp); //console.log(_zw.V.linkeddoc);
+                                        }
+                                    });
+                                    //console.log(_zw.V.linkeddoc)
+                                    p.modal('hide');
+                                });
+
+                                _zw.ut.picker('date');
+                                if (_zw.V.linkeddoc.length > 0) {
+                                    $.each(_zw.V.linkeddoc, function (idx, v) {
+                                        var iPos = v['reserved2'].lastIndexOf('.');
+                                        var s = "<div class=\"d-flex align-items-center mb-1\" fi=\"" + v['msgid'] + "\" xf=\"" + v['xfalias'] + "\" fn=\"" + encodeURIComponent(v['reserved2']) + "\" fp=\"" + encodeURIComponent(v['reserved1']) + "\">"
+                                            + "<div class=\"mr-1\"><i class=\"" + _zw.fu.fileExt(v['reserved2'].substr(iPos + 1)) + "\"></i></div>"
+                                            + "<div class=\"mr-1\"><a class=\"z-lnk-navy\" href=\"/Common/DownloadV?fn=" + encodeURIComponent(_zw.base64.encode(v['reserved2'])) + "&fp=" + encodeURIComponent(_zw.base64.encode(v['reserved1'])) + "\" target=\"_blank\">" + v['subject'] + "</a></div>"
+                                            + "<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\"><i class=\"fe-x\"></i></button></div>"
+                                            + "</div>";
+                                        p.find('.zf-linked-list').append(s);
+                                    });
+                                }
+
+                                p.find('.zf-linked-list > div[fi] .btn').click(function () {
+                                    var fi = $(this).parent().parent();
+                                    var idx = _zw.V.linkeddoc.findIndex(function (element) { if (element.xfalias == fi.attr('xf') && element.msgid == fi.attr('fi')) return true; });
+                                    if (idx > -1) _zw.V.linkeddoc.splice(idx, 1); //console.log(_zw.V.linkeddoc);
+                                    fi.remove();
+                                });
+
+                                p.on('hidden.bs.modal', function () { p.html(''); });
+                                p.modal();
+                            } else bootbox.alert(res);
+                        }
+                    });
+
+                } else {
+                    var s = '', iCnt = _zw.V.linkeddoc.length;
+                    if (_zw.V.linkeddoc.length > 0) {
+                        $.each(_zw.V.linkeddoc, function (idx, v) {
+                            var iPos = v['reserved2'].lastIndexOf('.');
+                            s += "<div class=\"d-flex align-items-center my-2\" fi=\"" + v['msgid'] + "\" xf=\"" + v['xfalias'] + "\" fn=\"" + encodeURIComponent(v['reserved2']) + "\" fp=\"" + encodeURIComponent(v['reserved1']) + "\">"
+                                + "<div class=\"mr-1\"><i class=\"" + _zw.fu.fileExt(v['reserved2'].substr(iPos + 1)) + "\"></i></div>"
+                                + "<div class=\"mr-1\"><a class=\"z-lnk-navy\" href=\"/Common/DownloadV?fn=" + encodeURIComponent(_zw.base64.encode(v['reserved2'])) + "&fp=" + encodeURIComponent(_zw.base64.encode(v['reserved1'])) + "\" target=\"_blank\">" + v['subject'] + "</a></div>"
+                                //+ "<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\"><i class=\"fe-x\"></i></button></div>"
+                                + "</div>";
+                        });
+                    } else {
+                        s = "<div class=\"w-100 text-center py-3\">표시할 항목이 없습니다.</div>";
                     }
-                });
+
+                    s = "<div class=\"zf-linked-list overflow-auto h-100 p-2\">" + s + "</div>";
+
+                    var h = iCnt <= 3 ? 105 : (iCnt > 5 ? 175 : iCnt * 35);
+                    var j = { "close": true, "width": 550, "height": h, "left": -200, "top": 0 }
+                    j["title"] = '관련문서'; j["content"] = s;
+
+                    var pop = _zw.ut.popup($(this)[0], j);
+                }
                 break;
 
             case "fileAttach":
@@ -268,7 +324,7 @@ $(function () {
 
     _zw.fn.getLinkedDocFile = function (p, el) {
         if (el.attr('acl').charAt(4) != "R") { bootbox.alert('권한이 없습니다!'); return; }
-        if (el.attr('sys') == 'PDM') return;
+        if (el.attr('sys') == 'PDM') { bootbox.alert('지원하지 않습니다!'); return; }
         
         $.ajax({
             type: "POST",
@@ -284,7 +340,28 @@ $(function () {
 
                     var pop = _zw.ut.popup(el[0], j);
                     pop.find('.btn[data-zm-menu="select"]').click(function () {
-                        
+                        var fi = $(this);
+                        var lnk = _zw.V.linkeddoc.find(function (element) { if (element.xfalias == fi.attr('xf') && element.msgid == fi.attr('fi')) return true; });
+                        if (lnk != undefined) {
+                            alert('이미 선택되었습니다!');
+                        } else {
+                            var clone = fi.parent().prev().find('a[href]').clone(true);
+                            clone.text(decodeURIComponent(fi.attr('fn')) + ' (' + el.text() + ')');
+                            var iPos = fi.attr('fn').lastIndexOf('.'); //console.log(temp["reserved2"].substr(iPos))
+                            var s = "<div class=\"d-flex align-items-center mb-1\" fi=\"" + fi.attr('fi') + "\" xf=\"" + fi.attr('xf') + "\" fn=\"" + fi.attr('fn') + "\" fp=\"" + fi.attr('fp') + "\">"
+                                + "<div class=\"mr-1\"><i class=\"" + _zw.fu.fileExt(fi.attr('fn').substr(iPos + 1)) + "\"></i></div>"
+                                + "<div class=\"mr-1\">" + clone[0].outerHTML + "</div>"
+                                + "<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\"><i class=\"fe-x\"></i></button></div>"
+                                + "</div>";
+                            p.find('.zf-linked-list').append(s);
+
+                            p.find('.zf-linked-list > div[fi] .btn').click(function () {
+                                var fi = $(this).parent().parent();
+                                var idx = _zw.V.linkeddoc.findIndex(function (element) { if (element.xfalias == fi.attr('xf') && element.msgid == fi.attr('fi')) return true; });
+                                if (idx > -1) _zw.V.linkeddoc.splice(idx, 1); //console.log(_zw.V.linkeddoc);
+                                fi.remove();
+                            });
+                        }
                         pop.find('.close[data-dismiss="modal"]').click();
                     });
                 } else bootbox.alert(res);
