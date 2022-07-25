@@ -1678,8 +1678,8 @@
   <xsl:choose>
     <xsl:when test="CLSNAME='ea'">
       <div>
-        <a target="_blank">
-          <xsl:attribute name="href">/<xsl:value-of select="$root"/>/EA/Forms/XFormMain.aspx?M=read&amp;mi=<xsl:value-of select="PDMOID"/></xsl:attribute>
+        <a target="_blank" href="javascript:" onclick="_zw.fn.openEAFormSimple('{PDMOID}');">
+          <!--<xsl:attribute name="href">/<xsl:value-of select="$root"/>/EA/Forms/XFormMain.aspx?M=read&amp;mi=<xsl:value-of select="PDMOID"/></xsl:attribute>-->
           <xsl:attribute name="title"><xsl:value-of select="PNUMBER"/></xsl:attribute>
           <xsl:value-of select="SUBJECT"/>&#160;(<xsl:value-of select="PNUMBER"/>)
         </a>

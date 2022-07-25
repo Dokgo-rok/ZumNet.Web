@@ -12,6 +12,11 @@ $(function () {
         $('#_SearchText').keyup(function (e) {
             if (e.which == 13) _zw.fn.goSearch();
         });
+
+        $('.pagination li a.page-link').click(function () {
+            _zw.fn.goSearch($(this).attr('data-for'));
+        });
+
         //console.log(fchart_report)
         //if (FusionCharts && fchart_report) fchart_report.render();
 
@@ -180,7 +185,7 @@ $(function () {
                 $('.z-list-cond table td [data-for]').each(function () {
                     if ($.trim($(this).val()) != '') _zw.V.lv[$(this).attr('data-for')] = $(this).val();
                 });
-                console.log(_zw.V.lv)
+                //console.log(_zw.V.lv)
             } else {
                 _zw.V.lv.cd1 = $('#_SearchSelect').val();
 
