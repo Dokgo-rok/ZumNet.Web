@@ -1838,7 +1838,17 @@ namespace ZumNet.Web.Bc
 
                 //필수항목 체크
                 sPos = "200";
-                if ((ctrl.ViewBag.JReq["M"].ToString() == "read" || ctrl.ViewBag.JReq["M"].ToString() == "edit" || ctrl.ViewBag.JReq["M"].ToString() == "html") && StringHelper.SafeInt(ctrl.ViewBag.JReq["mi"]) == 0) throw new Exception("필수 항목[MessageID] 누락");
+                if (ctrl.ViewBag.JReq["M"].ToString() == "read" || ctrl.ViewBag.JReq["M"].ToString() == "edit" || ctrl.ViewBag.JReq["M"].ToString() == "html")
+                {
+                    if (ctrl.ViewBag.JReq["xf"].ToString() == "ea")
+                    {
+                        if (!ctrl.ViewBag.JReq.ContainsKey("mi") || StringHelper.SafeInt(ctrl.ViewBag.JReq["mi"].ToString()) == 0) throw new Exception("필수 항목[MessageID] 누락");
+                    }
+                    else
+                    {
+                        if (!ctrl.ViewBag.JReq.ContainsKey("mi") || ctrl.ViewBag.JReq["mi"].ToString() == "") throw new Exception("필수 항목[MessageID] 누락");
+                    }
+                }
                 else if (ctrl.ViewBag.JReq["M"].ToString() == "new")
                 {
                     if (ctrl.ViewBag.JReq.ContainsKey("fi") && ctrl.ViewBag.JReq["fi"].ToString() == "")

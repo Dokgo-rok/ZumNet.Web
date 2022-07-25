@@ -4,6 +4,15 @@
 @{
     Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
 
+    if (ViewBag.JForm["xfalias"].ToString() == "tooling")
+    {
+        ViewBag.Title = "금형대장";
+    }
+    else if (ViewBag.JForm["xfalias"].ToString() == "ecnplan")
+    {
+        ViewBag.Title = "ecnplan";
+    }
+
     //첨부파일 임시 저장 폴더
     if (ViewBag.JReq["M"].ToString() != "mail" && ViewBag.JReq["M"].ToString() != "read")
     {
@@ -121,14 +130,21 @@
 
     private string CreateFormJS()
     {
-        //js 파일 생성
-        string sSourceJs = Server.MapPath("/Scripts/EA/Forms/_sample.js");
-        string sFormJs = Server.MapPath("/Scripts/EA/Forms/" + ViewBag.JForm["def"]["maintable"].ToString() + ".js");
-        if (!File.Exists(sFormJs))
+        if (ViewBag.JForm["xfalias"].ToString() == "ea")
         {
-            try { File.Copy(sSourceJs, sFormJs, false); } catch { return ""; }
+            //js 파일 생성
+            string sSourceJs = Server.MapPath("/Scripts/EA/Forms/_sample.js");
+            string sFormJs = Server.MapPath("/Scripts/EA/Forms/" + ViewBag.JForm["def"]["maintable"].ToString() + ".js");
+            if (!File.Exists(sFormJs))
+            {
+                try { File.Copy(sSourceJs, sFormJs, false); } catch { return ""; }
+            }
+            return "~/Scripts/EA/Forms/" + ViewBag.JForm["def"]["maintable"].ToString() + ".js";
         }
-        return "~/Scripts/EA/Forms/" + ViewBag.JForm["def"]["maintable"].ToString() + ".js";
+        else
+        {
+            return "";
+        }
     }
 }
 @section Styles {
@@ -152,13 +168,27 @@
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
     }
 
-    @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
     @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
-    @Scripts.Render("~/Scripts/EA/form.js")
-
-    @if (_formJs != "")
+    @if (ViewBag.JForm["xfalias"].ToString() == "ea")
     {
-        @Scripts.Render(_formJs);
+        @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
+        @Scripts.Render("~/Scripts/EA/form.js")
+
+        if (_formJs != "")
+        {
+            @Scripts.Render(_formJs);
+        }
+    }
+    else
+    {
+        if (ViewBag.JForm["xfalias"].ToString() == "tooling")
+        {
+            @Scripts.Render("~/Scripts/EA/tooling.js")
+        }
+        else if (ViewBag.JForm["xfalias"].ToString() == "ecnplan")
+        {
+            @Scripts.Render("~/Scripts/EA/ecnplan.js")
+        }
     }
 
     <script type="text/javascript">
@@ -269,10 +299,13 @@
                         }
                         else
                         {
-                            <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" data-zf-menu="register"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
+                            if (ViewBag.JForm["mode"].ToString() != "read")
+                            {
+                                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" data-zf-menu="register"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
+                            }
                             if (ViewBag.JForm["mode"].ToString() == "read" && ViewBag.JForm["xfalias"].ToString() != "ecnplan")
                             {
-                                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify" data-zf-menu="update"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                                @*<button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify" data-zf-menu="update"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>*@
                             }
                         }
 
@@ -295,12 +328,12 @@
                     </div>
                     <div>
                         <div class="btn-group">
-                            @if ((ViewBag.JForm["mode"].ToString() == "new" || ViewBag.JForm["mode"].ToString() == "edit" || ViewBag.JForm["mode"].ToString() == "reuse") && ViewBag.JForm["def"]["webeditor"].ToString() != "")
-                            {
-                                <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.EditorExpand" data-zf-menu="toggleEditor" aria-expanded="false" aria-label="@Resources.Global.EditorExpand|@Resources.Global.EditorFold"><i class="fas fa-arrow-up"></i></button>
-                            }
                             @if (ViewBag.JForm["xfalias"].ToString() == "ea")
                             {
+                                if ((ViewBag.JForm["mode"].ToString() == "new" || ViewBag.JForm["mode"].ToString() == "edit" || ViewBag.JForm["mode"].ToString() == "reuse") && ViewBag.JForm["def"]["webeditor"].ToString() != "")
+                                {
+                                    <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.EditorExpand" data-zf-menu="toggleEditor" aria-expanded="false" aria-label="@Resources.Global.EditorExpand|@Resources.Global.EditorFold"><i class="fas fa-arrow-up"></i></button>
+                                }
                                 if (ViewBag.JForm["apvmode"].ToString() == "draft")
                                 {
                                     <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" data-zf-menu="saveTemp"><i class="fas fa-save text-blue"></i></button>
@@ -309,12 +342,12 @@
                                 {
                                     <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="파일로 저장" data-zf-menu="saveFile"><i class="fas fa-download text-blue"></i></button>
                                 }
+                                <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Help" data-zf-menu="showHelp"><i class="fas fa-question-circle text-info"></i></button>
                             }
                             @if (ViewBag.JForm["xfalias"].ToString() != "ecnplan")
                             {
                                 <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" data-zf-menu="preview"><i class="fas fa-print"></i></button>
                             }
-                            <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Help" data-zf-menu="showHelp"><i class="fas fa-question-circle text-info"></i></button>
                             <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close" onclick="window.close();"><i class="fas fa-sign-out-alt"></i></button>
                         </div>
                     </div>
@@ -340,93 +373,96 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="popSignLine" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false"></div>
-            <div class="modal fade" id="popSignPlate" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog">
-                    <div class="modal-content" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
-                        <div class="zf-sl modal-body py-1 px-1 border-primary" style="border-top: 2px solid">
-                            <div class="bg-light px-2 pb-2">
-                                <div class="form-group mb-1">
-                                    <label class="col-form-label pl-1">의견</label>
-                                    <div class="">
-                                        <textarea class="form-control bootstrap-maxlength" rows="4" maxlength="500" id="sp_Comment"></textarea>
+            @if (ViewBag.JForm["xfalias"].ToString() == "ea")
+            {
+                <div class="modal fade" id="popSignLine" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false"></div>
+                <div class="modal fade" id="popSignPlate" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+                            <div class="zf-sl modal-body py-1 px-1 border-primary" style="border-top: 2px solid">
+                                <div class="bg-light px-2 pb-2">
+                                    <div class="form-group mb-1">
+                                        <label class="col-form-label pl-1">의견</label>
+                                        <div class="">
+                                            <textarea class="form-control bootstrap-maxlength" rows="4" maxlength="500" id="sp_Comment"></textarea>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group d-flex mb-1">
-                                    <label class="wd-20 wd-lg-15 wd-xl-15 pl-1 col-form-label">결재종류</label>
-                                    <div class="wd-80 wd-lg-85 wd-xl-85 input-group align-items-center">
-                                        @*spnDraft(기안), spnApproval(승인), spnReject(반려), spnReserve(보류), spnConfirm(확인), spnAuthorize(전결), spnDisagree(비승인,조건부승인), spnPre(선결)*@
-                                        @if (ViewBag.JForm["apvmode"] == "draft")
-                                        {
-                                            <label class="custom-control custom-radio m-0" for="rdoSS_1">
-                                                <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_1" value="draft" />
-                                                <span class="custom-control-label">@Resources.EA.SS_Draft</span>
-                                            </label>
-                                        }
-                                        else
-                                        {
-                                            if (ViewBag.PreApprovalWI.IndexOf("_cancel") > 0)
+                                    <div class="form-group d-flex mb-1">
+                                        <label class="wd-20 wd-lg-15 wd-xl-15 pl-1 col-form-label">결재종류</label>
+                                        <div class="wd-80 wd-lg-85 wd-xl-85 input-group align-items-center">
+                                            @*spnDraft(기안), spnApproval(승인), spnReject(반려), spnReserve(보류), spnConfirm(확인), spnAuthorize(전결), spnDisagree(비승인,조건부승인), spnPre(선결)*@
+                                            @if (ViewBag.JForm["apvmode"] == "draft")
                                             {
-                                                <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_7">
-                                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_7" value="pre_cancel" />
-                                                    <span class="custom-control-label">선결취소</span>
+                                                <label class="custom-control custom-radio m-0" for="rdoSS_1">
+                                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_1" value="draft" />
+                                                    <span class="custom-control-label">@Resources.EA.SS_Draft</span>
                                                 </label>
                                             }
                                             else
                                             {
-                                                <label class="custom-control custom-radio m-0" for="rdoSS_2">
-                                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_2" value="approval" />
-                                                    <span class="custom-control-label">@Resources.EA.SS_Approval</span>
-                                                </label>
-
-                                                <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_3">
-                                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_3" value="reject" />
-                                                    <span class="custom-control-label">@Resources.EA.SS_Reject</span>
-                                                </label>
-
-                                                if (ViewBag.JForm["apvmode"] == "approval")
+                                                if (ViewBag.PreApprovalWI.IndexOf("_cancel") > 0)
                                                 {
-                                                    <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_4">
-                                                        <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_4" value="reserve" />
-                                                        <span class="custom-control-label">@Resources.EA.SS_Reserve</span>
+                                                    <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_7">
+                                                        <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_7" value="pre_cancel" />
+                                                        <span class="custom-control-label">선결취소</span>
                                                     </label>
                                                 }
-
-                                                @*<label class="custom-control custom-radio m-0" for="rdoSS_5">
-                                                        <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_5" value="authorize" />
-                                                        <span class="custom-control-label">@Resources.EA.SK_Authorize</span>
-                                                    </label>*@
-                                                if (Session["LogonID"].ToString() == "jblee")
+                                                else
                                                 {
-                                                    <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_6">
-                                                        <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_6" value="disagree" />
-                                                        <span class="custom-control-label">@Resources.EA.SS_Disagree</span>
+                                                    <label class="custom-control custom-radio m-0" for="rdoSS_2">
+                                                        <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_2" value="approval" />
+                                                        <span class="custom-control-label">@Resources.EA.SS_Approval</span>
                                                     </label>
+
+                                                    <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_3">
+                                                        <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_3" value="reject" />
+                                                        <span class="custom-control-label">@Resources.EA.SS_Reject</span>
+                                                    </label>
+
+                                                    if (ViewBag.JForm["apvmode"] == "approval")
+                                                    {
+                                                        <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_4">
+                                                            <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_4" value="reserve" />
+                                                            <span class="custom-control-label">@Resources.EA.SS_Reserve</span>
+                                                        </label>
+                                                    }
+
+                                                    @*<label class="custom-control custom-radio m-0" for="rdoSS_5">
+                                                            <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_5" value="authorize" />
+                                                            <span class="custom-control-label">@Resources.EA.SK_Authorize</span>
+                                                        </label>*@
+                                                    if (Session["LogonID"].ToString() == "jblee")
+                                                    {
+                                                        <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_6">
+                                                            <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_6" value="disagree" />
+                                                            <span class="custom-control-label">@Resources.EA.SS_Disagree</span>
+                                                        </label>
+                                                    }
                                                 }
                                             }
-                                        }
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group d-flex mb-0">
-                                    <label class="wd-20 wd-lg-15 wd-xl-15 pl-1 col-form-label">결재인증</label>
-                                    <div class="wd-80 wd-lg-85 wd-xl-85 btn-group align-items-center">
-                                        <input type="password" class="form-control" disabled style="max-width: 10rem" id="sp_Password" />
-                                        @if (ViewBag.JForm["mode"].ToString() == "new" || ViewBag.JForm["mode"].ToString() == "edit")
-                                        {
-                                            <button type="button" class="btn btn-primary my-0 px-2 px-sm-3 flex-grow-0" data-zm-mmenu="send"><i class="fas fa-paper-plane mr-2"></i>@Resources.EA.SS_Draft</button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="btn btn-primary my-0 px-2 px-sm-3 flex-grow-0" data-zm-mmenu="send"><i class="fas fa-paper-plane mr-2"></i>@Resources.EA.SS_Approval</button>
-                                        }
-                                        <button type="button" class="btn btn-default my-0 px-2 px-sm-3 flex-grow-0" data-dismiss="modal">@Resources.Global.Cancel</button>
+                                    <div class="form-group d-flex mb-0">
+                                        <label class="wd-20 wd-lg-15 wd-xl-15 pl-1 col-form-label">결재인증</label>
+                                        <div class="wd-80 wd-lg-85 wd-xl-85 btn-group align-items-center">
+                                            <input type="password" class="form-control" disabled style="max-width: 10rem" id="sp_Password" />
+                                            @if (ViewBag.JForm["mode"].ToString() == "new" || ViewBag.JForm["mode"].ToString() == "edit")
+                                            {
+                                                <button type="button" class="btn btn-primary my-0 px-2 px-sm-3 flex-grow-0" data-zm-mmenu="send"><i class="fas fa-paper-plane mr-2"></i>@Resources.EA.SS_Draft</button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-primary my-0 px-2 px-sm-3 flex-grow-0" data-zm-mmenu="send"><i class="fas fa-paper-plane mr-2"></i>@Resources.EA.SS_Approval</button>
+                                            }
+                                            <button type="button" class="btn btn-default my-0 px-2 px-sm-3 flex-grow-0" data-dismiss="modal">@Resources.Global.Cancel</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>

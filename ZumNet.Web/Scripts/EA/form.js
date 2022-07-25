@@ -1,5 +1,4 @@
 ﻿//전자결재 메인, 리스트뷰
-
 $(function () {
 
     _zw.fn.input($('#__FormView .m'));

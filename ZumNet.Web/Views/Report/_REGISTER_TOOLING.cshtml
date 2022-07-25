@@ -24,6 +24,27 @@
     if (svcRt != null && svcRt.ResultCode == 0)
     {
         ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+
+        if (ViewBag.R.mode != "xls")
+        {
+            string[,] codeConfig = { { "external", "toolingcls" }, { "external", "centercode" } };
+            ZumNet.Framework.Core.ServiceResult svcRt2 = null;
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new ZumNet.BSL.ServiceBiz.CommonBiz())
+            {
+                svcRt2 = cb.SelectCodeDescription(codeConfig);
+            }
+
+            if (svcRt2 != null && svcRt2.ResultCode == 0)
+            {
+                ViewBag.CodeTable = svcRt2.ResultDataDetail;
+            }
+            else
+            {
+                ViewBag.CodeTable = null;
+                Response.Write(svcRt2.ResultMessage);
+            }
+            svcRt2 = null;
+        }
     }
     else
     {
@@ -155,7 +176,7 @@
             {
                 foreach (DataRow row in data.Tables[0].Rows)
                 {
-                    sb.AppendFormat("<tr id=\"_{0}\" fiid=\"{1}\">", row["TOOLING_NUMBER"].ToString(), row["fiid"].ToString());
+                    sb.AppendFormat("<tr id=\"{0}\" fiid=\"{1}\">", row["TOOLING_NUMBER"].ToString(), row["fiid"].ToString());
                     for (int i = 0; i < _columnConfig.GetLength(0); i++)
                     {
                         strID = _columnConfig[i, 0].ToString();
@@ -242,7 +263,7 @@
                         }
                         strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
 
-                        sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "", strValue);
+                        sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
                     }
                     sb.Append("</tr>");
                     iRow++;
@@ -281,7 +302,7 @@
 
         StringBuilder sb = new StringBuilder();
 
-        sb.Append("<div class=\"z-list-cond d-flex justify-content-end\">");
+        sb.Append("<div class=\"z-list-cond flex-fill\">");
 
         sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\" style=\"width: 280px\">");
         sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
@@ -292,8 +313,116 @@
         sb.Append("<div class=\"input-group-append\">");
         sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
         sb.Append("</div>");
-        sb.Append("</div>");
 
+        sb.Append("<div class=\"input-group-append\">"); //d-none d-sm-flex
+        sb.Append("<button class=\"btn btn-default\" aria-controls=\"vw-search-cond\" onclick=\"_zw.ut.ctrls();\" title=\"상세\"><i class=\"fas fa-angle-down\"></i></button>");
+        sb.Append("</div>");
+        sb.Append("</div>"); //z-list-date
+
+        # region [상세 검색]
+        sb.Append("<div class=\"d-none mt-2 pr-3\" data-controls=\"vw-search-cond\">");
+        sb.Append("<table class=\"table text-center mb-0\">");
+        sb.Append("<colgroup><col style=\"width: 11%\" /><col style=\"width: 14%\" /><col style=\"width: 11%\" /><col style=\"width: 14%\" /><col style=\"width: 11%\" /><col style=\"width: 14%\" /><col style=\"width: 11%\" /><col style=\"width: 14%\" /></colgroup>");
+        sb.Append("<tbody>");
+
+        sb.Append("<tr>");
+        sb.Append("<td class=\"bg-light p-0 align-middle\">제작구분</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.Append("<select class=\"custom-select\" data-for=\"cd1\">");
+        sb.Append("<option value=\"\">전체</option>");
+        sb.AppendFormat("<option value=\"NEW\"{0}>신작</option>", ViewBag.R.lv.cd1 == "NEW" ? " selected" : "");
+        sb.AppendFormat("<option value=\"ADD\"{0}>증작</option>", ViewBag.R.lv.cd1 == "ADD" ? " selected" : "");
+        sb.AppendFormat("<option value=\"BUYER\"{0}>고객</option>", ViewBag.R.lv.cd1 == "BUYER" ? " selected" : "");
+        sb.Append("</select>");
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">금형번호</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd4\" value=\"{0}\">", ViewBag.R.lv.cd4);
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">적용모델</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd5\" value=\"{0}\">", ViewBag.R.lv.cd5);
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">사용구분</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.Append("<select class=\"custom-select\" data-for=\"cd6\">");
+        sb.Append("<option value=\"\">전체</option>");
+        sb.AppendFormat("<option value=\"사용\"{0}>사용</option>", ViewBag.R.lv.cd6 == "사용" ? " selected" : "");
+        sb.AppendFormat("<option value=\"미사용\"{0}>미사용</option>", ViewBag.R.lv.cd6 == "미사용" ? " selected" : "");
+        sb.AppendFormat("<option value=\"폐기\"{0}>폐기</option>", ViewBag.R.lv.cd6 == "폐기" ? " selected" : "");
+        sb.AppendFormat("<option value=\"분실\"{0}>분실</option>", ViewBag.R.lv.cd6 == "분실" ? " selected" : "");
+        sb.Append("</select>");
+        sb.Append("</td>");
+        sb.Append("</tr>");
+
+        sb.Append("<tr>");
+        sb.Append("<td class=\"bg-light p-0 align-middle\">금형분류</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.Append("<select class=\"custom-select\" data-for=\"cd2\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["external.toolingcls"])
+        {
+            sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[3].ToString(), StringHelper.SafeString(ViewBag.R.lv["cd2"]) == o[4].ToString() ? " selected" : "");
+        }
+        sb.Append("</select>");
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">고객금형번호</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd7\" value=\"{0}\">", ViewBag.R.lv.cd7);
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">품번</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd8\" value=\"{0}\">", ViewBag.R.lv.cd8);
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">사업장</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.Append("<select class=\"custom-select\" data-for=\"cd9\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["external.centercode"])
+        {
+            sb.AppendFormat("<option value=\"{0}\"{1}>{0}</option>", o[3].ToString(), StringHelper.SafeString(ViewBag.R.lv["cd9"]) == o[3].ToString() ? " selected" : "");
+        }
+        sb.Append("</select>");
+        sb.Append("</td>");
+        sb.Append("</tr>");
+
+        sb.Append("<tr>");
+        sb.Append("<td class=\"bg-light p-0 align-middle\">비용부담</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.Append("<select class=\"custom-select\" data-for=\"cd3\">");
+        sb.Append("<option value=\"\">전체</option>");
+        sb.AppendFormat("<option value=\"당사\"{0}>당사</option>", ViewBag.R.lv.cd1 == "당사" ? " selected" : "");
+        sb.AppendFormat("<option value=\"고객\"{0}>고객</option>", ViewBag.R.lv.cd1 == "고객" ? " selected" : "");
+        sb.Append("</select>");
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">BUYER</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd10\" value=\"{0}\">", ViewBag.R.lv.cd10);
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">제작처</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd12\" value=\"{0}\">", ViewBag.R.lv.cd12);
+        sb.Append("</td>");
+
+        sb.Append("<td class=\"bg-light p-0 align-middle\">영업담당</td>");
+        sb.Append("<td class=\"p-0\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd11\" value=\"{0}\">", ViewBag.R.lv.cd11);
+        sb.Append("</td>");
+        sb.Append("</tr>");
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        sb.Append("</div>");
+        #endregion
         sb.Append("</div>"); //z-list-cond
         return sb.ToString();
     }
@@ -339,9 +468,10 @@
 }
 else
 {
-    <div class="z-list-head d-flex justify-content-between my-2">
+    <div class="z-list-head d-flex justify-content-between my-2 pl-0">
+        @Html.Raw(ListCond())
         <div class="z-list-page d-flex align-items-center justify-content-between" id="__ListCount">
-            <div class="z-list-total d-none d-sm-flex align-items-center mr-1">
+            <div class="z-list-total d-flex align-items-center mr-1">
                 <i class="fe-chevron-right"></i> @ListCount()
             </div>
             <div class="input-group d-none d-sm-flex z-lv-cnt">
@@ -354,7 +484,6 @@ else
                 </select>
             </div>
         </div>
-        @Html.Raw(ListCond())
     </div>
 
     <div class="z-list-body" id="__ListView">

@@ -43,6 +43,48 @@ $(function () {
 
     _zw.fn.bindCtrl();
 
+    _zw.fn.openXForm = function () {
+        var el = _zw.ut.eventBtn(), row = el.parent().parent(), x = 0, y = 0, winName = '', url = '', sResize = '', sId = '', qi;
+        if (row.prop('tagName') == 'TR') {
+            if (_zw.V.ft == 'SEARCH_EADOC') {
+                if (arguments[0] == "PDM") {
+                    x = 750; y = 600; winName = "pdmview";
+                    url = "/Portal/SSOpdm?target=" + arguments[2] + "&oid=" + arguments[1]; //alert(url)
+                } else {
+                    x = 640; y = 600; winName = "popupform_doc"; szResize = "resize";
+                    qi = '{wnd:"' + m + '",ct:"' + _zw.V.ct + '",ctalias:"",ot:"",alias:"",xfalias:"' + 'doc'
+                        + '",fdid:"' + _zw.V.fdid + '",appid:"' + row.attr('id').split('_')[1] + '",opnode:"",ttl:"",acl:"'
+                        + '",appacl:"",sort:"' + _zw.V.lv.sort + '",sortdir:"' + _zw.V.lv.sortdir + '",boundary:"' + _zw.V.lv.boundary + '"}';
+                    url = '/Docs/Edm/Read?qi=' + encodeURIComponent(_zw.base64.encode(qi));
+                }
+            } else if (_zw.V.ft == 'REGISTER_TOOLING' || _zw.V.ft == 'SEARCH_TOOLING_STATE' || _zw.V.ft == 'REGISTER_TOOLINGDAILYUSE') {
+                if (arguments[0] == "pdmmodel" || arguments[0] == "pdmpart") {
+                    x = 750; y = 600; winName = arguments[0];
+                    url = "/Portal/SSOpdm?target=prodview&oid=" + arguments[1];
+                } else {
+                    sId = _zw.V.ft == 'SEARCH_TOOLING_STATE' ? arguments[0] : row.attr('id');
+                    x = 900; y = 600; qi = '{M:"read",mi:"' + sId + '",oi:"",wi:"",fi:"REGISTER_TOOLING",xf:"tooling"}'; console.log(qi)
+                    url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+                }
+            } else if (_zw.V.ft == 'REGISTER_GONGGA') {
+                sId = row.attr('id').split('_')[1].substring(row.attr('id').split('_')[1].length, row.attr('id').split('_')[1].length - 6);
+                x = 900; y = 600; qi = '{M:"read",mi:"' + sId + '",oi:"",wi:"",xf:"ea"}';
+                url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+            } 
+        } else {
+            if (arguments[0]) {
+                x = 900; y = 600; qi = '{M:"read",mi:"' + arguments[0] + '",oi:"",wi:"",xf:"ea"}';
+                url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+            } else {
+                if (_zw.V.ft == 'REGISTER_TOOLING') {
+                    x = 900; y = 600; qi = '{M:"new",mi:"",oi:"",wi:"",fi:"REGISTER_TOOLING",xf:"tooling"}';
+                    url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+                }
+            }
+        }
+        if (url != '') _zw.ut.openWnd(url, winName, x, y, sResize);
+    }
+
     _zw.fn.exportExcel = function () {
         //var encQi = '{M:"xls",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",fdid:"' + _zw.V.fdid + '",opnode:"",ttl:"' + _zw.V.ttl + '"}';
         //window.open('?qi=' + encodeURIComponent(_zw.base64.encode(encQi)), 'ifrView');
@@ -134,15 +176,22 @@ $(function () {
             _zw.V.lv.start = $('.z-list-cond .start-date').val();
             _zw.V.lv.end = $('.z-list-cond .end-date').val();
 
-            _zw.V.lv.cd1 = $('#_SearchSelect').val();
+            if (_zw.V.ft == 'REGISTER_TOOLING') {
+                $('.z-list-cond table td [data-for]').each(function () {
+                    if ($.trim($(this).val()) != '') _zw.V.lv[$(this).attr('data-for')] = $(this).val();
+                });
+                console.log(_zw.V.lv)
+            } else {
+                _zw.V.lv.cd1 = $('#_SearchSelect').val();
 
-            if ($('#_SearchText').length > 0) {
-                var e = $('#_SearchText');
-                var s = "['\\%^&\"*]";
-                var reg = new RegExp(s, 'g');
-                if (e.val().search(reg) >= 0) { alert(s + " 문자는 사용될 수 없습니다!"); e.val(''); return; }
+                if ($('#_SearchText').length > 0) {
+                    var e = $('#_SearchText');
+                    var s = "['\\%^&\"*]";
+                    var reg = new RegExp(s, 'g');
+                    if (e.val().search(reg) >= 0) { alert(s + " 문자는 사용될 수 없습니다!"); e.val(''); return; }
 
-                _zw.V.lv.cd2 = e.val();
+                    _zw.V.lv.cd2 = e.val();
+                }
             }
         }
         _zw.fn.loadList();

@@ -2101,6 +2101,7 @@
     <Content Include="images\main_portal_cresyn7.jpg" />
     <Content Include="Scripts\Controls\portal.js" />
     <Content Include="Scripts\Docs\kms.js" />
+    <Content Include="Scripts\EA\ecnplan.js" />
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\EA\Forms\FORM_AFTERCHANGEREQUEST.js" />
@@ -2217,6 +2218,7 @@
     <Content Include="Scripts\EA\Forms\FORM_WITHHOLDINGRECEIPT.js" />
     <Content Include="Scripts\EA\Forms\_sample.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAFT.js" />
+    <Content Include="Scripts\EA\tooling.js" />
     <Content Include="Scripts\Env\env.js" />
     <Content Include="Scripts\ExS\ce.js" />
     <Content Include="Scripts\ExS\voc.js" />
