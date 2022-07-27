@@ -1211,6 +1211,7 @@ namespace ZumNet.Web.Bc
                 jV["web"] = oConfig.Attributes["web"].Value;
                 jV["root"] = oConfig.Attributes["root"].Value;
                 jV["companycode"] = oConfig.Attributes["company"].Value;
+                jV["domain"] = HttpContext.Current.Session["MainSuffix"].ToString();
                 jV["dnid"] = HttpContext.Current.Session["DNID"].ToString();
                 jV["oid"] = oConfig.Attributes["oid"].Value;
                 jV["relid"] = oConfig.Attributes["relid"].Value;

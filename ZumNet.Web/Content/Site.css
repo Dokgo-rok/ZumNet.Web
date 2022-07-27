@@ -708,6 +708,10 @@ a.z-lnk-navy-n {
             text-decoration: underline;
         }
 
+    .z-pop:focus {
+        outline: none;
+    }
+
 .zf-modal {
 }
     .zf-modal .modal-content {

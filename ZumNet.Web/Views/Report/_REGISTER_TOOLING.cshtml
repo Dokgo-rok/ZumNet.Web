@@ -90,7 +90,12 @@
     private void InitConfig(string popUp)
     {
         //초기 설정
-        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+        if (ViewBag.R.lv.cd1 == "" && ViewBag.R.lv.cd2 == "" && ViewBag.R.lv.cd3 == "" && ViewBag.R.lv.cd4 == "" && ViewBag.R.lv.cd5 == "" && ViewBag.R.lv.cd6 == ""
+            && ViewBag.R.lv.cd7 == "" && ViewBag.R.lv.cd8 == "" && ViewBag.R.lv.cd9 == "" && ViewBag.R.lv.cd10 == "" && ViewBag.R.lv.cd11 == "" && ViewBag.R.lv.cd12 == "")
+        {
+            if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+        }
+
         if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "금형대장리스트";
 
         //크레신 : 금형대장 현황 : 2014-04-10 필드 변경, 검색 변경

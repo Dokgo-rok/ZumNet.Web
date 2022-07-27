@@ -126,6 +126,12 @@
                 }
             }
         }
+        else
+        {
+            if (ViewBag.JForm["mode"].ToString() == "new") ViewBag.JForm["apvmode"] = "";
+            else if (ViewBag.JForm["mode"].ToString() == "edit") ViewBag.JForm["apvmode"] = "approval";
+            else ViewBag.JForm["apvmode"] = "read";
+        }
     }
 
     private string CreateFormJS()
@@ -305,7 +311,7 @@
                             }
                             if (ViewBag.JForm["mode"].ToString() == "read" && ViewBag.JForm["xfalias"].ToString() != "ecnplan")
                             {
-                                @*<button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify" data-zf-menu="update"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>*@
+                                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify" data-zf-menu="update"><i class="fas fa-redo text-third"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
                             }
                         }
 

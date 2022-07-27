@@ -60,6 +60,12 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         rt = RazorViewToString.RenderRazorViewToString(this, "_OracleERP", ViewBag);
                         break;
 
+                    case "gettooling":
+                        //rt = GetTooling(jPost);
+                        ViewBag.JPost = jPost;
+                        rt = RazorViewToString.RenderRazorViewToString(this, "_Tooling", ViewBag);
+                        break;
+
                     default:
                         break;
                 }

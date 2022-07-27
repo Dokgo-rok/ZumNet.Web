@@ -1538,7 +1538,7 @@ namespace ZumNet.Web.Bc
 
                 strMsg = "기본정보 구성";
                 sbXml.AppendFormat("<ph_xform><config mode=\"{0}\" web=\"{1}\" root=\"{2}\" company=\"{3}\" oid=\"{4}\" relid=\"{5}\" acl=\"{6}\" msgid=\"{7}\" formid=\"{8}\" xfalias=\"{9}\" wnid=\"{10}\"></config>"
-                            , mode, Framework.Configuration.Config.Read("FrontName"), "", HttpContext.Current.Session["CompanyCode"].ToString()
+                            , mode, HttpContext.Current.Session["FrontName"].ToString(), Framework.Configuration.Config.Read("RootFolder"), HttpContext.Current.Session["CompanyCode"].ToString()
                             , iOId.ToString(), strRelatedId, strAclType, msgID, formID, xfAlias, workNotice);
                 sbXml.AppendFormat("<current uid=\"{0}\" account=\"{1}\" deptid=\"{2}\" deptcode=\"{3}\" date=\"{4}\">"
                             , HttpContext.Current.Session["URID"].ToString(), HttpContext.Current.Session["LogonID"].ToString()

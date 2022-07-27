@@ -902,7 +902,9 @@
     <Content Include="Content\Forms\HTML\MOLDREQUEST_1.html" />
     <Content Include="Content\Forms\HTML\NOTICE_CONAPPLICATION.xsl" />
     <Content Include="Content\Forms\HTML\REGISTER_ECNPLAN.xsl" />
-    <Content Include="Content\Forms\HTML\REGISTER_TOOLING.xsl" />
+    <Content Include="Content\Forms\HTML\REGISTER_TOOLING.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\HTML\REGISTER_TOOLING_1.xsl" />
     <Content Include="Content\Forms\HTML\RESIGNATION.html" />
     <Content Include="Content\Forms\HTML\SAMPLESUGGESTREQ_1.html" />
@@ -3111,6 +3113,7 @@
     <Content Include="Areas\Docs\Views\Edm\_Edit.cshtml" />
     <Content Include="Areas\EA\Views\Shared\DocLink.cshtml" />
     <Content Include="Areas\EA\Views\Shared\DocLinkFile.cshtml" />
+    <Content Include="Areas\EA\Views\Common\_Tooling.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

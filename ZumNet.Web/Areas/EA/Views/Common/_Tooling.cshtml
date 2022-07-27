@@ -1,0 +1,110 @@
+﻿@using System;
+@using System.Data;
+@using System.Data.SqlClient;
+@using System.IO;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Web.Bc;
+@using ZumNet.BSL.InterfaceBiz;
+@using ZumNet.Framework.Core;
+@using ZumNet.Framework.Data;
+@using ZumNet.Framework.Exception;
+@using ZumNet.Framework.Util;
+@functions{
+    private string GetTooling(JObject postData)
+    {
+        ServiceResult svcRt = new ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        string strQuery = "";
+        string strReturn = "";
+
+        try
+        {
+            if (postData["k2"].ToString() == "CHECK_TAGNO")
+            {
+                #region [금형 태그번호 중복 확인]
+                strQuery = "SELECT COUNT(*) FROM BFFLOWFORMS_CRESYN.admin.REGISTER_TOOLING (NOLOCK) WHERE TOOLING_TAGNO = @toolingtagno";
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    ParamSet.Add4Sql("@toolingtagno", SqlDbType.NVarChar, 30, postData["no"].ToString())
+                };
+
+                using (ExecuteBiz execBiz = new ExecuteBiz())
+                {
+                    svcRt = execBiz.ExecuteScalarQuery(strQuery, 30, parameters);
+                }
+                if (svcRt.ResultCode == 0)
+                {
+                    if (Convert.ToInt32(svcRt.ResultDataString) > 0) strReturn = "DU";
+                    else strReturn = "OK";
+                }
+                else strReturn = svcRt.ResultMessage;
+                #endregion
+            }
+            else if (postData["k2"].ToString() == "SEARCH_TAGNO")
+            {
+                #region [금형 태그번호 검색]
+                strQuery = "SELECT TOOLING_NUMBER, TOOLING_TAGNO FROM BFFLOWFORMS_CRESYN.admin.REGISTER_TOOLING (NOLOCK) WHERE TOOLING_TAGNO LIKE '%" + postData["search"].ToString() + "%'";
+                SqlParameter[] parameters = null;
+
+                using (ExecuteBiz execBiz = new ExecuteBiz())
+                {
+                    svcRt = execBiz.ExecuteQuery(strQuery, 30, parameters);
+                }
+                if (svcRt.ResultCode == 0)
+                {
+                    sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                    sb.Append("<colgroup><col style=\"width:50%\" /><col style=\"width:50%\" /></colgroup>");
+                    sb.Append("<thead>");
+                    sb.Append("<tr><th>금형번호</th><th>고객금형번호</th></tr>");
+                    sb.Append("</thead>");
+                    sb.Append("<tbody>");
+                    if (svcRt.ResultDataSet.Tables != null && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                    {
+                        foreach(DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", row["TOOLING_NUMBER"].ToString());
+                            sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", row["TOOLING_TAGNO"].ToString().Replace(postData["search"].ToString(), "<span class=\"text-success\">" + postData["search"].ToString() + "</span>"));
+                            sb.Append("</tr>");
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<tr><td colspan=\"2\" class=\"text-center\">{0}</td></tr>", Resources.Global.NoItemShow);
+                    }
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                }
+                else
+                {
+                    //sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    strReturn = svcRt.ResultMessage;
+                }
+                #endregion
+            }
+            else if (postData["k1"].ToString() == "HISTORY")
+            {
+
+            }
+            else
+            {
+                strReturn = "해당 조건이 누락됐습니다!";
+            }
+            if (strReturn == "") strReturn = "OK" + sb.ToString();
+        }
+        catch (Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "GetTooling");
+            strReturn = (strReturn != "" ? "[" + strReturn + "] " : "") + ex.Message;
+        }
+        finally
+        {
+        }
+
+        return strReturn;
+    }
+}
+@Html.Raw(GetTooling(ViewBag.JPost))

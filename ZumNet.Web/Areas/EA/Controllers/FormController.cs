@@ -185,7 +185,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 try
                 {
                     strView = "전송값 할당";
-                    int iMessageId = StringHelper.SafeInt(jPost["mi"]);
+                    string sMessageId = jPost["mi"].ToString();
                     int iFolderId = StringHelper.SafeInt(jPost["fdid"]);
                     int iActorID = StringHelper.SafeInt(jPost["actor"]);
 
@@ -222,12 +222,12 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             }
                         }
 
-                        if (iMessageId > 0)
+                        if (Convert.ToInt32(sMessageId) > 0)
                         {
                             strView = "조회 설정[" + sActiveWI + "]";
                             using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                             {
-                                svcRt = cb.AddViewCount(jPost["xf"].ToString(), iFolderId, iActorID, iMessageId, sIP);
+                                svcRt = cb.AddViewCount(jPost["xf"].ToString(), iFolderId, iActorID, Convert.ToInt32(sMessageId), sIP);
                             }
                         }
                     }
@@ -236,7 +236,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         strView = "비결재문서 조회 설정";
                         using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
                         {
-                            svcRt = rpBiz.ViewCount(jPost["xf"].ToString(), iFolderId, iActorID, iMessageId.ToString(), sIP);
+                            svcRt = rpBiz.ViewCount(jPost["xf"].ToString(), iFolderId, iActorID, sMessageId, sIP);
                         }
                     }
 
@@ -247,7 +247,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             strView = "나의할일 조회 설정[" + lWorkNotice.ToString() + "]";
                             using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
                             {
-                                svcRt = rpBiz.ViewWorkItemNotice(jPost["xf"].ToString(), iActorID, iMessageId.ToString(), lWorkNotice.ToString());
+                                svcRt = rpBiz.ViewWorkItemNotice(jPost["xf"].ToString(), iActorID, sMessageId, lWorkNotice.ToString());
                             }
                         }
 

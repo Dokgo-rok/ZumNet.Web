@@ -2617,6 +2617,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
             string strPublishDate = "";
             string strEcnType = ""; //2019-10-15
             int iOId = 0;
+            int iSubTableCount = 0;
 
             ServiceResult svcRt = new ServiceResult();
 
@@ -2632,7 +2633,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 jMain = (JObject)postData["form"]["maintable"];
                 jSub = (JObject)postData["form"]["subtables"];
                 jFile = (JArray)postData["attachlist"];
-                jImg = (JArray)postData["imglist"];
+                //jImg = (JArray)postData["imglist"];
+                if (jSub != null) iSubTableCount = jSub.Count;
 
                 if (postData["oid"].ToString() != "" && postData["oid"].ToString() != "0") iOId = Convert.ToInt32(postData["oid"].ToString());
 
@@ -2733,7 +2735,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 strReturn = "[600]"; //"양식 저장 및 프로세스 처리";
                 using (BSL.FlowBiz.EApproval ea = new EApproval())
                 {
-                    svcRt = ea.RegisterFormNotEA(Session["CompanyCode"].ToString(), command, _xfAlias, _formID, _msgID, postData, strPublishDate);
+                    svcRt = ea.RegisterFormNotEA(Session["CompanyCode"].ToString(), command, _xfAlias, _formID, iSubTableCount, _msgID, postData, strPublishDate);
                 }
 
                 if (svcRt.ResultCode == 0)
@@ -2852,8 +2854,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
         {
             _mode = j["M"].ToString();
 
-            if (!j.ContainsKey("xfalias")) _xfAlias = "";
-            else _workItemID = j["xfalias"].ToString();
+            _xfAlias = j.ContainsKey("xfalias") ? j["xfalias"].ToString() : "";
             if (_xfAlias == "") _xfAlias = "ea"; //2011-08-23 추가:결재양식외의 양식(금형대장 등)을 위해
 
             if (!j.ContainsKey("wid")) _workItemID = "";
@@ -2891,6 +2892,12 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 if (j["biz"]["prevwork"] == null) _workNotice = "";
                 else _workNotice = j["biz"]["prevwork"].ToString();
                 if (_workNotice == "") _workNotice = "0";   //2011-08-23 작업연결 위해 추가
+            }
+            else
+            {
+                _formID = j.ContainsKey("formid") ? j["formid"].ToString() : "";
+                _oID = j.ContainsKey("oid") ? j["oid"].ToString() : "";
+                _msgID = j.ContainsKey("appid") ? j["appid"].ToString() : "";
             }
 
             if (j.ContainsKey("doc"))

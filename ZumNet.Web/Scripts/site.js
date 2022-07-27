@@ -1884,6 +1884,12 @@ $(function () {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent);
         },
         "popup": function (el, option) {// p : 팝업창 기준 요소(예: $('#__FormView .z-list-scroll'))
+            var autoComplete = option.autoComplete || false;
+            if (autoComplete && $('.z-pop').length > 0) { //자동완성 경우 여러번 ajax 호출이 일어나게 됨
+                $('.z-pop .z-pop-body > div').html(option.content);
+                return $('.z-pop');
+            }
+
             var ttl = option.title ? option.title : '';
             var bClose = option.close || false;
             var footer = option.footer ? option.footer : '';
@@ -1907,21 +1913,25 @@ $(function () {
 
             //console.log(iST + " : " + iSL + " : " + iBH + " : " + iBW + " : " + iT + " : " + iL + " : " + iH + " : " + iW)
             var back = '<div class="modal-backdrop fade show"></div>';
-            var s = '<div class="z-pop" role="modal">';
+            var s = '<div class="z-pop" role="modal" tabindex="-1">';
             if (ttl != '' || bClose) {
                 s += '<div class="z-pop-header">';
                 s += '<div class="z-pop-title">' + ttl + '</div>';
                 if (bClose) s += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
                 s += '</div>';
             }
-            s += '<div class="z-pop-body"><div style="overflow-y: auto; height: ' + (h - 40) + 'px">' + option.content + '</div></div>';
+            s += '<div class="z-pop-body"><div style="overflow-y: auto; height: ' + (autoComplete ? h - 6 : h - 40) + 'px">' + option.content + '</div></div>';
             if (footer != '') s += '<div class="z-pop-footer">' + footer + '</div>';
             s += '</div>';
 
             var m = $(s).css({ "top": iT, "left": iL + l, "width": w, "height": h }).show();
             m.find('.close[data-dismiss="modal"]').click(function () { $('.modal-backdrop').remove(); m.remove(); });
 
-            p.append(back).append(m);
+            if (autoComplete) {
+                p.append(m); m.on('mouseover', function () { m.focus(); }); m.blur(function () { m.remove(); });
+                //$(el).blur(function () { m.remove(); });
+            } else p.append(back).append(m);
+
             m.draggable();
             return m;
         }
@@ -2210,7 +2220,7 @@ $(function () {
                     p.find('.zf-upload-bar').removeClass('d-none');
                     fm.submit();
                 });
-
+                //console.log(p.find('.btn[data-toggle="popover"]').html());
                 p.find('.btn[data-toggle="popover"]').popover({
                     html: true,
                     trigger: 'focus',
@@ -2270,9 +2280,53 @@ $(function () {
             }
             //console.log(_zw.fu.fileList)
         },
+        "completeEx": function (msg) { //양식 필드 내 이미지 또는 파일 첨부 경우 (파일 확장자 아이콘X)
+            $('.zf-upload #uploadForm')[0].reset();
+            var rt = decodeURIComponent(msg).replace(/\+/gi, ' '), iFileCnt = _zw.fu.fileList.length;
+            if (rt.substr(0, 2) == 'OK') {
+                var vFile = rt.substr(2).split(_zw.T.uploader.df);
+                for (var i = 0; i < vFile.length; i++) {
+                    var vInfo = vFile[i].split(_zw.T.uploader.da);
+                    var multi = $('.zf-upload #uploadForm input[type="file"]').prop('multiple'); //복수선택 여부
+
+                    var s = "<div class=\"zf-upload-view\">"
+                        + "<div class=\"d-flex align-items-center mb-1\">"
+                        + "<div class=\"mr-1\"><a href=\"/Common/DownloadV?fn=" + encodeURIComponent(_zw.base64.encode(vInfo[0])) + "&fp=" + encodeURIComponent(_zw.base64.encode(vInfo[4])) + "\" target=\"_blank\">" + vInfo[0] + "</a></div>"
+                        + "<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\" onclick=\"_zw.fu.delete('','" + encodeURIComponent(vInfo[0]) + "','" + encodeURIComponent(_zw.base64.encode(vInfo[4])) + "')\"><i class=\"fe-x\"></i></button></div>"
+                        + "</div>"
+                        + "<div>"
+                        + "<img src=\"" + vInfo[4] + "\" alt=\"\" style=\"max-width: 100%\" />"
+                        + "</div>"
+                        + "</div>" //zf-upload-view
+
+                    $('.zf-upload .zf-upload-list').append(s).removeClass('d-none'); //console.log(multi)
+                    if (!multi) $('.zf-upload .zf-upload-select').removeClass('d-flex').addClass('d-none');
+
+                    var v = {};
+                    v["attachid"] = 0;
+                    v["atttype"] = "O";
+                    v["seq"] = iFileCnt + i + 1;
+                    v["isfile"] = "N";
+                    v["filename"] = vInfo[0];
+                    v["savedname"] = vInfo[1];
+                    v["ext"] = vInfo[2];
+                    v["size"] = vInfo[3];
+                    v["filepath"] = vInfo[4];
+                    v["storagefolder"] = "";
+
+                    _zw.fu.fileList.push(v);
+                }
+                $('.zf-upload .zf-upload-bar').addClass('d-none');
+            } else {
+                $('.zf-upload .zf-upload-bar').addClass('d-none');
+                bootbox.alert(rt); return false;
+            }
+            //console.log(_zw.fu.fileList)
+        },
         "delete": function (id, fm, path) {
             if (fm != '') fm = decodeURIComponent(fm); //console.log(fm + " : " + _zw.base64.decode(decodeURIComponent(path)))
             var p = _zw.ut.eventBtn().parent().parent();
+            if (p.parent().hasClass('zf-upload-view')) p = p.parent();
 
             bootbox.confirm('선택한 파일을 삭제하시겠습니까?', function (rt) {
                 if (rt) {
@@ -2289,6 +2343,7 @@ $(function () {
                                 });
                                 if (idx > -1) _zw.fu.fileList.splice(idx, 1);
                                 if (_zw.fu.fileList.length == 0) $('.zf-upload .zf-upload-list').addClass('d-none');
+                                if ($('.zf-upload .zf-upload-select').hasClass('d-none')) $('.zf-upload .zf-upload-select').removeClass('d-none').addClass('d-flex');
                             } else bootbox.alert(res);
                         }
                     });
