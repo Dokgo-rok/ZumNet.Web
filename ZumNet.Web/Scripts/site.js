@@ -629,10 +629,6 @@ $(function () {
             var el, p, postData, tgtPage, stdPage;
             m = m || '';
 
-            if (_zw.V.xfalias == 'knowledge') stdPage = '/Docs/Kms/Read';
-            else if (_zw.V.xfalias == 'doc') stdPage = '/Docs/Edm/Read';
-            else stdPage = '/Board/Read';
-
             if (m == 'reload') {
                 if (_zw.V.wnd == 'popup') {
                     window.location.reload(); return false;
@@ -644,6 +640,8 @@ $(function () {
                 el = event.target ? event.target : event.srcElement;
                 p = $(el).parent().parent();
                 if (p.attr('xf') == undefined) p = $(el).parent().parent().parent();
+
+                _zw.V.xfalias = p.attr('xf');
 
                 //var sortCol = _zw.V.lv.sort, sortType = _zw.V.lv.sortdir;
                 var sortCol = '', sortType = ''; //최근게시물 올 경우 위해
@@ -657,7 +655,7 @@ $(function () {
                 postData = '{wnd:"' + m + '",ct:"' + (p.attr('ctid') != undefined ? p.attr('ctid') : _zw.V.ct) + '",ctalias:"",ot:"",alias:"",xfalias:"' + p.attr('xf')
                     + '",fdid:"' + (p.attr('fdid') != undefined ? p.attr('fdid') : _zw.V.fdid) + '",appid:"' + p.attr('appid') + '",opnode:"",ttl:"",acl:"'
                     + '",appacl:"' + (p.attr('acl') != undefined ? p.attr('acl') : '') + '",sort:"' + sortCol + '",sortdir:"' + sortType + '",boundary:"' + _zw.V.lv.boundary + '"}';
-                tgtPage = stdPage;
+                //tgtPage = stdPage;
                 //console.log(postData);
 
             } else {
@@ -681,6 +679,12 @@ $(function () {
                 //console.log(postData); return
                 tgtPage = _zw.V.current.page;
             }
+
+            if (_zw.V.xfalias == 'knowledge') stdPage = '/Docs/Kms/Read';
+            else if (_zw.V.xfalias == 'doc') stdPage = '/Docs/Edm/Read';
+            else stdPage = '/Board/Read';
+
+            if (m == 'popup') tgtPage = stdPage;
             
             var url = tgtPage + '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
