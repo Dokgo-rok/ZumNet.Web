@@ -2211,6 +2211,7 @@
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGDISUSEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_UNITSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_USEITEMMASTERCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATION.js" />

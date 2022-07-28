@@ -1737,10 +1737,18 @@ $(function () {
             } else if (_zw.V.ft == 'TOOLINGNEWDRAFT' || _zw.V.ft == 'TOOLINGINCREASEDRAFT') { //금형신작, 증장 : 2014-04-22
                 if (_zw.V.biz == "normal" && _zw.V.act == '_reviewer') {
                     p = signLine.filter(function (element) { if (element.bizrole == 'last' && element.actrole == '_approver') return true; });
+                    var s = 0;
+                    $('#__subtable1 tr.sub_table_row .ft-sub-sub').each(function () {
+                        if ($(this).find('[name="WHOMONEY"]').val() == '당사') s += parseFloat(_zw.ut.empty($(this).find('[name="CONVPRODUCTCOSTSUM"]').val()));
+                    });
 
-                    //$('#__mainfield[name="WHOMONEY"]').val();
-                    //$('#__mainfield[name="CONVPRODUCTCOSTSUM"]').val();
-
+                    if (s == 0) {
+                        if (p.length > 0) { bootbox.alert("금형비부담이 [고객] 인 경우 최종승인권자를 지정 할 수 없습니다!"); return 'N'; }
+                    } else if (s < 5000) {
+                        if (p.length > 0) { bootbox.alert("당사 금형비 합계가 $5,000 미만 인 경우 최종승인권자를 지정 할 수 없습니다!"); return 'N'; }
+                    } else if (s >= 5000) {
+                        if (p.length == 0) { bootbox.alert("당사 금형비 합계가 $5,000 이상 인 경우 최종승인권자를 지정해야 합니다"); return 'N'; }
+                    }
                 }
 
             } else if (_zw.V.ft == 'PRODRELEASEREQ') { //자사제품출고요청서 : 2020-12-17

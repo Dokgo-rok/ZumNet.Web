@@ -46,7 +46,7 @@
                 {
                     if (postData["k2"].ToString() == "currency" || postData["k2"].ToString() == "centercode" || postData["k2"].ToString() == "centercode2" || postData["k2"].ToString() == "chartcentercode" || postData["k2"].ToString() == "prodlawname")
                     {
-                        //통화, 생산지표기
+                        # region [통화, 생산지표기]
                         sb.Append("<table class=\"table table-striped table-sm mb-0\">");
                         if (postData.ContainsKey("fn") && postData["fn"].ToString() == "checkbox")
                         {
@@ -75,7 +75,8 @@
                             {
                                 sb.Append("<tr>");
                                 sb.AppendFormat("<td>{0}</td>", row["item2"].ToString());
-                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["item1"].ToString());
+                                if (postData["etc"].ToString() == "orgcode") sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}\">{0}</a></td>", row["item1"].ToString(), row["item3"].ToString(), row["item4"].ToString());
+                                else sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["item1"].ToString());
                                 sb.Append("</tr>");
                             }
                             if (postData["etc"].ToString() == "etc")
@@ -85,9 +86,55 @@
                             sb.Append("</tbody>");
                         }
                         sb.Append("</table>");
+                        #endregion
+                    }
+                    else if (postData["k2"].ToString() == "toolingmakingreq")
+                    {
+                        #region [toolingmakingreq]
+                        sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                        if (postData.ContainsKey("fn") && postData["fn"].ToString() == "checkbox")
+                        {
+                            //복수선택
+                            sb.Append("<colgroup><col width=\"5%\" /><col width=\"20%\" /><col width=\"75%\" /></colgroup>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td><input type=\"checkbox\" name=\"ckbMultiOption\" value=\"{0}\" /></td>", row["item2"].ToString());
+                                sb.AppendFormat("<td>{0}</td>", row["item1"].ToString());
+                                sb.AppendFormat("<td>{0}</td>", row["item2"].ToString());
+                                sb.Append("</tr>");
+                            }
+                            if (postData["etc"].ToString() == "etc")
+                            {
+                                sb.Append("<tr><td><input type=\"checkbox\" name=\"ckbMultiOption\" value=\"\" /></td><td>기타<td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                            }
+                            sb.Append("</tbody>");
+                        }
+                        else
+                        {
+                            sb.Append("<colgroup><col width=\"20%\" /><col width=\"80%\" /></colgroup>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td>{0}</td>", row["item1"].ToString());
+                                if (postData["etc"].ToString() == "orgcode") sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}\">{0}</a></td>", row["item2"].ToString(), row["item3"].ToString(), row["item4"].ToString());
+                                else sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["item2"].ToString());
+                                sb.Append("</tr>");
+                            }
+                            if (postData["etc"].ToString() == "etc")
+                            {
+                                sb.Append("<tr><td>기타</td><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                            }
+                            sb.Append("</tbody>");
+                        }
+                        sb.Append("</table>");
+                        #endregion
                     }
                     else if (postData["k2"].ToString() == "conclassify")
                     {
+                        #region [conclassify]
                         sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
                         sb.Append("<colgroup><col width=\"20%\" /><col width=\"40%\" /><col width=\"20%\" /><col width=\"20%\" /></colgroup>");
                         sb.Append("<tbody>");
@@ -103,6 +150,7 @@
                         }
                         sb.Append("</tbody>");
                         sb.Append("</table>");
+                        #endregion
                     }
                     else
                     {
