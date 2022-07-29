@@ -238,7 +238,8 @@
               <xsl:when test="$mode='read'">
                 <span style="width:20%;border:0 solid red">1. 신작현황</span>
                 <span style="width:80%;text-align:right;padding-right:4px;border:0 solid blue">
-                  <a href="javascript:" onclick="if (parent.fnOpen) parent.fnOpen('/BizForce/EA/ReportSheet.aspx?M=&amp;ft=SEARCH_TOOLING&amp;Lc=%uC801%uC6A9%uBAA8%uB378%20%uAE08%uD615%uD604%uD669&amp;pop=' + document.getElementById('FMODELNO').value,1000,700,'resize','','');">적용모델 금형현황</a>
+                  <!--<a href="javascript:" onclick="if (parent.fnOpen) parent.fnOpen('/BizForce/EA/ReportSheet.aspx?M=&amp;ft=SEARCH_TOOLING&amp;Lc=%uC801%uC6A9%uBAA8%uB378%20%uAE08%uD615%uD604%uD669&amp;pop=' + document.getElementById('FMODELNO').value,1000,700,'resize','','');">적용모델 금형현황</a>-->
+					<a onclick="_zw.formEx.optionWnd('report.SEARCH_TOOLING',800,500,-400,0,'','{//forminfo/maintable/FMODELNO}');" id="lnkReport" style="text-decoration:none;font-weight:bold" href="javascript:" title="적용모델 금형현황">적용모델 금형현황</a>
                 </span>  
               </xsl:when>
               <xsl:otherwise>
@@ -254,7 +255,7 @@
                 <td style="width:35%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="FMODELNO" style="width:91%;margin-right:2px" onblur="parent.fnFormEvent(this.name);">
+                      <input type="text" id="__mainfield" name="FMODELNO" style="width:91%;margin-right:2px">
                         <xsl:attribute name="class">txtText</xsl:attribute>                        
                         <xsl:attribute name="value">
                           <xsl:value-of select="//forminfo/maintable/FMODELNO" />
@@ -2233,7 +2234,7 @@
                     <!--<button onclick="parent.fnOrgmap('ur','N', this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                     </button>-->
-					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="영업담당" onclick="_zw.fn.org('user','n','CHARGEUSER');">
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="영업담당" onclick="_zw.fn.org('user','n',this);">
 						  <i class="fas fa-angle-down"></i>
 					  </button>
                   </xsl:if>
@@ -2410,7 +2411,7 @@
           <xsl:otherwise>
             <!--<xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />-->
-            <input type="text" class="txtText_u"  name="ROWSEQ">
+            <input type="text" class="txtRead"  name="ROWSEQ">
               <xsl:attribute name="value"><xsl:value-of select="ROWSEQ" /></xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="style">text-align:center</xsl:attribute>
@@ -2431,7 +2432,7 @@
           </xsl:when>
           <xsl:otherwise>
             <!--<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ITEMNAME))" />-->
-            <input type="text" class="txtText_u"  name="ITEMNAME">
+            <input type="text" class="txtRead"  name="ITEMNAME">
               <xsl:attribute name="value"><xsl:value-of select="ITEMNAME" /></xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
             </input>
@@ -2446,7 +2447,7 @@
           <xsl:otherwise>
             <!--<xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(COUNT))" />-->
-            <input type="text" class="txtText_u"  name="COUNT">
+            <input type="text" class="txtRead"  name="COUNT">
               <xsl:attribute name="value">
                 <xsl:value-of select="COUNT" />
               </xsl:attribute>
@@ -2464,7 +2465,7 @@
           <xsl:otherwise>
             <!--<xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(CAVITYS))" />-->
-            <input type="text" class="txtText_u"  name="CAVITYS">
+            <input type="text" class="txtRead"  name="CAVITYS">
               <xsl:attribute name="value">
                 <xsl:value-of select="CAVITYS" />
               </xsl:attribute>
@@ -2480,7 +2481,7 @@
             <input type="text" name="UNIT" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{UNIT}" />
           </xsl:when>
           <xsl:otherwise>            
-            <input type="text" class="txtText_u"  name="UNIT">
+            <input type="text" class="txtRead"  name="UNIT">
               <xsl:attribute name="value">
                 <xsl:value-of select="UNIT" />
               </xsl:attribute>
@@ -2496,7 +2497,7 @@
             <input type="text" name="SUM" class="txtRead_Right" readonly="readonly" value="{SUM}" />              
           </xsl:when>
           <xsl:otherwise>            
-            <input type="text" class="txtText_u"  name="SUM">
+            <input type="text" class="txtRead"  name="SUM">
               <xsl:attribute name="value">
                 <xsl:value-of select="SUM" />
               </xsl:attribute>
@@ -2512,7 +2513,7 @@
             <input type="text" name="SUMKRW" class="txtRead_Right" readonly="readonly" value="{SUMKRW}" />
           </xsl:when>
           <xsl:otherwise>
-            <input type="text" class="txtText_u"  name="SUMKRW">
+            <input type="text" class="txtRead"  name="SUMKRW">
               <xsl:attribute name="value">
                 <xsl:value-of select="SUMKRW" />
               </xsl:attribute>

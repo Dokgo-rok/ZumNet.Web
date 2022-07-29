@@ -525,6 +525,61 @@
                     }
                     #endregion
                 }
+                else if (postData["k2"].ToString() == "SEARCH_TOOLING")
+                {
+                    #region [적용모델 금형현황]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("MN", 0, postData["k2"].ToString(), "", "", postData["v1"].ToString(), "", "", "", "");
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                            sb.Append("<colgroup><col width=\"3%\" /><col width=\"17%\" /><col width=\"15%\" /><col width=\"8%\" /><col width=\"5%\" /><col width=\"5%\" />");
+                            sb.Append("<col width=\"8%\" /><col width=\"8%\" /><col width=\"6%\" /><col width=\"15%\" /><col width=\"10%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>NO</th><th>고객명</th><th>부품명</th><th>금형분류</th><th>CAVITY</th><th>벌수</th>");
+                            sb.Append("<th>단가</th><th>총비용</th><th>비용부담</th><th>영업담당</th><th>기안일</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+
+                            int iSeq = 0;
+                            foreach(DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                iSeq++;
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td class=\"\"><span>{0}</span></td>", iSeq.ToString());
+                                sb.AppendFormat("<td class=\"text-left\"><span>{0}</span></td>", row["BUYER"].ToString());
+                                sb.AppendFormat("<td class=\"text-left\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}')\">{1}</a></td>"
+                                                , row["MessageID"].ToString(), row["PARTNO"].ToString());
+                                sb.AppendFormat("<td class=\"\"><span>{0}</span></td>", row["CLSNM"].ToString());
+                                sb.AppendFormat("<td class=\"\"><span>{0}</span></td>", row["CAVITY"].ToString());
+                                sb.AppendFormat("<td class=\"\"><span>{0}</span></td>", row["TOOLREQQTY"].ToString());
+                                sb.AppendFormat("<td class=\"text-right\"><span>{0}</span></td>", row["PRODUCTCOST"].ToString());
+                                sb.AppendFormat("<td class=\"text-right\"><span>{0}</span></td>", row["PRODUCTCOSTSUM"].ToString());
+                                //sb.AppendFormat("<td class=\"\"><span>{0}</span></td>", row["ADDNUMBER"].ToString());
+                                sb.AppendFormat("<td class=\"\"><span>{0}</span></td>", row["WHOMONEY"].ToString());
+                                sb.AppendFormat("<td class=\"\"><span>{0}</span></td>", row["CHARGEUSER"].ToString());
+                                sb.AppendFormat("<td class=\"\"><span>{0}</span></td>", CommonUtils.LvDate(row["PublishDate"].ToString()));
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    }
+                    #endregion
+                }
                 else if (postData["k2"].ToString() == "SEARCH_ECNNO")
                 {
                     #region [SEARCH_ECNNO]

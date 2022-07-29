@@ -727,6 +727,9 @@ a.z-lnk-navy-n {
     .zf-modal .modal-body {
         padding: .5rem;
     }
+    .zf-modal .table thead th {
+        vertical-align: middle;
+    }
     .zf-modal .table > colgroup + thead > tr:first-child > td, .zf-modal .table > colgroup + thead > tr:first-child > th, .zf-modal .table > thead:first-child > tr:first-child > td, .zf-modal .table > thead:first-child > tr:first-child > th {
         border-top: 0;
     }
