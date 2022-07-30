@@ -1572,8 +1572,9 @@ $(function () {
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, eaWndNm, 900, 600, "resize");
         },
-        "openEAFormSimple": function (mi) {
+        "openEAFormSimple": function (mi, xf, fi) {
             var qi = '{M:"read",mi:"' + mi + '",oi:"",wi:"",xf:"ea"}';
+            if (xf && xf != '' && fi && fi != '') qi = '{M:"read",mi:"' + mi + '",xf:"' + xf + '",fi:"' + fi + '"}';
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, '', 900, 600, "resize");
         },

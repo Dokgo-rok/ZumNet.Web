@@ -8,9 +8,11 @@
 @using ZumNet.Web.Filter;
 @{
     // 금형대장리스트, REGISTER_TOOLING
-    InitConfig("");
+    string _vwModal = ViewBag.Modal != null && ViewBag.Modal == "Y" ? "Y" : "";
 
-    string strWhere = SearchCondition();
+    InitConfig(_vwModal);
+
+    string strWhere = SearchCondition(_vwModal);
 
     ZumNet.Framework.Core.ServiceResult svcRt = null;
     using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
@@ -61,48 +63,58 @@
     string[,] _columnConfig = null;
     string _tblWidth = "";
 
-    private string SearchCondition()
+    private string SearchCondition(string modal)
     {
         string strWhere = "";
-        if (ViewBag.R.lv.cd1.ToString() != "") strWhere += " AND DIVISION = '" + ViewBag.R.lv.cd1.ToString() + "'";             //제작구분
-        if (ViewBag.R.lv.cd2.ToString() != "") strWhere += " AND CLASSIFICATION_ID = '" + ViewBag.R.lv.cd2.ToString() + "'";    //금형분류
-        if (ViewBag.R.lv.cd3.ToString() != "") strWhere += " AND WHO_MONEY = N'" + ViewBag.R.lv.cd3.ToString() + "'";           //금형비부담
-        if (ViewBag.R.lv.cd4.ToString() != "") strWhere += " AND TOOLING_NUMBER LIKE '" + ViewBag.R.lv.cd4.ToString() + "%'";   //금형번호
-        if (ViewBag.R.lv.cd5.ToString() != "") strWhere += " AND MODELNO LIKE '%" + ViewBag.R.lv.cd5.ToString() + "%'";         //적용모델
-        if (ViewBag.R.lv.cd6.ToString() != "")
+        if (modal == "Y")
         {
-            strWhere += " AND USAGE_TYPE = '" + ViewBag.R.lv.cd6.ToString() + "'";  //2016-04-27 USAGE_TYPE 필드값 정리 이후
+
         }
+        else
+        {
+            if (ViewBag.R.lv.cd1.ToString() != "") strWhere += " AND DIVISION = '" + ViewBag.R.lv.cd1.ToString() + "'";             //제작구분
+            if (ViewBag.R.lv.cd2.ToString() != "") strWhere += " AND CLASSIFICATION_ID = '" + ViewBag.R.lv.cd2.ToString() + "'";    //금형분류
+            if (ViewBag.R.lv.cd3.ToString() != "") strWhere += " AND WHO_MONEY = N'" + ViewBag.R.lv.cd3.ToString() + "'";           //금형비부담
+            if (ViewBag.R.lv.cd4.ToString() != "") strWhere += " AND TOOLING_NUMBER LIKE '" + ViewBag.R.lv.cd4.ToString() + "%'";   //금형번호
+            if (ViewBag.R.lv.cd5.ToString() != "") strWhere += " AND MODELNO LIKE '%" + ViewBag.R.lv.cd5.ToString() + "%'";         //적용모델
+            if (ViewBag.R.lv.cd6.ToString() != "")
+            {
+                strWhere += " AND USAGE_TYPE = '" + ViewBag.R.lv.cd6.ToString() + "'";  //2016-04-27 USAGE_TYPE 필드값 정리 이후
+            }
 
-        if (ViewBag.R.lv.cd7.ToString() != "") strWhere += " AND TOOLING_TAGNO LIKE '%" + ViewBag.R.lv.cd7.ToString() + "%'";           //고객금형번호
-        if (ViewBag.R.lv.cd8.ToString() != "") strWhere += " AND PARTNO LIKE '%" + ViewBag.R.lv.cd8.ToString() + "%'";                  //품번
-        if (ViewBag.R.lv.cd9.ToString() != "") strWhere += " AND ORG_NAME = '" + ViewBag.R.lv.cd9.ToString() + "'";                     //사업장
-        if (ViewBag.R.lv.cd10.ToString() != "") strWhere += " AND BUYER_NAME LIKE N'%" + ViewBag.R.lv.cd10.ToString() + "%'";           //BUYER
-        if (ViewBag.R.lv.cd12.ToString() != "") strWhere += " AND MAKE_SUPPLIER_NAME LIKE N'%" + ViewBag.R.lv.cd12.ToString() + "%'";   //제작처
-        if (ViewBag.R.lv.cd11.ToString() != "") strWhere += " AND (DEPT_NAME LIKE N'%" + ViewBag.R.lv.cd11.ToString() + "%' OR CHARGE_USER LIKE N'%" + ViewBag.R.lv.cd11.ToString() + "%')"; //영업부서, 담당자
+            if (ViewBag.R.lv.cd7.ToString() != "") strWhere += " AND TOOLING_TAGNO LIKE '%" + ViewBag.R.lv.cd7.ToString() + "%'";           //고객금형번호
+            if (ViewBag.R.lv.cd8.ToString() != "") strWhere += " AND PARTNO LIKE '%" + ViewBag.R.lv.cd8.ToString() + "%'";                  //품번
+            if (ViewBag.R.lv.cd9.ToString() != "") strWhere += " AND ORG_NAME = '" + ViewBag.R.lv.cd9.ToString() + "'";                     //사업장
+            if (ViewBag.R.lv.cd10.ToString() != "") strWhere += " AND BUYER_NAME LIKE N'%" + ViewBag.R.lv.cd10.ToString() + "%'";           //BUYER
+            if (ViewBag.R.lv.cd12.ToString() != "") strWhere += " AND MAKE_SUPPLIER_NAME LIKE N'%" + ViewBag.R.lv.cd12.ToString() + "%'";   //제작처
+            if (ViewBag.R.lv.cd11.ToString() != "") strWhere += " AND (DEPT_NAME LIKE N'%" + ViewBag.R.lv.cd11.ToString() + "%' OR CHARGE_USER LIKE N'%" + ViewBag.R.lv.cd11.ToString() + "%')"; //영업부서, 담당자
 
-        if (ViewBag.R.lv.start.ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + ViewBag.R.lv.start.ToString() + "', ORDER_CREATE_DATE) >= 0 "; //2014-04-16 CREATE_DATE=>ORDER_CREATE_DATE
-        if (ViewBag.R.lv.end.ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, ORDER_CREATE_DATE, '" + ViewBag.R.lv.end.ToString() + "') >= 0 ";
+            if (ViewBag.R.lv.start.ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + ViewBag.R.lv.start.ToString() + "', ORDER_CREATE_DATE) >= 0 "; //2014-04-16 CREATE_DATE=>ORDER_CREATE_DATE
+            if (ViewBag.R.lv.end.ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, ORDER_CREATE_DATE, '" + ViewBag.R.lv.end.ToString() + "') >= 0 ";
+        }
 
         return strWhere;
     }
 
-    private void InitConfig(string popUp)
+    private void InitConfig(string modal)
     {
         //초기 설정
-        if (ViewBag.R.lv.cd1 == "" && ViewBag.R.lv.cd2 == "" && ViewBag.R.lv.cd3 == "" && ViewBag.R.lv.cd4 == "" && ViewBag.R.lv.cd5 == "" && ViewBag.R.lv.cd6 == ""
-            && ViewBag.R.lv.cd7 == "" && ViewBag.R.lv.cd8 == "" && ViewBag.R.lv.cd9 == "" && ViewBag.R.lv.cd10 == "" && ViewBag.R.lv.cd11 == "" && ViewBag.R.lv.cd12 == "")
+        if (modal == "Y")
         {
-            if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+
         }
+        else
+        {
+            if (ViewBag.R.lv.cd1 == "" && ViewBag.R.lv.cd2 == "" && ViewBag.R.lv.cd3 == "" && ViewBag.R.lv.cd4 == "" && ViewBag.R.lv.cd5 == "" && ViewBag.R.lv.cd6 == ""
+            && ViewBag.R.lv.cd7 == "" && ViewBag.R.lv.cd8 == "" && ViewBag.R.lv.cd9 == "" && ViewBag.R.lv.cd10 == "" && ViewBag.R.lv.cd11 == "" && ViewBag.R.lv.cd12 == "")
+            {
+                if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+            }
 
-        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "금형대장리스트";
+            if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "금형대장리스트";
 
-        //크레신 : 금형대장 현황 : 2014-04-10 필드 변경, 검색 변경
-        string strSeq = (popUp == "") ? "fiid" : "__RADIO__";
-        string strSeqDn = (popUp == "") ? "ID" : "";
-
-        string[,] arr = { { strSeq, strSeqDn, "50px", "", "Y"},  { "ORG_NAME", "사업장", "60px", "", "Y" }, { "TOOLING_NUMBER", "금형번호", "130px", "", "Y" }, { "MODELNO", "적용모델", "130px", "", "Y" }
+            //크레신 : 금형대장 현황 : 2014-04-10 필드 변경, 검색 변경
+            string[,] arr = { { "fiid", "ID", "50px", "", "Y"},  { "ORG_NAME", "사업장", "60px", "", "Y" }, { "TOOLING_NUMBER", "금형번호", "130px", "", "Y" }, { "MODELNO", "적용모델", "130px", "", "Y" }
                         , { "PARTNM", "부품명", "160px", "L", "Y" }, { "PARTNO", "품번", "130px", "L", "Y" },{ "MAKE_SUPPLIER_NAME", "제작처", "170px", "L", "Y" }, { "MAKE_TOOLINGNO", "제작처<br />금형번호", "100px", "", "Y" }
                         , { "STORE_PLACE_NAME", "양산처", "170px", "", "Y" }, { "RUNNERTYPE", "RUNNER<br />TYPE", "70px", "", "Y" }, { "CAVITYA", "CAV<br />구분", "60px", "", "Y" }, { "CAVITY", "CAV<br />수량", "60px", "", "Y" } //1310
                         , { "ABLCAVITYA", "가용CAV<br />구분", "70px", "", "Y" }, { "ABLCAVITY", "가용CAV<br />수량", "70px", "", "Y" }, { "WATERPER", "수율(%)", "70px", "", "Y" }
@@ -119,10 +131,11 @@
                         , { "RETRIEVAL_EXP_DATE", "회수<br />예정일", "70px", "", "Y" }, { "RETRIEVAL_DATE", "회수<br />완료일", "70px", "", "Y" }, { "RETRIEVAL_TYPE", "회수<br />완료", "40px", "", "Y" }
                         , { "PONO", "PO NO", "60px", "", "Y" }, { "PODATE", "P/O<br />발행일", "60px", "", "Y" }, { "APNO", "AP NO", "60px", "", "Y" }
                         , { "ORDER_CREATE_DATE", "등록일", "70px", "", "Y" }, { "CREATOR", "등록자", "60px", "", "Y" }}; //430
-        this._columnConfig = arr;
-        this._tblWidth = "4100px";
+            this._columnConfig = arr;
+            this._tblWidth = "4100px";
 
-        ViewBag.R.lv["basesort"] = "ORDER_CREATE_DATE";
+            ViewBag.R.lv["basesort"] = "ORDER_CREATE_DATE";
+        }
     }
 
     private string RenderColumnHeader(string mode)

@@ -461,7 +461,7 @@
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_28.gif</xsl:attribute>
                         </img>
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="생산지" onclick="_zw.formEx.optionWnd('iso.currency',240,274,-130,0,'etc','CURRENCY');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',240,274,-130,0,'etc','CURRENCY');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                       &nbsp;&nbsp;적용환율 :
@@ -493,15 +493,10 @@
                     </td>
                     <td class="fm-button">
                       통화 :                       
-                      <input type="text" id="__mainfield" name="CURRENCY" style="width:60px;height:16px">
-                        <xsl:attribute name="class">txtText_u</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/CURRENCY" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="CURRENCY" style="width:60px" class="txtRead" readonluy="" value="{//forminfo/maintable/CURRENCY}" />
                       &nbsp;&nbsp;적용환율 :
-                      <input type="text" id="__mainfield" name="EXCHANGERATE" style="width:100px;height:16px" class=" txtText_u txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" onfocusout="parent.fnDateFormat(this)"  readonly="readonly" value="{//forminfo/maintable/EXCHANGERATE}" />
+                      <!--<input type="text" id="__mainfield" name="EXCHANGERATE" style="width:100px;height:16px" class=" txtText_u txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" onfocusout="parent.fnDateFormat(this)"  readonly="readonly" value="{//forminfo/maintable/EXCHANGERATE}" />-->
+						<input type="text" id="__mainfield" name="EXCHANGERATE" style="width:100px" class="txtRead" readonluy="" value="{//forminfo/maintable/EXCHANGERATE}" />
                     </td>
                   </tr>
                 </xsl:otherwise>
@@ -538,7 +533,8 @@
                         제작비용                        
                         &nbsp;
                       </td>
-                      <td class="f-lbl-sub" style="" onclick="parent.fnExchangeInfo3('B');">
+                      <!--<td class="f-lbl-sub" style="" onclick="parent.fnExchangeInfo3('B');">-->
+						<td class="f-lbl-sub">
                         제작비용<br />(KRW)                        
                       </td>
                       <td class="f-lbl-sub" style="border-right:0">비고</td>

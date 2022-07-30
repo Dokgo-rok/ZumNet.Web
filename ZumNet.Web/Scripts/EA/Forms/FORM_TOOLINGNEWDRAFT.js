@@ -34,6 +34,7 @@
 		"checkEvent": function (ckb, el, fld) {
 			if (fld == 'WHOMONEY') {
 				var row = $(el).parent().parent();
+				row.find('[name="WHOMONEYDETAIL"]').val('');
 				if (el.checked && el.value == '고객') row.find(':checkbox[name="ckbWHOMONEYDETAIL"]').prop('disabled', false).prop('checked', false);
 				else row.find(':checkbox[name="ckbWHOMONEYDETAIL"]').prop('disabled', true).prop('checked', false);
 			}
@@ -293,7 +294,8 @@
 									} else $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
 								}
 
-								if (x == 'BUYER') _zw.formEx.searchToolingStatus('AA', v[0], '', '');;
+								if (x == 'BUYER') _zw.formEx.searchToolingStatus('AA', v[0], '', '');
+								else if (x == 'PARTNO') _zw.formEx.searchDrawingInfo(el, 'AA', v[0], '', '');
 								p.modal('hide');
 							});
 
@@ -353,7 +355,7 @@
 				data: '{M:"getreportsearch",body:"S", k1:"report",k2:"SEARCH_TOOLING",k3:"' + k3 + '",v1:"' + v1 + '",v2:"' + v2 + '",v3:"",v4:"",v5:"' + v5 + '"}',
 				success: function (res) {
 					if (res.substr(0, 2) == 'OK') {
-						var v = res.substr(2).split(','), f = '0,0.[0000]'; console.log(parseFloat(v[0]) + " : " + numeral(parseFloat(v[0])).format(f));
+						var v = res.substr(2).split(','), f = '0,0.[0000]'; //console.log(parseFloat(v[0]) + " : " + numeral(parseFloat(v[0])).format(f));
 						$('#__mainfield[name="COMPANYSTOCKQTY"]').val(numeral(_zw.ut.empty(v[0])).format(f));
 						$('#__mainfield[name="COMPANYCOSTUSD"]').val(numeral(_zw.ut.empty(v[1])).format(f));
 						$('#__mainfield[name="BUYERSTOCKQTY"]').val(numeral(_zw.ut.empty(v[2])).format(f));
@@ -370,7 +372,7 @@
 				}
 			});
 		},
-		"searchDrawingInfo": function (k3, v1) {
+		"searchDrawingInfo": function (p, k3, v1) {
 			$.ajax({
 				type: "POST",
 				url: "/EA/Common",
@@ -378,7 +380,12 @@
 				data: '{M:"getreportsearch",body:"S", k1:"report",k2:"FORM_DRAWING",k3:"' + k3 + '",v1:"' + v1 + '",v2:"",v3:"",v4:"",v5:""}',
 				success: function (res) {
 					if (res.substr(0, 2) == 'OK') {
+						do { p = p.parent(); } while (!p.hasClass('ft-sub-sub'));
 						var v = res.substr(2).split(String.fromCharCode(10));
+
+						p.find('[name="ADDNUMBER"]').val(v[1]);
+						p.find('[name="TOOLPOSCNT"]').val(v[0]);
+						p.find('tr.subsub_table_row:nth-child(4) td:last()').html(v[2]);
 
 					} else bootbox.alert(res);
 				}

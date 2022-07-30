@@ -42,11 +42,11 @@
   function isGt(x, y) {if(!x || x=='') {x=0;} else {x=parseInt(x);}if(!y || y=='') {y=0;} else {y=parseInt(y);} if(x>y){return true;}else{return false;}}
     function down(w, r, x, s) {
         if (w && w != '' && r && r != '') return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?xf=" + x + "&sn=" + escape(s);
-		else return "/BizForce/PortalService/FileDown.aspx?xf=" + x + "&sn=" + escape(s);
+	    else return "/BizForce/PortalService/FileDown.aspx?xf=" + x + "&sn=" + escape(s);
     }
     function down2(w, r, v, s, f) {
         if (w && w != '' && r && r != '') return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v + "/" + s) + "&fn=" + escape(f);
-		else return "/BizForce/PortalService/FileDown.aspx?fp=" + escape(v + "/" + s) + "&fn=" + escape(f);
+	    else return "/BizForce/PortalService/FileDown.aspx?fp=" + escape(v + "/" + s) + "&fn=" + escape(f);
     }
   function fileDown(w, r, v, s, f) {return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?xf=ea&sn=" + escape(s);}  
   function linkDown(w, r, v, f) {return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v) + "&fn=" + escape(f);}

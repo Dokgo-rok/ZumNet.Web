@@ -846,11 +846,15 @@
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEDRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEDRAFT_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEREQ_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEREQ_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEREQ_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGMAKINGREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGMAKINGREQ_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGMOVEREQ_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_TOOLINGNEWDRAFT_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_TOOLINGNEWDRAFT_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGNEWDRAFT_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGNEWREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGNEWREQ_V2.xsl" />
@@ -2162,6 +2166,7 @@
     <Content Include="Scripts\EA\Forms\FORM_MEALTICKET.js" />
     <Content Include="Scripts\EA\Forms\FORM_MEASURELIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_MINUTES.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MOLDREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_MONTHFAULTYGOODS.js" />
     <Content Include="Scripts\EA\Forms\FORM_MONTHLOSSCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWDEVELOPREQUEST.js" />
@@ -2210,8 +2215,10 @@
     <Content Include="Scripts\EA\Forms\FORM_TESTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGDISUSEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLINGREPAIRDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_UNITSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_USEITEMMASTERCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATION.js" />

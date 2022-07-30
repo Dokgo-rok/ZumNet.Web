@@ -26,26 +26,26 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:716px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:2pt}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:700px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:1pt}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:} .m .ft .f-lbl2 {width:}
-          .m .ft .f-option {width:20px} .m .ft .f-option1 {width:49%} .m .ft .f-option2 {width:49%}
-          .m .ft-sub {border:1px solid windowtext;border-top:0}
-          .m .ft-sub .ft-sub-sub td {border:0;border-right:windowtext 1pt dotted;border-bottom:windowtext 1pt dotted}
-          .m .ft-sub .f-option {width:49%} .m .fm .f-option1 {width:50%} .m .fm .f-option2 {width:50%;text-align:right;padding-right:2px;font-size:12px}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:} .m .ft .f-lbl2 {width:}
+			.m .ft .f-option {width:20px} .m .ft .f-option1 {width:49%} .m .ft .f-option2 {width:49%}
+			.m .ft-sub {border:1px solid #343a40;border-top:0}
+			.m .ft-sub .ft-sub-sub td {border:0;border-right:#343a40 1px dotted;border-bottom:#343a40 1px dotted}
+			.m .ft-sub .f-option {width:49%} .m .fm .f-option1 {width:50%} .m .fm .f-option2 {width:50%;text-align:right;padding-right:2px;font-size:12px}
 
-          /* 하위테이블 추가삭제 버튼 */
-          .subtbl_div button {height:16px;width:16px}
+			/* 하위테이블 추가삭제 버튼 */
+			<!--.subtbl_div button {height:16px;width:16px}-->
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:650px}}
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:650px}}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -66,7 +66,7 @@
                   <h1>
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <select id="__mainfield" name="DOCCLASS" style="font-size:16pt;font-weight:bold">
+						  <select id="__mainfield" name="DOCCLASS" class="custom-select d-inline-block" style="width: 145px;font-size:16pt;font-weight:bold">
                           <xsl:choose>
                             <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/DOCCLASS),'')">
                               <option value="" selected="selected">선택</option>
@@ -99,7 +99,7 @@
                     </xsl:choose>
                     금형<xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <select id="__mainfield" name="REPAIRTYPE" style="font-weight:bold;font-size:16pt;letter-spacing:2pt">
+						  <select id="__mainfield" name="REPAIRTYPE" class="custom-select d-inline-block" style="width: 100px;font-weight:bold;font-size:16pt">
                           <xsl:choose>
                             <xsl:when test="//forminfo/maintable/REPAIRTYPE[.='REPAIR']">
                               <option value="REPAIR" selected="selected">수리</option>    
@@ -145,7 +145,7 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:320px">
+                <td style="width:325px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '작성부서')"/>
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
@@ -180,7 +180,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="MAINREVISION" tabindex="1">
+                      <input type="text" id="__mainfield" name="MAINREVISION">
                         <xsl:attribute name="class">txtText</xsl:attribute>
                         <xsl:attribute name="maxlength">50</xsl:attribute>
                         <xsl:attribute name="value">
@@ -217,20 +217,23 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="ORGCODE" style="width:30%" tabindex="2">
+                      <input type="text" id="__mainfield" name="ORGCODE" style="width:30%">
                         <xsl:attribute name="class">txtText_u</xsl:attribute>
                         <xsl:attribute name="readonly">readonly</xsl:attribute>
                         <xsl:attribute name="value">
                           <xsl:value-of select="//forminfo/maintable/ORGCODE" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.centercode',200,200,90,148,'orgcode','ORGCODE', 'ORGID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.centercode',200,200,90,148,'orgcode','ORGCODE', 'ORGID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="사업장" onclick="_zw.formEx.optionWnd('external.centercode',240,274,-130,0,'orgcode','ORGCODE', 'ORGID');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ORGCODE))" />
@@ -243,7 +246,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="Subject" name="__commonfield" tabindex="4">
+                      <input type="text" id="Subject" name="__commonfield">
                         <xsl:attribute name="class">txtText</xsl:attribute>
                         <xsl:attribute name="maxlength">200</xsl:attribute>
                         <xsl:attribute name="value">
@@ -262,17 +265,14 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="DESCRIPTION" style="height:80px" tabindex="5">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                      <textarea id="__mainfield" name="DESCRIPTION" style="height:80px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/DESCRIPTION" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="DESCRIPTION" style="height:80px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:80px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DESCRIPTION))" />
                       </div>
                     </xsl:otherwise>
@@ -296,7 +296,7 @@
                       <span>* 금형상세내역</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_26.gif
@@ -309,7 +309,13 @@
                             /<xsl:value-of select="$root"/>/EA/Images/ico_27.gif
                           </xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+					<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+	                    <i class="fas fa-plus"></i>
+                    </button>
+                    <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+	                    <i class="fas fa-minus"></i>
+                    </button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -345,7 +351,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -411,7 +417,7 @@
 
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
-      <td style="border:0;border-top:1px solid windowtext;border-right:1px dotted windowtext">
+		<td class="tdRead_Center" style="border-right:1px dotted #343a40">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ">
@@ -421,12 +427,11 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td style="border:0;border-top:1px solid windowtext;padding:0;height:232px">
+		<td style="border:0;border-top:1px solid #343a40;padding:0">
         <table class="ft-sub-sub" header="0" border="0" cellpadding="0" cellspacing="0">
           <xsl:if test="$mode='new' or $mode='edit'">
             <xsl:attribute name="style">table-layout:</xsl:attribute>
@@ -452,18 +457,24 @@
                       <xsl:value-of select="TOOLINGNUMBER" />
                     </xsl:attribute>
                   </input>
-                  <button onclick="parent.fnOpen('/BizForce/EA/ReportSheet.aspx?M=&amp;ft=REGISTER_TOOLING&amp;Lc=%uAE08%uD615%uB300%uC7A5',840,700,'resize','',this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                  <!--<button onclick="parent.fnOpen('/BizForce/EA/ReportSheet.aspx?M=&amp;ft=REGISTER_TOOLING&amp;Lc=%uAE08%uD615%uB300%uC7A5',840,700,'resize','',this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                     <img alt="" class="blt01" style="margin:0 0 2px 0">
                       <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_28.gif</xsl:attribute>
                     </img>
-                  </button>
+                  </button>-->
+					<button type="button" class="btn btn-outline-secondary btn-18" title="금형번호" onclick="_zw.formEx.reportWnd('REGISTER_TOOLING');">
+						<i class="fas fa-angle-down"></i>
+					</button>
                 </xsl:when>
                 <xsl:otherwise>
-                  <a target="_blank">
+                  <!--<a target="_blank">
                     <xsl:attribute name="href">/<xsl:value-of select="$root"/>/EA/Forms/XFormMain.aspx?M=read&amp;xf=tooling&amp;fi=REGISTER_TOOLING&amp;mi=<xsl:value-of select="TOOLINGNUMBER"/></xsl:attribute>
                     <xsl:attribute name="title"><xsl:value-of select="TOOLINGNUMBER"/></xsl:attribute>
                     <xsl:value-of select="TOOLINGNUMBER"/>
-                  </a>
+                  </a>-->
+					<a href="javascript:" onclick="_zw.fn.openEAFormSimple('{TOOLINGNUMBER}', 'tooling', 'REGISTER_TOOLING')" title="{TOOLINGNUMBER}">
+						<xsl:value-of select="TOOLINGNUMBER"/>
+					</a>
                 </xsl:otherwise>
               </xsl:choose>
             </td>
@@ -535,7 +546,7 @@
                           <xsl:value-of select="PARTNO1" />
                         </xsl:attribute>
                       </input>&nbsp;(
-                      <input type="text" name="PARTNM1" style="width:330px">
+                      <input type="text" name="PARTNM1" style="width:310px">
                         <xsl:attribute name="class">txtText</xsl:attribute>
                         <xsl:attribute name="class">txtRead</xsl:attribute>
                         <xsl:attribute name="readonly">readonly</xsl:attribute>
@@ -952,20 +963,17 @@
             <td colspan="4">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <input type="text" id="__mainfield" name="STOREPLACE" style="width:92%;border-bottom:0">
-                    <xsl:attribute name="class">txtText_u</xsl:attribute>
-                    <xsl:attribute name="readonly">readonly</xsl:attribute>
-                    <xsl:attribute name="value">                      
-                      <xsl:value-of select="STOREPLACE" />
-                    </xsl:attribute>
-                  </input>
-                  <button onclick="parent.fnExternal('erp.vendorcustomer',240,40,126,70,'VENDOR','STOREPLACE','STOREPLACEID','STOREPLACESITEID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                  <input type="text" name="STOREPLACE" class="txtRead" readonly="readonly" value="{STOREPLACE}" style="width:92%" />
+                  <!--<button onclick="parent.fnExternal('erp.vendorcustomer',240,40,126,70,'VENDOR','STOREPLACE','STOREPLACEID','STOREPLACESITEID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                     <img alt="" class="blt01" style="margin:0 0 2px 0">
                       <xsl:attribute name="src">
                         /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                       </xsl:attribute>
                     </img>
-                  </button>
+                  </button>-->
+					<button type="button" class="btn btn-outline-secondary btn-18" title="사용처" onclick="_zw.formEx.externalWnd('erp.vendorcustomer',240,40,126,70,'BUYER','STOREPLACE','STOREPLACEID','STOREPLACESITEID');">
+						<i class="fas fa-angle-down"></i>
+					</button>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(STOREPLACE))" />
@@ -986,7 +994,7 @@
             <td style="border-right:0">              
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <input type="text" id="__mainfield" name="COMPLETEDATE" style="width:160px">
+                  <input type="text" name="COMPLETEDATE" style="width:160px">
                     <xsl:attribute name="class">txtText</xsl:attribute>
                     <xsl:attribute name="maxlength">20</xsl:attribute>                    
                     <xsl:attribute name="value">
@@ -1012,18 +1020,15 @@
                       <xsl:value-of select="REPAIRCURRENCY" />
                     </xsl:attribute>
                   </input>
-                  <button onclick="parent.fnOption('iso.currency',160,140,10,115,'etc',this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                  <!--<button onclick="parent.fnOption('iso.currency',160,140,10,115,'etc',this);" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                     <img alt="" class="blt01" style="margin:0 0 2px 0">
                       <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_28.gif</xsl:attribute>
                     </img>
-                  </button>
-                  <input type="text" name="REPAIRCOST" style="width:190px">
-                    <xsl:attribute name="class">txtDollar</xsl:attribute>
-                    <xsl:attribute name="maxlength">20</xsl:attribute>
-                    <xsl:attribute name="value">
-                      <xsl:value-of select="REPAIRCOST" />
-                    </xsl:attribute>
-                  </input>
+                  </button>-->
+					<button type="button" class="btn btn-outline-secondary btn-18 mr-1" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',220,274,-130,0,'etc','REPAIRCURRENCY');">
+						<i class="fas fa-angle-down"></i>
+					</button>
+					<input type="text" name="REPAIRCOST" style="width:180px" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{REPAIRCOST}" />
                 </xsl:when>
                 <xsl:otherwise>
                   (<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(REPAIRCURRENCY))" />)&nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(REPAIRCOST))" />
@@ -1041,11 +1046,14 @@
                       <xsl:value-of select="REPAIRPLACE" />
                     </xsl:attribute>
                   </input>
-                  <button onclick="parent.fnExternal('erp.vendorcustomer',240,40,136,74,'VENDOR',this,'REPAIRPLACEID','REPAIRPLACESITEID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                  <!--<button onclick="parent.fnExternal('erp.vendorcustomer',240,40,136,74,'VENDOR',this,'REPAIRPLACEID','REPAIRPLACESITEID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                     <img alt="" class="blt01" style="margin:0 0 2px 0">
                       <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_28.gif</xsl:attribute>
                     </img>
-                  </button>
+                  </button>-->
+					<button type="button" class="btn btn-outline-secondary btn-18" title="수정(리)업체" onclick="_zw.formEx.externalWnd('erp.vendorcustomer',240,40,126,70,'BUYER','REPAIRPLACE','REPAIRPLACEID','REPAIRPLACESITEID');">
+						<i class="fas fa-angle-down"></i>
+					</button>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(REPAIRPLACE))" />
@@ -1064,7 +1072,7 @@
             <td colspan="4">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <select name="REPAIRSETTLEMENT" style="width:100px">
+                  <select name="REPAIRSETTLEMENT" class="form-control" style="width:120px">
                     <xsl:choose>
                       <xsl:when test="phxsl:isEqual(string(REPAIRSETTLEMENT),'')">
                         <option value="" selected="selected">선택</option>
@@ -1100,15 +1108,7 @@
             <td style="border-right:0">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <input type="text" name="REPAIRFROM">
-                    <xsl:attribute name="class">txtDate</xsl:attribute>
-                    <xsl:attribute name="style">width:80px</xsl:attribute>
-                    <xsl:attribute name="maxlength">8</xsl:attribute>
-                    <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                    <xsl:attribute name="value">
-                      <xsl:value-of select="REPAIRFROM" />
-                    </xsl:attribute>
-                  </input>
+                  <input type="text" name="REPAIRFROM" style="width: 100px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{REPAIRFROM}" />
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(REPAIRFROM))" />
@@ -1117,15 +1117,7 @@
               &#160;~&#160;
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <input type="text" name="REPAIRTO">
-                    <xsl:attribute name="class">txtDate</xsl:attribute>
-                    <xsl:attribute name="style">width:80px</xsl:attribute>
-                    <xsl:attribute name="maxlength">8</xsl:attribute>
-                    <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                    <xsl:attribute name="value">
-                      <xsl:value-of select="REPAIRTO" />
-                    </xsl:attribute>
-                  </input>
+                  <input type="text" name="REPAIRTO" style="width: 100px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{REPAIRTO}" />
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(REPAIRTO))" />
@@ -1169,13 +1161,7 @@
             <td style="border-right:0">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <input type="text" name="SHOT">
-                    <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                    <xsl:attribute name="maxlength">18</xsl:attribute>
-                    <xsl:attribute name="value">
-                      <xsl:value-of select="SHOT" />
-                    </xsl:attribute>
-                  </input>
+                  <input type="text" name="SHOT" style="width: 100px" class="txtCurrency" maxlength="18" data-inputmask="number;18;0" value="{SHOT}" />
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(SHOT))" />
@@ -1192,17 +1178,14 @@
             <td colspan="6" style="border-right:0">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <textarea name="REPAIRREASON" style="height:40px">
-                    <xsl:attribute name="class">txaText</xsl:attribute>
-                    <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                  <textarea name="REPAIRREASON" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                     <xsl:if test="$mode='edit'">
                       <xsl:value-of select="REPAIRREASON" />
                     </xsl:if>
                   </textarea>
                 </xsl:when>
                 <xsl:otherwise>
-                  <div name="REPAIRREASON" style="height:40px">
-                    <xsl:attribute name="class">txaRead</xsl:attribute>
+					<div class="txaRead" style="min-height:40px">
                     <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(REPAIRREASON))" />
                   </div>
                 </xsl:otherwise>
@@ -1223,17 +1206,14 @@
             <td colspan="6" style="border-bottom:0;border-right:0">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
-                  <textarea name="REPAIRDESCRIPTION" style="height:40px">
-                    <xsl:attribute name="class">txaText</xsl:attribute>
-                    <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+                  <textarea name="REPAIRDESCRIPTION" style="height:40px" class="txaText bootstrap-maxlength" maxlength="2000">
                     <xsl:if test="$mode='edit'">
                       <xsl:value-of select="REPAIRDESCRIPTION" />
                     </xsl:if>
                   </textarea>
                 </xsl:when>
                 <xsl:otherwise>
-                  <div name="REPAIRDESCRIPTION" style="height:40px">
-                    <xsl:attribute name="class">txaRead</xsl:attribute>
+                  <div class="txaRead" style="min-height:40px">
                     <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(REPAIRDESCRIPTION))" />
                   </div>
                 </xsl:otherwise>
