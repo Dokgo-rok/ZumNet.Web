@@ -102,8 +102,8 @@ namespace ZumNet.Web.BizForce.PortalService
             catch (Exception ex)
             {
                 //오류 처리 X
-                Response.Write(ex);
-                Response.End();
+                //Response.Write(ex);
+                //Response.End();
             }
 
             _disableDocSecurity = true;

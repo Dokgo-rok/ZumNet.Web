@@ -27,11 +27,11 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:714px} .m .fm-editor {height:450px;border:windowtext 1pt solid;border-top:0}
+          .m {width:700px} .m .fm-editor {height:450px;border:windowtext 1pt solid;border-top:0}
           .fh h1 {font-size:20.0pt;letter-spacing:1pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:72px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:8%} .m .ft .f-lbl2 {width:?}
@@ -80,23 +80,18 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:236px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '3', '작성부서')"/>
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
-                <td style="width:380px">
-                  &nbsp;
-                </td>
-                <td style="width:;font-size:1px">&nbsp;</td>
-                <td style="width:92px">
-                  &nbsp;
-                </td>
               </tr>
             </table>
           </div>
 
           <div class="ff" />
           <div class="ff" />
+			<div class="ff" />
+			<div class="ff" />
 
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
@@ -126,6 +121,7 @@
           <div class="ff" />
           <div class="ff" />
           <div class="ff" />
+			<div class="ff" />
 
           <div class="fm">
             <span>1. 사후관리 요청내용</span>
@@ -210,7 +206,7 @@
                 <td  style="">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="S_CLTAPVYN">
+                      <select id="__mainfield" class="form-control d-inline-block" name="S_CLTAPVYN" style="width: 120px">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/S_CLTAPVYN),'')">
                             <option value="" selected="selected">선택</option>
@@ -248,15 +244,7 @@
                 <td  style="border-right:0">                  
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="S_CLTAPVDT">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:80px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/S_CLTAPVDT" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="S_CLTAPVDT" style="width: 120px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/S_CLTAPVDT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/S_CLTAPVDT))" />
@@ -269,15 +257,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="S_NOTICE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="style">width:80px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/S_NOTICE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="S_NOTICE" style="width: 120px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/S_NOTICE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/S_NOTICE))" />
@@ -307,6 +287,8 @@
           
           <div class="ff" />
           <div class="ff" />
+			<div class="ff" />
+			<div class="ff" />
 
           <div class="fm">
             <span>2. 특기사항</span>
@@ -316,17 +298,14 @@
           <div class="ft">
             <xsl:choose>
               <xsl:when test="$mode='new' or $mode='edit'">
-                <textarea id="__mainfield" name="ETC" style="height:220px">
-                  <xsl:attribute name="class">txaText</xsl:attribute>
-                  <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 1000)</xsl:attribute>
+                <textarea id="__mainfield" name="ETC" style="height:220px" class="txaText bootstrap-maxlength" maxlength="1000">
                   <xsl:if test="$mode='edit'">
                     <xsl:value-of select="//forminfo/maintable/ETC" />
                   </xsl:if>
                 </textarea>
               </xsl:when>
               <xsl:otherwise>
-                <div id="__mainfield" name="ETC" style="height:220px">
-                  <xsl:attribute name="class">txaRead</xsl:attribute>
+                <div class="txaRead" style="min-height:220px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ETC))" />
                 </div>
               </xsl:otherwise>
@@ -336,7 +315,7 @@
           <div class="ff" />
           <div class="ff" />
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 

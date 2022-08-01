@@ -27,14 +27,14 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:1100px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:-2pt}
+          .m {width:1050px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
+          .fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:9%} .m .ft .f-lbl1 {width:2%} .m .ft .f-lbl2 {width:13%} .m .ft .f-lbl3 {width:5%}
+          .m .ft .f-lbl {width:10%} .m .ft .f-lbl1 {width:2%} .m .ft .f-lbl2 {width:13%} .m .ft .f-lbl3 {width:}
           .m .ft .f-option {width:20px} .m .ft .f-option1 {width:50%} .m .ft .f-option2 {width:70%}
           .m .ft-sub .f-option {width:49%}
 
@@ -80,7 +80,7 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:325">
+                <td style="width:325px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '신청부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
@@ -100,7 +100,7 @@
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="f-lbl">문서번호</td>
-                <td style="width:37%">
+                <td style="width:40%">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//docinfo/docnumber))" />
                 </td>
                 <td class="f-lbl">작성일자</td>
@@ -131,23 +131,26 @@
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="f-lbl" style="border-bottom:0">출장지</td>
-                <td style="border-bottom:0;width:37.5%">
+                <td style="border-bottom:0;width:40%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="LOCATION" style="width:91%">
+                      <input type="text" id="__mainfield" name="LOCATION" style="width:30%">
                         <xsl:attribute name="class">txtText_u</xsl:attribute>
                         <xsl:attribute name="readonly">readonly</xsl:attribute>
                         <xsl:attribute name="value">
                           <xsl:value-of select="//forminfo/maintable/LOCATION" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnView('external.centercode',300,180,80,140,'etc','LOCATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnView('external.centercode',300,180,80,140,'etc','LOCATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="생산지" onclick="_zw.formEx.optionWnd('external.centercode',240,304,-130,0,'etc','LOCATION');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/LOCATION))" />
@@ -158,7 +161,7 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="EVENTDATE" class="txtDate" style="width:100%" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" value="{//forminfo/maintable/EVENTDATE}" />
+                      <input type="text" id="__mainfield" name="EVENTDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width: 120px" value="{//forminfo/maintable/EVENTDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EVENTDATE))" />
@@ -197,29 +200,35 @@
               <xsl:if test="$mode='new' or $mode='edit'">
                 <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
               </xsl:if>
+				<colgroup>
+					<col style="width:3%"></col>
+					<col style="width:14%"></col>
+					<col style="width:34%"></col>
+					<col style="width:13%"></col>
+					<col style="width:13%"></col>
+					<col style="width:23%"></col>
+				</colgroup>
               <tr>
-                <td class="f-lbl1">체크</td>
+                <td class="f-lbl3">체크</td>
                 <td class="f-lbl3">비자종류</td>
-                <td class="f-lbl2">필요서류</td>
+                <td class="f-lbl3">필요서류</td>
                 <td class="f-lbl3">소요기간 구분</td>
                 <td class="f-lbl3">제출처</td>
-                <td class="f-lbl" style="border-right:0">비고</td>
+                <td class="f-lbl3" style="border-right:0">비고</td>
               </tr>
               <tr>
                 <td style="text-align:center;height:130px">
-                  <span class="f-option">
                     <input type="checkbox" id="ckb31" name="ckbCHCHECK" value="중국체크2">
-                      <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHCHECK', this, 'CHCHECK')</xsl:attribute>
-                      </xsl:if>
-                      <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHCHECK),'중국체크2')">
+                        <xsl:if test="$mode='new' or $mode='edit'">
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHCHECK', this, 'CHCHECK')</xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHCHECK),'중국체크2')">
                         <xsl:attribute name="checked">true</xsl:attribute>
-                      </xsl:if>
-                      <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CHCHECK),'중국체크2')">
+                        </xsl:if>
+                        <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CHCHECK),'중국체크2')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
-                      </xsl:if>
+                        </xsl:if>
                     </input>
-                  </span>                 
                 </td>
                 <td style="text-align:center">중국상용단수<br></br>
                   3개월 유효 30일 체류
@@ -233,7 +242,7 @@
                 <td style="text-align:center" rowspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECK0">
+                      <select id="__mainfield"  name="CHECK0" class="custom-select">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECK0),'')">
                             <option value="" selected="selected">선택</option>
@@ -282,10 +291,9 @@
               </tr>
               <tr>
                 <td style="text-align:center;height:60px">
-                  <span class="f-option">
                     <input type="checkbox" id="ckb31" name="ckbCHCHECK" value="중국체크">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCHCHECK', this, 'CHCHECK')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCHCHECK', this, 'CHCHECK')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHCHECK),'중국체크')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -294,7 +302,6 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                  </span>
                 </td>
                 <td style="text-align:center">
                   중국상용복수<br></br>
@@ -308,10 +315,9 @@
               </tr>
               <tr> 
                 <td style="text-align:center;height:50px">
-                  <span class="f-option">
                     <input type="checkbox" id="ckb41" name="ckbINCHECK" value="인니체크">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbINCHECK', this, 'INCHECK')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbINCHECK', this, 'INCHECK')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/INCHECK),'인니체크')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -320,7 +326,6 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>  
-                  </span>
                 </td>
                 <td style="text-align:center">인도네시아 상용단수<br></br>
                   3개월유효 60일체류
@@ -354,10 +359,9 @@
               </tr>
               <tr>
                 <td style="text-align:center;height:60px">
-                  <span class="f-option">
                     <input type="checkbox" id="ckb51" name="ckbVJCHECK" value="베트남">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbVJCHECK', this, 'VJCHECK')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbVJCHECK', this, 'VJCHECK')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/VJCHECK),'베트남')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -366,7 +370,6 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                  </span>
                 </td>
                 <td style="text-align:center">
                   베트남
@@ -380,7 +383,7 @@
                 <td style="text-align:center" rowspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <select id="__mainfield"  name="CHECKDAY">
+                      <select id="__mainfield"  name="CHECKDAY" class="custom-select">
                         <xsl:choose>
                           <xsl:when test="phxsl:isEqual(string(//forminfo/maintable/CHECKDAY),'')">
                             <option value="" selected="selected">선택</option>
@@ -435,10 +438,9 @@
               </tr>
               <tr>
                 <td style="text-align:center;height:60px">
-                  <span class="f-option">
                     <input type="checkbox" id="ckb81" name="ckbVTCHECK" value="베트남삼개월">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbVTCHECK', this, 'VTCHECK')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbVTCHECK', this, 'VTCHECK')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/VTCHECK),'베트남삼개월')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -447,7 +449,6 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
                     </input>
-                  </span>
                 </td>
                 <td style="text-align:center">
                  베트남

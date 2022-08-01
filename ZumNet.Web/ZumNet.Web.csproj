@@ -2118,6 +2118,7 @@
     <Content Include="Scripts\EA\Forms\FORM_BIZDOMTRIPEXPENSE.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPEXPENSE.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPPLAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_BIZTRIPREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZVACPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_CERTIFICATIONDOCUMENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
@@ -2181,6 +2182,7 @@
     <Content Include="Scripts\EA\Forms\FORM_OPERATIONMANUAL.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PASSPORTLIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_PCBSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PERSONNELAPPOINTMENTS.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRIMECOSTESTIMATECHART.js" />
