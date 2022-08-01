@@ -48,7 +48,7 @@ $(function () {
 
     _zw.fn.bindCtrl();
 
-    _zw.fn.openXForm = function () {
+    _zw.fn.openXFormEx = function () {
         var el = _zw.ut.eventBtn(), row = el.parent().parent(), x = 0, y = 0, winName = '', url = '', sResize = '', sId = '', qi;
         if (row.prop('tagName') == 'TR') {
             if (_zw.V.ft == 'SEARCH_EADOC') {

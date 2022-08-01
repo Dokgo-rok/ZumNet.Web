@@ -1578,12 +1578,12 @@ $(function () {
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, '', 900, 600, "resize");
         },
-        //"openXForm": function (m, mi, oi) {
-        //    var qi = '{M:"' + m + '",mi:"' + mi + '",oi:"' + oi + '",wi:"",xf:"ea"}';
-        //    var wnd = arguments[3] && arguments[3] != '' ? arguments[3] : 'EAFormOptionRead';
-        //    var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
-        //    _zw.ut.openWnd(url, wnd, 900, 600, "resize");
-        //},
+        "openXForm": function (m, mi, oi) {
+            var qi = '{M:"' + m + '",mi:"' + mi + '",oi:"' + oi + '",wi:"",xf:"ea"}';
+            var wnd = arguments[3] && arguments[3] != '' ? arguments[3] : 'EAFormOptionRead';
+            var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+            _zw.ut.openWnd(url, wnd, 900, 600, "resize");
+        },
         "input": function (e, p) {
             if (e) {
                 if ($(e).prop('tagName').toUpperCase() == 'INPUT') {

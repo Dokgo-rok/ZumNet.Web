@@ -21,7 +21,7 @@
                         bootbox.alert('1인 식비한도가 6천원을 초과하였습니다. 식대를 초기화 합니다.', function () { e2.val(''); e2.focus(); }); return false;
                     }
                 }
-            }
+            } s = 0;
 
             if (el.name == "MONEYA" || el.name == "MONEYB" || el.name == "MONEYC" || el.name == "MONEYD" || el.name == "MONEYE") {
                 p.find('td :text[name="' + el.name + '"]').each(function (z, e) { s += numeral(parseFloat(_zw.ut.empty(e.value))).value(); });

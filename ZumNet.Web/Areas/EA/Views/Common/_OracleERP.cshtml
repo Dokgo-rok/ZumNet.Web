@@ -28,7 +28,7 @@
         try
         {
             if (postData.ContainsKey("page")) iPage = Convert.ToInt32(postData["page"].ToString());
-            if (postData.ContainsKey("iPageCount")) iPage = Convert.ToInt32(postData["count"].ToString());
+            if (postData.ContainsKey("count")) iPageCount = Convert.ToInt32(postData["count"].ToString());
 
             if (strBodyMode == "S")
             {

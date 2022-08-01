@@ -218,17 +218,17 @@
                         else if (strID == "TOOLING_NUMBER")
                         {
                             if (mode == "xls") strValue = row[strID].ToString();
-                            else strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm();\">" + row[strID].ToString() + "</a>";
+                            else strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXFormEx();\">" + row[strID].ToString() + "</a>";
                         }
                         else if (strID == "MODELNO")
                         {
                             strValue = row[strID].ToString();
-                            if (mode != "xls" && strValue.Trim() != "" && row["MODELPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm('" + row["MODELCLS"].ToString() + "', '" + row["MODELPDMOID"].ToString() + "');\">" + strValue + "</a>";
+                            if (mode != "xls" && strValue.Trim() != "" && row["MODELPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXFormEx('" + row["MODELCLS"].ToString() + "', '" + row["MODELPDMOID"].ToString() + "');\">" + strValue + "</a>";
                         }
                         else if (strID == "PARTNO")
                         {
                             strValue = row[strID].ToString();
-                            if (mode != "xls" && strValue.Trim() != "" && row["PARTPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXForm('" + row["PARTCLS"].ToString() + "', '" + row["PARTPDMOID"].ToString() + "');\">" + strValue + "</a>";
+                            if (mode != "xls" && strValue.Trim() != "" && row["PARTPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXFormEx('" + row["PARTCLS"].ToString() + "', '" + row["PARTPDMOID"].ToString() + "');\">" + strValue + "</a>";
                         }
                         else if (strID == "DIVISION")
                         {

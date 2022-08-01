@@ -479,7 +479,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_DESIGNREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DESIGNSTANDARDREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DESIGN_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_DEVPRODUCTLIST_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_DEVPRODUCTLIST_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_DEVSAMPLEREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DFAILEXAMPLE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DHLUSE_V1.xsl" />
@@ -919,7 +921,9 @@
     <Content Include="Content\Forms\ph_xform_ea.xml" />
     <Content Include="Content\Forms\ph_xform_ea_참고용.xml" />
     <Content Include="Content\Forms\xform.css" />
-    <Content Include="Content\Forms\XFormScript.xsl" />
+    <Content Include="Content\Forms\XFormScript.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\xform.2.0_debug.css" />
     <Content Include="Content\Forms\xform_debug.css" />
     <Content Include="Content\mc.css" />
