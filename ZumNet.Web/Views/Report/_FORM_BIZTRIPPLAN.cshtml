@@ -1,5 +1,5 @@
-﻿@using System.Collections;
-@using System.Data;
+﻿@using System.Data;
+@using System.Data.SqlClient;
 @using System.Text;
 @using System.Threading;
 @using Newtonsoft.Json.Linq;
@@ -8,28 +8,110 @@
 @using ZumNet.Web.Filter;
 @{
     //FORM_BIZTRIPPLAN
-    InitConfig();
-
+    string _vwModal = ViewBag.Modal != null && ViewBag.Modal == "Y" ? "Y" : "";
     ZumNet.Framework.Core.ServiceResult svcRt = null;
-    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
-    {
-        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
-                , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
-    }
 
-    if (svcRt != null && svcRt.ResultCode == 0)
+    if (_vwModal == "Y")
     {
-        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+        StringBuilder sb = new StringBuilder();
+        //string strReturn = "";
+
+        string strFormDB = ZumNet.Framework.Configuration.ConfigINI.GetValue(ZumNet.Framework.Configuration.Sections.SECTION_DBNAME, ZumNet.Framework.Configuration.Property.INIKEY_DB_FORM);
+        string strSP = strFormDB + ".admin.ph_up_SelectRegisterBIZTRIP";
+
+        System.Data.SqlClient.SqlParameter[] parameters = new System.Data.SqlClient.SqlParameter[]
+        {
+            ZumNet.Framework.Data.ParamSet.Add4Sql("@msgid", SqlDbType.Int, 4, Convert.ToInt32(ViewBag.JPost["mi"].ToString())),
+            ZumNet.Framework.Data.ParamSet.Add4Sql("@step", SqlDbType.Int, 4, Convert.ToInt32(ViewBag.JPost["st"].ToString()))
+        };
+        using (ZumNet.BSL.InterfaceBiz.ExecuteBiz exBiz = new ZumNet.BSL.InterfaceBiz.ExecuteBiz())
+        {
+            svcRt = exBiz.ExecuteProcedure(strSP, 30, parameters);
+        }
+
+        sb.Append("<div class=\"zf-modal modal-dialog modal-dialog-centered modal-dialog-scrollable\">");
+        sb.Append("<div class=\"modal-content\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)\">");
+        sb.Append("<div class=\"modal-header\">");
+        sb.Append("<h6 class=\"modal-title\"></h6>");
+        sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+        sb.Append("</div>");
+        sb.Append("<div class=\"modal-body\">"); //modal-body
+
+        if (svcRt != null && svcRt.ResultCode == 0)
+        {
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:15%\" /><col style=\"width:20%\" /><col style=\"width:15%\" /><col style=\"width:20%\" /><col style=\"width:30%\" /></colgroup>");
+            sb.Append("<tbody>");
+            sb.Append("<tr><th class=\"bg-light align-middle\">변경시작일</th>");
+            sb.Append("<td><input type=\"text\" class=\"datepicker form-control\" data-for=\"ChangeStart\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" /></td>");
+            sb.Append("<th class=\"bg-light align-middle\">변경종료일</th>");
+            sb.Append("<td><input type=\"text\" class=\"datepicker form-control\" data-for=\"ChangeEnd\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" /></td>");
+            sb.Append("</tr><tr><th class=\"bg-light align-middle\">변경 사유</th>");
+            sb.Append("<td colspan=\"4\"><textarea class=\"form-control bootstrap-maxlength\" data-for=\"ChangeReason\" maxlength=\"200\"></textarea></td></tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("<div class=\"text-center my-2\">");
+            sb.Append("<button type=\"button\" class=\"btn btn-primary mr-2\" data-zm-menu=\"confirm\">확인</button>");
+            sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">닫기</button>");
+            sb.Append("</div>");
+            if (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+            {
+                sb.Append("<table class=\"table table-hover table-sm mb-0\">");
+                sb.Append("<colgroup><col style=\"width:15%\" /><col style=\"width:20%\" /><col style=\"width:15%\" /><col style=\"width:15%\" /><col style=\"width: 35%\" /></colgroup>");
+                sb.Append("<thead>");
+                sb.Append("<tr class=\"table-success\"><th>변경일</th><th>변경자</th><th>출장시작</th><th>출장종료</th><th>변경사유</th></tr>");
+                sb.Append("</thead>");
+                sb.Append("<tbody>");
+                foreach(DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                {
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(row["EventDate"].ToString(), "yy-MM-dd", ""));
+                    sb.AppendFormat("<td>{0} {1}</td>", row["RegistrantDept"].ToString(), row["Registrant"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(row["TRIPFROM"].ToString(), "yy-MM-dd", ""));
+                    sb.AppendFormat("<td>{0}</td>", CommonUtils.CheckDateTime(row["TRIPTO"].ToString(), "yy-MM-dd", ""));
+                    sb.AppendFormat("<td>{0}</td>", row["REASON"].ToString());
+                    sb.Append("</tr>");
+                }
+                sb.Append("</tbody>");
+                sb.Append("</table>");
+            }
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"\">{0}</div>", svcRt.ResultMessage);
+        }
+
+        sb.Append("</div>"); //modal-body
+        sb.Append("</div>"); //content
+        sb.Append("</div>");
+
+        Response.Write(sb.ToString());
+        Response.End();
     }
     else
     {
-        ViewBag.R.lv["total"] = 0;
-    }
+        InitConfig();
 
-    if (ViewBag.R.mode == "xls")
-    {
-        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
-        Response.End();
+        using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+        {
+            svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                    , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+        }
+
+        if (svcRt != null && svcRt.ResultCode == 0)
+        {
+            ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+        }
+        else
+        {
+            ViewBag.R.lv["total"] = 0;
+        }
+
+        if (ViewBag.R.mode == "xls")
+        {
+            ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+            Response.End();
+        }
     }
 }
 @functions {
@@ -53,9 +135,9 @@
 
         string[,] arr = { { "SEQ", "NO", "3%", "", "" }, { "TRIPPERSONORG", "부서", "9%", "", "Y" }
                             , { "TRIPPERSONGRADE", "직급", "7%", "", "Y" }, { "TRIPPERSON", "성명", "6%", "", "Y" }, { "COMPANIONYN", "동행자", "5%", "", "" }
-                            , { "LOCATION", "출장지", "12%", "L", "Y" }, { "STATE", "상태", "3%", "", "" }, { "TRIPFROM", "시작", "6%", "", "" } //51
+                            , { "LOCATION", "출장지", "11%", "L", "Y" }, { "STATE", "상태", "3%", "", "" }, { "TRIPFROM", "시작", "6%", "", "" } //51
                             , { "TRIPTO", "종료", "6%", "", "" }, { "CHANGEFROM", "시작", "6%", "", "" }, { "CHANGETO", "종료", "6%", "", "" }
-                            , { "PURPOSE", "출장목적", "16%", "L", "Y" }, { "DocStatus", "결재상태", "8%", "", "" }, { "PIStart", "등록일", "7%", "", "" }};
+                            , { "PURPOSE", "출장목적", "17%", "L", "Y" }, { "DocStatus", "결재상태", "8%", "", "" }, { "PIStart", "등록일", "7%", "", "" }};
         this._columnConfig = arr;
         this._tblWidth = "100%";
     }
@@ -99,7 +181,7 @@
             foreach (DataRow row in dt.Rows)
             {
                 if (row["Step"] == null) sb.AppendFormat("<tr id=\"_{0}\">", row["MessageID"].ToString());
-                else sb.AppendFormat("<tr id=\"_{0}\" step=\"{1}\">", row["MessageID"].ToString(), row["Step"].ToString());
+                else sb.AppendFormat("<tr id=\"_{0}\" step=\"{1}\" regid=\"{2}\">", row["MessageID"].ToString(), row["Step"].ToString(), row["RegID"].ToString());
 
                 rowCol = null;
                 if (data.Tables.Count > 1 && data.Tables[1].Rows.Count > 0) rowCol = data.Tables[1].Select("OID = " + row["OID"].ToString(), "SubStep, Seq");
@@ -115,6 +197,10 @@
                     else if (strID == "PublishDate" || strID == "PIStart")
                     {
                         strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
+                    }
+                    else if (strID == "TRIPFROM" || strID == "TRIPTO" || strID == "CHANGEFROM" || strID == "CHANGETO")
+                    {
+                        strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row[strID].ToString(), "yy-MM-dd", "");
                     }
                     else if (strID == "LOCATION" || strID == "TRIPPERSON")
                     {
@@ -159,7 +245,7 @@
                         //출장자, 작성자 또는 관리자만 출장기간 변경 가능
                         if (row["CreatorID"].ToString() == Session["URID"].ToString() || row["TRIPPERSONID"].ToString() == Session["URID"].ToString() || row["TRIPPERSONEMPID"].ToString() == Session["empid"].ToString() || Session["Admin"].ToString() == "Y")
                         {
-                            sb.AppendFormat("<td class=\"{0}\" style=\"cursor:hand\">{1}</td>", _columnConfig[i, 3].ToString(), strValue, row["RegID"].ToString(), row["Step"].ToString());
+                            sb.AppendFormat("<td class=\"{0}\" style=\"cursor:pointer\" data-for=\"change-date\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
                         }
                         else
                         {
@@ -306,17 +392,17 @@
     public string ExcelStyle()
     {
         return @"
-            body {width: 100%}
-            table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
-            td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
-    
-            .xls_warning {background-color: #fcf8e3}
-            .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
-    
-            .text-center {text-align: center}
-            .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
-            .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
-        ";
+        body {width: 100%}
+        table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+        td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+        .xls_warning {background-color: #fcf8e3}
+        .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+        .text-center {text-align: center}
+        .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+        .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+    ";
     }
 }
 @if (svcRt == null || svcRt.ResultCode != 0)

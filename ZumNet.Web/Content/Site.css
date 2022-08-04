@@ -538,6 +538,17 @@ a.z-lnk-navy-n {
     line-height: 1.5;
 }
 
+.z-input, z-input-in, z-select {
+    border: 1px solid rgba(24,28,33,0.3);
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
+}
+.z-input:focus, z-input-in:focus, z-select:focus {
+    background-color: #fff;
+    border-color: rgba(254,183,68,1);
+    outline: 0;
+    box-shadow: none;
+}
+
 .z-read {
     border: 0;
     background-color: Transparent

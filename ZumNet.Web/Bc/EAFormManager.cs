@@ -1088,11 +1088,92 @@ namespace ZumNet.Web.Bc
         }
         #endregion
 
+        #region [양식본문을 HTML로 내려 주기]
+        public ServiceResult LoadHtmlForm(string oID, string msgID, string xfAlias)
+        {
+            ServiceResult svcRt = new ServiceResult();
+
+            XFormDefinition xfDef = null;
+            XFormInstance xfInst = null;
+
+            EApproval eaBiz = null;
+            string strMsg = "";
+
+            try
+            {
+                eaBiz = new EApproval();
+
+                //2014-02-27 열람권한체크 추가
+                if (!eaBiz.CheckAppAcl(xfAlias, Convert.ToInt32(msgID), Convert.ToInt32(HttpContext.Current.Session["URID"]), Convert.ToInt32(HttpContext.Current.Session["DeptID"])))
+                {
+                    strMsg = "열람 권한이 없습니다!"; //throw new Exception("열람 권한이 없습니다!");
+                    svcRt.ResultCode = -1;
+                    svcRt.ResultMessage = strMsg;
+
+                    return svcRt; //22-07-15 오류 아닌 알림으로 변경
+                }
+
+                using (EApprovalDac eaDac = new EApprovalDac())
+                {
+                    strMsg = "양식 공통 데이타 가져오기";
+                    xfInst = eaDac.SelectXFMainEntity(xfAlias, Convert.ToInt32(msgID));
+
+                    strMsg = "양식 기본 정보 가져오기";
+                    xfDef = eaDac.GetEAFormData(Convert.ToInt32(HttpContext.Current.Session["DNID"]), xfInst.FormID);
+                }
+
+                string strFormSchema = HttpContext.Current.Server.MapPath(Framework.Configuration.Config.Read("EAFormSchemaPath"));
+                string strFormPath = HttpContext.Current.Server.MapPath(Framework.Configuration.Config.Read("EAFormFolder"));
+
+                strMsg = "본문HTML";
+                svcRt = eaBiz.ParsingXFormToHTML(HttpContext.Current.Session["CompanyCode"].ToString(), xfDef, xfInst, Convert.ToInt32(oID), xfAlias
+                                , HttpContext.Current.Session["DNID"].ToString(), HttpContext.Current.Session["FrontName"].ToString()
+                                , Framework.Configuration.Config.Read("RootFolder"), strFormSchema, strFormPath);
+            
+                svcRt.ResultDataDetail.Add("DocName", xfInst.DocName);
+            }
+            catch (Exception ex)
+            {
+                strMsg += Environment.NewLine + ex.Message;
+                ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, strMsg);
+
+                svcRt.ResultCode = -1;
+                svcRt.ResultMessage = strMsg;
+            }
+
+            return svcRt;
+        }
+        #endregion
+
         #region [인쇄 양식 불러오기]
         public ServiceResult LoadPrintForm()
         {
             ServiceResult svcRt = new ServiceResult();
 
+            //JObject jBiz = null;
+            //JObject jMain = null;
+            //JObject jSub = null;
+            //JArray jFile = null;
+            //JArray jImg = null;
+
+            //XFormDefinition xfDef = null;
+            //string strMsg = "";
+
+            //try
+            //{
+            //}
+            //catch (Exception ex)
+            //{
+            //    strMsg += Environment.NewLine + ex.Message;
+            //    ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, strMsg);
+
+            //    svcRt.ResultCode = -1;
+            //    svcRt.ResultMessage = strMsg;
+            //}
+            //finally
+            //{
+            //    xfDef = null;
+            //}
             return svcRt;
         }
         #endregion

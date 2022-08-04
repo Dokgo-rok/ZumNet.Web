@@ -44,6 +44,41 @@ $(function () {
             fchart.setXMLData(d);
             fchart.render();
         }
+
+        if (_zw.V.ft == 'FORM_BIZTRIPPLAN') {
+            $('#__ListView td[data-for="change-date"]').on('mouseover', function () {
+                $(this).addClass('table-primary');
+            }).on('mouseout', function () {
+                $(this).removeClass('table-primary');
+            }).on('click', function () {
+                var el = $(this), row = el.parent();
+                $.ajax({
+                    type: "POST",
+                    url: "/Report/Modal",
+                    data: '{M:"' + el.attr('data-for') + '",ft:"' + _zw.V.ft + '",mi:"' + row.attr('id').substr(1) + '", ri:"' + row.attr('regid') + '",st:"' + row.attr('step') + '"}',
+                    success: function (res) {
+                        //if (res.substr(0, 2) == 'OK') {
+                        //    var j = { "close": true, "width": 500, "height": (row.attr('regid') == '' || row.attr('regid') == '0' ? 154 : 300), "left": -200, "top": 0 }
+                        //    j["title"] = '출장기간 변경'; j["content"] = res.substr(2);
+
+                        //    var pop = _zw.ut.popup(el[0], j);
+                        //    _zw.ut.picker('date');
+
+                        //} else bootbox.alert(res);
+                        var p = $('#popBlank');
+                        p.html(res).find('.modal-title').html('출장기간 변경');
+                        _zw.ut.picker('date'); _zw.ut.maxLength(); _zw.fn.input(p.find('.modal-body'));
+
+                        p.find('.btn[data-zm-menu="confirm"]').click(function () {
+
+                        });
+
+                        p.on('hidden.bs.modal', function () { p.html(''); });
+                        p.modal();
+                    }
+                });
+            });
+        }
     }
 
     _zw.fn.bindCtrl();

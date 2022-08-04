@@ -2821,7 +2821,7 @@
         </div>
 
         <!-- 양식숨은필드 -->
-        <input type="hidden" id="__mainfield" name="PAYCHECK" value="{//forminfo/maintable/LASTCHECK}" />
+        <input type="hidden" id="__mainfield" name="PAYCHECK" value="{//forminfo/maintable/PAYCHECK}" />
 
         <!-- 필수 양식정보 -->
         <xsl:choose>

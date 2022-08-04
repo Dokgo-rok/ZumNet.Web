@@ -42,8 +42,8 @@
     $('#_RECENT_BOARD .card-header-elements a').click(function (e) {
         e.preventDefault();
 
-        var qi = '{ct:"103",ctalias:"bboard",ot:"G",alias:"notice.company",xfalias:"notice",ttl:"",opnode:"0.0.12851"}'
-        window.location.href = '/Board/List?qi=' + _zw.base64.encode(qi);
+        var qi = '{ct:"103",ctalias:"bboard",ot:"G",alias:"",xfalias:"",ttl:"최근 게시물",opnode:""}'
+        window.location.href = '/Board/Recent?qi=' + _zw.base64.encode(qi);
     });
 
     $('#_EKP_KPI .card-header-elements a').click(function (e) {

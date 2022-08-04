@@ -1,0 +1,69 @@
+﻿@{
+    HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+    doc.LoadHtml(ViewBag.FormHtml);
+
+    HtmlAgilityPack.HtmlNode bodyNode = doc.DocumentNode.SelectSingleNode("//body");
+    HtmlAgilityPack.HtmlNode styleNode = doc.DocumentNode.SelectSingleNode("//style");
+
+    int iPos = HttpContext.Current.Request.Url.AbsoluteUri.IndexOf("//");
+    string _webUrl = HttpContext.Current.Request.Url.AbsoluteUri.Substring(0, iPos);
+    _webUrl += "//" + HttpContext.Current.Request.Url.Host;
+}
+<!DOCTYPE html>
+<html lang="en" class="light-style">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="@_webUrl/favicon.ico">
+
+    <title>@ViewBag.Title</title>
+
+    <!-- Main font -->
+    @Styles.Render(_webUrl + "/bundle/vendor/fonts")
+
+    <!-- Icons. Uncomment required icon fonts -->
+    @Styles.Render(_webUrl + "/bundle/vendor/fonts/feather")
+    @Styles.Render(_webUrl + "/bundle/vendor/fonts/fontawesome")
+    @Styles.Render(_webUrl + "/bundle/vendor/fonts/materialdesignicons")
+    @*@Styles.Render(_webUrl + "/bundle/vendor/icons")*@
+
+    <!-- Core stylesheets -->
+    @Styles.Render(_webUrl + "/bundle/vendor/css/bootstrap")
+    @Styles.Render(_webUrl + "/bundle/vendor/css/appwork")
+    @*@Styles.Render(_webUrl + "/bundle/vendor/css/zumworks")*@
+    @Styles.Render(_webUrl + "/bundle/css/theme-cresyn")
+    @*@Styles.Render(_webUrl + "/bundle/vendor/css/colors")
+        @Styles.Render(_webUrl + "/bundle/vendor/css/uikit")
+        @Styles.Render(_webUrl + "/bundle/vendor/css/waves/waves")*@
+    @Styles.Render(_webUrl + "/bundle/vendor/css/csskit")
+
+    <!-- Core scripts -->
+    @Scripts.Render(_webUrl + "/bundle/vendor/js/pace")
+
+    <!-- `perfect-scrollbar` library required by SideNav plugin -->
+    @Styles.Render(_webUrl + "/bundle/vendor/css/perfect-scrollbar/perfect-scrollbar")
+
+    <!-- Application stylesheets -->
+    @Styles.Render(_webUrl + "/bundle/vendor/css/jstree/themes/default/style")
+    @Styles.Render(_webUrl + "/bundle/css/site")
+
+    @Styles.Render(_webUrl + "/Content/ea.css")
+    @Styles.Render(_webUrl + "/Content/Forms/xform.2.0_debug.css")
+
+    <style type="text/css">
+        @if (styleNode != null)
+        {
+            @Html.Raw(styleNode.InnerHtml)
+        }
+    </style>
+</head>
+<body style="overflow: auto">
+    <div class="layout-wrapper">
+        <div class="layout-inner" style="height: 100vh">
+            @Html.Raw(bodyNode.InnerHtml)
+        </div>
+    </div>
+</body>
+</html>

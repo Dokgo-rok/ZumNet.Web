@@ -45,10 +45,10 @@
         //검색조건 설정
 
         //크레신 : 외부인 출입관리대장
-        string[,] arr = { { "SEQ", "NO", "4%", "", "" }, { "LOCATION", "법인명", "8%", "", "Y" }, { "OUTWORK", "소속", "8%", "", "Y" }
+        string[,] arr = { { "SEQ", "NO", "4%", "", "" }, { "LOCATION", "법인명", "6%", "", "Y" }, { "OUTWORK", "소속", "8%", "", "Y" }
                             , { "OUTPOSI", "직위", "8%", "", "" }, { "OUTNAME", "성명", "8%", "", "Y" }, { "OUTNUM", "연락처", "8%", "", "" }
-                            , { "VISITDATE", "시작일", "8%", "", "" }, { "VISITDATETO", "종료일", "8%", "", "" }, { "VISITTIME", "시작시간", "8%", "", "" }
-                            , { "VISITTIMETO", "종료시간", "8%", "", "" }, { "VISITPLACE", "장소", "8%", "", "" }, { "VISITREASON", "출입사유", "8%", "", "Y" }
+                            , { "VISITDATE", "시작일", "7%", "", "" }, { "VISITDATETO", "종료일", "7%", "", "" }, { "VISITTIME", "시작시간", "6%", "", "" }
+                            , { "VISITTIMETO", "종료시간", "6%", "", "" }, { "VISITPLACE", "장소", "10%", "", "" }, { "VISITREASON", "출입사유", "14%", "L", "Y" }
                             , { "ATTENDEE", "관리담당", "8%", "", "Y" }};
         this._columnConfig = arr;
         //this._tblWidth = "2470px";
@@ -98,7 +98,15 @@
                 {
                     strID = _columnConfig[i, 0].ToString();
 
-                    strValue = row[strID].ToString();
+                    if (strID.ToUpper() == "SEQ")
+                    {
+                        strValue = iRow.ToString();
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString();
+                    }
+
                     //strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
                     sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
                 }

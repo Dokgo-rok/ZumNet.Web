@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -154,6 +154,72 @@ namespace ZumNet.Web.Areas.EA.Controllers
         public ActionResult Preview()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 양식 파일로 저장
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Save()
+        {
+            JObject jReq;
+            string rt = Resources.Global.Auth_InvalidPath;
+            string req = StringHelper.SafeString(Request["qi"], "");
+            if (req == "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            try
+            {
+                jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
+            }
+            catch (Exception ex)
+            {
+                rt = ex.Message;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+            using (EAFormManager fmMgr = new EAFormManager())
+            {
+                svcRt = fmMgr.LoadHtmlForm(jReq["oi"].ToString(), jReq["mi"].ToString(), jReq["xf"].ToString());
+            }
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                try
+                {
+                    ViewBag.FormHtml = svcRt.ResultDataString;
+                    ViewBag.Title = svcRt.ResultDataDetail["DocName"];
+
+                    string strBody = RazorViewToString.RenderRazorViewToString(this, "Save", ViewBag);
+
+                    string strFileName = svcRt.ResultDataDetail["DocName"].ToString() + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".mht";
+
+                    Framework.Util.MessageHandler msg = new MessageHandler("", "");
+                    msg.CharSet = "utf-8";
+                    string strInline = msg.ExtractImgSrc(strBody, Session["FrontName"].ToString());
+                    string strDown = msg.ConvertHtmlToMime(strBody, "", strInline);
+
+                    string strContentType = MimeMapping.GetMimeMapping(strFileName);
+                    byte[] fileBytes = Encoding.UTF8.GetBytes(strDown);
+                    strFileName = HttpUtility.UrlEncode(strFileName, new UTF8Encoding()).Replace("+", "%20");
+
+                    return File(fileBytes, strContentType, strFileName);
+                }
+                catch (Exception ex)
+                {
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(ex, this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+            else
+            {
+                //에러페이지
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
         }
         #endregion
 

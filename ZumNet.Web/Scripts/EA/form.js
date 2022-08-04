@@ -45,6 +45,34 @@ $(function () {
                 break;
 
             case "saveTemp":
+                var btn = {};
+                if (_zw.V.mode == 'edit' && _zw.V.appid != '') {
+                    btn = {
+                        cancel: { label: '취소', className: 'btn-default', callback: function () { return false; } },
+                        save: { label: '저장', className: 'btn-primary', callback: function () { _zw.fn.saveTemp('save'); } },
+                        saveas: { label: '새로 저장', className: 'btn-info', callback: function () { _zw.fn.saveTemp('saveas'); } }
+                    }
+                } else {
+                    btn = {
+                        cancel: { label: '취소', className: 'btn-default', callback: function () { return false; } },
+                        save: { label: '저장', className: 'btn-primary', callback: function () { _zw.fn.saveTemp('saveas'); } }
+                    }
+                }
+
+                bootbox.dialog({
+                    //title: "전자결재",
+                    message: "저장하시겠습니까?",
+                    size: "small",
+                    buttons: btn
+                });
+                break;
+
+            case "saveFile":
+                if (_zw.V.mode == 'read') {
+                    var qi = '{mi:"' + _zw.V.appid + '",oi:"' + _zw.V.oid + '",xf:"' + _zw.V.xfalias + '"}';
+                    var url = '/EA/Form/Save?qi=' + _zw.base64.encode(qi);
+                    window.open(url);
+                }
                 break;
 
             case "preview":
@@ -393,6 +421,27 @@ $(function () {
             p.find('.zf-sl .btn[data-zm-mmenu="send"]').off('click');
         });
         p.modal();
+    }
+
+    _zw.fn.saveTemp = function (cmd) {
+        var jSend = {};
+        _zw.form.make("draft", jSend);
+
+        if (cmd == 'saveas') jSend["M"] = "savenewtemporary";
+        else jSend["M"] = "savetemporary";
+        //console.log(jSend); return
+
+        $.ajax({
+            type: "POST",
+            url: "/EA/Process",
+            data: JSON.stringify(jSend),
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    _zw.fn.reloadList(); window.close();
+                } else bootbox.alert(res);
+            },
+            beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
+        });
     }
 
     _zw.fn.sendForm = function (p, cmd) {

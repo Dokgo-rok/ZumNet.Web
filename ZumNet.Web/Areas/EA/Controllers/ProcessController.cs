@@ -208,7 +208,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 strReturn = "[300]";
                 using (EApprovalDac eaDac = new EApprovalDac())
                 {
-                    xfDef = eaDac.GetEAFormData(Convert.ToInt32(jBiz["dnid"].ToString()), jBiz["formid"].ToString());
+                    xfDef = eaDac.GetEAFormData(Convert.ToInt32(postData["dnid"].ToString()), jBiz["formid"].ToString());
                 }
 
                 if ((jFile != null && jFile.Count > 0) || (jImg != null && jImg.Count > 0))

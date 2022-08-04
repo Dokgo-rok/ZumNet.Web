@@ -41,9 +41,10 @@
 @section Scripts {
     <script type="text/javascript">
         //$(function () { $('ssoForm').submit(); });
-        
+
         (function () {
-            ssoForm.submit();
+            //ssoForm.submit();
+            location.href = "@ZumNet.Framework.Configuration.Config.Read("erpUrl")OA_HTML/AppsLocalLogin.jsp?requestUrl=APPSHOMEPAGE&cancelUrl=http%3A%2F%2Ferpap.cresyn.com%3A8000%2FOA_HTML%2FAppsLocalLogin.jsp&errCode=FND_APPL_LOGIN_FAILED&langCode=US&username=@strReturn";
         }());
     </script>
 }

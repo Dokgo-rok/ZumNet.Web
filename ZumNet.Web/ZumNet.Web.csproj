@@ -418,7 +418,9 @@
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPREPORT_V2.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPREPORT_V3.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPREPORT_V3.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_BIZVACPLAN_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_BOOKSREQUEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_BUSINESSTRIPPLAN_V1.xsl" />
@@ -2184,6 +2186,7 @@
     <Content Include="Scripts\EA\Forms\FORM_NIGHTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_OFFICEPURCHASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_OPERATIONMANUAL.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OUTSIDERAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PASSPORTLIST.js" />
@@ -2209,6 +2212,7 @@
     <Content Include="Scripts\EA\Forms\FORM_SELLINGUC.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALCONFIRM.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SPECIALPROMOTION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SQANEWVERIFREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_STAMPRECORD.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
@@ -3128,6 +3132,7 @@
     <Content Include="Areas\EA\Views\Shared\DocLink.cshtml" />
     <Content Include="Areas\EA\Views\Shared\DocLinkFile.cshtml" />
     <Content Include="Areas\EA\Views\Common\_Tooling.cshtml" />
+    <Content Include="Areas\EA\Views\Form\Save.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
