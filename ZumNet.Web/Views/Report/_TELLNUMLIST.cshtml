@@ -12,13 +12,18 @@
 @using ZumNet.Framework.Util;
 @{
     //TELLNUMLIST, 전화번호 검색
-
+    string _vwModal = ViewBag.Modal != null && ViewBag.Modal == "Y" ? "Y" : "";
     ZumNet.Framework.Core.ServiceResult svcRt = null;
-    if (ViewBag.Modal != null && ViewBag.Modal == "Y")
+
+    if (_vwModal == "Y")
     {
+        string strReturn = GetReportSearch(ViewBag.JPost);
+        Response.Write(strReturn);
+        Response.End();
     }
     else
     {
+        string _requestMode = ViewBag.R.mode;
         InitConfig();
 
         using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
@@ -36,9 +41,9 @@
             ViewBag.R.lv["total"] = 0;
         }
 
-        if (ViewBag.R.mode == "xls")
+        if (_requestMode == "xls")
         {
-            ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+            ExcelBind(ViewList(_requestMode, svcRt.ResultDataSet));
             Response.End();
         }
     }
@@ -213,7 +218,7 @@
         Response.Write("</body></html>");
     }
 
-    public string ExcelStyle()
+    private string ExcelStyle()
     {
         return @"
 body {width: 100%}
@@ -306,11 +311,7 @@ td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; 
         return strReturn;
     }
 }
-@if (ViewBag.Modal != null && ViewBag.Modal == "Y")
-{
-    @Html.Raw(GetReportSearch(ViewBag.JPost))
-}
-else if (svcRt == null || svcRt.ResultCode != 0)
+@if (svcRt == null || svcRt.ResultCode != 0)
 {
     @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
 }

@@ -8,6 +8,7 @@
 @using ZumNet.Web.Filter;
 @{
     //FORM_EDUREPORTB
+    string _requestMode = ViewBag.R.mode;
     InitConfig();
 
     ZumNet.Framework.Core.ServiceResult svcRt = null;
@@ -26,9 +27,9 @@
         ViewBag.R.lv["total"] = 0;
     }
 
-    if (ViewBag.R.mode.ToString() == "xls")
+    if (_requestMode == "xls")
     {
-        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+        ExcelBind(ViewList(_requestMode, svcRt.ResultDataSet));
         Response.End();
     }
 }
@@ -44,7 +45,7 @@
 
         //검색조건 설정
 
-        //크레신 : 계약서 현황 대장
+        //크레신 : 근무계획
         string[,] arr = { { "SEQ", "NO", "4%", "", "" }, { "UserDept", "부서", "12%", "", "Y" }, { "UserGrade", "직위", "10%", "", "" }
                             , { "UserDN", "성명", "10%", "", "Y" }, { "PlanDate", "근무일", "10%", "", "Y" }, { "PlanInTime", "출근계획", "9%", "", "" }
                             , { "PlanOutTime", "퇴근계획", "9%", "", "" }, { "Reason", "사유", "27%", "L", "" }, { "STATUS", "결재상태", "9%", "", "" }};

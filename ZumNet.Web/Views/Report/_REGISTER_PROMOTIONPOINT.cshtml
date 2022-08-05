@@ -8,6 +8,7 @@
 @using ZumNet.Web.Filter;
 @{
     //REGISTER_PROMOTIONPOINT
+    string _requestMode = ViewBag.R.mode;
     InitConfig();
 
     ZumNet.Framework.Core.ServiceResult svcRt = null;
@@ -26,9 +27,9 @@
         ViewBag.R.lv["total"] = 0;
     }
 
-    if (ViewBag.R.mode == "xls")
+    if (_requestMode == "xls")
     {
-        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+        ExcelBind(ViewList(_requestMode, svcRt.ResultDataSet));
         Response.End();
     }
 }
@@ -167,13 +168,13 @@
 
     private string ListCond()
     {
-        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-65 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+        //string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-65 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
 
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end\">");
 
-        sb.AppendFormat("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i> {0}</button>", Resources.Global.Search);
+        sb.AppendFormat("<button class=\"btn btn-secondary py-1\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i> {0}</button>", Resources.Global.Search);
 
         sb.Append("</div>"); //z-list-cond
         return sb.ToString();

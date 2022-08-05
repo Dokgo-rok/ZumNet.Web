@@ -872,7 +872,7 @@ $(function () {
                 + '<div class="d-flex align-items-center w-100">'
                 + '<div class="input-group w-50">'
                 + '<div class="input-group-prepend">'
-                + '<select class="form-control">'
+                + '<select class="custom-select">'
                 + '<option value="Grade1">직위</option>'
                 + '<option value="DisplayName" selected>성명</option>'
                 + '<option value="GroupName">부서</option>'

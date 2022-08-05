@@ -3274,6 +3274,7 @@
     <Content Include="Views\Report\_INTIMEREPORT.cshtml" />
     <Content Include="Views\Report\_FORM_WORKSTATUS.cshtml" />
     <Content Include="Views\Report\_FORM_EDUREPORTB.cshtml" />
+    <Content Include="Views\Report\_REGISTER_LEAVE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

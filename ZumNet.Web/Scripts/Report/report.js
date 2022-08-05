@@ -46,7 +46,7 @@ $(function () {
         }
 
         if (_zw.V.ft == 'FORM_BIZTRIPPLAN') {
-            $('#__ListView td[data-for="change-date"]').on('mouseover', function () {
+            $('#__ListView td[data-for="popup"]').on('mouseover', function () {
                 $(this).addClass('table-primary');
             }).on('mouseout', function () {
                 $(this).removeClass('table-primary');
@@ -70,7 +70,30 @@ $(function () {
                         _zw.ut.picker('date'); _zw.ut.maxLength(); _zw.fn.input(p.find('.modal-body'));
 
                         p.find('.btn[data-zm-menu="confirm"]').click(function () {
+                            var e1 = p.find('[data-for="ChangeStart"]'), e2 = p.find('[data-for="ChangeEnd"]'), e3 = p.find('[data-for="ChangeReason"]');
+                            if (e1.val() == '' && e2.val() == '') { bootbox.alert("변경할 출장일을 입력하십시오!", function () { e1.focus(); }); return false; }
+                            if ($.trim(e3.val()) == '') { bootbox.alert("출장기간 변경사유를 입력하십시오!", function () { e3.focus(); }); return false; }
 
+                            bootbox.confirm("출장 기간을 변경하시겠습니까?", function (rt) {
+                                if (rt) {
+                                    var j = {};
+                                    j["M"] = "change-date"; j["ft"] = _zw.V.ft; j["mi"] = row.attr('id').substr(1);
+                                    j["st"] = row.attr('step'); j["cs"] = e1.val(); j["ce"] = e2.val(); j["cr"] = e3.val();
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Report/Modal",
+                                        data: JSON.stringify(j),
+                                        success: function (res) {
+                                            if (res.substr(0, 2) == "OK") {
+                                            } else bootbox.alert(res);
+
+                                            p.modal('hide');
+                                        }
+                                    });
+                                }
+                            });
+                            
                         });
 
                         p.on('hidden.bs.modal', function () { p.html(''); });
@@ -131,6 +154,7 @@ $(function () {
 
         var postData = _zw.fn.getLvQuery('xls'); console.log(postData)
         window.open('?qi=' + encodeURIComponent(_zw.base64.encode(postData)), 'ifrView');
+        //window.open('?qi=' + encodeURIComponent(_zw.base64.encode(postData)));
     }
 
     _zw.fn.loadList = function () {
