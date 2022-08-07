@@ -608,7 +608,7 @@ namespace ZumNet.Web.Controllers
                                 , Session["URName"].ToString(), Request.ServerVariables["REMOTE_HOST"], sUserAgent, (_disableDocSecurity ? "Y" : "N"));
                 }
 
-                _disableDocSecurity = true;
+                //_disableDocSecurity = true;
 
                 if (ext == "tif" || ext == "tiff" || ext == "jpg" || ext == "jpeg" || ext == "bmp"
                      || ext == "gif" || ext == "png" || ext == "mht" || ext == "mhtml" || ext == "htm" || ext == "html")
@@ -621,17 +621,6 @@ namespace ZumNet.Web.Controllers
                     {
                         //2014-11-12 파일 암호화
                         sRealPath = EncrypFile(sRealPath, ext);
-                        if (sRealPath.Substring(0, 2) == "OK")
-                        {
-                            sRealPath = sRealPath.Substring(2);
-                        }
-                        else
-                        {
-                            //22-08-06 임시로 암호화 실패 경우 로그 기록만
-                            ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "EncrypFile", sRealPath, Environment.NewLine));
-                        }
-                        //Response.Write("PATH ==> " + HttpContext.Current.Server.MapPath(strRealPath) + " : " + Session["FRONTNAME"].ToString());
-                        //Response.End();
                     }
                 }
 
@@ -764,6 +753,8 @@ namespace ZumNet.Web.Controllers
         /// 파일 암호화
         /// </summary>
         /// <param name="filePath"></param>
+        /// <param name="ext"></param>
+        /// <returns></returns>
         private string EncrypFile(string filePath, string ext)
         {
             int iPos = Request.Url.AbsoluteUri.IndexOf("//");
@@ -775,23 +766,38 @@ namespace ZumNet.Web.Controllers
             string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
             string strReturn = "";
 
-            System.Net.HttpWebRequest HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
-            System.Net.HttpWebResponse HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
-            using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
-            {
-                strReturn = sr.ReadToEnd();
-            }
-            HttpWResp.Close();
+            System.Net.HttpWebRequest HttpWReq = null;
+            System.Net.HttpWebResponse HttpWResp = null;
 
-            //if (strReturn.Substring(0, 2) == "OK")
-            //{
-            //    return strReturn.Substring(2);
-            //}
-            //else
-            //{
-            //    throw new Exception(strReturn);
-            //    //return strReturn;
-            //}
+            try
+            {
+                HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+                HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
+                {
+                    strReturn = sr.ReadToEnd();
+                }
+                HttpWResp.Close();
+
+                if (strReturn.Substring(0, 2) != "OK")
+                {
+                    //22-08-06 임시로 암호화 실패 경우 로그 기록만
+                    ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "EncrypFile", strUrl + " : " + strReturn, Environment.NewLine));
+                    strReturn = filePath;
+                }
+                else strReturn = strReturn.Substring(2);
+            }
+            catch (Exception ex)
+            {
+                ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "EncrypFile", strUrl + " : " + ex.Message, Environment.NewLine));
+                strReturn = filePath;
+            }
+            finally
+            {
+                HttpWReq = null;
+                if (HttpWResp != null) { HttpWResp.Close(); HttpWResp = null; }
+            }
+
             return strReturn;
         }
 
