@@ -61,6 +61,8 @@
                             string tempSavePath = Path.Combine(Server.MapPath(sUploadPath) + @"\" + sSavedName);
                             f.SaveAs(tempSavePath);
 
+                            DecrypFile(tempSavePath); //파일 복호화
+
                             if (rt.Length > 0)
                             {
                                 rt += cFile;
@@ -80,4 +82,45 @@
 
     Response.Write("<script type='text/javascript'>" + Request["completed"].ToString() + "('" + Server.UrlEncode(rt) + "');</script>");
     Response.End();
+}
+@functions{
+    private void DecrypFile(string filePath)
+    {
+        int iPos = Request.Url.AbsoluteUri.IndexOf("//");
+        string strHttp = Request.Url.AbsoluteUri.Substring(0, iPos);
+        strHttp += "//";
+
+        string sEncrypServer = strHttp + Session["FrontName"].ToString();
+        string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}", sEncrypServer, "dec", Server.UrlEncode(filePath));
+        string strResult = "";
+
+        System.Net.HttpWebRequest HttpWReq = null;
+        System.Net.HttpWebResponse HttpWResp = null;
+
+        try
+        {
+            HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+            HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
+            using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
+            {
+                strResult = sr.ReadToEnd();
+            }
+            HttpWResp.Close();
+
+            if (strResult.Substring(0, 2) != "OK")
+            {
+                //22-08-06 임시로 암호화 실패 경우 로그 기록만
+                ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strResult, Environment.NewLine));
+            }
+        }
+        catch (Exception ex)
+        {
+            ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + ex.Message, Environment.NewLine));
+        }
+        finally
+        {
+            HttpWReq = null;
+            if (HttpWResp != null) { HttpWResp.Close(); HttpWResp = null; }
+        }
+    }
 }

@@ -1,0 +1,3358 @@
+﻿@using System;
+@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using System.Web;
+@using ZumNet.Framework.Office;
+@using ZumNet.Framework.Util;
+@{
+    Layout = "";
+
+    InitConfig();
+
+    string _uploadMode = "";
+    if (Request.Files.Count > 0)
+    {
+        _uploadMode = "UPLOAD";
+    }
+}
+@functions{
+    private string _mode = String.Empty;
+    private string _ekpDB = String.Empty;
+    private string _formDB = String.Empty;
+    private string _uploadPath = String.Empty;
+    private string _standardYear = String.Empty;
+    private string _subCondition = String.Empty;
+
+    private void InitConfig()
+    {
+        string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
+        ZumNet.Framework.Web.Utility.SetUploadFolder(sUploadPath);
+
+        _uploadPath = HttpContext.Current.Server.MapPath(sUploadPath);
+
+        _mode = (Request["M"] == null) ? _mode = "" : _mode = Request["M"].ToString();
+        _standardYear = (Request["sy"] == null || Request["sy"].ToString() == "") ? DateTime.Now.Year.ToString() : Request["sy"].ToString();
+        _subCondition = (Request["cd"] == null || Request["cd"].ToString() == "") ? "" : Request["cd"].ToString();
+    }
+
+    private string PageLoad()
+    {
+        string strReturn = "";
+
+        #region [파일명 안내]
+        if (_mode == "REGISTER_LEAVE" || _mode == "REGISTER_LEAVEUSE")
+        {
+            if (_subCondition == "")
+            {
+                strReturn = "** 대상 파일(<a class=\"z-lnk-navy-n\" href=\"/Content/Forms/IMPORT/연차관리대상자.csv\" target=\"_blank\">연차관리대상자.csv</a>)을 선택하시오!";
+                strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복된 사용자 정보는 신규정보로 갱신됩니다.";
+                //this.UploadButton.Attributes.Add("onclick", "upload_onclick();");
+            }
+            else if (_subCondition == "event")
+            {
+                strReturn = "** 휴가 추가/삭제/변경 대상 파일(휴가대상자.csv)을 선택하시오!";
+                //strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;작성요령";
+                //strReturn += "<div id=\"csvTip\"><table border=\"\" cellpadding=\"\" cellspacing=\"\">";
+                //strReturn += "<tr><td></td><td></td></tr>";
+                //strReturn += "</table></div>";
+            }
+        }
+        else if (_mode == "REGISTER_PROMOTIONPOINT")
+        {
+            strReturn = "** 대상 파일(<a class=\"z-lnk-navy\" href=\"/Content/Forms/IMPORT/승진포인트관리대상자.csv\" target=\"_blank\">승진포인트관리대상자</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;사용자 정보는 일괄처리됩니다.";
+        }
+        else if (_mode == "REGISTER_INANDOUT")
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/퇴근현황.csv\" target=\"_blank\">퇴근현황</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;사용자 정보는 일괄처리됩니다.";
+        }
+        else if (_mode == "REGISTER_GAS")
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/유류현황.csv\" target=\"_blank\">유류현황</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;유류 정보는 일괄처리됩니다.";
+        }
+        else if (_mode == "REGISTER_EDUCATIONPOINT")
+        {
+            strReturn = "** 대상 파일(교육포인트관리대상자.csv)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;사용자 정보는 일괄처리됩니다.";
+        }
+        else if (_mode == "REGISTER_EXCHANGEINFO")
+        {
+            strReturn = "** 대상 파일(환율정보.csv)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복된 환율일자는 신규정보로 갱신됩니다.";
+        }
+        else if (_mode == "TELLNUMLIST")
+        {
+            strReturn = "** 대상 파일(전화번호가져오기.csv)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복된 사용자는 신규정보로 갱신됩니다.";
+        }
+        else if (_mode == "REGISTER_SALARY") //2015-03-13 연봉대장 보완
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/연봉대상자.xlsx\" target=\"_blank\">연봉대상자</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복된 사용자 정보는 신규정보로 갱신됩니다.";
+        }
+        else if (_mode == "REGISTER_ETHICAL") //2015-05-13 윤리대장 보완
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/윤리대상자.xlsx\" target=\"_blank\">윤리대상자</a>)을 선택하시오!";
+        }
+        else if (_mode == "FORM_WORKSTATUS") //2015-05-13 윤리대장 보완
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/근태관리.xlsx\" target=\"_blank\">근태관리</a>)을 선택하시오!";
+        }
+        else if (_mode == "REGISTER_USERINFO") //2015-05-13 윤리대장 보완
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/사용자현황.xlsx\" target=\"_blank\">사용자현황</a>)을 선택하시오!";
+        }
+        else if (_mode == "REGISTER_USERINFODETAIL") //2015-05-13 윤리대장 보완
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/학교현황.xlsx\" target=\"_blank\">학교교황</a>)을 선택하시오!";
+        }
+        else if (_mode == "REGISTER_GONGGA") //2017-03-30 공가연차관리대장
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/공동연차대상자.xlsx\" target=\"_blank\">공동연차대상자</a>)을 선택하시오!";
+        }
+        else if (_mode == "FORM_PURCHASEUCB") //구매단가결정품의서(인하인상)
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_PURCHASEUCB.xlsx\" target=\"_blank\">구매단가결정품의서(인하인상)</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "FORM_SHIPMENTUC") //생산지출하단가결정품의서
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_SHIPMENTUC.xlsx\" target=\"_blank\">생산지출하단가결정품의서</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "FORM_CODCHANGEREQUEST") //제조조건변경요청서
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_CODCHANGEREQUEST.xlsx\" target=\"_blank\">제조조건변경요청서</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "FORM_PURCHASEUCF") //구매단가결정품의서(가단가)
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_PURCHASEUCF.xlsx\" target=\"_blank\">구매단가결정품의서(가단가)</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "FORM_PURCHASEUCC") //구매단가결정품의서(유사)
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_PURCHASEUCC.xlsx\" target=\"_blank\">구매단가결정품의서(유사)</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "FORM_MANMOVELAST") //인사평가종합
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_MANMOVELAST.xlsx\" target=\"_blank\">인사평가종합</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "FORM_MANMOVESEC") //인사평가종합
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_MANMOVESEC.xlsx\" target=\"_blank\">인사평가종합</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "FORM_PURCHASEUCC2") //구매단가결정품의서(유사)
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_PURCHASEUCC2.xlsx\" target=\"_blank\">구매단가결정품의서(유사2)</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "FORM_PURCHASESAMPLE") //구매단가결정품의서(샘플)
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/FORM_PURCHASESAMPLE.xlsx\" target=\"_blank\">구매단가결정품의서(샘플)</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;양식내 해당 정보는 덮어씌워집니다.";
+        }
+        else if (_mode == "PQM_PRODCONTPLAN") //생관계획
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/PQM_PRODCONTPLAN.xlsx\" target=\"_blank\">생관계획</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 덮어씌워집니다.";
+        }
+        else if (_mode == "PQM_QUALITYGOAL") //품질목표
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/PQM_QUALITYGOAL.xlsx\" target=\"_blank\">품질목표</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 덮어씌워집니다.";
+        }
+        else if (_mode == "PQM_STANDWORK") //표준공수
+        {
+            strReturn = "** 대상 파일(<a href=\"/Content/Forms/IMPORT/PQM_STANDWORK.xlsx\" target=\"_blank\">표준공수</a>)을 선택하시오!";
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 덮어씌워집니다.";
+        }
+        else if (_mode == "LCM_COURSE") //교욱과정관리
+        {
+            strReturn = String.Format("** 대상 파일(<a href=\"/Content/Forms/IMPORT/교육과정관리.xlsx\" target=\"_blank\">교육과정관리</a>)을 선택하시오!");
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동일한 과정명도 신규로 추가됩니다!";
+        }
+        else if (_mode == "FORM_EDUREPORTA") //사내교육결과보고서
+        {
+            strReturn = String.Format("** 대상 파일(<a href=\"/Content/Forms/IMPORT/사내교육결과보고서.xlsx\" target=\"_blank\">사내교육결과보고서</a>)을 선택하시오!");
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동일한 참석자도 신규로 추가됩니다!";
+        }
+        else if (_mode == "LCM_ADMIN") //교육관리 관리자
+        {
+            if (_subCondition == "LCM_CYBERREPORT") //사이버교육결과보고서
+            {
+                strReturn = String.Format("** 대상 파일(<a href=\"/Content/Forms/IMPORT/사이버교육결과등록.xlsx\" target=\"_blank\">사이버교육결과등록</a>)을 선택하시오!");
+                strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;모든 항목은 신규로 추가됩니다!";
+            }
+        }
+        else if (_mode == "INV_NEW_KPI") //재고지표현황 품목별지표추가
+        {
+            strReturn = String.Format("** 대상 파일(<a href=\"/Content/Forms/IMPORT/재고지표현황_품목별지표.xlsx\" target=\"_blank\">재고지표현황_품목별지표</a>)을 선택하시오!");
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 제외됩니다.";
+        }
+        else if (_mode == "REGISTER_VOC") //AS관리대장
+        {
+            strReturn = String.Format("** 대상 파일(<a href=\"/Content/Forms/IMPORT/AS관리대장.xlsx\" target=\"_blank\">AS관리대장</a>)을 선택하시오!");
+            //strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 제외됩니다.";
+        }
+        else if (_mode == "MC_SUMMARY") //모델별원가 시스템 개발원가견적 업로드
+        {
+            strReturn = String.Format("** 대상 파일(<a href=\"/Content/Forms/IMPORT/개발원가견적.xlsx\" target=\"_blank\">개발원가견적</a>)을 선택하시오!");
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 덮어씌워집니다.";
+        }
+        #endregion
+
+        return strReturn;
+    }
+
+    private void UploadFile()
+    {
+        string rt = "";
+        string strUploadFile = "";
+        string strExt = "";
+
+        HttpPostedFileBase f = Request.Files[0];
+        if (f != null)
+        {
+            strUploadFile = Path.GetFileName(f.FileName);
+            strExt = Path.GetExtension(strUploadFile).Substring(1);
+
+            #region [파일명 확인]
+            if (_mode == "REGISTER_LEAVE" || _mode == "REGISTER_LEAVEUSE")
+            {
+                if ((_subCondition == "" && strUploadFile != "연차관리대상자.csv") || (_subCondition == "event" && strUploadFile != "휴가대상자.csv"))
+                {
+                    rt = "파일명이 올바르지 않습니다!";
+                }
+            }
+            else if (_mode == "REGISTER_INANDOUT" && strUploadFile != "퇴근현황.csv")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "REGISTER_GAS" && strUploadFile != "유류현황.csv")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "REGISTER_EDUCATIONPOINT" && strUploadFile != "교육포인트관리대상자.csv")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "REGISTER_EXCHANGEINFO" && strUploadFile != "환율정보.csv")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "TELLNUMLIST" && strUploadFile != "전화번호가져오기.csv")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "REGISTER_SALARY" && strUploadFile != "연봉대상자.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "REGISTER_ETHICAL" && strUploadFile != "윤리대상자.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            //else if (_mode == "FORM_PURCHASEUCB" && strUploadFile != "FORM_PURCHASEUCB.xlsx")
+            //{
+            //    rt = "파일명이 올바르지 않습니다!";
+            //}
+            //else if (_mode == "FORM_PURCHASEUCC" && strUploadFile != "FORM_PURCHASEUCC.xlsx")
+            //{
+            //    rt = "파일명이 올바르지 않습니다!";
+            //}
+            //else if (_mode == "FORM_PURCHASESAMPLE" && strUploadFile != "FORM_PURCHASESAMPLE.xlsx")
+            //{
+            //    rt = "파일명이 올바르지 않습니다!";
+            //}
+            //else if (_mode == "FORM_PURCHASEUCC2" && strUploadFile != "FORM_PURCHASEUCC2.xlsx")
+            //{
+            //    rt = "파일명이 올바르지 않습니다!";
+            //}
+            else if (_mode == "PQM_PRODCONTPLAN" && strUploadFile != "PQM_PRODCONTPLAN.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "PQM_QUALITYGOAL" && strUploadFile != "PQM_QUALITYGOAL.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "PQM_STANDWORK" && strUploadFile != "PQM_STANDWORK.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "LCM_COURSE" && strUploadFile != "교육과정관리.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "FORM_EDUREPORTA" && strUploadFile != "사내교육결과보고서.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "LCM_ADMIN")
+            {
+                if (_subCondition == "LCM_CYBERREPORT" && strUploadFile != "사이버교육결과등록.xlsx")
+                {
+                    rt = "파일명이 올바르지 않습니다!";
+                }
+            }
+            else if (_mode == "INV_NEW_KPI" && strUploadFile != "재고지표현황_품목별지표.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "REGISTER_VOC" && strUploadFile != "AS관리대장.xlsx")
+            {
+                rt = "파일명이 올바르지 않습니다!";
+            }
+            else if (_mode == "MC_SUMMARY" && !strUploadFile.Contains("개발원가견적")) //모델별원가 시스템 개발원가견적 업로드
+            {
+                rt = "파일명[" + strUploadFile + "]이 올바르지 않습니다!";
+            }
+            #endregion
+        }
+        else
+        {
+            rt = "첨부파일 전송 실패!";
+        }
+
+        if (rt != "") rt = String.Format("<div class=\"py-2 text-center text-danger\">{0}</div>", rt);
+        else
+        {
+            _uploadPath = Path.Combine(_uploadPath + @"\" + strUploadFile);
+            f.SaveAs(_uploadPath);
+
+            DecrypFile(_uploadPath); //파일 복호화
+
+
+            ArrayList rowList = null;   //csv 이용
+            TextParse tp = null;
+
+            DataTable dtList = null;    //엑셀 이용
+            ExcelParse ep = null;
+
+            string strQuery = "";
+            if (strExt.ToLower().Equals("xlsx")) //2014-04-18 AccessDatabaseEngine 설치
+            {
+                ep = new ExcelParse(true, _uploadPath);
+                strQuery = "SELECT * FROM [Sheet1$]";
+                dtList = ep.ReadSheet(strQuery);
+                //Response.Write(JsAlert(":: 열수 : " + dtList.Rows.Count.ToString() + " : " + dtList.Rows[0][0].ToString()));
+                //Response.End();
+            }
+            else
+            {
+                tp = new TextParse(_uploadPath, ",", "euc-kr");
+                rowList = tp.ReadText();
+            }
+
+            #region [파일 내용 처리]
+            if (_mode == "REGISTER_LEAVE")
+            {
+                if (_subCondition == "") rt = DoRegisterLEAVE(rowList);
+                else rt = DoRegisterLEAVEEVENT(rowList);
+            }
+            else if (_mode == "REGISTER_LEAVEUSE")
+            {
+                if (_subCondition == "") DoRegisterLEAVEUSE(rowList);
+                else rt = DoRegisterLEAVEUSEEVENT(rowList);
+            }
+            else if (_mode == "REGISTER_PROMOTIONPOINT")
+            {
+                rt = DoRegisterPROMOTIONPOINT(rowList);
+            }
+            else if (_mode == "REGISTER_INANDOUT")
+            {
+                rt = DoRegisterINANDOUT(rowList);
+            }
+            else if (_mode == "REGISTER_GAS")
+            {
+                rt = DoRegisterGAS(rowList);
+            }
+            else if (_mode == "REGISTER_EDUCATIONPOINT")
+            {
+                rt = DoRegisterEDUCATIONPOINT(rowList);
+            }
+            else if (_mode == "REGISTER_EXCHANGEINFO")
+            {
+                rt = DoRegisterEXCHANGEINFO(rowList);
+            }
+            else if (_mode == "TELLNUMLIST")
+            {
+                rt = DoRegisterTELLNUMLIST(rowList);
+            }
+            else if (_mode == "REGISTER_SALARY")
+            {
+                //DoRegisterSALARY(rowList);
+                rt = DoRegisterSALARY(dtList);
+            }
+            else if (_mode == "REGISTER_ETHICAL")
+            {
+                //DoRegisterSALARY(rowList);
+                rt = DoRegisterETHICAL(dtList);
+            }
+            else if (_mode == "FORM_WORKSTATUS")
+            {
+                //DoRegisterSALARY(rowList);
+                rt = DoRegisterWORKSTATUS(dtList);
+            }
+            else if (_mode == "REGISTER_USERINFO")
+            {
+                //DoRegisterSALARY(rowList);
+                rt = DoRegisterREGISTERUSERINFO(dtList);
+            }
+            else if (_mode == "REGISTER_USERINFODETAIL")
+            {
+                //DoRegisterSALARY(rowList);
+                rt = DoRegisterREGISTERUSERINFODETAIL(dtList);
+            }
+            else if (_mode == "REGISTER_GONGGA")
+            {
+                //DoRegisterSALARY(rowList);
+                rt = DoRegisterGONGGA(dtList);
+            }
+            else if (_mode == "FORM_PURCHASEUCB" || _mode == "FORM_PURCHASEUCC" || _mode == "FORM_PURCHASEUCC2" || _mode == "FORM_PURCHASESAMPLE" || _mode == "FORM_PURCHASEUCF")
+            {
+                rt = DoFormPURCHASEUC(dtList); //구매단가결정품의서(인하인상, 유사, 샘플), 2016-04-20 유사 추가
+            }
+            else if (_mode == "FORM_CODCHANGEREQUEST")
+            {
+                rt = DoFormCODCHANGEREQUEST(dtList); //제조조건변경요청서
+            }
+            else if (_mode == "FORM_SHIPMENTUC")
+            {
+                rt = DoFormSHIPMENTUC(dtList); //생산지출하단가결정품의서
+            }
+            else if (_mode == "FORM_MANMOVELAST")
+            {
+                rt = DoFormMANMOVELAST(dtList); //인사평가종합
+            }
+            else if (_mode == "FORM_MANMOVESEC")
+            {
+                rt = DoFormMANMOVESEC(dtList); //인사평가종합
+            }
+            else if (_mode == "PQM_PRODCONTPLAN")
+            {
+                rt = DoRegisterPQmProdContPlan(dtList); //생관계획
+            }
+            else if (_mode == "PQM_QUALITYGOAL")
+            {
+                rt = DoRegisterPQmQualityGoal(dtList); //품질목표
+            }
+            else if (_mode == "PQM_STANDWORK")
+            {
+                rt = DoRegisterPQmStandWork(dtList); //표준공수
+            }
+            else if (_mode == "LCM_COURSE")
+            {
+                rt = DoRegisterLcmCourse(dtList); //교욱과정관리
+            }
+            else if (_mode == "FORM_EDUREPORTA")
+            {
+                rt = DoFormEDUREPORTA(dtList); //사내교육결과보고서
+            }
+            else if (_mode == "LCM_ADMIN")
+            {
+                if (_subCondition == "LCM_CYBERREPORT") //사이버교육결과등록
+                {
+                    rt = DoRegisterLcmCyberReport(dtList);
+                }
+            }
+            else if (_mode == "INV_NEW_KPI") //재고지표현황 품목별지표
+            {
+                rt = DoERP_INV_NEW_KPI(dtList);
+            }
+            else if (_mode == "REGISTER_VOC")
+            {
+                rt = DoRegisterVoc(dtList);
+            }
+            else if (_mode == "MC_SUMMARY") //모델별원가
+            {
+                rt = DoRegisterMC(dtList);
+            }
+            #endregion
+            tp = null;
+            rowList = null;
+
+            rt = "OK" + rt;
+        }
+
+        Response.Write("<script type='text/javascript'>" + Request["completed"].ToString() + "('" + Server.UrlEncode(rt) + "');</script>");
+        //Response.End();
+    }
+
+    private string RenderFile()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"zf-upload w-100\">");
+        sb.Append("<div class=\"zf-upload-select\">");
+        sb.Append("<form id=\"uploadForm\" name=\"uploadForm\" action=\"/Common/FileImport\" method=\"post\" enctype=\"multipart/form-data\" target=\"ifrView\">");
+        sb.Append("<div class=\"custom-file\">");
+        sb.Append("<input type=\"file\" class=\"custom-file-input\" id=\"file1\" name=\"file1\" />");
+        sb.Append("<input name=\"completed\" type=\"hidden\" value=\"parent._zw.fn.complete\" />");
+        sb.Append("<label class=\"custom-file-label\" for=\"customFile\">파일 선택</label>");
+        sb.Append("</div>"); //custom-file
+        sb.Append("</form>");
+        sb.Append("</div>"); //zf-upload-select
+
+        sb.Append("<div class=\"zf-upload-bar mt-1 d-none\">");
+        sb.Append("<button class=\"btn btn-sm btn-primary btn-block px-5\" type=\"button\" disabled=\"\">");
+        sb.Append("<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>");
+        sb.Append("<span class=\"ml-2\">uploading...</span>");
+        sb.Append("</button>");
+        sb.Append("</div>"); //zf-upload-bar
+
+        sb.Append("<div class=\"zf-upload-list mt-3 d-none\">");
+        sb.Append("<textarea id=\"__FILEINFO\" style=\"display:none\">[]</textarea>");
+        sb.Append("</div>");
+        sb.Append("</div>"); //zf-upload
+
+        return sb.ToString();
+    }
+
+    private void DecrypFile(string filePath)
+    {
+        int iPos = Request.Url.AbsoluteUri.IndexOf("//");
+        string strHttp = Request.Url.AbsoluteUri.Substring(0, iPos);
+        strHttp += "//";
+
+        string sEncrypServer = strHttp + Session["FrontName"].ToString();
+        string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}", sEncrypServer, "dec", Server.UrlEncode(filePath));
+        string strResult = "";
+
+        System.Net.HttpWebRequest HttpWReq = null;
+        System.Net.HttpWebResponse HttpWResp = null;
+
+        try
+        {
+            HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+            HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
+            using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
+            {
+                strResult = sr.ReadToEnd();
+            }
+            HttpWResp.Close();
+
+            if (strResult.Substring(0, 2) != "OK")
+            {
+                //22-08-06 임시로 암호화 실패 경우 로그 기록만
+                ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strResult, Environment.NewLine));
+            }
+        }
+        catch(Exception ex)
+        {
+            ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + ex.Message, Environment.NewLine));
+        }
+        finally
+        {
+            HttpWReq = null;
+            if (HttpWResp != null) { HttpWResp.Close(); HttpWResp = null; }
+        }
+    }
+
+    #region [연차 관리대장 기록]
+    private string DoRegisterLEAVE(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        if (rowList.Count > 0)
+        {
+            string strEmpId = "";
+            string strSeq = "0";
+            string strUserDN = "";
+            string strOrgInfo = "";
+            string strInDate = "";
+            string strNumberA = "0";
+            string strNumberB = "0";
+            string strNumberC = "0";
+            string strResult = "";
+            string strYear = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (object[] o in rowList)
+                {
+                    if (i == 0)
+                    {
+                    }
+                    else
+                    {
+                        strEmpId = o[0].ToString();
+                        strSeq = o[1].ToString();
+                        strOrgInfo = o[2].ToString();
+                        strUserDN = o[3].ToString();
+                        strInDate = o[4].ToString();
+                        strNumberA = o[5].ToString();
+                        strNumberC = o[6].ToString();
+                        strNumberB = o[7].ToString();
+                        strYear = o[8].ToString();
+                        if (strSeq == "") strSeq = "0";
+                        if (strNumberA == "") strNumberA = "0";
+                        if (strNumberB == "") strNumberB = "0";
+
+                        svcRt = rptBiz.SetRegisterLEAVE(_standardYear, strEmpId, strSeq, strUserDN, strOrgInfo, strInDate, strNumberA, strNumberB, strNumberC);
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (strResult == "C") strResult = "신규";
+                            else if (strResult == "U") strResult = "갱신";
+                            else if (strResult == "N") strResult = "없음";
+                        }
+                        else strResult = svcRt.ResultMessage;
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0}({1}) {2}</td>", strUserDN, strEmpId, strOrgInfo);
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    i++;
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [계획연차 관리대장 기록]
+    private string DoRegisterLEAVEUSE(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        if (rowList.Count > 0)
+        {
+            string strEmpId = "";
+            string strSeq = "0";
+            string strUserDN = "";
+            string strOrgInfo = "";
+            string strInDate = "";
+            string strNumberA = "0";
+            string strNumberB = "0";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (object[] o in rowList)
+                {
+                    if (i == 0)
+                    {
+                    }
+                    else
+                    {
+                        strEmpId = o[0].ToString();
+                        strSeq = o[1].ToString();
+                        strOrgInfo = o[2].ToString();
+                        strUserDN = o[3].ToString();
+                        strInDate = o[4].ToString();
+                        strNumberA = o[5].ToString();
+                        strNumberB = o[6].ToString();
+                        if (strSeq == "") strSeq = "0";
+                        if (strNumberA == "") strNumberA = "0";
+                        if (strNumberB == "") strNumberB = "0";
+
+                        svcRt = rptBiz.SetRegisterLEAVEUSE(_standardYear, strEmpId, strSeq, strUserDN, strOrgInfo, strInDate, strNumberA, strNumberB);
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (strResult == "C") strResult = "신규";
+                            else if (strResult == "U") strResult = "갱신";
+                            else if (strResult == "N") strResult = "없음";
+                            else strResult = "&nbsp;";
+                        }
+                        else strResult = svcRt.ResultMessage;
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0}({1}) {2}</td>", strUserDN, strEmpId, strOrgInfo);
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    i++;
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [계획휴가 추가/삭제/변경 기록]
+    private string DoRegisterLEAVEUSEEVENT(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        if (rowList.Count > 0)
+        {
+            string strEmpId = "";
+            string strUserDN = "";
+            string strLeaveDate = "";
+            string strLeaveClass = "";
+            string strLeaveFromTime = "";
+            string strLeaveDN = "";
+            string strIsDel = "N";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (object[] o in rowList)
+                {
+                    if (i == 0)
+                    {
+                    }
+                    else
+                    {
+                        strEmpId = o[0].ToString();
+                        strUserDN = o[1].ToString();
+                        strLeaveDate = o[2].ToString();
+                        strIsDel = o[3].ToString();
+                        strLeaveClass = o[4].ToString();
+                        strLeaveDN = o[5].ToString();
+                        strLeaveFromTime = o[6].ToString();
+                        if (strLeaveFromTime.Length == 4) strLeaveFromTime = "0" + strLeaveFromTime;
+
+                        svcRt = rptBiz.SetRegisterLEAVEUSEEVENT(strEmpId, strLeaveDate, strLeaveClass, strLeaveFromTime, strLeaveDN, strIsDel);
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (strResult == "C") strResult = "신규";
+                            else if (strResult == "U") strResult = "갱신";
+                            else if (strResult == "D") strResult = "감소";
+                            else if (strResult == "R") strResult = "제거";
+                            else if (strResult == "N") strResult = "없음";
+                            else if (strResult == "X") strResult = "통과";
+                            else strResult = "&nbsp;";
+                        }
+                        else strResult = svcRt.ResultMessage;
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0}({1}) {2} {3}</td>", strUserDN, strEmpId, strLeaveDate, strLeaveDN);
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    i++;
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [휴가 추가/삭제/변경 기록]
+    private string DoRegisterLEAVEEVENT(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        if (rowList.Count > 0)
+        {
+            string strEmpId = "";
+            string strUserDN = "";
+            string strLeaveDate = "";
+            string strLeaveClass = "";
+            string strLeaveFromTime = "";
+            string strLeaveDN = "";
+            string strIsDel = "N";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (object[] o in rowList)
+                {
+                    if (i == 0)
+                    {
+                    }
+                    else
+                    {
+                        strEmpId = o[0].ToString();
+                        strUserDN = o[1].ToString();
+                        strLeaveDate = o[2].ToString();
+                        strIsDel = o[3].ToString();
+                        strLeaveClass = o[4].ToString();
+                        strLeaveDN = o[5].ToString();
+                        strLeaveFromTime = o[6].ToString();
+
+                        svcRt = rptBiz.SetRegisterLEAVEEVENT(strEmpId, strLeaveDate, strLeaveClass, strLeaveFromTime, strLeaveDN, strIsDel);
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (strResult == "C") strResult = "신규";
+                            else if (strResult == "U") strResult = "갱신";
+                            else if (strResult == "D") strResult = "감소";
+                            else if (strResult == "R") strResult = "제거";
+                            else if (strResult == "N") strResult = "없음";
+                            else if (strResult == "X") strResult = "통과";
+                            else strResult = "&nbsp;";
+                        }
+                        else strResult = svcRt.ResultMessage;
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0}({1}) {2} {3}</td>", strUserDN, strEmpId, strLeaveDate, strLeaveDN);
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    i++;
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [승진포인트 관리대장 기록]
+    private string DoRegisterPROMOTIONPOINT(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        string strReturn = "";
+        if (rowList.Count > 0)
+        {
+            string strHeader = "";  //헤더는 ,로 구분한다.
+            int iHeaderMax = 15;    //최대 헤더수 15개
+                                    //int iColumn = 0;        //import된 헤더수
+            string strFieldCnt = "";
+            string strFieldValue = "";
+
+            foreach (object[] o in rowList)
+            {
+                if (i == 0)
+                {
+                    for (int x = 4; x < o.Length; x++)
+                    {
+                        if (x == 4) strHeader = o[x].ToString();
+                        else strHeader += "," + o[x].ToString();
+                    }
+                }
+                else
+                {
+                    sb.Append("<row>");
+                    sb.AppendFormat("<empid>{0}</empid>", o[0].ToString());
+                    sb.AppendFormat("<seq>{0}</seq>", o[1].ToString());
+                    sb.AppendFormat("<orginfo>{0}</orginfo>", o[2].ToString());
+                    sb.AppendFormat("<userdn>{0}</userdn>", o[3].ToString());
+                    for (int y = 1; y <= iHeaderMax; y++)
+                    {
+                        strFieldCnt = (y < 10) ? "0" + y.ToString() : y.ToString();
+                        try { strFieldValue = (o[y + 3] != null) ? o[y + 3].ToString() : ""; }
+                        catch { strFieldValue = ""; }
+                        sb.AppendFormat("<attribute{0}>{1}</attribute{0}>", strFieldCnt, strFieldValue);
+                    }
+                    sb.Append("</row>");
+                }
+                i++;
+            }
+
+            if (strHeader != "" && sb.ToString() != "")
+            {
+                using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+                {
+                    svcRt = rptBiz.SetRegisterPROMOTIONPOINT("C", 0, "", strHeader, "<rows>" + sb.ToString() + "</rows>");
+                }
+                if (svcRt.ResultCode == 0) strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", ">대상자(" + i.ToString() + ")명 승진포인트 저장!");
+                else strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", svcRt.ResultMessage);
+            }
+            else
+            {
+                if (strHeader == "")
+                {
+                    strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "헤더 정보가 누락됐거나 읽을 수 없습니다!");
+                }
+                else if (sb.ToString() == "")
+                {
+                    strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 읽을 수 없습니다!");
+                }
+            }
+        }
+        else
+        {
+            strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return strReturn;
+    }
+    #endregion
+
+    #region [퇴근대장 기록]
+    private string DoRegisterINANDOUT(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        if (rowList.Count > 0)
+        {
+            string strStdDept = "";
+            string strStdPerson = "";
+            string strLogonId = "";
+            string strStdDate = "";
+            string strStdTime = "";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (object[] o in rowList)
+                {
+                    if (i == 0)
+                    {
+                    }
+                    else
+                    {
+                        strStdDate = o[0].ToString();
+                        strStdDept = o[1].ToString();
+                        strStdPerson = o[2].ToString();
+                        strLogonId = o[3].ToString();
+                        strStdTime = o[4].ToString();
+
+                        svcRt = rptBiz.SetRegisterINANDOUT(strStdDept, strStdPerson, strLogonId, strStdDate, strStdTime);
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (strResult == "C") strResult = "신규";
+                            else if (strResult == "U") strResult = "갱신";
+                            else if (strResult == "N") strResult = "없음";
+                            else strResult = "&nbsp;";
+                        }
+                        else strResult = svcRt.ResultMessage;
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0}({1})</td>", strStdPerson, strLogonId);
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    i++;
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [유류대장 기록]
+    private string DoRegisterGAS(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        if (rowList.Count > 0)
+        {
+            string strNormal = "";
+            string strStdPerson = "";
+            string strGas = "";
+            string strStdDate = "";
+            string strLpg = "";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (object[] o in rowList)
+                {
+                    if (i == 0)
+                    {
+                    }
+                    else
+                    {
+                        strStdDate = o[0].ToString();
+                        strNormal = o[1].ToString();
+                        strGas = o[2].ToString();
+                        strLpg = o[3].ToString();
+
+                        svcRt = rptBiz.SetRegisterGAS(strStdDate, strNormal, strGas, strLpg);
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (strResult == "C") strResult = "신규";
+                            else if (strResult == "U") strResult = "갱신";
+                            else strResult = "&nbsp;";
+                        }
+                        else strResult = svcRt.ResultMessage;
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0}</td>", strStdDate);
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    i++;
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "일자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [교육포인트 관리대장 기록]
+    private string DoRegisterEDUCATIONPOINT(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        string strReturn = "";
+        if (rowList.Count > 0)
+        {
+            string strHeader = "";  //헤더는 ,로 구분한다.
+            int iHeaderMax = 15;    //최대 헤더수 15개
+                                    //int iColumn = 0;        //import된 헤더수
+            string strFieldCnt = "";
+            string strFieldValue = "";
+
+            foreach (object[] o in rowList)
+            {
+                if (i == 0)
+                {
+                    for (int x = 4; x < o.Length; x++)
+                    {
+                        if (x == 4) strHeader = o[x].ToString();
+                        else strHeader += "," + o[x].ToString();
+                    }
+                }
+                else
+                {
+                    sb.Append("<row>");
+                    sb.AppendFormat("<empid>{0}</empid>", o[0].ToString());
+                    sb.AppendFormat("<seq>{0}</seq>", o[1].ToString());
+                    sb.AppendFormat("<orginfo>{0}</orginfo>", o[2].ToString());
+                    sb.AppendFormat("<userdn>{0}</userdn>", o[3].ToString());
+                    for (int y = 1; y <= iHeaderMax; y++)
+                    {
+                        strFieldCnt = (y < 10) ? "0" + y.ToString() : y.ToString();
+                        try { strFieldValue = (o[y + 3] != null) ? o[y + 3].ToString() : ""; }
+                        catch { strFieldValue = ""; }
+                        sb.AppendFormat("<attribute{0}>{1}</attribute{0}>", strFieldCnt, strFieldValue);
+                    }
+                    sb.Append("</row>");
+                }
+                i++;
+            }
+
+            if (strHeader != "" && sb.ToString() != "")
+            {
+                using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+                {
+                    svcRt = rptBiz.SetRegisterEDUCATIONPOINT("C", 0, "", strHeader, "<rows>" + sb.ToString() + "</rows>");
+                }
+                if (svcRt.ResultCode == 0) strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", ">대상자(" + i.ToString() + ")명 교육포인트 저장!");
+                else strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", svcRt.ResultMessage);
+            }
+            else
+            {
+                if (strHeader == "")
+                {
+                    strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "헤더 정보가 누락됐거나 읽을 수 없습니다!");
+                }
+                else if (sb.ToString() == "")
+                {
+                    strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 읽을 수 없습니다!");
+                }
+            }
+        }
+        else
+        {
+            strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return strReturn;
+    }
+    #endregion
+
+    #region [전화번호 관리대장 기록]
+    private string DoRegisterTELLNUMLIST(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        string strReturn = "";
+        if (rowList.Count > 0)
+        {
+            string strHeader = "";  //헤더는 ,로 구분한다.
+            int iHeaderMax = 15;    //최대 헤더수 15개
+                                    //int iColumn = 0;        //import된 헤더수
+            string strFieldCnt = "";
+            string strFieldValue = "";
+
+            foreach (object[] o in rowList)
+            {
+                if (i == 0)
+                {
+                    for (int x = 6; x < o.Length; x++)
+                    {
+                        if (x == 6) strHeader = o[x].ToString();        //몇 번째꺼부터 안보여줄껀지
+                        else strHeader += "," + o[x].ToString();
+                    }
+                }
+                else
+                {
+                    sb.Append("<row>");
+                    sb.AppendFormat("<seq>{0}</seq>", o[0].ToString());
+                    sb.AppendFormat("<grid>{0}</grid>", o[1].ToString());
+                    sb.AppendFormat("<orginfo>{0}</orginfo>", o[2].ToString());
+                    sb.AppendFormat("<grade>{0}</grade>", o[3].ToString());
+                    sb.AppendFormat("<userdn>{0}</userdn>", o[4].ToString());
+                    sb.AppendFormat("<empid>{0}</empid>", o[5].ToString());
+
+
+                    for (int y = 1; y <= iHeaderMax; y++)
+                    {
+                        strFieldCnt = (y < 10) ? "0" + y.ToString() : y.ToString();
+                        try { strFieldValue = (o[y + 5] != null) ? o[y + 5].ToString() : ""; }
+                        catch { strFieldValue = ""; }
+                        sb.AppendFormat("<attribute{0}>{1}</attribute{0}>", strFieldCnt, strFieldValue);
+                    }
+                    sb.Append("</row>");
+                }
+                i++;
+            }
+
+            if (strHeader != "" && sb.ToString() != "")
+            {
+                using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+                {
+                    svcRt = rptBiz.SetRegisterTELLNUMLIST("C", 0, "", strHeader, "<rows>" + sb.ToString() + "</rows>");
+                }
+                if (svcRt.ResultCode == 0) strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", ">대상자(" + i.ToString() + ")명 전화번호리스트 저장!");
+                else strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", svcRt.ResultMessage);
+            }
+            else
+            {
+                if (strHeader == "")
+                {
+                    strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "헤더 정보가 누락됐거나 읽을 수 없습니다!");
+                }
+                else if (sb.ToString() == "")
+                {
+                    strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 읽을 수 없습니다!");
+                }
+            }
+        }
+        else
+        {
+            strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return strReturn;
+    }
+    #endregion
+
+    #region [환율정보 추가/변경]
+    private string DoRegisterEXCHANGEINFO(ArrayList rowList)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        if (rowList.Count > 0)
+        {
+            string strExDate = "";
+            string strExType = "";
+            string strExTypeDesc = "";
+            string strCurrency01 = "";
+            string strCurrency02 = "";
+            string strCurrency03 = "";
+            string strCurrency04 = "";
+            string strCurrency05 = "";
+            string strCurrency06 = "";
+            string strCurrency07 = "";
+            string strCurrency08 = "";
+            string strCurrency09 = "";
+            string strCurrency10 = "";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>일자/구분</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (object[] o in rowList)
+                {
+                    if (i == 0)
+                    {
+                    }
+                    else
+                    {
+                        strExDate = o[0].ToString();
+                        strExType = o[1].ToString();
+                        if (strExType == "A") strExTypeDesc = "한국은행기준율";
+                        else if (strExType == "B") strExTypeDesc = "매매기준율";
+                        strCurrency01 = o[2].ToString();
+                        strCurrency02 = (o[3] != null) ? o[3].ToString() : "";
+                        strCurrency03 = (o[4] != null) ? o[4].ToString() : "";
+                        strCurrency04 = (o[5] != null) ? o[5].ToString() : "";
+                        strCurrency05 = (o[6] != null) ? o[6].ToString() : "";
+                        strCurrency06 = (o[7] != null) ? o[7].ToString() : "";
+                        strCurrency07 = (o[8] != null) ? o[8].ToString() : "";
+                        strCurrency08 = (o.Length > 9) ? o[9].ToString() : "";
+                        strCurrency09 = (o.Length > 10) ? o[10].ToString() : "";
+                        strCurrency10 = (o.Length > 11) ? o[11].ToString() : "";
+
+                        svcRt = rptBiz.SetRegisterEXCHANGEINFO(strExDate, strExType, strExTypeDesc, strCurrency01, strCurrency02, strCurrency03
+                                    , strCurrency04, strCurrency05, strCurrency06, strCurrency07, strCurrency08, strCurrency09, strCurrency10);
+                        if (svcRt.ResultCode == 0)
+                        {
+                            if (strResult == "C") strResult = "신규";
+                            else if (strResult == "U") strResult = "갱신";
+                            else strResult = "&nbsp;";
+                        }
+                        else strResult = svcRt.ResultMessage;
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0} : {1}</td>", strExDate, strExTypeDesc);
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    i++;
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "환율 정보가 없거나 csv 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [연봉대상자 추가]
+    private string DoRegisterSALARY(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string strType = "";        //연봉계약서가 3종(A,B,C)
+            string strEmpId = "";
+            string strSeq = "0";
+            string strUserDN = "";
+            string strOrgInfo = "";
+            string strInDate = "";
+            string strPeriodFrom = "";
+            string strPeriodTo = "";
+            string strPayMonth = "";
+            string strPayTime = "";
+            string strPayA = "";
+            string strPayB = "";
+            string strPayC = "";
+            string strPayD = "";
+            string strPayE = "";
+            string strContractDate = "";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strType = row["구분"].ToString();
+                    strEmpId = row["사번"].ToString();
+                    strSeq = row["순서"].ToString();
+                    strOrgInfo = row["부서"].ToString();
+                    strUserDN = row["성명"].ToString();
+                    strInDate = row["입사일"].ToString();
+                    strPeriodFrom = row["계약시작"].ToString();
+                    strPeriodTo = row["계약종료"].ToString();
+                    strPayMonth = row["계약기간"].ToString();
+                    strPayA = row["연봉"].ToString().Replace(",", "");
+                    strPayB = row["월급여"].ToString().Replace(",", "");
+                    strPayC = row["기본급"].ToString().Replace(",", "");
+                    strPayTime = row["시간외근로시간"].ToString();
+                    strPayD = row["시간외근로수당"].ToString().Replace(",", "");
+                    strPayE = row["직급수당"].ToString().Replace(",", "");
+                    strContractDate = row["계약일"].ToString();
+
+                    if (strSeq == "") strSeq = "0";
+                    if (strPayA == "") strPayA = "0";
+                    if (strPayB == "") strPayB = "0";
+                    if (strPayC == "") strPayC = "0";
+                    if (strPayD == "") strPayD = "0";
+                    if (strPayE == "") strPayE = "0";
+
+                    svcRt = rptBiz.SetRegisterSALARY(_standardYear, strType, strEmpId, strSeq, strUserDN, strOrgInfo, strInDate, strContractDate, strPeriodFrom
+                                                    , strPeriodTo, strPayMonth, strPayTime, strPayA, strPayB, strPayC, strPayD, strPayE);
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (strResult == "C") strResult = "신규";
+                        else if (strResult == "U") strResult = "갱신";
+                        else if (strResult == "G") strResult = "불가";//결재진행중 또는 정상완료
+                        else if (strResult == "N") strResult = "없음";
+                        else strResult = "&nbsp;";
+                    }
+                    else strResult = svcRt.ResultMessage;
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>{0}({1}) {2}</td>", strUserDN, strEmpId, strOrgInfo);
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [윤리대상자 추가]
+    private string DoRegisterETHICAL(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string strLogonID = "";
+            string strSeq = "0";
+            string strUserDN = "";
+            string strOrgInfo = "";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strSeq = row["순서"].ToString();
+                    strLogonID = row["아이디"].ToString();
+                    strOrgInfo = row["부서"].ToString();
+                    strUserDN = row["성명"].ToString();
+
+                    if (strSeq == "") strSeq = "0";
+
+                    svcRt = rptBiz.SetRegisterETHICAL(_standardYear, strLogonID, strSeq, strUserDN, strOrgInfo);
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (strResult == "C") strResult = "신규";
+                        else if (strResult == "U") strResult = "갱신";
+                        else if (strResult == "G") strResult = "불가";//결재진행중 또는 정상완료
+                        else if (strResult == "N") strResult = "없음";
+                        else strResult = "&nbsp;";
+                    }
+                    else strResult = svcRt.ResultMessage;
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>{0}({1}) {2}</td>", strUserDN, strLogonID, strOrgInfo);
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [근태관리 추가]
+    private string DoRegisterWORKSTATUS(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string strUserID = "";
+            string strDept = "";
+            string strName = "";
+            string strGrade = "";
+            string strDate = "";
+            string strTime = "";
+            string strStatus = "";
+            string strIP = "";
+            string strETC = "";
+            string strreg = "";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strUserID = row["아이디"].ToString();
+                    strDept = row["부서"].ToString();
+                    strName = row["성명"].ToString();
+                    strGrade = row["직급"].ToString();
+                    strDate = row["기준일"].ToString();
+                    strTime = row["기준시간"].ToString();
+                    strStatus = row["일상태"].ToString();
+                    strIP = row["IP"].ToString();
+                    strETC = "PC/MSIE";
+                    strreg = row["TAG번호"].ToString();
+
+                    svcRt = rptBiz.SetRegisterWORKSTATUS(_standardYear, strUserID, strDate, strTime, strStatus, strIP, strETC, strreg);
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (strResult == "C") strResult = "신규";
+                        else if (strResult == "N") strResult = "변경";
+                        else strResult = "&nbsp;";
+                    }
+                    else strResult = svcRt.ResultMessage;
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>{0}({1} {2})</td>", strDept, strName, strGrade);
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [사용자현황 추가]
+    private string DoRegisterREGISTERUSERINFO(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string strUserID = "";
+            string strHandphone = "";
+            string strEmgphone = "";
+            string strComphone = "";
+            string strStdwork = "";
+            string strStrdate = "";
+            string strEnddate = "";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strUserID = row["유저아이디"].ToString();
+                    strHandphone = row["핸드폰번호"].ToString();
+                    strEmgphone = row["비상연락처"].ToString();
+                    strComphone = row["사내번호"].ToString();
+                    strStdwork = row["근무유형"].ToString();
+                    strStrdate = row["시작일"].ToString();
+                    strEnddate = row["종료일"].ToString();
+
+                    svcRt = rptBiz.SetRegisterRegisteruserinfo(_standardYear, strUserID, strHandphone, strEmgphone, strComphone, strStdwork, strStrdate, strEnddate);
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (strResult == "C") strResult = "신규";
+                        else if (strResult == "N") strResult = "변경";
+                    }
+                    else strResult = svcRt.ResultMessage;
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>{0}</td>", strUserID);
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [사용자 세부현황 추가]
+    private string DoRegisterREGISTERUSERINFODETAIL(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string strUserID = "";
+            string strSchool = "";
+            string strResult = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strUserID = row["이메일"].ToString();
+                    strSchool = row["학교"].ToString();
+
+                    svcRt = rptBiz.SetRegisterRegisteruserinfoDETAIL(_standardYear, strUserID, strSchool);
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (strResult == "C") strResult = "신규";
+                        else if (strResult == "N") strResult = "변경";
+                    }
+                    else strResult = svcRt.ResultMessage;
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>{0}</td>", strUserID);
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+
+                    strResult = "";
+                }
+            }
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [공동연차대상자 추가]
+    private string DoRegisterGONGGA(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string strLogonID = "";
+            string strSeq = "0";
+            string strUserDN = "";
+            string strOrgInfo = "";
+            string strResult = "";
+            string strStdDay = "";
+            string strStdDate1 = "";
+            string strStdType1 = "";
+            string strStdDate2 = "";
+            string strStdType2 = "";
+            string strStdDate3 = "";
+            string strStdType3 = "";
+            string strStdDate4 = "";
+            string strStdType4 = "";
+            string strStdDate5 = "";
+            string strStdType5 = "";
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strSeq = row["순서"].ToString();
+                    strLogonID = row["아이디"].ToString();
+                    strOrgInfo = row["부서"].ToString();
+                    strUserDN = row["성명"].ToString();
+                    strStdDay = row["총연차일수"].ToString();
+                    strStdDate1 = row["연차일1"].ToString();
+                    strStdType1 = row["연차타입1"].ToString();
+                    strStdDate2 = row["연차일2"].ToString();
+                    strStdType2 = row["연차타입2"].ToString();
+                    strStdDate3 = row["연차일3"].ToString();
+                    strStdType3 = row["연차타입3"].ToString();
+                    strStdDate4 = row["연차일4"].ToString();
+                    strStdType4 = row["연차타입4"].ToString();
+                    strStdDate5 = row["연차일5"].ToString();
+                    strStdType5 = row["연차타입5"].ToString();
+
+                    if (strSeq == "") strSeq = "0";
+
+                    svcRt = rptBiz.SetRegisterGONGGA(_standardYear, strLogonID, strSeq, strUserDN, strOrgInfo, strStdDay, strStdDate1, strStdType1
+                                        , strStdDate2, strStdType2, strStdDate3, strStdType3, strStdDate4, strStdType4, strStdDate5, strStdType5);
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (strResult == "C") strResult = "신규";
+                        else if (strResult == "U") strResult = "갱신";
+                        else if (strResult == "G") strResult = "불가";//결재진행중 또는 정상완료
+                        else if (strResult == "N") strResult = "없음";
+                        else strResult = "&nbsp;";
+                    }
+                    else strResult = svcRt.ResultMessage;
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>{0}({1}) {2}</td>", strUserDN, strLogonID, strOrgInfo);
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [구매단가결정품의서 관련]
+    private string DoFormPURCHASEUC(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sbSubTableData = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
+
+        int iH = 0;
+        int iMAX = 500; //2014-06-12 추가 : 결과창 최대 높이
+        int iTotal = 0; //2014-06-12 추가 : 총 자료 건수
+        int iOk = 0;    //2014-06-12 추가 : 유효 건수
+        int iNo = 0;    //2014-06-12 추가 : 비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string strModelDn = ""; //모델명 <- ERP 확인값
+            string strModelNo = ""; //모델번호
+            string strPartNo = ""; //품번
+            string strPartDn = ""; //품명
+            string strCompanyCode = ""; //업체코드
+            string strCompany = ""; //업체명
+            string strCurrency = "";
+            string strBPANo = ""; //BPA NUM
+            string strApplyDate = ""; //적용시점
+            string strEtc = ""; //비고
+            string strNumberA = ""; //현행가, 개발견적가
+            string strNumberB = ""; //변경가, 견적가
+            string strNumberC = ""; //변동액, 현행가
+            string strNumberD = ""; //변동율, 확정가
+            string strNumberE = ""; //소요량
+            string strNumberF = ""; //금액
+            string strLTA = ""; //TTL L/T
+            string strLTB = ""; //Pre L/T
+            string strLTC = ""; //L/T
+            string strLTD = ""; //Post L/T
+            string strOrg = ""; //법인명
+
+            bool bApplyDate = true; //21-03-23 적용시점 체크
+
+            string strResult = "";
+            iTotal = data.Rows.Count;
+
+            if (_mode == "FORM_PURCHASEUCB")
+            {
+                //모델명,품명,품번,현행가,변경가,변동액,소요량,금액,TTL,PRE,LT,POST,업체명,업체코드,BPA,적용시점,비고
+                sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\",\"{16}\",\"{17}\"]"
+                        , "MODELNAME", "ITEMNAME", "ITEMNO", "PRICEA", "PRICEB", "PRICEC", "RATE", "AMOUNT", "PRICED", "TTLLT", "PRELT", "PROCESSLT", "POSTLT", "COMPANY", "COMPANYCODE", "BPANUM", "APPLYPOINT", "ETC");
+            }
+            else if (_mode == "FORM_PURCHASEUCF")
+            {
+                //모델명,품명,품번,가단가,업체명,업체코드,BPA,적용시점,비고
+                sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\"]"
+                        , "MODELNAME", "ITEMNAME", "ITEMNO", "PRICEB", "COMPANY", "COMPANYCODE", "BPANUM", "APPLYPOINT", "ETC");
+            }
+            else if (_mode == "FORM_PURCHASEUCC")
+            {
+                //NO,모델명,품명,품번,개발견적가,견적가,현행가,확정가,업체명,업체코드,BPA,적용시점,TTL,PRE,LT,POST,비고
+                sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\",\"{16}\"]"
+                        , "ROWNUM", "MODELNAME", "ITEMNAME", "ITEMNO", "PRICEA", "PRICEB", "PRICEC", "PRICED", "COMPANY", "COMPANYCODE", "BPANUM", "APPLYPOINT", "TTLLT", "PRELT", "PROCESSLT", "POSTLT", "ETC");
+            }
+            else if (_mode == "FORM_PURCHASESAMPLE")
+            {
+                //NO,모델명,품명,품번,개발견적가,견적가,현행가,확정가,업체명,업체코드,BPA,적용시점,TTL,PRE,LT,POST,비고
+                sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\",\"{16}\"]"
+                        , "ROWNUM", "MODELNAME", "ITEMNAME", "ITEMNO", "PRICEA", "PRICEB", "PRICEC", "PRICED", "COMPANY", "COMPANYCODE", "BPANUM", "APPLYPOINT", "TTLLT", "PRELT", "PROCESSLT", "POSTLT", "ETC");
+            }
+            else if (_mode == "FORM_PURCHASEUCC2")
+            {
+                //NO,모델명,품명,품번,개발견적가,견적가,현행가,통화,확정가,업체명,업체코드,BPA,적용시점,TTL,PRE,LT,POST,비고
+                sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\",\"{16}\",\"{17}\"]"
+                        , "ROWNUM", "MODELNAME", "ITEMNAME", "ITEMNO", "PRICEA", "PRICEB", "PRICEC", "SUBCURRENCY", "PRICED", "COMPANY", "COMPANYCODE", "BPANUM", "APPLYPOINT", "TTLLT", "PRELT", "PROCESSLT", "POSTLT", "ETC");
+            }
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:88%\" /><col style=\"width:12%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strModelNo = row["모델번호"].ToString();
+                    strPartNo = row["품번"].ToString();
+                    strOrg = row["법인명"].ToString();
+                    bApplyDate = true;
+
+                    if (strOrg == "CD") strOrg = "104";
+                    else if (strOrg == "CD2") strOrg = "148";
+                    else if (strOrg == "CH") strOrg = "102";
+                    else if (strOrg == "CT") strOrg = "103";
+                    else if (strOrg == "IC") strOrg = "105";
+                    else if (strOrg == "IS") strOrg = "128";
+                    else if (strOrg == "VH") strOrg = "108";
+                    else if (strOrg == "KH") strOrg = "101";
+
+                    //Response.Write("시간=>" + DateTime.Now.ToString("yyyyMMdd HHmmss.fffffff") + "::::"); => OS에 따라 표기 가능한 정밀도가 다르다
+
+                    if (strModelNo != "" && strPartNo != "" && strOrg != "")
+                    {
+                        iH++;
+                        strCompanyCode = row["업체코드"].ToString();
+                        strBPANo = row["BPA"].ToString();
+                        strApplyDate = row["적용시점"].ToString().Substring(0, 10);
+                        strEtc = row["비고"].ToString();
+
+                        if (_mode == "FORM_PURCHASEUCB" && strApplyDate != "" && DateTime.Compare(Convert.ToDateTime(strApplyDate), Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))) > 0)
+                        {
+                            //21-03-23 적용시점 체크
+                            bApplyDate = false;
+                        }
+
+                        svcRt = rptBiz.GetReport("", 0, this._mode, "", "", strModelNo, strPartNo, strCompanyCode, strOrg, "");
+                        //Response.Write(ds.GetXml());
+                        if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                        {
+                            strModelDn = svcRt.ResultDataSet.Tables[0].Rows[0]["모델명"].ToString();
+                            strPartDn = svcRt.ResultDataSet.Tables[0].Rows[0]["품명"].ToString();
+                            //test 2016-04-28 이영호 테스트
+                            strCompany = svcRt.ResultDataSet.Tables[0].Rows[0]["업체명"].ToString();
+                        }
+                        else
+                        {
+                            strModelDn = "";
+                            strPartDn = "";
+                            strCompany = "";
+                        }
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>모델 : {0}, 품번 {1}, 업체 : {2}</td>", strModelNo, strPartNo, strCompanyCode);
+
+                        if (!bApplyDate)
+                        {
+                            //적용시점이 오늘 이후인 경우
+                            strResult = "<a href=\"javascript:\" class=\"text-danger\" title=\"적용시점(" + strApplyDate + ")은 오늘 이전이어야 합니다!!\">NO</a>";
+                            iNo++;
+                        }
+                        else if (strModelDn == "" || strPartDn == "" || strCompany == "")
+                        {
+                            //모델명, 품명, 업체명 중 하나라도 확인 되지 않을 경우
+                            strResult = "<a href=\"javascript:\" class=\"text-danger\" title=\"모델명 : " + (strModelDn == "" ? "N/A" : strModelDn) + ", 품명 : " + (strPartDn == "" ? "N/A" : strPartDn) + ", 업체명 : " + (strCompany == "" ? "N/A" : strCompany) + "\">NO</a>";
+                            iNo++;
+                        }
+                        else
+                        {
+                            //모두 확인이 된 경우
+                            //strNumberA = (row["현행가"].ToString() == "") ? "0" : Convert.ToDecimal(row["현행가"]).ToString("#,###.#####");
+                            if (_mode == "FORM_PURCHASEUCB")
+                            {
+                                strNumberA = (row["현행가"].ToString() == "") ? "0" : Convert.ToDecimal(row["현행가"]).ToString("###0.#####");
+                                strNumberB = (row["변경가"].ToString() == "") ? "0" : Convert.ToDecimal(row["변경가"]).ToString("###0.#####");
+                                strNumberC = (row["변동액"].ToString() == "") ? "0" : Convert.ToDecimal(row["변동액"]).ToString("#,##0.#####");
+                                strNumberD = (row["변동율"].ToString() == "") ? "0%" : Convert.ToDecimal(row["변동율"]).ToString("#,##0.#") + "%";
+                                strNumberE = (row["소요량"].ToString() == "") ? "0" : Convert.ToDecimal(row["소요량"]).ToString("#,##0");
+                                strNumberF = (row["금액"].ToString() == "") ? "0" : Convert.ToDecimal(row["금액"]).ToString("#,##0.#####");
+
+                                strLTA = (row["TTL L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["TTL L/T"]).ToString("#,##0");
+                                strLTB = (row["Pre L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["Pre L/T"]).ToString("#,##0");
+                                strLTC = (row["L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["L/T"]).ToString("#,##0");
+                                strLTD = (row["Post L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["Post L/T"]).ToString("#,##0");
+
+                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\",\"{16}\",\"{17}\"]"
+                                        , JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0)
+                                        , strNumberA, strNumberB, strNumberC, strNumberD, strNumberE, strNumberF, strLTA, strLTB, strLTC, strLTD
+                                        , JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0), JsParamEncode(0, strBPANo, 0), JsParamEncode(0, strApplyDate, 0), JsParamEncode(0, strEtc, 0));
+                            }
+                            else if (_mode == "FORM_PURCHASEUCF")
+                            {
+                                strNumberB = (row["가단가"].ToString() == "") ? "0" : Convert.ToDecimal(row["가단가"]).ToString("###0.#####");
+
+
+                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\"]"
+                                        , JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0)
+                                        , strNumberB
+                                        , JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0), JsParamEncode(0, strBPANo, 0), JsParamEncode(0, strApplyDate, 0), JsParamEncode(0, strEtc, 0));
+                            }
+                            else if (_mode == "FORM_PURCHASEUCC")
+                            {
+                                //개발견적가,견적가,현행가,확정가
+                                strNumberA = (row["개발견적가"].ToString() == "") ? "" : Convert.ToDecimal(row["개발견적가"]).ToString("###0.#####");
+                                strNumberB = (row["견적가"].ToString() == "") ? "" : Convert.ToDecimal(row["견적가"]).ToString("###0.#####");
+                                strNumberC = (row["현행가"].ToString() == "") ? "" : Convert.ToDecimal(row["현행가"]).ToString("###0.#####");
+                                strNumberD = (row["확정가"].ToString() == "") ? "" : Convert.ToDecimal(row["확정가"]).ToString("###0.#####");
+
+                                strLTA = (row["TTL L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["TTL L/T"]).ToString("#,##0");
+                                strLTB = (row["Pre L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["Pre L/T"]).ToString("#,##0");
+                                strLTC = (row["L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["L/T"]).ToString("#,##0");
+                                strLTD = (row["Post L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["Post L/T"]).ToString("#,##0");
+
+                                //모델명,품명,품번,개발견적가,견적가,현행가,확정가,업체명,업체코드,BPA,적용시점,TTL,PRE,LT,POST,비고
+                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\",\"{16}\"]"
+                                        , (iOk + 1).ToString(), JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0)
+                                        , strNumberA, strNumberB, strNumberC, strNumberD, JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0)
+                                        , JsParamEncode(0, strBPANo, 0), JsParamEncode(0, strApplyDate, 0), strLTA, strLTB, strLTC, strLTD, JsParamEncode(0, strEtc, 0));
+                            }
+                            else if (_mode == "FORM_PURCHASESAMPLE")
+                            {
+                                //개발견적가,견적가,현행가,확정가
+                                strNumberA = (row["개발견적가"].ToString() == "") ? "0" : Convert.ToDecimal(row["개발견적가"]).ToString("###0.#####");
+                                strNumberB = (row["견적가"].ToString() == "") ? "0" : Convert.ToDecimal(row["견적가"]).ToString("###0.#####");
+                                strNumberC = (row["현행가"].ToString() == "") ? "0" : Convert.ToDecimal(row["현행가"]).ToString("###0.#####");
+                                strNumberD = (row["확정가"].ToString() == "") ? "0" : Convert.ToDecimal(row["확정가"]).ToString("###0.#####");
+
+                                strLTA = (row["TTL L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["TTL L/T"]).ToString("#,##0");
+                                strLTB = (row["Pre L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["Pre L/T"]).ToString("#,##0");
+                                strLTC = (row["L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["L/T"]).ToString("#,##0");
+                                strLTD = (row["Post L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["Post L/T"]).ToString("#,##0");
+
+                                //모델명,품명,품번,개발견적가,견적가,현행가,확정가,업체명,업체코드,BPA,적용시점,TTL,PRE,LT,POST,비고
+                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\",\"{16}\"]"
+                                        , (iOk + 1).ToString(), JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0)
+                                        , strNumberA, strNumberB, strNumberC, strNumberD, JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0)
+                                        , JsParamEncode(0, strBPANo, 0), JsParamEncode(0, strApplyDate, 0), strLTA, strLTB, strLTC, strLTD, JsParamEncode(0, strEtc, 0));
+                            }
+                            else if (_mode == "FORM_PURCHASEUCC2")
+                            {
+                                //개발견적가,견적가,현행가,확정가
+                                strNumberA = (row["개발견적가"].ToString() == "") ? "0" : Convert.ToDecimal(row["개발견적가"]).ToString("###0.#####");
+                                strNumberB = (row["견적가"].ToString() == "") ? "0" : Convert.ToDecimal(row["견적가"]).ToString("###0.#####");
+                                strNumberC = (row["현행가"].ToString() == "") ? "0" : Convert.ToDecimal(row["현행가"]).ToString("###0.#####");
+                                strCurrency = row["통화"].ToString();
+                                strNumberD = (row["확정가"].ToString() == "") ? "0" : Convert.ToDecimal(row["확정가"]).ToString("###0.#####");
+
+                                strLTA = (row["TTL L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["TTL L/T"]).ToString("#,##0");
+                                strLTB = (row["Pre L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["Pre L/T"]).ToString("#,##0");
+                                strLTC = (row["L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["L/T"]).ToString("#,##0");
+                                strLTD = (row["Post L/T"].ToString() == "") ? "0" : Convert.ToDecimal(row["Post L/T"]).ToString("#,##0");
+
+                                //모델명,품명,품번,개발견적가,견적가,현행가,확정가,업체명,업체코드,BPA,적용시점,TTL,PRE,LT,POST,비고
+                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\",\"{16}\",\"{17}\"]"
+                                        , (iOk + 1).ToString(), JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0)
+                                        , strNumberA, strNumberB, strNumberC, strCurrency, strNumberD, JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0)
+                                        , JsParamEncode(0, strBPANo, 0), JsParamEncode(0, strApplyDate, 0), strLTA, strLTB, strLTC, strLTD, JsParamEncode(0, strEtc, 0));
+                            }
+                            strResult = "OK";
+                            iOk++;
+                        }
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    else if (strModelNo == "" || strPartNo == "" || strOrg != "")
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0</td>", "모델명, 품번, 법인명은 반드시 입력되어야 합니다.");
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    strResult = "";
+                }
+            }
+            sbSubTableData.Append("]");
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+
+        sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
+        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [제조조건변경요청서 관련]
+    private string DoFormCODCHANGEREQUEST(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sbSubTableData = new StringBuilder("");
+
+        int iH = 0;
+        int iMAX = 500; //2014-06-12 추가 : 결과창 최대 높이
+        int iTotal = 0; //2014-06-12 추가 : 총 자료 건수
+        int iOk = 0;    //2014-06-12 추가 : 유효 건수
+        int iNo = 0;    //2014-06-12 추가 : 비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string strModelDn = ""; //모델명 <- ERP 확인값
+            string strModelNo = ""; //모델번호
+            string strPartNo = ""; //품번
+            string strPartDn = ""; //품명
+            string strResult = "";
+            iTotal = data.Rows.Count;
+
+            //모델명,품명,품번
+            sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\"]", "MODELNAME", "PARTNO", "PARTNM");
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:88%\" /><col style=\"width:12%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strModelNo = row["모델번호"].ToString();
+                    strPartNo = row["품번"].ToString();
+                    strPartDn = row["품명"].ToString();
+
+                    if (strModelNo != "" && strPartNo != "")
+                    {
+                        svcRt = rptBiz.GetReport("", 0, this._mode, "", "", strModelNo, strPartNo, "", "", "");
+
+                        if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                        {
+                            strModelDn = svcRt.ResultDataSet.Tables[0].Rows[0]["모델명"].ToString();
+                            strPartDn = svcRt.ResultDataSet.Tables[0].Rows[0]["품명"].ToString();
+                        }
+                        else
+                        {
+                            strModelDn = "";
+                            strPartDn = "";
+                        }
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>모델 : {0}, 품번 {1}</td>", strModelNo, strPartNo);
+
+                        if (strModelDn == "" || strPartDn == "")
+                        {
+                            //모델명, 품명, 업체명 중 하나라도 확인 되지 않을 경우
+                            strResult = "<a href=\"javascript:\" class=\"text-danger\" title=\"모델명 : " + (strModelDn == "" ? "N/A" : strModelDn) + ", 품명 : " + (strPartDn == "" ? "N/A" : strPartDn) + "\">NO</a>";
+                            iNo++;
+                        }
+                        else
+                        {
+                            sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\"]", JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartNo, 0), JsParamEncode(0, strPartDn, 0));
+
+                            strResult = "OK";
+                            iOk++;
+                        }
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    strResult = "";
+                }
+            }
+
+            sbSubTableData.Append("]");
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+
+        sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
+        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [생산지출하단가결정품의서 관련]
+    private string DoFormSHIPMENTUC(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sbSubTableData = new StringBuilder("");
+
+        int iH = 0;
+        int iMAX = 500; //2014-06-12 추가 : 결과창 최대 높이
+        int iTotal = 0; //2014-06-12 추가 : 총 자료 건수
+        int iOk = 0;    //2014-06-12 추가 : 유효 건수
+        int iNo = 0;    //2014-06-12 추가 : 비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string strCUSTOMER = ""; //고객
+            string strITEMNO = ""; //품번
+            string strCHECKREASON = ""; //변동요인
+            string strORGPRICE = ""; //출하단가
+            string strSHIPCONDITION = ""; //선적조건
+            string strLEAVEDATE = ""; //적용시점
+            string strPRICELIST = ""; //생산지 pricelist
+            string strBPANUM = ""; //판매처 BPA NUM
+            string strYESNO = ""; //중개거래
+            string strMIDCUSTOMER = ""; //중계고객
+            string strMIDCUSTOMER_CODE = ""; //중계고객코드
+            string strSALEPRICE = ""; //중계고객판매가
+            string strMIDPRICELIST = ""; //중계pricelist
+            string strSALEPER = ""; //이익율
+            string strETC = ""; //비고
+            string strGG = ""; //생산지
+            string strGG2 = ""; //판매지
+            string strGG3 = ""; //통화
+            string strGG4 = ""; //VENDER_CODE
+            string strCheck = ""; //중계고객CHECK
+            int _totalCount = 0;
+
+            string strResult = "";
+            //iTotal = data.Rows.Count;
+
+            //고객구분,품명,품번,현행가,변경가,변동액,소요량,금액,TTL,PRE,LT,POST,업체명,업체코드,BPA,적용시점,비고
+            sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\"]"
+                    , "CUSTOMER", "ITEMNO", "CHECKREASON", "ORGPRICE", "SHIPCONDITION", "LEAVEDATE", "PRICELIST", "BPANUM", "YESNO", "MIDCUSTOMER", "MIDCUSTOMER_CODE", "SALEPRICE", "MIDPRICELIST", "SALEPER", "ETC");
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:88%\" /><col style=\"width:12%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strCUSTOMER = row["고객"].ToString();
+                    strITEMNO = row["품번"].ToString();
+                    strORGPRICE = row["출하단가"].ToString();
+                    //strLEAVEDATE = EApproval.CheckDateTiem(row["적용시점"].ToString(), "yyyy-MM-dd"); //row["적용시점"].ToString(); //2019-07-26 수정
+                    try
+                    {
+                        strLEAVEDATE = Convert.ToDateTime(row["적용시점"].ToString()).ToString("yyyy-MM-dd"); //2019-09-10 다시 수정
+                    }
+                    catch
+                    {
+                        strLEAVEDATE = row["적용시점"].ToString(); //.Substring(0, 10);
+                    }
+                    strCHECKREASON = row["변동요인"].ToString();
+                    strSHIPCONDITION = row["선적조건"].ToString();
+                    strGG = Request["gg"].ToString();
+                    strGG2 = Request["gg2"].ToString();
+                    strGG3 = Request["gg3"].ToString();
+                    strGG4 = Request["gg4"].ToString();
+                    strPRICELIST = row["생산지PRICELIST"].ToString();
+                    strBPANUM = row["BPANUM"].ToString();
+                    strYESNO = row["중계거래"].ToString();
+                    strMIDCUSTOMER = row["중계고객"].ToString();
+                    strMIDCUSTOMER_CODE = row["중계고객코드"].ToString();
+                    strSALEPRICE = row["중계고객판매가"].ToString();
+                    strMIDPRICELIST = row["중계PRICELIST"].ToString();
+                    strSALEPER = row["이익율"].ToString();
+                    strETC = row["비고"].ToString();
+
+                    //Response.Write("시간=>" + DateTime.Now.ToString("yyyyMMdd HHmmss.fffffff") + "::::"); => OS에 따라 표기 가능한 정밀도가 다르다
+
+                    if (strITEMNO != "" && strORGPRICE != "")
+                    {
+                        iH++;
+
+                        svcRt = rptBiz.GetReport("", 0, this._mode, "", "", "A", strGG, strGG3, strITEMNO, strPRICELIST);
+                        if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                        {
+                            strITEMNO = svcRt.ResultDataSet.Tables[0].Rows[0]["품번"].ToString();
+                            strPRICELIST = svcRt.ResultDataSet.Tables[0].Rows[0]["pricelist"].ToString();
+                        }
+                        else
+                        {
+                            strITEMNO = "";
+                            strPRICELIST = "";
+                        }
+
+                        svcRt = rptBiz.GetReport("", 0, this._mode, "", "", "B", strGG2, strGG3, strGG4, strBPANUM);
+                        if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                        {
+                            strBPANUM = svcRt.ResultDataSet.Tables[0].Rows[0]["BPANUM"].ToString();
+                        }
+                        else
+                        {
+                            strBPANUM = "";
+                        }
+
+                        if (strYESNO == "Y")
+                        {
+                            svcRt = rptBiz.GetReport("", 0, this._mode, "", "", "C", strGG2, strGG3, strMIDCUSTOMER_CODE, strMIDPRICELIST);
+                            if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                            {
+                                strMIDCUSTOMER_CODE = svcRt.ResultDataSet.Tables[0].Rows[0]["midcus"].ToString();
+                                strMIDPRICELIST = svcRt.ResultDataSet.Tables[0].Rows[0]["midpricelist"].ToString();
+                            }
+                            else
+                            {
+                                strMIDCUSTOMER_CODE = "";
+                                strMIDPRICELIST = "";
+                            }
+                        }
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>품번 : {0}</td>", strLEAVEDATE);
+
+                        if (strYESNO == "Y")
+                        {
+                            if (strITEMNO == "" || strMIDCUSTOMER_CODE == "" || strMIDPRICELIST == "")
+                            {
+                                //모델명, 품명, 업체명 중 하나라도 확인 되지 않을 경우
+                                //strResult = "<span style=\"color:red;cursor:hand\" title=\"품번 : " + (strITEMNO == "" ? "N/A" : strITEMNO) + ", PRICELIST : " + (strPRICELIST == "" ? "N/A" : strPRICELIST) + ", BPANUM : " + (strBPANUM == "" ? "N/A" : strBPANUM) + "\">NO</span>";
+                                //strResult = "<span style=\"color:red;cursor:hand\" >NO</span>";
+
+                                if (strITEMNO == "") strResult = "a href=\"javascript:\" class=\"text-danger\">NO 품번</a>";
+                                else if (strMIDCUSTOMER_CODE == "") strResult = "<sa href=\"javascript:\" class=\"text-danger\">NO 중계고객</a>";
+                                else if (strMIDPRICELIST == "") strResult = "<a href=\"javascript:\" class=\"text-danger\">NO 중계PL</a>";
+                                //else if (strBPANUM == "") strResult = "<span style=\"color:red;cursor:hand\" >NO BPA</span>";
+                                //else if (strPRICELIST == "") strResult = "<span style=\"color:red;cursor:hand\" >NO PL</span>";
+
+                                iNo++;
+                            }
+                            else
+                            {
+                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\"]"
+                                        , JsParamEncode(0, strCUSTOMER, 0), JsParamEncode(0, strITEMNO, 0), JsParamEncode(0, strCHECKREASON, 0)
+                                        , strORGPRICE, strSHIPCONDITION, strLEAVEDATE, strPRICELIST, strBPANUM, strYESNO, strMIDCUSTOMER, strMIDCUSTOMER_CODE, strSALEPRICE, strMIDPRICELIST
+                                        , JsParamEncode(0, strSALEPER, 0), JsParamEncode(0, strETC, 0));
+
+                                strResult = "OK";
+                                iOk++;
+                            }
+                        }
+                        else if (strYESNO == "N")
+                        {
+                            if (strITEMNO == "")
+                            {
+                                //모델명, 품명, 업체명 중 하나라도 확인 되지 않을 경우
+                                //strResult = "<span style=\"color:red;cursor:hand\" title=\"품번 : " + (strITEMNO == "" ? "N/A" : strITEMNO) + ", PRICELIST : " + (strPRICELIST == "" ? "N/A" : strPRICELIST) + ", BPANUM : " + (strBPANUM == "" ? "N/A" : strBPANUM) + "\">NO</span>";
+                                //strResult = "<span style=\"color:red;cursor:hand\" >NO</span>";
+                                if (strITEMNO == "") strResult = "<a href=\"javascript:\" class=\"text-danger\">NO 품번</a>";
+                                //else if (strPRICELIST == "") strResult = "<span style=\"color:red;cursor:hand\" >NO PL</span>";
+                                //else if (strBPANUM == "") strResult = "<span style=\"color:red;cursor:hand\" >NO BPA</span>";
+
+                                iNo++;
+                            }
+                            else
+                            {
+                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\"]"
+                                        , JsParamEncode(0, strCUSTOMER, 0), JsParamEncode(0, strITEMNO, 0), JsParamEncode(0, strCHECKREASON, 0)
+                                        , strORGPRICE, strSHIPCONDITION, strLEAVEDATE, strPRICELIST, strBPANUM, strYESNO, strMIDCUSTOMER, strMIDCUSTOMER_CODE, strSALEPRICE, strMIDPRICELIST
+                                        , JsParamEncode(0, strSALEPER, 0), JsParamEncode(0, strETC, 0));
+
+                                strResult = "OK";
+                                iOk++;
+                            }
+                        }
+
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    strResult = "";
+                }
+            }
+
+            sbSubTableData.Append("]");
+            iTotal = iNo + iOk;
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
+        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [인사평가종합 관련]
+    private string DoFormMANMOVELAST(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sbSubTableData = new StringBuilder("");
+
+        int iH = 0;
+        int iMAX = 500; //2014-06-12 추가 : 결과창 최대 높이
+        int iTotal = 0; //2014-06-12 추가 : 총 자료 건수
+        int iOk = 0;    //2014-06-12 추가 : 유효 건수
+        int iNo = 0;    //2014-06-12 추가 : 비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string strName = ""; //성명 <- key 확인값
+            string strDept = ""; //모델번호
+            string strOposition = ""; //품번
+            string strResultlevel = ""; //품명
+            string strWorklevel = ""; //업체코드
+            string strTotalpoint = ""; //업체명
+            string strTotallevel = "";
+            string strTotalfirst = ""; //BPA NUM
+            string strTotalsecond = ""; //적용시점
+            string strChange = ""; //비고
+
+            string strResult = "";
+            iTotal = data.Rows.Count;
+
+            sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\"]"
+                    , "ROWSEQ", "DEPT", "OPOSITION", "NAME", "RESULTLEVEL", "WORKLEVEL", "TOTALPOINT", "TOTALLEVEL", "TOTALFIRST", "TOTALSECOND", "CHANGE");
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:88%\" /><col style=\"width:12%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            foreach (DataRow row in data.Rows)
+            {
+                strName = row["성명"].ToString();
+                strDept = row["부서"].ToString();
+                strOposition = row["직위"].ToString();
+                //strResultlevel = (row["업적평가"].ToString() == "") ? "0" : Convert.ToDecimal(row["업적평가"]).ToString("#,##0.#0");
+                //strWorklevel = (row["역량평가"].ToString() == "") ? "0" : Convert.ToDecimal(row["역량평가"]).ToString("#,##0.#0");
+                strResultlevel = row["업적평가"].ToString();
+                strWorklevel = row["역량평가"].ToString();
+                strTotalpoint = (row["종합평가점수"].ToString() == "") ? "0" : Convert.ToDecimal(row["종합평가점수"]).ToString("#,##0.#0");
+                strTotallevel = row["종합평가등급"].ToString();
+                strTotalfirst = row["종합평가1차조정"].ToString();
+                strTotalsecond = row["종합평가2차조정"].ToString();
+
+                if (strName != "")
+                {
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>성명 : {0}</td>", strName);
+
+                    //모델명,품명,품번,개발견적가,견적가,현행가,확정가,업체명,업체코드,BPA,적용시점,TTL,PRE,LT,POST,비고
+                    sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\"]"
+                            , (iOk + 1).ToString(), strDept, strOposition, strName, strResultlevel, strWorklevel, strTotalpoint, strTotallevel, strTotalfirst, strTotalsecond, strChange);
+
+                    strResult = "OK";
+                    iOk++;
+
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+                }
+                strResult = "";
+            }
+            sbSubTableData.Append("]");
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
+        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [인사평가종합 관련]
+    private string DoFormMANMOVESEC(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sbSubTableData = new StringBuilder("");
+
+        int iH = 0;
+        int iMAX = 500; //2014-06-12 추가 : 결과창 최대 높이
+        int iTotal = 0; //2014-06-12 추가 : 총 자료 건수
+        int iOk = 0;    //2014-06-12 추가 : 유효 건수
+        int iNo = 0;    //2014-06-12 추가 : 비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string strName = ""; //성명 <- key 확인값
+            string strDept = ""; //모델번호
+            string strOposition = ""; //품번
+            string strResultlevel = ""; //품명
+            string strWorklevel = ""; //업체코드
+            string strTotalpoint = ""; //업체명
+            string strTotallevel = "";
+            string strTotalfirst = ""; //BPA NUM
+            string strTotalsecond = ""; //적용시점
+            string strChange = ""; //비고
+
+            string strResult = "";
+            iTotal = data.Rows.Count;
+
+            sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\"]"
+                    , "ROWSEQ", "DEPT", "OPOSITION", "NAME", "RESULTLEVEL", "WORKLEVEL", "TOTALPOINT", "TOTALLEVEL", "TOTALFIRST", "CHANGE");
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:88%\" /><col style=\"width:12%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            foreach (DataRow row in data.Rows)
+            {
+                strName = row["성명"].ToString();
+                strDept = row["부서"].ToString();
+                strOposition = row["직위"].ToString();
+                //strResultlevel = (row["업적평가"].ToString() == "") ? "0" : Convert.ToDecimal(row["업적평가"]).ToString("#,##0.#0");
+                //strWorklevel = (row["역량평가"].ToString() == "") ? "0" : Convert.ToDecimal(row["역량평가"]).ToString("#,##0.#0");
+                strResultlevel = row["업적평가"].ToString();
+                strWorklevel = row["역량평가"].ToString();
+                strTotalpoint = (row["종합평가점수"].ToString() == "") ? "0" : Convert.ToDecimal(row["종합평가점수"]).ToString("#,##0.#0");
+                strTotallevel = row["종합평가등급"].ToString();
+                strTotalfirst = row["종합평가1차조정"].ToString();
+                strChange = row["종합평가2차조정"].ToString();
+
+                if (strName != "")
+                {
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>성명 : {0}</td>", strName);
+
+                    //모델명,품명,품번,개발견적가,견적가,현행가,확정가,업체명,업체코드,BPA,적용시점,TTL,PRE,LT,POST,비고
+                    sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\"]"
+                        , (iOk + 1).ToString(), strDept, strOposition, strName, strResultlevel, strWorklevel, strTotalpoint, strTotallevel, strTotalfirst, strChange);
+
+                    strResult = "OK";
+                    iOk++;
+
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+                }
+                strResult = "";
+            }
+            sbSubTableData.Append("]");
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
+        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [생산품질 관련]
+    /// <summary>
+    /// 생관계획 설정
+    /// </summary>
+    /// <param name="data"></param>
+    private string DoRegisterPQmProdContPlan(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        int iOK = 0;
+
+        sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+        sb.Append("<thead>");
+        sb.Append("<tr><th>처리결과</th></tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        if (data.Rows.Count > 0)
+        {
+            using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new ZumNet.BSL.InterfaceBiz.PQmBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    foreach (DataColumn col in data.Columns)
+                    {
+                        if (col.ColumnName != "법인")
+                        {
+                            svcRt = pqmBiz.SetRegisterPQMPRODCONTPLAN(row["법인"].ToString(), col.ColumnName, row[col.ColumnName].ToString());
+                            if (svcRt.ResultCode == 0) iOK++;
+                            else sb.AppendFormat("<tr><td>{0} {1} {2} => 저장오류! {3}</td></tr>", row["법인"].ToString(), col.ColumnName, row[col.ColumnName].ToString(), svcRt.ResultMessage);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            sb.AppendFormat("<tr><td class=\"text-center h5\">{0}</td></tr>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+
+        if (iOK > 0)
+        {
+            sb.AppendFormat("<tr><td class=\"text-center h5\">성공 : {0}건</td></tr>", iOK.ToString());
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 품질목표 설정
+    /// </summary>
+    /// <param name="data"></param>
+    private string DoRegisterPQmQualityGoal(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        int iOK = 0;
+
+        sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+        sb.Append("<thead>");
+        sb.Append("<tr><th>처리결과</th></tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        if (data.Rows.Count > 0)
+        {
+            using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new ZumNet.BSL.InterfaceBiz.PQmBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    foreach (DataColumn col in data.Columns)
+                    {
+                        if (col.ColumnName != "품목" && col.ColumnName != "기준일")
+                        {
+                            svcRt = pqmBiz.SetRegisterPQMQUALITYGOAL(row["기준일"].ToString(), row["품목"].ToString(), col.ColumnName, row[col.ColumnName].ToString());
+                            if (svcRt.ResultCode == 0) iOK++;
+                            else sb.AppendFormat("<tr><td>{0} {1} {2} => 저장오류! {3}</td></tr>", row["품목"].ToString(), col.ColumnName, row[col.ColumnName].ToString(), svcRt.ResultMessage);
+                        }
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            sb.AppendFormat("<tr><td class=\"text-center h5\">{0}</td></tr>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+
+        if (iOK > 0)
+        {
+            sb.AppendFormat("<tr><td class=\"text-center h5\">성공 : {0}건</td></tr>", iOK.ToString());
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 표준공수 설정
+    /// </summary>
+    /// <param name="data"></param>
+    private string DoRegisterPQmStandWork(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        int iOK = 0;
+
+        sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+        sb.Append("<thead>");
+        sb.Append("<tr><th>처리결과</th></tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        if (data.Rows.Count > 0)
+        {
+            using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new ZumNet.BSL.InterfaceBiz.PQmBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    foreach (DataColumn col in data.Columns)
+                    {
+                        if (col.ColumnName != "모델번호" && col.ColumnName != "기준일" && col.ColumnName != "비고")
+                        {
+                            svcRt = pqmBiz.SetRegisterPQMSTANDWORK(col.ColumnName, row["모델번호"].ToString(), row["기준일"].ToString(), row[col.ColumnName].ToString(), row["비고"].ToString());
+                            if (svcRt.ResultCode == 0) iOK++;
+                            else sb.AppendFormat("<tr><td>{0} {1} {2} => 저장오류! {3}</td></tr>", row["모델번호"].ToString(), col.ColumnName, row[col.ColumnName].ToString(), svcRt.ResultMessage);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            sb.AppendFormat("<tr><td class=\"text-center h5\">{0}</td></tr>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+
+        if (iOK > 0)
+        {
+            sb.AppendFormat("<tr><td class=\"text-center h5\">성공 : {0}건</td></tr>", iOK.ToString());
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [교육관리 관련]
+    /// <summary>
+    /// 교욱과정관리
+    /// </summary>
+    /// <param name="data"></param>
+    private string DoRegisterLcmCourse(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string strYear = ""; //교육년도
+            string strClassA = ""; //사내외
+            string strClassCodeA = "";
+            string strClassB = ""; //교육방식
+            string strClassCodeB = "";
+            string strClassC = ""; //교육유형
+            string strClassCodeC = "";
+            string strClassD = ""; //교육분야
+
+            string strCourseDN = ""; //교육명
+            string strInstDN = ""; //교육기관
+            string strPlace = ""; //교육장소
+            string strFrom = ""; //교육시작일
+            string strTo = ""; //교육종료일
+            string strCost = ""; //교육비
+            string strPeriod = ""; //교육일수
+            string strTime = ""; //교육시간
+            string strResult = "";
+
+            ArrayList optList1 = null; //1분류(사내외)
+            ArrayList optList2 = null; //2분류(방식)
+            ArrayList optList3 = null; //3분류(유형)
+
+            using (ZumNet.DAL.ServiceDac.CodeDac cdDac = new ZumNet.DAL.ServiceDac.CodeDac())
+            {
+                optList1 = cdDac.SelectCodeDescription("lcm", "class_a", "");
+                optList2 = cdDac.SelectCodeDescription("lcm", "class_b", "");
+                optList3 = cdDac.SelectCodeDescription("lcm", "class_c", "");
+            }
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strYear = StringHelper.SafeString(row["교육년도"], this._standardYear);
+                    strClassA = row["사내외"].ToString();
+                    strClassCodeA = rtvClassCode(optList1, strClassA);
+                    strClassB = row["교육방식"].ToString();
+                    strClassCodeB = rtvClassCode(optList2, strClassB);
+                    strClassC = row["교육유형"].ToString();
+                    strClassCodeC = rtvClassCode(optList3, strClassC);
+                    strClassD = row["교육분야"].ToString();
+                    strCourseDN = row["교육명"].ToString();
+                    strInstDN = row["교육기관"].ToString();
+                    strPlace = row["교육장소"].ToString();
+                    strFrom = CvtDate(row["교육시작일"].ToString());
+                    strTo = CvtDate(row["교육종료일"].ToString());
+                    strCost = row["교육비"].ToString().Replace(",", "");
+                    strPeriod = row["교육일수"].ToString();
+                    strTime = row["교육시간"].ToString();
+
+                    if (strClassCodeA != "" && strClassCodeB != "" && strClassCodeC != "")
+                    {
+                        svcRt = rptBiz.SetLCMCOURSE("I", 0, strYear, strClassA, strClassB, strClassC, strClassD, "", strClassCodeA, strClassCodeB, strClassCodeC, "", ""
+                                    , strCourseDN, 0, strInstDN, strPlace, 1, strFrom, strTo, "", "", strPeriod, strTime, "", "", "", "", strCost, "", "", "", ""
+                                    , "", "", "", "", "", "", "", "", ""
+                                    , Convert.ToInt32(Session["URID"]), Session["URName"].ToString(), Convert.ToInt32(Session["DeptID"]), Session["DeptName"].ToString(), "", "");
+
+                        if (svcRt.ResultCode != 0)
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td>({0}_{1}) {2}</td>", strClassC, strClassD, strCourseDN);
+                            sb.AppendFormat("<td>{0}</td>", svcRt.ResultMessage);
+                            sb.Append("</tr>");
+                        }
+                    }
+                    else
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>({0}_{1}) {2}</td>", strClassC, strClassD, strCourseDN);
+                        sb.AppendFormat("<td>{0}</td>", "분류코드 누락!");
+                        sb.Append("</tr>");
+                    }
+                    strResult = "";
+                }
+            }
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 사내교육결과보고서 참석자
+    /// </summary>
+    /// <param name="data"></param>
+    private string DoFormEDUREPORTA(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sbSubTableData = new StringBuilder("");
+
+        int iTotal = 0; //총 자료 건수
+        int iOk = 0;    //유효 건수
+        int iNo = 0;    //비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string strAPPLDN = "";
+            string strAPPLEMPNO = "";
+            string strAPPLGRADE = "";
+            string strAPPLDEPT = "";
+            string strPOLLA = ""; //평가결과
+            string strResult = "";
+
+            iTotal = data.Rows.Count;
+
+            sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\"]"
+                        , "APPLID", "APPLDEPTID", "APPLDN", "APPLEMPNO", "APPLGRADE", "APPLDEPT", "APPLCORP", "POLLA");
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:60%\" /><col style=\"width:40%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strAPPLDEPT = row["부서명"].ToString();
+                    strAPPLGRADE = row["직급"].ToString();
+                    strAPPLDN = row["성명"].ToString();
+                    strAPPLEMPNO = row["사번"].ToString();
+                    strPOLLA = row["평가결과"].ToString();
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>{0}. {1}. {2}</td>", strAPPLDEPT, strAPPLGRADE, strAPPLDN);
+
+                    if (strAPPLEMPNO != "")
+                    {
+                        svcRt = rptBiz.GetFormEDUREPORTA(strAPPLEMPNO);
+
+                        DataRow rowConfirm = svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0 ? svcRt.ResultDataSet.Tables[0].Rows[0] : null;
+
+                        if (rowConfirm != null)
+                        {
+                            if (rowConfirm["GroupName"].ToString() != strAPPLDEPT || rowConfirm["Grade1"].ToString() != strAPPLGRADE || rowConfirm["DisplayName"].ToString() != strAPPLDN)
+                            {
+                                iNo++;
+                                strResult = "정보 틀림!";
+                            }
+                            else
+                            {
+                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\"]"
+                                    , JsParamEncode(0, rowConfirm["UserID"].ToString(), 0), JsParamEncode(0, rowConfirm["GR_ID"].ToString(), 0)
+                                    , JsParamEncode(0, rowConfirm["DisplayName"].ToString(), 0), JsParamEncode(0, rowConfirm["EmpID"].ToString(), 0)
+                                    , JsParamEncode(0, rowConfirm["Grade1"].ToString(), 0), JsParamEncode(0, rowConfirm["GroupName"].ToString(), 0)
+                                    , JsParamEncode(0, rowConfirm["Belong"].ToString(), 0), strPOLLA);
+
+                                iOk++;
+                                strResult = "OK";
+                            }
+                            rowConfirm = null;
+                        }
+                        else
+                        {
+                            iNo++;
+                            strResult = "정보 없음!";
+                        }
+                    }
+                    else
+                    {
+                        iNo++;
+                        strResult = "사번 누락!";
+                    }
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+
+                    strResult = "";
+                }
+            }
+
+            sbSubTableData.Append("]");
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
+        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 사이버교육결과등록
+    /// </summary>
+    /// <param name="data"></param>
+    private string DoRegisterLcmCyberReport(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        int iTotal = 0; //총 자료 건수
+        int iOk = 0;    //유효 건수
+        int iNo = 0;    //비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string strYear = ""; //교육년도
+            string strClassA = ""; //사내외
+            string strClassCodeA = "";
+            string strClassB = ""; //교육방식
+            string strClassCodeB = "";
+            string strClassC = ""; //교육유형
+            string strClassCodeC = "";
+
+            string strCourseDN = ""; //교육명
+            string strInstDN = ""; //교육기관
+            string strFrom = ""; //교육시작일
+            string strTo = ""; //교육종료일
+            string strCost = ""; //교육비
+            string strPeriod = ""; //교육일수
+            string strTime = ""; //교육시간
+
+            string strApplEmpNo = ""; //수강자사번
+            string strApplDn = ""; //수강자명
+            string strApplDept = ""; //수강자부서
+            string strResult = "";
+
+            ArrayList optList1 = null; //1분류(사내외)
+            ArrayList optList2 = null; //2분류(방식)
+            ArrayList optList3 = null; //3분류(유형)
+
+            iTotal = data.Rows.Count;
+
+            using (ZumNet.DAL.ServiceDac.CodeDac cdDac = new ZumNet.DAL.ServiceDac.CodeDac())
+            {
+                optList1 = cdDac.SelectCodeDescription("lcm", "class_a", "");
+                optList2 = cdDac.SelectCodeDescription("lcm", "class_b", "");
+                optList3 = cdDac.SelectCodeDescription("lcm", "class_c", "");
+            }
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strYear = StringHelper.SafeString(row["교육년도"], this._standardYear);
+                    strClassA = row["사내외"].ToString();
+                    strClassCodeA = rtvClassCode(optList1, strClassA);
+                    strClassB = row["교육방식"].ToString();
+                    strClassCodeB = rtvClassCode(optList2, strClassB);
+                    strClassC = row["교육유형"].ToString();
+                    strClassCodeC = rtvClassCode(optList3, strClassC);
+                    strCourseDN = row["교육명"].ToString();
+                    strInstDN = row["교육기관"].ToString();
+                    strFrom = CvtDate(row["교육시작일"].ToString());
+                    strTo = CvtDate(row["교육종료일"].ToString());
+                    strCost = "";
+                    strPeriod = row["교육일수"].ToString();
+                    strTime = row["교육시간"].ToString();
+                    strApplEmpNo = row["수강자사번"].ToString();
+                    strApplDn = row["수강자"].ToString();
+                    strApplDept = row["수강자부서"].ToString();
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>({0}_{1}) {2}. {3}({4})</td>", strClassB, strClassC, strApplDept, strApplDn, strApplEmpNo);
+
+                    if (strApplEmpNo != "")
+                    {
+                        svcRt = rptBiz.GetFormEDUREPORTA(strApplEmpNo);
+                        DataRow rowConfirm = svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0 ? svcRt.ResultDataSet.Tables[0].Rows[0] : null;
+
+                        if (rowConfirm != null)
+                        {
+                            if (rowConfirm["GroupName"].ToString() != strApplDept || rowConfirm["DisplayName"].ToString() != strApplDn)
+                            {
+                                iNo++;
+                                strResult = "정보 틀림!";
+                            }
+                            else
+                            {
+                                if (strClassCodeA != "" && strClassCodeB != "" && strClassCodeC != "")
+                                {
+                                    svcRt = rptBiz.SetLCM("I", 0, strYear
+                                        , rowConfirm["UserID"].ToString(), rowConfirm["GR_ID"].ToString(), rowConfirm["DisplayName"].ToString()
+                                        , rowConfirm["EmpID"].ToString(), rowConfirm["Grade1"].ToString(), rowConfirm["GroupName"].ToString(), rowConfirm["Belong"].ToString()
+                                        , strClassA, strClassB, strClassC, "", "", strClassCodeA, strClassCodeB, strClassCodeC, "", ""
+                                        , "0", 0, strCourseDN, strInstDN, "", strFrom, strTo, strPeriod, strTime, "", strCost, "", "", ""
+                                        , Convert.ToInt32(Session["URID"]), Session["URName"].ToString(), Convert.ToInt32(Session["DeptID"]), Session["DeptName"].ToString());
+
+                                    if (svcRt.ResultCode != 0) { iNo++; strResult = svcRt.ResultMessage; }
+                                    else iOk++;
+                                }
+                                else
+                                {
+                                    iNo++;
+                                    strResult = "분류코드 누락!";
+                                }
+                            }
+                            rowConfirm = null;
+                        }
+                        else
+                        {
+                            iNo++;
+                            strResult = "정보 없음!";
+                        }
+                    }
+                    else
+                    {
+                        iNo++;
+                        strResult = "사번 누락!";
+                    }
+                    sb.AppendFormat("<td>{0}</td>", strResult);
+                    sb.Append("</tr>");
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [재고지표현황]
+    /// <summary>
+    /// 품목별지표 추가
+    /// </summary>
+    /// <param name="data"></param>
+    private string DoERP_INV_NEW_KPI(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        int iTotal = 0; //총 자료 건수
+        int iOk = 0;    //유효 건수
+        int iNo = 0;    //비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string strResult = "";
+            string strCorp = "";
+            string strKpiA = ""; //자동발주율
+            string strKpiB = ""; //과입고율
+            string strKpiC = ""; //선입고일
+            string strKpiD = ""; //과입고금액
+            string strKpiE = ""; //과보유율
+            string strKpiF = ""; //보유금선입고일
+            string strKpiG = ""; //과보유금액
+            string strInvCat = "";  //품목
+            string strDesc = "";    //품목설명
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:70%\" /><col style=\"width:30%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.PQmBiz pqmBiz = new ZumNet.BSL.InterfaceBiz.PQmBiz())
+            {
+                for (int i = 0; i < data.Rows.Count; i++)
+                {
+                    DataRow row = data.Rows[i];
+                    if (i == 0)
+                    {
+                        //법인 정보
+                        strCorp = row[1].ToString();
+                        //this.panResult.InnerHtml += "<tr class=\"td-lst\"><td colspan='2'>" + row[0].ToString() + " : " + _standardYear + "년 " + _subCondition + "주차 " + strCorp + "</td></tr>";
+                    }
+                    else if (i == 1)
+                    {
+                        //총합 정보
+                        strKpiB = row[2].ToString();
+                        strKpiC = row[3].ToString();
+                        strKpiD = row[4].ToString();
+                        strKpiA = row[5].ToString();
+                        strKpiE = row[6].ToString();
+                        strKpiF = row[7].ToString();
+                        strKpiG = row[8].ToString();
+
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>{0}년 {1}주차 {2} {3} : {4}, {5}, {6}, {7}, {8}, {9}, {10}</td>", _standardYear, _subCondition
+                                        , strCorp, row[0].ToString(), strKpiB, strKpiC, strKpiD, strKpiA, strKpiE, strKpiF, strKpiG);
+
+                        svcRt = pqmBiz.Set_INV_NEW_KPI_HDR(strCorp, Convert.ToInt32(_standardYear), Convert.ToInt32(_subCondition), strKpiA, strKpiB, strKpiC, strKpiD, strKpiE, strKpiF, strKpiG);
+                        if (svcRt.ResultCode == 0) strResult = svcRt.ResultDataString;
+                        else strResult = svcRt.ResultMessage;
+
+                        if (strResult == "OK")
+                        {
+                            iOk++;
+                            sb.Append("<td>성공</td>");
+                        }
+                        else if (strResult == "ET")
+                        {
+                            iNo++;
+                            sb.Append("<td class=\"text-danger\">중복!</td>");
+                        }
+                        else
+                        {
+                            iNo++;
+                            sb.AppendFormat("<td>{0}</td>", strResult);
+                        }
+                        sb.Append("</tr>");
+                    }
+                    else
+                    {
+                        if (row[0].ToString() != "")
+                        {
+                            strInvCat = row[0].ToString();
+                            strDesc = row[1].ToString();
+                            strKpiB = row[2].ToString();
+                            strKpiC = row[3].ToString();
+                            strKpiD = row[4].ToString();
+                            strKpiA = row[5].ToString();
+                            strKpiE = row[6].ToString();
+                            strKpiF = row[7].ToString();
+                            strKpiG = row[8].ToString();
+
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td>{0} [ {1} ] {2}, {3}, {4}, {5}, {6}, {7}, {8}</td>"
+                                        , strInvCat, strDesc, strKpiB, strKpiC, strKpiD, strKpiA, strKpiE, strKpiF, strKpiG);
+
+                            svcRt = pqmBiz.Set_INV_NEW_KPI_DTL(strCorp, Convert.ToInt32(_standardYear), Convert.ToInt32(_subCondition), strInvCat, strDesc, strKpiA, strKpiB, strKpiC, strKpiD, strKpiE, strKpiF, strKpiG);
+                            if (svcRt.ResultCode == 0) strResult = svcRt.ResultDataString;
+                            else strResult = svcRt.ResultMessage;
+
+                            if (strResult == "OK")
+                            {
+                                iOk++;
+                                sb.Append("<td>성공</td>");
+                            }
+                            else if (strResult == "ET")
+                            {
+                                iNo++;
+                                sb.Append("<td class=\"text-danger\">중복!</td>");
+                            }
+                            else
+                            {
+                                iNo++;
+                                sb.AppendFormat("<td>{0}</td>", strResult);
+                            }
+                            sb.Append("</tr>");
+                        }
+                    }
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "지표 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [AS관리대장]
+    private string DoRegisterVoc(DataTable data)
+    {
+        int iTotal = 0; //총 자료 건수
+
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string strCol1 = "";
+            string strCol2 = "";
+            string strCol3 = "";
+            string strCol4 = "";
+            string strCol5 = "";
+            string strCol6 = "";
+            string strCol7 = "";
+            string strCol8 = "";
+            string strCol9 = "";
+            string strCol10 = "";
+            string strCol11 = "";
+            string strCol12 = "";
+            string strCol13 = "";
+            string strCol14 = "";
+            string strCol15 = "";
+            string strCol16 = "";
+            string strCol17 = "";
+            string strCol18 = "";
+            string strCol19 = "";
+            string strCol20 = "";
+            string strCol21 = "";
+            string strResult = "";
+
+            iTotal = data.Rows.Count;
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>AS정보</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    strCol1 = StringHelper.SafeString(row["구분"], "");
+                    strCol2 = StringHelper.SafeString(row["접수일"], "");
+                    strCol3 = StringHelper.SafeString(row["고객명"], "");
+                    strCol4 = StringHelper.SafeString(row["전화번호"], "");
+                    strCol5 = StringHelper.SafeString(row["주소"], "");
+                    strCol6 = StringHelper.SafeString(row["품명A"], "");
+                    strCol7 = StringHelper.SafeString(row["품명B"], "");
+                    strCol8 = StringHelper.SafeString(row["색상"], "");
+                    strCol9 = StringHelper.SafeString(row["S/N"], "");
+                    strCol10 = StringHelper.SafeString(row["구입일"], "");
+                    strCol11 = StringHelper.SafeString(row["VOC"], "");
+                    strCol12 = StringHelper.SafeString(row["최종판정"], "");
+                    strCol13 = StringHelper.SafeString(row["수리현황"], "");
+                    strCol14 = StringHelper.SafeString(row["TAT"], "");
+                    strCol15 = StringHelper.SafeString(row["수리내역"], "");
+                    strCol16 = StringHelper.SafeString(row["고객요청사항"], "");
+                    strCol17 = StringHelper.SafeString(row["고장원인"], "");
+                    strCol18 = StringHelper.SafeString(row["원인C"], "");
+                    strCol19 = StringHelper.SafeString(row["불량유형"], ""); //사용안함
+                    strCol20 = StringHelper.SafeString(row["세부내용"], "");
+                    strCol21 = StringHelper.SafeString(row["비고"], "");
+
+                    svcRt = rptBiz.SetRegisterVOC("I", 0, strCol1, strCol2, strCol3, strCol4, strCol5, strCol6, strCol7, strCol8, strCol9, strCol10
+                                , strCol11, strCol12, strCol13, strCol15, strCol19, "", "", strCol14, strCol16, strCol17, strCol18, strCol20, strCol21, "", "", "", "", "", ""
+                                , Session["URID"].ToString(), Session["URName"].ToString(), Session["DeptID"].ToString(), Session["DeptName"].ToString(), "");
+
+                    if (svcRt.ResultCode != 0)
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>({0}_{1}) {2}</td>", strCol1, strCol2, strCol3);
+                        sb.AppendFormat("<td>{0}</td>", svcRt.ResultMessage);
+                        sb.Append("</tr>");
+                    }
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [모델별원가]
+    private string DoRegisterMC(DataTable data)
+    {
+        int iTotal = 0; //총 자료 건수
+
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sb = new StringBuilder();
+
+        if (data.Rows.Count > 0)
+        {
+            string[] vCol = { "", "", "", "", "", "", "", "", "", ""
+                            , "", "", "", "", "", "", "", "", "", ""
+                            , "", "", "", "", "", "", "", "", "", ""};
+
+            string strResult = "";
+            iTotal = data.Rows.Count;
+
+            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<thead>");
+            sb.Append("<tr><th>견적 정보</th><th>결과</th></tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+
+            using (ZumNet.BSL.InterfaceBiz.CostBiz costBiz = new ZumNet.BSL.InterfaceBiz.CostBiz())
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    vCol[0] = StringHelper.SafeString(row["모델번호"], "");
+                    vCol[1] = StringHelper.SafeString(row["법인"], "");
+                    vCol[2] = StringHelper.SafeString(row["품목분류"], "");
+                    vCol[3] = StringHelper.SafeString(row["고객"], "");
+                    vCol[4] = StringHelper.SafeString(row["기준환율"], "");
+                    vCol[5] = StringHelper.SafeString(row["기준임율"], "");
+                    vCol[6] = StringHelper.SafeString(row["외주임율"], "");
+                    vCol[7] = StringHelper.SafeString(row["재료비"], "");
+                    vCol[8] = StringHelper.SafeString(row["재료비비율"], "");
+                    vCol[9] = StringHelper.SafeString(row["가공비"], "");
+                    vCol[10] = StringHelper.SafeString(row["가공비비율"], "");
+                    vCol[11] = StringHelper.SafeString(row["소모품비"], "");
+                    vCol[12] = StringHelper.SafeString(row["소모품비비율"], "");
+                    vCol[13] = StringHelper.SafeString(row["변동원가"], "");
+                    vCol[14] = StringHelper.SafeString(row["변동원가비율"], "");
+                    vCol[15] = StringHelper.SafeString(row["고정원가"], "");
+                    vCol[16] = StringHelper.SafeString(row["고정원가비율"], "");
+                    vCol[17] = StringHelper.SafeString(row["제조원가"], "");
+                    vCol[18] = StringHelper.SafeString(row["제조원가비율"], "");
+                    vCol[19] = StringHelper.SafeString(row["판관비"], "");
+                    vCol[20] = StringHelper.SafeString(row["판관비비율"], "");
+                    vCol[21] = StringHelper.SafeString(row["총원가"], "");
+                    vCol[22] = StringHelper.SafeString(row["총원가비율"], "");
+                    vCol[23] = StringHelper.SafeString(row["판매가"], "");
+                    vCol[24] = StringHelper.SafeString(row["영업이익"], "");
+                    vCol[25] = StringHelper.SafeString(row["영업이익율"], "");
+                    vCol[26] = StringHelper.SafeString(row["공헌이익"], "");
+                    vCol[27] = StringHelper.SafeString(row["공헌이익율"], "");
+                    vCol[28] = StringHelper.SafeString(row["공수"], "");
+
+                    svcRt = costBiz.InsertMCSUMMARY_EXCEL(0, 0, vCol[1], vCol[0], 0, vCol[2], vCol[3], vCol[4], vCol[5], vCol[6]
+                                            , vCol[7], vCol[8], vCol[9], vCol[10], vCol[11], vCol[12], vCol[13], vCol[14]
+                                            , vCol[15], vCol[16], "", "", vCol[17], vCol[18], vCol[19], vCol[20], vCol[21], vCol[22]
+                                            , vCol[23], vCol[24], vCol[25], vCol[26], vCol[27], vCol[28]);
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        strResult = svcRt.ResultDataString;
+                        if (strResult == "NO") strResult = "법인정보 누락";
+                    }
+                    else strResult = svcRt.ResultMessage;
+
+                    if (strResult != "OK")
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td>({0}_{1}_{2}) {3}</td>", vCol[1], vCol[2], vCol[3], vCol[0]);
+                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.Append("</tr>");
+                    }
+                    strResult = "";
+                }
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+        return sb.ToString();
+    }
+    #endregion
+
+    #region [기타함수]
+    private string rtvClassCode(ArrayList clsList, string dn)
+    {
+        string strCode = "";
+        foreach (object[] o in clsList)
+        {
+            if (o[3].ToString() == dn)
+            {
+                strCode = o[2].ToString(); break;
+            }
+        }
+        return strCode;
+    }
+
+    private string CvtDate(string d)
+    {
+        if (d.Length == 10 && (d.IndexOf('-') >= 0 || d.IndexOf('/') >= 0)) return d.Replace("/", "-");
+        else if (d.IndexOf('-') < 0 && d.Length == 8) return d.Substring(0, 4) + "-" + d.Substring(4, 2) + "-" + d.Substring(6, 2);
+        else
+        {
+            if (d == null || d == "") return "";
+            else return d;
+        }
+    }
+
+    private string JsParamEncode(int opt, string s, int len)
+    {
+        if (len > 3 && s.Length > len) s = s.Substring(0, len - 3) + "..";
+        if (opt == 0) return s.Replace("\"", "&quot;").Replace("'", "\\\'");
+        else return s.Replace("'", "&#039;").Replace("\"", "\\\"");
+    }
+    #endregion
+}
+@if (_uploadMode == "UPLOAD")
+{
+    UploadFile();
+}
+else
+{
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+            <div class="modal-header">
+                <h5 class="modal-title">파일가져오기</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">@Html.Raw(PageLoad())</div>
+                @Html.Raw(RenderFile())
+            </div>
+        </div>
+    </div>
+}
+

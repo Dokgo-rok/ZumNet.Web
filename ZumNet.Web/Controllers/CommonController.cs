@@ -459,7 +459,7 @@ namespace ZumNet.Web.Controllers
         }
         #endregion
 
-        #region [첨부파일 관련]
+        #region [파일첨부 및 가져오기 관련]
         /// <summary>
         /// 파일 첨부
         /// </summary>
@@ -620,7 +620,16 @@ namespace ZumNet.Web.Controllers
                     if (!_disableDocSecurity)
                     {
                         //2014-11-12 파일 암호화
-                        //sRealPath = EncrypFile(sRealPath, ext);
+                        sRealPath = EncrypFile(sRealPath, ext);
+                        if (sRealPath.Substring(0, 2) == "OK")
+                        {
+                            sRealPath = sRealPath.Substring(2);
+                        }
+                        else
+                        {
+                            //22-08-06 임시로 암호화 실패 경우 로그 기록만
+                            ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "EncrypFile", sRealPath, Environment.NewLine));
+                        }
                         //Response.Write("PATH ==> " + HttpContext.Current.Server.MapPath(strRealPath) + " : " + Session["FRONTNAME"].ToString());
                         //Response.End();
                     }
@@ -731,14 +740,39 @@ namespace ZumNet.Web.Controllers
         }
 
         /// <summary>
+        /// 파일 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult FileImport(string Qi)
+        {
+            return View("_FileImport");
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public ActionResult FileImport()
+        {
+            return View("_FileImport");
+        }
+        #endregion
+
+        #region [파일 암복호화]
+        /// <summary>
         /// 파일 암호화
         /// </summary>
         /// <param name="filePath"></param>
         private string EncrypFile(string filePath, string ext)
         {
-            string sEncrypServer = Session["FrontName"].ToString();
+            int iPos = Request.Url.AbsoluteUri.IndexOf("//");
+            string strHttp = Request.Url.AbsoluteUri.Substring(0, iPos);
+            strHttp += "//";
+
+            string sEncrypServer = strHttp + Session["FrontName"].ToString();
             string strVPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["URAccount"].ToString();
-            string strUrl = String.Format("http://{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
+            string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
             string strReturn = "";
 
             System.Net.HttpWebRequest HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
@@ -749,14 +783,59 @@ namespace ZumNet.Web.Controllers
             }
             HttpWResp.Close();
 
-            if (strReturn.Substring(0, 2) == "OK")
+            //if (strReturn.Substring(0, 2) == "OK")
+            //{
+            //    return strReturn.Substring(2);
+            //}
+            //else
+            //{
+            //    throw new Exception(strReturn);
+            //    //return strReturn;
+            //}
+            return strReturn;
+        }
+
+        /// <summary>
+        /// 파일 복호화
+        /// </summary>
+        /// <param name="filePath"></param>
+        private void DecrypFile(string filePath)
+        {
+            int iPos = Request.Url.AbsoluteUri.IndexOf("//");
+            string strHttp = Request.Url.AbsoluteUri.Substring(0, iPos);
+            strHttp += "//";
+
+            string sEncrypServer = strHttp + Session["FrontName"].ToString();
+            string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}", sEncrypServer, "dec", Server.UrlEncode(filePath));
+            string strResult = "";
+
+            System.Net.HttpWebRequest HttpWReq = null;
+            System.Net.HttpWebResponse HttpWResp = null;
+
+            try
             {
-                return strReturn.Substring(2);
+                HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+                HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
+                {
+                    strResult = sr.ReadToEnd();
+                }
+                HttpWResp.Close();
+
+                if (strResult.Substring(0, 2) != "OK")
+                {
+                    //22-08-06 임시로 암호화 실패 경우 로그 기록만
+                    ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strResult, Environment.NewLine));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                throw new Exception(strReturn);
-                //return strReturn;
+                ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + ex.Message, Environment.NewLine));
+            }
+            finally
+            {
+                HttpWReq = null;
+                if (HttpWResp != null) { HttpWResp.Close(); HttpWResp = null; }
             }
         }
         #endregion

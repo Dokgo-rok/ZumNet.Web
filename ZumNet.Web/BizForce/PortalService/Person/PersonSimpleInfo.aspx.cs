@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Web;
 using System.Web.UI;
@@ -9,6 +9,7 @@ namespace ZumNet.Web.BizForce.PortalService.Person
 {
     public partial class PersonSimpleInfo : System.Web.UI.Page
     {
+        public DataRow PersonInfo;
         protected void Page_Load(object sender, EventArgs e)
         {
             ZumNet.Framework.Core.ServiceResult svcRt = null;
@@ -19,7 +20,7 @@ namespace ZumNet.Web.BizForce.PortalService.Person
 
             if (svcRt != null && svcRt.ResultCode == 0)
             {
-                
+                if (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0) PersonInfo = svcRt.ResultDataSet.Tables[0].Rows[0];
             }
             else
             {
@@ -50,7 +51,7 @@ namespace ZumNet.Web.BizForce.PortalService.Person
             return String.Format("<img src=\"data:{0};base64,{1}\" alt=\"User Image\" class=\"mb-2 contact-content-img{2}\">", imageFormat, base64, imageOpacity);
         }
 
-        private string GetOrgUserImage(string logonId)
+        public string GetOrgUserImage(string logonId)
         {
             string imagepath = "/Storage/cresyn/PersonPhoto/" + logonId + ".jpg";
             string imageOpacity = "";

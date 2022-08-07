@@ -2236,10 +2236,12 @@ $(function () {
         },
         "checkExt": function (ext) {
             var bExt = false;
-            $('.zf-upload [data-help="file"] .row div[data-for="ext"]').each(function (idx, e) {
-                //console.log(idx + " : " + $(this).text())
-                if ($(this).text().indexOf(ext) != -1) { bExt = true; return false; }
-            });
+            if ($('.zf-upload [data-help="file"]').length > 0) {
+                $('.zf-upload [data-help="file"] .row div[data-for="ext"]').each(function (idx, e) {
+                    //console.log(idx + " : " + $(this).text())
+                    if ($(this).text().indexOf(ext) != -1) { bExt = true; return false; }
+                });
+            } else bExt = true; // data-help 없는 경우
             return bExt;
         },
         "checkDouble": function (fm) {

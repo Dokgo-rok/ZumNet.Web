@@ -25,6 +25,11 @@ else if (ViewBag.R.ft == "REGISTER_EXCHANGEINFO")
 {
     <div class="mr-3">** 표시는 100 단위 기준임</div>
 }
+else if (ViewBag.R.ft == "REGISTER_LEAVE")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="연차관리 대상자 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">연차관리 대상자 가져오기</span></button>
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="휴가 추가/삭제/변경" onclick="_zw.fn.importFile('event');"><i class="fe-edit"></i><span class="d-none d-sm-inline-block ml-1">휴가 추가/삭제/변경</span></button>
+}
 @if (bView)
 {
     @*<a class="text-success mr-3" href="javascript:void(0);" onclick="_zw.fn.exportExcel();"><i class="fe-download"></i> 엑셀</a>*@

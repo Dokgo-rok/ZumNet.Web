@@ -94,17 +94,17 @@
     {
         if (!_disableDocSecurity)
         {
-            try
+            //2014-11-12 파일 암호화
+            sRealPath = EncrypFile(sRealPath, ext);
+            if (sRealPath.Substring(0, 2) == "OK")
             {
-                //2014-11-12 파일 암호화
-                //sRealPath = EncrypFile(sRealPath, ext);
+                sRealPath = sRealPath.Substring(2);
             }
-            catch(Exception ex)
+            else
             {
-                Response.Write(ex);
-                Response.End();
+                //22-08-06 임시로 암호화 실패 경우 로그 기록만
+                ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "EncrypFile", sRealPath, Environment.NewLine));
             }
-
         }
     }
 
@@ -196,9 +196,13 @@
     /// <param name="filePath"></param>
     private string EncrypFile(string filePath, string ext)
     {
-        string sEncrypServer = Session["FrontName"].ToString();
+        int iPos = HttpContext.Current.Request.Url.AbsoluteUri.IndexOf("//");
+        string strHttp = HttpContext.Current.Request.Url.AbsoluteUri.Substring(0, iPos);
+        strHttp += "//";
+
+        string sEncrypServer = strHttp + Session["FrontName"].ToString();
         string strVPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["URAccount"].ToString();
-        string strUrl = String.Format("https://{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
+        string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
         string strReturn = "";
 
         System.Net.HttpWebRequest HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
@@ -209,13 +213,14 @@
         }
         HttpWResp.Close();
 
-        if (strReturn.Substring(0, 2) == "OK")
-        {
-            return strReturn.Substring(2);
-        }
-        else
-        {
-            throw new Exception(strReturn);
-        }
+        //if (strReturn.Substring(0, 2) == "OK")
+        //{
+        //    return strReturn.Substring(2);
+        //}
+        //else
+        //{
+        //    throw new Exception(strReturn);
+        //}
+        return strReturn;
     }
 }
