@@ -199,6 +199,9 @@ $(function () {
         if (p.find('.modal-dialog').hasClass('modal-sm')) p.find('.modal-dialog').removeClass('modal-sm');
     }
 
+    _zw.fn.requestApproval = function () {
+    }
+
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(); //console.log(postData)
         var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));

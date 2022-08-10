@@ -1,0 +1,338 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@using ZumNet.Web.Filter;
+@{
+    //REGISTER_LEAVEUSE
+    string _requestMode = ViewBag.R.mode;
+    InitConfig();
+
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+    {
+        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+    }
+
+    if (svcRt != null && svcRt.ResultCode == 0)
+    {
+        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+    }
+    else
+    {
+        ViewBag.R.lv["total"] = 0;
+    }
+
+    if (_requestMode == "xls")
+    {
+        ExcelBind(ViewList(_requestMode, svcRt.ResultDataSet));
+        Response.End();
+    }
+}
+@functions {
+    string[,] _columnConfig = null;
+    string _tblWidth = "";
+
+    private void InitConfig()
+    {
+        //초기 설정
+        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.Year.ToString(); //현재년도
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "연차휴가관리대장";
+
+        //검색조건 설정
+
+        //크레신 : 연차휴가관리대장
+        string[,] arr = { { "Seq", "NO", "3%", "center", "" }, { "LogonID", "아이디", "4%", "center", "" }, { "OrgInfo", "부서정보", "7%", "", "" }
+                            , { "UserDN", "성명", "5%", "center", "" }, { "InDate", "입사일", "6%", "center", "Y" }, { "NumberA", "발생<br />일수", "5%", "center", "" }, { "NumberC", "전년도<br />잔여일수", "5%", "center", "" }
+                            , { "NumberB", "사용가능<br />연차 (A)", "6%", "center", "" }, { "__SUB1__", "개인신청사용일 (B)", "", "", "" }, { "__SUB2__", "관리자<br />부여일 (C)", "15%", "", "" }
+                            , { "UseSum", "사용합계<br />(B+C)", "6%", "center", "" }, { "__DIV__", "잔여일수<br />(A-B+C)", "6%", "center", "" }};
+        this._columnConfig = arr;
+
+        if (Session["Admin"].ToString() == "N" || ViewBag.R.current["operator"].ToString() != "Y")
+        {
+            if (ViewBag.R.current["acl"].ToString() == 0) ViewBag.R["mode"] = "ur";
+            else if (ViewBag.R.current["acl"].ToString().Substring(6, 1) == "_") ViewBag.R["mode"] = "ur";//____RVS____RV <= S가 6번째
+
+            if (ViewBag.R["mode"] == "ur") ViewBag.R.lv["tgt"] = Convert.ToInt32(Session["URID"]);
+        }
+        else
+        {
+            ViewBag.R["mode"] = "dn";
+            ViewBag.R.lv["tgt"] = "0";
+
+        }
+        this._tblWidth = "100%";
+    }
+
+    private string RenderColumnHeader(string mode)
+    {
+        StringBuilder sb = new StringBuilder();
+        string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
+
+        sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+        }
+        sb.Append("</colgroup>");
+
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"table-success\">");
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
+            {
+                sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"</a></th>"
+                                 , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
+                                , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
+            }
+            else sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
+        }
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strStyle = "";
+            string strCountClass = "";
+            string strXlsStyle = ""; //2016-05-04
+            int iTable = 1;
+            int iRow = 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            sb.Append(RenderColumnHeader(mode));
+            sb.Append("<tbody>");
+
+            DataTable dt1 = data.Tables[0];
+            DataTable dt2 = data.Tables[1];
+            DataRow[] rowCol = null;
+
+            foreach (DataRow row in dt1.Rows)
+            {
+                rowCol = dt2.Select("(ObjectType = 'UR' AND ObjectID = " + row["UserID"] + ") OR ObjectType = 'DN'", "LeaveDate, LeaveFromTime");
+
+                sb.AppendFormat("<tr id=\"_{0}_{1}\">", row["UserID"].ToString(), row["LogonID"].ToString());
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+
+                    if (strID == "UserDN")
+                    {
+                        strValue = mode == "xls" ? row[strID].ToString() : "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.viewUserSimpleInfo('" + row["UserID"].ToString() + "');\">" + row[strID].ToString() + "</a>";
+                    }
+                    else if (strID == "__SUB1__")
+                    {
+                        strValue = "";
+                        for (int j = 0; j < rowCol.Length; j++)
+                        {
+                            DataRow r = rowCol[j];
+                            if (Convert.ToInt32(r["RelatedMsg"]) > 0)
+                            {
+                                if (r["LeaveClass"].ToString() == "B") { strCountClass = "btn-default"; strXlsStyle = "color:#666666;width:60px"; }
+                                else if (r["LeaveClass"].ToString() == "C") { strCountClass = "btn-outline-info"; strXlsStyle = "color:blue;width:60px"; }
+                                else if (r["LeaveClass"].ToString() == "D") { strCountClass = "btn-outline-danger"; strXlsStyle = "color:red;width:60px"; }
+                                else if (r["LeaveClass"].ToString() == "Z") { strCountClass = "btn-outline-success"; strXlsStyle = "color:green;width:60px"; } //32px
+                                else { strCountClass = "btn-outline-success"; strXlsStyle = "color:green;width:60px"; }
+
+                                //strKind = "";
+                                //if (r["LeaveClass"].ToString() == "B") strKind = String.Format("<span class=\"{0}\" onclick=\"openXForm(null, '{1}');\" title=\"{2}, {3}\">{4}</span>", "spn-leave-bone", r["RelatedMsg"].ToString(), r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), strCount);
+                                //else if (r["LeaveClass"].ToString() == "C") strKind = String.Format("<span class=\"{0}\" onclick=\"openXForm(null, '{1}');\" title=\"{2}, {3}\">{4}</span>", "spn-leave-half", r["RelatedMsg"].ToString(), r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), strCount);
+                                //else if (r["LeaveClass"].ToString() == "D") strKind = String.Format("<span class=\"{0}\" onclick=\"openXForm(null, '{1}');\" title=\"{2}, {3}\">{4}</span>", "spn-leave-quarter", r["RelatedMsg"].ToString(), r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), strCount);
+                                //else if (r["LeaveClass"].ToString() == "Z") strKind = String.Format("<span class=\"{0}\" onclick=\"openXForm(null, '{1}');\" title=\"{2}, {3}\">{4}</span>", "spn-leave-zone", r["RelatedMsg"].ToString(), r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), strCount);
+                                //else strKind = String.Format("<span class=\"{0}\" onclick=\"openXForm(null, '{1}');\" title=\"{2}, {3}\">{4}</span>", "spn-leave-zone", r["RelatedMsg"].ToString(), r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), r["LeaveCount"].ToString());
+
+                                if (mode == "xls")
+                                {
+                                    strValue += String.Format("{3}<span style=\"{0}\">{1} {2}</span>", strXlsStyle, r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), (strValue != "" ? ", " : ""));
+                                }
+                                else
+                                {
+                                    //strValue += String.Format("<span class=\"{0}\" onclick=\"openXForm(null, '{1}');\" title=\"{2}, {3}\">{4}</span>", strCountClass, r["RelatedMsg"].ToString(), r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), StrLeaveCount(r["LeaveCount"].ToString()));
+                                    strValue += String.Format("<button class=\"btn btn-sm {0} mr-1 mb-1\" onclick=\"_zw.fn.openEAFormSimple('{1}');\" title=\"{2}, {3}\">{4}, {3}</button>", strCountClass, r["RelatedMsg"].ToString(), r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), r["LeaveDate"].ToString());
+                                }
+                            }
+                        }
+                        strValue = (mode == "xls" && strValue != "") ? "(" + strValue + ")" : "<div class=\"leave-use-link\">" + strValue + "</div>";
+                    }
+                    else if (strID == "__SUB2__")
+                    {
+                        strValue = "";
+                        for (int j = 0; j < rowCol.Length; j++)
+                        {
+                            DataRow r = rowCol[j];
+                            if (Convert.ToInt32(r["RelatedMsg"]) == 0)
+                            {
+
+                                if (r["LeaveClass"].ToString() == "B") { strCountClass = "btn-default"; strXlsStyle = "color:#666666;width:60px"; }
+                                else if (r["LeaveClass"].ToString() == "C") { strCountClass = "btn-info"; strXlsStyle = "color:blue;width:60px"; }
+                                else if (r["LeaveClass"].ToString() == "D") { strCountClass = "btn-danger"; strXlsStyle = "color:red;width:60px"; }
+                                else if (r["LeaveClass"].ToString() == "Z") { strCountClass = "btn-success"; strXlsStyle = "color:green;width:60px"; } //32px
+                                else { strCountClass = "btn-outline-success"; strXlsStyle = "color:green;width:60px"; }
+
+                                if (mode == "xls")
+                                {
+                                    strValue += String.Format("{3}<span style=\"{0}\">{1} {2}</span>", strXlsStyle, r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), (strValue != "" ? ", " : ""));
+                                }
+                                else
+                                {
+                                    //strValue += String.Format("<span class=\"{0}\" title=\"{1}, {2}\">{3}</span>", strCountClass, r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), StrLeaveCount(r["LeaveCount"].ToString()));
+                                    strValue += String.Format("<button class=\"btn btn-sm {0} mr-1 mb-1\" title=\"{1}, {2}\">{3}, {2}</button>", strCountClass, r["LeaveDate"].ToString(), r["LeaveDN"].ToString(), r["LeaveDate"].ToString());
+                                }
+                            }
+                        }
+                        strValue = (mode == "xls" && strValue != "") ? "(" + strValue + ")" : "<div class=\"leave-use-link\">" + strValue + "</div>";
+                    }
+                    else if (strID == "__DIV__")
+                    {
+                        strValue = (Convert.ToDecimal(row["NumberB"]) - Convert.ToDecimal(row["UseSum"])).ToString();
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString();
+                    }
+                    sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
+                }
+                sb.Append("</tr>");
+                iRow++;
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            if (dt1 != null) { dt1.Dispose(); dt1 = null; }
+            if (dt2 != null) { dt2.Dispose(); dt2 = null; }
+            rowCol = null;
+            return sb.ToString();
+        }
+        return "";
+    }
+
+    private string StrDocStatus(string ss)
+    {
+        foreach (DataRow row in ViewBag.DocStatus)
+        {
+            if (row["ItemSubHandler"].ToString() == ss)
+            {
+                string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+
+                if (sCurrentLocale.ToLower().IndexOf("ko") >= 0) return row["Item1"].ToString();
+                else if (sCurrentLocale.ToLower().IndexOf("zh") >= 0) return row["Item3"].ToString();
+                else return row["Item2"].ToString();
+            }
+        }
+        return ss;
+    }
+
+    private string ListCount()
+    {
+        string sPage = "";
+        int totalCount = 0;
+        if (ViewBag.R.ft.ToString() == "___")
+        {
+            int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+            int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+            int totalPage = totalCount / pageCount;
+
+            if (totalCount % pageCount > 0) { totalPage++; }
+            if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+            sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+
+        }
+        else
+        {
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            sPage = String.Format("{0} {1} {2}", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count);
+        }
+
+        return sPage;
+    }
+
+    private string ListCond()
+    {
+        //string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-60 wd-lg-50 wd-xl-40" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"z-list-cond d-flex justify-content-end\">");
+
+        sb.Append("<div class=\"z-list-date input-group\">");
+        sb.Append("<select class=\"custom-select start-date\">");
+        sb.Append(CommonUtils.OptionYear(2009, DateTime.Now.Year, Convert.ToInt32(ViewBag.R.lv.start)));
+        sb.Append("</select>");
+
+        sb.AppendFormat("<div class=\"input-group-append\">");
+        sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        sb.Append("</div>"); //z-list-cond
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = ViewBag.R.ft.ToString() + "_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    private string ExcelStyle()
+    {
+        return @"
+    body {width: 100%}
+    table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+    td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+    .xls_warning {background-color: #fcf8e3}
+    .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+    .text-center {text-align: center}
+    .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+    .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+";
+    }
+}
+@if (svcRt == null || svcRt.ResultCode != 0)
+{
+    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+}
+else
+{
+    <div class="z-list-head d-flex justify-content-between my-2">
+        <div class="z-list-page d-flex align-items-center" id="__ListCount">
+            <div class="z-list-total mt-1 mr-1">
+                <i class="fe-chevron-right"></i> @ListCount()
+            </div>
+        </div>
+        @Html.Raw(ListCond())
+    </div>
+
+    <div class="z-list-body" id="__ListView">
+        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+    </div>
+}

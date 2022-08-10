@@ -122,7 +122,7 @@
                 <td></td>
               </tr>
               <tr>
-                <td colspan="4" style="text-align:center;vertical-align:middel;border-right:0;font-size:40px;height:140px">
+                <td colspan="4" style="text-align:center;vertical-align:middel;font-size:40px;height:140px">
                   Certificate Of Employment<br/>
                   (재 직 증 명 서)
                 </td>
@@ -142,7 +142,7 @@
                   </xsl:if>
                 </td>
                 <td class="f-lbl" style="height:40px;font-size:15px ; display:none">사 번</td>
-                <td colspan="2" style="border-right:0;font-size:17px;padding-left:5px; display:none">
+                <td colspan="2" style="font-size:17px;padding-left:5px; display:none">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                       <input type="text" id="__mainfield" name="APPLICANTEMPNO" class="txtText"  style="width:100px" readnoly ="readonly"  value="{//forminfo/maintable/APPLICANTEMPNO}"/>
@@ -193,7 +193,7 @@
                 <td class="f-lbl" style="height:50px;font-size:15px;text-align:center;vertical-align:middle;">
                   Full Name<br/>(성명)
                 </td>
-                <td colspan="2" style="border-right:0;font-size:15px;padding-left:5px">
+                <td colspan="2" style="font-size:15px;padding-left:5px">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                      <span> <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ENGNM))" />
@@ -219,7 +219,7 @@
                 <td class="f-lbl" style="height:50px;font-size:15px;text-align:center;vertical-align:middle;">
                   Date of Birth<br/>(생년월일)
                 </td>
-                <td colspan="3" style="border-right:0;text-align:left;font-size:15px;padding-left:5px">
+                <td colspan="2" style="text-align:left;font-size:15px;padding-left:5px">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                       <span> <xsl:value-of select="phxsl:convertDate(string(//forminfo/maintable/BIRTHDATE),'en')" /> 
@@ -266,7 +266,7 @@
                 <td class="f-lbl" style="height:50px;font-size:15px;text-align:center;vertical-align:middle;">
                   Department <br/> (소속)
                 </td>
-                <td colspan="2" style="border-right:0;font-size:15px;padding-left:5px">
+                <td colspan="2" style="font-size:15px;padding-left:5px">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                       <span><xsl:value-of select="string(//forminfo/maintable/ENGDEPTNM)" />
@@ -291,7 +291,7 @@
                 <td class="f-lbl" style="height:50px;font-size:15px;text-align:center;vertical-align:middle;">
                   Position<br/>(직책)
                 </td>
-                <td colspan="2" style="border-right:0;font-size:15px;padding-left:5px">
+                <td colspan="2" style="font-size:15px;padding-left:5px">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                      <span> <xsl:value-of select="string(//forminfo/maintable/ENGGRADENM)" />
@@ -316,7 +316,7 @@
                 <td class="f-lbl" style="height:60px;font-size:14px">
                   Working Period<br/>(근무기간)
                 </td>
-                <td colspan="2" style="text-align:left;border-right:0;font-size:15px;padding-left:5px">
+                <td colspan="2" style="text-align:left;font-size:15px;padding-left:5px">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                       <span style="text-align:left">
@@ -388,7 +388,7 @@
                   Address : 5 Gangnam-daero 107-gil, Seocho-gu, Seoul, Korea #06524<br/>
                   소재지: 서울특별시 서초구 강남대로 107 길 5
                 </td>
-                <td style ="border:0; padding-left:25px;padding-top:20px">
+                <td style ="border-top:0; border-bottom:0;border-left:0; padding-left:25px;padding-top:20px">
                   <xsl:if test="//bizinfo/@docstatus='700'">
                   <span style="width:84px;border:0px solid green">
                     <img alt="회사인장" width="84px" style="margin:0;vertical-align:top" src="/Storage/{//config/@companycode}/CI/cresyn_stamp.gif" />

@@ -501,7 +501,9 @@
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_DOCUMENTREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DOCWORKSTATE_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_DOCWORKSTATE_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_DOCWORKSTATE_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_DRAFT_V2_back.xsl" />
@@ -3276,6 +3278,15 @@
     <Content Include="Views\Report\_FORM_EDUREPORTB.cshtml" />
     <Content Include="Views\Report\_REGISTER_LEAVE.cshtml" />
     <Content Include="Views\Common\_FileImport.cshtml" />
+    <Content Include="Views\Report\_REGISTER_USERINFO.cshtml" />
+    <Content Include="Views\Report\_REGISTER_USERINFODETAIL.cshtml" />
+    <Content Include="Views\Report\_FORM_MANMOVE.cshtml" />
+    <Content Include="Views\Report\_REGISTER_ETHICAL.cshtml" />
+    <Content Include="Views\Report\_REGISTER_GAS.cshtml" />
+    <Content Include="Views\Report\_REGISTER_GONGGA.cshtml" />
+    <Content Include="Views\Report\_FORM_AIRTICKETRESERVATION.cshtml" />
+    <Content Include="Views\Report\_REGISTER_LEAVEUSE.cshtml" />
+    <Content Include="Views\Report\_REGISTER_EDUCATIONPOINT.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

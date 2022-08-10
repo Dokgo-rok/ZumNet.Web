@@ -30,6 +30,36 @@ else if (ViewBag.R.ft == "REGISTER_LEAVE")
     <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="연차관리 대상자 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">연차관리 대상자 가져오기</span></button>
     <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="휴가 추가/삭제/변경" onclick="_zw.fn.importFile('event');"><i class="fe-edit"></i><span class="d-none d-sm-inline-block ml-1">휴가 추가/삭제/변경</span></button>
 }
+else if (ViewBag.R.ft == "REGISTER_PROMOTIONPOINT")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="개인승진포인트 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">개인승진포인트 가져오기</span></button>
+}
+else if (ViewBag.R.ft == "FORM_WORKSTATUS")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="근태정보 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">근태정보 가져오기</span></button>
+}
+else if (ViewBag.R.ft == "REGISTER_USERINFO")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="사용자현황 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">사용자현황 가져오기</span></button>
+}
+else if (ViewBag.R.ft == "REGISTER_USERINFODETAIL")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="최종학력 현황 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">최종학력 현황 가져오기</span></button>
+}
+else if (ViewBag.R.ft == "REGISTER_ETHICAL")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="윤리 대상자 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">윤리 대상자 가져오기</span></button>
+    @*<button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="결재요청" onclick="_zw.fn.requestApproval();"><i class="far fa-paper-plane text-primary"></i><span class="d-none d-sm-inline-block ml-1">결재요청</span></button>*@
+}
+else if (ViewBag.R.ft == "REGISTER_GAS")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="유류정보 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">유류정보 가져오기</span></button>
+}
+else if (ViewBag.R.ft == "REGISTER_GONGGA")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="공동연차 대상자 가져오기" onclick="_zw.fn.importFile();"><i class="fe-upload text-success"></i><span class="d-none d-sm-inline-block ml-1">공동연차 대상자 가져오기</span></button>
+    @*<button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="결재요청" onclick="_zw.fn.requestApproval();"><i class="far fa-paper-plane text-primary"></i><span class="d-none d-sm-inline-block ml-1">결재요청</span></button>*@
+}
 @if (bView)
 {
     @*<a class="text-success mr-3" href="javascript:void(0);" onclick="_zw.fn.exportExcel();"><i class="fe-download"></i> 엑셀</a>*@
