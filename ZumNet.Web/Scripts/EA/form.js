@@ -1803,7 +1803,14 @@ $(function () {
             } else if (_zw.V.ft == 'PRODRELEASEREQ') { //자사제품출고요청서 : 2020-12-17
 
             } else if (_zw.V.ft == 'CTCMINUTES') { //품평회회의록 : 21-11-24
-
+                if (_zw.V.biz == "normal" && _zw.V.act == '_approver') {
+                    if ($('#__mainfield[name="STEP"]').val() == 'PMP') {
+                        p = signLine.find(function (element) { if (element.bizrole == 'confirm' && element.actrole == '_approver' && element.partid != '' && element.step != '0' && element.viewstate != '6') return true; });
+                        if (p == undefined || p["partname"] != "엄이식") {
+                            bootbox.alert("확인권자(엄이식 총괄)를 지정하십시오!"); return 'N';
+                        }
+                    }
+                }
             }
 
             return 'Y';
@@ -2177,35 +2184,69 @@ $(function () {
         "sub": function (f) { //console.log($('#__subtable1 tr.sub_table_row').html())
             var s = {};
             for (var i = 1; i <= parseInt(_zw.V.def["subtablecount"]); i++) {
-                var v = [];
-                $('#__subtable' + i.toString() + ' tr.sub_table_row').each(function () { //console.log($(this).html())
-                    var iData = 0;
-                    $(this).find('[name]').each(function () { if ($(this).attr('name') != "" && $(this).prop('tagName').toLowerCase() != 'checkbox' && $(this).attr('name') != 'ROWSEQ' && $.trim($(this).val()) != '') { iData++; return false; } }); //alert(iData)
-                    if (iData > 0) { //ROWSEQ 이외 필드 값이 들어 있을 경우
-                        var s = {};
-                        $(this).find('[name]').each(function () {
-                            var tag = $(this).prop('tagName').toLowerCase(), nm = $(this).attr('name'); //console.log(tag + " : " + nm + " : " + $(this).val())
-                            if (nm != '') {
-                                if (tag == "div" || tag == "span") {
-                                    s[nm] = $(this).html();
-                                } else if (tag == "input") {
-                                    if (nm != 'ROWSEQ' && ($(this).is(":checkbox") || $(this).is(":radio"))) {
-                                        s[nm] = $(this).prop('checked') ? $(this).val() : '';
+                var prog = $('#__subtable' + i.toString()).attr('progdir');
+                if (prog && prog != undefined && prog == 'col') {
+                    s['subtable' + i.toString()] = _zw.body.subVer(f, i);
+                } else {
+                    var v = [];
+                    $('#__subtable' + i.toString() + ' tr.sub_table_row').each(function () { //console.log($(this).html())
+                        var iData = 0;
+                        $(this).find('[name]').each(function () { if ($(this).attr('name') != "" && $(this).prop('tagName').toLowerCase() != 'checkbox' && $(this).attr('name') != 'ROWSEQ' && $.trim($(this).val()) != '') { iData++; return false; } }); //alert(iData)
+                        if (iData > 0) { //ROWSEQ 이외 필드 값이 들어 있을 경우
+                            var s = {};
+                            $(this).find('[name]').each(function () {
+                                var tag = $(this).prop('tagName').toLowerCase(), nm = $(this).attr('name'); //console.log(tag + " : " + nm + " : " + $(this).val())
+                                if (nm != '') {
+                                    if (tag == "div" || tag == "span") {
+                                        s[nm] = $(this).html();
+                                    } else if (tag == "input") {
+                                        if (nm != 'ROWSEQ' && ($(this).is(":checkbox") || $(this).is(":radio"))) {
+                                            s[nm] = $(this).prop('checked') ? $(this).val() : '';
+                                        } else {
+                                            s[nm] = $(this).val();
+                                        }
                                     } else {
                                         s[nm] = $(this).val();
                                     }
+                                }
+                            });
+                            v.push(s);
+                        }
+                    });
+                    s['subtable' + i.toString()] = v;
+                    v = null;
+                }
+            }
+            f["subtables"] = s;
+        },
+        "subVer": function (f, cnt) {
+            var len = $('#__subtable' + cnt.toString() + ' tr.sub_table_row').first().find('> td:not(.f-lbl-sub)').length;
+            var v = [];
+            for (var i = 0; i < len; i++) {
+                var s = {};
+                $('#__subtable' + cnt.toString() + ' tr.sub_table_row').each(function (idx) {
+                    $(this).find('> td:not(.f-lbl-sub)').eq(i).find('[name]').each(function () {
+                        var tag = $(this).prop('tagName').toLowerCase(), nm = $(this).attr('name'); //console.log(tag + " : " + nm + " : " + $(this).val())
+                        if (nm != '' && nm != 'ROWSEQ') {
+                            if (tag == "div" || tag == "span") {
+                                s[nm] = $(this).html();
+                            } else if (tag == "input") {
+                                if ($(this).is(":checkbox") || $(this).is(":radio")) {
+                                    s[nm] = $(this).prop('checked') ? $(this).val() : '';
                                 } else {
                                     s[nm] = $(this).val();
                                 }
+                            } else {
+                                s[nm] = $(this).val();
                             }
-                        });
-                        v.push(s);
-                    }
+                        }
+                    });
                 });
-                s['subtable' + i.toString()] = v;
-                v = null;
+                s["ROWSEQ"] = i + 1;
+                v.push(s);
             }
-            f["subtables"] = s;
+            //s['subtable' + cnt.toString()] = v;
+            return v;
         },
         "subPart": function (f, subInfo) { //테이블구분^, 필드구분;
             var vSub = subInfo.split('^'), p = {}; //console.log(vSub)
@@ -2242,7 +2283,7 @@ $(function () {
         },
         "file": function (cmd, doc, fi, img) {
             var fileList = DEXT5UPLOAD.GetAllFileListForJson(); //console.log(fileList)
-            var imgList = DEXT5.getImagesEx(); console.log(imgList)
+            var imgList = DEXT5.getImagesEx(); //console.log(imgList)
 
             if (fileList && fileList.webFile) {
                 var webFile = fileList.webFile;
@@ -2270,6 +2311,11 @@ $(function () {
 
             doc["attachcount"] = DEXT5UPLOAD.GetTotalFileCount();
             doc["attachsize"] = DEXT5UPLOAD.GetTotalFileSize();
+
+            //양식 필드내 직접 첨부된 파일 처리
+            if (_zw.fu.fileList && _zw.fu.fileList.length > 0) {
+                for (var i = 0; i < _zw.fu.fileList.length; i++) fi.push(_zw.fu.fileList[i]);
+            }
 
             if (imgList) {
                 var rgx = (location.origin + $('#upload_path').val()).toLowerCase();

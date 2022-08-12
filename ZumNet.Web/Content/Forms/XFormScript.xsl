@@ -48,6 +48,14 @@
         if (w && w != '' && r && r != '') return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v + "/" + s) + "&fn=" + escape(f);
 	    else return "/BizForce/PortalService/FileDown.aspx?fp=" + escape(v + "/" + s) + "&fn=" + escape(f);
     }
+	function getAttachId(f, sn) {
+	    if (f && f.length > 0) {
+		    for(var i = 0; i < f.length; i++) {
+			    if (f[i].selectSingleNode("savedname").text == sn) { return f[i].getAttribute("attachid"); }
+			}
+		}
+		return '';
+	}
   function fileDown(w, r, v, s, f) {return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?xf=ea&sn=" + escape(s);}  
   function linkDown(w, r, v, f) {return "https://" + w + "/" + r + "/PortalService/FileDown.aspx?fp=" + escape(v) + "&fn=" + escape(f);}
   function linkDown2(w, r, t, p) {if (t == "pdmpd") {return "https://" + w + "/" + r + "/SSOpdm.aspx?target=prodview&oid=" + p;}else{return '';}}

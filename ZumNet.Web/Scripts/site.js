@@ -2165,11 +2165,11 @@ $(function () {
     _zw.fu = {
         "fileList": [],
         "bind": function () { //p : zf-upload 를 포함하는 parent (modal)
-            if ($('.zf-upload').length > 0) {
-                _zw.fu.fileList = JSON.parse($('.zf-upload #__FILEINFO').val()); //초기화
-                //console.log(_zw.fu.fileList)
+            var p = $('.zf-upload').has('.zf-upload-select.d-flex'); console.log(p)
+            if (p.length > 0) {
+                _zw.fu.fileList = JSON.parse(p.find('#__FILEINFO').val()); //초기화
+                fm = p.find('form')[0], fi = p.find('input[type="file"]'); //console.log('===' + fm.outerHTML)
 
-                var p = $('.zf-upload'), fm = p.find('#uploadForm')[0], fi = p.find('input[type="file"]');
                 fi.on('mouseover', function () {
                     $(this).parent().find('.custom-file-label').addClass('border-primary');
                 });
@@ -2235,9 +2235,10 @@ $(function () {
             }
         },
         "checkExt": function (ext) {
+            var p = $('.zf-upload').has('.zf-upload-select.d-flex');
             var bExt = false;
-            if ($('.zf-upload [data-help="file"]').length > 0) {
-                $('.zf-upload [data-help="file"] .row div[data-for="ext"]').each(function (idx, e) {
+            if (p.length > 0 && p.find('[data-help="file"]').length > 0) {
+                p.find('[data-help="file"] .row div[data-for="ext"]').each(function (idx, e) {
                     //console.log(idx + " : " + $(this).text())
                     if ($(this).text().indexOf(ext) != -1) { bExt = true; return false; }
                 });
@@ -2252,7 +2253,9 @@ $(function () {
             return true;
         },
         "complete": function (msg) {
-            $('.zf-upload #uploadForm')[0].reset();
+            var p = $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p)
+            p.find('form')[0].reset();
+            //$('.zf-upload #uploadForm')[0].reset();
             var rt = decodeURIComponent(msg).replace(/\+/gi, ' '), iFileCnt = _zw.fu.fileList.length;
             if (rt.substr(0, 2) == 'OK') {
                 var vFile = rt.substr(2).split(_zw.T.uploader.df);
@@ -2264,7 +2267,7 @@ $(function () {
                         + "<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\" onclick=\"_zw.fu.delete('','" + encodeURIComponent(vInfo[0]) + "','" + encodeURIComponent(_zw.base64.encode(vInfo[4])) + "')\"><i class=\"fe-x\"></i></button></div>"
                         + "</div>";
 
-                    $('.zf-upload .zf-upload-list').append(s).removeClass('d-none');
+                    p.find('.zf-upload-list').append(s).removeClass('d-none');
 
                     var v = {};
                     v["attachid"] = 0;
@@ -2280,21 +2283,23 @@ $(function () {
 
                     _zw.fu.fileList.push(v);
                 }
-                $('.zf-upload .zf-upload-bar').addClass('d-none');
+                p.find('.zf-upload-bar').addClass('d-none');
             } else {
-                $('.zf-upload .zf-upload-bar').addClass('d-none');
+                p.find('.zf-upload-bar').addClass('d-none');
                 bootbox.alert(rt); return false;
             }
             //console.log(_zw.fu.fileList)
         },
         "completeEx": function (msg) { //양식 필드 내 이미지 또는 파일 첨부 경우 (파일 확장자 아이콘X)
-            $('.zf-upload #uploadForm')[0].reset();
+            var p = $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p)
+            p.find('form')[0].reset();
+            //$('.zf-upload #uploadForm')[0].reset();
             var rt = decodeURIComponent(msg).replace(/\+/gi, ' '), iFileCnt = _zw.fu.fileList.length;
             if (rt.substr(0, 2) == 'OK') {
                 var vFile = rt.substr(2).split(_zw.T.uploader.df);
                 for (var i = 0; i < vFile.length; i++) {
                     var vInfo = vFile[i].split(_zw.T.uploader.da);
-                    var multi = $('.zf-upload #uploadForm input[type="file"]').prop('multiple'); //복수선택 여부
+                    var multi = p.find('form input[type="file"]').prop('multiple'); //복수선택 여부
 
                     var s = "<div class=\"zf-upload-view\">"
                         + "<div class=\"d-flex align-items-center mb-1\">"
@@ -2306,8 +2311,8 @@ $(function () {
                         + "</div>"
                         + "</div>" //zf-upload-view
 
-                    $('.zf-upload .zf-upload-list').append(s).removeClass('d-none'); //console.log(multi)
-                    if (!multi) $('.zf-upload .zf-upload-select').removeClass('d-flex').addClass('d-none');
+                    p.find('.zf-upload-list').append(s).removeClass('d-none'); //console.log(multi)
+                    if (!multi) p.find('.zf-upload-select').removeClass('d-flex').addClass('d-none');
 
                     var v = {};
                     v["attachid"] = 0;
@@ -2319,22 +2324,28 @@ $(function () {
                     v["ext"] = vInfo[2];
                     v["size"] = vInfo[3];
                     v["filepath"] = vInfo[4];
-                    v["storagefolder"] = "";
-
+                    v["storagefolder"] = ""; console.log('----:' + p.find(' > :hidden[name]').length)
+                    if (p.find(' > :hidden[name]').length > 0) {
+                        v["fld"] = p.find(' > :hidden[name]').attr('name'); //22-08-10 추가
+                        var dPos = p.find(' > :hidden[name]').attr('data-pos');
+                        if (dPos && dPos != '') v["fld"] += ';' + dPos;
+                    }
                     _zw.fu.fileList.push(v);
+                    console.log(_zw.fu.fileList)
                 }
-                $('.zf-upload .zf-upload-bar').addClass('d-none');
+                p.find('.zf-upload-bar').addClass('d-none');
             } else {
-                $('.zf-upload .zf-upload-bar').addClass('d-none');
+                p.find('.zf-upload-bar').addClass('d-none');
                 bootbox.alert(rt); return false;
             }
             //console.log(_zw.fu.fileList)
         },
         "delete": function (id, fm, path) {
+            path = path || '';
             if (fm != '') fm = decodeURIComponent(fm); //console.log(fm + " : " + _zw.base64.decode(decodeURIComponent(path)))
             var p = _zw.ut.eventBtn().parent().parent();
             if (p.parent().hasClass('zf-upload-view')) p = p.parent();
-
+            //console.log('{xf:"' + _zw.V.xfalias + '",tgtid:"' + id + '",fp:"' + path + '"}'); return
             bootbox.confirm('선택한 파일을 삭제하시겠습니까?', function (rt) {
                 if (rt) {
                     $.ajax({
@@ -2343,14 +2354,21 @@ $(function () {
                         data: '{xf:"' + _zw.V.xfalias + '",tgtid:"' + id + '",fp:"' + path + '"}',
                         success: function (res) {
                             if (res == "OK") {
+                                var fp = p.parent().parent(); //zf-upload
                                 p.remove();
-                                var idx = _zw.fu.fileList.findIndex(function (item) {
-                                    if (id != '' && parseInt(id) > 0) return item.attachid == id;
-                                    else return item.filename == fm;
-                                });
-                                if (idx > -1) _zw.fu.fileList.splice(idx, 1);
-                                if (_zw.fu.fileList.length == 0) $('.zf-upload .zf-upload-list').addClass('d-none');
-                                if ($('.zf-upload .zf-upload-select').hasClass('d-none')) $('.zf-upload .zf-upload-select').removeClass('d-none').addClass('d-flex');
+                                if (_zw.fu.fileList.length > 0) {
+                                    var idx = _zw.fu.fileList.findIndex(function (item) {
+                                        if (id != '' && parseInt(id) > 0) return item.attachid == id;
+                                        else return item.filename == fm;
+                                    });
+                                    if (idx > -1) _zw.fu.fileList.splice(idx, 1);
+                                }
+                                if (_zw.fu.fileList.length == 0) fp.find('.zf-upload-list').addClass('d-none');
+                                if (p.find(' > :hidden[name]').length > 0) p.find(' > :hidden[name]').val('');
+                                if (fp.find('.zf-upload-select').hasClass('d-none')) {
+                                    fp.find('.zf-upload-select').removeClass('d-none').addClass('d-flex');
+                                    _zw.fu.bind();
+                                }
                             } else bootbox.alert(res);
                         }
                     });

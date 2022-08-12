@@ -212,7 +212,6 @@
         else if (_zw.V.apvmode == 'approval') _zw.dext5.view('edit'); //2014-06-11 결재자는 무조건 변경 가능하게
         else _zw.dext5.view('view');
 
-
         if ($('#__DextEditor').length > 0) {
             DEXT5.config.EditorHolder = _zw.T.editor.holder;
             DEXT5.config.Lang = _zw.T.editor.lang;
@@ -223,6 +222,8 @@
 
             new Dext5editor(_zw.T.editor.id);
         }
+
+        _zw.fu.bind();
     }());
 
     function dext_editor_loaded_event() {// 에디터가 로드된 후
