@@ -56,7 +56,7 @@ $(function () {
 
                     if (el4.value == "갑지1") iStd = 24 * parseFloat(_zw.ut.empty(ex.val())) * parseFloat(_zw.ut.empty(el5.value));
                     else if (el4.value == "갑지2") iStd = 12 * parseFloat(_zw.ut.empty(ex.val())) * parseFloat(_zw.ut.empty(el5.value));
-                    else if (el4.value == "을지") iStd = 10 * parseFloat(_zw.ut.empty(ex.val())) * parseFloat(_zw.ut.empty(el5.value));
+                    else if (el4.value == "을지") iStd = 12 * parseFloat(_zw.ut.empty(ex.val())) * parseFloat(_zw.ut.empty(el5.value));
                     else if (el4.value == "일본") iStd = 1500 * parseFloat(_zw.ut.empty($('#__mainfield[name="EXCHANGE3"]').val())) * parseFloat(_zw.ut.empty(el5.value));
 
                     s = parseFloat(_zw.ut.empty(el.value)) * parseFloat(_zw.ut.empty(el2.val()));
@@ -116,14 +116,16 @@ $(function () {
                 el2 = $('#__mainfield[name="TRIPFROM"]'); el3 = $('#__mainfield[name="TRIPTO"]');
                 el4 = $('#__mainfield[name="JPSTAY"]'); el5 = $('#__mainfield[name="JPDAY"]');
 
-                if (el.name == "JPTRIPFROM") {
+                if (el.name == "JPTRIPFROM" && el.value != '') {
                     if (from.val() < el2.val() || from.val() > el3.val()) {
                         bootbox.alert('일본출장 시작일을 전체출장일안에 포함시켜주십시오!', function () { from.val(''); el4.val(''); el5.val(''); });
+                        //alert('일본출장 시작일을 전체출장일안에 포함시켜주십시오!');
                         _zw.formEx.event(el4[0]); return false;
                     }
-                } else if (el.name == "JPTRIPTO") {
+                } else if (el.name == "JPTRIPTO" && el.value != '') {
                     if (to.val() < el2.val() || to.val() > el3.val()) {
                         bootbox.alert('일본출장 종료일을 전체출장일안에 포함시켜주십시오!', function () { to.val(''); el4.val(''); el5.val(''); });
+                        //alert('일본출장 종료일을 전체출장일안에 포함시켜주십시오!');
                         _zw.formEx.event(el4[0]); return false;
                     }
                 }

@@ -798,7 +798,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_SELLINGUC_V3.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SELLINGUC_V4.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SHIPMENTUC_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_SHIPMENTUC_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_SHIPMENTUC_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_SOFTWARECHECK_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEINFOINDUSTRY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SPECCHANGEINFO_V1.xsl" />
@@ -2160,6 +2162,7 @@
     <Content Include="Scripts\EA\Forms\FORM_EQUIPPURCHASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_FIRSTVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_FLOWERMONEY.js" />
+    <Content Include="Scripts\EA\Forms\FORM_GONGDONGGONGGA.js" />
     <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOLIWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOMEWORK.js" />
@@ -2212,6 +2215,7 @@
     <Content Include="Scripts\EA\Forms\FORM_SAMPLESUGGESTREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_SECONDMODELREG.js" />
     <Content Include="Scripts\EA\Forms\FORM_SELLINGUC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SHIPMENTUC.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALCONFIRM.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALPROMOTION.js" />

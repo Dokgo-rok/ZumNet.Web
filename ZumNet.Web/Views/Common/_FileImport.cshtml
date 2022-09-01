@@ -330,7 +330,6 @@
 
             DecrypFile(_uploadPath); //파일 복호화
 
-
             ArrayList rowList = null;   //csv 이용
             TextParse tp = null;
 
@@ -338,149 +337,163 @@
             ExcelParse ep = null;
 
             string strQuery = "";
-            if (strExt.ToLower().Equals("xlsx")) //2014-04-18 AccessDatabaseEngine 설치
+            try
             {
-                ep = new ExcelParse(true, _uploadPath);
-                strQuery = "SELECT * FROM [Sheet1$]";
-                dtList = ep.ReadSheet(strQuery);
-                //Response.Write(JsAlert(":: 열수 : " + dtList.Rows.Count.ToString() + " : " + dtList.Rows[0][0].ToString()));
-                //Response.End();
-            }
-            else
-            {
-                tp = new TextParse(_uploadPath, ",", "euc-kr");
-                rowList = tp.ReadText();
-            }
-
-            #region [파일 내용 처리]
-            if (_mode == "REGISTER_LEAVE")
-            {
-                if (_subCondition == "") rt = DoRegisterLEAVE(rowList);
-                else rt = DoRegisterLEAVEEVENT(rowList);
-            }
-            else if (_mode == "REGISTER_LEAVEUSE")
-            {
-                if (_subCondition == "") DoRegisterLEAVEUSE(rowList);
-                else rt = DoRegisterLEAVEUSEEVENT(rowList);
-            }
-            else if (_mode == "REGISTER_PROMOTIONPOINT")
-            {
-                rt = DoRegisterPROMOTIONPOINT(rowList);
-            }
-            else if (_mode == "REGISTER_INANDOUT")
-            {
-                rt = DoRegisterINANDOUT(rowList);
-            }
-            else if (_mode == "REGISTER_GAS")
-            {
-                rt = DoRegisterGAS(rowList);
-            }
-            else if (_mode == "REGISTER_EDUCATIONPOINT")
-            {
-                rt = DoRegisterEDUCATIONPOINT(rowList);
-            }
-            else if (_mode == "REGISTER_EXCHANGEINFO")
-            {
-                rt = DoRegisterEXCHANGEINFO(rowList);
-            }
-            else if (_mode == "TELLNUMLIST")
-            {
-                rt = DoRegisterTELLNUMLIST(rowList);
-            }
-            else if (_mode == "REGISTER_SALARY")
-            {
-                //DoRegisterSALARY(rowList);
-                rt = DoRegisterSALARY(dtList);
-            }
-            else if (_mode == "REGISTER_ETHICAL")
-            {
-                //DoRegisterSALARY(rowList);
-                rt = DoRegisterETHICAL(dtList);
-            }
-            else if (_mode == "FORM_WORKSTATUS")
-            {
-                //DoRegisterSALARY(rowList);
-                rt = DoRegisterWORKSTATUS(dtList);
-            }
-            else if (_mode == "REGISTER_USERINFO")
-            {
-                //DoRegisterSALARY(rowList);
-                rt = DoRegisterREGISTERUSERINFO(dtList);
-            }
-            else if (_mode == "REGISTER_USERINFODETAIL")
-            {
-                //DoRegisterSALARY(rowList);
-                rt = DoRegisterREGISTERUSERINFODETAIL(dtList);
-            }
-            else if (_mode == "REGISTER_GONGGA")
-            {
-                //DoRegisterSALARY(rowList);
-                rt = DoRegisterGONGGA(dtList);
-            }
-            else if (_mode == "FORM_PURCHASEUCB" || _mode == "FORM_PURCHASEUCC" || _mode == "FORM_PURCHASEUCC2" || _mode == "FORM_PURCHASESAMPLE" || _mode == "FORM_PURCHASEUCF")
-            {
-                rt = DoFormPURCHASEUC(dtList); //구매단가결정품의서(인하인상, 유사, 샘플), 2016-04-20 유사 추가
-            }
-            else if (_mode == "FORM_CODCHANGEREQUEST")
-            {
-                rt = DoFormCODCHANGEREQUEST(dtList); //제조조건변경요청서
-            }
-            else if (_mode == "FORM_SHIPMENTUC")
-            {
-                rt = DoFormSHIPMENTUC(dtList); //생산지출하단가결정품의서
-            }
-            else if (_mode == "FORM_MANMOVELAST")
-            {
-                rt = DoFormMANMOVELAST(dtList); //인사평가종합
-            }
-            else if (_mode == "FORM_MANMOVESEC")
-            {
-                rt = DoFormMANMOVESEC(dtList); //인사평가종합
-            }
-            else if (_mode == "PQM_PRODCONTPLAN")
-            {
-                rt = DoRegisterPQmProdContPlan(dtList); //생관계획
-            }
-            else if (_mode == "PQM_QUALITYGOAL")
-            {
-                rt = DoRegisterPQmQualityGoal(dtList); //품질목표
-            }
-            else if (_mode == "PQM_STANDWORK")
-            {
-                rt = DoRegisterPQmStandWork(dtList); //표준공수
-            }
-            else if (_mode == "LCM_COURSE")
-            {
-                rt = DoRegisterLcmCourse(dtList); //교욱과정관리
-            }
-            else if (_mode == "FORM_EDUREPORTA")
-            {
-                rt = DoFormEDUREPORTA(dtList); //사내교육결과보고서
-            }
-            else if (_mode == "LCM_ADMIN")
-            {
-                if (_subCondition == "LCM_CYBERREPORT") //사이버교육결과등록
+                if (strExt.ToLower().Equals("xlsx")) //2014-04-18 AccessDatabaseEngine 설치
                 {
-                    rt = DoRegisterLcmCyberReport(dtList);
+                    ep = new ExcelParse(true, _uploadPath);
+                    strQuery = "SELECT * FROM [Sheet1$]";
+                    dtList = ep.ReadSheet(strQuery);
+                    //Response.Write(JsAlert(":: 열수 : " + dtList.Rows.Count.ToString() + " : " + dtList.Rows[0][0].ToString()));
+                    //Response.End();
+                }
+                else
+                {
+                    tp = new TextParse(_uploadPath, ",", "euc-kr");
+                    rowList = tp.ReadText();
                 }
             }
-            else if (_mode == "INV_NEW_KPI") //재고지표현황 품목별지표
+            catch (Exception ex)
             {
-                rt = DoERP_INV_NEW_KPI(dtList);
+                rt = ex.Message;
             }
-            else if (_mode == "REGISTER_VOC")
-            {
-                rt = DoRegisterVoc(dtList);
-            }
-            else if (_mode == "MC_SUMMARY") //모델별원가
-            {
-                rt = DoRegisterMC(dtList);
-            }
-            #endregion
-            tp = null;
-            rowList = null;
 
-            rt = "OK" + rt;
+            if (rt != "") rt = String.Format("<div class=\"py-2 text-center text-danger\">{0}</div>", rt);
+            else
+            {
+                //rt = ":: 열수 : " + dtList.Rows.Count.ToString();
+                //_mode = "XXXXXX";
+
+                #region [파일 내용 처리]
+                if (_mode == "REGISTER_LEAVE")
+                {
+                    if (_subCondition == "") rt = DoRegisterLEAVE(rowList);
+                    else rt = DoRegisterLEAVEEVENT(rowList);
+                }
+                else if (_mode == "REGISTER_LEAVEUSE")
+                {
+                    if (_subCondition == "") DoRegisterLEAVEUSE(rowList);
+                    else rt = DoRegisterLEAVEUSEEVENT(rowList);
+                }
+                else if (_mode == "REGISTER_PROMOTIONPOINT")
+                {
+                    rt = DoRegisterPROMOTIONPOINT(rowList);
+                }
+                else if (_mode == "REGISTER_INANDOUT")
+                {
+                    rt = DoRegisterINANDOUT(rowList);
+                }
+                else if (_mode == "REGISTER_GAS")
+                {
+                    rt = DoRegisterGAS(rowList);
+                }
+                else if (_mode == "REGISTER_EDUCATIONPOINT")
+                {
+                    rt = DoRegisterEDUCATIONPOINT(rowList);
+                }
+                else if (_mode == "REGISTER_EXCHANGEINFO")
+                {
+                    rt = DoRegisterEXCHANGEINFO(rowList);
+                }
+                else if (_mode == "TELLNUMLIST")
+                {
+                    rt = DoRegisterTELLNUMLIST(rowList);
+                }
+                else if (_mode == "REGISTER_SALARY")
+                {
+                    //DoRegisterSALARY(rowList);
+                    rt = DoRegisterSALARY(dtList);
+                }
+                else if (_mode == "REGISTER_ETHICAL")
+                {
+                    //DoRegisterSALARY(rowList);
+                    rt = DoRegisterETHICAL(dtList);
+                }
+                else if (_mode == "FORM_WORKSTATUS")
+                {
+                    //DoRegisterSALARY(rowList);
+                    rt = DoRegisterWORKSTATUS(dtList);
+                }
+                else if (_mode == "REGISTER_USERINFO")
+                {
+                    //DoRegisterSALARY(rowList);
+                    rt = DoRegisterREGISTERUSERINFO(dtList);
+                }
+                else if (_mode == "REGISTER_USERINFODETAIL")
+                {
+                    //DoRegisterSALARY(rowList);
+                    rt = DoRegisterREGISTERUSERINFODETAIL(dtList);
+                }
+                else if (_mode == "REGISTER_GONGGA")
+                {
+                    //DoRegisterSALARY(rowList);
+                    rt = DoRegisterGONGGA(dtList);
+                }
+                else if (_mode == "FORM_PURCHASEUCB" || _mode == "FORM_PURCHASEUCC" || _mode == "FORM_PURCHASEUCC2" || _mode == "FORM_PURCHASESAMPLE" || _mode == "FORM_PURCHASEUCF")
+                {
+                    rt = DoFormPURCHASEUC(dtList); //구매단가결정품의서(인하인상, 유사, 샘플), 2016-04-20 유사 추가
+                }
+                else if (_mode == "FORM_CODCHANGEREQUEST")
+                {
+                    rt = DoFormCODCHANGEREQUEST(dtList); //제조조건변경요청서
+                }
+                else if (_mode == "FORM_SHIPMENTUC")
+                {
+                    rt = DoFormSHIPMENTUC(dtList); //생산지출하단가결정품의서
+                }
+                else if (_mode == "FORM_MANMOVELAST")
+                {
+                    rt = DoFormMANMOVELAST(dtList); //인사평가종합
+                }
+                else if (_mode == "FORM_MANMOVESEC")
+                {
+                    rt = DoFormMANMOVESEC(dtList); //인사평가종합
+                }
+                else if (_mode == "PQM_PRODCONTPLAN")
+                {
+                    rt = DoRegisterPQmProdContPlan(dtList); //생관계획
+                }
+                else if (_mode == "PQM_QUALITYGOAL")
+                {
+                    rt = DoRegisterPQmQualityGoal(dtList); //품질목표
+                }
+                else if (_mode == "PQM_STANDWORK")
+                {
+                    rt = DoRegisterPQmStandWork(dtList); //표준공수
+                }
+                else if (_mode == "LCM_COURSE")
+                {
+                    rt = DoRegisterLcmCourse(dtList); //교욱과정관리
+                }
+                else if (_mode == "FORM_EDUREPORTA")
+                {
+                    rt = DoFormEDUREPORTA(dtList); //사내교육결과보고서
+                }
+                else if (_mode == "LCM_ADMIN")
+                {
+                    if (_subCondition == "LCM_CYBERREPORT") //사이버교육결과등록
+                    {
+                        rt = DoRegisterLcmCyberReport(dtList);
+                    }
+                }
+                else if (_mode == "INV_NEW_KPI") //재고지표현황 품목별지표
+                {
+                    rt = DoERP_INV_NEW_KPI(dtList);
+                }
+                else if (_mode == "REGISTER_VOC")
+                {
+                    rt = DoRegisterVoc(dtList);
+                }
+                else if (_mode == "MC_SUMMARY") //모델별원가
+                {
+                    rt = DoRegisterMC(dtList);
+                }
+                #endregion
+                tp = null;
+                rowList = null;
+
+                rt = "OK" + rt;
+            }
         }
 
         Response.Write("<script type='text/javascript'>" + Request["completed"].ToString() + "('" + Server.UrlEncode(rt) + "');</script>");
@@ -492,7 +505,7 @@
         StringBuilder sb = new StringBuilder();
 
         sb.Append("<div class=\"zf-upload w-100\">");
-        sb.Append("<div class=\"zf-upload-select\">");
+        sb.Append("<div class=\"zf-upload-select d-flex\">");
         sb.Append("<form id=\"uploadForm\" name=\"uploadForm\" action=\"/Common/FileImport\" method=\"post\" enctype=\"multipart/form-data\" target=\"ifrView\">");
         sb.Append("<div class=\"custom-file\">");
         sb.Append("<input type=\"file\" class=\"custom-file-input\" id=\"file1\" name=\"file1\" />");
@@ -2021,7 +2034,7 @@
         }
 
         sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
-        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
 
         return sb.ToString();
     }
@@ -2116,7 +2129,7 @@
         }
 
         sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
-        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
 
         return sb.ToString();
     }
@@ -2321,7 +2334,7 @@
             sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
         }
         sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
-        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
 
         return sb.ToString();
     }
@@ -2407,7 +2420,7 @@
             sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
         }
         sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
-        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
 
         return sb.ToString();
     }
@@ -2493,7 +2506,7 @@
             sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
         }
         sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
-        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
 
         return sb.ToString();
     }
@@ -2857,7 +2870,7 @@
             sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
         }
         sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
-        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
 
         return sb.ToString();
     }
@@ -3000,7 +3013,7 @@
         {
             sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
         }
-        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
 
         return sb.ToString();
     }
@@ -3138,7 +3151,7 @@
         {
             sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "지표 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
         }
-        sb.AppendFormat("<div>총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
 
         return sb.ToString();
     }
@@ -3374,7 +3387,7 @@ else
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-3">
                 <div class="mb-2">@Html.Raw(PageLoad())</div>
                 @Html.Raw(RenderFile())
             </div>

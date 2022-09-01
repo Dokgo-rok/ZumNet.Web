@@ -17,8 +17,8 @@
                 //console.log(parseInt(_zw.ut.empty(e1.val())) + " : " + parseInt(_zw.ut.empty(e2.val())))
                 if (parseInt(_zw.ut.empty(e1.val())) > 0 && parseInt(_zw.ut.empty(e2.val())) > 0) {
                     s = parseInt(_zw.ut.empty(e2.val())) / parseInt(_zw.ut.empty(e1.val())); //console.log(s)
-                    if (numeral(s).value() > 6000) {
-                        bootbox.alert('1인 식비한도가 6천원을 초과하였습니다. 식대를 초기화 합니다.', function () { e2.val(''); e2.focus(); }); return false;
+                    if (numeral(s).value() > 10000) {
+                        bootbox.alert('1인 식비한도가 1만원을 초과하였습니다. 식대를 초기화 합니다.', function () { e2.val(''); e2.focus(); }); return false;
                     }
                 }
             } s = 0;

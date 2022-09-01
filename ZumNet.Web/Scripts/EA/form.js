@@ -585,6 +585,68 @@ $(function () {
         };
     }
 
+    _zw.fn.importFile = function (cd) {
+        cd = cd || '';
+        var url = '/Common/FileImport?M=' + _zw.V.def.maintable + '&sy=&cd=' + cd;
+        if (_zw.V.ft == 'SHIPMENTUC') url += "&gg=" + $('#__mainfield[name="PRODUCTCENTER"]').val() + "&gg2=" + $('#__mainfield[name="SALECENTER"]').val() + "&gg3=" + $('#__mainfield[name="CURRENCY"]').val() + "&gg4=" + $('#__mainfield[name="VENDOR_CODE"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            success: function (res) {
+                var p = $('#popBlank');
+                p.html(res); _zw.fu.bind();
+                p.find('#uploadForm')[0].action = url;
+
+                p.on('hidden.bs.modal', function () { p.html(''); });
+                p.modal();
+            }
+        });
+    }
+
+    _zw.fn.complete = function (msg) {
+        var p = $('#popBlank');
+        p.find('.zf-upload #uploadForm')[0].reset();
+
+        var rt = decodeURIComponent(msg).replace(/\+/gi, ' ');
+        if (rt.substr(0, 2) == 'OK') {
+            var footer = '<div class="modal-footer justify-content-center">'
+                + '<button type="button" class="btn btn-primary" data-zm-menu="confirm">확인</button>'
+                + '<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>'
+                + '</div>';
+
+            p.find('.zf-upload .zf-upload-list').html(rt.substr(2)).removeClass('d-none');
+            p.find('.modal-content').append(footer);
+
+            p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
+                var rt = p.find('.zf-upload .zf-upload-list #__RESULTINFO');
+                if (rt.length > 0 && rt.html != '') {
+                    var j = JSON.parse(p.find('.zf-upload .zf-upload-list #__RESULTINFO').html());
+                    if (j.length > 0) { //console.log(j[0][0] + " : " + j[1][0])
+                        var tbl = $('#__subtable1'), len = tbl.find('tr.sub_table_row').length;
+                        tbl.find('tr.sub_table_row').each(function () {
+                            _zw.form.resetField($(this));
+                        });
+                        if (j.length - 1 > len) {
+                            for (var i = 0; i < j.length - 1 - len; i++) _zw.form.addRow('__subtable1');
+                        }
+                        tbl.find('tr.sub_table_row').each(function (idx) {
+                            for (var i = 0; i < j[0].length; i++) {
+                                $(this).find('td [name="' + j[0][i] + '"]').val(j[idx + 1][i]);
+                            }
+                        });
+                    }
+                }
+                p.modal('hide');
+            });
+
+        } else {
+            p.find('.zf-upload .zf-upload-list').html(rt).removeClass('d-none');
+        }
+        p.find('.zf-upload .zf-upload-bar').addClass('d-none');
+        if (p.find('.modal-dialog').hasClass('modal-sm')) p.find('.modal-dialog').removeClass('modal-sm');
+    }
+
     _zw.signline = {
         "open": function (m, multi, postData) {
             var p = $('#popSignLine');
@@ -1937,9 +1999,10 @@ $(function () {
             });
         },
         "resetField": function (el) {
-            el.find('input:text, input:hidden textarea').val('');
+            el.find('input:text, input:hidden, textarea, select').val('');
             el.find('input:checkbox, input:radio').prop('checked', false);
             el.find('select').attr('selectIndex', 0);
+            //el.find('select').prop('selectIndex', 0);
         },
         "validation": function (cmd) {
             if (cmd != null && (cmd == "reject" || cmd == "back" || cmd == "reserve" || cmd == "pre")) return true; //2013-02-21 (지정)반려, 2014-02-20 선결인 경우 체크 제외
@@ -2116,7 +2179,7 @@ $(function () {
                 j["doc"]["linkmsg"] = _zw.V.doc["linkmsg"];
                 j["doc"]["transfer"] = _zw.V.doc["transfer"];
 
-                _zw.body.externalKey(cmd, j["doc"]);
+                _zw.body.externalKey(cmd, j["doc"], _zw.V.doc["key1"], _zw.V.doc["key2"]);
 
                 if (_zw.V.creator["corp"] != null) {
                     j["doc"]["rsvd1"] = _zw.V.creator["corp"]["corpname"];
@@ -2344,8 +2407,8 @@ $(function () {
                 }
             }
         },
-        "externalKey": function (cmd, doc) {
-            var k1 = doc["key1"] || '', k2 = doc["key2"] || '';
+        "externalKey": function (cmd, doc, k1, k2) {
+            k1 = k1 || '', k2 = k2 || '';
 
             if (_zw.V.ft == 'MONTHFAULTYGOODS' || _zw.V.ft == 'MONTHFAULTYGOODSCTISM' || _zw.V.ft == 'MONTHLOSSCHART') { //작업불량품발생기안, 작업불량품발생기안CT(ISM), 월손실비용발생현황
                 doc["key1"] = $('#__mainfield[name="CORPORATION"]').val() + '-' + $('#__mainfield[name="STATSYEAR"]').val() + $('#__mainfield[name="STATSMONTH"]').val();

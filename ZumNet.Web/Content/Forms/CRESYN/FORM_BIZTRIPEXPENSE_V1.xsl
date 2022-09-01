@@ -1658,7 +1658,7 @@
                 <xsl:when test="$mode='new' or $mode='edit'">
                   <tr>
                     <td>
-                      <span>3. 식비 (1식한도 갑지1 $24, 갑지2 $12, 을지 $10, 일본 1,500엔) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(*갑지1: 미국, 유럽 &nbsp;&nbsp;&nbsp;갑지2: 홍콩, 싱가폴, 중국, 베트남 &nbsp;&nbsp;&nbsp;을지: 동남아, 인도네시아)</span>
+                      <span>3. 식비 (1식한도 갑지1 $24, 갑지2 $12, 을지 $12, 일본 1,500엔) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(*갑지1: 미국, 유럽 &nbsp;&nbsp;&nbsp;갑지2: 홍콩, 싱가폴, 중국, 베트남 &nbsp;&nbsp;&nbsp;을지: 동남아, 인도네시아)</span>
                     </td>
                     <td class="fm-button">
                       <!--<button onclick="parent.fnAddChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">

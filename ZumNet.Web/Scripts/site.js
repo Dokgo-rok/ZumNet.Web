@@ -2165,7 +2165,7 @@ $(function () {
     _zw.fu = {
         "fileList": [],
         "bind": function () { //p : zf-upload 를 포함하는 parent (modal)
-            var p = $('.zf-upload').has('.zf-upload-select.d-flex'); console.log(p)
+            var p = $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p.length)
             if (p.length > 0) {
                 _zw.fu.fileList = JSON.parse(p.find('#__FILEINFO').val()); //초기화
                 fm = p.find('form')[0], fi = p.find('input[type="file"]'); //console.log('===' + fm.outerHTML)

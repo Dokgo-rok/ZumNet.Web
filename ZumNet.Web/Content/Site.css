@@ -699,6 +699,9 @@ a.z-lnk-navy-n {
         padding: .15rem;
         /*overflow-y: auto;*/
     }
+        /*.z-pop .z-pop-body .table > colgroup + thead > tr:first-child > td, .z-pop .z-pop-body .table > colgroup + thead > tr:first-child > th, .z-pop .z-pop-body .table > thead:first-child > tr:first-child > td, .z-pop .z-pop-body .table > thead:first-child > tr:first-child > th, .z-pop .z-pop-body .table > colgroup + tbody > tr:first-child > td, .z-pop .z-pop-body .table > tbody:first-child > tr:first-child > td {
+            border-top: 0;
+        }*/
     .z-pop .z-pop-footer {
         display: flex;
         flex-wrap: wrap;

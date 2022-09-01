@@ -94,7 +94,7 @@
                 </td>
                 <td style="width:;font-size:12px">&nbsp;</td>
                 <td style="width:95px">
-                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='last' and @partid!='' and @step!='0'], '__si_Last', '1', '승인')"/>
+                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[(@bizrole='last' and @partid!='' and @step!='0') or (@bizrole='receive' and @actrole='_approver' and @partid!='' and @step!='0')], '__si_Last', '1', '승인')"/>
                 </td>
               </tr>
             </table>
@@ -1151,7 +1151,8 @@
               <tr>
                 <td style="font-size:1px">&nbsp;</td>
                 <td style="width:395px">
-                  <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '5', '주관부서')"/>
+                  <!--<xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '5', '주관부서')"/>-->
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='receive' and @actrole='_reviewer'  and @partid!='' and @step!='0'], '__si_Receive', '5', '주관부서')"/>
                 </td>
               </tr>
             </table>
