@@ -44,7 +44,49 @@
             {
                 if (svcRt.ResultItemCount > 0)
                 {
-                    if (postData["k2"].ToString() == "currency" || postData["k2"].ToString() == "centercode" || postData["k2"].ToString() == "centercode2" || postData["k2"].ToString() == "chartcentercode" || postData["k2"].ToString() == "prodlawname")
+                    if (postData["k2"].ToString() == "filechangecode")
+                    {
+                        #region [filechangecode]
+                        sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                        sb.Append("<colgroup><col width=\"20%\" /><col width=\"80%\" /></colgroup>");
+                        sb.Append("<tbody>");
+                        foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td>{0}</td>", row["item1"].ToString());
+                            sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"({0}){1}\">{0}</a></td>", row["item1"].ToString(), row["item2"].ToString());
+                            sb.Append("</tr>");
+                        }
+                        if (postData["etc"].ToString() == "etc")
+                        {
+                            sb.Append("<tr><td>기타</td><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                        }
+                        sb.Append("</tbody>");
+                        sb.Append("</table>");
+                        #endregion
+                    }
+                    else if (postData["k2"].ToString() == "losscode")
+                    {
+                        #region [손실분류CODE]
+                        sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                        sb.Append("<colgroup><col width=\"65%\" /><col width=\"35%\" /></colgroup>");
+                        sb.Append("<tbody>");
+                        foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td>{0}</td>", row["item2"].ToString());
+                            sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{1}({0})\">{0}</a></td>", row["item1"].ToString(), row["item2"].ToString());
+                            sb.Append("</tr>");
+                        }
+                        if (postData["etc"].ToString() == "etc")
+                        {
+                            sb.Append("<tr><td>기타</td><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                        }
+                        sb.Append("</tbody>");
+                        sb.Append("</table>");
+                        #endregion
+                    }
+                    else if (postData["k2"].ToString() == "currency" || postData["k2"].ToString() == "centercode" || postData["k2"].ToString() == "centercode2" || postData["k2"].ToString() == "chartcentercode" || postData["k2"].ToString() == "prodlawname")
                     {
                         # region [통화, 생산지표기]
                         sb.Append("<table class=\"table table-striped table-sm mb-0\">");
@@ -88,7 +130,7 @@
                         sb.Append("</table>");
                         #endregion
                     }
-                    else if (postData["k2"].ToString() == "toolingmakingreq")
+                    else if (postData["k2"].ToString() == "toolingmakingreq") //금형제작의뢰서
                     {
                         #region [toolingmakingreq]
                         sb.Append("<table class=\"table table-striped table-sm mb-0\">");
@@ -132,9 +174,56 @@
                         sb.Append("</table>");
                         #endregion
                     }
+                    else if (postData["k2"].ToString() == "failexampleclass")
+                    {
+                        #region[실패사례 품명,발생부위 분류 일람표]
+                        string strPre1 = "";
+                        string strPre2 = "";
+                        string strCol1 = "";
+                        string strCol2 = "";
+
+                        sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                        sb.Append("<colgroup><col width=\"35%\" /><col width=\"20%\" /><col width=\"45%\" /></colgroup>");
+                        sb.Append("<thead>");
+                        sb.Append("<tr><th>입사일</th><th>품명</th><th>설계구분</th><th>발생부위</th></tr>");
+                        sb.Append("</thead>");
+                        sb.Append("<tbody>");
+                        foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                        {
+                            strCol1 = (strPre1 == row["item1"].ToString()) ? "" : row["item1"].ToString();
+                            strCol2 = (strPre2 == row["item2"].ToString()) ? "" : row["item2"].ToString();
+
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td>{0}</td>", strCol1);
+                            sb.AppendFormat("<td>{0}</td>", strCol2);
+                            sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}\">{0}</a></td>", row["item3"].ToString(), row["item2"].ToString(), row["item1"].ToString());
+                            sb.Append("</tr>");
+
+                            strPre1 = row["item1"].ToString();
+                            strPre2 = row["item2"].ToString();
+                        }
+                        sb.Append("</tbody>");
+                        sb.Append("</table>");
+
+                        #endregion
+                    }
+                    else if (postData["k2"].ToString() == "groupcode")
+                    {
+                        #region[불용제품처리기안 법인코드]
+                        sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                        sb.Append("<tbody>");
+                        foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                        {
+                            sb.AppendFormat("<tr><td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}^{3}\">{0}</a></td></tr>"
+                                    , row["item1"].ToString(), row["item3"].ToString(), row["item4"].ToString(), row["item5"].ToString().IndexOf('|') >= 0 ? row["item5"].ToString().Split('|')[1] : "");
+                        }
+                        sb.Append("</tbody>");
+                        sb.Append("</table>");
+                        #endregion
+                    }
                     else if (postData["k2"].ToString() == "conclassify")
                     {
-                        #region [conclassify]
+                        #region [경조금신청서 경조항목]
                         sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
                         sb.Append("<colgroup><col width=\"20%\" /><col width=\"40%\" /><col width=\"20%\" /><col width=\"20%\" /></colgroup>");
                         sb.Append("<tbody>");

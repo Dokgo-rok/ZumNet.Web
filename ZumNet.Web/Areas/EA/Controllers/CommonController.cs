@@ -66,6 +66,12 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         rt = RazorViewToString.RenderRazorViewToString(this, "_Tooling", ViewBag);
                         break;
 
+                    case "getformchart":
+                        //rt = GetFormChart(jPost);
+                        ViewBag.JPost = jPost;
+                        rt = RazorViewToString.RenderRazorViewToString(this, "_FormChart", ViewBag);
+                        break;
+
                     default:
                         break;
                 }

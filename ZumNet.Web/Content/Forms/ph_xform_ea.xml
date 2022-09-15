@@ -30,7 +30,7 @@
     <belong></belong>
     <indate></indate>
   </creatorinfo>
-  <currentinfo uid="" account="" deptid="" deptcode="">
+  <currentinfo uid="" account="" deptid="" deptcode="" date="">
     <name></name>
     <empno></empno>
     <grade></grade>

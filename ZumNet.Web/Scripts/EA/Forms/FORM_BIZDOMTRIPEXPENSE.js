@@ -41,11 +41,15 @@
                 p.find('td :text[name="' + el.name + '"]').each(function (z, e) { s += numeral(parseFloat(_zw.ut.empty(e.value))).value(); });
                 $('#__mainfield[name="TOTALDISTANCE"]').val(numeral(s).format(f)); s = 0;
 
-                s = numeral(parseFloat(_zw.ut.empty(row.find(':text[name="DISTANCE"]').val())) * parseFloat(_zw.ut.empty(row.find(':text[name="FUELUNIT"]').val()))).value();
-                row.find(':text[name="FUELSUM"]').val(numeral(s).format(f)); s = 0;
+                if (row.find(':text[name="FUELKIND"]').val() != '') {
+                    s = numeral(parseFloat(_zw.ut.empty(row.find(':text[name="DISTANCE"]').val())) * parseFloat(_zw.ut.empty(row.find(':text[name="FUELUNIT"]').val()))).value();
+                    if (row.find('input[name="FUELKIND"]').val() == 'LPG') row.find(':text[name="FUELSUM"]').val(numeral(s / 5).format(f));
+                    else row.find(':text[name="FUELSUM"]').val(numeral(s / 10).format(f));
+                    s = 0;
 
-                p.find('td :text[name="FUELSUM"]').each(function (z, e) { s += numeral(parseFloat(_zw.ut.empty(e.value))).value(); });
-                $('#__mainfield[name="SUM"]').val(numeral(s).format(f)); s = 0;
+                    p.find('td :text[name="FUELSUM"]').each(function (z, e) { s += numeral(parseFloat(_zw.ut.empty(e.value))).value(); });
+                    $('#__mainfield[name="SUM"]').val(numeral(s).format(f)); s = 0;
+                }
             }
         },
         "autoCalc": function (p) {
@@ -129,8 +133,11 @@
                                 var v = res.substr(2);
                                 row.find(':text[name="FUELUNIT"]').val(numeral(v).format('0,0'));
 
-                                var s = numeral(parseFloat(_zw.ut.empty(row.find(':text[name="DISTANCE"]').val())) * parseFloat(_zw.ut.empty(row.find(':text[name="FUELUNIT"]').val()))).value();
-                                row.find(':text[name="FUELSUM"]').val(numeral(s).format('0,0'));
+                                if (row.find('input[name="FUELKIND"]').val() != '') {
+                                    var s = numeral(parseFloat(_zw.ut.empty(row.find(':text[name="DISTANCE"]').val())) * parseFloat(_zw.ut.empty(row.find(':text[name="FUELUNIT"]').val()))).value();
+                                    if (row.find('input[name="FUELKIND"]').val() == 'LPG') row.find(':text[name="FUELSUM"]').val(numeral(s / 5).format('0,0'));
+                                    else row.find(':text[name="FUELSUM"]').val(numeral(s / 10).format('0,0'));
+                                }
 
                                 _zw.formEx.autoCalc(row.parent().parent());
                             }

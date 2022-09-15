@@ -31,20 +31,17 @@
 						j["title"] = el.attr('title'); j["content"] = res.substr(2);
 
 						var pop = _zw.ut.popup(el[0], j);
-						var row = vPos[1] == 'wastereason' ? el.parent().parent() : null;
 						pop.find('a[data-val]').click(function () {
 							var v = $(this).attr('data-val').split('^');
 							for (var i = 0; i < param.length; i++) {
-								if (row) row.find('td [name="' + param[i] + '"]').val(v[i]);
-								else $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
+								$('#__mainfield[name="' + param[i] + '"]').val(v[i]);
 							}
 							pop.find('.close[data-dismiss="modal"]').click();
 						});
 
 						pop.find('input:text.z-input-in').keyup(function (e) {
 							if (e.which == 13) {
-								if (row) row.find('td [name="' + param[0] + '"]').val($(this).val());
-								else $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
+								$('#__mainfield[name="' + param[0] + '"]').val($(this).val());
 								pop.find('.close[data-dismiss="modal"]').click();
 							}
 						});

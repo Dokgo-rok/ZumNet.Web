@@ -388,7 +388,7 @@
 				<button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,214,-100,0,'etc','PRODUCTION_CURRENCY');">
 					<i class="fas fa-angle-down"></i>
 				</button>
-              <input type="text" id="__mainfield" name="PRODUCTION_COST" style="width:180px; margin-left: 2px" tabindex="11" class="txtCurrency" maxlength="15" data-inputmask="number;15;0" value="{phxsl:addCommaAndDotMinus(string(//forminfo/maintable/PRODUCTION_COST), 0)}" />
+              <input type="text" id="__mainfield" name="PRODUCTION_COST" style="width:180px; margin-left: 2px" tabindex="11" class="txtCurrency" maxlength="15" data-inputmask="number;12;3" value="{phxsl:addCommaAndDotMinus(string(//forminfo/maintable/PRODUCTION_COST), 0)}" />
             </xsl:when>
             <xsl:otherwise>
               <!--(<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PRODUCTION_CURRENCY))" />)&#160;<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PRODUCTION_COST))" />-->
@@ -1240,7 +1240,7 @@
 				<button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,214,-100,0,'etc','SALES_CURRENCY');">
 					<i class="fas fa-angle-down"></i>
 				</button>
-              <input type="text" id="__mainfield" name="SALES_COST" style="width:180px; margin-left: 2px" tabindex="39" class="txtDollar" maxlength="15" value="{phxsl:addCommaAndDotMinus(string(//forminfo/maintable/SALES_COST), 4)}" />
+              <input type="text" id="__mainfield" name="SALES_COST" style="width:180px; margin-left: 2px" tabindex="39" class="txtDollar" maxlength="15" data-inputmask="number;12;3" value="{phxsl:nZero(phxsl:addCommaAndDotMinus(string(//forminfo/maintable/SALES_COST), 4))}" />
             </xsl:when>
             <xsl:otherwise>
               <xsl:choose>
@@ -1286,7 +1286,7 @@
 				<button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,214,-100,0,'etc','RETRIEVAL_CURRENCY');">
 					<i class="fas fa-angle-down"></i>
 				</button>
-              <input type="text" id="__mainfield" name="RETRIEVAL_COST" style="width:180px; margin-left: 2px" tabindex="42" class="txtDollar" maxlength="15" value="{phxsl:addCommaAndDotMinus(string(//forminfo/maintable/RETRIEVAL_COST), 4)}" />
+              <input type="text" id="__mainfield" name="RETRIEVAL_COST" style="width:180px; margin-left: 2px" tabindex="42" class="txtDollar" maxlength="15" data-inputmask="number;12;3" value="{phxsl:nZero(phxsl:addCommaAndDotMinus(string(//forminfo/maintable/RETRIEVAL_COST), 4))}" />
             </xsl:when>
             <xsl:otherwise>
               <xsl:choose>
@@ -1707,7 +1707,8 @@
 <input type="hidden" id="__mainfield" name="SLIDE_CORE" value="{//forminfo/maintable/SLIDE_CORE}" />
 <input type="hidden" id="__mainfield" name="MOLD_TYPE" value="{//forminfo/maintable/MOLD_TYPE}" />
 <input type="hidden" value="{phxsl:cvtDate(string(//forminfo/maintable/TAGDATE),'','',0,false)}" />
-<input type="hidden" id="__mainfield" name="APPROVAL_DATE" value="{phxsl:cvtDate(string(//forminfo/maintable/APPROVAL_DATE),'','',0,false)}" />
+<!--<input type="hidden" id="__mainfield" name="APPROVAL_DATE" value="{phxsl:cvtDate(string(//forminfo/maintable/APPROVAL_DATE),'','',0,false)}" />-->
+<input type="hidden" id="__mainfield" name="APPROVAL_DATE" value="{//forminfo/maintable/APPROVAL_DATE}" />
 <input type="hidden" id="__mainfield" name="TEST_TO"  value="{phxsl:cvtDate(string(//forminfo/maintable/TEST_TO),'','',0,false)}" />
 <input type="hidden" id="__mainfield" name="TEST_FROM"  value="{phxsl:cvtDate(string(//forminfo/maintable/TEST_FROM),'','',0,false)}" />  
 <input type="hidden" id="__mainfield" name="ORG_ID" value="{//forminfo/maintable/ORG_ID}" />

@@ -942,7 +942,7 @@ namespace ZumNet.Web.Bc
                 jV["current"]["phone"] = oCurrentInfo.SelectSingleNode("phone").InnerText;
                 jV["current"]["belong"] = oCurrentInfo.SelectSingleNode("belong").InnerText;
                 jV["current"]["indate"] = oCurrentInfo.SelectSingleNode("indate").InnerText;
-                jV["current"]["date"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                jV["current"]["date"] = oCurrentInfo.Attributes["date"].Value; //DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
                 sPos = "500";
                 oNode = oFormInfo.SelectSingleNode("maintable");

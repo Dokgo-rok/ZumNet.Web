@@ -602,7 +602,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_INSURANCEPOLICY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_INTERNALAUDITPLAN_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_INTERNALAUDITRESULT_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_INVENTORYTAKING_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_INVENTORYTAKING_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_IPR_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_ISOPARTMONTHLYRETURN_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_ISOPARTMONTHLYRETURN_V2.xsl" />
@@ -654,7 +656,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_MONTHFAULTYGOODS_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MONTHFAULTYGOODS_V3.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MONTHFAULTYGOODS_V4.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_MONTHFAULTYGOODS_V5.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_MONTHFAULTYGOODS_V5.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_MONTHLOSSCHART_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MONTHPURCHASEUC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MONTHPURCHASE_V1.xsl" />
@@ -2170,10 +2174,12 @@
     <Content Include="Scripts\EA\Forms\FORM_INTERNALAUDITRESULT.js" />
     <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_ITEMMASTERCHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_LOSSDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVESEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANPT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANUFACTURINGPROCESSCHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MARKETBUY.js" />
     <Content Include="Scripts\EA\Forms\FORM_MASTERFILECHANGEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_MEALTICKET.js" />
     <Content Include="Scripts\EA\Forms\FORM_MEASURELIST.js" />
@@ -2235,12 +2241,16 @@
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGREPAIRDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLINGTRYREPORT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_UNITASSYRETURNAGREEMENT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_UNITASSYRETURNNOTIFY.js" />
     <Content Include="Scripts\EA\Forms\FORM_UNITSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_USEITEMMASTERCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONCHANGE.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONHR.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONUSE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_WASTEPRODUCTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_WITHHOLDINGRECEIPT.js" />
     <Content Include="Scripts\EA\Forms\_sample.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAFT.js" />
@@ -3139,6 +3149,7 @@
     <Content Include="Areas\EA\Views\Shared\DocLinkFile.cshtml" />
     <Content Include="Areas\EA\Views\Common\_Tooling.cshtml" />
     <Content Include="Areas\EA\Views\Form\Save.cshtml" />
+    <Content Include="Areas\EA\Views\Common\_FormChart.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

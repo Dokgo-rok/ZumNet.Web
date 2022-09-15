@@ -27,11 +27,11 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:1100px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
+          .m {width:1000px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:-2pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:8%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
@@ -80,13 +80,14 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:280px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '3', '결재')"/>
                 </td>
                 <!--<td style="font-size:1px">&nbsp;</td>
                 <td style="width:355px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '4', '주관부서')"/>
                 </td>-->
+				  <td style="font-size:1px">&nbsp;</td>
               </tr>
             </table>
           </div>
@@ -100,15 +101,15 @@
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="f-lbl" style="border-bottom:0">문서번호</td>
-                <td style="width:15%;border-bottom:0">
+                <td style="width:17%;border-bottom:0">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//docinfo/docnumber))" />
                 </td>
                 <td class="f-lbl" style="border-bottom:0">작성일자</td>
-                <td style="width:15%;border-bottom:0">
+                <td style="width:17%;border-bottom:0">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:convertDate(string(//docinfo/createdate), '')" />
                 </td>
                 <td class="f-lbl" style="border-bottom:0">작성부서</td>
-                <td style="width:15%;border-bottom:0">
+                <td style="width:17%;border-bottom:0">
                   <xsl:value-of select="//creatorinfo/department" />
                 </td>
                 <td class="f-lbl" style="border-bottom:0">작성자</td>
@@ -163,7 +164,7 @@
                 <td style="border-bottom:0;height:100px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="RETURNAMOUNT" class="txtCurrency" style="height:100%;font-size:50pt;text-align:center;" maxlength="20" value="{//forminfo/maintable/RETURNAMOUNT}" />
+                      <input type="text" id="__mainfield" name="RETURNAMOUNT" class="txtCurrency" style="height:100%;font-size:50pt;text-align:center;" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/RETURNAMOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <div id="__mainfield" name="RETURNAMOUNT" class="txaRead" style="height:100%;font-size:50pt;text-align:center;" >
@@ -175,7 +176,7 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="CONFIRMAMOUNT" class="txtCurrency" style="height:100%;font-size:50pt;text-align:center;" maxlength="20" value="{//forminfo/maintable/CONFIRMAMOUNT}" />
+                      <input type="text" id="__mainfield" name="CONFIRMAMOUNT" class="txtCurrency" style="height:100%;font-size:50pt;text-align:center;" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/CONFIRMAMOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <div id="__mainfield" name="RETURNAMOUNT" class="txaRead" style="height:100%;font-size:50pt;text-align:center;" >
@@ -228,18 +229,21 @@
                           <xsl:value-of select="//forminfo/maintable/CORPORATION" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.chartcentercode',180,140,70,122,'','CORPORATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.chartcentercode',180,140,70,122,'','CORPORATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18 mr-2" title="개발단계" onclick="_zw.formEx.optionWnd('external.chartcentercode',220,304,-100,0,'','CORPORATION');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="CORPORATION" class="txaRead" style="width:50px;font-size:10pt" >
+                      <span class="txaRead" style="width:50px;font-size:10pt" >
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CORPORATION))" />
-                      </div>
+                      </span>
                     </xsl:otherwise>
                   </xsl:choose>QC 부서장
                 </td>
@@ -293,7 +297,7 @@
           <div class="ff" />
           <div class="ff" />
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 

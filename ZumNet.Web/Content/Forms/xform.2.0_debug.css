@@ -271,7 +271,7 @@ body {overflow: hidden}
 }
 .m .txtNumberic, .m .txtVolume {
 	width: 100%;
-	direction: rtl;
+	/*direction: rtl;*/
 	ime-mode: disabled
 }
 .m .txtJuminDash {
@@ -280,7 +280,7 @@ body {overflow: hidden}
 	ime-mode: disabled
 }
 .m .txtCurrency, .m .txtDollar, .m .txtDollar1, .m .txtDollar2, .m .txtDollar3, .m .txtDollarMinus1, .m .txtDollarMinus2, .m .txtDollarMinus3 {
-	direction: rtl;
+	/*direction: rtl;*/
 	ime-mode: active;
 	width: 100%;
 	text-align: right;

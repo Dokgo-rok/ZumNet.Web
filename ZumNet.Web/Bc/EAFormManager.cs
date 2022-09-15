@@ -259,7 +259,8 @@ namespace ZumNet.Web.Bc
 					oCurrentInfo.Attributes["account"].Value = HttpContext.Current.Session["LogonID"].ToString();
 					oCurrentInfo.Attributes["deptid"].Value = HttpContext.Current.Session["DeptID"].ToString();
 					oCurrentInfo.Attributes["deptcode"].Value = HttpContext.Current.Session["DeptAlias"].ToString();
-					oCurrentInfo.SelectSingleNode("belong").InnerXml = "<![CDATA[" + HttpContext.Current.Session["Belong"].ToString() + "]]>";
+                    oCurrentInfo.Attributes["date"].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); //22-09-15 추가
+                    oCurrentInfo.SelectSingleNode("belong").InnerXml = "<![CDATA[" + HttpContext.Current.Session["Belong"].ToString() + "]]>";
 					oCurrentInfo.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();
 
 					strMsg = "XML 값 할당 - 공통정보";
@@ -767,9 +768,9 @@ namespace ZumNet.Web.Bc
                     oCurrentInfo.Attributes["account"].Value = HttpContext.Current.Session["LogonID"].ToString();
                     oCurrentInfo.Attributes["deptid"].Value = HttpContext.Current.Session["DeptID"].ToString();
                     oCurrentInfo.Attributes["deptcode"].Value = HttpContext.Current.Session["DeptAlias"].ToString();
+                    oCurrentInfo.Attributes["date"].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); //22-09-15 추가
                     oCurrentInfo.SelectSingleNode("belong").InnerXml = "<![CDATA[" + HttpContext.Current.Session["Belong"].ToString() + "]]>";
                     oCurrentInfo.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();
-
 
                     strMsg = "XML 값 할당 - 공통정보";
                     oDocInfo.SelectSingleNode("docname").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.DocName);
@@ -1359,6 +1360,7 @@ namespace ZumNet.Web.Bc
                     oCurrentInfo.Attributes["account"].Value = HttpContext.Current.Session["LogonID"].ToString();
                     oCurrentInfo.Attributes["deptid"].Value = HttpContext.Current.Session["DeptID"].ToString();
                     oCurrentInfo.Attributes["deptcode"].Value = HttpContext.Current.Session["DeptAlias"].ToString();
+                    oCurrentInfo.Attributes["date"].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); //22-09-15 추가
                     oCurrentInfo.SelectSingleNode("belong").InnerXml = "<![CDATA[" + HttpContext.Current.Session["Belong"].ToString() + "]]>";
                     oCurrentInfo.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();
 

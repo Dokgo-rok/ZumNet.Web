@@ -1,0 +1,414 @@
+﻿@using System;
+@using System.Data;
+@using System.Data.SqlClient;
+@using System.IO;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Web.Bc;
+@using ZumNet.BSL.InterfaceBiz;
+@using ZumNet.Framework.Configuration;
+@using ZumNet.Framework.Data;
+@using ZumNet.Framework.Exception;
+@using ZumNet.Framework.Util;
+@functions{
+    private char _firstDel = (char)10;  //줄바꿈
+    private char _secondDel = (char)9;  //탭
+
+    private string GetFormChart(JObject postData)
+    {
+        DataSet dsChart = null;
+        DataTable dt = null;
+        StringBuilder sbData = null;
+        StringBuilder sbData2 = null;
+        //StringBuilder sbData3 = null;
+        //StringBuilder sbColumn = null;
+        //StringBuilder sbSubColumn = null;
+
+        string strReturn = "";
+
+        try
+        {
+            string strEkpDB = ConfigINI.GetValue(Sections.SECTION_DBNAME, Property.INIKEY_DB_BASE);
+            string strFormDB = ConfigINI.GetValue(Sections.SECTION_DBNAME, Property.INIKEY_DB_FORM);
+
+            using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new ZumNet.DAL.FlowDac.EApprovalDac())
+            {
+                dsChart = eaDac.SelectExternalData(strFormDB, strEkpDB, 0, 0, postData["fi"].ToString(), postData["ft"].ToString(), 0, postData["fk"].ToString());
+            }
+
+            sbData = new StringBuilder();
+            sbData2 = new StringBuilder();
+            //sbData3 = new StringBuilder();
+            //sbColumn = new StringBuilder();
+            //sbSubColumn = new StringBuilder();
+
+            int iCurrent = 0;
+            if (postData["fk"].ToString().IndexOf('-') < 1) iCurrent = Convert.ToInt32(postData["fk"].ToString().Substring(4));
+            else iCurrent = Convert.ToInt32(postData["fk"].ToString().Split('-')[1].Substring(4));
+
+            int i = 1;
+
+            if (postData["fi"].ToString() == "30E3A885A0F447D3884EA71F378C2F6B")
+            {
+                #region []
+                #endregion
+            }
+            else if (postData["ft"].ToString() == "FORM_MONTHFAULTYGOODS" || postData["ft"].ToString() == "FORM_MONTHFAULTYGOODSCTISM")
+            {
+                #region [불용제품처리기안]
+                #endregion
+            }
+            else if (postData["ft"].ToString() == "FORM_INVENTORYTAKING")
+            {
+                #region [월재고조사결과보고]
+                int iYear = 0;
+                int[] vYear = new int[12];
+                int[] vPrevYear = new int[12];
+                int iPrevSum = 0;
+                int iSum = 0;
+                int iMax = 0;
+                int iMin = 0;
+                int iH = Convert.ToInt32(postData["h"]);
+                int iH2 = iH;
+                int iH3 = iH;
+                int plusH = 0;
+
+                double dStd = 0;
+                double dStd2 = 0;
+                double dTemp = 0;
+
+                iYear = Convert.ToInt32(postData["fk"].ToString().Split('-')[1].Substring(0, 4));
+                iCurrent = Convert.ToInt32(postData["fk"].ToString().Split('-')[1].Substring(4));
+
+                if (dsChart != null && dsChart.Tables.Count > 0)
+                {
+                    foreach (DataRow dr in dsChart.Tables[0].Rows)
+                    {
+                        if (Convert.ToInt32(dr["STATSYEAR"]) == iYear - 1)
+                        {
+                            vPrevYear[Convert.ToInt32(dr["STATSMONTH"]) - 1] = Convert.ToInt32(dr["TGTVALUE"]);
+                        }
+                        else if (Convert.ToInt32(dr["STATSYEAR"]) == iYear)
+                        {
+                            vYear[Convert.ToInt32(dr["STATSMONTH"]) - 1] = Convert.ToInt32(dr["TGTVALUE"]);
+                        }
+                    }
+                    if (postData["v1"].ToString() != "" && postData["v1"].ToString() != "0")
+                    {
+                        vYear[iCurrent - 1] = Convert.ToInt32(postData["v1"]);
+                    }
+
+                    foreach (int x in vPrevYear) iPrevSum += x;
+                    foreach (int x in vYear) iSum += x;
+
+                    iMax = iPrevSum > iSum ? iPrevSum : iSum;
+                    iMin = iPrevSum > iSum ? iSum : iPrevSum;
+
+                    foreach (int x in vYear)
+                    {
+                        if (x > iMax) iMax = x;
+                        else if (x < iMin) iMin = x;
+                    }
+
+                    iMax = Convert.ToInt32(Math.Round(iMax * 1.1)); //10% 정도 높임
+                    iMin = Convert.ToInt32(Math.Round(iMin * 1.1)); //10% 정도 높임
+
+                    dStd = CalcAxisY(iMax);
+                    dStd2 = CalcAxisY(iMin);
+
+                    if (iMax > 0 && iMin < 0)
+                    {
+                        plusH = Convert.ToInt32(Math.Round(dStd * 100 / (dStd + dStd2)));
+                        if (plusH < 10) plusH = 10;
+                        else if (plusH > 85) plusH = 85;
+                    }
+
+                    if (plusH > 0)
+                    {
+                        iH2 = Convert.ToInt32(Math.Round(Convert.ToDouble(iH * plusH / 100)));
+                        iH3 = Convert.ToInt32(Math.Round(Convert.ToDouble(iH * (100 - plusH) / 100)));
+                    }
+
+                    sbData.Append("<table class=\"fc\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" id=\"__fc_chart\">");
+                    sbData.Append("<colgroup><col width=\"92px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /></colgroup>");
+
+                    if (iMax > 0)
+                    {
+                        sbData.Append("<tr>");
+                        sbData.AppendFormat("<td class=\"axis-y\" style=\"height:{0}\">", (plusH > 0 ? plusH + "%" : ""));
+
+                        if (plusH > 70)
+                        {
+                            sbData.AppendFormat("<div class=\"plus\" style=\"bottom:{0}px\">{1}</div>", (CalcAxisY(iH2, dStd, dStd) - 8), CvtNumeric(dStd.ToString(), 0));
+                            sbData.AppendFormat("<div class=\"plus\" style=\"bottom:{0}px\">{1}</div>", (CalcAxisY(iH2, dStd, (dStd * 3 / 4)) - 8), CvtNumeric((dStd * 3 / 4).ToString(), 0));
+                            sbData.AppendFormat("<div class=\"plus\" style=\"bottom:{0}px\">{1}</div>", (CalcAxisY(iH2, dStd, (dStd * 2 / 4)) - 8), CvtNumeric((dStd * 2 / 4).ToString(), 0));
+                            sbData.AppendFormat("<div class=\"plus\" style=\"bottom:{0}px\">{1}</div>", (CalcAxisY(iH2, dStd, (dStd * 1 / 4)) - 8), CvtNumeric((dStd * 1 / 4).ToString(), 0));
+                        }
+                        else
+                        {
+                            dTemp = CalcAxisY(iH2, dStd, dStd);
+                            sbData.AppendFormat("<div class=\"plus\" style=\"bottom:{0}px\">{1}</div>", (dTemp - 8) < 18 ? "18" : (dTemp - 8).ToString(), CvtNumeric(dStd.ToString(), 0));
+                        }
+
+                        sbData.Append("</td><td class=\"fc-plus\">"); //전년
+                        if (iPrevSum > 0)
+                        {
+                            dTemp = CalcAxisY(iH2, dStd, iPrevSum);
+                            sbData.AppendFormat("<div class=\"bar prev\" style=\"height:{0}px\"></div><div class=\"lbl-value\" style=\"bottom:{1}px\">{2}</div>", dTemp.ToString(), (dTemp + 2).ToString(), CvtNumeric(iPrevSum.ToString(), 0));
+                        }
+
+                        sbData.Append("</td><td class=\"fc-plus\">"); //금년
+                        if (iSum > 0)
+                        {
+                            dTemp = CalcAxisY(iH2, dStd, iSum);
+                            sbData.AppendFormat("<div class=\"bar now\" style=\"height:{0}px\"></div><div class=\"lbl-value\" style=\"bottom:{1}px\">{2}</div>", dTemp.ToString(), (dTemp + 2).ToString(), CvtNumeric(iSum.ToString(), 0));
+                        }
+                        sbData.Append("</td>");
+
+                        foreach (int x in vYear)
+                        {
+                            sbData.Append("<td class=\"fc-plus\">");
+                            if (x > 0)
+                            {
+                                dTemp = CalcAxisY(iH2, dStd, x);
+                                if (dTemp > 0) sbData.AppendFormat("<div class=\"bar\" style=\"height:{0}px\"></div><div class=\"lbl-value\" style=\"bottom:{1}px\">{2}</div>", dTemp.ToString(), (dTemp + 2).ToString(), CvtNumeric(x.ToString(), 0));
+                            }
+                            sbData.Append("</td>");
+                        }
+
+                        //sbData.Append("<td class=\"\"></td>");
+                        sbData.Append("</tr>");
+
+                        if (iMin == 0) sbData.Append("<tr><td></td><td class=\"fc-zero border\" colspan=\"14\">&nbsp;</td></tr>");
+                    }
+
+                    if (iMin < 0)
+                    {
+                        sbData.Append("<tr><td></td><td class=\"fc-zero border\" colspan=\"14\">&nbsp;</td></tr>");
+
+                        sbData.Append("<tr>");
+                        sbData.Append("<td class=\"axis-y\">");
+                        sbData.Append("<div class=\"zero\" style=\"top: 0\">0</div>");
+
+                        if (plusH < 30)
+                        {
+                            sbData.AppendFormat("<div class=\"minus\" style=\"top:{0}px\">{1}</div>", (CalcAxisY(iH3, dStd2, dStd2) - 8), CvtNumeric(dStd2.ToString(), 0));
+                            sbData.AppendFormat("<div class=\"minus\" style=\"top:{0}px\">{1}</div>", (CalcAxisY(iH3, dStd2, (dStd2 * 3 / 4)) - 8), CvtNumeric((dStd2 * 3 / 4).ToString(), 0));
+                            sbData.AppendFormat("<div class=\"minus\" style=\"top:{0}px\">{1}</div>", (CalcAxisY(iH3, dStd2, (dStd2 * 2 / 4)) - 8), CvtNumeric((dStd2 * 2 / 4).ToString(), 0));
+                            sbData.AppendFormat("<div class=\"minus\" style=\"top:{0}px\">{1}</div>", (CalcAxisY(iH3, dStd2, (dStd2 * 1 / 4)) - 8), CvtNumeric((dStd2 * 1 / 4).ToString(), 0));
+                        }
+                        else
+                        {
+                            dTemp = CalcAxisY(iH3, dStd2, dStd2);
+                            sbData.AppendFormat("<div class=\"minus\" style=\"top:{0}px\">{1}</div>", dTemp < 20 ? "20" : (dTemp - 4).ToString(), CvtNumeric(dStd2.ToString(), 0));
+                        }
+
+                        sbData.Append("</td><td class=\"fc-minus\">"); //전년
+                        if (iPrevSum <= 0)
+                        {
+                            dTemp = CalcAxisY(iH3, dStd2, iPrevSum);
+                            sbData.AppendFormat("<div class=\"lbl\">전년</div><div class=\"bar prev\" style=\"height:{0}px\"></div><div class=\"lbl-value\" style=\"top:{1}px\">{2}</div>", dTemp.ToString(), dTemp < 20 ? "20" : dTemp.ToString(), CvtNumeric(iPrevSum.ToString(), 0));
+                        }
+
+                        sbData.Append("</td><td class=\"fc-minus\">"); //금년
+                        if (iSum <= 0)
+                        {
+                            dTemp = CalcAxisY(iH3, dStd2, iSum);
+                            sbData.AppendFormat("<div class=\"lbl\">금년</div><div class=\"bar now\" style=\"height:{0}px\"></div><div class=\"lbl-value\" style=\"top:{1}px\">{2}</div>", dTemp.ToString(), dTemp < 20 ? "20" : dTemp.ToString(), CvtNumeric(iSum.ToString(), 0));
+                        }
+                        sbData.Append("</td>");
+
+                        int k = 0;
+                        foreach (int x in vYear)
+                        {
+                            k++;
+                            sbData.AppendFormat("<td class=\"fc-minus\"><div class=\"lbl\">{0}월</div>", k.ToString());
+                            if (x < 0)
+                            {
+                                dTemp = CalcAxisY(iH3, dStd2, x);
+                                sbData.AppendFormat("<div class=\"bar\" style=\"height:{0}px\"></div><div class=\"lbl-value\" style=\"top:{1}px\">{2}</div>", dTemp.ToString(), dTemp < 20 ? "20" : dTemp.ToString(), CvtNumeric(x.ToString(), 0));
+                            }
+                            sbData.Append("</td>");
+                        }
+
+                        //sbData.Append("<td class=\"\"></td>");
+                        sbData.Append("</tr>");
+                    }
+
+                    sbData.Append("</table>");
+
+                    //표 그리기
+                    sbData2.Append("<table class=\"ft\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" id=\"__fc_table\">");
+                    sbData2.Append("<colgroup><col width=\"100px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"78px\" /><col width=\"86px\" /></colgroup>");
+                    sbData2.Append("<tr><td class=\"f-lbl2\">단위</td><td class=\"f-lbl2\">전년</td><td class=\"f-lbl2\">금년</td><td class=\"f-lbl2\">1월</td><td class=\"f-lbl2\">2월</td><td class=\"f-lbl2\">3월</td><td class=\"f-lbl2\">4월</td><td class=\"f-lbl2\">5월</td><td class=\"f-lbl2\">6월</td><td class=\"f-lbl2\">7월</td><td class=\"f-lbl2\">8월</td><td class=\"f-lbl2\">9월</td><td class=\"f-lbl2\">10월</td><td class=\"f-lbl2\">11월</td><td class=\"f-lbl2\" style=\"border-right:0\">12월&nbsp;&nbsp;</td></tr>");
+                    sbData2.Append("<tr>");
+                    sbData2.Append("<td style=\"text-align: center; border-bottom:0\">USD</td>");
+                    sbData2.AppendFormat("<td style=\"text-align: center; border-bottom:0\">{0}</td>", CvtNumeric(iPrevSum.ToString(), 0));
+                    sbData2.AppendFormat("<td style=\"text-align: center; border-bottom:0\">{0}</td>", CvtNumeric(iSum.ToString(), 0));
+
+                    int j = 0;
+                    foreach (int x in vYear)
+                    {
+                        if (x != 0)
+                        {
+                            sbData2.AppendFormat("<td style=\"text-align: center; border-bottom:0;{1}\">{0}</td>", CvtNumeric(x.ToString(), 0), j < vYear.Length - 1 ? "" : "border-right:0");
+                        }
+                        else
+                        {
+                            sbData2.AppendFormat("<td style=\"text-align: center; border-bottom:0;{0}\">&nbsp;</td>", j < vYear.Length - 1 ? "" : "border-right:0");
+                        }
+                        j++;
+                    }
+
+                    sbData2.Append("</tr>");
+                    sbData2.Append("</table>");
+
+                    strReturn  = "OK" + sbData.ToString() + _secondDel + sbData2.ToString();
+                }
+                else
+                {
+                    strReturn = "OK";
+                }
+                #endregion
+            }
+            else
+            {
+                #region [차트]
+                #endregion
+            }
+
+        }
+        catch (Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "GetFormChart");
+            strReturn = (strReturn != "" ? "[" + strReturn + "] " : "") + ex.Message;
+        }
+        finally
+        {
+            if (dsChart != null) { dsChart.Dispose(); dsChart = null; }
+            sbData = null;
+            sbData2 = null;
+            //sbData3 = null;
+            //sbColumn = null;
+            //sbSubColumn = null;
+        }
+
+        return strReturn;
+    }
+
+    /// <summary>
+    /// 표준 숫자 서식 문자열
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    private string CvtNumeric(string s, int n)
+    {
+        try
+        {
+            return Convert.ToDecimal(s).ToString("n" + n);
+        }
+        catch
+        {
+            return Convert.ToDecimal("0").ToString("n" + n);
+        }
+    }
+
+    /// <summary>
+    /// Y축 값
+    /// </summary>
+    /// <param name="h"></param>
+    /// <param name="std"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    private double CalcAxisY(int h, double std, double y)
+    {
+        if (y < 0) y = Convert.ToDouble(y.ToString().Replace("-", ""));
+        return Math.Round(Convert.ToDouble(h * y) / std);
+    }
+
+    /// <summary>
+    /// Y축 최대값 설정
+    /// </summary>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    private double CalcAxisY(int max)
+    {
+        if (max == 0) return 0;
+        if (max < 0) max = Convert.ToInt32(max.ToString().Replace("-", ""));
+
+        //차트 높이-10 => 상단 표시 값 위치
+        double dStd = 0;
+        double dInteval = 0;
+        int n = 10;
+        bool bOut = false;
+
+        for (int i = 1; i <= 6; i++)
+        {
+            dInteval = (i > 1) ? Math.Pow(n, i - 1) : Math.Pow(n, i);
+
+            for (double j = Math.Pow(n, i); j <= Math.Pow(n, i + 1); j += dInteval)
+            {
+                if (max < j)
+                {
+                    dStd = j; bOut = true; break;
+                }
+            }
+            if (bOut) break;
+        }
+
+        return dStd;
+
+        //if (max < 100) 
+        //{
+        //    for(int i = 10; i <= 100; i+=10)
+        //    {
+        //        if (max < i) iStd = i;
+
+        //    }
+        //}
+        //else if (max < 1000)
+        //{
+        //    for (int i = 100; i <= 1000; i += 100)
+        //    {
+        //        if (max < i) iStd = i;
+
+        //    }
+        //}
+        //else if (max < 10000)
+        //{
+        //    for (int i = 1000; i <= 10000; i += 1000)
+        //    {
+        //        if (max < i) iStd = i;
+
+        //    }
+        //}
+        //else if (max < 100000)
+        //{
+        //    for (int i = 10000; i <= 100000; i += 10000)
+        //    {
+        //        if (max < i) iStd = i;
+
+        //    }
+        //}
+        //else if (max < 1000000)
+        //{
+        //    for (int i = 100000; i <= 1000000; i += 100000)
+        //    {
+        //        if (max < i) iStd = i;
+
+        //    }
+        //}
+        //else if (max < 10000000)
+        //{
+        //    for (int i = 1000000; i <= 10000000; i += 1000000)
+        //    {
+        //        if (max < i) iStd = i;
+
+        //    }
+        //}
+
+    }
+}
+@Html.Raw(GetFormChart(ViewBag.JPost))

@@ -91,6 +91,31 @@
 	  }
 	  return szReturn;
   }
+  function optionYear(cy, sy) {
+    var szReturn = '';
+	for (var i = cy; i >= sy; i--) {
+	    if (i == cy) szReturn += '<option value="' + i.toString() + '" selected="selected">' + i.toString() + '</option>';
+        else szReturn += '<option value="' + i.toString() + '">' + i.toString() + '</option>';
+	}
+	return szReturn;
+  }
+  function optionYear2(s, e, cy) {log(s + "==" + e + "==" + cy);
+    var szReturn = '';
+	for (var i = e; i >= s; i--) {
+	    if (i == cy) szReturn += '<option value="' + i.toString() + '" selected="selected">' + i.toString() + '</option>';
+        else szReturn += '<option value="' + i.toString() + '">' + i.toString() + '</option>';
+	}
+	//log("~~~~" + szReturn)
+	return szReturn;
+  }
+  function optionMonth(vlu) {
+    var szReturn = '';
+	for (var i = 1; i <= 12; i++) {
+	    if (i == vlu) szReturn += '<option value="' + i.toString() + '" selected="selected">' + i.toString() + '</option>';
+        else szReturn += '<option value="' + i.toString() + '">' + i.toString() + '</option>';
+	}
+	return szReturn;
+  }
   function addComma(s) {
     var r=''
     if (s.length > 3) {
@@ -553,8 +578,9 @@
 	  var iNodes = nodes.length;
 	  var iDiff = cellCnt-iNodes;
     var k = 0;
+	var szBorder = (arguments[5] && arguments[5] == "N") ? ";border-right:0pt" : ""; //2022-09-15 추가
 	
-    var szHTML = "<table id=\"" + id + "\" class=\"si-tbl\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-left:0\">";
+    var szHTML = "<table id=\"" + id + "\" class=\"si-tbl\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-left:0" + szBorder + "\">";
 	  var szTop = "", szMid = "", szBot = "";
 	  var szTopRow = "", szMidRow = "", szBotRow = "";
 	  var szStyle1 = "", szStyle2 = "", szStyle3 = "";

@@ -246,10 +246,10 @@
                     data: JSON.stringify(postJson),
                     success: function (res) {
                         if (res.substr(0, 2) == 'OK') {
-                            bootbox.alert(res.substr(2), function () {
+                            //bootbox.alert(res.substr(2), function () {
                                 if (p) p.find("button[data-dismiss='modal']").click();
                                 _zw.fn.getToDoCount('', 'W', ''); _zw.fn.loadList();
-                            });
+                            //});
 
                         } else bootbox.alert(res);
                     }
@@ -269,7 +269,7 @@
                     data: '{mi:"' + mi + '",dt:"' + dt + '",opt:"' + opt + '"}',
                     success: function (res) {
                         if (res.substr(0, 2) == 'OK') {
-                            bootbox.alert(res.substr(2), function () {
+                            //bootbox.alert(res.substr(2), function () {
                                 if (p) {
                                     if (p.length && p.length > 0) {
                                         for (var i = 0; i < p.length; i++) {
@@ -280,7 +280,7 @@
                                     }
                                 }
                                 _zw.fn.getToDoCount('', 'W', ''); _zw.fn.loadList();
-                            });
+                            //});
 
                         } else bootbox.alert(res);
                     }

@@ -62,12 +62,12 @@ $(function () {
         jSend["M"] = _zw.V.mode == 'new' ? 'newregisterformnotea' : 'editregisterformnotea';
 
         _zw.body.common(jSend);
-        if (_zw.V.mode == 'edit') _zw.body.main(jSend["form"], ["CREATE_DATE", "MODIFY_DATE"]);
+        if (_zw.V.mode == 'edit') _zw.body.mainCompare(jSend["form"], true, ["CREATE_DATE", "MODIFY_DATE"]);
         else _zw.body.main(jSend["form"]);
 
         _zw.body.sub(jSend["form"]);
         _zw.body.file(jSend);
-        console.log(jSend)
+        //console.log(jSend); return
 
         var szMsg = _zw.V.mode == 'new' ? '등록' : '수정';
         bootbox.confirm('금형대장 ' + szMsg + ' 하시겠습니까?', function (rt) {
@@ -450,6 +450,38 @@ $(function () {
                     }
                 }
             });
+            f["maintable"] = p;
+        },
+        "mainCompare": function (f, comp, v) {
+            var p = {};
+            $('#__FormView #__mainfield').each(function () { //console.log($(this))
+                var tag = $(this).prop('tagName').toLowerCase(), nm = $(this).attr('name');
+                var b = nm == '' ? false : true;
+                if (b) {//v : 제외 필드
+                    var fld = v && v.length > 0 && v.find(function (element) { if (element == nm) return true; });
+                    b = fld === undefined ? true : false;
+                }
+                if (b) {
+                    var org = _zw.V.form.maintable[nm];
+                    if (tag == "div" || tag == "span") {
+                        if (!comp || ((org == null && $(this).html() != '') || (org && org != $(this).html()))) p[nm] = $(this).html();
+                    } else if (tag == "input") {
+                        if (!comp || ((org == null && $(this).val() != '') || (org && org != $(this).val()))) {
+                            if ($(this).is(":checkbox") || $(this).is(":radio")) {
+                                p[nm] = $(this).prop('checked') ? $(this).val() : '';
+                            } else if ($(this).hasClass('txtDate')) {
+                                if (org == null || $(this).val() != org.substr(0, 10)) p[nm] = $(this).val();
+                            } else {
+                                p[nm] = $(this).val();
+                            }
+                        }
+                    } else {
+                        if (!comp || ((org == null && $(this).val() != '') || (org && org != $(this).val()))) p[nm] = $(this).val();
+                    }
+                }
+            });
+
+            //if (_zw.V.def["webeditor"] != '' && $('#' + _zw.T.editor.holder).length > 0) p["WEBEDITOR"] = DEXT5.getBodyValue();
             f["maintable"] = p;
         },
         "sub": function (f) {

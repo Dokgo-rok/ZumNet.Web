@@ -1719,8 +1719,10 @@ $(function () {
                 });
             } else if (v[0] == "date" || v[0] == "time") {
                 var mv = [];
-                if (v[0] == "date") mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
-                else if (v[0] == "time") {
+                if (v[0] == "date") {
+                    if (v[1] == 'yyyy') mv = [/[1-2]/, /\d/, /\d/, /\d/];
+                    else mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
+                } else if (v[0] == "time") {
                     mv = v[1] == 'HH:MM' ? [/\d/, /\d/, ':', /\d/, /\d/] : [/\d/, /\d/, ':', /\d/, /\d/, ':', /\d/, /\d/];
                 }
                 vanillaTextMask.maskInput({

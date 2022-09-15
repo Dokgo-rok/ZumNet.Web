@@ -1863,6 +1863,20 @@ $(function () {
                 }
 
             } else if (_zw.V.ft == 'PRODRELEASEREQ') { //자사제품출고요청서 : 2020-12-17
+                if (_zw.V.mode == 'new') {
+                    var rt = '';
+                    $('#__subtable1 tr.sub_table_row').each(function () {
+                        if ($(this).find('td [name="CUSTOMER"]').val() != '' && $(this).find('td [name="ITEMNO"]').val() != '') {//고객, 품번 있는 경우에
+                            c2 = $(this).find('td [name="FONHAND"]'); c3 = $(this).find('td [name="RELCNT"]');
+                            if (c2.val() == '' || c2.val() == '0') {
+                                bootbox.alert('재고수량(F. On-hand)이 "0"인 경우 결재진행이 되지 않습니다!'); rt = 'F'; return false;
+                            } else if (c3.val() == '' || c3.val() == '0') {
+                                bootbox.alert('수량을 "0" 이상 입력하십시오!'); try { c3.focus(); } catch (e) { }; rt = 'F'; return false;
+                            }
+                        }
+                    });
+                    if (rt == 'F') return rt;
+                }
 
             } else if (_zw.V.ft == 'CTCMINUTES') { //품평회회의록 : 21-11-24
                 if (_zw.V.biz == "normal" && _zw.V.act == '_approver') {
@@ -1874,7 +1888,6 @@ $(function () {
                     }
                 }
             }
-
             return 'Y';
         },
         "toFormBody": function (signLine) {
@@ -1994,7 +2007,7 @@ $(function () {
             }
         },
         "orderRow": function (p) {
-            p.find('tr.sub_table_row input:checkbox[name="ROWSEQ"]').each(function (idx, el) {
+            p.find('tr.sub_table_row input[name="ROWSEQ"]').each(function (idx, el) { //checkbox 제거
                 $(this).val(idx + 1);
             });
         },
@@ -2223,7 +2236,7 @@ $(function () {
                 if (b && v && v.length > 0) {
                     var fld = v.find(function (element) { if (element == nm) return true; });
                     if (fld === undefined) b = false;
-                    console.log(fld + " : " + b)
+                    //console.log(fld + " : " + b)
                 }
                 if (b) {
                     //console.log($(this).attr('name') + " : " + $(this).val())
@@ -2242,6 +2255,38 @@ $(function () {
             });
 
             if (_zw.V.def["webeditor"] != '' && $('#' + _zw.T.editor.holder).length > 0) p["WEBEDITOR"] = DEXT5.getBodyValue();
+            f["maintable"] = p;
+        },
+        "mainCompare": function (f, comp, v) {
+            var p = {};
+            $('#__FormView #__mainfield').each(function () { //console.log($(this))
+                var tag = $(this).prop('tagName').toLowerCase(), nm = $(this).attr('name');
+                var b = nm == '' ? false : true;
+                if (b) {//v : 제외 필드
+                    var fld = v && v.length > 0 && v.find(function (element) { if (element == nm) return true; });
+                    b = fld === undefined ? true : false;
+                }
+                if (b) {
+                    var org = _zw.V.form.maintable[nm];
+                    if (tag == "div" || tag == "span") {
+                        if (!comp || ((org == null && $(this).html() != '') || (org && org != $(this).html()))) p[nm] = $(this).html();
+                    } else if (tag == "input") {
+                        if (!comp || ((org == null && $(this).val() != '') || (org && org != $(this).val()))) {
+                            if ($(this).is(":checkbox") || $(this).is(":radio")) {
+                                p[nm] = $(this).prop('checked') ? $(this).val() : '';
+                            } else if ($(this).hasClass('txtDate')) {
+                                if (org == null || $(this).val() != org.substr(0, 10)) p[nm] = $(this).val();
+                            } else {
+                                p[nm] = $(this).val();
+                            }
+                        }
+                    } else {
+                        if (!comp || ((org == null && $(this).val() != '') || (org && org != $(this).val()))) p[nm] = $(this).val();
+                    }
+                }
+            });
+
+            //if (_zw.V.def["webeditor"] != '' && $('#' + _zw.T.editor.holder).length > 0) p["WEBEDITOR"] = DEXT5.getBodyValue();
             f["maintable"] = p;
         },
         "sub": function (f) { //console.log($('#__subtable1 tr.sub_table_row').html())
