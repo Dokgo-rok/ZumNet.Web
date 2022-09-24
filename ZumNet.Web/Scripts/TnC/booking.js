@@ -144,6 +144,7 @@
         _zw.V.ot = pt;
         _zw.V.fdid = partid;
         _zw.V.lv.cd1 = hm;
+        _zw.V.appid = 0; //22-09-22 추가!!!
 
         $.ajax({
             type: "POST",
@@ -403,7 +404,7 @@
         postJson["attachcount"] = _zw.fu.fileList.length > 1 ? '2' : _zw.fu.fileList.length;
         postJson["taskact"] = "";
 
-        //console.log(postJson);
+        //console.log(postJson); return
 
         bootbox.confirm("저장 하시겠습니까?", function (rt) {
             if (rt) {
@@ -417,7 +418,8 @@
                                 if (p) p.find("button[data-dismiss='modal']").click();
                                 _zw.fn.loadList(); //location.reload();
                             });
-
+                        } else if (res.substr(0, 2) == 'NO') {
+                            bootbox.alert(res.substr(2)); //중복
                         } else bootbox.alert(res);
                     }
                 });

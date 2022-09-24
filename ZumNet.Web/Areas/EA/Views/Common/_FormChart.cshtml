@@ -51,7 +51,69 @@
 
             if (postData["fi"].ToString() == "30E3A885A0F447D3884EA71F378C2F6B")
             {
-                #region []
+                #region [불용제품처리기안, FORM_MONTHFAULTYGOODS, V5]
+                int iYear = 0;
+                int[] vYear = new int[12];
+                int[] vPrevYear = new int[12];
+                int iPrevSum = 0;
+                int iSum = 0;
+                int iMax = 0;
+                int iDiv = 1000;
+
+                iYear = Convert.ToInt32(postData["fk"].ToString().Split('-')[1].Substring(0, 4));
+                iCurrent = Convert.ToInt32(postData["fk"].ToString().Split('-')[1].Substring(4));
+
+                if (dsChart != null && dsChart.Tables.Count > 0)
+                {
+                    foreach (DataRow dr in dsChart.Tables[0].Rows)
+                    {
+                        if (Convert.ToInt32(dr["STATSYEAR"]) == iYear - 1)
+                        {
+                            vPrevYear[Convert.ToInt32(dr["STATSMONTH"]) - 1] += Convert.ToInt32(Math.Round(Convert.ToDouble(dr["TGTVALUE"]) / iDiv));
+                        }
+                        else if (Convert.ToInt32(dr["STATSYEAR"]) == iYear)
+                        {
+                            vYear[Convert.ToInt32(dr["STATSMONTH"]) - 1] += Convert.ToInt32(Math.Round(Convert.ToDouble(dr["TGTVALUE"]) / iDiv));
+                        }
+                    }
+                    if (postData["v1"].ToString() != "" && postData["v1"].ToString() != "0")
+                    {
+                        vYear[iCurrent - 1] += Convert.ToInt32(Math.Round(Convert.ToDouble(postData["v1"]) / iDiv));
+                    }
+
+                    foreach (int x in vPrevYear) iPrevSum += x;
+                    foreach (int x in vYear) iSum += x;
+
+                    iMax = iPrevSum > iSum ? iPrevSum : iSum;
+                    foreach (int x in vYear)
+                    {
+                        if (x > iMax) iMax = x;
+                    }
+
+                    iMax = Convert.ToInt32(Math.Round(iMax * 1.1)); //10% 정도 높임
+
+                    double dStd = CalcAxisY(iMax);
+
+                    //단위, 전년, 금년, 1월 ~ 12월
+                    sbData.AppendFormat("{0}/{1}", CvtNumeric(dStd.ToString(), 0), CalcAxisY(Convert.ToInt32(postData["h"]), dStd, dStd).ToString());
+                    sbData.AppendFormat(";{0}/{1}", CvtNumeric((dStd * 3 / 4).ToString(), 0), CalcAxisY(Convert.ToInt32(postData["h"]), dStd, (dStd * 3 / 4)).ToString());
+                    sbData.AppendFormat(";{0}/{1}", CvtNumeric((dStd * 2 / 4).ToString(), 0), CalcAxisY(Convert.ToInt32(postData["h"]), dStd, (dStd * 2 / 4)).ToString());
+                    sbData.AppendFormat(";{0}/{1}", CvtNumeric((dStd * 1 / 4).ToString(), 0), CalcAxisY(Convert.ToInt32(postData["h"]), dStd, (dStd * 1 / 4)).ToString());
+
+                    sbData.AppendFormat("^{0};{1}", CvtNumeric(iPrevSum.ToString(), 0), CalcAxisY(Convert.ToInt32(postData["h"]), dStd, iPrevSum).ToString());
+                    sbData.AppendFormat("^{0};{1}", CvtNumeric(iSum.ToString(), 0), CalcAxisY(Convert.ToInt32(postData["h"]), dStd, iSum).ToString());
+                    for (int x = 0; x < vYear.Length; x++)
+                    {
+                        sbData.AppendFormat("^{0};{1}", CvtNumeric(vYear[x].ToString(), 0), CalcAxisY(Convert.ToInt32(postData["h"]), dStd, vYear[x]).ToString());
+
+                    }
+                    //ResponseText("OK--" + iPrevSum.ToString() + " : " + dStd.ToString() + " : " + CalcAxisY(Convert.ToInt32(postData["h"]), dStd, iPrevSum).ToString());
+                    strReturn = "OK" + sbData.ToString();
+                }
+                else
+                {
+                    strReturn = "OK";
+                }
                 #endregion
             }
             else if (postData["ft"].ToString() == "FORM_MONTHFAULTYGOODS" || postData["ft"].ToString() == "FORM_MONTHFAULTYGOODSCTISM")

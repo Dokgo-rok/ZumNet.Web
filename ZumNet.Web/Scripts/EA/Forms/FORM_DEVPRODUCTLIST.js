@@ -196,7 +196,7 @@
 									if (x == "ckbDESIGNLINKCHECK") { el1 = cell.next(); el2 = el1.next(); }
 									else { el1 = cell.next().next(); el2 = el1.next(); }
 
-									var sLink = "<a class=\"z-lnk-navy\" href=\"javascript\" onclick=\"_zw.fn.openXForm('read','" + v[0] + "','');\">";
+									var sLink = "<a class=\"z-lnk-navy\" href=\"javascript://\" onclick=\"_zw.fn.openXForm('read','" + v[0] + "','');\">";
 									var pos = el1.html().indexOf(">/");
 									if (pos > 0) el1.html(el1.html().substr(0, pos + 2) + sLink + 'O</a>');
 									else el1.html("&nbsp;/" + sLink + "O</a>");

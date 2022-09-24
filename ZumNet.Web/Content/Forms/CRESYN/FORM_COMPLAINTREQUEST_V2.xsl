@@ -27,7 +27,7 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:780px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
+          .m {width:791px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
           /* 결재칸 넓이 */
@@ -35,7 +35,7 @@
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:12%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:75px} .m .ft .f-option1 {width:50px} .m .ft .f-option2 {width:70px} .m .ft .f-option3 {width:60px}
+          .m .ft .f-option {width:80px} .m .ft .f-option1 {width:55px} .m .ft .f-option2 {width:70px} .m .ft .f-option3 {width:70px}
           .m .ft-sub .f-option {width:}
 
           /* 인쇄 설정 : 맨하단으로 */
@@ -80,23 +80,23 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:236px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '3', '요청부서')"/>
                 </td>
                 <td style="font-size:8px">&nbsp;</td>
-                <td style="width:92px">
+                <td style="width:95px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='application' and @partid!='' and @step!='0'], '__si_Application', '1', '접수부서')"/>
                 </td>
                 <td style="font-size:8px">&nbsp;</td>
-                <td style="width:164px">
+                <td style="width:170px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='gwichaek' and @actrole!='__r' and @partid!='' and @step!='0'], '__si_Form', '2', '귀책부서')"/>
                 </td>
                 <td style="font-size:8px">&nbsp;</td>
-                <td style="width:164px">
+                <td style="width:170px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '2', '검토부서')"/>
                 </td>
                 <td style="font-size:8px">&nbsp;</td>
-                <td style="width:92px">
+                <td style="width:95px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='last' and @partid!='' and @step!='0'], '__si_Last', '1', '최종승인')"/>
                 </td>
               </tr>
@@ -158,12 +158,15 @@
                 <td style="width:38%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="CUSTOMER" class="txtText"  style="width:92%"  value="{//forminfo/maintable/CUSTOMER}" />
-                      <button onclick="parent.fnExternal('erp.customers',240,40,100,70,'','CUSTOMER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="CUSTOMER" class="txtText"  style="width:92%; margin-right: 2px"  value="{//forminfo/maintable/CUSTOMER}" />
+                      <!--<button onclick="parent.fnExternal('erp.customers',240,40,100,70,'','CUSTOMER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_28.gif</xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="고객명" onclick="_zw.formEx.externalWnd('erp.customers',240,40,100,70,'','CUSTOMER');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CUSTOMER))" />
@@ -174,7 +177,7 @@
                 <td style="width:38%;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="COMPLAINDATE" class="txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/COMPLAINDATE}" />
+                      <input type="text" id="__mainfield" name="COMPLAINDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/COMPLAINDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COMPLAINDATE))" />
@@ -198,10 +201,13 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="MODELNAME" style="width:93%" c3ass="txtText"  value="{//forminfo/maintable/MODELNAME}" />
-                      <button onclick="parent.fnExternal('erp.items',240,40,80,70,'','MODELNAME','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <input type="text" id="__mainfield" name="MODELNAME" style="width:92%; margin-right: 2px" c3ass="txtText"  value="{//forminfo/maintable/MODELNAME}" />
+                      <!--<button onclick="parent.fnExternal('erp.items',240,40,80,70,'','MODELNAME','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="모델명" onclick="_zw.formEx.externalWnd('erp.items',240,40,20,70,'','MODELNAME','ITEMNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/MODELNAME))" />
@@ -246,9 +252,12 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <input type="text" id="__mainfield" name="OUTFACTORY" style="width:120px" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/OUTFACTORY}">
-                        <button onclick="parent.fnOption('external.chartcentercode',200,140,100,120,'','OUTFACTORY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                        <!--<button onclick="parent.fnOption('external.chartcentercode',200,140,100,120,'','OUTFACTORY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                           <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}/EA/Images/ico_28.gif" />
-                        </button>
+                        </button>-->
+						  <button type="button" class="btn btn-outline-secondary btn-18" title="출하공장" onclick="_zw.formEx.optionWnd('external.chartcentercode',220,304,-150,0,'','OUTFACTORY');">
+							  <i class="fas fa-angle-down"></i>
+						  </button>
                       </input>
                     </xsl:when>
                     <xsl:otherwise>
@@ -263,7 +272,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb11" name="ckbBADPRIORITY" value="A">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADPRIORITY', this, 'BADPRIORITY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADPRIORITY', this, 'BADPRIORITY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADPRIORITY),'A')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -277,7 +286,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb12" name="ckbBADPRIORITY" value="B">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADPRIORITY', this, 'BADPRIORITY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADPRIORITY', this, 'BADPRIORITY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADPRIORITY),'B')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -291,7 +300,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb13" name="ckbBADPRIORITY" value="C">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADPRIORITY', this, 'BADPRIORITY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADPRIORITY', this, 'BADPRIORITY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADPRIORITY),'C')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -305,7 +314,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb14" name="ckbBADPRIORITY" value="기타">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADPRIORITY', this, 'BADPRIORITY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADPRIORITY', this, 'BADPRIORITY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADPRIORITY),'기타')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -323,7 +332,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb21" name="ckbBADKIND" value="초회">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADKIND', this, 'BADKIND')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADKIND', this, 'BADKIND')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADKIND),'초회')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -337,7 +346,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb22" name="ckbBADKIND" value="재발">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADKIND', this, 'BADKIND')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADKIND', this, 'BADKIND')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADKIND),'재발')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -351,7 +360,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb23" name="ckbBADKIND" value="연속">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADKIND', this, 'BADKIND')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADKIND', this, 'BADKIND')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADKIND),'연속')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -365,7 +374,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb24" name="ckbBADKIND" value="기타">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADKIND', this, 'BADKIND')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADKIND', this, 'BADKIND')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADKIND),'기타')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -384,7 +393,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="LOTCOUNT" class="txtNumberic" maxlength="10" value="{//forminfo/maintable/LOTCOUNT}" />
+                      <input type="text" id="__mainfield" name="LOTCOUNT" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/LOTCOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/LOTCOUNT))" />
@@ -395,7 +404,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="CHECKCOUNT" class="txtVolume" maxlength="10" value="{//forminfo/maintable/CHECKCOUNT}" />
+                      <input type="text" id="__mainfield" name="CHECKCOUNT" class="txtVolume" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/CHECKCOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CHECKCOUNT))" />
@@ -406,7 +415,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="BADCOUNT" class="txtVolume" maxlength="10" value="{//forminfo/maintable/BADCOUNT}" />
+                      <input type="text" id="__mainfield" name="BADCOUNT" class="txtVolume" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/BADCOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/BADCOUNT))" />
@@ -430,7 +439,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="OUTDATE" class="txtNumberic" maxlength="10" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/OUTDATE}" />
+                      <input type="text" id="__mainfield" name="OUTDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/OUTDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/OUTDATE))" />
@@ -452,7 +461,7 @@
                 <td >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="RECALLCOUNT" class="txtNumberic" maxlength="10" value="{//forminfo/maintable/RECALLCOUNT}" />
+                      <input type="text" id="__mainfield" name="RECALLCOUNT" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/RECALLCOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RECALLCOUNT))" />
@@ -463,7 +472,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="REPLYDATE" class="txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/REPLYDATE}" />
+                      <input type="text" id="__mainfield" name="REPLYDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/REPLYDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/REPLYDATE))" />
@@ -477,7 +486,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb31" name="ckbOCCURRENCE" value="수입검사">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbOCCURRENCE', this, 'OCCURRENCE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbOCCURRENCE', this, 'OCCURRENCE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/OCCURRENCE),'수입검사')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -491,7 +500,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb32" name="ckbOCCURRENCE" value="공정">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbOCCURRENCE', this, 'OCCURRENCE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbOCCURRENCE', this, 'OCCURRENCE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/OCCURRENCE),'공정')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -505,7 +514,7 @@
                   <span class="f-option">
                     <input type="checkbox" id="ckb33" name="ckbOCCURRENCE" value="출하검사">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbOCCURRENCE', this, 'OCCURRENCE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbOCCURRENCE', this, 'OCCURRENCE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/OCCURRENCE),'출하검사')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -519,7 +528,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb34" name="ckbOCCURRENCE" value="시장">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbOCCURRENCE', this, 'OCCURRENCE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbOCCURRENCE', this, 'OCCURRENCE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/OCCURRENCE),'시장')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -537,7 +546,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb41" name="ckbHISTORY" value="반품">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/HISTORY),'반품')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -551,7 +560,7 @@
                   <span class="f-option3">
                     <input type="checkbox" id="ckb42" name="ckbHISTORY" value="대용품">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/HISTORY),'대용품')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -565,7 +574,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb43" name="ckbHISTORY" value="선별">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/HISTORY),'선별')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -579,7 +588,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb44" name="ckbHISTORY" value="수리">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/HISTORY),'수리')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -593,7 +602,7 @@
                   <span class="f-option1">
                     <input type="checkbox" id="ckb45" name="ckbHISTORY" value="기타">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbHISTORY', this, 'HISTORY')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/HISTORY),'기타')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -631,9 +640,12 @@
                   <xsl:choose>
                     <xsl:when test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
                       <input type="text" id="__mainfield" name="FAULTFACTORY" style="width:120px" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/FAULTFACTORY}">
-                        <button onclick="parent.fnOption('external.centercodethree',200,140,100,120,'','FAULTFACTORY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                        <!--<button onclick="parent.fnOption('external.centercodethree',200,140,100,120,'','FAULTFACTORY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                           <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}/EA/Images/ico_28.gif" />
-                        </button>
+                        </button>-->
+						  <button type="button" class="btn btn-outline-secondary btn-18" title="귀책공장" onclick="_zw.formEx.optionWnd('external.centercodethree',140,334,-120,0,'','FAULTFACTORY');">
+							  <i class="fas fa-angle-down"></i>
+						  </button>
                       </input>
                     </xsl:when>
                     <xsl:otherwise>
@@ -648,7 +660,7 @@
                   <span class="f-option1" style="width:49%">
                     <input type="checkbox" id="ckb51" name="ckbBADSAMPLE" value="유">
                       <xsl:if test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADSAMPLE', this, 'BADSAMPLE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADSAMPLE', this, 'BADSAMPLE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADSAMPLE),'유')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -662,7 +674,7 @@
                   <span class="f-option1" style="width:49%">
                     <input type="checkbox" id="ckb52" name="ckbBADSAMPLE" value="무">
                       <xsl:if test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbBADSAMPLE', this, 'BADSAMPLE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbBADSAMPLE', this, 'BADSAMPLE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/BADSAMPLE),'무')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -679,7 +691,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                      <input type="text" id="__mainfield" name="RECEIVEDATE" class="txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/RECEIVEDATE}" />
+                      <input type="text" id="__mainfield" name="RECEIVEDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/RECEIVEDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RECEIVEDATE))" />
@@ -691,7 +703,7 @@
                   <span class="f-option1" style="width:49%">
                     <input type="checkbox" id="ckb61" name="ckbLOSSYN" value="유">
                       <xsl:if test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbLOSSYN', this, 'LOSSYN')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbLOSSYN', this, 'LOSSYN')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/LOSSYN),'유')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -705,7 +717,7 @@
                   <span class="f-option1" style="width:49%">
                     <input type="checkbox" id="ckb62" name="ckbLOSSYN" value="무">
                       <xsl:if test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbLOSSYN', this, 'LOSSYN')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbLOSSYN', this, 'LOSSYN')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/LOSSYN),'무')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -735,7 +747,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                      <input type="text" id="__mainfield" name="CHECKDATE" class="txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/CHECKDATE}" />
+                      <input type="text" id="__mainfield" name="CHECKDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/CHECKDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CHECKDATE))" />
@@ -746,7 +758,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                      <input type="text" id="__mainfield" name="CHECKCOUNT2" class="txtNumberic" maxlength="10" value="{//forminfo/maintable/CHECKCOUNT2}" />
+                      <input type="text" id="__mainfield" name="CHECKCOUNT2" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/CHECKCOUNT2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CHECKCOUNT2))" />
@@ -770,7 +782,7 @@
                 <td colspan="3" style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                      <input type="text" id="__mainfield" name="RESPONSEDATE" class="txtDate" style="width:96px" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid);" value="{//forminfo/maintable/RESPONSEDATE}" />
+                      <input type="text" id="__mainfield" name="RESPONSEDATE" style="width:120px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/RESPONSEDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RESPONSEDATE))" />
@@ -812,7 +824,7 @@
                 <td style="width:38%;padding:1px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="BADNOTE" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000)" style="height:60px">
+                      <textarea id="__mainfield" name="BADNOTE" class="txaText bootstrap-maxlength" maxlength="1000" style="height:60px">
                         <xsl:value-of select="//forminfo/maintable/BADNOTE" />
                       </textarea>
                     </xsl:when>
@@ -828,7 +840,7 @@
                 <td style="width:38%;padding:1px;border-right:0">
                   <xsl:choose>
                     <xsl:when test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                      <textarea id="__mainfield" name="REASON" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000)" style="height:60px">
+                      <textarea id="__mainfield" name="REASON" class="txaText bootstrap-maxlength" maxlength="1000" style="height:60px">
                         <xsl:value-of select="//forminfo/maintable/REASON" />
                       </textarea>
                     </xsl:when>
@@ -843,7 +855,7 @@
               </tr>
               <tr>
                 <td colspan="2" style="vertical-align:top">
-                  <xsl:if test="//bizinfo/@docstatus != '700'">
+                  <!--<xsl:if test="//bizinfo/@docstatus != '700'">
                     <form id="upForm11" name="upForm11" action="" method="post" enctype="multipart/form-data" style="margin:0;padding:0">
                       <xsl:if test="//forminfo/maintable/PHOTOLEFTA[.!=''] or $mode='read'">
                         <xsl:attribute name="style">display:none</xsl:attribute>
@@ -893,10 +905,84 @@
                       </xsl:otherwise>
                     </xsl:choose>
                   </div>
-                  <input type="hidden" id="__mainfield" name="PHOTOLEFTA" value="{//forminfo/maintable/PHOTOLEFTA}" />
+                  <input type="hidden" id="__mainfield" name="PHOTOLEFTA" value="{//forminfo/maintable/PHOTOLEFTA}" />-->
+					<div class="zf-upload w-100" id="__zfUpload11">
+						<div class="zf-upload-select d-flex align-items-center">
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTOLEFTA[.!=''] or $mode='read'">
+									<xsl:attribute name="class">zf-upload-select d-none align-items-center</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-select d-flex align-items-center</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+							<form id="uploadForm11" name="uploadForm11" action="/Common/Upload" method="post" enctype="multipart/form-data" target="ifrView">
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="file11" name="file11" />
+									<input name="completed" type="hidden" value="parent._zw.fu.completeEx" />
+									<label class="custom-file-label ml-0 text-left" for="customFile">이미지 첨부</label>
+								</div>
+							</form>
+							<div class="ml-2 d-none">
+								<button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다">
+									<i class="fas fa-question fs-11"></i>
+								</button>
+								<div class="d-none" data-help="file">
+									<div>
+										<div class="row">
+											<div class="col-3 font-weight-bold">* 이미지</div>
+											<div class="col-9" data-for="ext">JPEG, JPG, GIF, PNG, BMP</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="zf-upload-bar mt-1 d-none">
+							<button class="btn btn-sm btn-primary px-5" type="button" disabled="">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+								<span class="ml-2">uploading...</span>
+							</button>
+						</div>
+						<div>
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTOLEFTA[.!='']">
+									<xsl:attribute name="class">zf-upload-list p-1</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-list p-1 d-none</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+
+							<textarea id="__FILEINFO" style="display:none">[]</textarea>
+							<xsl:if test="//forminfo/maintable/PHOTOLEFTA[.!='']">
+								<xsl:variable name="fnm" select="substring-before(//forminfo/maintable/PHOTOLEFTA,';')" />
+								<xsl:variable name="snm" select="substring-after(//forminfo/maintable/PHOTOLEFTA,';')" />
+								<xsl:variable name="fid" select="phxsl:getAttachId(//fileinfo/file, $snm)" />
+
+								<div class="zf-upload-view">
+									<div class="d-flex align-items-center mb-1">
+										<div class="mr-1">
+											<xsl:apply-templates select="//fileinfo/file[filename=$fnm and savedname=$snm]"/>
+										</div>
+										<xsl:if test="$mode='new' or $mode='edit'">
+											<div class="text-muted">
+												<button class="btn btn-default btn-sm btn-18" onclick="_zw.fu.delete('{$fid}', '{$fnm}');">
+													<i class="fe-x"></i>
+												</button>
+											</div>
+										</xsl:if>
+									</div>
+									<div>
+										<img src="http://{//config/@web}/{//fileinfo/file[filename=$fnm and savedname=$snm]/virtualpath}/{//fileinfo/file[filename=$fnm and savedname=$snm]/savedname}" alt="{//fileinfo/file[filename=$fnm and savedname=$snm]/filename}" style="max-width: 100%" />
+									</div>
+								</div>
+							</xsl:if>
+						</div>
+						<input type="hidden" id="__mainfield" name="PHOTOLEFTA" value="{//forminfo/maintable/PHOTOLEFTA}" />
+					</div>
                 </td>
                 <td colspan="2" style="border-right:0;vertical-align:top">
-                  <xsl:if test="//bizinfo/@docstatus != '700'">
+                  <!--<xsl:if test="//bizinfo/@docstatus != '700'">
                     <form id="upForm12" name="upForm12" action="" method="post" enctype="multipart/form-data" style="margin:0;padding:0">
                       <xsl:if test="//forminfo/maintable/PHOTORIGHTA[.!=''] or ($mode='new' or $mode='edit') or (not (($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')) and $mode='read')">
                         <xsl:attribute name="style">display:none</xsl:attribute>
@@ -946,7 +1032,81 @@
                       </xsl:otherwise>
                     </xsl:choose>
                   </div>
-                  <input type="hidden" id="__mainfield" name="PHOTORIGHTA" value="{//forminfo/maintable/PHOTORIGHTA}" />
+                  <input type="hidden" id="__mainfield" name="PHOTORIGHTA" value="{//forminfo/maintable/PHOTORIGHTA}" />-->
+				<div class="zf-upload w-100" id="__zfUpload12">
+						<div class="zf-upload-select d-flex align-items-center">
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTORIGHTA[.!=''] or ($mode='new' or $mode='edit') or (not (($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')) and $mode='read')">
+									<xsl:attribute name="class">zf-upload-select d-none align-items-center</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-select d-flex align-items-center</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+							<form id="uploadForm12" name="uploadForm12" action="/Common/Upload" method="post" enctype="multipart/form-data" target="ifrView">
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="file1" name="file1" />
+									<input name="completed" type="hidden" value="parent._zw.fu.completeEx" />
+									<label class="custom-file-label ml-0 text-left" for="customFile">이미지 첨부</label>
+								</div>
+							</form>
+							<div class="ml-2 d-none">
+								<button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다">
+									<i class="fas fa-question fs-11"></i>
+								</button>
+								<div class="d-none" data-help="file">
+									<div>
+										<div class="row">
+											<div class="col-3 font-weight-bold">* 이미지</div>
+											<div class="col-9" data-for="ext">JPEG, JPG, GIF, PNG, BMP</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="zf-upload-bar mt-1 d-none">
+							<button class="btn btn-sm btn-primary px-5" type="button" disabled="">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+								<span class="ml-2">uploading...</span>
+							</button>
+						</div>
+						<div>
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTORIGHTA[.!='']">
+									<xsl:attribute name="class">zf-upload-list p-1</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-list p-1 d-none</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+
+							<textarea id="__FILEINFO" style="display:none">[]</textarea>
+							<xsl:if test="//forminfo/maintable/PHOTORIGHTA[.!='']">
+								<xsl:variable name="fnm" select="substring-before(//forminfo/maintable/PHOTORIGHTA,';')" />
+								<xsl:variable name="snm" select="substring-after(//forminfo/maintable/PHOTORIGHTA,';')" />
+								<xsl:variable name="fid" select="phxsl:getAttachId(//fileinfo/file, $snm)" />
+
+								<div class="zf-upload-view">
+									<div class="d-flex align-items-center mb-1">
+										<div class="mr-1">
+											<xsl:apply-templates select="//fileinfo/file[filename=$fnm and savedname=$snm]"/>
+										</div>
+										<xsl:if test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and $actrole='__r' and $partid!='')">
+											<div class="text-muted">
+												<button class="btn btn-default btn-sm btn-18" onclick="_zw.fu.delete('{$fid}', '{$fnm}');">
+													<i class="fe-x"></i>
+												</button>
+											</div>
+										</xsl:if>
+									</div>
+									<div>
+										<img src="http://{//config/@web}/{//fileinfo/file[filename=$fnm and savedname=$snm]/virtualpath}/{//fileinfo/file[filename=$fnm and savedname=$snm]/savedname}" alt="{//fileinfo/file[filename=$fnm and savedname=$snm]/filename}" style="max-width: 100%" />
+									</div>
+								</div>
+							</xsl:if>
+						</div>
+					    <input type="hidden" id="__mainfield" name="PHOTORIGHTA" value="{//forminfo/maintable/PHOTORIGHTA}" />
+					</div>
                 </td>
               </tr>
               <tr>
@@ -954,7 +1114,7 @@
                 <td style="padding:1px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="BADDESC" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000)" style="height:60px">
+                      <textarea id="__mainfield" name="BADDESC" class="txaText bootstrap-maxlength" maxlength="1000" style="height:60px">
                         <xsl:value-of select="//forminfo/maintable/BADDESC" />
                       </textarea>
                     </xsl:when>
@@ -970,7 +1130,7 @@
                 <td style="padding:1px;border-right:0">
                   <xsl:choose>
                     <xsl:when test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                      <textarea id="__mainfield" name="STEPDESC" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000)" style="height:60px">
+                      <textarea id="__mainfield" name="STEPDESC" class="txaText bootstrap-maxlength" maxlength="1000" style="height:60px">
                         <xsl:value-of select="//forminfo/maintable/STEPDESC" />
                       </textarea>
                     </xsl:when>
@@ -985,7 +1145,7 @@
               </tr>
               <tr>
                 <td colspan="2" style="vertical-align:top">
-                  <xsl:if test="//bizinfo/@docstatus != '700'">
+                  <!--<xsl:if test="//bizinfo/@docstatus != '700'">
                     <form id="upForm21" name="upForm21" action="" method="post" enctype="multipart/form-data" style="margin:0;padding:0">
                       <xsl:if test="//forminfo/maintable/PHOTOLEFTB[.!=''] or $mode='read'">
                         <xsl:attribute name="style">display:none</xsl:attribute>
@@ -1035,10 +1195,84 @@
                       </xsl:otherwise>
                     </xsl:choose>
                   </div>
-                  <input type="hidden" id="__mainfield" name="PHOTOLEFTB" value="{//forminfo/maintable/PHOTOLEFTB}" />
+                  <input type="hidden" id="__mainfield" name="PHOTOLEFTB" value="{//forminfo/maintable/PHOTOLEFTB}" />-->
+					<div class="zf-upload w-100" id="__zfUpload21">
+						<div class="zf-upload-select d-flex align-items-center">
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTOLEFTB[.!=''] or $mode='read'">
+									<xsl:attribute name="class">zf-upload-select d-none align-items-center</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-select d-flex align-items-center</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+							<form id="uploadForm21" name="uploadForm21" action="/Common/Upload" method="post" enctype="multipart/form-data" target="ifrView">
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="file1" name="file1" />
+									<input name="completed" type="hidden" value="parent._zw.fu.completeEx" />
+									<label class="custom-file-label ml-0 text-left" for="customFile">이미지 첨부</label>
+								</div>
+							</form>
+							<div class="ml-2 d-none">
+								<button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다">
+									<i class="fas fa-question fs-11"></i>
+								</button>
+								<div class="d-none" data-help="file">
+									<div>
+										<div class="row">
+											<div class="col-3 font-weight-bold">* 이미지</div>
+											<div class="col-9" data-for="ext">JPEG, JPG, GIF, PNG, BMP</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="zf-upload-bar mt-1 d-none">
+							<button class="btn btn-sm btn-primary px-5" type="button" disabled="">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+								<span class="ml-2">uploading...</span>
+							</button>
+						</div>
+						<div>
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTOLEFTB[.!='']">
+									<xsl:attribute name="class">zf-upload-list p-1</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-list p-1 d-none</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+
+							<textarea id="__FILEINFO" style="display:none">[]</textarea>
+							<xsl:if test="//forminfo/maintable/PHOTOLEFTB[.!='']">
+								<xsl:variable name="fnm" select="substring-before(//forminfo/maintable/PHOTOLEFTB,';')" />
+								<xsl:variable name="snm" select="substring-after(//forminfo/maintable/PHOTOLEFTB,';')" />
+								<xsl:variable name="fid" select="phxsl:getAttachId(//fileinfo/file, $snm)" />
+
+								<div class="zf-upload-view">
+									<div class="d-flex align-items-center mb-1">
+										<div class="mr-1">
+											<xsl:apply-templates select="//fileinfo/file[filename=$fnm and savedname=$snm]"/>
+										</div>
+										<xsl:if test="$mode='new' or $mode='edit'">
+											<div class="text-muted">
+												<button class="btn btn-default btn-sm btn-18" onclick="_zw.fu.delete('{$fid}', '{$fnm}');">
+													<i class="fe-x"></i>
+												</button>
+											</div>
+										</xsl:if>
+									</div>
+									<div>
+										<img src="http://{//config/@web}/{//fileinfo/file[filename=$fnm and savedname=$snm]/virtualpath}/{//fileinfo/file[filename=$fnm and savedname=$snm]/savedname}" alt="{//fileinfo/file[filename=$fnm and savedname=$snm]/filename}" style="max-width: 100%" />
+									</div>
+								</div>
+							</xsl:if>
+						</div>
+						<input type="hidden" id="__mainfield" name="PHOTOLEFTB" value="{//forminfo/maintable/PHOTOLEFTB}" />
+					</div>
                 </td>
                 <td colspan="2" style="border-right:0;vertical-align:top">
-                  <xsl:if test="//bizinfo/@docstatus != '700'">
+                  <!--<xsl:if test="//bizinfo/@docstatus != '700'">
                     <form id="upForm22" name="upForm22" action="" method="post" enctype="multipart/form-data" style="margin:0;padding:0">
                       <xsl:if test="//forminfo/maintable/PHOTORIGHTB[.!=''] or ($mode='new' or $mode='edit') or (not (($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')) and $mode='read')">
                         <xsl:attribute name="style">display:none</xsl:attribute>
@@ -1088,7 +1322,81 @@
                       </xsl:otherwise>
                     </xsl:choose>
                   </div>
-                  <input type="hidden" id="__mainfield" name="PHOTORIGHTB" value="{//forminfo/maintable/PHOTORIGHTB}" />
+                  <input type="hidden" id="__mainfield" name="PHOTORIGHTB" value="{//forminfo/maintable/PHOTORIGHTB}" />-->
+					<div class="zf-upload w-100" id="__zfUpload22">
+						<div class="zf-upload-select d-flex align-items-center">
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTORIGHTB[.!=''] or ($mode='new' or $mode='edit') or (not (($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')) and $mode='read')">
+									<xsl:attribute name="class">zf-upload-select d-none align-items-center</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-select d-flex align-items-center</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+							<form id="uploadForm22" name="uploadForm22" action="/Common/Upload" method="post" enctype="multipart/form-data" target="ifrView">
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="file1" name="file1" />
+									<input name="completed" type="hidden" value="parent._zw.fu.completeEx" />
+									<label class="custom-file-label ml-0 text-left" for="customFile">이미지 첨부</label>
+								</div>
+							</form>
+							<div class="ml-2 d-none">
+								<button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다">
+									<i class="fas fa-question fs-11"></i>
+								</button>
+								<div class="d-none" data-help="file">
+									<div>
+										<div class="row">
+											<div class="col-3 font-weight-bold">* 이미지</div>
+											<div class="col-9" data-for="ext">JPEG, JPG, GIF, PNG, BMP</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="zf-upload-bar mt-1 d-none">
+							<button class="btn btn-sm btn-primary px-5" type="button" disabled="">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+								<span class="ml-2">uploading...</span>
+							</button>
+						</div>
+						<div>
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTORIGHTB[.!='']">
+									<xsl:attribute name="class">zf-upload-list p-1</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-list p-1 d-none</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+
+							<textarea id="__FILEINFO" style="display:none">[]</textarea>
+							<xsl:if test="//forminfo/maintable/PHOTORIGHTB[.!='']">
+								<xsl:variable name="fnm" select="substring-before(//forminfo/maintable/PHOTORIGHTB,';')" />
+								<xsl:variable name="snm" select="substring-after(//forminfo/maintable/PHOTORIGHTB,';')" />
+								<xsl:variable name="fid" select="phxsl:getAttachId(//fileinfo/file, $snm)" />
+
+								<div class="zf-upload-view">
+									<div class="d-flex align-items-center mb-1">
+										<div class="mr-1">
+											<xsl:apply-templates select="//fileinfo/file[filename=$fnm and savedname=$snm]"/>
+										</div>
+										<xsl:if test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and $actrole='__r' and $partid!='')">
+											<div class="text-muted">
+												<button class="btn btn-default btn-sm btn-18" onclick="_zw.fu.delete('{$fid}', '{$fnm}');">
+													<i class="fe-x"></i>
+												</button>
+											</div>
+										</xsl:if>
+									</div>
+									<div>
+										<img src="http://{//config/@web}/{//fileinfo/file[filename=$fnm and savedname=$snm]/virtualpath}/{//fileinfo/file[filename=$fnm and savedname=$snm]/savedname}" alt="{//fileinfo/file[filename=$fnm and savedname=$snm]/filename}" style="max-width: 100%" />
+									</div>
+								</div>
+							</xsl:if>
+						</div>
+						<input type="hidden" id="__mainfield" name="PHOTORIGHTB" value="{//forminfo/maintable/PHOTORIGHTB}" />
+					</div>
                 </td>
               </tr>
               <tr>
@@ -1096,7 +1404,7 @@
                 <td style="padding:1px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="ACTDESC" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000)" style="height:60px">
+                      <textarea id="__mainfield" name="ACTDESC" class="txaText bootstrap-maxlength" maxlength="1000" style="height:60px">
                         <xsl:value-of select="//forminfo/maintable/ACTDESC" />
                       </textarea>
                     </xsl:when>
@@ -1112,7 +1420,7 @@
                 <td style="padding:1px;border-right:0">
                   <xsl:choose>
                     <xsl:when test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                      <textarea id="__mainfield" name="DEVDESC" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000)" style="height:60px">
+                      <textarea id="__mainfield" name="DEVDESC" class="txaText bootstrap-maxlength" maxlength="1000" style="height:60px">
                         <xsl:value-of select="//forminfo/maintable/DEVDESC" />
                       </textarea>
                     </xsl:when>
@@ -1127,7 +1435,7 @@
               </tr>
               <tr>
                 <td colspan="2" style="vertical-align:top">
-                  <xsl:if test="//bizinfo/@docstatus != '700'">
+                  <!--<xsl:if test="//bizinfo/@docstatus != '700'">
                     <form id="upForm31" name="upForm31" action="" method="post" enctype="multipart/form-data" style="margin:0;padding:0">
                       <xsl:if test="//forminfo/maintable/PHOTOLEFTC[.!=''] or $mode='read'">
                         <xsl:attribute name="style">display:none</xsl:attribute>
@@ -1177,10 +1485,84 @@
                       </xsl:otherwise>
                     </xsl:choose>
                   </div>
-                  <input type="hidden" id="__mainfield" name="PHOTOLEFTC" value="{//forminfo/maintable/PHOTORIGHTA}" />
+                  <input type="hidden" id="__mainfield" name="PHOTOLEFTC" value="{//forminfo/maintable/PHOTORIGHTA}" />-->
+					<div class="zf-upload w-100" id="__zfUpload31">
+						<div class="zf-upload-select d-flex align-items-center">
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTOLEFTC[.!=''] or $mode='read'">
+									<xsl:attribute name="class">zf-upload-select d-none align-items-center</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-select d-flex align-items-center</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+							<form id="uploadForm31" name="uploadForm31" action="/Common/Upload" method="post" enctype="multipart/form-data" target="ifrView">
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="file1" name="file1" />
+									<input name="completed" type="hidden" value="parent._zw.fu.completeEx" />
+									<label class="custom-file-label ml-0 text-left" for="customFile">이미지 첨부</label>
+								</div>
+							</form>
+							<div class="ml-2 d-none">
+								<button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다">
+									<i class="fas fa-question fs-11"></i>
+								</button>
+								<div class="d-none" data-help="file">
+									<div>
+										<div class="row">
+											<div class="col-3 font-weight-bold">* 이미지</div>
+											<div class="col-9" data-for="ext">JPEG, JPG, GIF, PNG, BMP</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="zf-upload-bar mt-1 d-none">
+							<button class="btn btn-sm btn-primary px-5" type="button" disabled="">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+								<span class="ml-2">uploading...</span>
+							</button>
+						</div>
+						<div>
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTOLEFTC[.!='']">
+									<xsl:attribute name="class">zf-upload-list p-1</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-list p-1 d-none</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+
+							<textarea id="__FILEINFO" style="display:none">[]</textarea>
+							<xsl:if test="//forminfo/maintable/PHOTOLEFTC[.!='']">
+								<xsl:variable name="fnm" select="substring-before(//forminfo/maintable/PHOTOLEFTC,';')" />
+								<xsl:variable name="snm" select="substring-after(//forminfo/maintable/PHOTOLEFTC,';')" />
+								<xsl:variable name="fid" select="phxsl:getAttachId(//fileinfo/file, $snm)" />
+
+								<div class="zf-upload-view">
+									<div class="d-flex align-items-center mb-1">
+										<div class="mr-1">
+											<xsl:apply-templates select="//fileinfo/file[filename=$fnm and savedname=$snm]"/>
+										</div>
+										<xsl:if test="$mode='new' or $mode='edit'">
+											<div class="text-muted">
+												<button class="btn btn-default btn-sm btn-18" onclick="_zw.fu.delete('{$fid}', '{$fnm}');">
+													<i class="fe-x"></i>
+												</button>
+											</div>
+										</xsl:if>
+									</div>
+									<div>
+										<img src="http://{//config/@web}/{//fileinfo/file[filename=$fnm and savedname=$snm]/virtualpath}/{//fileinfo/file[filename=$fnm and savedname=$snm]/savedname}" alt="{//fileinfo/file[filename=$fnm and savedname=$snm]/filename}" style="max-width: 100%" />
+									</div>
+								</div>
+							</xsl:if>
+						</div>
+						<input type="hidden" id="__mainfield" name="PHOTOLEFTC" value="{//forminfo/maintable/PHOTOLEFTC}" />
+					</div>
                 </td>
                 <td colspan="2" style="border-right:0;vertical-align:top">
-                  <xsl:if test="//bizinfo/@docstatus != '700'">
+                  <!--<xsl:if test="//bizinfo/@docstatus != '700'">
                     <form id="upForm32" name="upForm32" action="" method="post" enctype="multipart/form-data" style="margin:0;padding:0">
                       <xsl:if test="//forminfo/maintable/PHOTORIGHTC[.!=''] or ($mode='new' or $mode='edit') or (not (($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')) and $mode='read')">
                         <xsl:attribute name="style">display:none</xsl:attribute>
@@ -1230,7 +1612,81 @@
                       </xsl:otherwise>
                     </xsl:choose>
                   </div>
-                  <input type="hidden" id="__mainfield" name="PHOTORIGHTC" value="{//forminfo/maintable/PHOTORIGHTC}" />
+                  <input type="hidden" id="__mainfield" name="PHOTORIGHTC" value="{//forminfo/maintable/PHOTORIGHTC}" />-->
+					<div class="zf-upload w-100" id="__zfUpload32">
+						<div class="zf-upload-select d-flex align-items-center">
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTORIGHTC[.!=''] or ($mode='new' or $mode='edit') or (not (($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')) and $mode='read')">
+									<xsl:attribute name="class">zf-upload-select d-none align-items-center</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-select d-flex align-items-center</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+							<form id="uploadForm32" name="uploadForm32" action="/Common/Upload" method="post" enctype="multipart/form-data" target="ifrView">
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="file1" name="file1" />
+									<input name="completed" type="hidden" value="parent._zw.fu.completeEx" />
+									<label class="custom-file-label ml-0 text-left" for="customFile">이미지 첨부</label>
+								</div>
+							</form>
+							<div class="ml-2 d-none">
+								<button class="btn btn-outline-info btn-18 rounded-circle" data-toggle="popover" data-placement="bottom" data-original-title="첨부 가능한 파일 형식은 다음과 같습니다">
+									<i class="fas fa-question fs-11"></i>
+								</button>
+								<div class="d-none" data-help="file">
+									<div>
+										<div class="row">
+											<div class="col-3 font-weight-bold">* 이미지</div>
+											<div class="col-9" data-for="ext">JPEG, JPG, GIF, PNG, BMP</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="zf-upload-bar mt-1 d-none">
+							<button class="btn btn-sm btn-primary px-5" type="button" disabled="">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+								<span class="ml-2">uploading...</span>
+							</button>
+						</div>
+						<div>
+							<xsl:choose>
+								<xsl:when test="//forminfo/maintable/PHOTORIGHTC[.!='']">
+									<xsl:attribute name="class">zf-upload-list p-1</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="class">zf-upload-list p-1 d-none</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
+
+							<textarea id="__FILEINFO" style="display:none">[]</textarea>
+							<xsl:if test="//forminfo/maintable/PHOTORIGHTC[.!='']">
+								<xsl:variable name="fnm" select="substring-before(//forminfo/maintable/PHOTORIGHTC,';')" />
+								<xsl:variable name="snm" select="substring-after(//forminfo/maintable/PHOTORIGHTC,';')" />
+								<xsl:variable name="fid" select="phxsl:getAttachId(//fileinfo/file, $snm)" />
+
+								<div class="zf-upload-view">
+									<div class="d-flex align-items-center mb-1">
+										<div class="mr-1">
+											<xsl:apply-templates select="//fileinfo/file[filename=$fnm and savedname=$snm]"/>
+										</div>
+										<xsl:if test="($bizrole='application' and $actrole='_approver' and $partid!='')  or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and $actrole='__r' and $partid!='')">
+											<div class="text-muted">
+												<button class="btn btn-default btn-sm btn-18" onclick="_zw.fu.delete('{$fid}', '{$fnm}');">
+													<i class="fe-x"></i>
+												</button>
+											</div>
+										</xsl:if>
+									</div>
+									<div>
+										<img src="http://{//config/@web}/{//fileinfo/file[filename=$fnm and savedname=$snm]/virtualpath}/{//fileinfo/file[filename=$fnm and savedname=$snm]/savedname}" alt="{//fileinfo/file[filename=$fnm and savedname=$snm]/filename}" style="max-width: 100%" />
+									</div>
+								</div>
+							</xsl:if>
+						</div>
+						<input type="hidden" id="__mainfield" name="PHOTORIGHTC" value="{//forminfo/maintable/PHOTORIGHTC}" />
+					</div>
                 </td>
               </tr>
               <tr>
@@ -1238,7 +1694,7 @@
                 <td colspan="3" style="padding:1px;border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or ($bizrole='application' and $actrole='_approver' and $partid!='') or ($bizrole='gwichaek' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='') or ($bizrole='receive' and ( $actrole='__r' or $actrole='_reviewer' ) and $partid!='')">
-                      <textarea id="__mainfield" name="DESCRIPTION" class="txaText" onkeyup="parent.checkTextAreaLength(this, 1000)" style="height:60px">
+                      <textarea id="__mainfield" name="DESCRIPTION" class="txaText bootstrap-maxlength" maxlength="1000" style="height:60px">
                         <xsl:value-of select="//forminfo/maintable/DESCRIPTION" />
                       </textarea>
                     </xsl:when>

@@ -10,7 +10,7 @@
                             row = $(this); return false;
                         }
                     });
-                    if (row.length > 0) {
+                    if (row && row.length > 0) {
                         if (row.find('td :hidden[name="S5DCN1"]').val() == '') { bootbox.alert('부서 내/외부 4M진행 선택하십시오!', function () { }); return false; }
                         el = row.find('td textarea[name="S5OPN1"]');
                         if (el.val() == '') { bootbox.alert('부서 내/외부 4M진행 의견을 입력하십시오!', function () { el.focus(); }); return false; }
@@ -22,7 +22,7 @@
                             row = $(this); return false;
                         }
                     });
-                    if (row.length > 0) {
+                    if (row && row.length > 0) {
                         if (row.find('td :hidden[name="S5DCN2"]').val() == '') { bootbox.alert('부서 내/외부 4M진행 선택하십시오!', function () { }); return false; }
                         el = row.find('td textarea[name="S5OPN2"]');
                         if (el.val() == '') { bootbox.alert('부서 내/외부 4M진행 의견을 입력하십시오!', function () { el.focus(); }); return false; }

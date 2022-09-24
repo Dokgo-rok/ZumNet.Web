@@ -1637,7 +1637,7 @@ $(function () {
             return (parseFloat(_zw.ut.empty(c)) * parseFloat(_zw.ut.empty(p)) / 100).toFixed(n);
         },
         "rate": function (c, p, n) {
-            return (parseFloat(_zw.ut.empty(c)) / parseFloat(_zw.ut.empty(p)) * 100).toFixed(n);
+            return p == '' || parseFloat(_zw.ut.empty(p)) == 0 ? 0 : (parseFloat(_zw.ut.empty(c)) / parseFloat(_zw.ut.empty(p)) * 100).toFixed(n);
         },
         "empty": function (f) {
             f = f || '';
@@ -2166,11 +2166,11 @@ $(function () {
     //File Upload (기본 input[type=file] 이용)
     _zw.fu = {
         "fileList": [],
-        "bind": function () { //p : zf-upload 를 포함하는 parent (modal)
+        "bind": function (m) { //p : zf-upload 를 포함하는 parent (modal)
             var p = $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p.length)
             if (p.length > 0) {
-                _zw.fu.fileList = JSON.parse(p.find('#__FILEINFO').val()); //초기화
-                fm = p.find('form')[0], fi = p.find('input[type="file"]'); //console.log('===' + fm.outerHTML)
+                if (!m || m == '')_zw.fu.fileList = JSON.parse(p.find('#__FILEINFO').val()); //초기화
+                var fi = p.find('input[type="file"]'); //console.log('===' + fm.outerHTML)
 
                 fi.on('mouseover', function () {
                     $(this).parent().find('.custom-file-label').addClass('border-primary');
@@ -2195,7 +2195,8 @@ $(function () {
                     //        bootbox.alert('중복된 파일입니다!', function () { fm.reset(); }); return false;
                     //    }
                     //}
-
+                    var p = $(this).parent(); do { p = p.parent(); } while (!p.hasClass('zf-upload')); //이벤트 요소의 zf-upload 반환
+                    var id = p.attr("id") != undefined && p.attr("id") != '' ? p.attr("id") : '', fm = p.find('form')[0];
                     var x = $(this)[0];
                     if ('files' in x) {
                         if (x.files.length == 0) return false;
@@ -2203,7 +2204,7 @@ $(function () {
                             for (var i = 0; i < x.files.length; i++) {
                                 var file = x.files[i]; //console.log(file.value + " : " + file.name + " : " + file.size);
                                 var f = file.name.split('.'), ext = f[f.length - 1].toUpperCase();
-                                if (!_zw.fu.checkExt(ext)) {
+                                if (!_zw.fu.checkExt(id, ext)) {
                                     bootbox.alert('[' + ext + ']는 첨부 가능한 파일 형식이 아닙니다!', function () { fm.reset(); }); return false;
                                 }
                                 if (!_zw.fu.checkDouble(file.name)) {
@@ -2216,15 +2217,19 @@ $(function () {
                         else {
                             f = x.value;
                             var n = f.split(String.fromCharCode(92)), fmn = n[n.length - 1], f = fmn.split('.'), ext = f[f.length - 1].toUpperCase();
-                            if (!_zw.fu.checkExt(ext)) {
+                            if (!_zw.fu.checkExt(id, ext)) {
                                 bootbox.alert('[' + ext + ']는 첨부 가능한 파일 형식이 아닙니다!', function () { fm.reset(); }); return false;
                             }
-                            if (!_zw.fu.checkDouble(fm)) {
+                            if (!_zw.fu.checkDouble(fmn)) {
                                 bootbox.alert('[' + fmn + ']는 중복된 파일입니다!', function () { fm.reset(); }); return false;
                             }
                         }
                     }
                     p.find('.zf-upload-bar').removeClass('d-none');
+                    if (id != '') {
+                        //var c = p.find(':hidden[name="completed"]'); if (c.val().indexOf(';') == -1) { c.val(p.attr("id") + ';' + c.val()); } //22-09-18
+                        if (fm["completed"].value.indexOf(';') == -1) fm["completed"].value = id + ';' + fm["completed"].value;
+                    }
                     fm.submit();
                 });
                 //console.log(p.find('.btn[data-toggle="popover"]').html());
@@ -2236,8 +2241,8 @@ $(function () {
                 });
             }
         },
-        "checkExt": function (ext) {
-            var p = $('.zf-upload').has('.zf-upload-select.d-flex');
+        "checkExt": function (id, ext) {
+            var p = id && id != '' ? $('#' + id + '.zf-upload') : $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p.html())
             var bExt = false;
             if (p.length > 0 && p.find('[data-help="file"]').length > 0) {
                 p.find('[data-help="file"] .row div[data-for="ext"]').each(function (idx, e) {
@@ -2254,8 +2259,8 @@ $(function () {
             }
             return true;
         },
-        "complete": function (msg) {
-            var p = $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p)
+        "complete": function (id, msg) {
+            var p = id && id != '' ? $('#' + id + '.zf-upload') : $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p)
             p.find('form')[0].reset();
             //$('.zf-upload #uploadForm')[0].reset();
             var rt = decodeURIComponent(msg).replace(/\+/gi, ' '), iFileCnt = _zw.fu.fileList.length;
@@ -2292,8 +2297,8 @@ $(function () {
             }
             //console.log(_zw.fu.fileList)
         },
-        "completeEx": function (msg) { //양식 필드 내 이미지 또는 파일 첨부 경우 (파일 확장자 아이콘X)
-            var p = $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p)
+        "completeEx": function (id, msg) { //양식 필드 내 이미지 또는 파일 첨부 경우 (파일 확장자 아이콘X)
+            var p = id && id != '' ? $('#' + id + '.zf-upload') : $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p.html())
             p.find('form')[0].reset();
             //$('.zf-upload #uploadForm')[0].reset();
             var rt = decodeURIComponent(msg).replace(/\+/gi, ' '), iFileCnt = _zw.fu.fileList.length;
@@ -2326,21 +2331,20 @@ $(function () {
                     v["ext"] = vInfo[2];
                     v["size"] = vInfo[3];
                     v["filepath"] = vInfo[4];
-                    v["storagefolder"] = ""; console.log('----:' + p.find(' > :hidden[name]').length)
+                    v["storagefolder"] = ""; //console.log('----:' + p.find(' > :hidden[name]').length)
                     if (p.find(' > :hidden[name]').length > 0) {
                         v["fld"] = p.find(' > :hidden[name]').attr('name'); //22-08-10 추가
                         var dPos = p.find(' > :hidden[name]').attr('data-pos');
                         if (dPos && dPos != '') v["fld"] += ';' + dPos;
                     }
                     _zw.fu.fileList.push(v);
-                    console.log(_zw.fu.fileList)
                 }
                 p.find('.zf-upload-bar').addClass('d-none');
             } else {
                 p.find('.zf-upload-bar').addClass('d-none');
                 bootbox.alert(rt); return false;
             }
-            //console.log(_zw.fu.fileList)
+            console.log(_zw.fu.fileList)
         },
         "delete": function (id, fm, path) {
             path = path || '';
@@ -2369,7 +2373,8 @@ $(function () {
                                 if (p.find(' > :hidden[name]').length > 0) p.find(' > :hidden[name]').val('');
                                 if (fp.find('.zf-upload-select').hasClass('d-none')) {
                                     fp.find('.zf-upload-select').removeClass('d-none').addClass('d-flex');
-                                    _zw.fu.bind();
+                                    _zw.fu.bind('d');
+                                    console.log(_zw.fu.fileList)
                                 }
                             } else bootbox.alert(res);
                         }

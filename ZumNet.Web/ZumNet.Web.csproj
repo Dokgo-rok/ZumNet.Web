@@ -449,7 +449,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_COMPLAINTREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_COMPLAINTREQUESTINDUSTRY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_COMPLAINTREQUEST_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_COMPLAINTREQUEST_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_COMPLAINTREQUEST_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_COMPLETEPRODUCTTEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CONAPPLICATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CONSTRUCTDRAFT_V1.xsl" />
@@ -470,7 +472,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_CRESYNEQUIPDRAFTA_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CRESYNEQUIPDRAFTD_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CRESYNMONTHFAULTYGOODS_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_CTCMINUTES_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_CTCMINUTES_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_CTQLIST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CUSTOMERORDER_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CUSTOMSREQUEST_V1.xsl" />
@@ -917,7 +921,9 @@
     <Content Include="Content\Forms\HTML\MINUTES_1.html" />
     <Content Include="Content\Forms\HTML\MOLDREQUEST_1.html" />
     <Content Include="Content\Forms\HTML\NOTICE_CONAPPLICATION.xsl" />
-    <Content Include="Content\Forms\HTML\REGISTER_ECNPLAN.xsl" />
+    <Content Include="Content\Forms\HTML\REGISTER_ECNPLAN.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\HTML\REGISTER_TOOLING.xsl">
       <SubType>Designer</SubType>
     </Content>

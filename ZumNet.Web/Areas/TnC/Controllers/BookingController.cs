@@ -707,7 +707,11 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                             svcRt = schBiz.SaveSchedule(jPost, Convert.ToInt32(Session["DNID"]), Convert.ToInt32(Session["URID"]), Session["DeptName"].ToString(), Convert.ToInt32(Session["DeptID"]), fileInfo);
                         }
 
-                        if (svcRt != null && svcRt.ResultCode == 0) rt = "OK" + "저장했습니다!";
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            if (svcRt.ResultMessage != "") rt = "NO" + svcRt.ResultMessage;
+                            else rt = "OK" + "저장했습니다!"; 
+                        }
                         else rt = "[" + sPos + "] " + svcRt.ResultMessage;
                     }   
                 }

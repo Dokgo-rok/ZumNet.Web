@@ -248,26 +248,54 @@
                     </tr>
                     <tr>
                       <td style="height: 50px; border: 0">
-                        <div style="font-weight: bold; padding-left: 40px; margin-bottom: 4px; font-size: 14px">
+                        <div>
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<xsl:attribute name="style">font-weight: bold; padding-left: 20px; margin-bottom: 4px; font-size: 14px</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="style">font-weight: bold; padding-left: 40px; margin-bottom: 4px; font-size: 14px</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
                           (&nbsp;<xsl:choose>
                             <xsl:when test="$mode='new'">
-                              <input type="text" id="__mainfield" name="STATSYEAR" style="width:40px" class="txtYear" maxlength="4" value="{substring(string(//docinfo/createdate),1,4)}" />
+                              <!--<input type="text" id="__mainfield" name="STATSYEAR" style="width:40px" class="txtYear" maxlength="4" value="{substring(string(//docinfo/createdate),1,4)}" />-->
+								<select id="__mainfield" name="STATSYEAR" class="custom-select d-inline-block" style="width:90px" onchange="_zw.formEx.change(this)">
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:optionYear2(2015, substring(string(//currentinfo/@date),1,4), substring(string(//docinfo/createdate),1,4))" />
+								</select>
                             </xsl:when>
                             <xsl:when test="$mode='edit'">
-                              <input type="text" id="__mainfield" name="STATSYEAR" style="width:40px" class="txtYear" maxlength="4" value="{//forminfo/maintable/STATSYEAR}" />
+                              <!--<input type="text" id="__mainfield" name="STATSYEAR" style="width:40px" class="txtYear" maxlength="4" value="{//forminfo/maintable/STATSYEAR}" />-->
+							<select id="__mainfield" name="STATSYEAR" class="custom-select" style="width:90px" onchange="_zw.formEx.change(this)">
+							  <xsl:value-of select="phxsl:optionYear2(2015, substring(string(//currentinfo/@date),1,4), string(//forminfo/maintable/STATSYEAR))" />
+						  </select>
                             </xsl:when>
                             <xsl:otherwise>
                               <xsl:value-of select="//forminfo/maintable/STATSYEAR" />
                             </xsl:otherwise>
                           </xsl:choose>&nbsp;)&nbsp;년
                         </div>
-                        <div style="font-weight: bold; padding-left: 64px; font-size: 14px">
+                        <div>
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<xsl:attribute name="style">font-weight: bold; padding-left: 40px; margin-bottom: 4px; font-size: 14px</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="style">font-weight: bold; padding-left: 64px; margin-bottom: 4px; font-size: 14px</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
                           (&nbsp;<xsl:choose>
                             <xsl:when test="$mode='new'">
-                              <input type="text" id="__mainfield" name="STATSMONTH" style="width:18px" class="txtMonth" maxlength="2" value="{phxsl:cvtMonth(substring(string(//docinfo/createdate),6,2))}" />
+                              <!--<input type="text" id="__mainfield" name="STATSMONTH" style="width:18px" class="txtMonth" maxlength="2" value="{phxsl:cvtMonth(substring(string(//docinfo/createdate),6,2))}" />-->
+						        <select id="__mainfield" name="STATSMONTH" class="custom-select d-inline-block" style="width:70px" onchange="_zw.formEx.change(this)">
+							        <xsl:value-of disable-output-escaping="yes" select="phxsl:optionMonth(substring(string(//docinfo/createdate),6,2))" />
+						        </select>
                             </xsl:when>
                             <xsl:when test="$mode='edit'">
-                              <input type="text" id="__mainfield" name="STATSMONTH" style="width:18px" class="txtMonth" maxlength="2" value="{//forminfo/maintable/STATSMONTH}" />
+                              <!--<input type="text" id="__mainfield" name="STATSMONTH" style="width:18px" class="txtMonth" maxlength="2" value="{//forminfo/maintable/STATSMONTH}" />-->
+								<select id="__mainfield" name="STATSMONTH" class="custom-select d-inline-block" style="width:70px" onchange="_zw.formEx.change(this)">
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:optionMonth(string(//forminfo/maintable/STATSMONTH))" />
+								</select>
                             </xsl:when>
                             <xsl:otherwise>
                               <xsl:value-of select="//forminfo/maintable/STATSMONTH" />
@@ -618,7 +646,7 @@
                       <td style="border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="WRBCNT1" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/WRBCNT1}" />
+                            <input type="text" id="__mainfield" name="WRBCNT1" class="txtRead_Right" readonly="readonly" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WRBCNT1}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -629,7 +657,7 @@
                       <td style="border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="WRBCNT2" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/WRBCNT2}" />
+                            <input type="text" id="__mainfield" name="WRBCNT2" class="txtRead_Right" readonly="readonly" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WRBCNT2}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -746,7 +774,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="WRBGONGSU1" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/WRBGONGSU1}" />
+                      <input type="text" id="__mainfield" name="WRBGONGSU1" class="txtRead_Right" readonly="readonly" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WRBGONGSU1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1095,7 +1123,7 @@
                       <td style="border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="WASCNT1" class="txtDollar" maxlength="20" data-inputmask="number;16;4"  value="{//forminfo/maintable/WASCNT1}" />
+                            <input type="text" id="__mainfield" name="WASCNT1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WASCNT1}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1106,7 +1134,7 @@
                       <td style="border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="WASCNT2" class="txtDollar" maxlength="20" data-inputmask="number;16;4"  value="{//forminfo/maintable/WASCNT2}" />
+                            <input type="text" id="__mainfield" name="WASCNT2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WASCNT2}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1117,7 +1145,7 @@
                       <td style="border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="WASSUM1" class="txtDollar" maxlength="20" data-inputmask="number;16;4"  value="{//forminfo/maintable/WASSUM1}" />
+                            <input type="text" id="__mainfield" name="WASSUM1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WASSUM1}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1247,7 +1275,7 @@
                       <td style="border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="WAFCNT1" class="txtDollar" maxlength="20" data-inputmask="number;16;4"  value="{//forminfo/maintable/WAFCNT1}" />
+                            <input type="text" id="__mainfield" name="WAFCNT1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WAFCNT1}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1258,7 +1286,7 @@
                       <td style="border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="WAFCNT2" class="txtDollar" maxlength="20" data-inputmask="number;16;4"  value="{//forminfo/maintable/WAFCNT2}" />
+                            <input type="text" id="__mainfield" name="WAFCNT2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WAFCNT2}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1269,7 +1297,7 @@
                       <td style="border-bottom:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="WAFSUM1" class="txtDollar" maxlength="20" data-inputmask="number;16;4"  value="{//forminfo/maintable/WAFSUM1}" />
+                            <input type="text" id="__mainfield" name="WAFSUM1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/WAFSUM1}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="class">tdRead_Right</xsl:attribute>

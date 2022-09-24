@@ -2898,6 +2898,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 _formID = j.ContainsKey("formid") ? j["formid"].ToString() : "";
                 _oID = j.ContainsKey("oid") ? j["oid"].ToString() : "";
                 _msgID = j.ContainsKey("appid") ? j["appid"].ToString() : "";
+                _workNotice = j.ContainsKey("wnid") ? j["wnid"].ToString() : "";
+                if (_workNotice == "") _workNotice = "0";
             }
 
             if (j.ContainsKey("doc"))

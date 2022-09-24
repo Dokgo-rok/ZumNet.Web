@@ -5,6 +5,16 @@
 
 @{
     string rt = "";
+    string fn = "";
+    string uploadPos = "";
+
+    fn = Request["completed"].ToString();
+    if (fn.IndexOf(";") >= 0)
+    {
+        string[] temp = fn.Split(';');
+        fn = temp[1];
+        uploadPos = temp[0];
+    }
 
     try
     {
@@ -80,7 +90,8 @@
         rt = ex.Message;
     }
 
-    Response.Write("<script type='text/javascript'>" + Request["completed"].ToString() + "('" + Server.UrlEncode(rt) + "');</script>");
+    //Response.Write("<script type='text/javascript'>" + Request["completed"].ToString() + "('" + Server.UrlEncode(rt) + "');</script>");
+    Response.Write("<script type='text/javascript'>" + fn + "('" + uploadPos + "', '" + Server.UrlEncode(rt) + "');</script>");
     Response.End();
 }
 @functions{

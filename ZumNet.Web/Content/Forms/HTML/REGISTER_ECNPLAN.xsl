@@ -134,8 +134,8 @@
 
   <div class="fm">
     <span>1. (&#160;<xsl:value-of select="//forminfo/maintable/FMCLS" />&#160;) 변경&#160;&#160;&#160;
-      <a target="_blank">
-        <xsl:attribute name="href">
+      <a target="_blank" href="javascript:">
+        <xsl:attribute name="onclick">
           <xsl:value-of disable-output-escaping="yes" select="phxsl:linkForm(string(//config/@web), string($root), string(//forminfo/maintable/MessageID))" />
         </xsl:attribute>
         관련문서
@@ -267,12 +267,12 @@
         <td colspan="5" style="border-bottom:0;border-right:0">
           <xsl:choose>
             <xsl:when test="//forminfo/maintable/APVRID=//current/@uid and //forminfo/maintable/APVRSTATUS!='7'">
-              <textarea name="NOTE" style="height:60px" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000)">
+              <textarea name="NOTE" style="height:60px" class="txaText bootstrap-maxlength" maxlength="2000">
                 <xsl:value-of select="//forminfo/maintable/NOTE" />
               </textarea>
             </xsl:when>
             <xsl:otherwise>
-              <div style="padding:2px;height:60px">
+              <div style="padding:2px;min-height:60px">
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/NOTE))" />
               </div>
             </xsl:otherwise>
@@ -313,14 +313,13 @@
 
 <xsl:template match="//forminfo/subtables/subtable1/row">
   <tr class="sub_table_row">
-    <td>
+	  <td class="tdRead_Center">
       <xsl:choose>
         <!--<xsl:when test="PARTID=//current/@uid and PARTDEPTID=//current/@deptid">-->
         <xsl:when test="PARTID=//current/@uid">
           <input type="checkbox" name="SEQ" value="{SEQ}" />
         </xsl:when>
         <xsl:otherwise>
-          <xsl:attribute name="class">tdRead_Center</xsl:attribute>
           <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(SEQ))" />
         </xsl:otherwise>
       </xsl:choose>
@@ -350,7 +349,7 @@
       <xsl:choose>
         <!--<xsl:when test="PARTID=//current/@uid  and PARTDEPTID=//current/@deptid and //forminfo/maintable/APVRSTATUS!='7'">-->
         <xsl:when test="PARTID=//current/@uid and //forminfo/maintable/APVRSTATUS!='7'">
-          <textarea name="BIZPLAN" style="height:44px" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000)">
+          <textarea name="BIZPLAN" style="height:44px" class="txaText bootstrap-maxlength" maxlength="2000">
             <xsl:value-of select="BIZPLAN" />
           </textarea>
         </xsl:when>
