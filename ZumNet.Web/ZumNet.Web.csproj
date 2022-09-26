@@ -804,7 +804,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_SELLINGUC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SELLINGUC_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SELLINGUC_V3.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_SELLINGUC_V4.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_SELLINGUC_V4.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_SHIPMENTUC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SHIPMENTUC_V2.xsl">
       <SubType>Designer</SubType>

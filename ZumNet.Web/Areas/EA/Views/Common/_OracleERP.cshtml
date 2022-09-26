@@ -747,14 +747,28 @@
 
                     if (svcRt.ResultCode == 0)
                     {
+                        bool bNo = true;
+                        sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                        sb.Append("<colgroup><col width=\"25%\" /><col width=\"65%\" /><col width=\"10%\" /></colgroup>");
+                        sb.Append("<thead>");
+                        sb.Append("<tr><th>BPA NUM</th><th>업체</th><th>상태</th></tr>");
+                        sb.Append("</thead>");
+                        sb.Append("<tbody>");
+
+                        if (postData["k3"].ToString() == "PURCHASEUCA" || postData["k3"].ToString() == "PURCHASEUCC" || postData["k3"].ToString() == "PURCHASEUCD" || postData["k3"].ToString() == "OUTSOURCINGUC"
+                                || postData["k3"].ToString() == "OUTSOURCINGUCC" || postData["k3"].ToString() == "OUTSOURCINGUCD" || postData["k3"].ToString() == "PURCHASEUCB")
+
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", "New BPA", "Y");
+                            sb.AppendFormat("<td>{0}</td>", "신규");
+                            sb.AppendFormat("<td>{0}</td>", "Y");
+                            sb.Append("</tr>");
+                            bNo = false;
+                        }
+
                         if (svcRt.ResultItemCount > 0)
                         {
-                            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
-                            sb.Append("<colgroup><col width=\"25%\" /><col width=\"65%\" /><col width=\"10%\" /></colgroup>");
-                            sb.Append("<thead>");
-                            sb.Append("<tr><th>BPA NUM</th><th>업체</th><th>상태</th></tr>");
-                            sb.Append("</thead>");
-                            sb.Append("<tbody>");
                             foreach (DataRow row in svcRt.ResultDataTable.Rows)
                             {
                                 sb.Append("<tr>");
@@ -763,33 +777,10 @@
                                 sb.AppendFormat("<td>{0}</td>", row["APPROVED_FLAG"].ToString().Trim());
                                 sb.Append("</tr>");
                             }
-                            sb.Append("</tbody>");
-                            sb.Append("</table>");
                         }
-                        else
+                        else 
                         {
-                            if (postData["k3"].ToString() == "PURCHASEUCA" || postData["k3"].ToString() == "PURCHASEUCC" || postData["k3"].ToString() == "PURCHASEUCD" || postData["k3"].ToString() == "OUTSOURCINGUC"
-                                || postData["k3"].ToString() == "OUTSOURCINGUCC" || postData["k3"].ToString() == "OUTSOURCINGUCD" || postData["k3"].ToString() == "PURCHASEUCB")
-
-                            {
-                                sb.Append("<table class=\"table table-striped table-sm mb-0\">");
-                                sb.Append("<colgroup><col width=\"25%\" /><col width=\"65%\" /><col width=\"10%\" /></colgroup>");
-                                sb.Append("<thead>");
-                                sb.Append("<tr><th>BPA NUM</th><th>업체</th><th>상태</th></tr>");
-                                sb.Append("</thead>");
-                                sb.Append("<tbody>");
-                                foreach (DataRow row in svcRt.ResultDataTable.Rows)
-                                {
-                                    sb.Append("<tr>");
-                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", "New BPA", "Y");
-                                    sb.AppendFormat("<td>{0}</td>", "신규");
-                                    sb.AppendFormat("<td>{0}</td>", "Y");
-                                    sb.Append("</tr>");
-                                }
-                                sb.Append("</tbody>");
-                                sb.Append("</table>");
-                            }
-                            else sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                            if (bNo) sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
                         }
                     }
                     else

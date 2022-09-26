@@ -329,7 +329,15 @@
                 {
                     #region [SEARCH_DEVPRODUCT]
                     //strWhere = " AND a.DocName = '" + postData["query"].ToString() + "' AND (a.Subject LIKE '%" + postData["search"].ToString() + "%' OR a.ExternalKey1 LIKE '%" + postData["search"].ToString() + "%')";
-                    strWhere = " AND a.DocName LIKE '" + postData["query"].ToString() + "%' AND (a.Subject LIKE '%" + postData["search"].ToString() + "%' OR a.ExternalKey1 LIKE '%" + postData["search"].ToString() + "%')";
+                    if (postData["query"].ToString() == "제품인증서류" || postData["query"].ToString() == "제품규격인증서류")
+                    {
+                        strWhere = " AND (a.DocName LIKE '제품인증서류%' OR a.DocName LIKE '제품규격인증서류%')";
+                    }
+                    else
+                    {
+                        strWhere = " AND a.DocName LIKE '" + postData["query"].ToString() + "%'";
+                    }
+                    strWhere += " AND (a.Subject LIKE '%" + postData["search"].ToString() + "%' OR a.ExternalKey1 LIKE '%" + postData["search"].ToString() + "%')";
 
                     using (ReportBiz rptBiz = new ReportBiz())
                     {

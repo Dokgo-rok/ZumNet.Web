@@ -233,7 +233,7 @@
                       <!--<button onclick="parent.fnOption('external.centercode',240,140,100,120,'','PRODUCTCENTER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="적용사업장" onclick="_zw.formEx.optionWnd('external.centercode',240,140,100,120,'','PRODUCTCENTER');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="적용사업장" onclick="_zw.formEx.optionWnd('external.centercode',240,274,-170,0,'','PRODUCTCENTER');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -315,7 +315,7 @@
                       <!--<button onclick="parent.fnOption('iso.currency',160,140,100,115,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',160,140,100,115,'etc','CURRENCY');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',220,274,-130,0,'etc','CURRENCY');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -449,7 +449,7 @@
                       <!--<button onclick="parent.fnOption('erp.potype',80,90,60,90,'','POTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="PO TYPE" onclick="_zw.formEx.optionWnd('erp.potype',80,90,60,90,'','POTYPE');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="PO TYPE" onclick="_zw.formEx.optionWnd('erp.potype',140,94,-80,0,'','POTYPE');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -468,7 +468,7 @@
                       <!--<button onclick="parent.fnOption('erp.bpanum',400,160,100,120,'','BPANUM');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="BPA NUM" onclick="_zw.formEx.optionWnd('erp.bpanum',400,160,100,120,'','BPANUM');">
+						<button type="button" class="btn btn-outline-secondary btn-18" title="BPA NUM" onclick="_zw.formEx.optionWnd('erp.bpanum',400,140,-260,120,'','BPANUM');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                     </xsl:when>
@@ -579,13 +579,7 @@
                   소&nbsp;계&nbsp;:&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="SUM1" style="width:120px">
-                        <xsl:attribute name="class">txtDollar5</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM1" style="width:120px" class="txtDollar5" maxlength="20" data-inputmask="number;15;5" value="{//forminfo/maintable/SUM1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SUM1))" />
@@ -610,13 +604,7 @@
                 소&nbsp;계&nbsp;:&nbsp;
                 <xsl:choose>
                   <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                    <input type="text" id="__mainfield" name="SUM2" style="width:120px">
-                      <xsl:attribute name="class">txtDollar5</xsl:attribute>
-                      <xsl:attribute name="maxlength">20</xsl:attribute>
-                      <xsl:attribute name="value">
-                        <xsl:value-of select="//forminfo/maintable/SUM2" />
-                      </xsl:attribute>
-                    </input>
+                    <input type="text" id="__mainfield" name="SUM2" style="width:120px" class="txtDollar5" maxlength="20" data-inputmask="number;15;5" value="{//forminfo/maintable/SUM2}" />
                   </xsl:when>
                   <xsl:otherwise>
                     <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SUM2))" />
@@ -727,13 +715,7 @@
                   소&nbsp;계&nbsp;:&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="SUM4" style="width:120px">
-                        <xsl:attribute name="class">txtDollar5</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM4" style="width:120px" class="txtDollar5" maxlength="20" data-inputmask="number;15;5" value="{//forminfo/maintable/SUM4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SUM4))" />
@@ -758,13 +740,7 @@
                   소&nbsp;계&nbsp;:&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="SUM5" style="width:120px">
-                        <xsl:attribute name="class">txtDollar5</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM5" style="width:120px" class="txtDollar5" maxlength="20" data-inputmask="number;15;5" value="{//forminfo/maintable/SUM5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SUM5))" />
@@ -875,13 +851,7 @@
                   소&nbsp;계&nbsp;:&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="SUM22" style="width:120px">
-                        <xsl:attribute name="class">txtDollar5</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM22" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM22" style="width:120px" class="txtDollar5" maxlength="20" data-inputmask="number;15;5" value="{//forminfo/maintable/SUM22}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SUM22))" />
@@ -906,13 +876,7 @@
                   소&nbsp;계&nbsp;:&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="SUM23" style="width:120px">
-                        <xsl:attribute name="class">txtDollar5</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM23" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM23" style="width:120px" class="txtDollar5" maxlength="20" data-inputmask="number;15;5" value="{//forminfo/maintable/SUM23}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SUM23))" />
@@ -936,13 +900,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="SUM24" style="width:100px">
-                        <xsl:attribute name="class">txtRead</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM24" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM24" style="width:100px" class="txtDollar5" maxlength="20" data-inputmask="number;15;5" value="{//forminfo/maintable/SUM24}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/SUM24))" />
@@ -1066,13 +1024,7 @@
                   제조원가의
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="RATE2" style="width:30px">
-                        <xsl:attribute name="class">txtDollar</xsl:attribute>
-                        <xsl:attribute name="maxlength">5</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/RATE2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="RATE2" style="width:30px" class="txtDollar" maxlength="6" data-inputmask="number;3;3" value="{//forminfo/maintable/RATE2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RATE2))" />
@@ -1111,13 +1063,7 @@
                   제조원가의
                   <xsl:choose>
                   <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                    <input type="text" id="__mainfield" name="RATE3" style="width:30px">
-                      <xsl:attribute name="class">txtDollar</xsl:attribute>
-                      <xsl:attribute name="maxlength">5</xsl:attribute>
-                      <xsl:attribute name="value">
-                        <xsl:value-of select="//forminfo/maintable/RATE3" />
-                      </xsl:attribute>
-                    </input>
+                    <input type="text" id="__mainfield" name="RATE3" style="width:30px" class="txtDollar" maxlength="6" data-inputmask="number;3;3" value="{//forminfo/maintable/RATE3}" />
                   </xsl:when>
                   <xsl:otherwise>
                     <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RATE3))" />
@@ -1189,13 +1135,7 @@
                   제조원가의
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="RATE4" style="width:30px">
-                        <xsl:attribute name="class">txtDollar</xsl:attribute>
-                        <xsl:attribute name="maxlength">5</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/RATE4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="RATE4" style="width:30px" class="txtDollar" maxlength="6" data-inputmask="number;3;3" value="{//forminfo/maintable/RATE4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RATE4))" />
@@ -1234,13 +1174,7 @@
                   제조원가의
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="RATE5" style="width:30px">
-                        <xsl:attribute name="class">txtDollar</xsl:attribute>
-                        <xsl:attribute name="maxlength">5</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/RATE5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="RATE5" style="width:30px" class="txtDollar" maxlength="6" data-inputmask="number;3;3" value="{//forminfo/maintable/RATE5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RATE5))" />
@@ -1407,13 +1341,7 @@
                   제조원가의
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="RATE6" style="width:30px">
-                        <xsl:attribute name="class">txtDollar</xsl:attribute>
-                        <xsl:attribute name="maxlength">5</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/RATE6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="RATE6" style="width:30px" class="txtDollar" maxlength="6" data-inputmask="number;3;3" value="{//forminfo/maintable/RATE6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RATE6))" />
@@ -1452,13 +1380,7 @@
                   제조원가의
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit' or $actrole='__r' or $actrole='_reviewer'">
-                      <input type="text" id="__mainfield" name="RATE7" style="width:30px">
-                        <xsl:attribute name="class">txtDollar</xsl:attribute>
-                        <xsl:attribute name="maxlength">5</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/RATE7" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="RATE7" style="width:30px" class="txtDollar" maxlength="6" data-inputmask="number;3;3" value="{//forminfo/maintable/RATE7}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/RATE7))" />
@@ -1704,7 +1626,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
