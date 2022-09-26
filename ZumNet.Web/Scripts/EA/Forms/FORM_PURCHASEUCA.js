@@ -137,9 +137,12 @@
                         var j = { "close": true, "width": w, "height": h, "left": l, "top": t }
                         j["title"] = el.attr('title'); j["content"] = res.substr(2);
 
-                        var pop = _zw.ut.popup(el[0], j); console.log(param)
+                        var pop = _zw.ut.popup(el[0], j); //console.log(param)
                         pop.find('a[data-val]').click(function () {
                             var v = $(this).attr('data-val').split('^');
+                            if (param == 'BPANUM' && v[1] != 'Y') {
+                                bootbox.alert('BPA Status is not APPROVED!'); return false;
+                            }
                             for (var i = 0; i < param.length; i++) {
                                 $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
                             }

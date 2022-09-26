@@ -2001,7 +2001,7 @@ $(function () {
                 if (iCnt == 0) tgtRow = $(this);
             });
             if (iCnt < 2) {
-                newRow = tgtRow.clone(); tgtRow.after(newRow); _zw.fn.input(newRow);
+                newRow = tgtRow.clone(); tgtRow.after(newRow); _zw.fn.input(newRow); _zw.ut.picker('date');
                 _zw.form.orderRow(p); 
                 if (_zw.formEx.autoCalc) _zw.formEx.autoCalc(p);
             }
