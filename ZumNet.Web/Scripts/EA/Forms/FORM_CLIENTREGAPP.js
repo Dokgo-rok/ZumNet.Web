@@ -118,6 +118,8 @@
                 var exp = "['\\%^&\"*]", reg = new RegExp(exp, 'gi');
                 if (searchTxt.val().search(reg) >= 0) { bootbox.alert(exp + ' 문자는 사용될 수 없습니다!', function () { searchTxt.focus(); }); return false; }
 
+                if (vPos[1] == 'ERP_COUNTRY2') searchTxt.val(searchTxt.val().toUpperCase());
+
                 $.ajax({
                     type: "POST",
                     url: "/EA/Common",

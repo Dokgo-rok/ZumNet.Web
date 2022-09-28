@@ -2216,7 +2216,9 @@
     <Content Include="Scripts\EA\Forms\FORM_PRODRELEASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTSPECIFICATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PURCHASESAMPLE.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCA.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCB.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCF.js" />
     <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />

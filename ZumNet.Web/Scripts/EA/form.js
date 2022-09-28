@@ -48,13 +48,13 @@ $(function () {
                 var btn = {};
                 if (_zw.V.mode == 'edit' && _zw.V.appid != '') {
                     btn = {
-                        cancel: { label: '취소', className: 'btn-default', callback: function () { return false; } },
+                        cancel: { label: '취소', className: 'btn-default', callback: function () { } },
                         save: { label: '저장', className: 'btn-primary', callback: function () { _zw.fn.saveTemp('save'); } },
                         saveas: { label: '새로 저장', className: 'btn-info', callback: function () { _zw.fn.saveTemp('saveas'); } }
                     }
                 } else {
                     btn = {
-                        cancel: { label: '취소', className: 'btn-default', callback: function () { return false; } },
+                        cancel: { label: '취소', className: 'btn-default', callback: function () { } },
                         save: { label: '저장', className: 'btn-primary', callback: function () { _zw.fn.saveTemp('saveas'); } }
                     }
                 }

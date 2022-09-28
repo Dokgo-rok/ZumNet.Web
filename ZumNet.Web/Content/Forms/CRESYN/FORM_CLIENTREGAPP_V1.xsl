@@ -466,7 +466,7 @@
                       <!--<button onclick="parent.fnExternal('report.ERP_COUNTRY2',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');" id="btcc"  onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
                       </button>-->
-                      <button type="button" class="btn btn-outline-secondary btn-18" title="국가" onclick="_zw.formEx.externalWnd('report.ERP_COUNTRY2',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');">
+                      <button type="button" class="btn btn-outline-secondary btn-18" title="국가코드" onclick="_zw.formEx.externalWnd('report.ERP_COUNTRY2',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');">
                         <i class="fas fa-angle-down"></i>
                       </button>
                     </xsl:when>

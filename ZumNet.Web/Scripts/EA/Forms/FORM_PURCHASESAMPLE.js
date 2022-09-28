@@ -10,59 +10,59 @@
             }
             return true;
         },
-		"make": function (f) {
-			if (_zw.V.act == "_reviewer" || _zw.V.act == "__r") _zw.body.sub(f);
+        "make": function (f) {
+            if (_zw.V.act == "_reviewer" || _zw.V.act == "__r") _zw.body.sub(f);
         },
         "checkEvent": function (ckb, el, fld) {
         },
-		"calc": function (el) {
-			var s = 0, f = '0,0.[0000]';
-			if (el.name == "TTLLT") {
-				$('#__subtable1 td :text[name="TTLLT"]').each(function (idx, e) { s += numeral(e.value).value(); })
-				$('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
+        "calc": function (el) {
+            var s = 0, f = '0,0.[0000]';
+            if (el.name == "TTLLT") {
+                $('#__subtable1 td :text[name="TTLLT"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
             }
         },
-		"autoCalc": function (p) {
-			var s = 0, f = '0,0.[0000]';
-			p.find('td :text[name="TTLLT"]').each(function (idx, e) { s += numeral(e.value).value(); })
-			$('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
+        "autoCalc": function (p) {
+            var s = 0, f = '0,0.[0000]';
+            p.find('td :text[name="TTLLT"]').each(function (idx, e) { s += numeral(e.value).value(); })
+            $('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
         },
-		"optionWnd": function (pos, w, h, l, t, etc, x) {
-			var el = _zw.ut.eventBtn(), vPos = pos.split('.');
-			var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]);
-			var m = '', v1 = '', v2 = '', v3 = '', query = '', k3 = '', row = null;
-			if (vPos[0] == 'erp') {
-				m = 'getoracleerp';
+        "optionWnd": function (pos, w, h, l, t, etc, x) {
+            var el = _zw.ut.eventBtn(), vPos = pos.split('.');
+            var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]);
+            var m = '', v1 = '', v2 = '', v3 = '', query = '', k3 = '', row = null;
+            if (vPos[0] == 'erp') {
+                m = 'getoracleerp';
                 if (vPos[1] == 'bpanum') {
                     row = el.parent().parent();
-					var e = $('#__mainfield[name="PRODUCTCENTER"]');
-					if (e.val() == '') { bootbox.alert('적용사업장을 선택하십시오!'); return false; } else { query = e.val(); }
+                    var e = $('#__mainfield[name="PRODUCTCENTER"]');
+                    if (e.val() == '') { bootbox.alert('적용사업장을 선택하십시오!'); return false; } else { query = e.val(); }
 
                     e = row.find('td :text[name="COMPANYCODE"]');
                     if (e.val() == '') { bootbox.alert('업체명을 선택하십시오!'); return false; } else { v1 = e.val(); }
 
-					e = $('#__mainfield[name="CURRENCY"]');
-					if (e.val() == '') { bootbox.alert('통화를 선택하십시오!'); return false; } else { v2 = e.val(); }
+                    e = $('#__mainfield[name="CURRENCY"]');
+                    if (e.val() == '') { bootbox.alert('통화를 선택하십시오!'); return false; } else { v2 = e.val(); }
 
-					k3 = _zw.V.ft;
-				}
-			} else if (vPos[0] == 'report') m = 'getreportsearch';
-			else m = 'getcodedescription';
+                    k3 = _zw.V.ft;
+                }
+            } else if (vPos[0] == 'report') m = 'getreportsearch';
+            else m = 'getcodedescription';
 
-			//data body 조건 : N(modal-body 없음), F(footer 포함)
-			$.ajax({
-				type: "POST",
-				url: "/EA/Common",
-				data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + k3 + '",etc:"' + etc + '",fn:"",query:"' + query + '",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
-				success: function (res) {
-					//res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
-					if (res.substr(0, 2) == 'OK') {
-						var j = { "close": true, "width": w, "height": h, "left": l, "top": t }
-						j["title"] = el.attr('title'); j["content"] = res.substr(2);
+            //data body 조건 : N(modal-body 없음), F(footer 포함)
+            $.ajax({
+                type: "POST",
+                url: "/EA/Common",
+                data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + k3 + '",etc:"' + etc + '",fn:"",query:"' + query + '",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
+                success: function (res) {
+                    //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
+                    if (res.substr(0, 2) == 'OK') {
+                        var j = { "close": true, "width": w, "height": h, "left": l, "top": t }
+                        j["title"] = el.attr('title'); j["content"] = res.substr(2);
 
-						var pop = _zw.ut.popup(el[0], j);
+                        var pop = _zw.ut.popup(el[0], j);
                         //var row = vPos[1] == 'bpanum' ? el.parent().parent() : null;
-						pop.find('a[data-val]').click(function () {
+                        pop.find('a[data-val]').click(function () {
                             var v = $(this).attr('data-val').split('^'); //console.log(v + " : " + param)
                             if (param == 'BPANUM' && v[1] != 'Y') {
                                 bootbox.alert('BPA Status is not APPROVED!'); return false;
@@ -73,25 +73,25 @@
                                 _zw.form.orderRow(p); _zw.formEx.autoCalc(p);
                             }
 
-							for (var i = 0; i < param.length; i++) {
-								if (row && row.length > 0) row.find('td [name="' + param[i] + '"]').val(v[i]);
-								else $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
-							}
-							pop.find('.close[data-dismiss="modal"]').click();
-						});
+                            for (var i = 0; i < param.length; i++) {
+                                if (row && row.length > 0) row.find('td [name="' + param[i] + '"]').val(v[i]);
+                                else $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
+                            }
+                            pop.find('.close[data-dismiss="modal"]').click();
+                        });
 
-						pop.find('input:text.z-input-in').keyup(function (e) {
-							if (e.which == 13) {
-								if (row && row.length > 0) row.find('td [name="' + param[0] + '"]').val($(this).val());
-								else $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
-								pop.find('.close[data-dismiss="modal"]').click();
-							}
-						});
+                        pop.find('input:text.z-input-in').keyup(function (e) {
+                            if (e.which == 13) {
+                                if (row && row.length > 0) row.find('td [name="' + param[0] + '"]').val($(this).val());
+                                else $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
+                                pop.find('.close[data-dismiss="modal"]').click();
+                            }
+                        });
 
-					} else bootbox.alert(res);
-				}
-			});
-		},
+                    } else bootbox.alert(res);
+                }
+            });
+        },
         "externalWnd": function (pos, w, h, m, n, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(arguments)
             var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]); //console.log(param);
