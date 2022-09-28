@@ -8,8 +8,22 @@
         "checkEvent": function (ckb, el, fld) {
         },
         "calc": function (el) {
+            var s = 0, f = '0,0.[0000]';
+            if (el.name == "TTLLT") {
+                $('#__subtable1 td :text[name="TTLLT"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
+            }
         },
         "autoCalc": function (p) {
+            var s = 0, f = '0,0.[0000]';
+            p.find('td :text[name="TTLLT"]').each(function (idx, e) { s += numeral(e.value).value(); })
+            $('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
+        },
+        "date": function (el) {
+            if (el.name == "APPLYPOINT") {
+                var dif = _zw.ut.diff('day', _zw.V.current.date.substr(0, 10), el.value); console.log(dif + " : " + _zw.V.current.date.substr(0, 10))
+                if (dif && dif < 0) { bootbox.alert('[적용시점]은 오늘 이전으로 선택하세요!', function () { el.value = ''; el.focus(); }); return false; }
+            }
         },
         "optionWnd": function (pos, w, h, l, t, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.');

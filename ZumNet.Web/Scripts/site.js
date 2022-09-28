@@ -1703,21 +1703,34 @@ $(function () {
             });
         },
         "maskInput": function (e) {
-            var v = $(e).attr('data-inputmask').split(';');
-            if (v[0] == "number" || v[0] == "percent" || v[0] == "number-n") {
-                vanillaTextMask.maskInput({
-                    inputElement: e,
-                    mask: textMaskAddons.createNumberMask({
-                        prefix: '',
-                        suffix: v[0] == "percent" ? '%' : '',
-                        includeThousandsSeparator: v[0] == "number-n" ? false : true,
-                        integerLimit: parseInt(v[1]),
-                        allowDecimal: parseInt(v[2]) > 0 ? true : false,
-                        decimalLimit: parseInt(v[2]) > 0 ? parseInt(v[2]) : 0,
-                        allowNegative: v[3] && v[3] == '-' ? true : false
-                    })
-                });
-            } else if (v[0] == "date" || v[0] == "time") {
+            var v = $(e).attr('data-inputmask').split(';'); //console.log('v[0] => ' + v[0])
+            if (v[0] == "number" || v[0] == "percent" || v[0] == "number-n" || v[0] == "month") {
+                if (v[0] == "month") {
+                    vanillaTextMask.maskInput({
+                        inputElement: e,
+                        mask: textMaskAddons.createNumberMask({
+                            prefix: '',
+                            suffix: '',
+                            integerLimit: 2,
+                            allowDecimal: false,
+                            decimalLimit: 0
+                        })
+                    });
+                } else {
+                    vanillaTextMask.maskInput({
+                        inputElement: e,
+                        mask: textMaskAddons.createNumberMask({
+                            prefix: '',
+                            suffix: v[0] == "percent" ? '%' : '',
+                            includeThousandsSeparator: v[0] == "number-n" ? false : true,
+                            integerLimit: parseInt(v[1]),
+                            allowDecimal: parseInt(v[2]) > 0 ? true : false,
+                            decimalLimit: parseInt(v[2]) > 0 ? parseInt(v[2]) : 0,
+                            allowNegative: v[3] && v[3] == '-' ? true : false
+                        })
+                    });
+                }                
+            } else if (v[0] == "date" || v[0] == "time" || v[0] == "year") {
                 var mv = [];
                 if (v[0] == "date") {
                     if (v[1] == 'yyyy') mv = [/[1-2]/, /\d/, /\d/, /\d/];

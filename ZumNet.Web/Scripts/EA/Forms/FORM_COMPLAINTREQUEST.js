@@ -9,44 +9,45 @@
                     if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [귀책공장] 누락!', function () { el.focus(); }); return false; }
 
 				//} else if ((_zw.V.biz == "application" && _zw.V.act == "_approver") || (_zw.V.biz == "gwichaek" && (_zw.V.act == "__r" || _zw.V.act == "_reviewer")) || (_zw.V.biz == "receive" && _zw.V.act == "__r") || (_zw.V.biz == "receive" && _zw.V.act == "_reviewer")) {
-				} else if (_zw.V.biz == "receive" && _zw.V.act == "_approver") {
+				//} else if (_zw.V.biz == "receive" && _zw.V.act == "_approver") {
+				} else if (_zw.V.biz == "receive" && (_zw.V.act == "__r" || _zw.V.act == "_reviewer")) {
                     el = $('#__mainfield[name="BADSAMPLE"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [불량샘플유/무] 누락!', function () { el.focus(); }); return false; }
+                    if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [불량샘플유/무] 누락!', function () { el.focus(); }); return false; }
 
                     var el2 = $('#__mainfield[name="RECEIVEDATE"]');
-                    if (el && el.val() == '유') {
+					if (el && el.length > 0 && el.val() == '유') {
                         if (el2 && $.trim(el2.val()) == '') { bootbox.alert('필수항목 [불량샘플접수일] 누락!', function () { el2.focus(); }); return false; }
                     }
 
                     el = $('#__mainfield[name="LOSSYN"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [손실발생유/무] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [손실발생유/무] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="LOSSAMOUNT"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [손실금액] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [손실금액] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="CHECKDATE"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [효과성검증일] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [효과성검증일] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="CHECKCOUNT2"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [효과성확인수량] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [효과성확인수량] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="ETC"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [효과성확인결과] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [효과성확인결과] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="RESPONSEDATE"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [고객대응완료일] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [고객대응완료일] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="BADCOUNT2"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [비고] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [비고] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="REASON"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [발생원인] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [발생원인] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="STEPDESC"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [개선대책] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [개선대책] 누락!', function () { el.focus(); }); return false; }
 
                     el = $('#__mainfield[name="DEVDESC"]');
-                    if (el && $.trim(el.val()) == '') { bootbox.alert('필수항목 [수평전개] 누락!', function () { el.focus(); }); return false; }
+					if (el && el.length > 0 && $.trim(el.val()) == '') { bootbox.alert('필수항목 [수평전개] 누락!', function () { el.focus(); }); return false; }
                 }
             }
 			return true;

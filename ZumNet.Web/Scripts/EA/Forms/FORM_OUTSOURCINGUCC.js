@@ -1,15 +1,31 @@
 ﻿$(function () {
     _zw.formEx = {
         "validation": function (cmd) {
+            if (cmd == "draft") { //기안
+                $('#__subtable1 tr.sub_table_row').each(function (idx) {
+                    if ($(this).find('td :text[name="PRICEA"]').val() != '' && $(this).find('td :text[name="PRICEB"]').val() == '' && $(this).find('td :text[name="BPANUM"]').val() == '') {
+                        $(this).find('td :text[name="BPANUM"]').val('NO BPA');
+                    }
+                });
+            }
             return true;
         },
         "make": function (f) {
+            if (_zw.V.act == "_reviewer" || _zw.V.act == "__r") _zw.body.sub(f);
         },
         "checkEvent": function (ckb, el, fld) {
         },
         "calc": function (el) {
+            var s = 0, f = '0,0.[0000]';
+            if (el.name == "TTLLT") {
+                $('#__subtable1 td :text[name="TTLLT"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
+            }
         },
         "autoCalc": function (p) {
+            var s = 0, f = '0,0.[0000]';
+            p.find('td :text[name="TTLLT"]').each(function (idx, e) { s += numeral(e.value).value(); })
+            $('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
         },
         "optionWnd": function (pos, w, h, l, t, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.');

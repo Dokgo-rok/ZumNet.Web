@@ -4,6 +4,7 @@
             return true;
         },
         "make": function (f) {
+            if (_zw.V.act == "_reviewer" || _zw.V.act == "__r") _zw.body.mainCompare(f, false);
         },
         "checkEvent": function (ckb, el, fld) {
         },
@@ -12,17 +13,16 @@
         "autoCalc": function (p) {
         },
         "optionWnd": function (pos, w, h, l, t, etc, x) {
-            var el = _zw.ut.eventBtn(), vPos = pos.split('.');
-            var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]);
-            var m = '', v1 = '', v2 = '', v3 = '', query = '', k3 = '', row = null;
+            var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(arguments)
+            var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]); //console.log(param);
+            var m = '', query = '', v1 = '', v2 = '', v3 = '', k3 = '';
             if (vPos[0] == 'erp') {
                 m = 'getoracleerp';
                 if (vPos[1] == 'bpanum') {
-                    row = el.parent().parent();
                     var e = $('#__mainfield[name="PRODUCTCENTER"]');
                     if (e.val() == '') { bootbox.alert('적용사업장을 선택하십시오!'); return false; } else { query = e.val(); }
 
-                    e = row.find('td :text[name="COMPANYCODE"]');
+                    e = $('#__mainfield[name="COMPANYCODE"]');
                     if (e.val() == '') { bootbox.alert('업체명을 선택하십시오!'); return false; } else { v1 = e.val(); }
 
                     e = $('#__mainfield[name="CURRENCY"]');
@@ -37,39 +37,23 @@
             $.ajax({
                 type: "POST",
                 url: "/EA/Common",
-                data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + k3 + '",etc:"' + etc + '",fn:"",query:"' + query + '",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
+                data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + k3 + '",etc:"' + etc + '",query:"' + query + '",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
                 success: function (res) {
                     //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
                     if (res.substr(0, 2) == 'OK') {
                         var j = { "close": true, "width": w, "height": h, "left": l, "top": t }
                         j["title"] = el.attr('title'); j["content"] = res.substr(2);
 
-                        var pop = _zw.ut.popup(el[0], j);
-                        //var row = vPos[1] == 'bpanum' ? el.parent().parent() : null;
+                        var pop = _zw.ut.popup(el[0], j); //console.log(param)
                         pop.find('a[data-val]').click(function () {
-                            var v = $(this).attr('data-val').split('^'); //console.log(v + " : " + param)
+                            var v = $(this).attr('data-val').split('^');
                             if (param == 'BPANUM' && v[1] != 'Y') {
                                 bootbox.alert('BPA Status is not APPROVED!'); return false;
                             }
-                            if (param == 'PRODUCTCENTER') {//구매단가 관련 사업장 변경시 테이블 정보 초기화
-                                var p = $('#__subtable1');
-                                p.find('tr.sub_table_row').each(function () { _zw.form.resetField($(this)); });
-                                _zw.form.orderRow(p); _zw.formEx.autoCalc(p);
-                            }
-
                             for (var i = 0; i < param.length; i++) {
-                                if (row && row.length > 0) row.find('td [name="' + param[i] + '"]').val(v[i]);
-                                else $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
+                                $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
                             }
                             pop.find('.close[data-dismiss="modal"]').click();
-                        });
-
-                        pop.find('input:text.z-input-in').keyup(function (e) {
-                            if (e.which == 13) {
-                                if (row && row.length > 0) row.find('td [name="' + param[0] + '"]').val($(this).val());
-                                else $('#__mainfield[name="' + param[0] + '"]').val($(this).val());
-                                pop.find('.close[data-dismiss="modal"]').click();
-                            }
                         });
 
                     } else bootbox.alert(res);
@@ -160,14 +144,10 @@
                                 p.find('.modal-body').html(res.substr(2));
                             }
 
-                            var row = vPos[1] == 'items' || vPos[1] == 'items3' || vPos[1] == 'vendors' ? el.parent().parent() : null;
                             p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
                                 var v = $(this).attr('data-val').split('^');
-                                if (vPos[1] == 'vendors') row.find('td [name="BPANUM"]').val('');
-
                                 for (var i = 0; i < param.length; i++) {
-                                    if (row) row.find('td [name="' + param[i] + '"]').val(v[i]);
-                                    else $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
+                                    $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
                                 }
                                 p.modal('hide');
                             });

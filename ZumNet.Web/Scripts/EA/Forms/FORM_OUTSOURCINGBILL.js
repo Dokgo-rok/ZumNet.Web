@@ -8,29 +8,97 @@
         "checkEvent": function (ckb, el, fld) {
         },
         "calc": function (el) {
+            var s = 0, f = '0,0', row;
+
+            if (el.name == "UNITCOST1" || el.name == "UNITCOST2") {
+                row = $(el).parent().parent();
+                $('#__subtable1 td :text[name="UNITCOST1"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM1"]').val(numeral(s).format(f)); s = 0;
+
+                $('#__subtable1 td :text[name="UNITCOST2"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM2"]').val(numeral(s).format(f)); s = 0;
+
+                s = _zw.ut.add(4, row.find('td :text[name="UNITCOST1"]').val(), row.find('td :text[name="UNITCOST2"]').val()); //console.log('s => ' + s)
+                row.find('td :text[name="SUM1"]').val(numeral(s).format(f)); s = 0;
+
+                $('#__subtable1 td :text[name="SUM1"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="TOTALSUM1"]').val(numeral(s).format(f)); s = 0;
+
+            } else if (el.name == "UNITCOST3" || el.name == "UNITCOST4") {
+                row = $(el).parent().parent();
+                $('#__subtable1 td :text[name="UNITCOST3"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM3"]').val(numeral(s).format(f)); s = 0;
+
+                $('#__subtable1 td :text[name="UNITCOST4"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM4"]').val(numeral(s).format(f)); s = 0;
+
+                s = _zw.ut.sub(4, row.find('td :text[name="UNITCOST3"]').val(), row.find('td :text[name="UNITCOST4"]').val());
+                row.find('td :text[name="SUM2"]').val(numeral(s).format(f)); s = 0;
+
+                $('#__subtable1 td :text[name="SUM2"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="TOTALSUM2"]').val(numeral(s).format(f)); s = 0;
+
+            } else {
+                if (el.name == "UNITCOST5") {
+                    $('#__subtable2 td :text[name="UNITCOST5"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                    $('#__mainfield[name="UNITSUM5"]').val(numeral(s).format(f)); s = 0;
+
+                } else if (el.name == "UNITCOST6") {
+                    $('#__subtable2 td :text[name="UNITCOST6"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                    $('#__mainfield[name="UNITSUM6"]').val(numeral(s).format(f)); s = 0;
+
+                } else if (el.name == "UNITCOST7") {
+                    $('#__subtable2 td :text[name="UNITCOST7"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                    $('#__mainfield[name="UNITSUM7"]').val(numeral(s).format(f)); s = 0;
+
+                } else if (el.name == "UNITCOST8") {
+                    $('#__subtable2 td :text[name="UNITCOST8"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                    $('#__mainfield[name="UNITSUM8"]').val(numeral(s).format(f)); s = 0;
+                }
+            }
         },
         "autoCalc": function (p) {
+            var s = 0, f = '0,0';
+
+            if (p.attr('id') == '__subtable1') {
+                p.find('td :text[name="UNITCOST1"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM1"]').val(numeral(s).format(f)); s = 0;
+
+                p.find('td :text[name="UNITCOST2"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM2"]').val(numeral(s).format(f)); s = 0;
+
+                p.find('td :text[name="SUM1"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="TOTALSUM1"]').val(numeral(s).format(f)); s = 0;
+
+                p.find('td :text[name="UNITCOST3"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM3"]').val(numeral(s).format(f)); s = 0;
+
+                p.find('td :text[name="UNITCOST4"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM4"]').val(numeral(s).format(f)); s = 0;
+
+                p.find('td :text[name="SUM2"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="TOTALSUM2"]').val(numeral(s).format(f)); s = 0;
+
+            } else if (p.attr('id') == '__subtable2') {
+                p.find('td :text[name="UNITCOST5"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM5"]').val(numeral(s).format(f)); s = 0;
+
+                p.find('td :text[name="UNITCOST6"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM6"]').val(numeral(s).format(f)); s = 0;
+
+                p.find('td :text[name="UNITCOST7"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM7"]').val(numeral(s).format(f)); s = 0;
+
+                p.find('td :text[name="UNITCOST8"]').each(function (idx, e) { s += numeral(e.value).value(); })
+                $('#__mainfield[name="UNITSUM8"]').val(numeral(s).format(f)); s = 0;
+            }
         },
         "optionWnd": function (pos, w, h, l, t, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.');
             var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]);
             var m = '', v1 = '', v2 = '', v3 = '', query = '', k3 = '', row = null;
-            if (vPos[0] == 'erp') {
-                m = 'getoracleerp';
-                if (vPos[1] == 'bpanum') {
-                    row = el.parent().parent();
-                    var e = $('#__mainfield[name="PRODUCTCENTER"]');
-                    if (e.val() == '') { bootbox.alert('적용사업장을 선택하십시오!'); return false; } else { query = e.val(); }
-
-                    e = row.find('td :text[name="COMPANYCODE"]');
-                    if (e.val() == '') { bootbox.alert('업체명을 선택하십시오!'); return false; } else { v1 = e.val(); }
-
-                    e = $('#__mainfield[name="CURRENCY"]');
-                    if (e.val() == '') { bootbox.alert('통화를 선택하십시오!'); return false; } else { v2 = e.val(); }
-
-                    k3 = _zw.V.ft;
-                }
-            } else if (vPos[0] == 'report') m = 'getreportsearch';
+            if (vPos[0] == 'erp') m = 'getoracleerp';
+            else if (vPos[0] == 'report') m = 'getreportsearch';
             else m = 'getcodedescription';
 
             //data body 조건 : N(modal-body 없음), F(footer 포함)
@@ -48,15 +116,6 @@
                         //var row = vPos[1] == 'bpanum' ? el.parent().parent() : null;
                         pop.find('a[data-val]').click(function () {
                             var v = $(this).attr('data-val').split('^'); //console.log(v + " : " + param)
-                            if (param == 'BPANUM' && v[1] != 'Y') {
-                                bootbox.alert('BPA Status is not APPROVED!'); return false;
-                            }
-                            if (param == 'PRODUCTCENTER') {//구매단가 관련 사업장 변경시 테이블 정보 초기화
-                                var p = $('#__subtable1');
-                                p.find('tr.sub_table_row').each(function () { _zw.form.resetField($(this)); });
-                                _zw.form.orderRow(p); _zw.formEx.autoCalc(p);
-                            }
-
                             for (var i = 0; i < param.length; i++) {
                                 if (row && row.length > 0) row.find('td [name="' + param[i] + '"]').val(v[i]);
                                 else $('#__mainfield[name="' + param[i] + '"]').val(v[i]);
@@ -84,30 +143,6 @@
             else if (vPos[0] == 'report') m = 'getreportsearch';
             else m = 'getcodedescription';
 
-            if (pos == "erp.items" || pos == "erp.vendors" || pos == "erp.items1" || pos == "erp.items3") {
-                el2 = $('#__mainfield[name="PRODUCTCENTER"]');
-                if (el2.val() == '') { bootbox.alert('적용사업장을 선택하십시오!', function () { el2.focus(); }); return false; }
-
-                if (pos == "erp.items3") {
-                    if (el2.val() == "CD") query = "104";
-                    else if (el2.val() == "CD2") query = "148";
-                    else if (el2.val() == "CH") query = "102";
-                    else if (el2.val() == "CT") query = "103";
-                    else if (el2.val() == "IC") query = "105";
-                    else if (el2.val() == "IS") query = "128";
-                    else if (el2.val() == "VH") query = "108";
-                    else if (el2.val() == "KH") query = "101";
-                } else {
-                    query = el2.val();
-                }
-                m = 'getoracleerp';
-            }
-
-            if (pos == 'erp.exchangerate') { //환율
-                if ($('#__mainfield[name="CURRENCY"]').val() == '') { bootbox.alert('통화를 선택하십시오!', function () { }); return false; }
-                v1 = $('#__mainfield[name="CURRENCY"]').val();
-            }
-
             var sSelect = '';
             if (pos == "erp.vendors") sSelect = '<div class="input-group-prepend"><select class="form-control"><option value="VENDOR_NAME" selected>NAME</option><option value="SEGMENT1">CODE</option></select></div>'
 
@@ -132,11 +167,7 @@
             var searchBtn = p.find('.zf-modal .modal-header .input-group .btn');
             var searchTxt = $('.zf-modal .modal-header .input-group :text');
 
-            if (pos == "erp.exchangerate") {
-                p.find(".modal-dialog").css("max-width", "20rem").find(".modal-content").css("min-height", "6rem");
-                searchTxt.prop('readonly', true).val(moment(_zw.V.current.date).format('YYYY-MM-DD'));
-
-            } else p.find(".modal-dialog").css("max-width", "35rem").find(".modal-content").css("min-height", "20rem");
+            p.find(".modal-dialog").css("max-width", "35rem").find(".modal-content").css("min-height", "20rem");
 
             searchTxt.keyup(function (e) { if (e.which == 13) { searchBtn.click(); } });
             searchBtn.click(function () {
@@ -163,8 +194,6 @@
                             var row = vPos[1] == 'items' || vPos[1] == 'items3' || vPos[1] == 'vendors' ? el.parent().parent() : null;
                             p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
                                 var v = $(this).attr('data-val').split('^');
-                                if (vPos[1] == 'vendors') row.find('td [name="BPANUM"]').val('');
-
                                 for (var i = 0; i < param.length; i++) {
                                     if (row) row.find('td [name="' + param[i] + '"]').val(v[i]);
                                     else $('#__mainfield[name="' + param[i] + '"]').val(v[i]);

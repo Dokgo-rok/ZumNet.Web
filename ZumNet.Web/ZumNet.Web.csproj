@@ -759,12 +759,18 @@
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCBLEEVIN_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCB_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCB_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCB_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCC2_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCCLEEVIN_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCC_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCC_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCDLEEVIN_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCD_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCD_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCF_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUIN_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASE_V1.xsl" />
@@ -2172,6 +2178,7 @@
     <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTD.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPMAKEPURCHASE.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPPURCHASEREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_ESTIMATEAGREE.js" />
     <Content Include="Scripts\EA\Forms\FORM_FIRSTVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_FLOWERMONEY.js" />
     <Content Include="Scripts\EA\Forms\FORM_GONGDONGGONGGA.js" />
@@ -2206,6 +2213,11 @@
     <Content Include="Scripts\EA\Forms\FORM_OFFICEPURCHASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_OPERATIONMANUAL.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTSIDERAPP.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGBILL.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUCB.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUCC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUCD.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PASSPORTLIST.js" />
@@ -2216,10 +2228,12 @@
     <Content Include="Scripts\EA\Forms\FORM_PRODRELEASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTSPECIFICATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PURCHASEBILL.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASESAMPLE.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCA.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCB.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCD.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCF.js" />
     <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />
     <Content Include="Scripts\EA\Forms\FORM_RESIGNATION.js" />
