@@ -765,6 +765,14 @@ namespace ZumNet.Web.Bc
                     rt = "far fa-file-pdf text-danger";
                     break;
 
+                case "dst":
+                case "dwf":
+                case "dwg":
+                case "dws":
+                case "dwt":
+                    rt = "fas fa-file-invoice text-indigo"; //autocad
+                    break;
+
                 case "png":
                 case "bmp":
                 case "jpg":

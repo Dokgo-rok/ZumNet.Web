@@ -199,6 +199,98 @@ $(function () {
         if (p.find('.modal-dialog').hasClass('modal-sm')) p.find('.modal-dialog').removeClass('modal-sm');
     }
 
+    _zw.fn.optionWnd = function (pos, w, h, l, t, etc, x) {
+        var el = _zw.ut.eventBtn();
+        var j = { "close": true, "width": w, "height": h, "left": l, "top": t }
+        j["title"] = el.attr('title'); j["content"] = el.next().html();
+        var pop = _zw.ut.popup(el[0], j);
+    }
+
+    _zw.fn.externalWnd = function (pos, w, h, m, n, etc, x) {
+        var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(arguments)
+        var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]);
+        var m = '', query = '', v1 = '', v2 = '', v3 = '';
+        if (vPos[0] == 'erp') m = 'getoracleerp';
+        else if (vPos[0] == 'report') m = 'getreportsearch';
+        else m = 'getcodedescription';
+
+        var sSelect = '';
+        if (_zw.V.ft == 'FORM_DRAWING') {
+            $('#_SearchText').val(''); $('#_SearchCond3').val('');
+        }
+
+        var s = '<div class="zf-modal modal-dialog modal-dialog-centered modal-dialog-scrollable">'
+            + '<div class="modal-content" data-for="' + vPos[1] + '" style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)">'
+            + '<div class="modal-header">'
+            + '<div class="d-flex align-items-center w-100">'
+            + '<div class="input-group w-50">'
+            + sSelect
+            + '<input type="text" class="form-control" placeholder="' + (el.attr('title') != '' ? el.attr('title') + ' ' : '') + '검색" value="">'
+            + '<span class="input-group-append"><button class="btn btn-secondary" type="button"><i class="fe-search"></i></button></span>'
+            + '</div>' //input-group
+            + '<div class="ml-2 d-flex align-items-center zf-modal-page"></div>'
+            + '</div>' //d-flex
+            + '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+            + '<input type="hidden" data-for="page" value="1" /><input type="hidden" data-for="page-count" value="50" />'
+            + '</div>' //modal-header
+            + '<div class="modal-body"></div>'
+            + '</div></div>';
+
+        var p = $('#popBlank'); p.html(s);
+        var searchBtn = p.find('.zf-modal .modal-header .input-group .btn');
+        var searchTxt = $('.zf-modal .modal-header .input-group :text');
+
+        p.find(".modal-dialog").css("max-width", "35rem").find(".modal-content").css("min-height", "20rem");
+
+        searchTxt.keyup(function (e) { if (e.which == 13) { searchBtn.click(); } });
+        searchBtn.click(function () {
+            if ($.trim(searchTxt.val()) == '' || searchTxt.val().length < 1) { bootbox.alert('검색어를 입력하십시오!', function () { searchTxt.focus(); }); return false; }
+            var exp = "['\\%^&\"*]", reg = new RegExp(exp, 'gi');
+            if (searchTxt.val().search(reg) >= 0) { bootbox.alert(exp + ' 문자는 사용될 수 없습니다!', function () { searchTxt.focus(); }); return false; }
+
+            $.ajax({
+                type: "POST",
+                url: "/EA/Common",
+                data: '{M:"' + m + '",body:"N", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",k3:"' + '' + '",etc:"' + etc + '",query:"' + query + '",search:"' + searchTxt.val() + '",searchcol:"' + (p.find('.modal-header select').length > 0 ? p.find('.modal-header select').val() : '') + '",page:"' + p.find('.modal-header :hidden[data-for="page"]').val() + '",count:"' + p.find('.modal-header :hidden[data-for="page-count"]').val() + '",v1:"' + v1 + '"}',
+                success: function (res) {
+                    //res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
+                    if (res.substr(0, 2) == 'OK') {
+                        var cDel = String.fromCharCode(8);
+                        if (res.substr(2).indexOf(cDel) != -1) {
+                            var vRes = res.substr(2).split(cDel);
+                            p.find('.modal-header .zf-modal-page').html(vRes[0]);
+                            p.find('.modal-body').html(vRes[1]);
+                        } else {
+                            p.find('.modal-body').html(res.substr(2));
+                        }
+
+                        p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
+                            var v = $(this).attr('data-val').split('^'); console.log(v)
+                            //$('#_SearchText').val(v[0]);
+                            //if (_zw.V.ft == 'FORM_DRAWING') _zw.V.lv["cd3"] = v[1];
+                            for (var i = 0; i < param.length; i++) {
+                                $('#' + param[i]).val(v[i]);
+                            }
+                            p.modal('hide');
+                        });
+
+                        p.find('.zf-modal-page .btn[data-for]').click(function () {
+                            p.find('.modal-header :hidden[data-for="page"]').val($(this).attr('data-for'));
+                            searchBtn.click();
+                        });
+
+                    } else bootbox.alert(res);
+                }
+            });
+        });
+
+        p.on('shown.bs.modal', function () {
+            searchTxt.focus();
+        });
+        p.on('hidden.bs.modal', function () { p.html(''); });
+        p.modal();
+    }
+
     _zw.fn.requestApproval = function () {
     }
 
@@ -274,6 +366,8 @@ $(function () {
             //var postData = _zw.fn.getLvQuery(); //console.log(postData)
             //window.location.href = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
+        //} else if (_zw.V.ft == 'FORM_DRAWING') {
+
         } else {
             _zw.fn.initLv(_zw.V.current.urid);
 
@@ -297,9 +391,14 @@ $(function () {
                     var e = $('#_SearchText');
                     var s = "['\\%^&\"*]";
                     var reg = new RegExp(s, 'g');
-                    if (e.val().search(reg) >= 0) { alert(s + " 문자는 사용될 수 없습니다!"); e.val(''); return; }
+                    if (e.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e.val(''); e.focus(); }); return false; }
 
                     _zw.V.lv.cd2 = e.val();
+
+                    if (_zw.V.ft == 'FORM_DRAWING') {
+                        if ($.trim(e.val()) == '') { bootbox.alert('모델번호 또는 부품번호를 입력하십시오!', function () { e.focus(); }); return false; }
+                        _zw.V.lv.cd3 = $('#_SearchCond3').val();
+                    }
                 }
             }
         }
@@ -334,7 +433,7 @@ $(function () {
 
         j["cd1"] = _zw.V.lv.cd1; j["cd2"] = _zw.V.lv.cd2; j["cd3"] = _zw.V.lv.cd3; j["cd4"] = _zw.V.lv.cd4; j["cd5"] = _zw.V.lv.cd5; j["cd6"] = _zw.V.lv.cd6;
         j["cd7"] = _zw.V.lv.cd7; j["cd8"] = _zw.V.lv.cd8; j["cd9"] = _zw.V.lv.cd9; j["cd10"] = _zw.V.lv.cd10; j["cd11"] = _zw.V.lv.cd11; j["cd12"] = _zw.V.lv.cd12;
-
+        console.log(j)
         return JSON.stringify(j);
     }
 

@@ -749,7 +749,9 @@
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PROJECTBUDGET_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PROJECTIDREGISTRATION_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEBILL_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEBILL_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEPROJECT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASESAMPLE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCAINDUSTRY_V1.xsl" />
@@ -3326,6 +3328,7 @@
     <Content Include="Views\Report\_FORM_AIRTICKETRESERVATION.cshtml" />
     <Content Include="Views\Report\_REGISTER_LEAVEUSE.cshtml" />
     <Content Include="Views\Report\_REGISTER_EDUCATIONPOINT.cshtml" />
+    <Content Include="Views\Report\_FORM_DRAWING.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
