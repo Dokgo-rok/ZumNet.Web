@@ -281,6 +281,14 @@ $(function () {
     //    });
     //});
 
+    $('#layout-navbar .app-search input[type="text"], .modal-body .app-search input[type="text"]').keyup(function (e) {
+        if (e.which == 13) _zw.mu.totalSearch();
+    });
+
+    $('#layout-navbar .app-search .btn, .modal-body .app-search .btn').click(function (e) {
+        _zw.mu.totalSearch();
+    });
+
     $('.z-lv-menu .btn[data-zv-menu], .z-lv-search .btn[data-zv-menu]').click(function () {
         var mn = $(this).attr('data-zv-menu');
         if (mn != '') _zw.mu[mn]();
@@ -624,6 +632,15 @@ $(function () {
             if (opt && opt == 'count') _zw.fn.getEACount('', 'ea', 'base', '', 'N');
 
             _zw.fn.loadList();
+        },
+        "totalSearch": function () {
+            var e = $('.app-search input[type="text"]'); //console.log(e.val())
+            var s = "['\\%^&\"*]";
+            var reg = new RegExp(s, 'g');
+            if (e.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e.val(''); e.focus(); }); return false; }
+            if ($.trim(e.val()) == '') { bootbox.alert('검색어를 입력하십시오!', function () { e.focus(); }); return false; }
+
+            window.location.href = '/Search?qi=' + encodeURIComponent(_zw.base64.encode('{ct:"0",ctalias:"",searchtext:"' + e.val() + '"}'));
         },
         "readMsg": function (m) {
             var el, p, postData, tgtPage, stdPage;
@@ -1873,6 +1890,8 @@ $(function () {
                     if (_zw.Fc) _zw.Fc.updateSize();
                 } else if (ctrl == 'vw-search-cond') {
                     tgt.toggleClass('d-none');
+                    if ($(el).find('i').hasClass('fa-angle-down')) $(el).find('i').removeClass('fa-angle-down').addClass('fa-angle-up');
+                    else $(el).find('i').removeClass('fa-angle-up').addClass('fa-angle-down');
                 }
             }
         },

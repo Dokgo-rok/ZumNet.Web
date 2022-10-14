@@ -1,0 +1,98 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = Resources.Global.Search;
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/Content/search.css")
+}
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="utf-8"></script>
+    }
+    @Scripts.Render("~/Scripts/Controls/search.js")
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+@functions {
+//private string ViewList(DataTable data)
+//{
+//    if (data != null && data.Rows.Count > 0)
+//    {
+//        StringBuilder sb = new StringBuilder();
+
+//        sb.AppendFormat("<div class=\"text-muted px-3 pt-3\">>검색결과 총 {0} 건</div>", ViewBag.R.lv["total"].ToString());
+//        sb.Append("<ul class=\"list-group list-group-flush\">");
+//        foreach(DataRow row in data.Rows)
+//        {
+//            sb.Append("<li class=\"list-group-item border-0\">");
+//            sb.AppendFormat("<div class=\"text-muted mb-1\">{0} > {1}</div>", row["CTName"].ToString(), row["FDName"].ToString());
+//            sb.AppendFormat("<a class=\"z-lnk-navy-n\" href=\"javascript://\">{0}</a>", row["Subject"].ToString());
+//            sb.AppendFormat("<div class=\"mt-1\">{0}</div>", row["Body"].ToString().Trim());
+//            sb.Append("<div class=\"d-flex\">");
+//            sb.AppendFormat("<div class=\"mr-3\">작성자 : {0}</div>", row["Creator"].ToString());
+//            sb.AppendFormat("<div>등록일 : {0}</div>", ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString()));
+//            sb.Append("</div>");
+//            sb.Append("</li>");
+//        }
+//        sb.Append("</ul>");
+
+//        return sb.ToString();
+//    }
+//    return "";
+//}
+}
+<div class="container-fluid container-p-y">
+    <div class="total-search d-flex">
+        <div class="input-group">
+            <input type="text" class="form-control text-big" placeholder="@Resources.Global.Search ..." value="@ViewBag.R.lv["searchtext"]">
+            <button type="button" class="btn btn-default"><i class="fe-search navbar-icon"></i></button>
+        </div>
+        <button class="btn btn-default ml-2" aria-controls="vw-search-cond" onclick="_zw.ut.ctrls();" title="상세"><i class="fas fa-angle-down"></i></button>
+    </div>
+
+    <div class="total-search-detail mt-3 d-none" data-controls="vw-search-cond">
+        <div class="input-group input-daterange justify-content-end">
+            <div class="input-group-prepend"><span class="input-group-text bg-light">검색일자</span></div>
+            <input type="text" class="form-control start-date px-1" value="@ViewBag.R.lv["start"]" style="max-width: 8rem">
+            <div class="input-group-prepend"><span class="input-group-text">~</span></div>
+            <input type="text" class="form-control end-date" value="@ViewBag.R.lv["end"]" style="max-width: 8rem">
+        </div>
+    </div>
+
+    <div class="total-search-result mt-3">
+        <ul class="nav nav-tabs tabs-alt justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link@(ViewBag.R.ct == "" || ViewBag.R.ct == "0" ? " active" : "")" href="javascript://" data-val="0"><i class="fe-search mr-1"></i>통합검색</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link@(ViewBag.R.ct == "103" ? " active" : "")" href="javascript://" data-val="103"><i class="fas fa-list-ul mr-1"></i>게시판</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link@(ViewBag.R.ct == "129" ? " active" : "")" href="javascript://" data-val="129"><i class="fe-users mr-1"></i>부서게시판</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link@(ViewBag.R.ct == "108" ? " active" : "")" href="javascript://" data-val="108"><i class="fe-file-text mr-1"></i>문서관리</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link@(ViewBag.R.ct == "105" ? " active" : "")" href="javascript://" data-val="105"><i class="far fa-clipboard mr-1"></i>지식관리</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="__SearchView">
+                @*@Html.Raw(ViewList(ViewBag.BoardList))*@
+                @Html.Partial("_Result")
+            </div>
+            <ul class="pagination pagination-sm justify-content-center pt-3" id="__SearchViewPage">
+                @Html.Partial("~/Views/Common/_ListPagination.cshtml")
+            </ul>
+        </div>
+    </div>
+</div>

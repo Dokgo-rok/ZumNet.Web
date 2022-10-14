@@ -48,7 +48,9 @@
                             + '<li class="list-group-item list-group-item-action"><a href="javascript:" class="z-lnk-navy-n" data-val="13:30^18:00">오후반차&nbsp;&nbsp;13:30 ~ 18:00</a></li>'
                             + '</ul></div>';
                     } else if (x.value == 'D') {
+                        j["height"] = 124;
                         j["content"] = '<div><ul class="list-group list-group-flush">'
+                            + '<li class="list-group-item list-group-item-action"><a href="javascript:" class="z-lnk-navy-n" data-val="08:00^10:00">오전1/4차&nbsp;&nbsp;08:00 ~ 10:00</a></li>'
                             + '<li class="list-group-item list-group-item-action"><a href="javascript:" class="z-lnk-navy-n" data-val="09:00^11:00">오전1/4차&nbsp;&nbsp;09:00 ~ 11:00</a></li>'
                             + '<li class="list-group-item list-group-item-action"><a href="javascript:" class="z-lnk-navy-n" data-val="16:00^18:00">오후1/4차&nbsp;&nbsp;16:00 ~ 18:00</a></li>'
                             + '</ul></div>';

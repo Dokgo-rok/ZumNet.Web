@@ -1,0 +1,44 @@
+﻿/*******************************************************************************/
+/* 통합검색 */
+
+.total-search, .total-search-detail {
+    margin: 0 auto;
+    max-width: 32rem;
+}
+    .total-search .form-control {
+        border: none;
+        height: 40px;
+        padding-left: 30px;
+        padding-right: 10px;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.15);
+        border-radius: 40px 0 0 40px;
+    }
+        .total-search .form-control:focus, .total-search .form-control:hover {
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+        }
+
+    .total-search .input-group .btn {
+        border-color: transparent;
+        border-radius: 0 40px 40px 0;
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.15);
+        margin-left: 0 !important;
+        z-index: 4;
+    }
+
+.total-search-result .nav-item {
+    font-size: 106%;
+}
+.total-search-result .tab-content {
+    margin: 0 auto;
+    max-width: 50rem;
+    font-size: 106%;
+}
+
+    .total-search-result .tab-content .total-search-cnt {
+        padding: 1rem 0.9375rem 0;
+    }
+
+    .total-search-result .tab-content .list-group-item .z-lnk-navy-n {
+        font-size: 120%;
+        font-weight: 700;
+    }

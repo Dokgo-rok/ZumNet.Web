@@ -386,6 +386,7 @@
     <Content Include="Content\booking.css" />
     <Content Include="Content\ce.css" />
     <Content Include="Content\env.css" />
+    <Content Include="Content\search.css" />
     <Content Include="Content\voc.css" />
     <Content Include="Content\todo.css" />
     <Content Include="Content\lcm.css" />
@@ -2135,6 +2136,7 @@
     <Content Include="images\banner\portal_cresyn8.jpg" />
     <Content Include="images\icons\calendar_imgs.png" />
     <Content Include="images\main_portal_cresyn7.jpg" />
+    <Content Include="Scripts\Controls\search.js" />
     <Content Include="Scripts\Controls\portal.js" />
     <Content Include="Scripts\Docs\kms.js" />
     <Content Include="Scripts\EA\ecnplan.js" />
@@ -2946,7 +2948,6 @@
     <Folder Include="Content\Forms\IMPORT\" />
     <Folder Include="Views\Addr\" />
     <Folder Include="Views\External\" />
-    <Folder Include="Views\Search\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\theme-cresyn.scss" />
@@ -3329,6 +3330,8 @@
     <Content Include="Views\Report\_REGISTER_LEAVEUSE.cshtml" />
     <Content Include="Views\Report\_REGISTER_EDUCATIONPOINT.cshtml" />
     <Content Include="Views\Report\_FORM_DRAWING.cshtml" />
+    <Content Include="Views\Search\Index.cshtml" />
+    <Content Include="Views\Search\_Result.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

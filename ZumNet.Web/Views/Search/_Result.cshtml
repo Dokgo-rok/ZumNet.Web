@@ -1,0 +1,33 @@
+﻿@using System.Data;
+@using System.Text;
+@functions {
+    private string ViewList(DataTable data)
+    {
+        if (data != null && data.Rows.Count > 0)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendFormat("<div class=\"total-search-cnt\">검색결과 총 <strong class=\"text-danger\">{0}</strong> 건</div>", ViewBag.R.lv["total"].ToString());
+            sb.Append("<ul class=\"list-group list-group-flush\">");
+            foreach (DataRow row in data.Rows)
+            {
+                sb.Append("<li class=\"list-group-item border-0\">");
+                sb.AppendFormat("<div class=\"text-muted mb-1\">{0} > {1}</div>", row["CTName"].ToString(), row["FDName"].ToString());
+                sb.AppendFormat("<a class=\"z-lnk-navy-n\" href=\"javascript://\" onclick=\"_zw.fn.readSearchForm('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}')\">{0}</a>"
+                                    , row["Subject"].ToString(), row["FD_ID"].ToString(), row["MessageID"].ToString(), row["CT_ID"].ToString()
+                                    , row["XFAlias"].ToString(), row["Permission"].ToString(), row["FDName"].ToString(), row["SysName"].ToString());
+                sb.AppendFormat("<div class=\"mt-1 d-none\" data-for=\"body\">{0}</div>", row["Body"].ToString().Trim());
+                sb.Append("<div class=\"d-flex mt-1 text-muted\">");
+                sb.AppendFormat("<div class=\"mr-3\">작성자 : {0}</div>", row["Creator"].ToString());
+                sb.AppendFormat("<div>등록일 : {0}</div>", ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString()));
+                sb.Append("</div>");
+                sb.Append("</li>");
+            }
+            sb.Append("</ul>");
+
+            return sb.ToString();
+        }
+        return "";
+    }
+}
+@Html.Raw(ViewList(ViewBag.BoardList))
