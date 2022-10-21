@@ -8,11 +8,79 @@
         "checkEvent": function (ckb, el, fld) {
         },
 		"calc": function (el) {
-			var s = 0;
-			if (el.name == "EXPENSESCOUNT" || el.name == "SUM1" || el.name == "SUM2" || el.name == "SUM3" || el.name == "SUM4" || el.name == "SUM5") {
-				s = parseFloat(_zw.ut.empty($('#__mainfield[name="EXPENSESCOUNT"]').val())) * parseFloat(_zw.ut.empty($('#__mainfield[name="SUM1"]').val()));
-				s = _zw.ut.add(4, s, $('#__mainfield[name="SUM2"]').val(), $('#__mainfield[name="SUM3"]').val(), $('#__mainfield[name="SUM4"]').val(), $('#__mainfield[name="SUM5"]').val());
-				$('#__mainfield[name="TOTALSUM"]').val(numeral(s).format('0,0'));
+			var s = 0, f = '0,0.[0]', e1, e2, e3, e4;
+
+			if (el.name == "REALCOST1" || el.name == "DEVCOSTS1" || el.name == "RELPRICE1") {
+				e1 = $('#__mainfield[name="REALCOST1"]'); e2 = $('#__mainfield[name="DEVCOSTS1"]'); e3 = $('#__mainfield[name="RELPRICE1"]');
+
+				if (e1.val() != '' && e2.val() != '') {
+					s = _zw.ut.rate(_zw.ut.sub(4, e2.val(), e1.val()), e2.val(), 4);
+					$('#__mainfield[name="BIDEVCOST1"]').val(numeral(s).format(f)); s = 0;
+				}
+				if (e1.val() != '' && e3.val() != '') {
+					s = _zw.ut.rate(_zw.ut.sub(4, e3.val(), e1.val()), e3.val(), 4);
+					$('#__mainfield[name="BIRELPRICE1"]').val(numeral(s).format(f)); s = 0;
+				}
+			} else if (el.name == "REALCOST2" || el.name == "DEVCOSTS2" || el.name == "RELPRICE2") {
+				e1 = $('#__mainfield[name="REALCOST2"]'); e2 = $('#__mainfield[name="DEVCOSTS2"]'); e3 = $('#__mainfield[name="RELPRICE2"]');
+
+				if (e1.val() != '' && e2.val() != '') {
+					s = _zw.ut.rate(_zw.ut.sub(4, e2.val(), e1.val()), e2.val(), 4);
+					$('#__mainfield[name="BIDEVCOST2"]').val(numeral(s).format(f)); s = 0;
+				}
+				if (e1.val() != '' && e3.val() != '') {
+					s = _zw.ut.rate(_zw.ut.sub(4, e3.val(), e1.val()), e3.val(), 4);
+					$('#__mainfield[name="BIRELPRICE2"]').val(numeral(s).format(f)); s = 0;
+				}
+			} else if (el.name == "REALCOST3" || el.name == "DEVCOSTS3" || el.name == "RELPRICE3") {
+				e1 = $('#__mainfield[name="REALCOST3"]'); e2 = $('#__mainfield[name="DEVCOSTS3"]'); e3 = $('#__mainfield[name="RELPRICE3"]');
+
+				if (e1.val() != '' && e2.val() != '') {
+					s = _zw.ut.rate(_zw.ut.sub(4, e2.val(), e1.val()), e2.val(), 4);
+					$('#__mainfield[name="BIDEVCOST3"]').val(numeral(s).format(f)); s = 0;
+				}
+				if (e1.val() != '' && e3.val() != '') {
+					s = _zw.ut.rate(_zw.ut.sub(4, e3.val(), e1.val()), e3.val(), 4);
+					$('#__mainfield[name="BIRELPRICE3"]').val(numeral(s).format(f)); s = 0;
+				}
+			} else if (el.name == "REALCOST4" || el.name == "DEVCOSTS4" || el.name == "RELPRICE4") {
+				e1 = $('#__mainfield[name="REALCOST4"]'); e2 = $('#__mainfield[name="DEVCOSTS4"]'); e3 = $('#__mainfield[name="RELPRICE4"]');
+
+				if (e1.val() != '' && e2.val() != '') {
+					s = _zw.ut.rate(_zw.ut.sub(4, e2.val(), e1.val()), e2.val(), 4);
+					$('#__mainfield[name="BIDEVCOST4"]').val(numeral(s).format(f)); s = 0;
+				}
+				if (e1.val() != '' && e3.val() != '') {
+					s = _zw.ut.rate(_zw.ut.sub(4, e3.val(), e1.val()), e3.val(), 4);
+					$('#__mainfield[name="BIRELPRICE4"]').val(numeral(s).format(f)); s = 0;
+				}
+			} else if (el.name.indexOf("REGISTCOUNT") >= 0 || el.name.indexOf("SOLVECOUNT") >= 0) {
+				var i = el.name.substr(el.name.length - 1, el.name.length);
+				e1 = $('#__mainfield[name="REGISTCOUNT' + i + '"]'); e2 = $('#__mainfield[name="SOLVECOUNT' + i + '"]');
+				if (e1.val() != '' && e2.val() != '') {
+					s = _zw.ut.rate(e2.val(), e1.val(), 4);
+					$('#__mainfield[name="SOLVERATE' + i + '"]').val(numeral(s).format(f)); s = 0;
+				}
+			} else if (el.name.indexOf("PROCGOALRATE") >= 0 || el.name.indexOf("PROCDORATE") >= 0) {
+				var i = el.name.substr(el.name.length - 1, el.name.length);
+				e1 = $('#__mainfield[name="PROCGOALRATE' + i + '"]'); e2 = $('#__mainfield[name="PROCDORATE' + i + '"]');
+				if (e1.val() != '' && e2.val() != '') {
+					s = _zw.ut.rate(e2.val(), e1.val(), 4);
+					$('#__mainfield[name="PROCRATE' + i + '"]').val(numeral(s).format(f)); s = 0;
+				}
+			} else if (el.name.indexOf("INVESTPRICE") >= 0 || el.name == "MOCKUPPRICE" || el.name == "QDMPRICE" || el.name == "USELESSPRICE"
+				|| el.name == "ETCPRICE1" || el.name == "ETCPRICE2" || el.name == "TRIPPRICE" || el.name == "MANPRICE") {
+
+				if (el.name == "TRIPPRICE" || el.name == "MANPRICE") {
+					s = _zw.ut.add(4, $('#__mainfield[name="TRIPPRICE"]').val(), $('#__mainfield[name="MANPRICE"]').val());
+					$('#__mainfield[name="SUMPRICE"]').val(numeral(s).format(f)); s = 0;
+				}
+
+				s = _zw.ut.add(4, $('#__mainfield[name="INVESTPRICE1"]').val(), $('#__mainfield[name="INVESTPRICE2"]').val(), $('#__mainfield[name="INVESTPRICE3"]').val()
+					, $('#__mainfield[name="INVESTPRICE4"]').val(), $('#__mainfield[name="INVESTPRICE5"]').val(), $('#__mainfield[name="MOCKUPPRICE"]').val(), $('#__mainfield[name="QDMPRICE"]').val()
+					, $('#__mainfield[name="USELESSPRICE"]').val(), $('#__mainfield[name="ETCPRICE1"]').val(), $('#__mainfield[name="ETCPRICE2"]').val(), $('#__mainfield[name="SUMPRICE"]').val());
+
+				$('#__mainfield[name="TOTALPRICE"]').val(numeral(s).format(f));
 			}
         },
         "autoCalc": function (p) {
@@ -26,6 +94,11 @@
 			if (from && from.length > 0 && to && to.length > 0) { //console.log(from.val() + " : " + to.val())
 				var dif = _zw.ut.diff('day', to.val(), from.val());
 				if (dif && dif < 0) { bootbox.alert('날짜 범위 입력 오류!', function () { to.val(''); to.focus(); }); return false; }
+
+				if (dif) { //alert(dif + " : " + (dif-1))
+					var v = _zw.ut.diff('d', to.val(), from.val()); //console.log(v)
+					$('#__mainfield[name="DEVYEAR"]').val(v[0]); $('#__mainfield[name="DEVMONTH"]').val(v[1]); $('#__mainfield[name="DEVDAY"]').val(v[2]);
+				}
 			}
 		},
 		"optionWnd": function (pos, w, h, l, t, etc, x) {

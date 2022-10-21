@@ -31,7 +31,7 @@
           .fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:72px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:13%} .m .ft .f-lbl1 {width:8%} .m .ft .f-lbl2 {width:6%} .m .ft .f-lbl3 {width:19%}
@@ -53,18 +53,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -74,18 +70,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -93,7 +85,7 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:596px">
+                <td style="width:620px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '8', '결재')"/>
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
@@ -121,13 +113,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="MAINREVISION">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">5</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/MAINREVISION" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="MAINREVISION" class="txtNumberic" maxlength="5" data-inputmask="number;5;0" value="{//forminfo/maintable/MAINREVISION}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -187,9 +173,12 @@
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <input type="text" id="__mainfield" name="MODELNAME" class="txtRead" readonly="readonly"  style="width:86%" value="{//forminfo/maintable/MODELNAME}" />
-                      <button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME','ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="모델명" onclick="_zw.formEx.externalWnd('report.SEARCH_NEWDEVREQMODEL',240,40,20,70,'','MODELNAME','ITEMNAME');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
@@ -226,14 +215,17 @@
                           <xsl:value-of select="//forminfo/maintable/DEVTYPE" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.devtype',120,110,100,80,'etc','DEVTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.devtype',120,110,100,80,'etc','DEVTYPE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
-                    </xsl:when>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="개발형태" onclick="_zw.formEx.optionWnd('external.devtype',140,124,-120,0,'etc','DEVTYPE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
+					</xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DEVTYPE))" />
                     </xsl:otherwise>
@@ -250,14 +242,17 @@
                           <xsl:value-of select="//forminfo/maintable/DEVCLASS" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.devclass',80,110,100,80,'','DEVCLASS');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.devclass',80,110,100,80,'','DEVCLASS');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
-                    </xsl:when>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="개발등급" onclick="_zw.formEx.optionWnd('external.devclass',140,124,-120,0,'','DEVCLASS');">
+							<i class="fas fa-angle-down"></i>
+						</button>
+					</xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DEVCLASS))" />
                     </xsl:otherwise>
@@ -274,13 +269,16 @@
                           <xsl:value-of select="//forminfo/maintable/DEVTERMS" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.devterms',100,110,80,80,'etc','DEVTERMS');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.devterms',100,110,80,80,'etc','DEVTERMS');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="개발방법" onclick="_zw.formEx.optionWnd('external.devterms',140,124,-60,0,'etc','DEVTERMS');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DEVTERMS))" />
@@ -300,13 +298,16 @@
                           <xsl:value-of select="//forminfo/maintable/PRODUCTCENTER" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('external.centercode',240,140,100,120,'','PRODUCTCENTER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('external.centercode',240,140,100,120,'','PRODUCTCENTER');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="생산예정지" onclick="_zw.formEx.optionWnd('external.centercode',240,274,-130,0,'','PRODUCTCENTER');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PRODUCTCENTER))" />
@@ -924,14 +925,7 @@
                 <td colspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="DEVREQDATE">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/DEVREQDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="DEVREQDATE" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/DEVREQDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -943,14 +937,7 @@
                 <td colspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="RECEIVEDATE">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/RECEIVEDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="RECEIVEDATE" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/RECEIVEDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -962,15 +949,7 @@
                 <td colspan="3">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="DEVFROM">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="style">width:66px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/DEVFROM" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="DEVFROM" class="datepicker-slash txtDateSlash" style="width:66px" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/DEVFROM}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DEVFROM))" />
@@ -979,15 +958,7 @@
                   ~
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="DEVTO">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="style">width:66px</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/DEVTO" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="DEVTO" class="datepicker-slash txtDateSlash" style="width:66px" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/DEVTO}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DEVTO))" />
@@ -997,14 +968,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PERIODMONTH">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="style">width:28px</xsl:attribute>
-                        <xsl:attribute name="maxlength">3</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PERIODMONTH" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PERIODMONTH" class="txtNumberic" style="width:28px" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/PERIODMONTH}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/PERIODMONTH))" />
@@ -1012,14 +976,7 @@
                   </xsl:choose>개월
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PERIODDAY">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="style">width:28px</xsl:attribute>
-                        <xsl:attribute name="maxlength">3</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PERIODDAY" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PERIODDAY" class="txtNumberic" style="width:28px" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/PERIODDAY}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/PERIODDAY))" />
@@ -1047,14 +1004,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE1">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE1" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1065,14 +1015,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE2">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE2" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1083,14 +1026,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE3">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE3" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1101,14 +1037,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE4">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE4" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1119,14 +1048,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE5">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE5" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1137,14 +1059,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE6">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE6" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1155,14 +1070,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE7">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE7" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE7" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE7}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1173,14 +1081,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE8">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE8" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE8" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE8}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1191,14 +1092,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE9">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE9" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE9" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE9}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1209,14 +1103,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE10">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE10" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE10" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE10}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1227,15 +1114,8 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE11">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE11" />
-                        </xsl:attribute>
-                      </input>
-                    </xsl:when>
+					  <input type="text" id="__mainfield" name="PLANDATE10" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE11}" />
+					</xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/PLANDATE11))" />
@@ -1245,14 +1125,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANDATE12">
-                        <xsl:attribute name="class">txtDateSlash</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANDATE12" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANDATE12" class="datepicker-slash txtDateSlash" maxlength="10" data-inputmask="date;yyyy/MM/dd" value="{//forminfo/maintable/PLANDATE12}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1266,13 +1139,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT1">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT1" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1283,13 +1150,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT2">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT2" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1300,13 +1161,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT3">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT3" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1317,13 +1172,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT4">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT4" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1334,13 +1183,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT5">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT5" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1351,13 +1194,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT6">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT6" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT6" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT6}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1368,13 +1205,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT7">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT7" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT7" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT7}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1385,13 +1216,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT8">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT8" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT8" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT8}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1402,13 +1227,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT9">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT9" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT9" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT9}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1419,13 +1238,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT10">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT10" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT10" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT10}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1436,13 +1249,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT11">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT11" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT11" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT11}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1453,13 +1260,7 @@
                 <td style="border-bottom:0;border-right:">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PLANCOUNT12">
-                        <xsl:attribute name="class">txtNumberic</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PLANCOUNT12" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="PLANCOUNT12" class="txtNumberic" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/PLANCOUNT12}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1486,17 +1287,14 @@
                 <td style="width:464px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="PRODUCTDESC" style="height:66px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 500)</xsl:attribute>
+                      <textarea id="__mainfield" name="PRODUCTDESC" style="height:66px" class="txaText bootstrap-maxlength" maxlength="500">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/PRODUCTDESC" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="PRODUCTDESC" style="height:66px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:66px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PRODUCTDESC))" />
                       </div>
                     </xsl:otherwise>
@@ -1506,17 +1304,14 @@
                 <td style="width:;border-right:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="ENVINFORMATION" style="height:66px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 500)</xsl:attribute>
+                      <textarea id="__mainfield" name="ENVINFORMATION" style="height:66px" class="txaText bootstrap-maxlength" maxlength="500">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/ENVINFORMATION" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="ENVINFORMATION" style="height:66px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:66px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ENVINFORMATION))" />
                       </div>
                     </xsl:otherwise>
@@ -1528,17 +1323,14 @@
                 <td colspan="3" style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="CUSTOMERDEMAND" style="height:66px">
-                        <xsl:attribute name="class">txaText</xsl:attribute>
-                        <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 500)</xsl:attribute>
+                      <textarea id="__mainfield" name="CUSTOMERDEMAND" style="height:66px" class="txaText bootstrap-maxlength" maxlength="500">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/CUSTOMERDEMAND" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="CUSTOMERDEMAND" style="height:66px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="min-height:66px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CUSTOMERDEMAND))" />
                       </div>
                     </xsl:otherwise>
@@ -1562,7 +1354,7 @@
                   <tr>
                     <td class="fm-button">
                       기구&nbsp;:&nbsp;
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_26.gif</xsl:attribute>
                         </img>추가
@@ -1571,9 +1363,15 @@
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_27.gif</xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+							<i class="fas fa-minus"></i>
+						</button>
                       &nbsp;&nbsp;회로&nbsp;:&nbsp;
-                      <button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_26.gif</xsl:attribute>
                         </img>추가
@@ -1582,9 +1380,15 @@
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_27.gif</xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable2');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable2');">
+							<i class="fas fa-minus"></i>
+						</button>
                       &nbsp;&nbsp;음향&nbsp;:&nbsp;
-                      <button onclick="parent.fnAddChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_26.gif</xsl:attribute>
                         </img>추가
@@ -1593,9 +1397,15 @@
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_27.gif</xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable3');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable3');">
+							<i class="fas fa-minus"></i>
+						</button>
                       &nbsp;&nbsp;공정&nbsp;:&nbsp;
-                      <button onclick="parent.fnAddChkRow('__subtable5');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable5');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_26.gif</xsl:attribute>
                         </img>추가
@@ -1604,7 +1414,13 @@
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_27.gif</xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable5');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable5');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -1620,20 +1436,15 @@
                 <td>
                   <table class="ft-sub" border="0" cellspacing="0" cellpadding="0">
                     <colgroup>
-                      <col style="width:48px"></col>
-                      <xsl:choose>
-                        <xsl:when test="$mode='new' or $mode='edit'">
-                          <col style="width:25px"></col>
-                          <col style="width:"></col>
-                        </xsl:when>
-                        <xsl:otherwise>
-                          <col style="width:156px"></col>
-                        </xsl:otherwise>
-                      </xsl:choose>
-                      <col style="width:416px"></col>
-                      <col style="width:48px"></col>
-                      <col style="width:48px"></col>
-                      <col style="width:48px"></col>
+                        <col style="width:48px"></col>
+                        <xsl:if test="$mode='new' or $mode='edit'">
+                            <col style="width:25px"></col>
+                        </xsl:if>
+                        <col style="width:158px"></col>
+                        <col style="width:"></col>
+                        <col style="width:48px"></col>
+                        <col style="width:48px"></col>
+                        <col style="width:48px"></col>
                     </colgroup>
                     <tr>
                       <td class="f-lbl-sub" style="border-top:0" rowspan="2">구분</td>
@@ -1651,19 +1462,14 @@
                     </tr>
                     <tr>
                       <td class="f-lbl-sub">기구</td>
-                      <td colspan="6" style="border-top:0;border-right:0;padding:0">
+                      <td colspan="6" style="border:0;padding:0">
                         <table id="__subtable1" class="ft-sub" header="0" border="0" cellspacing="0" cellpadding="0" style="border:0;">
                           <colgroup>
-                            <xsl:choose>
-                              <xsl:when test="$mode='new' or $mode='edit'">
+                            <xsl:if test="$mode='new' or $mode='edit'">
                                 <col style="width:25px"></col>
-                                <col style="width:"></col>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                <col style="width:156px"></col>
-                              </xsl:otherwise>
-                            </xsl:choose>
-                            <col style="width:416px"></col>
+                            </xsl:if>
+                            <col style="width:158px"></col>
+                            <col style="width:"></col>
                             <col style="width:48px"></col>
                             <col style="width:48px"></col>
                             <col style="width:48px"></col>
@@ -1674,19 +1480,14 @@
                     </tr>
                     <tr>
                       <td class="f-lbl-sub">회로<br />(H/W<br />S/W</td>
-                      <td colspan="6" style="border-top:0;border-right:0;padding:0">
+                      <td colspan="6" style="border:0;padding:0">
                         <table id="__subtable2" class="ft-sub" header="0" border="0" cellspacing="0" cellpadding="0" style="border:0">
                           <colgroup>
-                            <xsl:choose>
-                              <xsl:when test="$mode='new' or $mode='edit'">
+                            <xsl:if test="$mode='new' or $mode='edit'">
                                 <col style="width:25px"></col>
-                                <col style="width:"></col>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                <col style="width:156px"></col>
-                              </xsl:otherwise>
-                            </xsl:choose>
-                            <col style="width:416px"></col>
+                            </xsl:if>
+                            <col style="width:158px"></col>
+                            <col style="width:"></col>
                             <col style="width:48px"></col>
                             <col style="width:48px"></col>
                             <col style="width:48px"></col>
@@ -1697,19 +1498,14 @@
                     </tr>
                     <tr>
                       <td class="f-lbl-sub">음향</td>
-                      <td colspan="6" style="border-top:0;border-right:0;padding:0">
+                      <td colspan="6" style="border:0;padding:0">
                         <table id="__subtable3" class="ft-sub" header="0" border="0" cellspacing="0" cellpadding="0" style="border:0">
                           <colgroup>
-                            <xsl:choose>
-                              <xsl:when test="$mode='new' or $mode='edit'">
+                            <xsl:if test="$mode='new' or $mode='edit'">
                                 <col style="width:25px"></col>
-                                <col style="width:"></col>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                <col style="width:156px"></col>
-                              </xsl:otherwise>
-                            </xsl:choose>
-                            <col style="width:416px"></col>
+                            </xsl:if>
+                            <col style="width:158px"></col>
+                            <col style="width:"></col>
                             <col style="width:48px"></col>
                             <col style="width:48px"></col>
                             <col style="width:48px"></col>
@@ -1720,19 +1516,14 @@
                     </tr>
                     <tr>
                       <td class="f-lbl-sub">공정</td>
-                      <td colspan="6" style="border-top:0;border-right:0;padding:0">
+                      <td colspan="6" style="border:0;padding:0">
                         <table id="__subtable5" class="ft-sub" header="0" border="0" cellspacing="0" cellpadding="0" style="border:0">
                           <colgroup>
-                            <xsl:choose>
-                              <xsl:when test="$mode='new' or $mode='edit'">
+                            <xsl:if test="$mode='new' or $mode='edit'">
                                 <col style="width:25px"></col>
-                                <col style="width:"></col>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                <col style="width:156px"></col>
-                              </xsl:otherwise>
-                            </xsl:choose>
-                            <col style="width:416px"></col>
+                            </xsl:if>
+                            <col style="width:158px"></col>
+                            <col style="width:"></col>
                             <col style="width:48px"></col>
                             <col style="width:48px"></col>
                             <col style="width:48px"></col>
@@ -1751,56 +1542,32 @@
                         </xsl:otherwise>
                       </xsl:choose>
                       <td class="f-lbl-sub">PMP 목표수율은 95%이상을 원칙으로 함</td>
-                      <td>
+                      <td class="tdRead_Center">
                         (<xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="EPRATE">
-                              <xsl:attribute name="class">txtDollar</xsl:attribute>
-                              <xsl:attribute name="style">width:30px</xsl:attribute>
-                              <xsl:attribute name="maxlength">5</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/EPRATE" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="EPRATE" class="txtDollar" style="width:25px" maxlength="5" data-inputmask="number;2;3" value="{//forminfo/maintable/EPRATE}" />
                           </xsl:when>
                           <xsl:otherwise>
-                            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EPRATE))" />
                           </xsl:otherwise>
                         </xsl:choose>)%
                       </td>
-                      <td>
+                      <td class="tdRead_Center">
                         (<xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="PPRATE">
-                              <xsl:attribute name="class">txtDollar</xsl:attribute>
-                              <xsl:attribute name="style">width:30px</xsl:attribute>
-                              <xsl:attribute name="maxlength">5</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/PPRATE" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="PPRATE" class="txtDollar" style="width:25px" maxlength="5" data-inputmask="number;2;3" value="{//forminfo/maintable/PPRATE}" />
                           </xsl:when>
                           <xsl:otherwise>
-                            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/PPRATE))" />
                           </xsl:otherwise>
                         </xsl:choose>)%
                       </td>
-                      <td style="border-right:0">
+                      <td class="tdRead_Center" style="border-right:0">
                         (<xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="PMPRATE">
-                              <xsl:attribute name="class">txtDollar</xsl:attribute>
-                              <xsl:attribute name="style">width:30px</xsl:attribute>
-                              <xsl:attribute name="maxlength">5</xsl:attribute>
-                              <xsl:attribute name="value">
-                                <xsl:value-of select="//forminfo/maintable/PMPRATE" />
-                              </xsl:attribute>
-                            </input>
+                            <input type="text" id="__mainfield" name="PMPRATE" class="txtDollar" style="width:25px" maxlength="5" data-inputmask="number;2;3" value="{//forminfo/maintable/PMPRATE}" />
                           </xsl:when>
                           <xsl:otherwise>
-                            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/PMPRATE))" />
                           </xsl:otherwise>
                         </xsl:choose>)%
@@ -1811,17 +1578,14 @@
                       <td colspan="6" style="border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <textarea id="__mainfield" name="DESCRIPTION" style="height:56px">
-                              <xsl:attribute name="class">txaText</xsl:attribute>
-                              <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 500)</xsl:attribute>
+                            <textarea id="__mainfield" name="DESCRIPTION" style="height:56px" class="txaText bootstrap-maxlength" maxlength="500">
                               <xsl:if test="$mode='edit'">
                                 <xsl:value-of select="//forminfo/maintable/DESCRIPTION" />
                               </xsl:if>
                             </textarea>
                           </xsl:when>
                           <xsl:otherwise>
-                            <div id="__mainfield" name="DESCRIPTION" style="height:56px">
-                              <xsl:attribute name="class">txaRead</xsl:attribute>
+                            <div class="txaRead" style="min-height:56px">
                               <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DESCRIPTION))" />
                             </div>
                           </xsl:otherwise>
@@ -1850,13 +1614,16 @@
                       <xsl:value-of select="//forminfo/maintable/CURRENCY" />
                     </xsl:attribute>
                   </input>
-                  <button onclick="parent.fnOption('iso.currency',160,140,40,110,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                  <!--<button onclick="parent.fnOption('iso.currency',160,140,40,110,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                     <img alt="" class="blt01" style="margin:0 0 2px 0">
                       <xsl:attribute name="src">
                         /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                       </xsl:attribute>
                     </img>
-                  </button>
+                  </button>-->
+					<button type="button" class="btn btn-outline-secondary btn-18 mr-1" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',220,274,-130,0,'etc','CURRENCY');">
+						<i class="fas fa-angle-down"></i>
+					</button>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY))" />&nbsp;
@@ -1919,13 +1686,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="EXPENSESCOUNT">
-                        <xsl:attribute name="class">txtVolume</xsl:attribute>
-                        <xsl:attribute name="maxlength">10</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/EXPENSESCOUNT" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="EXPENSESCOUNT" class="txtVolume" maxlength="10" data-inputmask="number;10;0" value="{//forminfo/maintable/EXPENSESCOUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1936,13 +1697,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="SUM1">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM1" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM1" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/SUM1}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1953,13 +1708,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="SUM2">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM2" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM2" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/SUM2}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1970,13 +1719,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="SUM3">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM3" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM3" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/SUM3}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -1987,13 +1730,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="SUM4">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM4" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM4" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/SUM4}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -2004,13 +1741,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="SUM5">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">20</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/SUM5" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="SUM5" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/SUM5}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -2051,7 +1782,7 @@
                       <span>개정이력</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable4');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable4');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_26.gif
@@ -2064,7 +1795,13 @@
                             /<xsl:value-of select="$root"/>/EA/Images/ico_27.gif
                           </xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable4');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable4');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -2109,7 +1846,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -2172,7 +1909,7 @@
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
       <xsl:if test="$mode='new' or $mode='edit'">
-        <td>
+		  <td class="tdRead_Center" style="border-left:0; border-top:0">
           <input type="checkbox" name="ROWSEQ">
             <xsl:attribute name="value">
               <xsl:value-of select="ROWSEQ" />
@@ -2180,7 +1917,7 @@
           </input>
         </td>
       </xsl:if>
-      <td>
+		<td style="border-top:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="INSITEM">
@@ -2192,11 +1929,12 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
+			  <xsl:attribute name="style">border-left:0; border-top:0</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(INSITEM))" />
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td>
+		<td style="border-top:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="INSSPEC">
@@ -2212,11 +1950,11 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td style="text-align:center">
+      <td style="text-align:center;border-top:0">
         <span class="f-option">
           <input type="checkbox" name="ckbINSEP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbINSEP', this, 'INSEP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbINSEP', this, 'INSEP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(INSEP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2230,11 +1968,11 @@
           <xsl:attribute name="value"><xsl:value-of select="INSEP" /></xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center">
+      <td style="text-align:center;border-top:0">
         <span class="f-option">
           <input type="checkbox" name="ckbINSPP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbINSPP', this, 'INSPP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbINSPP', this, 'INSPP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(INSPP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2248,11 +1986,11 @@
           <xsl:attribute name="value"><xsl:value-of select="INSPP" /></xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center;border-right:0">
+      <td style="text-align:center;border-right:0;border-top:0">
         <span class="f-option">
           <input type="checkbox" name="ckbINSPMP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbINSPMP', this, 'INSPMP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbINSPMP', this, 'INSPMP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(INSPMP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2271,7 +2009,7 @@
   <xsl:template match="//forminfo/subtables/subtable2/row">
     <tr class="sub_table_row">
       <xsl:if test="$mode='new' or $mode='edit'">
-        <td>
+		  <td class="tdRead_Center" style="border-left:0; border-top:0">
           <input type="checkbox" name="ROWSEQ">
             <xsl:attribute name="value">
               <xsl:value-of select="ROWSEQ" />
@@ -2279,7 +2017,7 @@
           </input>
         </td>
       </xsl:if>
-      <td>
+      <td style="border-top:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="CCTITEM">
@@ -2291,11 +2029,12 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
+			  <xsl:attribute name="style">border-left:0; border-top:0</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(CCTITEM))" />
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td>
+		<td style="border-top:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="CCTSPEC">
@@ -2311,11 +2050,11 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td style="text-align:center">
+      <td style="text-align:center;border-top:0">
         <span class="f-option">
           <input type="checkbox" name="ckbCCTEP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbCCTEP', this, 'CCTEP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbCCTEP', this, 'CCTEP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CCTEP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2329,11 +2068,11 @@
           <xsl:attribute name="value"><xsl:value-of select="CCTEP" /></xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center">
+      <td style="text-align:center;border-top:0">
         <span class="f-option">
           <input type="checkbox" name="ckbCCTPP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbCCTPP', this, 'CCTPP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbCCTPP', this, 'CCTPP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CCTPP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2347,11 +2086,11 @@
           <xsl:attribute name="value"><xsl:value-of select="CCTPP" /></xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center;border-right:0">
+      <td style="text-align:center;border-top:0;border-right:0">
         <span class="f-option">
           <input type="checkbox" name="ckbCCTPMP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbCCTPMP', this, 'CCTPMP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbCCTPMP', this, 'CCTPMP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(CCTPMP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2370,7 +2109,7 @@
   <xsl:template match="//forminfo/subtables/subtable3/row">
     <tr class="sub_table_row">
       <xsl:if test="$mode='new' or $mode='edit'">
-        <td>
+		  <td class="tdRead_Center" style="border-left:0;border-top:0">
           <input type="checkbox" name="ROWSEQ">
             <xsl:attribute name="value">
               <xsl:value-of select="ROWSEQ" />
@@ -2378,7 +2117,7 @@
           </input>
         </td>
       </xsl:if>
-      <td>
+      <td style="border-top:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="SNDITEM">
@@ -2390,11 +2129,12 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
+			  <xsl:attribute name="style">border-left:0; border-top:0</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(SNDITEM))" />
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td>
+      <td style="border-top:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="SNDSPEC">
@@ -2410,11 +2150,11 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td style="text-align:center">
+      <td style="text-align:center;border-top:0">
         <span class="f-option">
           <input type="checkbox" name="ckbSNDEP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbSNDEP', this, 'SNDEP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbSNDEP', this, 'SNDEP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(SNDEP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2428,11 +2168,11 @@
           <xsl:attribute name="value"><xsl:value-of select="SNDEP" /></xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center">
+      <td style="text-align:center;border-top:0">
         <span class="f-option">
           <input type="checkbox" name="ckbSNDPP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbSNDPP', this, 'SNDPP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbSNDPP', this, 'SNDPP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(SNDPP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2446,11 +2186,11 @@
           <xsl:attribute name="value"><xsl:value-of select="SNDPP" /></xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center;border-right:0">
+      <td style="text-align:center;border-right:0;border-top:0">
         <span class="f-option">
           <input type="checkbox" name="ckbSNDPMP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbSNDPMP', this, 'SNDPMP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbSNDPMP', this, 'SNDPMP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(SNDPMP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2468,7 +2208,7 @@
   </xsl:template>
   <xsl:template match="//forminfo/subtables/subtable4/row">
     <tr class="sub_table_row">
-      <td>
+		<td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ">
@@ -2478,7 +2218,6 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -2486,13 +2225,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="REVISION">
-              <xsl:attribute name="class">txtNumberic</xsl:attribute>
-              <xsl:attribute name="maxlength">5</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="REVISION" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="REVISION" class="txtNumberic" maxlength="5" data-inputmask="number;5;0" value="REVISION" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -2503,14 +2236,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="REVDATE">
-              <xsl:attribute name="class">txtDate</xsl:attribute>
-              <xsl:attribute name="maxlength">8</xsl:attribute>
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-              <xsl:attribute name="value">
-                <xsl:value-of select="REVDATE" />
-              </xsl:attribute>
-            </input>
+            <input type="text" name="REVDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="REVDATE" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -2555,7 +2281,15 @@
   <xsl:template match="//forminfo/subtables/subtable5/row">
     <tr class="sub_table_row">
       <xsl:if test="$mode='new' or $mode='edit'">
-        <td>
+		  <td class="tdRead_Center">
+			  <xsl:choose>
+				  <xsl:when test="position()=last()">
+					  <xsl:attribute name="style">border-left:0;border-top:0;border-bottom:0</xsl:attribute>
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <xsl:attribute name="style">border-left:0;border-top:0</xsl:attribute>
+				  </xsl:otherwise>
+			  </xsl:choose>
           <input type="checkbox" name="ROWSEQ">
             <xsl:attribute name="value">
               <xsl:value-of select="ROWSEQ" />
@@ -2564,6 +2298,14 @@
         </td>
       </xsl:if>
       <td>
+		<xsl:choose>
+			<xsl:when test="position()=last()">
+				<xsl:attribute name="style">border-left:0;border-top:0;border-bottom:0</xsl:attribute>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:attribute name="style">border-left:0;border-top:0</xsl:attribute>
+			</xsl:otherwise>
+		</xsl:choose>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="PROITEM">
@@ -2580,6 +2322,14 @@
         </xsl:choose>
       </td>
       <td>
+		  <xsl:choose>
+			<xsl:when test="position()=last()">
+				<xsl:attribute name="style">border-top:0;border-bottom:0</xsl:attribute>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:attribute name="style">border-top:0</xsl:attribute>
+			</xsl:otherwise>
+		</xsl:choose>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="PROSPEC">
@@ -2595,11 +2345,19 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-      <td style="text-align:center">
+      <td>
+		  <xsl:choose>
+			<xsl:when test="position()=last()">
+				<xsl:attribute name="style">text-align:center;border-top:0;border-bottom:0</xsl:attribute>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:attribute name="style">text-align:center;border-top:0</xsl:attribute>
+			</xsl:otherwise>
+		</xsl:choose>
         <span class="f-option">
           <input type="checkbox" name="ckbPROEP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbPROEP', this, 'PROEP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbPROEP', this, 'PROEP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(PROEP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2615,11 +2373,19 @@
           </xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center">
+      <td>
+		  <xsl:choose>
+			<xsl:when test="position()=last()">
+				<xsl:attribute name="style">text-align:center;border-top:0;border-bottom:0</xsl:attribute>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:attribute name="style">text-align:center;border-top:0</xsl:attribute>
+			</xsl:otherwise>
+		</xsl:choose>
         <span class="f-option">
           <input type="checkbox" name="ckbPROPP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbPROPP', this, 'PROPP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbPROPP', this, 'PROPP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(PROPP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>
@@ -2635,11 +2401,19 @@
           </xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center;border-right:0">
+      <td>
+		  <xsl:choose>
+			<xsl:when test="position()=last()">
+				<xsl:attribute name="style">text-align:center;border-right:0;border-top:0;border-bottom:0</xsl:attribute>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:attribute name="style">text-align:center;border-right:0;border-top:0</xsl:attribute>
+			</xsl:otherwise>
+		</xsl:choose>
         <span class="f-option">
           <input type="checkbox" name="ckbPROPMP" value="Y">
             <xsl:if test="$mode='new' or $mode='edit'">
-              <xsl:attribute name="onclick">parent.fnTableCheckYN('ckbPROPMP', this, 'PROPMP')</xsl:attribute>
+              <xsl:attribute name="onclick">_zw.form.checkTableYN('ckbPROPMP', this, 'PROPMP')</xsl:attribute>
             </xsl:if>
             <xsl:if test="phxsl:isEqual(string(PROPMP),'Y')">
               <xsl:attribute name="checked">true</xsl:attribute>

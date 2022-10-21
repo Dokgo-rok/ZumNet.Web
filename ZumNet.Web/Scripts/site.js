@@ -1686,10 +1686,19 @@ $(function () {
                     });
                 }
 
-                if ($('.datepicker, .datepicker-ko').length > 0) {
+                if ($('.datepicker, .datepicker-ko, .datepicker-slash').length > 0) {
                     $('.datepicker').datepicker({
                         autoclose: true,
                         //format: "yyyy-mm-dd",
+                        todayHighlight: true, //22-07-14 보류
+                        language: $('#current_culture').val()
+                    }).on('changeDate', function (e) {
+                        if (_zw.fn.onblur) _zw.fn.onblur(e.target, ['date']);
+                    });
+
+                    $('.datepicker-slash').datepicker({
+                        autoclose: true,
+                        format: "yyyy/mm/dd",
                         todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     }).on('changeDate', function (e) {
@@ -1751,6 +1760,7 @@ $(function () {
                 var mv = [];
                 if (v[0] == "date") {
                     if (v[1] == 'yyyy') mv = [/[1-2]/, /\d/, /\d/, /\d/];
+                    else if (v[1] == 'yyyy/MM/dd') mv = [/[1-2]/, /\d/, /\d/, /\d/, '/', /[0-1]/, /\d/, '/', /[0-3]/, /\d/];
                     else mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
                 } else if (v[0] == "time") {
                     mv = v[1] == 'HH:MM' ? [/\d/, /\d/, ':', /\d/, /\d/] : [/\d/, /\d/, ':', /\d/, /\d/, ':', /\d/, /\d/];
@@ -1802,6 +1812,11 @@ $(function () {
         "diff": function (f, s, e) {
             if (f == 'day') {//console.log(s + " : " + e)
                 if (moment(s).isValid() && moment(e).isValid()) return moment(s).diff(moment(e), 'days');
+            } else if (f == 'd') {
+                if (moment(s).isValid() && moment(e).isValid()) {
+                    var d = moment.duration(moment(s).diff(moment(e), 'days'), 'd'); //console.log(d);
+                    return [d.years(), d.months(), d.days()];
+                }
             }
         },
         "toBR": function (s) {

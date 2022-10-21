@@ -2210,6 +2210,7 @@
     <Content Include="Scripts\EA\Forms\FORM_NEWOWNDEVREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPARTSREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPARTSREVIEW.js" />
+    <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTCOMP.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTREREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTREVIEW.js" />

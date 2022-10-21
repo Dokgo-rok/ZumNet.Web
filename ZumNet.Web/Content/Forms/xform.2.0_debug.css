@@ -272,7 +272,8 @@ body {overflow: hidden}
 .m .txtNumberic, .m .txtVolume {
 	width: 100%;
 	/*direction: rtl;*/
-	ime-mode: disabled
+	ime-mode: disabled;
+	text-align: right
 }
 .m .txtJuminDash {
 	width: 100%;
