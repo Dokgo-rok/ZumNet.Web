@@ -15,48 +15,78 @@
     string strWhere = SearchCondition(_vwModal);
 
     ZumNet.Framework.Core.ServiceResult svcRt = null;
-    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+    if (_vwModal == "Y")
     {
-        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
-                        , "", "", "", "", ""
-                        , StringHelper.SafeInt(ViewBag.R.lv.page.Value), StringHelper.SafeInt(ViewBag.R.lv.count.Value), ViewBag.R.lv.basesort.ToString()
-                        , ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), strWhere);
-    }
-
-    if (svcRt != null && svcRt.ResultCode == 0)
-    {
-        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
-
-        if (ViewBag.R.mode != "xls")
+        using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
         {
+            svcRt = rpBiz.GetReport("", StringHelper.SafeInt(ViewBag.JPost["tgt"].ToString()), ViewBag.JPost["ft"].ToString(), ViewBag.JPost["start"].ToString(), ViewBag.JPost["end"].ToString()
+                            , "", "", "", "", ""
+                            , StringHelper.SafeInt(ViewBag.JPost["page"].ToString()), StringHelper.SafeInt(ViewBag.JPost["count"].ToString()), ViewBag.JPost["basesort"].ToString()
+                            , ViewBag.JPost["sort"].ToString(), ViewBag.JPost["sortdir"].ToString(), strWhere);
+        }
+
+        if (svcRt != null && svcRt.ResultCode == 0)
+        {
+            ViewBag.JPost["total"] = svcRt.ResultItemCount.ToString();
+
             string[,] codeConfig = { { "external", "toolingcls" }, { "external", "centercode" } };
             ZumNet.Framework.Core.ServiceResult svcRt2 = null;
             using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new ZumNet.BSL.ServiceBiz.CommonBiz())
             {
                 svcRt2 = cb.SelectCodeDescription(codeConfig);
             }
-
-            if (svcRt2 != null && svcRt2.ResultCode == 0)
-            {
-                ViewBag.CodeTable = svcRt2.ResultDataDetail;
-            }
-            else
-            {
-                ViewBag.CodeTable = null;
-                Response.Write(svcRt2.ResultMessage);
-            }
-            svcRt2 = null;
+            ViewBag.CodeTable = svcRt2.ResultDataDetail;
+        }
+        else
+        {
+            ViewBag.JPost["total"] = 0;
         }
     }
     else
     {
-        ViewBag.R.lv["total"] = 0;
-    }
+        using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+        {
+            svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                            , "", "", "", "", ""
+                            , StringHelper.SafeInt(ViewBag.R.lv.page.Value), StringHelper.SafeInt(ViewBag.R.lv.count.Value), ViewBag.R.lv.basesort.ToString()
+                            , ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), strWhere);
+        }
 
-    if (ViewBag.R.mode == "xls")
-    {
-        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
-        Response.End();
+        if (svcRt != null && svcRt.ResultCode == 0)
+        {
+            ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+
+            if (ViewBag.R.mode != "xls")
+            {
+                string[,] codeConfig = { { "external", "toolingcls" }, { "external", "centercode" } };
+                ZumNet.Framework.Core.ServiceResult svcRt2 = null;
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new ZumNet.BSL.ServiceBiz.CommonBiz())
+                {
+                    svcRt2 = cb.SelectCodeDescription(codeConfig);
+                }
+
+                if (svcRt2 != null && svcRt2.ResultCode == 0)
+                {
+                    ViewBag.CodeTable = svcRt2.ResultDataDetail;
+                }
+                else
+                {
+                    ViewBag.CodeTable = null;
+                    Response.Write(svcRt2.ResultMessage);
+                }
+                svcRt2 = null;
+            }
+        }
+        else
+        {
+            ViewBag.R.lv["total"] = 0;
+        }
+
+        if (ViewBag.R.mode == "xls")
+        {
+            ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+            Response.End();
+        }
     }
 }
 @functions {
@@ -68,7 +98,15 @@
         string strWhere = "";
         if (modal == "Y")
         {
+            if (ViewBag.JPost["cd1"].ToString() != "") strWhere += " AND DIVISION = '" + ViewBag.JPost["cd1"].ToString() + "'";             //제작구분
+            if (ViewBag.JPost["cd2"].ToString() != "") strWhere += " AND CLASSIFICATION_ID = '" + ViewBag.JPost["cd2"].ToString() + "'";    //금형분류
+            if (ViewBag.JPost["cd4"].ToString() != "") strWhere += " AND TOOLING_NUMBER LIKE '" + ViewBag.JPost["cd4"].ToString() + "%'"; //금형번호
+            if (ViewBag.JPost["cd5"].ToString() != "") strWhere += " AND MODELNO LIKE '" + ViewBag.JPost["cd5"].ToString() + "%'"; //적용모델
+            if (ViewBag.JPost["cd8"].ToString() != "") strWhere += " AND PARTNO LIKE '" + ViewBag.JPost["cd8"].ToString() + "%'"; //품번
+            if (ViewBag.JPost["cd9"].ToString() != "") strWhere += " AND ORG_NAME = '" + ViewBag.JPost["cd9"].ToString() + "'";    //사업장
 
+            if (ViewBag.JPost["start"].ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, '" + ViewBag.JPost["start"].ToString() + "', ORDER_CREATE_DATE) >= 0 "; //2014-04-16 CREATE_DATE=>ORDER_CREATE_DATE
+            if (ViewBag.JPost["end"].ToString().Trim() != "") strWhere += " AND DATEDIFF(DD, ORDER_CREATE_DATE, '" + ViewBag.JPost["end"].ToString() + "') >= 0 ";
         }
         else
         {
@@ -101,7 +139,36 @@
         //초기 설정
         if (modal == "Y")
         {
+            string[,] arr = { { "__RADIO__", "", "50px", "", ""},  { "ORG_NAME", "사업장", "60px", "", "Y" }, { "CLASSIFICATION_NAME", "금형<br />분류", "70px", "", "Y" }
+                    , { "TOOLING_NUMBER", "금형번호", "130px", "", "Y" }, { "MODELNO", "적용모델", "130px", "", "Y" }, { "PARTNM", "부품명", "160px", "L", "Y" }
+                    , { "PARTNO", "품번", "130px", "L", "Y" },{ "MAKE_SUPPLIER_NAME", "제작처", "170px", "L", "Y" }, { "BUYER_NAME", "BUYER", "170px", "L", "Y" }
+                    , { "OWNER_NAME", "소유처", "170px", "L", "Y" }, { "DIVISION", "제작<br />구분", "40px", "", "Y" }
+            };
+            this._columnConfig = arr;
+            this._tblWidth = "1280px";
 
+            ViewBag.JPost["tgt"] = Session["URID"].ToString();
+            ViewBag.JPost["basesort"] = "ORDER_CREATE_DATE";
+
+            if (ViewBag.JPost["page"] == null || ViewBag.JPost["page"].ToString() == "") ViewBag.JPost["page"] = "1";
+            if (ViewBag.JPost["count"] == null || ViewBag.JPost["count"].ToString() == "") ViewBag.JPost["count"] = "20";
+
+            if (ViewBag.JPost["end"] == null) ViewBag.JPost["end"] = "";
+            if (ViewBag.JPost["sort"] == null) ViewBag.JPost["sort"] = "";
+            if (ViewBag.JPost["sortdir"] == null) ViewBag.JPost["sortdir"] = "";
+
+            if (ViewBag.JPost["cd1"] == null) ViewBag.JPost["cd1"] = "";
+            if (ViewBag.JPost["cd2"] == null) ViewBag.JPost["cd2"] = "";
+            if (ViewBag.JPost["cd4"] == null) ViewBag.JPost["cd4"] = "";
+            if (ViewBag.JPost["cd5"] == null) ViewBag.JPost["cd5"] = "";
+            if (ViewBag.JPost["cd8"] == null) ViewBag.JPost["cd8"] = "";
+            if (ViewBag.JPost["cd9"] == null) ViewBag.JPost["cd9"] = "";
+
+            if (ViewBag.JPost["cd1"].ToString() == "" && ViewBag.JPost["cd2"].ToString() == "" && ViewBag.JPost["cd4"].ToString() == ""
+                && ViewBag.JPost["cd5"].ToString() == "" && ViewBag.JPost["cd8"].ToString() == "" && ViewBag.JPost["cd9"].ToString() == "")
+            {
+                if (ViewBag.JPost["start"] == null || ViewBag.JPost["start"].ToString() == "") ViewBag.JPost["start"] = DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd"); //최근 1개월
+            }
         }
         else
         {
@@ -115,22 +182,22 @@
 
             //크레신 : 금형대장 현황 : 2014-04-10 필드 변경, 검색 변경
             string[,] arr = { { "fiid", "ID", "50px", "", "Y"},  { "ORG_NAME", "사업장", "60px", "", "Y" }, { "TOOLING_NUMBER", "금형번호", "130px", "", "Y" }, { "MODELNO", "적용모델", "130px", "", "Y" }
-                        , { "PARTNM", "부품명", "160px", "L", "Y" }, { "PARTNO", "품번", "130px", "L", "Y" },{ "MAKE_SUPPLIER_NAME", "제작처", "170px", "L", "Y" }, { "MAKE_TOOLINGNO", "제작처<br />금형번호", "100px", "", "Y" }
-                        , { "STORE_PLACE_NAME", "양산처", "170px", "", "Y" }, { "RUNNERTYPE", "RUNNER<br />TYPE", "70px", "", "Y" }, { "CAVITYA", "CAV<br />구분", "60px", "", "Y" }, { "CAVITY", "CAV<br />수량", "60px", "", "Y" } //1310
-                        , { "ABLCAVITYA", "가용CAV<br />구분", "70px", "", "Y" }, { "ABLCAVITY", "가용CAV<br />수량", "70px", "", "Y" }, { "WATERPER", "수율(%)", "70px", "", "Y" }
-                        , { "CYCLETIME", "C/T<br />(sec)", "60px", "", "Y" }, { "PRODHR", "생산<br />적용시간", "60px", "", "Y" }
-                        , { "ONEDAY", "1 Day<br />CAPA", "60px", "", "Y" }, { "ONEMON", "1 Mth<br />생산일", "60px", "", "Y" }, { "ONEMONCAP", "1 Mth<br />CAPA", "60px", "", "Y" }
-                        , { "SHOT", "사용<br />실적", "60px", "", "Y" }, { "RFID_TAKE", "RFID<br />부착여부", "60px", "", "Y" }, { "NAME_TAKE", "명판<br />부착여부", "60px", "", "Y" }, { "COUNTER_TAKE", "COUNTER<br />부착여부", "80px", "", "Y" } //770
-                        , { "USAGE_TYPE", "사용<br />구분", "50px", "", "N" }, { "MAKE_FROM", "START", "70px", "", "Y" }, { "MAKE_TO", "FINISH", "70px", "", "Y" }
-                        , { "COMPLETE_DATE", "승인일(제작완료확인일)", "100px", "", "Y" }, { "BUYER_NAME", "BUYER", "170px", "L", "Y" } , { "OWNER_NAME", "소유처", "170px", "L", "Y" }
-                        , { "TOOLING_TAGNO", "고객금형번호", "100px", "", "Y" }, { "DIVISION", "제작<br />구분", "40px", "", "Y" }
-                        , { "CLASSIFICATION_NAME", "금형<br />분류", "70px", "", "Y" }, { "RFIDYN", "RFID등록<br />대상여부", "70px", "", "Y" }, { "IFSTATE", "기안<br />결재여부", "70px", "", "Y" } //980
-                        , { "WHO_MONEY", "비용<br />부담", "60px", "", "Y" }, { "DEPT_NAME", "영업부서", "100px", "", "Y" }
-                        , { "CHARGE_USER", "영업<br />담당", "60px", "", "Y" }, { "PRODUCTION_CURRENCY", "통화<br />(제작)", "50px", "", "Y" }, { "PRODUCTION_COST", "제작금액", "90px", "", "Y" }, { "EXCHANGE_USD", "제작금액<br />(USD)", "90px", "", "Y" }
-                        , { "RETRIEVAL_ORG_NAME", "회수<br />법인", "40px", "", "Y" }, { "RETRIEVAL_CURRENCY", "통화<br />(회수)", "50px", "", "Y" }, { "RETRIEVAL_COST", "회수<br />금액", "70px", "", "Y" } //610
-                        , { "RETRIEVAL_EXP_DATE", "회수<br />예정일", "70px", "", "Y" }, { "RETRIEVAL_DATE", "회수<br />완료일", "70px", "", "Y" }, { "RETRIEVAL_TYPE", "회수<br />완료", "40px", "", "Y" }
-                        , { "PONO", "PO NO", "60px", "", "Y" }, { "PODATE", "P/O<br />발행일", "60px", "", "Y" }, { "APNO", "AP NO", "60px", "", "Y" }
-                        , { "ORDER_CREATE_DATE", "등록일", "70px", "", "Y" }, { "CREATOR", "등록자", "60px", "", "Y" }}; //430
+                    , { "PARTNM", "부품명", "160px", "L", "Y" }, { "PARTNO", "품번", "130px", "L", "Y" },{ "MAKE_SUPPLIER_NAME", "제작처", "170px", "L", "Y" }, { "MAKE_TOOLINGNO", "제작처<br />금형번호", "100px", "", "Y" }
+                    , { "STORE_PLACE_NAME", "양산처", "170px", "", "Y" }, { "RUNNERTYPE", "RUNNER<br />TYPE", "70px", "", "Y" }, { "CAVITYA", "CAV<br />구분", "60px", "", "Y" }, { "CAVITY", "CAV<br />수량", "60px", "", "Y" } //1310
+                    , { "ABLCAVITYA", "가용CAV<br />구분", "70px", "", "Y" }, { "ABLCAVITY", "가용CAV<br />수량", "70px", "", "Y" }, { "WATERPER", "수율(%)", "70px", "", "Y" }
+                    , { "CYCLETIME", "C/T<br />(sec)", "60px", "", "Y" }, { "PRODHR", "생산<br />적용시간", "60px", "", "Y" }
+                    , { "ONEDAY", "1 Day<br />CAPA", "60px", "", "Y" }, { "ONEMON", "1 Mth<br />생산일", "60px", "", "Y" }, { "ONEMONCAP", "1 Mth<br />CAPA", "60px", "", "Y" }
+                    , { "SHOT", "사용<br />실적", "60px", "", "Y" }, { "RFID_TAKE", "RFID<br />부착여부", "60px", "", "Y" }, { "NAME_TAKE", "명판<br />부착여부", "60px", "", "Y" }, { "COUNTER_TAKE", "COUNTER<br />부착여부", "80px", "", "Y" } //770
+                    , { "USAGE_TYPE", "사용<br />구분", "50px", "", "N" }, { "MAKE_FROM", "START", "70px", "", "Y" }, { "MAKE_TO", "FINISH", "70px", "", "Y" }
+                    , { "COMPLETE_DATE", "승인일(제작완료확인일)", "100px", "", "Y" }, { "BUYER_NAME", "BUYER", "170px", "L", "Y" } , { "OWNER_NAME", "소유처", "170px", "L", "Y" }
+                    , { "TOOLING_TAGNO", "고객금형번호", "100px", "", "Y" }, { "DIVISION", "제작<br />구분", "40px", "", "Y" }
+                    , { "CLASSIFICATION_NAME", "금형<br />분류", "70px", "", "Y" }, { "RFIDYN", "RFID등록<br />대상여부", "70px", "", "Y" }, { "IFSTATE", "기안<br />결재여부", "70px", "", "Y" } //980
+                    , { "WHO_MONEY", "비용<br />부담", "60px", "", "Y" }, { "DEPT_NAME", "영업부서", "100px", "", "Y" }
+                    , { "CHARGE_USER", "영업<br />담당", "60px", "", "Y" }, { "PRODUCTION_CURRENCY", "통화<br />(제작)", "50px", "", "Y" }, { "PRODUCTION_COST", "제작금액", "90px", "", "Y" }, { "EXCHANGE_USD", "제작금액<br />(USD)", "90px", "", "Y" }
+                    , { "RETRIEVAL_ORG_NAME", "회수<br />법인", "40px", "", "Y" }, { "RETRIEVAL_CURRENCY", "통화<br />(회수)", "50px", "", "Y" }, { "RETRIEVAL_COST", "회수<br />금액", "70px", "", "Y" } //610
+                    , { "RETRIEVAL_EXP_DATE", "회수<br />예정일", "70px", "", "Y" }, { "RETRIEVAL_DATE", "회수<br />완료일", "70px", "", "Y" }, { "RETRIEVAL_TYPE", "회수<br />완료", "40px", "", "Y" }
+                    , { "PONO", "PO NO", "60px", "", "Y" }, { "PODATE", "P/O<br />발행일", "60px", "", "Y" }, { "APNO", "AP NO", "60px", "", "Y" }
+                    , { "ORDER_CREATE_DATE", "등록일", "70px", "", "Y" }, { "CREATOR", "등록자", "60px", "", "Y" }}; //430
             this._columnConfig = arr;
             this._tblWidth = "4100px";
 
@@ -153,17 +220,34 @@
             sb.Append("</colgroup>");
 
             sb.Append("<thead>");
-            sb.AppendFormat("<tr class=\"table-success\"><th{0} rowspan=\"2\">{1}</th><th{0} colspan=\"34\">{2}</th><th{0} colspan=\"17\">{3}</th></tr>", sClassExcel, "NO", "금형내역", "금형비 관리");
-            sb.Append("<tr class=\"table-success\">");
-            for (int i = 1; i < _columnConfig.GetLength(0); i++)
+            if (ViewBag.Modal == "Y")
             {
-                if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
+                sb.Append("<tr class=\"table-success\">");
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
                 {
-                    sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"</a></th>"
-                                     , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
-                                    , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
+                    if (_columnConfig[i, 4].ToString() == "Y")
+                    {
+                        sb.AppendFormat("<th class=\"text-center\"><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\">{1} <i class=\"{2}\"</a></th>"
+                                            , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
+                                        , (ViewBag.JPost["sort"].ToString() == _columnConfig[i, 0].ToString() ? (ViewBag.JPost["sortdir"] == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
+                    }
+                    else sb.AppendFormat("<th class=\"text-center\">{0}</th>", _columnConfig[i, 1].ToString());
                 }
-                else sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
+            }
+            else
+            {
+                sb.AppendFormat("<tr class=\"table-success\"><th{0} rowspan=\"2\">{1}</th><th{0} colspan=\"34\">{2}</th><th{0} colspan=\"17\">{3}</th></tr>", sClassExcel, "NO", "금형내역", "금형비 관리");
+                sb.Append("<tr class=\"table-success\">");
+                for (int i = 1; i < _columnConfig.GetLength(0); i++)
+                {
+                    if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
+                    {
+                        sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"</a></th>"
+                                            , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
+                                        , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
+                    }
+                    else sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
+                }
             }
             sb.Append("</tr>");
             sb.Append("</thead>");
@@ -467,46 +551,255 @@
     public string ExcelStyle()
     {
         return @"
-            body {width: 100%}
-            table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
-            td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+        body {width: 100%}
+        table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+        td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
 
-            .xls_warning {background-color: #fcf8e3}
-            .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+        .xls_warning {background-color: #fcf8e3}
+        .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
 
-            .text-center {text-align: center}
-            .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
-            .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
-            ";
+        .text-center {text-align: center}
+        .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+        .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+        ";
+    }
+
+    private string ViewModal(DataSet data)
+    {
+        char cDel = (char)8;
+        int iPage = Convert.ToInt32(ViewBag.JPost["page"].ToString());
+        int iPageCount = Convert.ToInt32(ViewBag.JPost["count"].ToString());
+        int iTotal = Convert.ToInt32(ViewBag.JPost["total"].ToString());
+        int iTotalPage = iTotal / iPageCount + 1;
+
+        string strReturn = "";
+        StringBuilder sb = new StringBuilder();
+        if (ViewBag.JPost["body"].ToString() == "")
+        {
+            sb.Append("<div class=\"zf-modal modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm\" style=\"max-width: 100%\">");
+            sb.AppendFormat("<div class=\"modal-content\" data-for=\"{0}\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5); min-height: 40rem\">", ViewBag.JPost["ft"].ToString());
+
+            sb.Append("<div class=\"modal-header flex-column\">");
+            sb.Append("<div class=\"d-flex align-items-center w-100\">");
+
+            sb.Append("<div class=\"input-group w-50\">");
+            sb.Append("<div class=\"input-group datepicker input-daterange\" style=\"width: \">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.JPost["start"]);
+            sb.Append("<div class=\"input-group-prepend\">");
+            sb.Append("<span class=\"input-group-text\">~</span>");
+            sb.Append("</div>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control end-date px-1\" value=\"{0}\">", ViewBag.JPost["end"]);
+            sb.Append("<div class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zm-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</div>");
+            sb.Append("<div class=\"input-group-append\">"); //d-none d-sm-flex
+            sb.Append("<button class=\"btn btn-default\" aria-controls=\"vw-search-cond\" onclick=\"_zw.ut.ctrls();\" title=\"상세\"><i class=\"fas fa-angle-down\"></i></button>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            sb.Append("</div>"); //input-group w-50
+
+            sb.Append("<div class=\"ml-2 d-flex align-items-center zf-modal-page\">");
+            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+            sb.Append("</div>");
+
+            sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\" style=\"top: 1.5rem\"><span aria-hidden=\"true\">&times;</span></button>");
+            sb.AppendFormat("<input type=\"hidden\" data-for=\"page\" value=\"{0}\" />", ViewBag.JPost["page"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" data-for=\"count\" value=\"{0}\" />", ViewBag.JPost["count"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" data-for=\"pos\" value=\"{0}\" />", ViewBag.JPost["pos"] != null ? ViewBag.JPost["pos"].ToString() : ""); //table row
+            sb.Append("</div>"); //d-flex
+
+            sb.Append("<div class=\"d-none mt-2 w-100\" data-controls=\"vw-search-cond\">");
+            sb.Append("<table class=\"table text-center mb-0\">");
+            sb.Append("<colgroup><col style=\"width: 10%\" /><col style=\"width: 23.3%\" /><col style=\"width: 10%\" /><col style=\"width: 23.3%\" /><col style=\"width: 10%\" /><col style=\"width: 23.4%\" /></colgroup>");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append("<td class=\"bg-light p-0 align-middle\">제작구분</td>");
+            sb.Append("<td class=\"p-0\">");
+            sb.Append("<select class=\"custom-select\" data-for=\"cd1\">");
+            sb.Append("<option value=\"\">전체</option>");
+            sb.AppendFormat("<option value=\"NEW\"{0}>신작</option>", ViewBag.JPost["cd1"] == "NEW" ? " selected" : "");
+            sb.AppendFormat("<option value=\"ADD\"{0}>증작</option>", ViewBag.JPost["cd1"] == "ADD" ? " selected" : "");
+            sb.AppendFormat("<option value=\"BUYER\"{0}>고객</option>", ViewBag.JPost["cd1"] == "BUYER" ? " selected" : "");
+            sb.Append("</select>");
+            sb.Append("</td>");
+
+            sb.Append("<td class=\"bg-light p-0 align-middle\">금형분류</td>");
+            sb.Append("<td class=\"p-0\">");
+            sb.Append("<select class=\"custom-select\" data-for=\"cd2\">");
+            sb.Append("<option value=\"\">전체</option>");
+            foreach (object[] o in ViewBag.CodeTable["external.toolingcls"])
+            {
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[3].ToString(), StringHelper.SafeString(ViewBag.JPost["cd2"].ToString()) == o[4].ToString() ? " selected" : "");
+            }
+            sb.Append("</select>");
+            sb.Append("</td>");
+
+            sb.Append("<td class=\"bg-light p-0 align-middle\">사업장</td>");
+            sb.Append("<td class=\"p-0\">");
+            sb.Append("<select class=\"custom-select\" data-for=\"cd9\">");
+            sb.Append("<option value=\"\">전체</option>");
+            foreach (object[] o in ViewBag.CodeTable["external.centercode"])
+            {
+                sb.AppendFormat("<option value=\"{0}\"{1}>{0}</option>", o[3].ToString(), StringHelper.SafeString(ViewBag.JPost["cd9"].ToString()) == o[3].ToString() ? " selected" : "");
+            }
+            sb.Append("</select>");
+            sb.Append("</td>");
+            sb.Append("</tr>");
+
+            sb.Append("<tr>");
+            sb.Append("<td class=\"bg-light p-0 align-middle\">금형번호</td>");
+            sb.Append("<td class=\"p-0\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd4\" value=\"{0}\">", ViewBag.JPost["cd4"]);
+            sb.Append("</td>");
+
+            sb.Append("<td class=\"bg-light p-0 align-middle\">적용모델</td>");
+            sb.Append("<td class=\"p-0\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd5\" value=\"{0}\">", ViewBag.JPost["cd5"]);
+            sb.Append("</td>");
+
+            sb.Append("<td class=\"bg-light p-0 align-middle\">품번</td>");
+            sb.Append("<td class=\"p-0\">");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control px-1\" data-for=\"cd8\" value=\"{0}\">", ViewBag.JPost["cd8"]);
+            sb.Append("</td>");
+            sb.Append("</tr>");
+
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</div>");
+
+            sb.Append("</div>"); //modal-header
+
+            sb.Append("<div class=\"modal-body\">"); //modal-body
+        }
+        else
+        {
+            sb.AppendFormat("<span class=\"mr-2\">총 {0}개 {1}/{2} 페이지</span>", iTotal.ToString(), iPage.ToString(), iTotalPage.ToString());
+            if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+            if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+            sb.Append(cDel); //페이징과 테이블 구분
+        }
+
+        string strHeader = RenderColumnHeader("");
+        sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+        sb.Append(strHeader);
+        sb.Append("<tbody>");
+
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            int iRow = 1;
+
+            if (data.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow row in data.Tables[0].Rows)
+                {
+                    sb.AppendFormat("<tr id=\"{0}\" fiid=\"{1}\">", row["TOOLING_NUMBER"].ToString(), row["fiid"].ToString());
+                    for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                    {
+                        strID = _columnConfig[i, 0].ToString();
+
+                        if (strID == "__RADIO__")
+                        {
+                            strValue = "<input name=\"rdoRow\" type=\"radio\" />";
+                        }
+                        else if (strID == "TOOLING_NUMBER")
+                        {
+                            strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.formEx.openXForm();\">" + row[strID].ToString() + "</a>";
+                        }
+                        else if (strID == "MODELNO")
+                        {
+                            strValue = row[strID].ToString();
+                            //if (strValue.Trim() != "" && row["MODELPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.formEx.openXForm('" + row["MODELCLS"].ToString() + "', '" + row["MODELPDMOID"].ToString() + "');\">" + strValue + "</a>";
+                        }
+                        else if (strID == "PARTNO")
+                        {
+                            strValue = row[strID].ToString();
+                            //if (strValue.Trim() != "" && row["PARTPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.formEx.openXForm('" + row["PARTCLS"].ToString() + "', '" + row["PARTPDMOID"].ToString() + "');\">" + strValue + "</a>";
+                        }
+                        else if (strID == "DIVISION")
+                        {
+                            strValue = row[strID].ToString();
+                            if (strValue.Trim() == "NEW") strValue = "신작";
+                            else if (strValue.Trim() == "ADD") strValue = "증작";
+                        }
+                        else
+                        {
+                            strValue = row[strID].ToString();
+                        }
+                        strValue = (strValue.Trim() == "") ? "&nbsp;" : strValue;
+
+                        sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
+                    }
+                    sb.Append("</tr>");
+                    iRow++;
+                }
+            }
+            else
+            {
+                sb.AppendFormat("<tr><td class=\"text-center py-5\" colspan=\"11\">{0}</td></tr>", Resources.Global.NoItemShow);
+            }
+        }
+        else
+        {
+            sb.AppendFormat("<tr><td class=\"text-center\" colspan=\"11\">{0}</td></tr>", Resources.Global.NoItemShow);
+        }
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (ViewBag.JPost["body"].ToString() == "")
+        {
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">"); //modal-footer
+            sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">닫기</button>");
+            sb.Append("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"confirm\">확인</button>");
+            sb.Append("</div>");
+
+            sb.Append("</div>"); //modal-content
+            sb.Append("</div>"); //modal-dialog
+        }
+
+        if (strReturn == "") strReturn = "OK" + sb.ToString();
+
+        return strReturn;
     }
 }
-@if (svcRt == null || svcRt.ResultCode != 0)
+@if (_vwModal == "Y")
 {
-    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+    @Html.Raw(ViewModal(svcRt.ResultDataSet))
 }
 else
 {
-    <div class="z-list-head d-flex justify-content-between my-2 pl-0">
-        @Html.Raw(ListCond())
-        <div class="z-list-page d-flex align-items-center justify-content-between" id="__ListCount">
-            <div class="z-list-total d-flex align-items-center mr-1">
-                <i class="fe-chevron-right"></i> @ListCount()
-            </div>
-            <div class="input-group d-none d-sm-flex z-lv-cnt">
-                <select class="custom-select">
-                    <option value="10" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 10 ? " selected" : "")>10</option>
-                    <option value="20" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 20 ? " selected" : "")>20</option>
-                    <option value="30" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 30 ? " selected" : "")>30</option>
-                    <option value="40" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 40 ? " selected" : "")>40</option>
-                    <option value="50" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 50 ? " selected" : "")>50</option>
-                </select>
+    if (svcRt == null || svcRt.ResultCode != 0)
+    {
+        @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+    }
+    else
+    {
+        <div class="z-list-head d-flex justify-content-between my-2 pl-0">
+            @Html.Raw(ListCond())
+            <div class="z-list-page d-flex align-items-center justify-content-between" id="__ListCount">
+                <div class="z-list-total d-flex align-items-center mr-1">
+                    <i class="fe-chevron-right"></i> @ListCount()
+                </div>
+                <div class="input-group d-none d-sm-flex z-lv-cnt">
+                    <select class="custom-select">
+                        <option value="10" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 10 ? " selected" : "")>10</option>
+                        <option value="20" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 20 ? " selected" : "")>20</option>
+                        <option value="30" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 30 ? " selected" : "")>30</option>
+                        <option value="40" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 40 ? " selected" : "")>40</option>
+                        <option value="50" @(Convert.ToInt32(ViewBag.R.lv.count.Value) == 50 ? " selected" : "")>50</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="z-list-body" id="__ListView">
-        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
-    </div>
+        <div class="z-list-body" id="__ListView">
+            @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+        </div>
+    }
 }
-
-

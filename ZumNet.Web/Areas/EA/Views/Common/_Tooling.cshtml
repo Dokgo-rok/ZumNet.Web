@@ -20,6 +20,9 @@
         string strQuery = "";
         string strReturn = "";
 
+        char _firstDel = (char)10;  //줄바꿈
+        char _secondDel = (char)9;  //탭
+
         try
         {
             if (postData["k2"].ToString() == "CHECK_TAGNO")
@@ -88,6 +91,80 @@
             else if (postData["k1"].ToString() == "HISTORY")
             {
 
+            }
+            else if (postData["k2"].ToString() == "TOOLING_DATA")
+            {
+                #region [결재양식에서 선택한 금형 데이터 가져오기]
+                if (postData["mi"].ToString() == "" || postData["mi"].ToString() == "0" || postData["xf"].ToString() == "")
+                {
+                    strReturn = "필수항목 누락!";
+                }
+                else
+                {
+                    DataSet dsForm = null;
+                    using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new ZumNet.DAL.FlowDac.EApprovalDac())
+                    {
+                        dsForm = eaDac.SelectFormDataNotEA(postData["mi"].ToString(), postData["xf"].ToString(), postData["fi"].ToString());
+                    }
+
+                    if (dsForm != null && dsForm.Tables.Count > 0)
+                    {
+                        //금형번호,모델,부품,보유처,소유처,설치장소,cavity,사용실적,수명만기,제작완료일
+                        for (int i = 0; i < dsForm.Tables.Count; i++)
+                        {
+                            DataTable dt = dsForm.Tables[i];
+                            if (i == 0)
+                            {
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["TOOLING_NUMBER"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["STORE_PLACE_NAME"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["STORE_PLACE_ID"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["STORE_PLACE_SITEID"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["OWNER_NAME"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["OWNER_ID"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["OWNER_SITEID"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["SETUP_PLACE"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["CAVITY"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["SHOT"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["EXPIRATION_SHOT"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["COMPLETE_DATE"].ToString(), _secondDel);
+
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["BUYER_NAME"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["BUYER_ID"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["BUYER_SITEID"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["MAKE_SUPPLIER_NAME"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["MAKE_SUPPLIER_ID"].ToString(), _secondDel);
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["MAKE_SUPPLIER_SITEID"].ToString(), _secondDel);
+
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["CMN_TYPE"].ToString(), _secondDel);   //2011-10-06 추가
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["ORG_NAME"].ToString(), _secondDel);   //2014-12-10 추가
+                                sb.AppendFormat("{0}{1}", (dt.Rows[0]["MAKE_FROM"].ToString() != "" ? Convert.ToDateTime(dt.Rows[0]["MAKE_FROM"]).ToString("yyyy-MM-dd") : ""), _secondDel);   //2014-12-10 추가
+                                sb.AppendFormat("{0}{1}", (dt.Rows[0]["MAKE_TO"].ToString() != "" ? Convert.ToDateTime(dt.Rows[0]["MAKE_TO"]).ToString("yyyy-MM-dd") : ""), _secondDel);   //2014-12-10 추가
+
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["CAVITYA"].ToString(), _secondDel); //2019-10-08 추가
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["ABLCAVITYA"].ToString(), _secondDel); //2019-10-08 추가
+                                sb.AppendFormat("{0}{1}", dt.Rows[0]["ABLCAVITY"].ToString(), _secondDel); //2019-10-08 추가
+
+                                sb.Append(_firstDel);
+                            }
+                            else
+                            {
+                                foreach (DataRow row in dt.Rows)
+                                {
+                                    if (row["CLSNAME"].ToString() == "pdmmodel" || row["CLSNAME"].ToString() == "pdmpart")
+                                    {
+                                        sb.AppendFormat("{1}{0}{2}{0}{3}{0}{4}", _secondDel, row["CLSNAME"].ToString(), row["PDMOID"].ToString(), row["PNUMBER"].ToString(), row["SUBJECT"].ToString());
+                                        sb.Append(_firstDel);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        strReturn = "해당 데이타가 없습니다!";
+                    }
+                }
+                #endregion
             }
             else
             {

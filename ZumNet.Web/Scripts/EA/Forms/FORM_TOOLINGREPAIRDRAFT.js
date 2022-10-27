@@ -158,7 +158,202 @@
 			p.on('hidden.bs.modal', function () { p.html(''); });
 			p.modal();
 		},
-		"reportWnd": function (ft) {
+		"reportWnd": function (ft, body, page, sort, dir) {
+			//data body 조건 : N(modal-body 없음), F(footer 포함)
+			body = body || ''; sort = sort || ''; dir = dir || '';
+
+			var postData = {};
+			postData["ft"] = ft; postData["body"] = body; postData["tgt"] = _zw.V.current.urid; postData["basesort"] = '';
+			postData["page"] = (page) ? page : 1; postData["count"] = ''; postData["sort"] = sort; postData["sortdir"] = dir;
+
+			if (body == '') {
+				var el = _zw.ut.eventBtn(); do { el = el.parent(); } while (el && el.length > 0 && !el.hasClass('sub_table_row')); //alert(el.find('td:first-child').find('input[name="ROWSEQ"]').val()); return
+				postData["pos"] = el.find('td:first-child').find('input[name="ROWSEQ"]').val(); //table row
+
+				postData["start"] = ''; postData["end"] = ''; postData["cd1"] = ''; postData["cd2"] = '';
+				postData["cd4"] = ''; postData["cd5"] = ''; postData["cd8"] = ''; postData["cd9"] = '';
+			} else {
+				var p = $('#popBlank');
+				postData["start"] = p.find('.modal-header .start-date').val();
+				postData["end"] = p.find('.modal-header .end-date').val();
+				p.find('.modal-header .table td [data-for]').each(function () {
+					postData[$(this).attr('data-for')] = $(this).val();
+				});
+				//console.log(postData)
+			}
+
+			$.ajax({
+				type: "POST",
+				url: "/Report/Modal",
+				data: JSON.stringify(postData),
+				success: function (res) {
+					//res = $.trim(res); //cshtml 사용 경우 앞에 공백이 올수 있음 -> 서버에서 문자열 TrimStart() 사용
+					if (res.substr(0, 2) == 'OK') {
+						var p = $('#popBlank');
+						if (body == '') {
+							p.html(res.substr(2));
+							_zw.ut.picker('date');
+
+							p.find('.modal-header .btn[data-zm-menu="search"]').click(function () {
+								_zw.formEx.reportWnd(ft, 'N');
+							});
+
+							p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
+								var n = p.find('.modal-body table :radio[name="rdoRow"]:checked');
+								if (n.length > 0) {
+									bootbox.confirm('현 금형을 선택하시겠습니까?', function (rt) {
+										if (rt) {
+											//alert(n.parent().parent().attr('id'));
+											$.ajax({
+												type: "POST",
+												url: "/EA/Common",
+												data: '{M:"gettooling",k1:"",k2:"TOOLING_DATA",mi:"' + n.parent().parent().attr('id') + '",xf:"tooling",fi:"' + ft + '"}',
+												success: function (res) {
+													if (res.substr(0, 2) == 'OK') {
+														//_zw.formEx.insertToolingData(p.find('.modal-header :hidden[data-for="pos"]').val(), res.substr(2).split(String.fromCharCode(10)));
+														_zw.formEx.insertToolingData(p.find('.modal-header :hidden[data-for="pos"]').val(), res.substr(2));
+														p.modal('hide');
+													} else bootbox.alert(res);
+												}
+											});
+										}
+									});
+								}
+							});
+
+						} else {
+							var cDel = String.fromCharCode(8);
+							if (res.substr(2).indexOf(cDel) != -1) {
+								var vRes = res.substr(2).split(cDel);
+								p.find('.modal-header .zf-modal-page').html(vRes[0]);
+								p.find('.modal-body').html(vRes[1]);
+							} else {
+								p.find('.modal-body').html(res.substr(2));
+							}
+						}
+
+						p.find('.zf-modal-page .btn[data-for]').click(function () {
+							p.find('.modal-header :hidden[data-for="page"]').val($(this).attr('data-for'));
+							_zw.formEx.reportWnd(ft, 'N', $(this).attr('data-for'));
+						});
+
+						p.find('.modal-body .table thead a[data-val]').click(function () {
+							var t = $(event.target); sortCol = t.attr('data-val'), sortDir = '';
+							t.parent().parent().find('a[data-val]').each(function () {
+								if ($(this).attr('data-val') == sortCol) {
+									var c = $(this).find('i');
+									if (c.hasClass('fe-arrow-up')) {
+										c.removeClass('fe-arrow-up').addClass('fe-arrow-down'); sortDir = 'DESC';
+									} else {
+										c.removeClass('fe-arrow-down').addClass('fe-arrow-up'); sortDir = 'ASC';
+									}
+								} else {
+									$(this).find('i').removeClass();
+								}
+							});
+							_zw.formEx.reportWnd(ft, 'N', null, sortCol, sortDir);
+						});
+
+						p.on('hidden.bs.modal', function () { p.html(''); });
+						p.modal();
+
+					} else bootbox.alert(res);
+				}
+			});
+		},
+		"openXForm": function () {
+			var el = _zw.ut.eventBtn(), row = el.parent().parent(), x = 0, y = 0, winName = '', url = '', sResize = '', sId = '', qi;
+			sId = row.attr('id');
+			x = 900; y = 600; qi = '{M:"read",mi:"' + sId + '",oi:"",wi:"",fi:"REGISTER_TOOLING",xf:"tooling"}';
+			url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+			if (url != '') _zw.ut.openWnd(url, winName, x, y, sResize);
+		},
+		"insertToolingData": function (pos, res) {
+			if (parseInt(pos) > 0 && res.length > 0) {
+				$('#__subtable1 tr.sub_table_row').each(function () {
+					var c = $(this).find('td:first-child');
+					if (c.find('input[name="ROWSEQ"]').val() == pos) {
+						var c1 = String.fromCharCode(10), c2 = String.fromCharCode(9), vModel = '', vPart = '';
+						var v1 = res.split(c1), v2 = null, el = null;
+
+						var t = c.next().find('table.ft-sub-sub');
+						for (var i = 0; i < v1.length; i++) {
+							if (v1[i].length > 0) {
+								v2 = v1[i].split(c2);
+								if (i == 0) {//console.log(v2)
+									el = t.find('[name="TOOLINGNUMBER"]'); if (el && el.length > 0) el.val(v2[0]);
+									el = t.find('[name="STOREPLACE"]'); if (el && el.length > 0) el.val(v2[1]);
+									el = t.find('[name="STOREPLACEID"]'); if (el && el.length > 0) el.val(v2[2]);
+									el = t.find('[name="STOREPLACESITEID"]'); if (el && el.length > 0) el.val(v2[3]);
+									el = t.find('[name="OWNER"]'); if (el && el.length > 0) el.val(v2[4]);
+									el = t.find('[name="OWNERID"]'); if (el && el.length > 0) el.val(v2[5]);
+									el = t.find('[name="OWNERSITEID"]'); if (el && el.length > 0) el.val(v2[6]);
+									el = t.find('[name="SETUPPLACE"]'); if (el && el.length > 0) el.val(v2[7]);
+									el = t.find('[name="CAVITY"]'); if (el && el.length > 0) el.val(v2[8]);
+
+									el = t.find('[name="CAVITYA"]'); if (el && el.length > 0) el.val(v2[22]);
+									el = t.find('[name="USABLECAVITYA"]'); if (el && el.length > 0) el.val(v2[23]);
+									el = t.find('[name="USABLECAVITY"]'); if (el && el.length > 0) el.val(v2[24]);
+
+									el = t.find('[name="SHOT"]'); if (el && el.length > 0) el.val(v2[9]);
+									el = t.find('[name="EXPIREDSHOT"]'); if (el && el.length > 0) el.val(v2[10]);
+									el = t.find('[name="COMPLETEDATE"]'); if (el && el.length > 0) el.val(v2[11]);
+
+									el = t.find('[name="PREPLACE"]'); if (el && el.length > 0) el.val(v2[19]);
+									el = t.find('[name="FROMDATE"]'); if (el && el.length > 0) el.val(v2[20]);
+									el = t.find('[name="TODATE"]'); if (el && el.length > 0) el.val(v2[21]);
+
+									el = t.find('[name="MAKESUPPLIER"]'); if (el && el.length > 0) el.val(v2[15]);
+									el = t.find('[name="MAKESUPPLIERID"]'); if (el && el.length > 0) el.val(v2[16]);
+									el = t.find('[name="MAKESUPPLIERSITEID"]'); if (el && el.length > 0) el.val(v2[17]);
+									el = t.find('[name="CMNTYPE"]'); if (el && el.length > 0) el.val(v2[18]);
+								} else {
+									if (v2[0] == "pdmmodel") {//console.log(v2)
+										vModel = v2[1] + c2 + v2[2] + c2 + v2[3];
+									} else if (v2[0] == "pdmpart") {//console.log(v2)
+										if (vPart != '') vPart += c1;
+										vPart += v2[1] + c2 + v2[2] + c2 + v2[3];
+									}
+								}
+							}
+						}
+						var el2 = t.find('[name="MODELOID"]'); if (el2 && el2.length > 0) el2.val('');
+						var el3 = t.find('[name="MODELNO"]'); if (el3 && el3.length > 0) el3.val('');
+						var el4 = t.find('[name="MODELNM"]'); if (el4 && el4.length > 0) el4.val('');
+						if (vModel != '') {
+							vModel = vModel.split(c2);
+							if (el2) el2.val(vModel[0]); if (el3) el3.val(vModel[1]); if (el4) el4.val(vModel[2]);
+						}
+
+						el = t.find('[name="PARTNO1"]');
+						if (el && el.length > 0) {
+							var n = el.parent().parent(); //div class=subtbl_div
+							n.find('> div:gt(1)').remove();
+							n.find('> div').find("input").val('');
+
+							if (vPart != '') {
+								vPart = vPart.split(c1);
+								for (var i = 0; i < vPart.length; i++) {
+									v2 = vPart[i].split(c2); //console.log(v2)
+									if (i == 0) {
+										n.find("input[name]").each(function () {
+											//console.log('name=>' + $(this).attr('name'))
+											if ($(this).attr('name').indexOf('PARTOID') >= 0) $(this).val(v2[0]);
+											else if ($(this).attr('name').indexOf('PARTNO') >= 0) $(this).val(v2[1]);
+											else if ($(this).attr('name').indexOf('PARTNM') >= 0) $(this).val(v2[2]);
+										});
+									} else {
+										var str = "<div><input type='text' name='PARTNO" + (i + 1).toString() + "' style='width:250px' class='txtRead' readonly='readonly' value='" + v2[1] + "' />"
+											+ "&nbsp;(<input type='text' name='PARTNM" + (i + 1).toString() + "' style='width:335px' class='txtRead' readonly='readonly' value='" + v2[2] + "' />)"
+											+ "<input type='hidden' name='PARTOID" + (i + 1).toString() + "' value='" + v2[0] + "' /></div>";
+										n.append(str);
+									}
+								}
+							}
+						}
+					}
+				});
+			}
 		}
     }
 });

@@ -317,11 +317,11 @@ namespace ZumNet.Web.Controllers
                 fdEnv = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
             }
 
-            rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
-            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
-            {
-                return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
+            //rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+            //if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
+            //{
+            //    return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            //}
 
             rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
             if (rt != "")
@@ -406,10 +406,10 @@ namespace ZumNet.Web.Controllers
                         fdEnv = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
                     }
 
-                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
-                    {
-                        return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
-                    }
+                    //if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
+                    //{
+                    //    return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                    //}
 
                     sPos = "400";
                     rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
@@ -498,10 +498,10 @@ namespace ZumNet.Web.Controllers
                         }
                     }
 
-                    if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
-                    {
-                        return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
-                    }
+                    //if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R")))
+                    //{
+                    //    return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+                    //}
 
                     sPos = "400";
                     rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
@@ -685,11 +685,11 @@ namespace ZumNet.Web.Controllers
                 fdEnv = cb.GetFolderEnvironmentInfomation(iFolderId, ViewBag.R.xfalias.ToString(), "read");
             }
 
-            rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
-            if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "E") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E")))
-            {
-                return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
-            }
+            //rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
+            //if (ViewBag.R.current["operator"].ToString() == "N" && (ViewBag.R.current["acl"].ToString() == "" || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "E") || !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E")))
+            //{
+            //    return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            //}
 
             rt = Bc.CtrlHandler.SiteMap(this, iCategoryId, iFolderId, ViewBag.R["opnode"].ToString());
             if (rt != "")

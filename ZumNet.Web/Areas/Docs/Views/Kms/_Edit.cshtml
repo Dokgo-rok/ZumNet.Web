@@ -3,8 +3,17 @@
 
 @{
     bool bPrevEditorBody = false;
+    if (ViewBag.R.app["creurid"].ToString() == Session["URID"].ToString())
+    {
+        ViewBag.R.current["appacl"] = "_DEMRV"; //작성자
+    }
 }
-
+@if (ViewBag.R.current["operator"].ToString() == "N" && !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E"))
+{
+    @Html.Partial("~/Views/Shared/_NoPermission.cshtml")
+}
+else
+{
 <!-- Header -->
 <div class="flex-grow-0">
     <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.wnd.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.wnd.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
@@ -16,14 +25,14 @@
                 </div>
             }
 
-        <div class="btn-group">
-            <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg();"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
-            <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" onclick="_zw.mu.previewMsg();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Preview</span></button>
-            @if (ViewBag.R.app.state == '0')
-            {
-                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" onclick="_zw.mu.saveMsg();"><i class="fe-save"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.TempSave</span></button>
-            }
-        </div>
+            <div class="btn-group">
+                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg();"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
+                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" onclick="_zw.mu.previewMsg();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Preview</span></button>
+                @if (ViewBag.R.app.state == '0')
+                {
+                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" onclick="_zw.mu.saveMsg();"><i class="fe-save"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.TempSave</span></button>
+                }
+            </div>
         </div>
         <div>
             <div class="btn-group">
@@ -101,3 +110,4 @@
         <div class="container-p-x py-2 zf-editor position-absolute" id="__DextEditor" style="top: ; bottom: 0; left: 0; right: 0; min-height: 50%"></div>
     </div>
 </div>
+}

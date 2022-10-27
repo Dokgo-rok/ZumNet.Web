@@ -10,8 +10,17 @@
     bPrevEditorBody = true;
 
     bool bOwner = ViewBag.R.app["creurid"].ToString() == Session["URID"].ToString() ? true : false;
+    if (bOwner)
+    {
+        ViewBag.R.current["appacl"] = "_DEMRV"; //작성자
+    }
 }
-
+@if (ViewBag.R.current["operator"].ToString() == "N" && !ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R"))
+{
+    @Html.Partial("~/Views/Shared/_NoPermission.cshtml")
+}
+else
+{
 <!-- Header -->
 <div class="flex-grow-0">
     <div class="zf-menu d-flex justify-content-between container-p-x m-0 @(ViewBag.R.wnd.ToString() == "" ? "mt-1 pt-3" : "py-2")" style="@(ViewBag.R.wnd.ToString() == "" ? "padding-bottom: .65rem !important" : "")">
@@ -197,3 +206,4 @@
         @Html.Partial("~/Views/Common/_ListComment.cshtml")
     </div>
 </div>
+}

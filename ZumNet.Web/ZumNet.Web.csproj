@@ -386,6 +386,7 @@
     <Content Include="Content\booking.css" />
     <Content Include="Content\ce.css" />
     <Content Include="Content\env.css" />
+    <Content Include="Content\Forms\CRESYN\FORM_SAMPLECONTROL_V1.xsl" />
     <Content Include="Content\search.css" />
     <Content Include="Content\voc.css" />
     <Content Include="Content\todo.css" />
@@ -648,7 +649,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_MOLDREQUEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MOLDREQUEST_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MOLDREQUEST_V3.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_MOLDREQUEST_V4.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_MOLDREQUEST_V4.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_MOLDSCRAP_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MOLDTRYREPORT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MONEYCONTRACT2_V1.xsl" />
@@ -2179,6 +2182,9 @@
     <Content Include="Scripts\EA\Forms\FORM_EDUREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTA.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTB.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTC.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTD.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPMAKEPURCHASE.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPPURCHASEREQ.js" />
@@ -2240,6 +2246,7 @@
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCD.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCF.js" />
+    <Content Include="Scripts\EA\Forms\FORM_REPAIRREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />
     <Content Include="Scripts\EA\Forms\FORM_RESIGNATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_RPUSEAPP.js" />
@@ -2267,10 +2274,14 @@
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGDISUSEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLINGMOVEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGNEWREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGREPAIRDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLINGSAILSREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGTRYREPORT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLMAKINGLIST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TOOLMAKINGSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_UNITASSYRETURNAGREEMENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_UNITASSYRETURNNOTIFY.js" />
     <Content Include="Scripts\EA\Forms\FORM_UNITSPECIFICATION.js" />

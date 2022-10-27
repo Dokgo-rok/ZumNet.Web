@@ -26,21 +26,21 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:720px} .m .fm-editor {height:500px;border:windowtext 1pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:15pt}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:720px} .m .fm-editor {height:500px;min-height:500px;border:windowtext 1pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:15pt}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:72px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:12%} .m .ft .f-lbl1 {width:50%} .m .ft .f-lbl2 {width:?}
-          .m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
-          .m .ft-sub .f-option {width:49%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:50%} .m .ft .f-lbl2 {width:?}
+			.m .ft .f-option {width:33%} .m .ft .f-option1 {width:34%}
+			.m .ft-sub .f-option {width:49%}
 
-          /* 인쇄 설정 : 맨하단으로 */
-          @media print {.m .fm-editor {height:550px}}
-        </style>
+			/* 인쇄 설정 : 맨하단으로 */
+			@media print {.m .fm-editor {height:500px;min-height:500px}}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -48,18 +48,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -69,18 +65,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="ff" />
@@ -88,11 +80,11 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:330px">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '의뢰부서')"/>
                 </td>
-                <td style="width:150px;font-size:1px">&nbsp;</td>
-                <td style="width:330px;">
+                <td style="font-size:1px">&nbsp;</td>
+                <td style="width:320px;">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '4', '주관부서')"/>
                 </td>
               </tr>
@@ -107,11 +99,11 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:12%" class="f-lbl">문서번호</td>
-                <td style="width:38%">
+                <td class="f-lbl">문서번호</td>
+                <td style="width:35%">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//docinfo/docnumber))" />
                 </td>
-                <td style="width:12%" class="f-lbl">작성일자</td>
+                <td class="f-lbl">작성일자</td>
                 <td style="border-right:0">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:convertDate(string(//docinfo/createdate), '')" />
                 </td>
@@ -137,7 +129,7 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td class="f-lbl" style="border-bottom:0;width:82px">제목</td>
+                <td class="f-lbl" style="border-bottom:0">제목</td>
                 <td style="border-right:0;border-bottom:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
@@ -165,7 +157,7 @@
             <table class="ft" border="0" cellspacing="0" cellpadding="0">             
               <tr>
                 <td class="f-lbl">Serial No.</td>                
-                <td style="width:38%">
+                <td style="width:35%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <input type="text" name="SNUMBER" id="__mainfield" >
@@ -182,7 +174,7 @@
                   </xsl:choose>
                 </td>
                 <td class="f-lbl">모델명</td>
-                <td style="width:38%;border-right:0">
+                <td style="width:35%;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <input type="text" name="MODELNAME" id="__mainfield">
@@ -221,13 +213,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" name="COUNT" id="__mainfield">
-                        <xsl:attribute name="class">txtCurrency</xsl:attribute>
-                        <xsl:attribute name="maxlength">100</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/COUNT" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" name="COUNT" id="__mainfield" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" value="{//forminfo/maintable/COUNT}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT))" />
@@ -240,14 +226,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="GETDATE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/GETDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="GETDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/GETDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/GETDATE))" />
@@ -277,14 +256,7 @@
                 <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="FIRSTDATE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>                        
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/FIRSTDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="FIRSTDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/FIRSTDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/FIRSTDATE))" />
@@ -295,14 +267,7 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="HOPEDATE">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>                        
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/HOPEDATE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="HOPEDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/HOPEDATE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/HOPEDATE))" />
@@ -327,7 +292,10 @@
               <div class="ff" />
             </td>
           </tr>
-          <div class="fm-editor" style="height:470px">
+          <div class="fm-editor">
+			  <xsl:if test="$mode!='new' and $mode!='edit'">
+				  <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+			  </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <div name="WEBEDITOR" id="__mainfield" style="width:100%;height:100%;padding:4px 4px 4px 4px;position:relative">
@@ -341,16 +309,17 @@
                     <xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
                   </textarea>
                 </xsl:if>
-                <iframe id="ifrWebEditor" frameborder="0" width="100%" height="470px" marginheight="0" marginwidth="0" scrolling="no">
+                <!--<iframe id="ifrWebEditor" frameborder="0" width="100%" height="470px" marginheight="0" marginwidth="0" scrolling="no">
                   <xsl:attribute name="src">
                     /<xsl:value-of select="$root" />/EA/External/Editor_tagfree.aspx
                   </xsl:attribute>
-                </iframe>
+                </iframe>-->
+				  <div class="h-100" id="__DextEditor"></div>
               </xsl:otherwise>
             </xsl:choose>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
