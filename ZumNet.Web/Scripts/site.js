@@ -11,6 +11,10 @@ defaultWhiteList.button = [];
 defaultWhiteList.input = [];
 defaultWhiteList.textarea = [];
 
+//$.fn.hasScrollBar = function () {
+//    return (this.prop("scrollHeight") == 0 && this.prop("clientHeight") == 0) || (this.prop("scrollHeight") > this.prop("clientHeight"));
+//};
+
 $(function () {
     if (window.layoutHelpers) {
 

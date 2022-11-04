@@ -92,4 +92,55 @@
         } catch (e) {
         };
     }
+
+    _zw.fn.popupNotice = function (idx) {
+        if (idx == null || idx == undefined || isNaN(idx) || idx >= _zw.V.notice.length) return false;
+        //console.log('popup')
+
+        var v = _zw.V.notice[idx];
+        var postData = '{ct:"' + v["ct"] + '",ctalias:"",ot:"",alias:"",xfalias:"' + v["xf"] + '",fdid:"' + v["fd"] + '",appid:"' + v["msgid"] + '",opnode:"",ttl:"",acl:"' + '",appacl:"",sort:"SeqID",sortdir:"DESC",boundary:"' + _zw.V.lv.boundary + '"}';
+
+        $.ajax({
+            type: "POST",
+            url: "/Board/Modal?qi=" + _zw.base64.encode(postData),
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    var d = res.substr(2).split(_zw.V.lv.boundary);
+                    //var p = $('#popForm');
+                    //p.find('.modal-title').html(d[1]); p.find('.modal-body').html(d[0]);
+                    //p.on('hidden.bs.modal', function () {
+                    //    p.find('.modal-title').html(''); p.find('.modal-body').html('');
+                    //    _zw.fn.popupNotice(idx + 1);
+                    //});
+                    //p.modal();
+
+                    $('#popForm').off('hidden.bs.modal'); //중요!!!!
+
+                    $('#popForm').on('show.bs.modal', function (e) {
+                        $('#ifrView').show();
+                        var ifr = $('#ifrView')[0].contentWindow.document;
+                        ifr.body.outerHTML = '<body>' + d[0] + '</body>';
+                        var w = ifr.body.scrollWidth + 34, h = ifr.body.scrollHeight;
+                        ifr.outerHTML = '';
+                        $('#ifrView').hide();
+
+                        $(this).find('.modal-title').html(d[1]);
+                        $(this).find('.modal-body').html(d[0]);
+                        if (w > 560) {
+                            if (w > 1024) w = 1064;
+                            //if ($(this).find('.modal-body').hasScrollBar()) w += 40;
+                            $(this).find('.modal-dialog').css('max-width', w + 'px');
+                        }
+                        
+                    }).on('hidden.bs.modal', function () {
+                        $(this).find('.modal-title').html(''); $(this).find('.modal-body').html('');
+                        _zw.fn.popupNotice(parseInt(idx) + 1);
+                    }).modal();
+
+                } else bootbox.alert(res);
+            }, beforeSend: function () {}
+        });
+    }
+
+    if (_zw.V.notice && _zw.V.notice.length > 0) _zw.fn.popupNotice(0);
 });

@@ -1,8 +1,11 @@
 ﻿@using System;
 @using System.Data;
+@using System.Reflection;
 @using System.Text;
 @using System.Threading;
 @using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Exception;
 
 @{
     ViewBag.Title = Resources.Global.Cresyn + " " + Resources.Global.Groupware;
@@ -49,7 +52,7 @@
     }
     else
     {
-        //ViewBag.Error = 
+        //ViewBag.Error =
     }
 
     if (svcRt2 != null && svcRt2.ResultCode == 0)
@@ -71,9 +74,44 @@
             ViewBag.PeriodText_S = "(" + svcRt.ResultDataSet.Tables[1].Rows[0]["FDATE"].ToString() + " ~ " + svcRt.ResultDataSet.Tables[1].Rows[iCnt - 1]["TDATE"].ToString() + ")";
         }
     }
+
+    GetPopupNotice();
 }
 
 @functions {
+    private void GetPopupNotice()
+    {
+        DataSet ds = null;
+        try
+        {
+            using (ZumNet.DAL.ServiceDac.RelationDac reDac = new ZumNet.DAL.ServiceDac.RelationDac())
+            {
+                ds = reDac.GetMessagePopupMessageList(Convert.ToInt32(Session["URID"]));
+            }
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                var jArr = new JArray();
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    JObject jTemp = JObject.Parse("{}");
+                    jTemp["msgid"] = row["MessageID"].ToString();
+                    jTemp["xf"] = "notice";
+                    jTemp["fd"] = row["FD_ID"].ToString();
+                    jTemp["ct"] = row["CT_ID"].ToString();
+                    jTemp["dn"] = row["DisplayName"].ToString();
+
+                    jArr.Add(jTemp);
+                }
+                ViewBag.R["notice"] = jArr;
+            }
+        }
+        catch(Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, MethodBase.GetCurrentMethod().Name);
+        }
+    }
+
     private string RenderFusionChartItem(DataTable dtCorp, DataTable dtPeriod, DataTable dtData, string no, string inv, string invText, string yAxi, string numPrefix, string numSuffix)
     {
         DataRow dr = null;

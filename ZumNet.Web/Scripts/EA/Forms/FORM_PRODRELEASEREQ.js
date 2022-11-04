@@ -121,7 +121,7 @@
 									row.find('td [name="' + param[i] + '"]').val(v[i]);
 								}
 								if (param[0] == 'CUSTOMER') {
-									row.find('td [name="FROMINVEN"]').val('HS-MDS'); row.find('td [name="TOINVEN"]').val('HS-MDS');
+									row.find('td [name="FROMINVEN"]').val('HS-MDS'); row.find('td [name="TOINVEN"]').val('HG-MDS');
 								}
 								_zw.formEx.event(row, param[0]);
 								p.modal('hide');
