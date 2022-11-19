@@ -2159,9 +2159,11 @@
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_COMPLAINTREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_COMPLETEPRODUCTTEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONTRACTRE.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CREDIBILITYRESULTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CREIBILITYREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CTCMINUTES.js" />
     <Content Include="Scripts\EA\Forms\FORM_CTQLIST.js" />
@@ -2192,6 +2194,7 @@
     <Content Include="Scripts\EA\Forms\FORM_FIRSTVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_FLOWERMONEY.js" />
     <Content Include="Scripts\EA\Forms\FORM_GONGDONGGONGGA.js" />
+    <Content Include="Scripts\EA\Forms\FORM_HARMFULREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOLIWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOMEWORK.js" />
@@ -2200,6 +2203,7 @@
     <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_ITEMMASTERCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_LOSSDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_LOSSREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVESEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANPT.js" />
@@ -2218,6 +2222,7 @@
     <Content Include="Scripts\EA\Forms\FORM_NEWPARTSREVIEW.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTCOMP.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTPLAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTREREPORTQA.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTREREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTREVIEW.js" />
     <Content Include="Scripts\EA\Forms\FORM_NIGHTWORK.js" />
@@ -2231,6 +2236,7 @@
     <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUCD.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PARTSINDITESTSTD.js" />
     <Content Include="Scripts\EA\Forms\FORM_PASSPORTLIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_PCBSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PERSONNELAPPOINTMENTS.js" />
