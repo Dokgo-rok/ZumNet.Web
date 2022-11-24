@@ -1,0 +1,61 @@
+﻿@using System;
+@{
+    Layout = "";
+
+    string inputYn = Request.Form["inputYn"];
+    string roadFullAddr = Request.Form["roadFullAddr"];
+    string roadAddrPart1 = Request.Form["roadAddrPart1"];
+    string roadAddrPart2 = Request.Form["roadAddrPart2"];
+    string engAddr = Request.Form["engAddr"];
+    string jibunAddr = Request.Form["jibunAddr"];
+    string zipNo = Request.Form["zipNo"];
+    string addrDetail = Request.Form["addrDetail"];
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>주소검색</title>
+    <script type="text/javascript">
+        window.onload = function () {
+            var url = location.href;
+            var confirmKey = "U01TX0FVVEgyMDIyMTEyMjExMzUxOTExMzI0NDg=";
+            var resultType = "4"; // 도로명주소 검색결과 화면 출력유형, 1 : 도로명, 2 : 도로명+지번, 3 : 도로명+상세건물명, 4 : 도로명+지번+상세건물명
+            var inputYn = "@inputYn";
+
+            if (inputYn != "Y") {
+                document.form.confmKey.value = confirmKey;
+                document.form.returnUrl.value = url;
+                document.form.resultType.value = resultType;
+                if (isMobile()) document.form.action = "https://business.juso.go.kr/addrlink/addrMobileLinkUrl.do"; //모바일 웹인 경우, 인터넷망
+                else document.form.action = "https://business.juso.go.kr/addrlink/addrLinkUrl.do"; //인터넷망
+                document.form.submit();
+
+            } else {
+                //roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo
+                opener.jusoCallBack('@roadFullAddr', '@roadAddrPart1', '@addrDetail', '@roadAddrPart2', '@engAddr', '@jibunAddr', '@zipNo');
+                window.close();
+            }
+        }
+
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent);
+        }
+    </script>
+</head>
+<body>
+    <form id="form" name="form" method="post">
+        <input type="hidden" id="confmKey" name="confmKey" value="" />
+        <input type="hidden" id="returnUrl" name="returnUrl" value="" />
+        <input type="hidden" id="resultType" name="resultType" value="" />
+        <!-- 해당시스템의 인코딩타입이 EUC-KR일경우에만 추가 START-->
+        <!--
+        <input type="hidden" id="encodingType" name="encodingType" value="EUC-KR"/>
+         -->
+        <!-- 해당시스템의 인코딩타입이 EUC-KR일경우에만 추가 END-->
+    </form>
+</body>
+</html>

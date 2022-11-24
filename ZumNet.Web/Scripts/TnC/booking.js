@@ -416,7 +416,8 @@
                         if (res.substr(0, 2) == 'OK') {
                             bootbox.alert(res.substr(2), function () {
                                 if (p) p.find("button[data-dismiss='modal']").click();
-                                _zw.fn.loadList(); //location.reload();
+                                if (_zw.V.ft.toLowerCase() == 'resourceschedule') _zw.fn.loadBar();
+                                else _zw.fn.loadList();
                             });
                         } else if (res.substr(0, 2) == 'NO') {
                             bootbox.alert(res.substr(2)); //중복
@@ -442,7 +443,8 @@
                         if (res.substr(0, 2) == 'OK') {
                             bootbox.alert(res.substr(2), function () {
                                 $('#popForm').find("button[data-dismiss='modal']").click();
-                                _zw.fn.loadList();
+                                if (_zw.V.ft.toLowerCase() == 'resourceschedule') _zw.fn.loadBar();
+                                else _zw.fn.loadList();
                             });
 
                         } else bootbox.alert(res);

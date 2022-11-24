@@ -17,7 +17,7 @@
     }
     else
     {
-        dtSearch = Convert.ToDateTime(ViewBag.JPost["dt"]);
+        dtSearch = ViewBag.JPost["dt"] != null ? Convert.ToDateTime(ViewBag.JPost["dt"]) : DateTime.Now;
     }
 
     sDesc = (dtSearch.Year == DateTime.Now.Year ? "" : dtSearch.Year.ToString() + "년 ") + dtSearch.Month.ToString() + "월 " + dtSearch.Day.ToString() + "일";

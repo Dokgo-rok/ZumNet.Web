@@ -5,9 +5,8 @@
 @using System.Threading;
 @using ZumNet.Framework.Util;
 @{
+    
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
-
-
 }
 @functions {
     private string GetOrgUserImage(string logonId)
@@ -119,7 +118,8 @@
 
         sb.Append("<div class=\"form-group row mb-2\">");
         sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">우편번호</label>");
-        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control w-50\" data-for=\"{0}\" value=\"{1}\" /></div>", "ZipCode1", FieldValue(row, "ZipCode1"));
+        sb.AppendFormat("<div class=\"col-md-9 d-flex\"><input type=\"text\" class=\"form-control w-50\" data-for=\"{0}\" value=\"{1}\" />", "ZipCode1", FieldValue(row, "ZipCode1"));
+        sb.Append("<button class=\"btn btn-default ml-2\" onclick=\"_zw.mu.jusoPopup();\"><i class=\"fe-search\"></i> 주소검색</button></div>");
         sb.Append("</div>");
 
         sb.Append("<div class=\"form-group row mb-2\">");
@@ -130,6 +130,11 @@
         sb.Append("<div class=\"form-group row mb-2\">");
         sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">상세주소</label>");
         sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "DetailAddress1", FieldValue(row, "DetailAddress1"));
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">홈페이지</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "HomePage", FieldValue(row, "HomePage"));
         sb.Append("</div>");
 
         sb.Append("</div>"); //card-body
@@ -147,7 +152,7 @@
         sb.Append("<div class=\"card-body p-3\">");
         sb.Append("<div class=\"form-group row mb-2\">");
         sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">부서명</label>");
-        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control bg-white border-0\" readonly data-for=\"{0}\" value=\"{1} (2)\" /></div>", "TeamName", FieldValue(row, "TeamName"), FieldValue(row, "TeamNum"));
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control bg-white border-0\" readonly data-for=\"{0}\" value=\"{1} ({2})\" /></div>", "TeamName", FieldValue(row, "TeamName"), FieldValue(row, "TeamNum"));
         sb.Append("</div>");
 
         sb.Append("<div class=\"form-group row mb-2\">");
@@ -162,13 +167,24 @@
 
         sb.Append("<div class=\"form-group row mb-2\">");
         sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">담당업무</label>");
-        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "BusinessMain", FieldValue(row, "BusinessMain"));
+        sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "BusinessMain", FieldValue(row, "BusinessMain")); //BusinessMain
         sb.Append("</div>");
 
         sb.Append("<div class=\"form-group row mb-2\">");
         sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">소개글</label>");
         sb.AppendFormat("<div class=\"col-md-9\"><textarea class=\"form-control\" row=\"3\" data-for=\"{0}\" style=\"height: 100px\">{1}</textarea></div>", "Description", FieldValue(row, "Description"));
         sb.Append("</div>");
+
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"UserID\" value=\"{0}\" />", Session["URID"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"URName\" value=\"{0}\" />", Session["URName"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"LogonID\" value=\"{0}\" />", Session["LogonID"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"EmpID\" value=\"{0}\" />", Session["EmpID"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"InDate\" value=\"{0}\" />", Session["InDate"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"SecondBusiness\" value=\"{0}\" />", ""); //SecondBusiness
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"SecondBusiness2\" value=\"{0}\" />", ""); //SecondBusiness2
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"SecondBusiness3\" value=\"{0}\" />", ""); //SecondBusiness3
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"SecondBusiness4\" value=\"{0}\" />", ""); //SecondBusiness4
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"SecondBusiness5\" value=\"{0}\" />", ""); //SecondBusiness5
 
         sb.Append("</div>"); //card-body
         sb.Append("</div>"); //card
@@ -209,5 +225,8 @@
     </div>
     <div class="row mx-0 mt-2">
         @Html.Raw(RenderData())
+    </div>
+    <div class="text-center mb-2">
+        <button class="btn btn-primary" data-zp-menu="savePersonInfo">저&nbsp;&nbsp;&nbsp;&nbsp;장</button>
     </div>
 </div>

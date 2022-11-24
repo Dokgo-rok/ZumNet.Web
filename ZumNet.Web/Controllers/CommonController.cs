@@ -845,5 +845,15 @@ namespace ZumNet.Web.Controllers
             }
         }
         #endregion
+
+        /// <summary>
+        /// 주소 공공데이터 팝업
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public ActionResult JusoPopup()
+        {
+            return View();
+        }
     }
 }

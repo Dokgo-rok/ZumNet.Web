@@ -138,7 +138,10 @@
                         </xsl:attribute>
                       </img>
                     </button>-->
-					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="인적사항" onclick="_zw.fn.org('user','n');">
+					  <!--<button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="인적사항" onclick="_zw.fn.org('user','n');">
+						  <i class="fas fa-angle-down"></i>
+					  </button>-->
+					  <button type="button" class="btn btn-outline-secondary btn-18" title="대상자" onclick="_zw.formEx.externalWnd('report.DOCCAREER',240,40,20,70,'','MODELNAME','ITEMNAME');">
 						  <i class="fas fa-angle-down"></i>
 					  </button>
                   </xsl:if>
@@ -154,17 +157,6 @@
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/APPLICANTEMPNO))" />
-                    </xsl:otherwise>
-                  </xsl:choose>
-                  <xsl:choose>
-                    <xsl:when test="$mode='new'">
-                      <input type="hidden" id="__mainfield" name="APPLICANTID" value="{//forminfo/maintable/APPLICANTID}"/>
-                    </xsl:when>
-                    <xsl:when test="$mode='edit'">
-                      <input type="hidden" id="__mainfield" name="APPLICANTID" value="{//forminfo/maintable/APPLICANTID}"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/APPLICANTID))" />
                     </xsl:otherwise>
                   </xsl:choose>
                   <xsl:choose>

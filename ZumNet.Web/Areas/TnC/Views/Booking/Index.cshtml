@@ -8,6 +8,10 @@
     Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+    if (ViewBag.R.ft.ToString() == "")
+    {
+        ViewBag.R["ft"] = "ResourceSchedule";
+    }
     string sPatialView = "_" + ViewBag.R.ft.ToString();
 
     //Response.Write(DateTime.MinValue);
@@ -245,7 +249,7 @@
                                     }
                                 </div>
                             </div>
-                            <div class="mt-2" id="__ResSchedule">@Html.Partial("_ResourceSchedule")</div>
+                            <div class="mt-2" id="__ResSchedule">@Html.Partial(sPatialView)</div>
                         </div>
                     }
 

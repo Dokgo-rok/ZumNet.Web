@@ -943,6 +943,10 @@ $(function () {
             p.on('shown.bs.modal', function () { searchTxt.focus(); });
             p.on('hidden.bs.modal', function () { p.html(''); });
             p.modal();
+        },
+        "jusoPopup": function () {
+            if (_zw.ut.isMobile()) var pop = window.open("/Common/JusoPopup", "pop", "scrollbars=yes, resizable=yes");
+            else var pop = window.open("/Common/JusoPopup", "pop", "width=570,height=420, scrollbars=yes, resizable=yes");
         }
     };
 

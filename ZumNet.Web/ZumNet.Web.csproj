@@ -468,7 +468,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_CORRECTIVEPREVENTIVACTION_V1_0529.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_COSTESTIMATEREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CPR_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_CREDIBILITYRESULTREPORT_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_CREDIBILITYRESULTREPORT_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_CREIBILITYREQUEST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CRESYNDRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CRESYNEQUIPDRAFTA_V1.xsl" />
@@ -728,7 +730,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PARTSACKTEST_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_PARTSINDITESTSTD_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PARTSINDITESTSTD_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_PASSPORTLIST_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PASSPORTLIST_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PAYDRAFT_V1.xsl" />
@@ -3350,6 +3354,7 @@
     <Content Include="Views\Report\_FORM_DRAWING.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Search\_Result.cshtml" />
+    <Content Include="Views\Common\JusoPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

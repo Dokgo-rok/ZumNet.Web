@@ -28,5 +28,36 @@ namespace ZumNet.Web.Controllers
 
             return View();
         }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string SavePersonInfo()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["UserID"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (OfficePortalBiz opBiz = new OfficePortalBiz())
+                    {
+                        svcRt = opBiz.SetPersonInfo(jPost);
+                    }
+
+                    if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
+                    else rt = "OK";
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
     }
 }
