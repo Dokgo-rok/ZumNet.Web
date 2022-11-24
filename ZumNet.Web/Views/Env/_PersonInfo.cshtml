@@ -71,7 +71,7 @@
         sb.Append("<div class=\"col-md-9 d-flex align-items-center\">");
         sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" data-for=\"{0}\" value=\"{1}\" />", "BirthDay", FieldValue(row, "BirthDay"));
         sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
-        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", FieldValue(row, "BirthType") == "1" ? "" : "  checked");
+        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", StringHelper.SafeBool(FieldValue(row, "BirthType")) ? "" : "  checked");
         sb.Append("</label>");
         sb.Append("</div>");
         sb.Append("</div>");
