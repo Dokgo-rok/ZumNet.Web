@@ -1192,7 +1192,7 @@ namespace ZumNet.Web.Bc
                     ctrl.ViewBag.LinkSite = svcRt.ResultDataSet;
                     ctrl.ViewBag.ShortLink = svcRt.ResultDataDetail["ShortLink"];
                     ctrl.ViewBag.DeptList = svcRt.ResultDataDetail["DeptList"];
-                    //ctrl.ViewBag.WorkStatus = svcRt.ResultDataDetail["WorkStatus"];
+                    //ctrl.ViewBag.NoticeCount = svcRt.ResultDataDetail["NoticeCount"]; //22-12-09 ajax로 처리
 
                     strReturn = RequestInit(ctrl, svcRt.ResultDataDetail["WorkStatus"].ToString());
                 }

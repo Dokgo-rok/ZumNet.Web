@@ -6,6 +6,12 @@
 
 @{
     //Response.Write("-----------------------------" + ViewBag.BoardList.Tables[0].Rows.Count.ToString());
+
+    if (ViewBag.R.mode == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.Mode, ViewBag.BoardList, ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString()));
+        Response.End();
+    }
 }
 @functions {
     int _monthDay = 0;
@@ -125,8 +131,8 @@
                         if (mode == "xls")
                         {
                             if (strStdTime == "" || strStdTime == "0") sb1.Append("<td>&nbsp;</td>");
-                            else sb1.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(strStdTime));
-                            sb2.AppendFormat("<td>{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(strManHour));
+                            else sb1.AppendFormat("<td class=\"text-info\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(strStdTime));
+                            sb2.AppendFormat("<td class=\"text-info\">{0}</td>", ZumNet.Web.Bc.CommonUtils.CvtNumeric(strManHour));
                         }
                         else
                         {
@@ -195,6 +201,44 @@
         if (data != null) { data.Dispose(); data = null; }
 
         return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = ViewBag.R.ft.ToString() + "_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    private string ExcelStyle()
+    {
+        return @"
+        body {width: 100%}
+        table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+        td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+        .xls_warning {background-color: #fcf8e3}
+        .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+        .text-center {text-align: center}
+        .text-danger {color: #ec4a3b}
+        .text-primary {color: #FEB744}
+        .text-info {color: #4083ff}
+        .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+        .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+    ";
     }
 }
 

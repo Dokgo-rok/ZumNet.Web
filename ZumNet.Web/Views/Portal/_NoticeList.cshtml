@@ -1,0 +1,151 @@
+﻿@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@{
+}
+@functions{
+    private string ViewList(DataSet data)
+    {
+        StringBuilder sb = new StringBuilder();
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            int iSeq = 0;
+            string sNoticeCls = "";
+            string sContents = "";
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                if (row["noticls"].ToString().IndexOf("/booking") > 0) sNoticeCls = "자원관리";
+                else if (row["noticls"].ToString().IndexOf("/ea") > 0) sNoticeCls = "전자결재";
+                else if (row["noticls"].ToString().IndexOf("/worktime") > 0) sNoticeCls = "근무관리";
+                else if (row["noticls"].ToString().IndexOf("/lcm") > 0) sNoticeCls = "교육관리";
+                else sNoticeCls = "알림";
+
+                sContents = row["contents"].ToString();
+                if (row["noticls"].ToString().IndexOf("/ea") > 0)
+                {
+                    string[] v = sContents.Split(new string[] { "$^$" }, StringSplitOptions.None);
+                    sContents = v[0] + Resources.EA.Get(v[1]) + v[2];
+                }
+
+                sb.AppendFormat("<div class=\"p-3{0} d-flex justify-content-between\">", iSeq > 0 ? " border-top" : "");
+
+                sb.AppendFormat("<a href=\"javascript://\" class=\"pr-2{0}\" data-noticls=\"{1}\" data-regid=\"{2}\" data-linkinfo=\"{3}\" title=\"{4}\"><p class=\"mb-0\">{5}</p>"
+                                            , (row["vewdate"].ToString() != "" ? "" : " font-weight-bold"), row["noticls"].ToString(), row["regid"].ToString(), row["linkinfo"].ToString()
+                                            , Server.HtmlEncode(sContents), StringHelper.TrimString(sContents, 80));
+                sb.AppendFormat("<p class=\"mb-0 text-muted\">{0}&nbsp;&nbsp;|&nbsp;&nbsp;{1}</p></a>", sNoticeCls, CommonUtils.LvDate(row["credate"].ToString(), true));
+
+                sb.Append("<button class=\"close fs-14\" data-zm-menu=\"delete\" title=\"선택 알림 삭제\"><i class=\"far fa-trash-alt\"></i></button>");
+                sb.Append("</div>");
+
+                iSeq++;
+            }
+        }
+        else
+        {
+            //sb.AppendFormat("<div class=\"text-center p-4\">{0}</div>", ZumNet.Framework.Configuration.Config.Read(ZumNet.Framework.Configuration.Property.CONFIGKEY_ERRORLOG).Replace(ZumNet.Framework.Configuration.Property.CONFIGKEY_ERRORLOG + "\\", ""));
+            sb.AppendFormat("<div class=\"text-center p-4\">{0}</div>", Resources.Global.NoItemShow);
+        }
+        return sb.ToString();
+    }
+
+    private string ViewTimeLine(DataSet data)
+    {
+        StringBuilder sb = new StringBuilder();
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+            string sNoticeCls = "";
+            string sContents = "";
+            string sPrevDate = "";
+
+            sb.Append("<div class=\"row h-100 px-3 px-sm-0\">");
+            sb.Append("<div class=\"col-1 mt-3 border-right\" style=\"border-right-width: 4px !important\">");
+            sb.Append("<div>");
+
+            sb.Append("</div>");
+            sb.Append("</div>");
+            sb.Append("<div class=\"col-11 time-line pr-sm-5\">");
+
+            foreach (DataRow row in data.Tables[0].Rows)
+            {
+                if (row["noticls"].ToString().IndexOf("/booking") > 0) sNoticeCls = "자원관리";
+                else if (row["noticls"].ToString().IndexOf("/ea") > 0) sNoticeCls = "전자결재";
+                else if (row["noticls"].ToString().IndexOf("/worktime") > 0) sNoticeCls = "근무관리";
+                else if (row["noticls"].ToString().IndexOf("/lcm") > 0) sNoticeCls = "교육관리";
+                else sNoticeCls = "알림";
+
+                sContents = row["contents"].ToString();
+                if (row["noticls"].ToString().IndexOf("/ea") > 0)
+                {
+                    string[] v = sContents.Split(new string[] { "$^$" }, StringSplitOptions.None);
+                    sContents = v[0] + Resources.EA.Get(v[1]) + v[2];
+                }
+
+                if (sPrevDate == "" || sPrevDate != Convert.ToDateTime(row["credate"]).ToString("yyyy-MM-dd"))
+                {
+                    sb.Append("<div class=\"h4 time-line-date\">");
+                    sb.Append("<span class=\"rounded-circle d-inline-block bg-info mr-2\"><i class=\"far fa-clock text-white p-2\"></i></span>");
+                    sb.AppendFormat("<span>{0}</span>", DateHelper.DateFormat(row["credate"].ToString(), "m", sCurrentLocale));
+                    sb.Append("</div>");
+                }
+
+                sb.Append("<div class=\"py-2 px-3 px-sm-5 time-line-item\">");
+                sb.Append("<div class=\"p-3 border rounded d-flex justify-content-between\">");
+                sb.AppendFormat("<a href=\"javascript://\" class=\"pr-2{0}\" data-noticls=\"{1}\" data-regid=\"{2}\" data-linkinfo=\"{3}\" title=\"{4}\"><p class=\"mb-0\">{5}</p>"
+                                            , (row["vewdate"].ToString() != "" ? "" : " font-weight-bold"), row["noticls"].ToString(), row["regid"].ToString(), row["linkinfo"].ToString()
+                                            , Server.HtmlEncode(sContents), StringHelper.ReplaceReply(sContents));
+                sb.AppendFormat("<p class=\"mb-0 text-muted\">{0}&nbsp;&nbsp;|&nbsp;&nbsp;{1}</p></a>", sNoticeCls, CommonUtils.LvDate(row["credate"].ToString(), true));
+
+                sb.Append("<button class=\"close fs-14\" data-zv-menu=\"delete\" title=\"선택 알림 삭제\"><i class=\"fe-x\"></i></button>");
+                sb.Append("</div>");
+                sb.Append("</div>");
+
+                sPrevDate = Convert.ToDateTime(row["credate"]).ToString("yyyy-MM-dd");
+            }
+            sb.Append("</div>");
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"mt-5 pt-5 text-center\">");
+            sb.Append("<span class=\"rounded-circle bg-secondary p-3 fs-20\"><i class=\"far fa-bell-slash text-white\"></i></span>");
+            sb.AppendFormat("<h4 class=\"text-blue mt-4\">{0}</h4>", "새로운 알림이 없습니다!");
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+}
+@if (ViewBag.Mode == "modal")
+{
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+            <div class="modal-header">
+                <h5 class="modal-title">알림</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                @Html.Raw(ViewList(ViewBag.NoticeList))
+            </div>
+            <div class="modal-footer">
+                <div class="flex-fill">
+                    <a href="javascript://" class="z-lnk-navy-n" data-zm-menu="viewAll">내 알림 전체보기</a>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-default" data-zm-menu="deleteRead">읽은 알림 삭제</button>
+                    <button type="button" class="btn btn-default" data-zm-menu="deleteAll">모두 삭제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @Html.Raw(ViewTimeLine(ViewBag.NoticeList))
+}

@@ -385,6 +385,7 @@
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
     <Content Include="Content\ce.css" />
+    <Content Include="Content\notice.css" />
     <Content Include="Content\env.css" />
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLECONTROL_V1.xsl" />
     <Content Include="Content\search.css" />
@@ -2143,6 +2144,7 @@
     <Content Include="images\banner\portal_cresyn8.jpg" />
     <Content Include="images\icons\calendar_imgs.png" />
     <Content Include="images\main_portal_cresyn7.jpg" />
+    <Content Include="Scripts\Controls\notice.js" />
     <Content Include="Scripts\Controls\search.js" />
     <Content Include="Scripts\Controls\portal.js" />
     <Content Include="Scripts\Docs\kms.js" />
@@ -3355,6 +3357,8 @@
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Search\_Result.cshtml" />
     <Content Include="Views\Common\JusoPopup.cshtml" />
+    <Content Include="Views\Portal\_NoticeList.cshtml" />
+    <Content Include="Views\Portal\NoticeList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

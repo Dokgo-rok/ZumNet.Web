@@ -303,6 +303,190 @@ namespace ZumNet.Web.Controllers
         }
         #endregion
 
+        #region [알림 관련]
+        [SessionExpireFilter]
+        [Authorize]
+        public string NoticeCount()
+        {
+            string strView = "";
+            try
+            {
+                string mode = Request["M"] != null ? Request["M"].ToString() : ""; //A:전체, L:최근30일, 그외 최근 30일 동안 안읽은알림
+
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+                using (ZumNet.BSL.ServiceBiz.NoticeBiz ntBiz = new NoticeBiz())
+                {
+                    svcRt = ntBiz.GetNoticeCount(mode, Convert.ToInt32(Session["URID"]));
+                }
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    strView = "OK" + svcRt.ResultItemCount;
+                }
+                else
+                {
+                    strView = svcRt.ResultMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                strView = ex.Message;
+            }
+            return strView;
+        }
+
+        /// <summary>
+        /// 내 알림 보기
+        /// </summary>
+        /// <param name="Qi"></param>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult NoticeList(string Qi)
+        {
+            string rt = Bc.CtrlHandler.PageInit(this, false);
+            if (rt != "")
+            {
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            if (Qi == null || Qi == "") Qi = "L";
+
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+            using (ZumNet.BSL.ServiceBiz.NoticeBiz ntBiz = new NoticeBiz())
+            {
+                svcRt = ntBiz.GetNoticeList(Qi, Convert.ToInt32(Session["URID"]));
+            }
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ViewBag.Mode = "";
+                ViewBag.Scope = Qi; //L, A
+                ViewBag.NoticeList = svcRt.ResultDataSet;
+            }
+            else
+            {
+                rt = svcRt.ResultMessage;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+
+            return View();
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string NoticeList()
+        {
+            string strView = "";
+            try
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if ((jPost == null || jPost.Count == 0) && jPost["tgtid"].ToString() == "")
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.NoticeBiz ntBiz = new NoticeBiz())
+                    {
+                        svcRt = ntBiz.GetNoticeList(jPost["M"].ToString(), Convert.ToInt32(jPost["tgtid"].ToString()));
+                    }
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.Mode = jPost.ContainsKey("wnd") ? jPost["wnd"].ToString() : "modal";
+                        ViewBag.Scope = jPost["M"].ToString();
+                        ViewBag.NoticeList = svcRt.ResultDataSet;
+                        strView = "OK" + RazorViewToString.RenderRazorViewToString(this, "_NoticeList", ViewBag);
+                    }
+                    else
+                    {
+                        strView = svcRt.ResultMessage;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                strView = ex.Message;
+            }
+            return strView;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string NoticeRead()
+        {
+            string strView = "";
+            try
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if ((jPost == null || jPost.Count == 0) && (jPost["regid"].ToString() == "" || jPost["tgtid"].ToString() == ""))
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    long lRegId = jPost.ContainsKey("regid") && jPost["regid"].ToString() != "" ? Convert.ToInt64(jPost["regid"].ToString()) : 0;
+                    int iTgtId = jPost.ContainsKey("tgtid") && jPost["tgtid"].ToString() != "" ? Convert.ToInt32(jPost["tgtid"].ToString()) : 0;
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.NoticeBiz ntBiz = new NoticeBiz())
+                    {
+                        svcRt = ntBiz.ReadNotice(lRegId, iTgtId);
+                    }
+                    if (svcRt != null && svcRt.ResultCode == 0) strView = "OK";
+                    else strView = svcRt.ResultMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                strView = ex.Message;
+            }
+            return strView;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string NoticeDelete()
+        {
+            string strView = "";
+            try
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if ((jPost == null || jPost.Count == 0) && jPost["regid"].ToString() == "")
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    string mode = jPost.ContainsKey("M") ? jPost["M"].ToString() : ""; //R : 완전삭제
+                    string[] v = jPost["regid"].ToString().Split(';');
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.NoticeBiz ntBiz = new NoticeBiz())
+                    {
+                        foreach(string s in v)
+                        {
+                            svcRt = ntBiz.DeleteNotice(mode, Convert.ToInt64(s), 0);
+                        }
+                    }
+                    if (svcRt != null && svcRt.ResultCode == 0) strView = "OK";
+                    else strView = svcRt.ResultMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                strView = ex.Message;
+            }
+            return strView;
+        }
+        #endregion
+
         #region [기타 + 유틸함수]
         /// <summary>
         /// SSO

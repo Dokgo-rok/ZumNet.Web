@@ -1,5 +1,7 @@
 ﻿@using System.Data;
 @using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
 @{
 }
 @functions{
@@ -59,20 +61,38 @@
         else return "";
     }
 
-    private string GetReqState(string inUse, string state)
+    private string GetReqState(DataRow row)
     {
-        if (inUse == "N") return "선점제";
+        string rt = "";
+        string sClass = "";
+        if (row["InUse"].ToString() == "N") rt = "선점제";
         else
         {
-            switch (state.Trim())
+            switch (row["State"].ToString().Trim())
             {
-                case "0": return "신청중";
-                case "7": return "승인";
-                case "8": return "거부";
-                case "6": return "보류";
-                default: return "신청중";
+                case "0": rt = "신청중"; sClass = "z-lnk-navy-n"; break;
+                case "7": rt = "승인"; sClass = "text-success"; break;
+                case "8": rt = "거부"; sClass = "text-danger"; break;
+                case "6": rt = "보류"; sClass = "text-primary"; break;
+                default: rt = "신청중"; sClass = "z-lnk-navy-n"; break;
             }
+            //messageid, state, from, to, partid, objecttype, creator, creatorid, creatormail
+
+            JObject j = JObject.Parse("{}");
+            j["msgid"] = row["MessageID"].ToString();
+            j["state"] = row["State"].ToString().Trim();
+            j["from"] = row["PeriodFrom"].ToString();
+            j["to"] = row["PeriodTo"].ToString();
+            j["partid"] = row["ParticipantID"].ToString();
+            j["part"] = row["Participant"].ToString();
+            j["ot"] = row["ObjectType"].ToString();
+            j["crid"] = row["CreatorID"].ToString();
+            j["cr"] = row["Creator"].ToString();
+            j["crmail"] = row["MailAccount"].ToString();
+
+            rt = String.Format("<a href=\"javascript://\" class=\"{2}\" data-controls=\"vw-context-menu\" data-val=\"{0}\">{1}</a>", Server.HtmlEncode(JsonConvert.SerializeObject(j)), rt, sClass);
         }
+        return rt;
     }
 }
 
@@ -103,7 +123,7 @@
                         <td><a href="javascript:void(0)" class="z-lnk-navy-n" onclick="_zw.mu.readEvent('@ViewBag.R.ctalias', '', '@row["MessageID"].ToString()', '@row["ObjectType"].ToString()', '@row["ParticipantID"].ToString()');">@row["Subject"].ToString()</a></td>
                         <td>@row["Creator"].ToString()</td>
                         <td class="d-none d-sm-table-cell">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["CreateDate"].ToString(), "MM-dd HH:mm", "")</td>
-                        <td class="d-none d-sm-table-cell">@GetReqState(row["InUse"].ToString(), row["State"].ToString())</td>
+                        <td class="d-none d-sm-table-cell">@Html.Raw(GetReqState(row))</td>
                         <td class="d-none d-sm-table-cell">
                             @if (row["RepeatType"].ToString() == "0")
                             {

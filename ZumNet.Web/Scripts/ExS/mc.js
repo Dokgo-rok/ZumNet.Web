@@ -19,6 +19,19 @@ $(function () {
         _zw.fn.goSearch();
     });
 
+    $('[data-zv-menu="exportExcel"]').click(function () {
+        //var d = $('#_SearchYear').val() + ($('#_SearchMonth').val().length < 2 ? '0' + $('#_SearchMonth').val() : $('#_SearchMonth').val());
+        //var data = "tgt=" + $('#_Target').val() + "&tgtnm=" + escape($('#_Target').children('option:selected').text()) + "&vd=" + d + "&sch=&page=&sortcol=&dir=";
+
+        //$('#hhdSearch').val(data);
+        //aspnetForm.action = "?M=xls";
+        //aspnetForm.submit();
+
+        var postData = _zw.fn.getLvQuery('xls'); console.log(postData)
+        window.open('?qi=' + encodeURIComponent(_zw.base64.encode(postData)), 'ifrView');
+        //window.open('?qi=' + encodeURIComponent(_zw.base64.encode(postData)));
+    });
+
     $('.z-lv-cond input.search-text').keyup(function (e) {
         if (e.which == 13) _zw.fn.goSearch();
     });
@@ -27,19 +40,14 @@ $(function () {
         _zw.fn.goSearch($(this).attr('data-for'));
     });
 
-    _zw.mu.exportExcel = function () {
-        var d = $('#_SearchYear').val() + ($('#_SearchMonth').val().length < 2 ? '0' + $('#_SearchMonth').val() : $('#_SearchMonth').val());
-        var data = "tgt=" + $('#_Target').val() + "&tgtnm=" + escape($('#_Target').children('option:selected').text()) + "&vd=" + d + "&sch=&page=&sortcol=&dir=";
+    //_zw.fn.exportExcel = function () {}
 
-        $('#hhdSearch').val(data);
-        aspnetForm.action = "?M=xls";
-        aspnetForm.submit();
-    }
-
-    _zw.mu.importExcel = function () {
+    $('[data-zv-menu="importExcel"]').click(function () {
         //var url = "/" + _ZF.V.root + "/EA/External/FileImport.aspx?M=MC_SUMMARY&cd=ce";
         //_zw.ut.openWnd(url, "fileImport", 400, 100, "fix")
-    }
+
+        bootbox.alert('준비중!')
+    });
 
     _zw.mu.saveStd = function (t) {
         var pos = t ? t.attr('data-zf-menu').toLowerCase() : '';
@@ -460,8 +468,9 @@ $(function () {
         });
     }
     
-    _zw.fn.getLvQuery = function () {
-        var j = {};
+    _zw.fn.getLvQuery = function (m) {
+        var j = {}; m = m || '';
+        j["M"] = m;
         j["ct"] = _zw.V.ct;
         j["ctalias"] = _zw.V.ctalias;
         j["ot"] = _zw.V.ot;

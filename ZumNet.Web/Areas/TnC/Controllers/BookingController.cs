@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -308,6 +308,87 @@ namespace ZumNet.Web.Areas.TnC.Controllers
                             else rt = svcRt.ResultMessage;
                         }
                         else rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ResourceAcl()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["fdid"].ToString() == "" || jPost["tgtid"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.CommonBiz comBiz = new BSL.ServiceBiz.CommonBiz())
+                    {
+                        svcRt = comBiz.GetFolderAttribute(0, 0, Convert.ToInt32(jPost["fdid"]));
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            svcRt = comBiz.GetObjectACL(Convert.ToInt32(Session["DNID"]), svcRt.ResultDataRow["Inherited"].ToString(), Convert.ToInt32(jPost["fdid"]), "FD", "0");
+                            if (svcRt != null && svcRt.ResultCode == 0)
+                            {
+                                foreach(DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                                {
+                                    if (row["TargetType"].ToString() == "UR" && row["TargetID"].ToString() == jPost["tgtid"].ToString()
+                                        && (row["AclKind"].ToString().Substring(0, 1) == "S") || ZumNet.Framework.Util.StringHelper.HasAcl(row["AclKind"].ToString(), "S"))
+                                    {
+                                        rt = "OK"; break;
+                                    }
+                                }
+                                if (rt != "OK") rt = "NO";
+                            }
+                            else rt = svcRt.ResultMessage;
+                        }
+                        else rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ResourceConfirm()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["msgid"].ToString() == "" || jPost["partid"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.ScheduleBiz schBiz = new BSL.ServiceBiz.ScheduleBiz())
+                    {
+                        svcRt = schBiz.ConfirmSchedule(jPost, Session["MainSuffix"].ToString(), "", "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
                     }
                 }
                 catch (Exception ex)

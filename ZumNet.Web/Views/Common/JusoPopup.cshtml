@@ -2,6 +2,8 @@
 @{
     Layout = "";
 
+    string confirmKey = ZumNet.Web.Bc.CommonUtils.IsMobile() ? "U01TX0FVVEgyMDIyMTEyODExMjUyNDExMzI2MzQ=" : "U01TX0FVVEgyMDIyMTEyMjExMzUxOTExMzI0NDg=";
+
     string inputYn = Request.Form["inputYn"];
     string roadFullAddr = Request.Form["roadFullAddr"];
     string roadAddrPart1 = Request.Form["roadAddrPart1"];
@@ -22,7 +24,7 @@
     <script type="text/javascript">
         window.onload = function () {
             var url = location.href;
-            var confirmKey = "U01TX0FVVEgyMDIyMTEyMjExMzUxOTExMzI0NDg=";
+            var confirmKey = "@confirmKey";
             var resultType = "4"; // 도로명주소 검색결과 화면 출력유형, 1 : 도로명, 2 : 도로명+지번, 3 : 도로명+상세건물명, 4 : 도로명+지번+상세건물명
             var inputYn = "@inputYn";
 

@@ -155,7 +155,7 @@ $(function () {
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"][title!=""]').tooltip();
 
-    $('.sidenav-item[data-navmenu], .sidenav-header .sidenav-link[data-navmenu], .navbar-nav .nav-link[data-navmenu], .navbar-nav .dropdown-item[data-navmenu], #layout-navbar-rightbar .dropdown-item[data-navmenu], #layout-navbar-rightbar a[data-navmenu]').on('click', function () {
+    $('.sidenav-item[data-navmenu], .sidenav-header .sidenav-link[data-navmenu], .navbar-nav .nav-link[data-navmenu], .navbar-nav .dropdown-item[data-navmenu], #layout-navbar-rightbar .dropdown-item[data-navmenu], #layout-navbar-rightbar a[data-navmenu], a.nav-link[data-navmenu="alarm"]').on('click', function () {
         switch ($(this).attr('data-navmenu')) {
             case "mail":
                 _zw.ut.openWnd("https://mail.cresyn.com/owa ", "owaWim");
@@ -220,7 +220,7 @@ $(function () {
                 });
                 break;
             case "alarm": //알람
-                bootbox.alert('준비중!');
+                _zw.mu.noticePopup('modal');
                 break;
             default:
                 break;
@@ -386,6 +386,8 @@ $(function () {
 
     //메인창에서만 실행!!!!!
     if ($('#layout-navbar').length > 0) {
+        _zw.fn.notice(); //22-12-09 알림갯수
+
         //근무 시간 조회, 근무 상태 자동 알림
         if (_zw.V.current && _zw.V.current != undefined && _zw.V.current.ws != undefined && _zw.V.current.ws != 'N/A' && _zw.V.current.urid != '') {
             _zw.fn.getTotalWorkTime(); _zw.fn.autoWorkStatus();
@@ -944,6 +946,88 @@ $(function () {
             p.on('hidden.bs.modal', function () { p.html(''); });
             p.modal();
         },
+        "noticePopup": function (pos, p) {
+            $.ajax({
+                type: "POST",
+                url: "/Portal/NoticeList",
+                data: '{M:"L",wnd:"' + pos + '",tgtid:"' + _zw.V.current.urid + '"}', //L : 최근30일알림목록
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') {
+                        p = p || $('#popBlank'); p.html(res.substr(2)).find(".modal-dialog").css("max-width", "30rem");
+
+                        p.find('.modal-body a[data-regid]').click(function () {
+                            var regid = $(this).attr('data-regid'), notiCls = $(this).attr('data-noticls'), linkInfo = $(this).attr('data-linkinfo');
+                            $.ajax({
+                                type: "POST",
+                                url: "/Portal/NoticeRead",
+                                data: '{regid:"' + regid + '",tgtid:"0"}',
+                                success: function (res) {
+                                    if (res == 'OK') {
+                                        if (notiCls.indexOf('/ea') > 0) {
+                                            //xf=ea,oi=315349,mi=333174,wi=e692a8741916498d917f73e68bb3660f
+                                            var temp = linkInfo.split(','); //wi->의미없음
+                                            _zw.fn.openXFormEx('read', temp[0].split('=')[1], temp[2].split('=')[1], temp[1].split('=')[1], '');
+                                            p.modal('hide'); _zw.fn.notice();
+                                            
+                                        } else {
+                                            window.location.href = linkInfo;
+                                        }
+                                    } else console.log(res);
+                                },
+                                beforeSend: function () { }
+                            });
+                        });
+
+                        p.find('.modal-footer [data-zm-menu], .modal-body button[data-zm-menu="delete"]').click(function () {
+                            var fn = $(this).attr('data-zm-menu');
+                            if (fn == 'viewAll') {
+                                if (_zw.V.current.page.toLowerCase().indexOf('/portal/noticelist') >= 0) {
+                                    p.modal('hide'); _zw.fn.loadList();
+                                } else window.location.href = '/Portal/NoticeList/L';
+
+                            } else {
+                                var s = '';
+                                if (fn == 'delete') {
+                                    s = $(this).prev().attr('data-regid');
+                                } else {
+                                    p.find('.modal-body a[data-regid]').each(function () {
+                                        if (fn == 'deleteRead') {
+                                            if (!$(this).hasClass('font-weight-bold')) {
+                                                if (s == '') s = $(this).attr('data-regid');
+                                                else s += ';' + $(this).attr('data-regid');
+                                            }
+                                        } else {
+                                            if (s == '') s = $(this).attr('data-regid');
+                                            else s += ';' + $(this).attr('data-regid');
+                                        }
+                                    });
+                                }
+                                if (s != '') {
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Portal/NoticeDelete",
+                                        data: '{regid:"' + s + '",M:""}',
+                                        success: function (res) {
+                                            if (res == 'OK') {
+                                                //var t = s.split(';');
+                                                //for (var i = 0; i < t.length; i++) {
+                                                //    p.find('.modal-body a[data-regid="' + t[i] + '"]').parent().remove();
+                                                //}
+                                                _zw.mu.noticePopup(pos, p); _zw.fn.notice();
+                                            } else console.log(res);
+                                        },
+                                        beforeSend: function () { }
+                                    });
+                                }
+                            }
+                        });
+
+                        p.on('hidden.bs.modal', function () { p.html(''); });
+                        p.modal();
+                    } else bootbox.alert(res);
+                }
+            });
+        },
         "jusoPopup": function () {
             if (_zw.ut.isMobile()) var pop = window.open("/Common/JusoPopup", "pop", "scrollbars=yes, resizable=yes");
             else var pop = window.open("/Common/JusoPopup", "pop", "width=570,height=420, scrollbars=yes, resizable=yes");
@@ -1116,6 +1200,18 @@ $(function () {
                     });
                 }
             });
+        },
+        "notice": function () {
+            $.ajax({
+                type: "GET",
+                url: "/Portal/NoticeCount?M=",
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') $('a.nav-link[data-navmenu="alarm"]').find('span').text(res.substr(2));
+                    else console.log(res);
+                },
+                beforeSend: function () { }
+            });
+            var t = setTimeout(_zw.fn.notice, 180000); //3분
         },
         "view": function () {
             $.ajax({
@@ -1609,6 +1705,11 @@ $(function () {
             var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
             _zw.ut.openWnd(url, wnd, 900, 600, "resize");
         },
+        "openXFormEx": function (m, xf, mi, oi, wi) {
+            var qi = '{M:"' + m + '",mi:"' + mi + '",oi:"' + oi + '",wi:"' + wi + '",xf:"' + xf + '"}'; //alert(qi)
+            var url = '/EA/Form?qi=' + _zw.base64.encode(qi);
+            _zw.ut.openWnd(url, '', 900, 600, "resize");
+        },
         "input": function (e, p) {
             if (e) {
                 if ($(e).prop('tagName').toUpperCase() == 'INPUT') {
@@ -1825,6 +1926,8 @@ $(function () {
                     var d = moment.duration(moment(s).diff(moment(e), 'days'), 'd'); //console.log(d);
                     return [d.years(), d.months(), d.days()];
                 }
+            } else if (f == 'min') {
+                if (moment(s).isValid() && moment(e).isValid()) return moment(s).diff(moment(e), 'minutes');
             }
         },
         "toBR": function (s) {

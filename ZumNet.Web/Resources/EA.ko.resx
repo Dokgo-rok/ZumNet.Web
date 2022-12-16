@@ -180,6 +180,66 @@
   <data name="Monitoring" xml:space="preserve">
     <value>결재현황</value>
   </data>
+  <data name="Notice_Address" xml:space="preserve">
+    <value>문서가 수신함에 도착했습니다!</value>
+  </data>
+  <data name="Notice_Approval" xml:space="preserve">
+    <value>문서가 결재함에 도착했습니다!</value>
+  </data>
+  <data name="Notice_Authorize" xml:space="preserve">
+    <value>문서가 전결 처리 됐습니다!</value>
+  </data>
+  <data name="Notice_Back" xml:space="preserve">
+    <value>문서가 지정반려 됐습니다!</value>
+  </data>
+  <data name="Notice_BackAddress" xml:space="preserve">
+    <value>문서가 지정반려로 수신함에 도착했습니다!</value>
+  </data>
+  <data name="Notice_BackApproval" xml:space="preserve">
+    <value>문서가 지정반려로 결재함에 도착했습니다!</value>
+  </data>
+  <data name="Notice_Bypass" xml:space="preserve">
+    <value>문서가 후열 처리 됐습니다!</value>
+  </data>
+  <data name="Notice_Cancel" xml:space="preserve">
+    <value>문서 진행이 취소 됐습니다!</value>
+  </data>
+  <data name="Notice_Complete" xml:space="preserve">
+    <value>문서가 완료 됐습니다!</value>
+  </data>
+  <data name="Notice_Default" xml:space="preserve">
+    <value>문서가 도착했습니다!</value>
+  </data>
+  <data name="Notice_Disagree" xml:space="preserve">
+    <value>문서가 조건부승인 처리 됐습니다!</value>
+  </data>
+  <data name="Notice_DL" xml:space="preserve">
+    <value>문서가 배포 됐습니다!</value>
+  </data>
+  <data name="Notice_Post" xml:space="preserve">
+    <value>문서가 후결 처리 됐습니다!</value>
+  </data>
+  <data name="Notice_Reference" xml:space="preserve">
+    <value>문서가 참조함에 도착했습니다!</value>
+  </data>
+  <data name="Notice_Reject" xml:space="preserve">
+    <value>문서가 반려 됐습니다!</value>
+  </data>
+  <data name="Notice_Reserved" xml:space="preserve">
+    <value>문서가 보류 됐습니다!</value>
+  </data>
+  <data name="Notice_Substitue" xml:space="preserve">
+    <value>문서가 결재함에 도착했습니다!</value>
+  </data>
+  <data name="Notice_TranferAddress" xml:space="preserve">
+    <value>문서가 수신함에 전달 됐습니다!</value>
+  </data>
+  <data name="Notice_TranferApproval" xml:space="preserve">
+    <value>문서가 결재함에 전달 됐습니다!</value>
+  </data>
+  <data name="Notice_Withdraw" xml:space="preserve">
+    <value>문서가 회수 됐습니다!</value>
+  </data>
   <data name="PersonLine" xml:space="preserve">
     <value>개인결재선</value>
   </data>

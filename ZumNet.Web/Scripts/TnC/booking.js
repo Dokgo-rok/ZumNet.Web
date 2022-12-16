@@ -61,8 +61,9 @@
 
     //popover
     $('.z-ttl .btn[data-popover="resource-info"]').on('click', function () {
-        var p = $(this), tgt = $('div[data-info="resource-info"]'); console.log(tgt.children())
-        if (tgt.children().length == 0) {
+        var p = $(this), tgt = $('div[data-info="resource-info"]'); //console.log(tgt.children().length)
+        
+        //if (tgt.children().length == 0) {
             $.ajax({
                 type: "POST",
                 url: "/TnC/Booking/ResourceInfo",
@@ -70,7 +71,6 @@
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {
                         tgt.html(res.substr(2));
-
                         //p.on('shown.bs.popover', function () {//show로 할 경우 안 click 이벤트 발생X
                             //var pop = $(this)
                             //$('button[data-dismiss="popover"]').click(function () {
@@ -81,13 +81,13 @@
                             trigger: 'focus',
                             title: function () { return tgt.find('.header').html(); },
                             content: function () { return tgt.find('.content').html(); }
-                        }).popover('toggle');
+                        }).popover('show');
 
                     } else bootbox.alert(res);
                 },
                 beforeSend: function () { } //로딩 X
             });
-        }
+        //}
     });
 
     //$('.z-ttl .btn[data-popover="resource-info"]').on('show.bs.popover', function () {
@@ -232,6 +232,7 @@
                         }
                     });
 
+                    _zw.fn.showContextMenu('md-context-menu');
                     p.modal();
                 } else {
                     bootbox.alert(res);
@@ -454,6 +455,138 @@
         });
     }
 
+    _zw.fn.showContextMenu = function (dc) {
+        dc = dc || 'vw-context-menu'
+        var m = new BootstrapMenu('a[data-controls="' + dc + '"]', {
+            menuEvent: 'click',
+            menuSource: 'element',
+            menuPosition: 'belowLeft',
+            fetchElementData: function (el) {
+                var j = JSON.parse(el.attr('data-val'));
+                var d = _zw.ut.diff('min', j["from"], new Date()); //console.log('시간차 => ' + d);
+                if (d < 0) {
+                    j["state"] = -1;
+                } else {
+                    if (_zw.V.current.operator != 'Y') {
+                        $.ajax({
+                            type: "POST",
+                            url: "/TnC/Booking/ResourceAcl",
+                            data: '{fdid:"' + j["partid"] + '",tgtid:"' + _zw.V.current.urid + '"}',
+                            async: false,
+                            success: function (res) {
+                                if (res == 'OK') {
+                                } else if (res == 'NO') {
+                                    j["state"] = 99;
+                                } else console.log(res);
+                            },
+                            beforeSend: function () { }
+                        });
+                    }
+                }
+                //console.log('22=>' + j["state"]);
+                return j
+            },
+            actions: [{
+                name: '수락, 승인',
+                iconClass: 'far fa-check-circle text-success',
+                onClick: function (info) {
+                    info['state'] = 7;
+                    _zw.fn.popupConfirm(info, $(event.target).parent().text());
+                },
+                isShown: function (info) {
+                    return info["state"] == -1 || info["state"] == 7 || info["state"] == 99 ? false : true;
+                }
+            }, {
+                name: '거부, 불가',
+                iconClass: 'fas fa-times-circle text-danger',
+                onClick: function (info) {
+                    info['state'] = 8;
+                    _zw.fn.popupConfirm(info, $(event.target).parent().text());
+                },
+                isShown: function (info) {
+                    return info["state"] == -1 || info["state"] == 8 || info["state"] == 99 ? false : true;
+                }
+            }, {
+                name: '보류',
+                iconClass: 'fas fa-stop-circle text-warning',
+                onClick: function (info) {
+                    info['state'] = 6;
+                    _zw.fn.popupConfirm(info, $(event.target).parent().text());
+                },
+                isShown: function (info) {
+                    return info["state"] == -1 || info["state"] == 6 || info["state"] == 99 ? false : true;
+                }
+            }, {
+                name: '자원 담당자에게 문의하십시오!',
+                iconClass: 'far fa-question-circle text-info',
+                onClick: function () { },
+                isShown: function (info) {
+                    return info["state"] == -1 || info["state"] != 99 ? false : true;
+                }
+            }, {
+                name: '예약시간이 경과 됐습니다!',
+                iconClass: 'fas fa-clock text-danger',
+                onClick: function () { },
+                isShown: function (info) {
+                    return info["state"] == -1 ? true : false;
+                }
+            }]
+        });
+    }
+
+    _zw.fn.popupConfirm = function (info, txt) {
+        txt = $.trim(txt);
+
+        var s = '<div class="modal-dialog modal-sm modal-dialog-centered">'
+            + '<div class="modal-content" style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)">'
+            + '<div class="modal-header">'
+            + '<div>' + '자원 신청 처리' + '</div>'
+            + '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+            + '</div>'
+            + '<div class="modal-body p-3">'
+            + '<div class="mb-2">' + '해당 자원 사용을 "' + txt + '" 처리 합니다!' + '</div>'
+            + '<div><textarea class="form-control" rows="3"></textarea></div>'
+            + '</div>'
+            + '<div class="modal-footer">'
+            + '<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>'
+            + '<button type="button" class="btn btn-primary" data-zm-menu="confirm">확인</button>'
+            //+ '<input type=\"hidden\" value="' + JSON.stringify(info) + '" />'
+            + '</div>'
+            + '</div></div>';
+
+        var p = $('#popBlank'); p.html(s);
+
+        p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
+            //알림 링크 -> 내 예약현황
+            var encQi = '{"M":"","ct":"' + _zw.V.ct + '","ctalias":"' + _zw.V.ctalias + '","ot":"","fdid":"","opnode":"","ft":"","ttl":"예약현황","tgt":"' + info['from'].substr(0, 10) + '"}'; //console.log(JSON.parse(encQi))
+            info['url'] = '/TnC/Booking/List?qi=' + encodeURIComponent(_zw.base64.encode(encQi));
+
+            var msg = info['from'] + ' 에약한 자원(' + info['part'] + ') "' + txt + '" 됐습니다.';
+            if ($.trim(p.find('.modal-body textarea').val()) != '') {
+                msg += '\n* 사유\n' + p.find('.modal-body textarea').val();
+            }
+            info['noticls'] = 'ekp/' + _zw.V.ctalias;
+            info['contents'] = msg;
+            console.log(info)
+
+            $.ajax({
+                type: "POST",
+                url: "/TnC/Booking/ResourceConfirm",
+                data: JSON.stringify(info),
+                success: function (res) {
+                    if (res == 'OK') {
+                        p.modal('hide'); $('#popForm').modal('hide');
+                        _zw.fn.loadList();
+
+                    } else bootbox.alert(res);
+                }
+            });
+        });
+
+        p.on('hidden.bs.modal', function () { p.html(''); });
+        p.modal();
+    }
+
     _zw.fn.bindBarCtrl = function () {
         $('[data-toggle="tooltip"][title!=""]').tooltip();
 
@@ -574,6 +707,8 @@
                         title: function () { return $(this).next().html(); }
                     });
 
+                    _zw.fn.showContextMenu();
+
                 } else bootbox.alert(res);
             }
         });
@@ -608,6 +743,8 @@
 
         return JSON.stringify(j);
     }
+
+    _zw.fn.showContextMenu();
 
     $('.zc-month .zc-calendar .zc-day-event a[data-toggle="tooltip"], .zc-week a[data-toggle="tooltip"], .zc-dayview a[data-toggle="tooltip"]').tooltip({
         html: true,

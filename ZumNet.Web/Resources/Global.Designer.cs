@@ -59,7 +59,16 @@ namespace Resources {
                 resourceCulture = value;
             }
         }
-        
+
+        /// <summary>
+        /// 리소스이름으로 가져오기
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string Get(string name) {
+            return ResourceManager.GetString(name, resourceCulture);
+        }
+
         /// <summary>
         ///   Access과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

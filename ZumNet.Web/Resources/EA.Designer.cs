@@ -59,6 +59,15 @@ namespace Resources {
                 resourceCulture = value;
             }
         }
+
+        /// <summary>
+        /// 리소스이름으로 가져오기
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string Get(string name) {
+            return ResourceManager.GetString(name, resourceCulture);
+        }
         
         /// <summary>
         ///   Folders과(와) 유사한 지역화된 문자열을 찾습니다.
@@ -246,6 +255,186 @@ namespace Resources {
         public static string Monitoring {
             get {
                 return ResourceManager.GetString("Monitoring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Document has arrived in inbox!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Address {
+            get {
+                return ResourceManager.GetString("Notice_Address", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Documents have arrived!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Approval {
+            get {
+                return ResourceManager.GetString("Notice_Approval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 전결 처리 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Authorize {
+            get {
+                return ResourceManager.GetString("Notice_Authorize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 지정반려 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Back {
+            get {
+                return ResourceManager.GetString("Notice_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 지정반려로 수신함에 도착했습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_BackAddress {
+            get {
+                return ResourceManager.GetString("Notice_BackAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 지정반려로 결재함에 도착했습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_BackApproval {
+            get {
+                return ResourceManager.GetString("Notice_BackApproval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 후열 처리 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Bypass {
+            get {
+                return ResourceManager.GetString("Notice_Bypass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서 진행이 취소 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Cancel {
+            get {
+                return ResourceManager.GetString("Notice_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Document has completed!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Complete {
+            get {
+                return ResourceManager.GetString("Notice_Complete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Documents have arrived!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Default {
+            get {
+                return ResourceManager.GetString("Notice_Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 조건부승인 처리 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Disagree {
+            get {
+                return ResourceManager.GetString("Notice_Disagree", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 배포 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_DL {
+            get {
+                return ResourceManager.GetString("Notice_DL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 후결 처리 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Post {
+            get {
+                return ResourceManager.GetString("Notice_Post", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 참조함에 도착했습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Reference {
+            get {
+                return ResourceManager.GetString("Notice_Reference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Document has been rejected!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Reject {
+            get {
+                return ResourceManager.GetString("Notice_Reject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Document has been put on hold!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Reserved {
+            get {
+                return ResourceManager.GetString("Notice_Reserved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Documents have arrived!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Substitue {
+            get {
+                return ResourceManager.GetString("Notice_Substitue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 수신함에 전달 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_TranferAddress {
+            get {
+                return ResourceManager.GetString("Notice_TranferAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 결재함에 전달 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_TranferApproval {
+            get {
+                return ResourceManager.GetString("Notice_TranferApproval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   문서가 회수 됐습니다!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Notice_Withdraw {
+            get {
+                return ResourceManager.GetString("Notice_Withdraw", resourceCulture);
             }
         }
         
