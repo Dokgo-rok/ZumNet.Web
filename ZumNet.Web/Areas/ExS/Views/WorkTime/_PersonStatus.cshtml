@@ -80,7 +80,7 @@
                 {
                     if (i <= 7) sb.AppendFormat("<th>{0}</th>", _columnConfig[i, 1].ToString());
                     else if (i > 10) sb.AppendFormat("<th rowspan=\"2\">{0}</th>", _columnConfig[i, 1].ToString());
-                }    
+                }
 
                 sb.Append("</tr><tr class=\"table-success\">");
                 sb.AppendFormat("<th class=\"text-danger\">{0}h</th>", sum["work"].ToString() == "" ? "0" : sum["work"].ToString());
@@ -167,9 +167,13 @@
             string strValue = "";
             string strClass = "";
 
-            dr = data.Tables[0].Rows[0];
-
-            long lMinHour = (new TimeSpan(Convert.ToInt32(dr["MinHour"]), 0, 0)).Ticks; //최소근무시간
+            //dr = data.Tables[0].Rows[0];
+            long lMinHour = 0; // (new TimeSpan(Convert.ToInt32(dr["MinHour"]), 0, 0)).Ticks; //최소근무시간
+            if (data.Tables[0].Rows.Count > 0)
+            {
+                dr = data.Tables[0].Rows[0];
+                lMinHour = (new TimeSpan(Convert.ToInt32(dr["MinHour"]), 0, 0)).Ticks; //최소근무시간
+            }
 
             long iDiff = 0;
             DateTime dtExtra = new DateTime(2900, 1, 1);   //최소근무시간을 넘긴 일자

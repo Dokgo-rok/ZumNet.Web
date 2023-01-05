@@ -238,8 +238,8 @@ namespace ZumNet.Web.Bc
 					oCreator.Attributes["account"].Value = HttpContext.Current.Session["LogonID"].ToString();
 					oCreator.Attributes["deptid"].Value = HttpContext.Current.Session["DeptID"].ToString();
 					oCreator.Attributes["deptcode"].Value = HttpContext.Current.Session["DeptAlias"].ToString();
-					oCreator.SelectSingleNode("belong").InnerXml = HttpContext.Current.Session["Belong"].ToString();//2010-12-20 추가, 사이트별로 최상위 조직 또는 법인명을 담기 위해
-					oCreator.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();//2011-05-03 추가, 입사일
+					oCreator.SelectSingleNode("belong").InnerXml = "<![CDATA[" + HttpContext.Current.Session["Belong"].ToString() + "]]>";//2010-12-20 추가, 사이트별로 최상위 조직 또는 법인명을 담기 위해
+                    oCreator.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();//2011-05-03 추가, 입사일
 
 					if (rowCorp != null)
 					{
@@ -775,7 +775,7 @@ namespace ZumNet.Web.Bc
                     strMsg = "XML 값 할당 - 공통정보";
                     oDocInfo.SelectSingleNode("docname").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.DocName);
                     oDocInfo.SelectSingleNode("msgtype").InnerXml = StringHelper.SetDataAsCDATASection(xfInst.MsgType);
-                    oDocInfo.SelectSingleNode("docnumber").InnerXml = xfInst.DocNumber;
+                    oDocInfo.SelectSingleNode("docnumber").InnerXml = "<![CDATA[" + xfInst.DocNumber + "]]>"; //23-01-05
 
                     if (xfInst.DocLevel > 0 && xfInst.KeepYear > 0)
                     {
@@ -1339,7 +1339,7 @@ namespace ZumNet.Web.Bc
                     oCreator.Attributes["account"].Value = HttpContext.Current.Session["LogonID"].ToString();
                     oCreator.Attributes["deptid"].Value = HttpContext.Current.Session["DeptID"].ToString();
                     oCreator.Attributes["deptcode"].Value = HttpContext.Current.Session["DeptAlias"].ToString();
-                    oCreator.SelectSingleNode("belong").InnerXml = HttpContext.Current.Session["Belong"].ToString();//2010-12-20 추가, 사이트별로 최상위 조직 또는 법인명을 담기 위해
+                    oCreator.SelectSingleNode("belong").InnerXml = "<![CDATA[" + HttpContext.Current.Session["Belong"].ToString() + "]]>";//2010-12-20 추가, 사이트별로 최상위 조직 또는 법인명을 담기 위해
                     oCreator.SelectSingleNode("indate").InnerXml = HttpContext.Current.Session["InDate"].ToString();//2011-05-03 추가, 입사일
 
                     if (rowCorp != null)
