@@ -3368,8 +3368,9 @@
     private string JsParamEncode(int opt, string s, int len)
     {
         if (len > 3 && s.Length > len) s = s.Substring(0, len - 3) + "..";
-        if (opt == 0) return s.Replace("\"", "&quot;").Replace("'", "\\\'");
-        else return s.Replace("'", "&#039;").Replace("\"", "\\\"");
+        if (opt == 0) return s.Replace("\"", "\\\"");
+        else if (opt == 1) return s.Replace("'", "\\\'");
+        else return s.Replace("'", "&#039;").Replace("\"", "&quot;");
     }
     #endregion
 }

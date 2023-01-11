@@ -630,7 +630,8 @@ $(function () {
             p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
                 var rt = p.find('.zf-upload .zf-upload-list #__RESULTINFO');
                 if (rt.length > 0 && rt.html != '') {
-                    var j = JSON.parse(p.find('.zf-upload .zf-upload-list #__RESULTINFO').html());
+                    //console.log(p.find('.zf-upload .zf-upload-list #__RESULTINFO').html())
+                    var j = JSON.parse(p.find('.zf-upload .zf-upload-list #__RESULTINFO').html()); console.log(j)
                     if (j.length > 0) { //console.log(j[0][0] + " : " + j[1][0])
                         var tbl = $('#__subtable1'), len = tbl.find('tr.sub_table_row').length;
                         tbl.find('tr.sub_table_row').each(function () {
@@ -640,6 +641,7 @@ $(function () {
                             for (var i = 0; i < j.length - 1 - len; i++) _zw.form.addRow('__subtable1');
                         }
                         tbl.find('tr.sub_table_row').each(function (idx) {
+                            if (idx >= j.length - 1) return false;
                             for (var i = 0; i < j[0].length; i++) {
                                 $(this).find('td [name="' + j[0][i] + '"]').val(j[idx + 1][i]);
                             }
