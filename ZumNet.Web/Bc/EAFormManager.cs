@@ -1626,7 +1626,7 @@ namespace ZumNet.Web.Bc
                 sbXml.AppendFormat("<current uid=\"{0}\" account=\"{1}\" deptid=\"{2}\" deptcode=\"{3}\" date=\"{4}\">"
                             , HttpContext.Current.Session["URID"].ToString(), HttpContext.Current.Session["LogonID"].ToString()
                             , HttpContext.Current.Session["DeptID"].ToString(), HttpContext.Current.Session["DeptAlias"].ToString(), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sbXml.AppendFormat("<name>{0}</name><depart>{1}</depart><belong>{2}</belong></current>"
+                sbXml.AppendFormat("<name><![CDATA[{0}]]></name><depart><![CDATA[{1}]]></depart><belong><![CDATA[{2}]]></belong></current>"
                             , HttpContext.Current.Session["URName"].ToString(), HttpContext.Current.Session["DeptName"].ToString(), HttpContext.Current.Session["Belong"].ToString());
 
                 strMsg = "양식정보 구성";

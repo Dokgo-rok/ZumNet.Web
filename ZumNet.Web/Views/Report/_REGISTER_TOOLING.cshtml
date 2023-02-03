@@ -307,12 +307,12 @@
                         else if (strID == "MODELNO")
                         {
                             strValue = row[strID].ToString();
-                            if (mode != "xls" && strValue.Trim() != "" && row["MODELPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXFormEx('" + row["MODELCLS"].ToString() + "', '" + row["MODELPDMOID"].ToString() + "');\">" + strValue + "</a>";
+                            //if (mode != "xls" && strValue.Trim() != "" && row["MODELPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXFormEx('" + row["MODELCLS"].ToString() + "', '" + row["MODELPDMOID"].ToString() + "');\">" + strValue + "</a>";
                         }
                         else if (strID == "PARTNO")
                         {
                             strValue = row[strID].ToString();
-                            if (mode != "xls" && strValue.Trim() != "" && row["PARTPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXFormEx('" + row["PARTCLS"].ToString() + "', '" + row["PARTPDMOID"].ToString() + "');\">" + strValue + "</a>";
+                            //if (mode != "xls" && strValue.Trim() != "" && row["PARTPDMOID"].ToString() != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openXFormEx('" + row["PARTCLS"].ToString() + "', '" + row["PARTPDMOID"].ToString() + "');\">" + strValue + "</a>";
                         }
                         else if (strID == "DIVISION")
                         {
@@ -338,8 +338,8 @@
 
                             if (strID == "RETRIEVAL_COST")
                             {
-                                if (mode != "xls" && (row["CHARGE_USER_ID"].ToString() == Session["URID"].ToString() || Session["Admin"].ToString() == "Y"))
-                                    strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.showRegisterData(this);\">{0}</a>", strValue);
+                                //if (mode != "xls" && (row["CHARGE_USER_ID"].ToString() == Session["URID"].ToString() || Session["Admin"].ToString() == "Y"))
+                                //    strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.showRegisterData(this);\">{0}</a>", strValue);
                             }
                         }
                         else if (strID == "___CHARGE_USER")
@@ -417,12 +417,12 @@
         sb.Append("</div>");
 
         sb.Append("<div class=\"input-group-append\">"); //d-none d-sm-flex
-        sb.Append("<button class=\"btn btn-default\" aria-controls=\"vw-search-cond\" onclick=\"_zw.ut.ctrls();\" title=\"상세\"><i class=\"fas fa-angle-down\"></i></button>");
+        sb.Append("<button class=\"btn btn-default\" aria-controls=\"vw-search-cond\" onclick=\"_zw.ut.ctrls();\" title=\"상세\"><i class=\"fas fa-angle-up\"></i></button>");
         sb.Append("</div>");
         sb.Append("</div>"); //z-list-date
 
         # region [상세 검색]
-        sb.Append("<div class=\"d-none mt-2 pr-3\" data-controls=\"vw-search-cond\">");
+        sb.Append("<div class=\"mt-2 pr-3\" data-controls=\"vw-search-cond\">");
         sb.Append("<table class=\"table text-center mb-0\">");
         sb.Append("<colgroup><col style=\"width: 11%\" /><col style=\"width: 14%\" /><col style=\"width: 11%\" /><col style=\"width: 14%\" /><col style=\"width: 11%\" /><col style=\"width: 14%\" /><col style=\"width: 11%\" /><col style=\"width: 14%\" /></colgroup>");
         sb.Append("<tbody>");
