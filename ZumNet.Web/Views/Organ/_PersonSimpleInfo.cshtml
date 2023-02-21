@@ -101,7 +101,7 @@
                             <th class="table-secondary text-nowrap">연락처</th>
                             <td class="">@rowInfo["InterPhone"]</td>
                         </tr>
-                        @if (rowInfo["LogonID"].ToString() == "sjaekim")
+                        @if (Session["LogonID"].ToString() == "ojseo" || Session["LogonID"].ToString() == "hyjung" || Session["LogonID"].ToString() == "jblee")
                         {
                             <tr>
                                 <th class="table-secondary text-nowrap">생년월일</th>
@@ -112,7 +112,7 @@
                                 <td class="">@rowInfo["Indate"]</td>
                             </tr>
                             <tr>
-                                <th class="table-secondary text-nowrap">최종학교</th>
+                                <th class="table-secondary text-nowrap">학력</th>
                                 <td class="">@rowInfo["SecondBusiness5"]</td>
                             </tr>
                         }
