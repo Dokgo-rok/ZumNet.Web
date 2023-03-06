@@ -2163,6 +2163,7 @@
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZVACPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_CERTIFICATIONDOCUMENT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CHANGEPLACEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_COMPLAINTREQUEST.js" />
@@ -2205,6 +2206,7 @@
     <Content Include="Scripts\EA\Forms\FORM_HARMFULREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOLIWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOMEWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_HOMEWORKWEEK.js" />
     <Content Include="Scripts\EA\Forms\FORM_INDUSTRIALPRO.js" />
     <Content Include="Scripts\EA\Forms\FORM_INTERNALAUDITRESULT.js" />
     <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
@@ -2212,6 +2214,7 @@
     <Content Include="Scripts\EA\Forms\FORM_LOSSDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_LOSSREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MANMOVELAST.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVESEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANPT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANUFACTURINGPROCESSCHART.js" />
