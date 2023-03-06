@@ -16,11 +16,15 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.detectJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
 
         if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
-            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
         }
     </script>
 
@@ -43,6 +47,11 @@
 
         function page_loaded_event() {
             var _td1InnerHtml = '', _td2InnerHtml = '', _td3InnerHtml = '';
+            var fileAccept = '';
+            if (Dext5LayerWin._dext_editor._config.fileFilterHtml5 && Dext5LayerWin._dext_editor._config.fileFilterHtml5 != '') {
+                fileAccept = 'accept="' + Dext5LayerWin._dext_editor._config.fileFilterHtml5 + '"';
+            }
+
             if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
                 _td1InnerHtml += '<input id="radio_image" name="InputFlag" onclick="InputFlag_change(this);" type="radio" value="1" checked="checked" />';
 
@@ -50,7 +59,7 @@
 
                 _td3InnerHtml += '<input type="hidden" id="drop_zone_uploadtype" name="drop_zone_uploadtype" value="image" /><input type="hidden" id="file_text" name="file_text" />';
                 _td3InnerHtml += '<div class="DEXT_fiVe_ED_Popup_DropZone DEXT_fiVe_ED_Popup_DropZone_1" id="drop_zone" style="border:dashed 1px gray; width:255px; height:40px; line-height:40px; text-align:center; color:gray; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"></div>';
-                _td3InnerHtml += '<div style="position:absolute; left:0px; top:-40px;"><input class="noline" type="file" id="Filedata" name="Filedata" style="width:0px; height:0px" onchange="fileOnchange(this, \'input_image\');" /></div>';
+                _td3InnerHtml += '<div style="position:absolute; left:0px; top:-40px;"><input class="noline" type="file" {0} id="Filedata" name="Filedata" style="width:0px; height:0px" onchange="fileOnchange(this, \'input_image\');" /></div>';
             }
             else {
                 _td1InnerHtml += '<input id="radio_image" name="InputFlag" onclick="InputFlag_change(this);" type="radio" value="1" checked="checked" />';
@@ -60,9 +69,11 @@
                 _td3InnerHtml += '<input name="image_url" id="image_url" type="text" class="con_input" style="width:150px; float:left;background:#fff" disabled="disabled" />';
                 _td3InnerHtml += '<span id="find_file_nm" style="width:67px; height:20px; *margin-left:-3px;_margin-left:-3px; background-position: 0px 0px; display:block; float:left; cursor:pointer; background-repeat:no-repeat;">';
                 _td3InnerHtml += '<span id="file_input_search" class="file_input_button2">찾아보기</span>';
-                _td3InnerHtml += '<input class="noline" type="file" id="Filedata" name="Filedata" style="margin-top:-35px;*margin-top: -28px; margin-left:-156px;width:230px;height:25px; opacity:0; filter:alpha(opacity=0); -moz-opacity:0; cursor:pointer;" onchange="fileOnchange(this, \'input_image\');" />';
+                _td3InnerHtml += '<input class="noline" type="file" {0} id="Filedata" name="Filedata" style="margin-top:-35px;*margin-top: -28px; margin-left:-156px;width:230px;height:25px; opacity:0; filter:alpha(opacity=0); -moz-opacity:0; cursor:pointer;" onchange="fileOnchange(this, \'input_image\');" />';
                 _td3InnerHtml += '<a href="javascript:void(0);" id="a_file"></a></span>';
             }
+
+            _td3InnerHtml = _td3InnerHtml.replace('{0}', fileAccept);
 
             var _td1 = document.createElement('td');
             _td1.width = '5%';
@@ -304,7 +315,7 @@
         }
 	</script>
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event()" >
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();">
     <div id="editor_popup_input" class="editor_popup">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -425,7 +436,7 @@
                         <tr>
                             <td colspan="2">
                                 <input id="input_disabled" type="checkbox"/>
-                                <label id="label_disabled" for="input_disabled"></label>
+                                <label style="vertical-align:middle;" id="label_disabled" for="input_disabled"></label>
                             </td>
                             <td rowspan="2" colspan="2" align="left" width="10%">
 								<a id="img_ratio" ratio-checked="false" class="img_link_btn" title="" style="display:none;"></a>

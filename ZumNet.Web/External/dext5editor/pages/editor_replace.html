@@ -16,8 +16,11 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <style type="text/css">
@@ -83,7 +86,7 @@
 
 
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event()" >
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();">
     <div id="editor_popup_replace" class="editor_popup">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -104,7 +107,7 @@
                                 <label for="search_contents" id="label_search_contents"></label>
                             </td>
                             <td width="75%" class="cb_btn">
-                                <input name="search_contents" id="search_contents" type="text" style="width:190px;" class="con_input"/>
+                                <input name="search_contents" id="search_contents" type="text" style="width:189px;" class="con_input"/>
                                 <a href="javascript:event_dext_find_completed();" style="cursor:pointer"><span id="span_search"></span></a>
                             </td>    
                         </tr>      
@@ -113,7 +116,7 @@
                                 <label for="replace_contents" id="label_replace_contents"></label>
                             </td>
                             <td class="cb_btn">
-                                <input name="replace_contents" id="replace_contents" type="text" style="width:190px;" class="con_input"/>
+                                <input name="replace_contents" id="replace_contents" type="text" style="width:189px;" class="con_input"/>
                                 <a href="javascript:event_dext_replace_completed();" style="cursor:pointer"><span id="span_replace"></span></a>
                             </td>    
                         </tr>  

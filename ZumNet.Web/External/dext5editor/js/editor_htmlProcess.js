@@ -22,9 +22,13 @@ function fn_processHtmlWorker(_paramObj) {
 
             releaseProcessHtmlWorker();
 
+            var backupRange = saveSelection(_paramObj.editorConfig.editor_id, true);
+
             if (changeContentEditable == true) {
                 _iframeDoc.body.contentEditable = "true";
             }
+
+            restoreSelection(backupRange, true);
 
             if (_paramObj && _paramObj.callBackFn) {
                 if (_paramObj.callFn == "SetCorrectOfficeHtml") {
@@ -48,14 +52,20 @@ function fn_processHtmlWorker(_paramObj) {
             }
         };
 
+        var editorConfig = createWorkerConfig(_paramObj.editorConfig);
+
         G_processHtmlWorker.postMessage({
             editorBrowser: _paramObj.editorBrowser,
-            editorConfig: _paramObj.editorConfig,
+            editorConfig: editorConfig,
             callFn: _paramObj.callFn,
             callFnParam: _paramObj.callFnParam
         });
     } catch (ex) {
         releaseProcessHtmlWorker();
+
+        if (changeContentEditable == true) {
+            _iframeDoc.body.contentEditable = "true";
+        }
 
         if (_paramObj && _paramObj.callBackFn) {
             _paramObj.callBackFn(_paramObj.callFnParam[0]);
@@ -78,4 +88,15 @@ function destoryWebWorkerVar() {
             delete G_processHtmlWorker;
         } catch (e) { }
     }
+}
+
+function createWorkerConfig(config) {
+    var autoMoveInitFocusWindow = config.autoMoveInitFocus.targetWindow;
+    config.autoMoveInitFocus.targetWindow = null;
+
+    var copy = JSON.parse(JSON.stringify(config));
+
+    config.autoMoveInitFocus.targetWindow = autoMoveInitFocusWindow;
+
+    return copy;
 }

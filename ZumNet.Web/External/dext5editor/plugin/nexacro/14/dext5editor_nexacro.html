@@ -1,6 +1,6 @@
 ﻿<html>
 <head>
-    <title>DEXT5 Editor with nexacro 14 Runtime</title>
+    <title>RAONWIZ with nexacro Runtime</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Pragma" content="no-cache">
@@ -27,7 +27,15 @@
 
         // DEXT5 Editor 생성 완료 이벤트
         function dext_editor_loaded_event(editor) {
-            //DEXT5.dextCommands("full_screen", editor.ID);
+            // 문서모드 10일 경우 툴바 그룹핑 안되는 현상 발생하여 로직 추가
+			if(DEXT5.browser.ieVersion == 10) {			 
+				setTimeout(function () {
+					editor.editor._FRAMEWIN.groupingIcon( editor.editor );
+					editor.editor._FRAMEWIN.setPositionGroupingDiv( 1 );
+					editor.editor._FRAMEWIN.setPositionGroupingDiv( 2 );
+				}, 100);
+			}
+										
             fn_onusernotify("dext_editor_loaded_event");
         }
         // 사용자 정의 이벤트
@@ -109,6 +117,9 @@
         }
         function fn_dext5DecodeMime(editorID) {
             fn_onusernotify("dext5DecodeMime|D5_nexacro_retunValue|" + DEXT5.dext5DecodeMime(editorID));
+        }
+        function fn_getForbiddenWordValidation(editorID) {
+            fn_onuserontify("getForbiddenWordValidation|D5_nexacro_retunValue|" + DEXT5.getForbiddenWordValidation(editorID));
         }
     </script>
 </head>

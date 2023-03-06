@@ -568,4 +568,60 @@
 				description="대체 이미지 사용"
 	/>
   </EnumInfo>
+	<EnumInfo id="enum_RulerUse" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerViewPointer" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerViewGuideLine" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerViewRuler" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerMode" composite="false" delimiter="" description="1, 2">
+		<Enum name="1" description="1" />
+		<Enum name="2" description="2" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerUseInoutdent" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerMoveGap" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerUseResizeEvent" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerDefaultView" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerAutoFitMode" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerFixEditorWidth" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerUseVertical" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_RulerUseMouseGuide" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
+	<EnumInfo id="enum_DialogWindowScroll" composite="false" delimiter="" description="0, 1">
+		<Enum name="0" description="0" />
+		<Enum name="1" description="1" />
+	</EnumInfo>
 </MetaInfo>

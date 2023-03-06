@@ -1,0 +1,18 @@
+﻿{
+	"name": "DEXT5Upload",
+	"version": "2022.02.03",
+	"description": "DEXT5Upload Plugin for nexacro platform N (version 21)",
+	"license": "Commercial license",
+	"scripts": [
+		"dext5upload/js/dext5upload.js",
+		"dext5upload/plugin/nexacro/21/dext5upload.nexacro21.js"
+	],
+	"objInfo": [
+		"dext5upload/plugin/nexacro/21/metainfo/dext5upload.nexacro.enum.info",
+		"dext5upload/plugin/nexacro/21/metainfo/dext5upload.nexacro.meta.info",
+		"dext5upload/plugin/nexacro/21/metainfo/dext5upload.nexacro.event.info"
+	],
+	"designscripts": [
+		"dext5upload/plugin/nexacro/21/design/dext5upload.nexacro.design.js"
+	]
+}

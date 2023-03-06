@@ -1,0 +1,10 @@
+﻿@if (ViewBag.R.ft == "NUM_ME")
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="품번작성기준표" onclick="_zw.fn.openSheet();"><i class="fas fa-keyboard text-blue"></i><span class="d-none d-sm-inline-block ml-1">품번작성기준표</span></button>
+}
+else
+{
+<button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="품번채번" onclick="_zw.fn.openSheet();"><i class="fas fa-keyboard text-blue"></i><span class="d-none d-sm-inline-block ml-1">품번채번</span></button>
+}
+<button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="엑셀 내보내기" onclick="_zw.fn.exportExcel();"><i class="fe-download text-success"></i><span class="d-none d-sm-inline-block ml-1">엑셀</span></button>
+<button class="btn btn-default py-1 font-weight-bold" aria-controls="vw-full-fill" onclick="_zw.ut.ctrls();"><i class="fas fa-expand"></i></button>

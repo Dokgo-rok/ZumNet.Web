@@ -16,8 +16,11 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <style type="text/css">
@@ -42,6 +45,8 @@
 
             document.getElementById("span_color").innerHTML = LayerWin.dext5_lang.row_property.color;
             document.getElementById("label_height").innerHTML = LayerWin.dext5_lang.row_property.height;
+
+            document.getElementById("span_thead").innerHTML = LayerWin.dext5_lang.row_property.thead;
 
             document.getElementById("label_horizontal_align").innerHTML = LayerWin.dext5_lang.row_property.horizontal_align;
             document.getElementById("label_vertical_align").innerHTML = LayerWin.dext5_lang.row_property.vertical_align;
@@ -93,65 +98,14 @@
                 }
             }
 
-            set_page();
+            row_property_set_page();
             
             setCursorPos(document.getElementById('a_select_color'), false, false);
             LayerWin.setFocusFirstAndLast(document, document.getElementById('a_select_color'));
         }
-
-        function set_page() {
-
-            var elem = LayerWin.GetTDTHCell(DEXTTOP.G_SELECTED_ELEMENT);
-            if (elem == null || elem == undefined) return;
-
-            var currTable = LayerWin.GetParentbyTagName(elem, "table");
-            var currRow = LayerWin.GetParentbyTagName(elem, "tr");
-            if (currTable == null || currRow == null) return;
-
-            var cell = null;
-            var cellBgColor = "", cellHeight = "", celltextAlign = "", cellVerticalAlign = "";
-            var bgCheck = true, heightCheck = true, tAlignCheck = true, vAlignCheck = true;
-            var currRowCellsLen = currRow.cells.length;
-            for (var nIdx = 0; nIdx < currRowCellsLen; nIdx++) {
-                cell = currRow.cells[nIdx];
-                if (nIdx != 0) {
-                    if (bgCheck && cellBgColor != cell.style.backgroundColor) {
-                        bgCheck = false;
-                    }
-                    if (heightCheck && cellHeight != cell.style.height) {
-                        heightCheck = false;
-                    }
-                    if (tAlignCheck && celltextAlign != cell.style.textAlign) {
-                        tAlignCheck = false;
-                    }
-                    if (vAlignCheck && cellVerticalAlign != cell.style.verticalAlign) {
-                        vAlignCheck = false;
-                    }
-                }
-                cellBgColor = cell.style.backgroundColor;
-                cellHeight = cell.style.height;
-                celltextAlign = cell.style.textAlign;
-                cellVerticalAlign = cell.style.verticalAlign;
-            }
-
-            if (bgCheck) {
-                document.getElementById("background_color").style.backgroundColor = cellBgColor;
-            }
-            cellHeight = LayerWin.parseIntOr0(cellHeight);
-            if (heightCheck && cellHeight > 0) {
-                document.getElementById("row_height").value = cellHeight;
-            }
-            if (tAlignCheck && celltextAlign != "") {
-                document.getElementById("horizontal_align").value = celltextAlign;
-            }
-            if (vAlignCheck && cellVerticalAlign != "") {
-                document.getElementById("vertical_align").value = cellVerticalAlign;
-            }
-        }
-
 	</script>
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event()" >
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();">
     <div id="editor_popup_row_property" class="editor_popup">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -181,6 +135,16 @@
                             <td><label id="label_height" for="row_height"></label></td>
                             <td width="76%"><input name="row_height" id="row_height" type="text" class="con_input" style="width:55px;" onkeydown="LayerWin.onlyNumber(event);" maxlength="4"/>px</td>
                         </tr>    
+                    </table>
+                </div>
+                <div class="con border" id="div_thead">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="24%"><span id="span_thead"></span></td>
+                            <td width="76%">
+                                 <input id="row_thead" name="row_thead" type="checkbox"/>
+                            </td>
+                        </tr>
                     </table>
                 </div>
                 <div class="con">

@@ -16,11 +16,15 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+		document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
+		document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.detectJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
 
         if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
-            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
         }
     </script>
 
@@ -334,7 +338,7 @@
                 dext_upload_media();
             } else {
                 var web_url = document.getElementById('web_url');
-                elemData.src = web_url.value;
+                elemData.src = web_url_remove_char(web_url.value);
                 processEnd();
             }
         }
@@ -450,7 +454,7 @@
 	    }
 	    </script>
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event()" >
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();">
 		<div class="editor_s01_popup ed_green" id="dext_dialog_box">
 			<!-- Header -->
 			<div class="EdiTor_Popup_header">

@@ -16,8 +16,11 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <script type="text/javascript">
@@ -237,7 +240,7 @@
             var chkReg = new RegExp(/^(http|ftp|https|news)/);
             var chkVal = chkReg.test(_input_url.value);
             var fmt2 = /^\s\s*$/;
-            if ((_input_url.value == "" || !!fmt2.exec(_input_url.value)) || (chkVal && !DEXTTOP.DEXT5.util.checkUrl(_input_url.value))) {
+            if ((_input_url.value == "" || !!fmt2.exec(_input_url.value)) || (chkVal && !LayerWin.urlCheckOrPass(_input_url.value))) { // 하이퍼링크 삽입 시 url 정규식 체크 안하도록 설정 추가 by dahyun 23.02.02 (GS칼텍스)
                 alert(LayerWin.dext5_lang.msg.alert_url);
                 setCursorPos(document.getElementById('input_url'), true, false);
                 return;
@@ -267,7 +270,7 @@
 
             elemData.width = LayerWin.parseIntOr0(_input_width.value) == 0 ? "" : _input_width.value;
             elemData.height = LayerWin.parseIntOr0(_input_height.value) == 0 ? "" : _input_height.value;
-            elemData.src = _input_url.value;
+            elemData.src = web_url_remove_char(_input_url.value);
             elemData.id = _input_id.value;
             elemData.name = _input_name.value;
             elemData.title = _input_title.value;
@@ -303,7 +306,7 @@
         }
     </script>
 </head>
-<body style="margin:0px; padding:0px; " onload="page_loaded_event()">
+<body style="margin:0px; padding:0px; " onload="page_loaded_event(); page_dialog_loaded_event();">
     <div class="DEXT_fiVe_ED_Popup_Type01 DEXT_fiVe_PUi_green" id="dext_dialog_box">
         <!-- Header -->
         <div class="EdiTor_Popup_header">

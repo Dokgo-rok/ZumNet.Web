@@ -16,11 +16,15 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.detectJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
 
         if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
-            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
         }
     </script>
 
@@ -55,12 +59,17 @@
         function page_loaded_event() {
 
             var _td1InnerHtml = '', _td2InnerHtml = '';
+            var fileAccept = '';
+            if (Dext5LayerWin._dext_editor._config.fileFilterHtml5 && Dext5LayerWin._dext_editor._config.fileFilterHtml5 != '') {
+                fileAccept = 'accept="' + Dext5LayerWin._dext_editor._config.fileFilterHtml5 + '"';
+            }
+
             if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
                 _td1InnerHtml += '<select id="select_category" name="" style="width: 75px;"></select><input type="hidden" id="drop_zone_uploadtype" name="drop_zone_uploadtype" value="hyperlink_image" /><input type="hidden" id="file_text" name="' + file_field_id + '" /></td>';
 
                 _td2InnerHtml += '<input id="input_url" name="" type="text" style="width: 250px;" class="con_input" />';
                 _td2InnerHtml += '<span id="file_find_sec"><div class="DEXT_fiVe_ED_Popup_DropZone DEXT_fiVe_ED_Popup_DropZone_1" id="drop_zone" style="border:dashed 1px gray; width:252px; height:40px; line-height:40px; text-align:center; color:gray; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"></div>';
-                _td2InnerHtml += '<div style="position:absolute; left:0px; top:-40px;"><input class="noline" type="file" id="Filedata" name="Filedata" style="width:0px; height:0px" onchange="fileOnchange(this, \'hyperlink_image\');" /></div>';
+                _td2InnerHtml += '<div style="position:absolute; left:0px; top:-40px;"><input class="noline" type="file" {0} id="Filedata" name="Filedata" style="width:0px; height:0px" onchange="fileOnchange(this, \'hyperlink_image\');" /></div>';
                 _td2InnerHtml += '</span>';
             }
             else {
@@ -70,9 +79,11 @@
                 _td2InnerHtml += '<span id="file_find_sec"><input name="image_url" id="image_url" type="text" class="con_input" style="width:175px; float:left;background:#fff" disabled="disabled" />';
                 _td2InnerHtml += '<span id="find_file_nm" style="width:67px; height:20px; *margin-left:-3px;_margin-left:-3px; background-position: 0px 0px; display:block; float:left; cursor:pointer; background-repeat:no-repeat;">';
                 _td2InnerHtml += '<span id="file_input_search" class="file_input_button2">찾아보기</span>';
-                _td2InnerHtml += '<input class="noline" type="file" id="Filedata" name="Filedata" style="margin-top:-35px;*margin-top: -28px; margin-left:-175px;width:250px;height:25px; opacity:0; filter:alpha(opacity=0); -moz-opacity:0; cursor:pointer;" onchange="fileOnchange(this, \'hyperlink_image\');" />';
+                _td2InnerHtml += '<input class="noline" type="file" {0} id="Filedata" name="Filedata" style="margin-top:-35px;*margin-top: -28px; margin-left:-175px;width:250px;height:25px; opacity:0; filter:alpha(opacity=0); -moz-opacity:0; cursor:pointer;" onchange="fileOnchange(this, \'hyperlink_image\');" />';
                 _td2InnerHtml += '<a href="javascript:void(0);" id="a_file"></a></span></span>';
             }
+
+            _td2InnerHtml = _td2InnerHtml.replace('{0}', fileAccept);
 
             var _td1 = document.createElement('td');
             if (DEXTTOP.DEXT5.browser.mobile) { // mobile 환경에서 UI 개선
@@ -462,6 +473,19 @@
 
         function set_modify_ok() {
             var select_category = document.getElementById('select_category');
+
+            // 하이퍼링크 추가 전 이벤트 추가 by dahyun 22.07.19 (현대오토에버)
+            var _temp_url;
+            try {
+                if (typeof LayerWin._dext_editor._config.event.beforeInsertHyperlink == 'function') {
+                    _temp_url = LayerWin._dext_editor._config.event.beforeInsertHyperlink(DEXTTOP.G_CURREDITOR.ID, document.getElementById('input_url').value);
+                } else {
+                    _temp_url = LayerWin.DEXTTOP.DEXTWIN.dext_editor_before_insert_hyperlink_event(DEXTTOP.G_CURREDITOR.ID, document.getElementById('input_url').value);
+                }
+            } catch (e) { }
+            if (_temp_url != null && _temp_url != undefined) {
+                document.getElementById('input_url').value = _temp_url;
+            }
             var input_url = document.getElementById('input_url');
             var input_text = document.getElementById('input_text');
             var input_title = document.getElementById('input_title');
@@ -501,14 +525,14 @@
                     var chkReg = new RegExp(/^(http|ftp|https|news)/);
                     var chkVal = chkReg.test(input_url.value);
                     var fmt2 = /^\s\s*$/;
-                    if ((input_url.value == "" || !!fmt2.exec(input_url.value)) || (chkVal && !DEXTTOP.DEXT5.util.checkUrl(input_url.value))) {
+                    if ((input_url.value == "" || !!fmt2.exec(input_url.value)) || (chkVal && !LayerWin.urlCheckOrPass(input_url.value))) { // 하이퍼링크 삽입 시 url 정규식 체크 안하도록 설정 추가 by dahyun 23.02.02 (GS칼텍스)
                         alert(LayerWin.dext5_lang.msg.alert_url);
                         setCursorPos(document.getElementById('input_url'), true, false);
                         return;
                     }
                 }
                 var beforeTarget = elemModify.target;
-                elemModify.href = input_url.value;
+                elemModify.href = web_url_remove_char(input_url.value);
                 elemModify.innerHTML = input_text.value;
                 elemModify.title = input_title.value;
                 elemModify.target = select_target.value;
@@ -648,7 +672,7 @@
         }
     </script>
 </head>
-<body style="margin:0px; padding:0px; " onload="page_loaded_event()">
+<body style="margin:0px; padding:0px; " onload="page_loaded_event(); page_dialog_loaded_event();">
     <div class="" id="dext_dialog_box">
         <!-- Header -->
         <div class="EdiTor_Popup_header">

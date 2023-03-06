@@ -19,11 +19,15 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+		document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
+		document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.detectJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
 
         if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
-            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
         }
     </script>
 
@@ -123,7 +127,14 @@
 
 	        var border = document.getElementById('img_border');
 	        var img_width = document.getElementById('img_width');
-	        var img_height = document.getElementById('img_height');
+			var img_height = document.getElementById('img_height');
+            var img_width_Unit = document.getElementById('img_width_unit');
+            var img_height_Unit = document.getElementById('img_height_unit');
+            if (LayerWin._dext_editor._config.imgDefaultWidth.indexOf("%") > -1) {
+                img_width_Unit.value = "%";
+                img_height_Unit.value = "%";
+                img_height.disabled = true;
+            }
 
 	        DEXTTOP.DEXT5.util.addEvent(border, 'keydown', LayerWin.onlyNumber);
 	        DEXTTOP.DEXT5.util.addEvent(img_width, 'keydown', LayerWin.onlyNumber);
@@ -241,13 +252,13 @@
 	            document.getElementById("uploadtype").value = DEXTTOP.DEXT5.util.makeEncryptParamFinal("image");
 	            document.getElementById("proxy_url").value = DEXTTOP.DEXT5.util.makeEncryptParamFinal(_proxy_url);
 				document.getElementById("pe").value = LayerWin._dext_editor._config.security.encryptParam;
-				document.getElementById("cd").value = _proxy_url != "" ? DEXTTOP.DEXT5.util.makeEncryptParamFinal("1") : DEXTTOP.DEXT5.util.makeEncryptParamFinal("0"); // 크로스 도메인 환경 포스트 메시지 방식 추가 by JinYoung 21.05.21
+                document.getElementById("cd").value = LayerWin._dext_editor._config.isCrossDomain == true && LayerWin._dext_editor._config.uploadUseHTML5 == "0" ? DEXTTOP.DEXT5.util.makeEncryptParamFinal("1") : DEXTTOP.DEXT5.util.makeEncryptParamFinal("0"); // 크로스 도메인 환경 포스트 메시지 방식 추가 by JinYoung 21.05.21 
 	        } else {
 	            document.getElementById("document_domain").value = currentDocDomain;
 	            document.getElementById("uploadtype").value = "image";
 	            document.getElementById("proxy_url").value = _proxy_url;
 				document.getElementById("pe").parentNode.removeChild(document.getElementById("pe"));
-				document.getElementById("cd").value = _proxy_url != "" ? "1" : "0"; // 크로스 도메인 환경 포스트 메시지 방식 추가 by JinYoung 21.05.21
+                document.getElementById("cd").value = LayerWin._dext_editor._config.isCrossDomain == true && LayerWin._dext_editor._config.uploadUseHTML5 == "0" ? "1" : "0"; // 크로스 도메인 환경 포스트 메시지 방식 추가 by JinYoung 21.05.21
 	        }
 	    }
 
@@ -369,7 +380,7 @@
             var widthUnit = heightUnit = 'px';
             var tmpWidth = elemModify.style.width;
             var tmpHeight = elemModify.style.height;
-            var tmpCheckWPercent = tmpCheckHPercent = false;
+			var tmpCheckWPercent = tmpCheckHPercent = false;
             if (tmpWidth.indexOf('%') > -1) tmpCheckWPercent = true;
             if (tmpHeight.indexOf('%') > -1) tmpCheckHPercent = true;
             if (!tmpCheckWPercent) {
@@ -384,7 +395,8 @@
 
             } else {
                 selectWidthUnit.value = '%';
-                width = DEXTTOP.DEXT5.util.parseIntOr0(tmpWidth);
+				width = DEXTTOP.DEXT5.util.parseIntOr0(tmpWidth);
+                img_height.disabled = true;
             }
             if (!tmpCheckHPercent) {
                 selectHeightUnit.value = 'px';
@@ -395,9 +407,10 @@
                 } else {
                     height = tmpHeight.replace('px', '');
                 }
-            } else {
-                selectHeightUnit.value = '%';
-                height = DEXTTOP.DEXT5.util.parseIntOr0(tmpHeight);
+            } else { 
+				selectHeightUnit.value = '%';
+                img_height.disabled = true;
+                //height = DEXTTOP.DEXT5.util.parseIntOr0(tmpHeight);
             }
 	        //elemModify.style.width.replace('px', '') == "" ? width = elemModify.width : width = elemModify.style.width.replace('px', '');
 	        //elemModify.style.height.replace('px', '') == "" ? height = elemModify.height : height = elemModify.style.height.replace('px', '');
@@ -445,7 +458,7 @@
 
             var ck_img_ratio = document.getElementById('ck_img_ratio');
             document.getElementById('img_ratio_view').style.display = '';
-            if (ratio && LayerWin._k_editor._config.allowImgSize == "1" && (selectWidthUnit.value == 'px' && selectHeightUnit.value == 'px')) {
+            if (ratio && LayerWin._dext_editor._config.allowImgSize == "1" && (selectWidthUnit.value == 'px' && selectHeightUnit.value == 'px')) {
                 //   ratio.style.display = 'block';
                 ratio.className = 'img_link_active_btn';
                 ratio.setAttribute('ratio-checked', 'true');
@@ -472,7 +485,7 @@
 	        } else {
 	            var img_web_url = document.getElementById('img_web_url');
 	            if (img_web_url) {
-	                elemModify.src = img_web_url.value;
+                    elemModify.src = web_url_remove_char(img_web_url.value);
 	            }
 	            processEnd();
 	        }
@@ -505,7 +518,7 @@
 	        DEXTTOP.DEXT5.util.addEvent(img_height, "keyup", ratio_height_keyup);
 	    }
 
-	    function processEnd() {
+		function processEnd() {
 	        var title = document.getElementById('img_title');
 	        var alt = document.getElementById('img_alt');
 	        var img_id = document.getElementById('img_id');
@@ -517,7 +530,9 @@
 	        var img_margin_right = document.getElementById('img_margin_right');
 	        var img_margin_top = document.getElementById('img_margin_top');
 	        var img_margin_bottom = document.getElementById('img_margin_bottom');
-	        var align = document.getElementById('img_align');
+			var align = document.getElementById('img_align');
+			var selectWidthUnit = document.getElementById('img_width_unit');
+            var selectHeightUnit = document.getElementById('img_height_unit');
 	        //var border = document.getElementById('img_border');
 
 	        if (img_id) img_id.value == '' ? elemModify.removeAttribute('id') : elemModify.setAttribute('id', img_id.value);
@@ -558,7 +573,7 @@
 	    }
 	</script>
 </head>
-<body style="margin:0px; padding:0px; " onload="page_loaded_event();">
+<body style="margin:0px; padding:0px; " onload="page_loaded_event(); page_dialog_loaded_event();">
 		<div id="dext_dialog_box" class="DEXT_fiVe_ED_Popup_Type03">
 			<!-- Header -->
 			<div class="EdiTor_Popup_header">
@@ -591,7 +606,10 @@
 						<input type="hidden" id="link_target" value="" />
 						<input type="hidden" id="userField" value="" />
 						<input type="hidden" id="originalfilename" name="originalfilename" value="" />
+						<input type="hidden" id="original_image_width" name="original_image_width" value="" />
+						<input type="hidden" id="original_image_height" name="original_image_height" value="" />
 						<input type="hidden" id="cd" name="cd" value="" />
+						<input type="hidden" id="uploadUseHTML5" name="uploadUseHTML5" value="" />
 					</div>
 					<div class="contents" style="overflow:hidden; height:250px;">
                         <div class="speech_balloons" id="access_div" style="position:absolute; display:none; width:95%;" >       
@@ -652,7 +670,7 @@
                                     </td>
 								</tr>
                                 <tr>
-                                    <td id="img_ratio_view" width="100%" colspan="4" style="display:none;"><input type="checkbox" id="ck_img_ratio" /><label for="ck_img_ratio" id="label_img_ratio">너비 높이 비율 유지</label></td>
+                                    <td id="img_ratio_view" width="100%" colspan="4" style="display:none;"><input type="checkbox" id="ck_img_ratio" /><label style="vertical-align:middle;" for="ck_img_ratio" id="label_img_ratio">너비 높이 비율 유지</label></td>
                                 </tr>
 								<tr>
 									<td><label for="img_border" id="label_img_border">테두리</label></td>

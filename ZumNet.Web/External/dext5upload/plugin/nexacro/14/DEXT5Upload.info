@@ -1515,6 +1515,23 @@
 				requirement="Runtime,HTML5"
 				description="긴 경로 다운로드를 허용하도록 설정 합니다."
 			/>
+      <Property
+				name="ZipFileNameUserSettingMode"
+				group="Misc"
+				defaultvalue=""
+				readonly="false"
+				initonly="false"
+				hidden="false"
+				control="false"
+				style="false"
+				expr="false"
+				deprecated="false"
+				unused="false"
+				objectinfo=""
+				unitinfo=""
+				requirement="Runtime,HTML5"
+				description="[html5] 여러 파일 다운로드 시 zip 파일명을 사용자가 설정할 수 있도록 설정합니다."
+			/>
     </PropertyInfo>
 
 
@@ -3386,8 +3403,43 @@
           </Arguments>
         </Syntax>
       </EventHandler>
+	  
+	  <EventHandler
+                name="DEXT5UPLOAD_InitAddAllFile"
+                group="event"
+                deprecated="false"
+                unused="false"
+                requirement="HTML5"
+                description="파일 추가 전 발생합니다. "
+            >
+        <Syntax
+            text = "DEXT5UPLOAD_InitAddAllFile(obj:DEXT5Upload, param)"
+                >
+          <Return/>
+          <Arguments>
+            <Argument
+                            name="obj"
+                            type="Object"
+                            in="true"
+                            out="false"
+                            option="false"
+                            variable="false"
+                            description="DEXT5Upload"
+                        />
+            <Argument
+                            name="param"
+                            type="Object"
+                            in="true"
+                            out="false"
+                            option="false"
+                            variable="false"
+                            description="param"
+                        />
+          </Arguments>
+        </Syntax>
+      </EventHandler>
 
-      <EventHandler
+	  <EventHandler
                 name="DEXT5UPLOAD_BeforeAddItem"
                 group="event"
                 deprecated="false"

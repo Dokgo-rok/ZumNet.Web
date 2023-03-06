@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>New table</title>
+    <title>Table</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <script type="text/javascript">
         document.write('<scr' + 'ipt src="../config/editor_crossdomain_config.js?t=' + (new Date).getTime() + '" type="text/javascript"><\/scr' + 'ipt>');
@@ -14,11 +14,15 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.detectJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
 
         if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
-            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
         }
     </script>
 
@@ -38,13 +42,18 @@
 
 	    function page_loaded_event() {
 
-	        var _td1InnerHtml = '', _td2InnerHtml = '';
+            var _td1InnerHtml = '', _td2InnerHtml = '';
+            var fileAccept = '';
+            if (Dext5LayerWin._dext_editor._config.fileFilterHtml5 && Dext5LayerWin._dext_editor._config.fileFilterHtml5 != '') {
+                fileAccept = 'accept="' + Dext5LayerWin._dext_editor._config.fileFilterHtml5 + '"';
+            }
+
 	        if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
 	            _td1InnerHtml += '<label id="label_image" for="image_url"></label><input type="hidden" id="drop_zone_uploadtype" name="drop_zone_uploadtype" value="table_bg_image" /><input type="hidden" id="file_text" name="' + file_field_id + '" />';
 
 	            _td2InnerHtml += '<input id="image_url_value" type="hidden" />';	            
 	            _td2InnerHtml += '<div class="DEXT_fiVe_ED_Popup_DropZone DEXT_fiVe_ED_Popup_DropZone_1" id="drop_zone" style="border:dashed 1px gray; width:255px; height:40px; line-height:40px; text-align:center; color:gray; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"></div>';
-	            _td2InnerHtml += '<div style="position:absolute; left:0px; top:-40px;"><input class="noline" type="file" id="Filedata" name="Filedata" style="width:0px; height:0px" onchange="fileOnchange(this, \'table_bg_image\');" /></div>';
+	            _td2InnerHtml += '<div style="position:absolute; left:0px; top:-40px;"><input class="noline" type="file" {0} id="Filedata" name="Filedata" style="width:0px; height:0px" onchange="fileOnchange(this, \'table_bg_image\');" /></div>';
 
 	        }
 	        else {
@@ -54,9 +63,11 @@
 	            _td2InnerHtml += '<input name="image_url" id="image_url" type="text" class="con_input" style="width:178px; float:left;background:#fff" disabled="disabled"/>';
 	            _td2InnerHtml += '<span id="find_file_nm" style="width:67px; height:20px; *margin-left:-3px;_margin-left:-3px; background-position: 0px 0px; display:block; float:left; cursor:pointer; background-repeat:no-repeat;">';
 	            _td2InnerHtml += '<span id="file_input_search" class="file_input_button2">찾아보기</span>';
-	            _td2InnerHtml += '<input class="noline" type="file" id="Filedata" name="Filedata" style="margin-top:-35px;*margin-top: -28px;margin-left:-178px;width:258px; height:25px; opacity:0; filter:alpha(opacity=0); -moz-opacity:0; cursor:pointer;" onchange="fileOnchange(this, \'table_bg_image\');"/>';       
+                _td2InnerHtml += '<input class="noline" type="file" {0} id="Filedata" name="Filedata" style="margin-top:-35px;*margin-top: -28px;margin-left:-178px;width:258px; height:25px; opacity:0; filter:alpha(opacity=0); -moz-opacity:0; cursor:pointer;" onchange="fileOnchange(this, \'table_bg_image\');"/>';
 	            _td2InnerHtml += '<a href="javascript:void(0);" id="a_file"></a></span>';
 	        }
+
+            _td2InnerHtml = _td2InnerHtml.replace('{0}', fileAccept);
 
 	        var _td1 = document.createElement('td');
 	        _td1.width = '20%';
@@ -450,7 +461,9 @@
 	        document.getElementById("cell_gap").value = "0";
 
             // 테이블 생성후 우측 마지막 셀 크기 변경시 안쪽 셀이 조금씩 변경 되는 현상으로 기본값을 0으로 셋팅함.   2017.07.19  sanctity.
-	        document.getElementById("cell_inside_margin").value = "0";
+	        //document.getElementById("cell_inside_margin").value = "0";
+            // 표 생성 시 셀 안쪽 여백 설정값 추가
+            document.getElementById("cell_inside_margin").value = LayerWin._dext_editor._config.tableDefaultCellPadding;
 	        var _add_value = LayerWin.dext5_lang.arr_add_value.value;
 	        _cnt = _add_value.length;
 	        for (var i = 0; i < _cnt; i++) {
@@ -844,7 +857,7 @@
 
 	</script>
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_Custom_Control();" >
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_Custom_Control(); page_dialog_loaded_event();" >
     <script type="text/javascript">
         var custom_code = LayerWin._dext_editor._config.custom_code;
         var custom_height = "";
@@ -987,7 +1000,7 @@
                         <tr id="tr_table_edge_reduce">
                             <td colspan="4">
                                 <input name="table_edge_reduce" id="table_edge_reduce" type="checkbox" />
-                                <label id="label_table_edge_reduce" for="table_edge_reduce"></label>
+                                <label style="vertical-align:middle;" id="label_table_edge_reduce" for="table_edge_reduce"></label>
                             </td>
                         </tr>
                     </table>
@@ -1076,7 +1089,7 @@
                                 <div class="no_a">
                                 <input name="cell_inside_margin" id="cell_inside_margin" type="text" class="con_input" onkeydown="LayerWin.onlyNumber(event);" maxlength="4"/>
                                 <ul>
-                                    <li onclick="LayerWin.click_plus_func(document.getElementById('cell_inside_margin'),10,1)"><a href="javascript:void(0);" style="cursor:pointer"><img src="../images/editor/dialog/btn/editor_ta_btn.gif" width="15" height="10" alt=""/></a></li>
+                                    <li onclick="LayerWin.click_plus_func(document.getElementById('cell_inside_margin'),999,1)"><a href="javascript:void(0);" style="cursor:pointer"><img src="../images/editor/dialog/btn/editor_ta_btn.gif" width="15" height="10" alt=""/></a></li>
                                     <li onclick="LayerWin.click_minus_func(document.getElementById('cell_inside_margin'),0,1)"><a href="javascript:void(0);" style="cursor:pointer"><img src="../images/editor/dialog/btn/editor_ba_btn.gif" width="15" height="10" alt=""/></a></li>
                                 </ul>
                                 </div>
@@ -1183,10 +1196,10 @@
                         <tr>
                             <td width="22%">
                                 <label id="label_table_caption" for="table_caption"></label>
-                                <a href="javascript:LayerWin.showAccessPopup(document, document.getElementById('access_img_1'), document.getElementById('access_div_tab1'), LayerWin.dext5_lang.access_explain.table_caption, -10, -90);">
+                                <a style="margin-left: 5px;" href="javascript:LayerWin.showAccessPopup(document, document.getElementById('access_img_1'), document.getElementById('access_div_tab1'), LayerWin.dext5_lang.access_explain.table_caption, -10, -90);">
                                     <script type="text/javascript">
                                         if (custom_code != 'CCODE_001') {
-                                            document.write('<img id="access_img_1" src="../images/editor/dialog/editor_a.gif" alt="web_accessibility" style="margin-left:5px; border:0;" />');
+                                            document.write('<img id="access_img_1" src="../images/editor/dialog/editor_a.gif" alt="web_accessibility" style="border:0;" />');
                                         }
                                     </script>
                                 </a>
@@ -1196,10 +1209,10 @@
                             </td>
                             <td width="22%">
                                 <label id="label_table_summary" for="table_summary"></label>
-                                <a href="javascript:LayerWin.showAccessPopup(document, document.getElementById('access_img_2'), document.getElementById('access_div_tab1'), LayerWin.dext5_lang.access_explain.table_summary, -195, -90);">
+                                <a style="margin-left: 5px;" href="javascript:LayerWin.showAccessPopup(document, document.getElementById('access_img_2'), document.getElementById('access_div_tab1'), LayerWin.dext5_lang.access_explain.table_summary, -195, -90);">
                                     <script type="text/javascript">
                                         if (custom_code != 'CCODE_001') {
-                                            document.write('<img id="access_img_2" src="../images/editor/dialog/editor_a.gif" alt="web_accessibility" style="margin-left:5px; border:0;" />');
+                                            document.write('<img id="access_img_2" src="../images/editor/dialog/editor_a.gif" alt="web_accessibility" style="border:0;" />');
                                         }
                                     </script>
                                 </a>
@@ -1303,7 +1316,7 @@
                         <tr>
                             <td colspan="4" style="height:30px; text-align:left;">
                                 <input name="scope" id="scope" type="checkbox" disabled/>
-                                <label id="label_scope" for="scope"></label>
+                                <label style="vertical-align:middle;" id="label_scope" for="scope"></label>
                                 <a href="javascript:LayerWin.showAccessPopup(document, document.getElementById('access_img_3'), document.getElementById('access_div_tab2'), LayerWin.dext5_lang.access_explain.table_scope, 15, 0);">
                                     <script type="text/javascript">
                                         if (custom_code != 'CCODE_001') {
@@ -1417,7 +1430,7 @@
                         <tr>
                             <td colspan="4" style="height:30px; text-align:left;">
                                 <input name="t_scope" id="t_scope" type="checkbox"/>
-                                <label id="label_t_scope" for="t_scope"></label>
+                                <label style="vertical-align:middle;" id="label_t_scope" for="t_scope"></label>
                                 <a href="javascript:LayerWin.showAccessPopup(document, document.getElementById('access_img_4'), document.getElementById('access_div_tab3'), LayerWin.dext5_lang.access_explain.table_scope, 15, 0);">
                                     <script type="text/javascript">
                                         if (custom_code != 'CCODE_001') {

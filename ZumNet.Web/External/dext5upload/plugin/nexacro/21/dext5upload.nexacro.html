@@ -1,0 +1,213 @@
+﻿<html>
+<head>
+    <title>RAONWIZ with nexacro Runtime</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script type="text/javascript">
+        document.write('<scr' + 'ipt src="../../../js/dext5upload.js?t=' + (new Date).getTime() + '" type="text/javascript"><\/scr' + 'ipt>');
+    </script>
+    <script type="text/javascript">
+        
+        var G_GetNewUploadListForJson_ResultObj = null;
+        var G_GetNewUploadListForText_ResultObj = null;
+
+        var G_GetAllFileListForJson_ResultObj = null;
+        var G_GetAllFileListForText_ResultObj = null;
+
+        var G_GetAllFileMergeListForJson_ResultObj = null;
+        var G_GetAllFileMergeListForText_ResultObj = null;
+
+        var G_EventReturnValue_GetFileSize = null;
+        
+        if (!window.NEXACROHTML) {
+            window.NEXACROHTML = {};
+        }
+
+        // ref. http://tobetong.com/?p=10955&ckattempt=1
+        window.NEXACROHTML.FireUserNotify = function ( userdata ) {
+            if ( window.NEXACROWEBBROWSER ) {
+                // Web runtime environment, iOS/iPadOS NRE 일때
+                window.NEXACROWEBBROWSER.on_fire_onusernotify( window.NEXACROWEBBROWSER, userdata );
+            } else if ( typeof nexacro === "undefined" ) {
+                // Windows NRE 일때
+                window.document.title = userdata;
+            } else if ( nexacro ) {
+                // Android NRE, macOS NRE 일때,
+                // nexacro.Webview 일때
+                nexacro.fireUserNotify( userdata );
+            }
+        }
+        function fn_bodyOnload() {
+            // iOS 넥사크로 앱에서 로드 안되는 현상 때문에 setTimeout 설정
+            setTimeout(function () {
+                window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_WEBBROWSER_INIT");
+            }, 0);
+        }
+        function fn_FireUserNotify(userdata) {
+            window.NEXACROHTML.FireUserNotify(userdata);
+        }
+        function fn_RunFunction( func ) {
+            if ( typeof func === 'string' ) {
+                return looseJsonParse( func );
+            }
+        }
+        function looseJsonParse( obj ) {
+            return Function( '"use strict";return (' + obj + ')' )();
+        }
+        function fn_InitGlobalVar() {
+            G_GetNewUploadListForJson_ResultObj = null;
+            G_GetNewUploadListForText_ResultObj = null;
+
+            G_GetAllFileListForJson_ResultObj = null;
+            G_GetAllFileListForText_ResultObj = null;
+
+            G_GetAllFileMergeListForJson_ResultObj = null;
+            G_GetAllFileMergeListForText_ResultObj = null;            
+        }
+        function fn_GetAllMethodFileInfo(uploadID) {
+            G_GetNewUploadListForJson_ResultObj = DEXT5UPLOAD.GetNewUploadListForJson(uploadID);
+            if (G_GetNewUploadListForJson_ResultObj != null) {
+                G_GetNewUploadListForJson_ResultObj = DEXT5UPLOAD.util.jsonToString(G_GetNewUploadListForJson_ResultObj);
+                G_GetNewUploadListForJson_ResultObj = DEXT5UPLOAD.util.base64_encode(G_GetNewUploadListForJson_ResultObj);
+            }
+
+            G_GetNewUploadListForText_ResultObj = DEXT5UPLOAD.GetNewUploadListForText(uploadID);
+            if (G_GetNewUploadListForText_ResultObj != null) {
+                G_GetNewUploadListForText_ResultObj = DEXT5UPLOAD.util.base64_encode(G_GetNewUploadListForText_ResultObj);
+            }
+
+            G_GetAllFileListForJson_ResultObj = DEXT5UPLOAD.GetAllFileListForJson(uploadID);
+            if (G_GetAllFileListForJson_ResultObj != null) {
+                G_GetAllFileListForJson_ResultObj = DEXT5UPLOAD.util.jsonToString(G_GetAllFileListForJson_ResultObj);
+                G_GetAllFileListForJson_ResultObj = DEXT5UPLOAD.util.base64_encode(G_GetAllFileListForJson_ResultObj);
+            }
+
+            G_GetAllFileListForText_ResultObj = DEXT5UPLOAD.GetAllFileListForText(uploadID);
+            if (G_GetAllFileListForText_ResultObj != null) {
+                G_GetAllFileListForText_ResultObj = DEXT5UPLOAD.util.jsonToString(G_GetAllFileListForText_ResultObj);
+                G_GetAllFileListForText_ResultObj = DEXT5UPLOAD.util.base64_encode(G_GetAllFileListForText_ResultObj);
+            }
+
+            G_GetAllFileMergeListForJson_ResultObj = DEXT5UPLOAD.GetAllFileMergeListForJson(uploadID);
+            if (G_GetAllFileMergeListForJson_ResultObj != null) {
+                G_GetAllFileMergeListForJson_ResultObj = DEXT5UPLOAD.util.jsonToString(G_GetAllFileMergeListForJson_ResultObj);
+                G_GetAllFileMergeListForJson_ResultObj = DEXT5UPLOAD.util.base64_encode(G_GetAllFileMergeListForJson_ResultObj);
+            }
+
+            G_GetAllFileMergeListForText_ResultObj = DEXT5UPLOAD.GetAllFileMergeListForText(uploadID);
+            if (G_GetAllFileMergeListForText_ResultObj != null) {
+                G_GetAllFileMergeListForText_ResultObj = DEXT5UPLOAD.util.jsonToString(G_GetAllFileMergeListForText_ResultObj);
+                G_GetAllFileMergeListForText_ResultObj = DEXT5UPLOAD.util.base64_encode(G_GetAllFileMergeListForText_ResultObj);
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // event start
+        ///////////////////////////////////////////////////////////////////////
+        // create
+        function DEXT5UPLOAD_OnCreationComplete( uploadID ) {
+            fn_InitGlobalVar();
+
+            G_EventReturnValue_OnCreationComplete = {
+                usePluginMode: ( typeof DEXT5UPLOAD.GetUploadByName( uploadID ).frameWin.dext5PL !== 'undefined' ) ? "1" : "0"
+            };
+            G_EventReturnValue_OnCreationComplete = DEXT5UPLOAD.util.jsonToString( G_EventReturnValue_OnCreationComplete );
+            G_EventReturnValue_OnCreationComplete = DEXT5UPLOAD.util.base64_encode( G_EventReturnValue_OnCreationComplete );
+
+            window.NEXACROHTML.FireUserNotify( "DEXT5UPLOAD_OnCreationComplete" );
+        }
+
+        // add file        
+        function DEXT5UPLOAD_AfterAddItemEndTime( uploadID ) {
+            fn_GetAllMethodFileInfo();
+
+            window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_AfterAddItemEndTime");
+        }
+        function DEXT5UPLOAD_AfterAddWebFile(uploadID) {
+            fn_GetAllMethodFileInfo();
+        }
+
+        // delete file
+        function DEXT5UPLOAD_DeleteItemEndTime(uploadID, nDeleteItemCount) {
+            fn_GetAllMethodFileInfo();
+
+            G_EventReturnValue_DeleteItemEndTime = {
+                nDeleteItemCount: nDeleteItemCount
+            };
+
+            G_EventReturnValue_DeleteItemEndTime = DEXT5UPLOAD.util.jsonToString( G_EventReturnValue_DeleteItemEndTime );
+            G_EventReturnValue_DeleteItemEndTime = DEXT5UPLOAD.util.base64_encode( G_EventReturnValue_DeleteItemEndTime );
+
+            window.NEXACROHTML.FireUserNotify( "DEXT5UPLOAD_DeleteItemEndTime" );
+        }
+
+        // upload
+        function DEXT5UPLOAD_OnTransfer_Complete(uploadID) {
+            fn_GetAllMethodFileInfo();
+
+            window.NEXACROHTML.FireUserNotify( "DEXT5UPLOAD_OnTransfer_Complete" );
+        }
+        function DEXT5UPLOAD_UploadingCancel(uploadID, uploadedFileListObj) {
+            G_EventReturnValue_UploadingCancel = {
+                uploadedFileListObj: uploadedFileListObj
+            };
+
+            G_EventReturnValue_UploadingCancel = DEXT5UPLOAD.util.jsonToString( G_EventReturnValue_UploadingCancel );
+            G_EventReturnValue_UploadingCancel = DEXT5UPLOAD.util.base64_encode( G_EventReturnValue_UploadingCancel );
+
+            window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_UploadingCancel");
+        }
+
+        function DEXT5UPLOAD_SelectItem(uploadID, itemInfo) {
+            G_EventReturnValue_SelectItem = itemInfo;
+            G_EventReturnValue_SelectItem = DEXT5UPLOAD.util.jsonToString( G_EventReturnValue_SelectItem );
+            G_EventReturnValue_SelectItem = DEXT5UPLOAD.util.base64_encode( G_EventReturnValue_SelectItem );
+
+            window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_SelectItem");
+        }
+
+        // download
+        function DEXT5UPLOAD_FinishDownloaded(uploadID, nDownloadItemCount) {
+            G_EventReturnValue_FinishDownloaded = {
+                nDownloadItemCount: nDownloadItemCount
+            };
+
+            G_EventReturnValue_FinishDownloaded = DEXT5UPLOAD.util.jsonToString( G_EventReturnValue_FinishDownloaded );
+            G_EventReturnValue_FinishDownloaded = DEXT5UPLOAD.util.base64_encode( G_EventReturnValue_FinishDownloaded );
+
+            window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_FinishDownloaded");
+        }
+
+        // error / cancel
+        function DEXT5UPLOAD_OnError(uploadID, code, message, uploadedFileListObj, otherData) {
+            G_EventReturnValue_OnError = {
+                code: code,
+                message: message,
+                uploadedFileListObj: uploadedFileListObj,
+                otherData: otherData
+            };
+
+            G_EventReturnValue_OnError = DEXT5UPLOAD.util.jsonToString( G_EventReturnValue_OnError );
+            G_EventReturnValue_OnError = DEXT5UPLOAD.util.base64_encode( G_EventReturnValue_OnError );
+
+            window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_OnError");
+        }
+        
+        function DEXT5UPLOAD_CustomAction(uploadID, strCmmand) {
+            G_EventReturnValue_CustomAction = strCmmand;
+            G_EventReturnValue_CustomAction = DEXT5UPLOAD.util.base64_encode( G_EventReturnValue_CustomAction );
+
+            window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_CustomAction");
+        }
+        ///////////////////////////////////////////////////////////////////////
+        // event end
+        ///////////////////////////////////////////////////////////////////////
+    </script>
+</head>
+<body onload="fn_bodyOnload();" style="padding:0; margin:0; height:100%; text-align: center; overflow: hidden; border: 0;">
+    <div id="component_Holder" style="width: 100%; height: 100%; margin: 0 auto; overflow: hidden;"></div>
+</body>
+</html>

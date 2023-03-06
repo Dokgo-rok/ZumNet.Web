@@ -2288,6 +2288,87 @@ namespace ZumNet.Web.Bc
         }
 
         /// <summary>
+        /// 품번 채번 초기 설정
+        /// </summary>
+        /// <param name="ctrl"></param>
+        /// <param name="ctId"></param>
+        /// <param name="fdId"></param>
+        /// <param name="formTable"></param>
+        /// <returns></returns>
+        public static string NumInit(this Controller ctrl, int ctId, int fdId, string formTable)
+        {
+            string strReturn = "";
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+            {
+                //권한체크
+                if (HttpContext.Current.Session["Admin"].ToString() == "Y")
+                {
+                    ctrl.ViewBag.R.current["operator"] = "Y";
+                }
+                else
+                {
+                    svcRt = cb.GetObjectPermission(Convert.ToInt32(HttpContext.Current.Session["DNID"]), ctId, Convert.ToInt32(HttpContext.Current.Session["URID"]), fdId, "O", "0");
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ctrl.ViewBag.R.current["operator"] = svcRt.ResultDataDetail["operator"].ToString();
+                        ctrl.ViewBag.R.current["acl"] = svcRt.ResultDataDetail["acl"].ToString();
+                    }
+                    else
+                    {
+                        //에러페이지
+                        strReturn = svcRt.ResultMessage;
+                    }
+                }
+
+                if (strReturn == "" && formTable != "")
+                {
+                    string[,] codeConfig = null;
+                    if (formTable == "NUM_ME")
+                    {
+                        string[,] arr = {{ "partnum", "color", "" }, { "partnum", "me_dir", "" }, { "partnum", "me_postproc", "" }, { "partnum", "me_print", "" }};
+                        codeConfig = arr;
+                    }
+                    else if (formTable == "NUM_WI")
+                    {
+                        string[,] arr = { { "partnum", "color", "" }, { "partnum", "wi_type", "" }, { "partnum", "wi_fiber", "" } };
+                        codeConfig = arr;
+                    }
+                    else if (formTable == "NUM_PG")
+                    {
+                        string[,] arr = { { "partnum", "color", "" }, { "partnum", "pg_diam", "" }, { "partnum", "pg_plating", "" } };
+                        codeConfig = arr;
+                    }
+                    else if (formTable == "NUM_BT")
+                    {
+                        string[,] arr = { { "partnum", "color", "" }, { "partnum", "bt_type", "" }, { "partnum", "bt_thread", "" }, { "partnum", "bt_head", "" } };
+                        codeConfig = arr;
+                    }
+
+                    if (codeConfig != null)
+                    {
+                        svcRt = cb.SelectCodeDescription(codeConfig);
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            ctrl.ViewBag.CodeConfig = codeConfig;
+                            ctrl.ViewBag.CodeTable = svcRt.ResultDataDetail;
+                        }
+                        else
+                        {
+                            //에러페이지
+                            strReturn = svcRt.ResultMessage;
+                        }
+                    }
+                }
+            }
+
+            return strReturn;
+        }
+
+        /// <summary>
         /// 대장, 집계 초기 설정
         /// </summary>
         /// <param name="ctrl"></param>

@@ -16,11 +16,15 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+		document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
+		document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.detectJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
 
         if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
-            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
         }
     </script>
 
@@ -36,13 +40,19 @@
 	    var G_preWidth = '', G_preHeight = '';
 
 	    function page_loaded_event() {
-	        var _td1InnerHtml = '', _td2InnerHtml = '';
+			var _td1InnerHtml = '', _td2InnerHtml = '';
+
+            var fileAccept = '';
+            if (Dext5LayerWin._dext_editor._config.fileFilterHtml5 && Dext5LayerWin._dext_editor._config.fileFilterHtml5 != '') {
+                fileAccept = 'accept="' + Dext5LayerWin._dext_editor._config.fileFilterHtml5 + '"';
+			}
+
 	        if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
 	            _td1InnerHtml += '<label id="label_image" for="image_url"></label><input type="hidden" id="drop_zone_uploadtype" name="drop_zone_uploadtype" value="cell_bg_image" /><input type="hidden" id="file_text" name="' + file_field_id + '" />';
 
 	            _td2InnerHtml += '<input id="image_url_value" type="hidden" />';	            
 	            _td2InnerHtml += '<div class="DEXT_fiVe_ED_Popup_DropZone DEXT_fiVe_ED_Popup_DropZone_1" id="drop_zone" style="border:dashed 1px gray; width:255px; height:40px; line-height:40px; text-align:center; color:gray; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"></div>';
-	            _td2InnerHtml += '<div style="position:absolute; left:0px; top:-40px;"><input class="noline" type="file" id="Filedata" name="Filedata" style="width:0px; height:0px" onchange="fileOnchange(this, \'cell_bg_image\');" /></div>';
+	            _td2InnerHtml += '<div style="position:absolute; left:0px; top:-40px;"><input class="noline" type="file" {0} id="Filedata" name="Filedata" style="width:0px; height:0px" onchange="fileOnchange(this, \'cell_bg_image\');" /></div>';
 	        }
 	        else {
 	            _td1InnerHtml += '<label id="label_image" for="image_url"></label>';
@@ -51,9 +61,11 @@
 	            _td2InnerHtml += '<input name="image_url" id="image_url" type="text" class="con_input" style="width:178px; float:left;background:#fff" disabled="disabled" />';
 	            _td2InnerHtml += '<span id="find_file_nm" style="width:67px; height:20px; *margin-left:-3px;_margin-left:-3px; background-position: 0px 0px; display:block; float:left; cursor:pointer; background-repeat:no-repeat;">';
 	            _td2InnerHtml += '<span id="file_input_search" class="file_input_button2">찾아보기</span>';
-	            _td2InnerHtml += '<input class="noline" type="file" id="Filedata" name="Filedata" style="margin-top:-35px;*margin-top: -28px;margin-left:-178px;width:258px; height:25px; opacity:0; filter:alpha(opacity=0); -moz-opacity:0; cursor:pointer;" onchange="fileOnchange(this, \'cell_bg_image\');" />';
+                _td2InnerHtml += '<input class="noline" type="file" {0} id="Filedata" name="Filedata" style="margin-top:-35px;*margin-top: -28px;margin-left:-178px;width:258px; height:25px; opacity:0; filter:alpha(opacity=0); -moz-opacity:0; cursor:pointer;" onchange="fileOnchange(this, \'cell_bg_image\');" />';
 	            _td2InnerHtml += '<a href="javascript:void(0);" id="a_file"></a></span>';
 	        }
+
+            _td2InnerHtml = _td2InnerHtml.replace('{0}', fileAccept);
 
 	        var _td1 = document.createElement('td');
 	        _td1.width = '20%';
@@ -327,12 +339,24 @@
 	            _title_cell = "N";
 	        }
 	        var _scope = tdth_element.scope;
-	        var _nowrap = "";
-	        if (tdth_element.style.whiteSpace == "nowrap") {
-	            _nowrap = "Y";
-	        } else {
-	            _nowrap = "N";
-	        }
+			var _nowrap = "";
+			// 줄바꿈 금지 설정 white-space -> word-break 로 변경 by gipyeong 22.08.18
+			// 한글, 영어 줄바꿈 다른 현상 때문에 white-space, word-break 모두 적용, 줄 바꿈 금지 옵션에 적용안함 추가 by gipyeong 22.08.23
+			var currStyle;
+			if (LayerDoc.documentElement.currentStyle) {
+				currStyle = tdth_element.currentStyle;
+			} else if (LayerWin._iframeWin.getComputedStyle) {
+				currStyle = getComputedStyle(tdth_element);
+			}
+			if (currStyle && (currStyle.whiteSpace == "nowrap" || currStyle.whiteSpace == "pre")) {
+				_nowrap = "N";
+            } else if (currStyle && (currStyle.wordBreak == "break-all" || currStyle.wordBreak == "break-word")) {
+				_nowrap = "break-all";
+            } else if (currStyle && currStyle.wordBreak == "keep-all") {
+				_nowrap = "keep-all";
+			} else {
+				_nowrap = "notapplicable";
+			}
 	        var _image_url = (tdth_element.style.backgroundImage).replace('url("', '').replace('")', '');
 	        if (_image_url == "") {
 	            if (tdth_element.getAttribute('background')) {
@@ -398,11 +422,16 @@
 	                document.getElementById("vertical_align").options.add(option);
 	            }
 
-	            var _nowrap_value = LayerWin.dext5_lang.arr_applyNone.value;
+				var _nowrap_value = LayerWin.dext5_lang.arr_nowrap_value.value;
 	            _cnt = _nowrap_value.length;
-	            for (var i = 0; i < _cnt; i++) {
-	                _value = LayerWin.dext5_lang.arr_applyNone.value[i];
-	                _text = LayerWin.dext5_lang.arr_applyNone.text[i];
+				for (var i = 0; i < _cnt; i++) {
+                    _value = LayerWin.dext5_lang.arr_nowrap_value.value[i];
+					_text = LayerWin.dext5_lang.arr_nowrap_value.text[i];
+					if (_value == 'N') {
+						if (DEXTTOP.DEXT5.browser.ie && DEXTTOP.DEXT5.browser.ieVersion <= 7) {
+							continue;
+                        }
+                    }
 	                var option = document.createElement("OPTION");
 	                option.value = _value;
 	                option.text = _text;
@@ -414,7 +443,7 @@
 
 	            var _title_cell_value = LayerWin.dext5_lang.arr_applyNone.value;
 	            _cnt = _title_cell_value.length;
-	            for (var i = 0; i < _cnt; i++) {
+				for (var i = 0; i < _cnt; i++) {
 	                _value = LayerWin.dext5_lang.arr_applyNone.value[i];
 	                _text = LayerWin.dext5_lang.arr_applyNone.text[i];
 	                var option = document.createElement("OPTION");
@@ -456,17 +485,17 @@
                 
 	            var _classList = LayerWin._dext_editor._config.tableClassList;
 	            _cnt = _classList.length;
-	            if (_cnt > 0) {
+				if (_cnt > 0) {
 	                for (var i = 0; i < _cnt; i++) {
 	                    var option = document.createElement("OPTION");
 	                    option.value = _classList[i];
 	                    option.text = _classList[i];
 	                    document.getElementById("class_name").options.add(option);
-	                }
-	                var option = document.createElement("OPTION");
-	                option.value = "";
-	                option.text = LayerWin.dext5_lang.table.none_class;
-	                document.getElementById("class_name").options.add(option);
+					}
+                    var option = document.createElement("OPTION");
+                    option.value = "";
+                    option.text = LayerWin.dext5_lang.table.none_class;
+                    document.getElementById("class_name").options.add(option);
 	                if (_class_name == "") {
 	                    document.getElementById("class_name").value = "";
 	                } else {
@@ -583,27 +612,36 @@
 	            if (_background_color != "") {
 	                document.getElementById("background_color").style.backgroundColor = _background_color;
 	            }
-	        } else {
+			} else {
 	            var _notapplicable_value = LayerWin.dext5_lang.arr_notapplicable_value.value[0];
 	            var _notapplicable_text = LayerWin.dext5_lang.arr_notapplicable_value.text[0];
-                var _nowrap_value = LayerWin.dext5_lang.arr_applyNone.value;
-	            _cnt = _nowrap_value.length;
-	            for (var i = 0; i < _cnt; i++) {
-	                _value = LayerWin.dext5_lang.arr_applyNone.value[i];
-	                _text = LayerWin.dext5_lang.arr_applyNone.text[i];
+                var _nowrap_value = LayerWin.dext5_lang.arr_nowrap_value.value;
+				_cnt = _nowrap_value.length;
+				for (var i = 0; i < _cnt; i++) {
+                    _value = LayerWin.dext5_lang.arr_nowrap_value.value[i];
+					_text = LayerWin.dext5_lang.arr_nowrap_value.text[i];
+                    if (_value == 'N') {
+                        if (DEXTTOP.DEXT5.browser.ie && DEXTTOP.DEXT5.browser.ieVersion <= 7) {
+                            continue;
+                        }
+                    }
 	                var option = document.createElement("OPTION");
 	                option.value = _value;
-	                option.text = _text;
+					option.text = _text;
+					// 한글, 영어 줄바꿈 다른 현상 때문에 white-space, word-break 모두 적용, 줄 바꿈 금지 옵션에 적용안함 추가 by gipyeong 22.08.23
+                    if (_value == _notapplicable_value) {
+						option.selected = 'selected';
+                    }
 	                document.getElementById("nowrap").options.add(option);
-	            }
-	            var option = document.createElement("OPTION");
-	            option.value = _notapplicable_value;
-	            option.text = _notapplicable_text;
-	            option.selected = 'selected';
-	            document.getElementById("nowrap").options.add(option);
-
+				}
+                
 	            var _title_cell_value = LayerWin.dext5_lang.arr_applyNone.value;
-	            _cnt = _title_cell_value.length;
+				_cnt = _title_cell_value.length;
+                var option = document.createElement("OPTION");
+                option.value = _notapplicable_value;
+                option.text = _notapplicable_text;
+                option.selected = 'selected';
+                document.getElementById("title_cell").options.add(option);
 	            for (var i = 0; i < _cnt; i++) {
 	                _value = LayerWin.dext5_lang.arr_applyNone.value[i];
 	                _text = LayerWin.dext5_lang.arr_applyNone.text[i];
@@ -612,14 +650,15 @@
 	                option.text = _text;
 	                document.getElementById("title_cell").options.add(option);
 	            }
-	            var option = document.createElement("OPTION");
-	            option.value = _notapplicable_value;
-	            option.text = _notapplicable_text;
-	            option.selected = 'selected';
-	            document.getElementById("title_cell").options.add(option);
 
 	            var _scope_value = LayerWin.dext5_lang.arr_scope_value.value;
-	            _cnt = _scope_value.length;
+				_cnt = _scope_value.length;
+                var option = document.createElement("OPTION");
+                option.value = _notapplicable_value;
+                option.text = _notapplicable_text;
+                option.selected = 'selected';
+                document.getElementById("scope").options.add(option);
+                document.getElementById("scope").disabled = true;
 	            for (var i = 0; i < _cnt; i++) {
 	                _value = LayerWin.dext5_lang.arr_scope_value.value[i];
 	                _text = LayerWin.dext5_lang.arr_scope_value.text[i];
@@ -628,12 +667,6 @@
 	                option.text = _text;
 	                document.getElementById("scope").options.add(option);
 	            }
-	            var option = document.createElement("OPTION");
-	            option.value = _notapplicable_value;
-	            option.text = _notapplicable_text;
-	            option.selected = 'selected';
-	            document.getElementById("scope").options.add(option);
-	            document.getElementById("scope").disabled = true;
 
 	            var _classList = LayerWin._dext_editor._config.tableClassList;
 	            _cnt = _classList.length;
@@ -642,8 +675,14 @@
 	                var notApplyClassName = document.getElementById('not_apply_class_name');
 	                var labelnotApplyClassName = document.getElementById('label_not_apply_class_name');
 	                notApplyClassName.parentNode.removeChild(notApplyClassName);
-	                labelnotApplyClassName.parentNode.removeChild(labelnotApplyClassName);
+					labelnotApplyClassName.parentNode.removeChild(labelnotApplyClassName);
 
+                    //셀 멀티셀렉트시 적용안함 옵션 추가 적용안함 선택시 해당 셀값 변경 안함.
+                    var option = document.createElement("OPTION");
+                    option.value = _notapplicable_value;
+                    option.text = _notapplicable_text;
+                    option.selected = 'selected';
+                    document.getElementById("class_name").options.add(option);
 	                for (var i = 0; i < _cnt; i++) {
 	                    var option = document.createElement("OPTION");
 	                    option.value = _classList[i];
@@ -655,13 +694,7 @@
 	                option.value = "";
 	                option.text = LayerWin.dext5_lang.table.none_class;
 	                document.getElementById("class_name").options.add(option);
-
-                    //셀 멀티셀렉트시 적용안함 옵션 추가 적용안함 선택시 해당 셀값 변경 안함.
-	                var option = document.createElement("OPTION");
-	                option.value = _notapplicable_value;
-	                option.text = _notapplicable_text;
-	                option.selected = 'selected';
-	                document.getElementById("class_name").options.add(option);
+                    
 	            } else {
 	                var classinput = document.createElement('input');
 	                classinput.type = 'text';
@@ -674,7 +707,14 @@
 	            var _horizontal_align_value = LayerWin.dext5_lang.arr_horizontal_align_value.value;
 	            var _cnt = _horizontal_align_value.length;
 	            var _value = "";
-	            var _text = "";
+				var _text = "";
+                //셀 멀티셀렉트시 적용안함 옵션 추가 적용안함 선택시 해당 셀 값변경 안함.
+                var option = document.createElement("OPTION");
+                option.value = _notapplicable_value;
+                option.text = _notapplicable_text;
+                option.selected = 'selected';
+                document.getElementById("horizontal_align").options.add(option);
+                //document.getElementById("horizontal_align").options[0].selected = "selected";
 	            for (var i = 0; i < _cnt; i++) {
 	                _value = LayerWin.dext5_lang.arr_horizontal_align_value.value[i];
 	                _text = LayerWin.dext5_lang.arr_horizontal_align_value.text[i];
@@ -683,16 +723,16 @@
 	                option.text = _text;
 	                document.getElementById("horizontal_align").options.add(option);
 	            }
-	            //셀 멀티셀렉트시 적용안함 옵션 추가 적용안함 선택시 해당 셀 값변경 안함.
-	            var option = document.createElement("OPTION");
-	            option.value = _notapplicable_value;
-	            option.text = _notapplicable_text;
-	            option.selected = 'selected';
-	            document.getElementById("horizontal_align").options.add(option);
-                //document.getElementById("horizontal_align").options[0].selected = "selected";
 
 	            var _vertical_align_value = LayerWin.dext5_lang.arr_vertical_align_value.value;
-	            _cnt = _vertical_align_value.length;
+				_cnt = _vertical_align_value.length;
+                //셀 멀티셀렉트시 적용안함 옵션 추가 적용안함 선택시 해당 셀 값변경 안함.
+                var option = document.createElement("OPTION");
+                option.value = _notapplicable_value;
+                option.text = _notapplicable_text;
+                option.selected = 'selected';
+                document.getElementById("vertical_align").options.add(option);
+	            //document.getElementById("vertical_align").options[0].selected = "selected";
 	            for (var i = 0; i < _cnt; i++) {
 	                _value = LayerWin.dext5_lang.arr_vertical_align_value.value[i];
 	                _text = LayerWin.dext5_lang.arr_vertical_align_value.text[i];
@@ -701,13 +741,6 @@
 	                option.text = _text;
 	                document.getElementById("vertical_align").options.add(option);
 	            }
-	            //셀 멀티셀렉트시 적용안함 옵션 추가 적용안함 선택시 해당 셀 값변경 안함.
-	            var option = document.createElement("OPTION");
-	            option.value = _notapplicable_value;
-	            option.text = _notapplicable_text;
-	            option.selected = 'selected';
-	            document.getElementById("vertical_align").options.add(option);
-	            //document.getElementById("vertical_align").options[0].selected = "selected";
 
 	            var lineStyle = LayerWin._dext_editor._config.tableLineStyleValue;
 	            var ulLineStyle = document.getElementById("ul_line_style");
@@ -767,7 +800,13 @@
                 }
 
 	            var _add_value = LayerWin.dext5_lang.arr_add_value.value;
-	            _cnt = _add_value.length;
+				_cnt = _add_value.length;
+                var option = document.createElement("OPTION");
+                option.value = _notapplicable_value;
+                option.text = _notapplicable_text;
+                option.selected = 'selected';
+                document.getElementById("add").options.add(option);
+	            //document.getElementById("add").options[0].selected = "selected";
 	            for (var i = 0; i < _cnt; i++) {
 	                _value = LayerWin.dext5_lang.arr_add_value.value[i];
 	                _text = LayerWin.dext5_lang.arr_add_value.text[i];
@@ -776,15 +815,15 @@
 	                option.text = _text;
 	                document.getElementById("add").options.add(option);
 	            }
-	            var option = document.createElement("OPTION");
-	            option.value = _notapplicable_value;
-	            option.text = _notapplicable_text;
-	            option.selected = 'selected';
-	            document.getElementById("add").options.add(option);
-	            //document.getElementById("add").options[0].selected = "selected";
 
 	            var _repeat_value = LayerWin.dext5_lang.arr_repeat_value.value;
-	            _cnt = _repeat_value.length;
+				_cnt = _repeat_value.length;
+                var option = document.createElement("OPTION");
+                option.value = _notapplicable_value;
+                option.text = _notapplicable_text;
+                option.selected = 'selected';
+                document.getElementById("repeat").options.add(option);
+	            //document.getElementById("repeat").options[0].selected = "selected";
 	            for (var i = 0; i < _cnt; i++) {
 	                _value = LayerWin.dext5_lang.arr_repeat_value.value[i];
 	                _text = LayerWin.dext5_lang.arr_repeat_value.text[i];
@@ -793,13 +832,7 @@
 	                option.text = _text;
 	                document.getElementById("repeat").options.add(option);
 	            }
-	            var option = document.createElement("OPTION");
-	            option.value = _notapplicable_value;
-	            option.text = _notapplicable_text;
-	            option.selected = 'selected';
-	            document.getElementById("repeat").options.add(option);
-	            //document.getElementById("repeat").options[0].selected = "selected";
-
+	            
 	            document.getElementById('cell_id').disabled = 'true';
 	            var notApplyCellid = document.getElementById('not_apply_cell_id');
 	            notApplyCellid.checked = true;
@@ -810,8 +843,8 @@
 	                    document.getElementById('cell_id').removeAttribute("disabled");
 	                }
 	            };
-	            DEXTTOP.DEXT5.util.addEvent(notApplyCellid, "click", changeNotApplyCellid);
-
+				DEXTTOP.DEXT5.util.addEvent(notApplyCellid, "click", changeNotApplyCellid);
+				
 	            var notApplyClassName = document.getElementById('not_apply_class_name');
 	            if (notApplyClassName) {
 	                document.getElementById('class_name').disabled = 'true';
@@ -1004,7 +1037,7 @@
 	</script>
 
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_Custom_Control();" >
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_Custom_Control(); page_dialog_loaded_event();" >
     <script type="text/javascript">
         var custom_code = LayerWin._dext_editor._config.custom_code;
         var custom_height = "";
@@ -1112,10 +1145,10 @@
                         <tr>
                             <td width="25%">
                                 <label style="vertical-align:middle;" id="label_title_cell" for="title_cell"></label>
-                                <a href="javascript:LayerWin.showAccessPopup(document, document.getElementById('access_img'), document.getElementById('access_div'), LayerWin.dext5_lang.access_explain.table_scope, 15, 0);">
+                                <a style="margin-left:5px;" href="javascript:LayerWin.showAccessPopup(document, document.getElementById('access_img'), document.getElementById('access_div'), LayerWin.dext5_lang.access_explain.table_scope, 15, 0);">
                                     <script type="text/javascript">
                                         if (custom_code != 'CCODE_001') {
-                                            document.write('<img id="access_img" src="../images/editor/dialog/editor_a.gif" alt="web_accessibility" style="margin-left:5px; border:0;" />');
+                                            document.write('<img id="access_img" src="../images/editor/dialog/editor_a.gif" alt="web_accessibility" style="border:0;" />');
                                         }
                                     </script>
                                 </a>
@@ -1322,10 +1355,10 @@
                         </tr>
                         <tr id="tr_not_apply">
                             <td colspan="2">
-                                <input id="not_apply_cell_id" type="checkbox"><label id="label_not_apply_cell_id" for="not_apply_cell_id"></label>
+                                <input id="not_apply_cell_id" type="checkbox"><label style="vertical-align:middle;" id="label_not_apply_cell_id" for="not_apply_cell_id"></label>
                             </td>
                             <td colspan="2">
-                                <input id="not_apply_class_name" type="checkbox"><label id="label_not_apply_class_name" for="not_apply_class_name"></label>
+                                <input id="not_apply_class_name" type="checkbox"><label style="vertical-align:middle;" id="label_not_apply_class_name" for="not_apply_class_name"></label>
                             </td>
                         </tr>
                     </table>

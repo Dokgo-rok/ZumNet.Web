@@ -16,8 +16,11 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <script type="text/javascript">
@@ -88,7 +91,7 @@
 
     </script>
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event()" class="DEXT_sEleCt_none" unselectable="on" onselectstart="return false;">
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();" class="DEXT_sEleCt_none" unselectable="on" onselectstart="return false;">
     <div class="editor_popup" id="dext_dialog_box">
         <div class="EdiTor_Popup_header">
             <span class="subject" id="span_subject">자동저장내역 불러오기</span><span class="text">DEXT5 Editor</span>

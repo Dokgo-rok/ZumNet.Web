@@ -388,6 +388,7 @@
     <Content Include="Content\notice.css" />
     <Content Include="Content\env.css" />
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLECONTROL_V1.xsl" />
+    <Content Include="Content\num.css" />
     <Content Include="Content\search.css" />
     <Content Include="Content\voc.css" />
     <Content Include="Content\todo.css" />
@@ -2309,6 +2310,7 @@
     <Content Include="Scripts\EA\tooling.js" />
     <Content Include="Scripts\Env\env.js" />
     <Content Include="Scripts\ExS\ce.js" />
+    <Content Include="Scripts\ExS\num.js" />
     <Content Include="Scripts\ExS\voc.js" />
     <Content Include="Scripts\ExS\lcm.js" />
     <Content Include="Scripts\ExS\mc.js" />
@@ -3201,6 +3203,13 @@
     <Content Include="Areas\EA\Views\Common\_Tooling.cshtml" />
     <Content Include="Areas\EA\Views\Form\Save.cshtml" />
     <Content Include="Areas\EA\Views\Common\_FormChart.cshtml" />
+    <Content Include="Areas\ExS\Views\Num\_ListMenu.cshtml" />
+    <Content Include="Areas\ExS\Views\Num\_NUM_ME.cshtml" />
+    <Content Include="Areas\ExS\Views\Num\_NUM_BT.cshtml" />
+    <Content Include="Areas\ExS\Views\Num\_NUM_WI.cshtml" />
+    <Content Include="Areas\ExS\Views\Num\_NUM_PG.cshtml" />
+    <Content Include="Areas\ExS\Views\Num\_ListPagination.cshtml" />
+    <Content Include="Areas\ExS\Views\Num\Sheet.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

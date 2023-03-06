@@ -62,7 +62,7 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
             }
             */
 
-            /*
+			/*
 			// 이미지 포멧 변경
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.ImageConvertFormat(strSourceFile, "png", 0);
@@ -92,7 +92,7 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
             }
             */
 
-            /*
+			/*
 			// 비율로 이미지 크기 변환
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.ImageConvertSizeByPercent(strSourceFile, 50);
@@ -102,7 +102,7 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
 			}
 			*/
 
-            /*
+			/*
 			// 이미지 회전
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.ImageRotate(strSourceFile, 90);
@@ -112,7 +112,7 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
 			}
 			*/
 
-            /*
+			/*
 			// 이미지 워터마크
 			string strSourceFile = DEXT5.LastSaveFile;
 			string strWaterMarkFile = @"C:\Temp\watermark.jpg";
@@ -123,7 +123,7 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
 			}
 			*/
 
-            /*
+			/*
 			// 텍스트 워터마크
 			string strSourceFile = DEXT5.LastSaveFile;
 			DEXT5.SetFontInfo("굴림", 50, "FF00FF");
@@ -153,8 +153,8 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
                 string strLastError = DEXT5.LastErrorMessage;
             }
             */
-
-            /*
+			
+			/*
 			// 이미지 세로(Height) 크기
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.GetImageHeight(strSourceFile);
@@ -164,7 +164,7 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
 			}
 			*/
 
-            /*
+			/*
 			// 이미지 Format 정보
 			string strSourceFile = DEXT5.LastSaveFile;
 			string rtn_value = DEXT5.GetImageFormat(strSourceFile);
@@ -175,7 +175,7 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
 			*/
 
 
-            /*
+			/*
 			// 이미지 파일 크기
 			string strSourceFile = DEXT5.LastSaveFile;
 			long rtn_value = DEXT5.GetImageFileSize(strSourceFile);
@@ -184,8 +184,8 @@ public class upload_handler : IHttpHandler, IRequiresSessionState
 				string strLastError = DEXT5.LastErrorMessage;
 			}
 			*/
-
-            /*
+			
+			/*
 			// 파일 삭제
 			string strSourceFile = DEXT5.LastSaveFile;
 			int rtn_value = DEXT5.DeleteFile(strSourceFile, false);

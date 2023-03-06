@@ -1,6 +1,6 @@
 ﻿<html>
 <head>
-    <title>DEXT5 Upload with nexacro Runtime</title>
+	<title>RAONWIZ with nexacro Runtime</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Pragma" content="no-cache">
@@ -37,7 +37,23 @@
 		function fn_transfer_complete_done(uploadID) {
 			fn_GetFileInfo(uploadID);
 		}
-		
+
+		function fn_InitGlobalVar() {
+            G_GetNewUploadListForText_ResultObj = null;
+            G_GetSelectedNewUploadListForText_ResultObj = null;
+            G_GetAllFileListForText_ResultObj = null;
+            G_GetSelectedAllFileListForText_ResultObj = null;
+            G_GetAllFileMergeListForText_ResultObj = null;
+            G_GetDeleteListForText = null;
+
+            G_GetNewUploadListForJson_ResultObj = null;
+            G_GetSelectedNewUploadListForJson_ResultObj = null;
+            G_GetAllFileListForJson_ResultObj = null;
+            G_GetSelectedAllFileListForJson_ResultObj = null;
+            G_GetAllFileMergeListForJson_ResultObj = null;
+            G_GetDeleteListForJson_ResultObj = null;
+		}
+
 		function fn_GetFileInfo(uploadID) {
 			G_GetNewUploadListForText_ResultObj = DEXT5UPLOAD.GetNewUploadListForText(uploadID);
 			G_GetSelectedNewUploadListForText_ResultObj = DEXT5UPLOAD.GetSelectedNewUploadListForText(uploadID);
@@ -104,6 +120,18 @@
 		}
 		
 		// 파일 다운로드 이벤트
+        // download
+        function DEXT5UPLOAD_BeforeFileViewOrOpen( uploadID, strWebFile, strItemKey, strItemOrgName, strItemUrlOrPath, strLargeFile ) {
+            fn_InitGlobalVar();
+
+            return true;
+        }
+        function DEXT5UPLOAD_BeforeFileDownload( uploadID, nWebFile, strItemKey, strItemOrgName, strItemUrlOrPath, largeFiles, isLastEvent ) {
+            fn_InitGlobalVar();
+
+            return true;
+		}
+		
 		function DEXT5UPLOAD_AfterDownload(uploadID, strDownloadPath, nViewOrSave) {
 			G_EventReturnValue = {strDownloadPath: strDownloadPath, nViewOrSave: nViewOrSave};
 			
@@ -118,19 +146,7 @@
 		
 		// 변수 초기화
 		function DEXT5UPLOAD_OnTransfer_Start(uploadID) {
-			G_GetNewUploadListForText_ResultObj = null;
-			G_GetSelectedNewUploadListForText_ResultObj = null;
-			G_GetAllFileListForText_ResultObj = null;
-			G_GetSelectedAllFileListForText_ResultObj = null;
-			G_GetAllFileMergeListForText_ResultObj = null;
-			G_GetDeleteListForText = null;
-		
-			G_GetNewUploadListForJson_ResultObj = null;
-			G_GetSelectedNewUploadListForJson_ResultObj = null;
-			G_GetAllFileListForJson_ResultObj = null;
-			G_GetSelectedAllFileListForJson_ResultObj = null;
-			G_GetAllFileMergeListForJson_ResultObj = null;
-			G_GetDeleteListForJson_ResultObj = null;
+			fn_InitGlobalVar();
 		
 			return true;
 		}
@@ -147,6 +163,11 @@
             G_EventReturnValue = data;
 
             fn_onusernotify("DEXT5UPLOAD_OnAddFileProcessing");
+		}
+
+        function fn_ResetUpload( uploadID ) {
+            DEXT5UPLOAD.ResetUpload( uploadID );
+            ( typeof fn_InitGlobalVar === 'function' ) && ( fn_InitGlobalVar() );
         }
     </script>
 </head>		

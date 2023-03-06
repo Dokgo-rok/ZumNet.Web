@@ -65,11 +65,13 @@ $(function () {
                 var vId = n.id.split('.');
 
                 if (vId[vId.length - 1] == _zw.V.fdid) return false;
+                //console.log('changed.jstree => ' + d.selected.length)
 
                 _zw.fn.clickTreeNode(d, n);
             }
         })
         .on("select_node.jstree", function (e, d) {
+            //console.log('select_node.jstree')
             var n = d.instance.get_node(d.selected);
             _zw.fn.clickTreeNode(d, n);
         })
@@ -362,6 +364,27 @@ $(function () {
                     } else {
                         encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + ft + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                         window.location.href = '/ExS/PQm?qi=' + encodeURIComponent(encQi);
+                    }
+
+                } else if (n.a_attr.url.toLowerCase().indexOf('extensionservice/num') >= 0) { //Num
+                    var vUrl = n.a_attr.url.split('?');
+                    var ft = vUrl[vUrl.length - 1].split('=')[1].toUpperCase(); //alert(ft); return
+
+                    if (_zw.V.current.page.toLowerCase() == '/exs/num') {
+                        _zw.V.ot = n.li_attr.objecttype;
+                        _zw.V.alias = n.li_attr.alias;
+                        _zw.V.xfalias = n.li_attr.xfalias;
+                        _zw.V.fdid = vId[vId.length - 1];
+                        _zw.V.current.acl = n.li_attr.acl;
+                        _zw.V.opnode = n.id;
+                        _zw.V.ft = ft;
+                        _zw.V.ttl = ttl;
+
+                        _zw.fn.initLv(_zw.V.current.urid);
+                        _zw.fn.loadList();
+                    } else {
+                        encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + ft + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                        window.location.href = '/ExS/Num?qi=' + encodeURIComponent(encQi);
                     }
 
                 } else if (n.a_attr.url.toLowerCase().indexOf('extensionservice/voc') >= 0) { //VOC

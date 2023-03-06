@@ -15,15 +15,26 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <script type="text/javascript">
         var imageType, tempScale, previewX, previewY;
+        function page_loaded_event() {
+            if (Dext5LayerWin._dext_editor._config.keepImageOriginalSizeAutoCheck == 1) {
+                document.getElementById('lock_origin_size').checked = true;
+                document.getElementById('image_width').disabled = true;
+                document.getElementById('image_height').disabled = true;
+
+            }
+        }
     </script>
 </head>
-<body style="margin:0; padding:0;" onload="paste_to_image_loaded_event()">
+<body style="margin:0; padding:0;" onload="page_loaded_event(); paste_to_image_loaded_event(); page_dialog_loaded_event();">
     <div class="" id="dext_dialog_box">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -100,7 +111,7 @@
                         </ul>-->
                                     </div>
                                 </li>
-                                <li class="Li"><input type="checkbox" id="lock_size_rate" checked="checked" /><label for="lock_size_rate" id="label_lock_size_rate">너비/높이 비율유지</label></li>
+                                <li class="Li"><input type="checkbox" id="lock_size_rate" checked="checked" /><label style="vertical-align:middle;" for="lock_size_rate" id="label_lock_size_rate">너비/높이 비율유지</label></li>
                                 <li class="LI" style="text-align:right"><a href="javascript:void(0);"><span id="span_origin_size">원래크기</span></a></li>
                             </ul>
                         </fieldset>

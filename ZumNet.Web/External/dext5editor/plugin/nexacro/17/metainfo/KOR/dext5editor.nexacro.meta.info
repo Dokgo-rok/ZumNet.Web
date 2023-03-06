@@ -621,6 +621,174 @@
 				requirement="" csspropertyname="" csselementname=""
 				normalpropertyname="DisplayFontFamilyList"
 				description="폰트 리스트 콤보박스에 표시할 이름 설정을 설정합니다. &#10;예) '맑은 고딕|A체,굴림|B체'" />
+		<Property name="RulerUse"
+					edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+					readonly="false" initonly="false" hidden="false" control="false"
+					style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+					enuminfo="enum_RulerUse" enuminfo2="" delimiter="" unitinfo=""
+					requirement="" csspropertyname="" csselementname=""
+					normalpropertyname="RulerUse"
+					description="가로 눈금자 표시 사용여부를 설정합니다. &#10;1(기본값) : 사용&#10;0 : 사용안함" />
+		<Property name="RulerInitPosition"
+					edittype="String" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+					readonly="false" initonly="false" hidden="false" control="false"
+					style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+					enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+					requirement="" csspropertyname="" csselementname=""
+					normalpropertyname="RulerInitPosition"
+					description="눈금자 포인터의 위치 값(픽셀)을 설정합니다. &#10;기본값 : '680px'" />
+		<Property name="RulerViewPointer"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerViewPointer" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerViewPointer"
+				description="눈금자 포인터 아이콘 표시 사용여부를 설정합니다. &#10;1(기본값) : 사용&#10;0 : 사용안함." />
+		<Property name="RulerViewGuideLine"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerViewGuideLine" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerViewGuideLine"
+				description="에디터 작성 영역에 눈금자 포인터 기준선(세로) 표시 사용여부를 설정합니다. &#10;1(기본값) : 사용&#10;0 : 사용안함" />
+		<Property name="RulerGuideLineStyle"
+				edittype="String" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerGuideLineStyle"
+				description="에디터 작성 영역에 눈금자 포인터 기준선(세로) 스타일을 설정합니다. css style 값을 넣어주시면 됩니다.&#10; 기본값 : dotted" />
+		<Property name="RulerViewRuler"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerViewRuler" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerViewRuler"
+				description="에디터 작성 영역 상단에 눈금자 이미지 표시 사용여부를 설정합니다. &#10;1(기본값) : 사용&#10;0 : 사용안함" />
+		<Property name="RulerMode"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerMode" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerMode"
+				description="룰러 모드를 설정합니다.&#10;1(기본값) : '1'모드 사용&#10;2 : '2'모드 사용" />
+		<Property name="RulerGuideLineColor"
+				edittype="String" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerGuideLineColor"
+				description="에디터 작성 영역에 눈금자 포인터 기준선(세로)의 색상을 설정합니다. &#10;기본값 : rgb(255, 0, 0)" />
+		<Property name="RulerMoveGuideLineColor"
+				edittype="String" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerMoveGuideLineColor"
+				description="룰러 모드 2에서 움직이는 가이드 라인의 색상을 설정합니다. &#10;기본값 : #666666" />
+		<Property name="RulerMoveGuideLineStyle"
+				edittype="String" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerMoveGuideLineStyle"
+				description="룰러 모드 2에서 움직이는 가이드 라인의 스타일을 설정합니다. &#10;기본값 : dotted" />
+		<Property name="RulerUseInoutdent"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerUseInoutdent" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerUseInoutdent"
+				description="룰러 모드 2에서 가이드 라인 이동 시 들여쓰기 적용을 설정합니다. &#10;1(기본값) : 적용, &#10;0 : 미적용" />
+		<Property name="RulerMoveGap"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerMoveGap" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerMoveGap"
+				description="룰러 모드 2에서 눈금자 이동 간격 설정합니다. &#10;1(기본값) : 적용, &#10;0 : 미적용" />
+		<Property name="RulerUseResizeEvent"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerUseResizeEvent" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerUseResizeEvent"
+				description="ruler mode 2일때 에디터 resize 이벤트에서 ruler 위치 조정을 할지 말지에 대한 설정합니다. &#10;1(기본값) : 적용, &#10;0 : 미적용" />
+		<Property name="RulerDefaultView"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerDefaultView" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerDefaultView"
+				description="눈금자 보이게 혹은 안 보이게 설정합니다. &#10;1(기본값) : 보이게 설정, &#10;0 : 안 보이게 설정" />
+		<Property name="RulerAutoFitMode"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerAutoFitMode" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerAutoFitMode"
+				description="에디터 크기에 맞게 body 크기를 동적으로 맞춰주도록 설정합니다. &#10;1 : 사용, &#10;0(기본값) : 미사용" />
+		<Property name="RulerFixEditorWidth"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerFixEditorWidth" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerFixEditorWidth"
+				description="AutoFitMode가 1인 경우, 에디터 body에 width값을 style로 넣어주도록 설정합니다. &#10;1(기본값) : 적용, &#10;0 : 미적용" />
+		<Property name="RulerUseVertical"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerUseVertical" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerUseVertical"
+				description="수직 눈금자를 설정합니다. &#10;1 : 사용, &#10;0(기본값) : 미사용" />
+		<Property name="RulerUseMouseGuide"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_RulerUseMouseGuide" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="RulerUseMouseGuide"
+				description="룰러 모드 2인 경우 마우스 가이드를 설정합니다. &#10;1 : 적용, &#10;0(기본값) : 미적용" />
+		<Property name="DialogWindowScroll"
+				edittype="Enum" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+				readonly="false" initonly="false" hidden="false" control="false"
+				style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+				enuminfo="enum_DialogWindowScroll" enuminfo2="" delimiter="" unitinfo=""
+				requirement="" csspropertyname="" csselementname=""
+				normalpropertyname="DialogScroll"
+				description="넥사크로 전용 모듈 사용 시에만 다이얼로그 창이 에디터 화면보다 작을 때 스크롤이 활성화 됩니다. &#10;1 : 적용, &#10;0(기본값) : 미적용" />
+	  <Property name="DialogBorderRadius"
+		    	edittype="String" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+			    readonly="false" initonly="false" hidden="false" control="false"
+			    style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+			    enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+			    requirement="" csspropertyname="" csselementname=""
+			    normalpropertyname="DialogBorderRadius"
+			    description="다이얼로그의 BorderRadius 스타일을 설정합니다. &#10;예) 10px" />
+	  <Property name="DialogBoxShadow"
+			    edittype="String" group="DEXT5Editor_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+			    readonly="false" initonly="false" hidden="false" control="false"
+			    style="false" expr="false" deprecated="false" unused="false" objectinfo=""
+			    enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+			    requirement="" csspropertyname="" csselementname=""
+			    normalpropertyname="DialogBoxShadow"
+			    description="다이얼로그의 BoxShadow 스타일을 설정합니다. &#10;예) 1px 1px 9px 5px rgb(0 0 0 / 20%)" />
     </PropertyInfo>
 
     <CSSInfo>
@@ -1367,6 +1535,30 @@
           </Arguments>
         </Syntax>
       </Method>
+      <Method name="GetStatusBarMode" group="RaonkEditor_Method" async="false"
+				deprecated="false" usecontextmenu="false" unused="false"
+				requirement="" description="현재 선택되어 있는 status bar 모드를 반환합니다.">
+        <Syntax text="GetStatusBarMode()">
+          <Return />
+        </Syntax>
+      </Method>
+      <Method name="ReplaceAllContents" group="DEXT5Editor_Method" async="false" deprecated="false" usecontextmenu="false" unused="false"
+				requirement="" description="에디터에 작성된 내용 중 변경할 수 있습니다.">
+        <Syntax text="ReplaceAllContents(options)">
+          <Return />
+          <Arguments>
+            <Argument name="options" type="object" in="true" out="false"
+					option="false" variable="false" description="param object" />
+          </Arguments>
+        </Syntax>
+      </Method>
+      <Method name="GetForbiddenWordValidation" group="DEXT5Editor_Method" async="false"
+				deprecated="false" usecontextmenu="false" unused="false"
+				requirement="" description="에디터의 작성영역에 금지어가 존재하는지 여부를 확인합니다.">
+        <Syntax text="GetForbiddenWordValidation()">
+          <Return />
+        </Syntax>
+      </Method>
     </MethodInfo>
     
     <EventHandlerInfo>
@@ -1391,10 +1583,10 @@
           </Arguments>
         </Syntax>
       </EventHandler>
-      <EventHandler name="dext_editor_onusernotify" group="DEXT5EditorEvent" deprecated="false" unused="false"
+      <EventHandler name="dext_editor_onusernotify" group="DEXT5Editor_Event" deprecated="false" unused="false"
                     requirement="IE8,IE9,IE10,IE11,Chrome,Safari,Firefox,Opera,Windows nexacro Browser,macOS nexacro Browser,Android nexacro Browser,iOS nexacro Browser,Android Default Web Browser,iOS Default Web Browser"
                     description="안드로이드 앱 실행환경에서 get API 호출시 결과 값 Return. ">
-        <Syntax text="dext_editor_before_loaded_event(obj:ReturnValue)">
+        <Syntax text="dext_editor_onusernotify(obj:nexacro.DEXT5Editor, evtInfo:nexacro.Dext5EditorEventInfo)">
           <Return />
           <Arguments>
             <Argument name="obj" type="Object" in="true" out="false" option="false" variable="false" description="DEXT5Editor" />

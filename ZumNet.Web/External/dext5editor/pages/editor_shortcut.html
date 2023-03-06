@@ -16,12 +16,15 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <script type="text/javascript">
-        function load_page() {
+        function page_loaded_event() {
             var _skin_name = LayerWin._dext_editor._config.style.skinName;
             if (DEXTTOP.DEXT5.browser.mobile) { // mobile 환경에서 UI 개선junmo 19.05.22
                 document.getElementById("dext_dialog_box").className = 'DEXT_fiVe_ED_Popup_Type03 DEXT_fiVe_PUi_' + _skin_name;
@@ -63,6 +66,7 @@
             document.getElementById('cmd_span13').innerHTML = LayerWin.dext5_lang.shortkey.cmd_span13;
             document.getElementById('cmd_span14').innerHTML = LayerWin.dext5_lang.shortkey.cmd_span14;
             document.getElementById('cmd_span15').innerHTML = LayerWin.dext5_lang.shortkey.cmd_span15;
+            document.getElementById('cmd_span16').innerHTML = LayerWin.dext5_lang.shortkey.cmd_span16;
 
             document.getElementById('tablekey').innerHTML = LayerWin.dext5_lang.shortkey.table_key;
             document.getElementById('table_span1').innerHTML = LayerWin.dext5_lang.shortkey.table_span1;
@@ -98,7 +102,7 @@
         }
     </script>
 </head>
-<body style="margin:0px; padding:0px;" onload="load_page();">
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();">
     <div class="DEXT_fiVe_ED_Popup_Type02 DEXT_fiVe_PUi_green" id="dext_dialog_box">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -157,6 +161,7 @@
                     <span id="cmd_span13"></span><br />
                     <span id="cmd_span14"></span><br />
                     <span id="cmd_span15"></span><br />
+                    <span id="cmd_span16"></span><br />
                 </div>
                 <div class="con" style="line-height:18px">
                     <span><b id="tablekey"></b></span><br /><br />

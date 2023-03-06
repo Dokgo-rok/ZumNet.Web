@@ -16,8 +16,11 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <script type="text/javascript">
@@ -56,7 +59,20 @@
             var xhr_config = DEXTTOP.DEXT5.util.ajax.xml_http_request();
             xhr_config.onreadystatechange = function (e) {
                 if (xhr_config.readyState == 4) {
-                    if (xhr_config.status == 200) { var xml_doc = xhr_config.responseXML; setFormList(xml_doc) }
+                    if (xhr_config.status == 200) {
+                        var xml_doc = xhr_config.responseXML;
+                        if (xml_doc == null || xml_doc.xml == '') {
+                            xml_doc = DEXTTOP.DEXT5.util.stringToXML(xhr_config.responseText);
+                        }
+
+                        if (xml_doc == null || xml_doc.xml == '') {
+                            alert("ErrCode : 1003");
+
+                        } else {
+                            setFormList(xml_doc);
+                        }
+
+                    }
                     else if (xhr_config.status == 404) { alert("ErrCode : 1003"); }
                 }
             };
@@ -250,7 +266,7 @@
         }
     </script>
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event()" class="DEXT_sEleCt_none" unselectable="on" onselectstart="return false;">
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();" class="DEXT_sEleCt_none" unselectable="on" onselectstart="return false;">
     <div class="editor_popup" id="dext_dialog_box">
         <input type="hidden" id="clicked_template" />
         <input type="hidden" id="template_print_header" />

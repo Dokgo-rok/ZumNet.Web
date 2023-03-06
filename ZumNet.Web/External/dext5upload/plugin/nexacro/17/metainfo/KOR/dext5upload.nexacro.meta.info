@@ -564,7 +564,7 @@
 			  requirement="" csspropertyname="" csselementname="" normalpropertyname="Html4LimitFileSize"
 			  description="HTML4모드인 경우 서버에서 개별 파일 Max Size Check 여부를 설정합니다. 기본값은 '0' 서버에서 개별 파일 Max Size Check를 하지 않고, '1'로 설정시 서버에서 개별 파일 Max Size Check함 " />
       <Property name="ChunkSize"
-			  edittype="String" group="DEXT5Upload_Url" subgroup="Url" refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+			  edittype="String" group="DEXT5Upload_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
 			  readonly="false" initonly="false" hidden="false" control="false" style="false" expr="false" deprecated="false"
 			  unused="false" objectinfo="" enuminfo="" enuminfo2="" delimiter="" unitinfo=""
 			  requirement="" csspropertyname="" csselementname="" normalpropertyname="ChunkSize"
@@ -629,6 +629,12 @@
        unused="false" objectinfo="" enuminfo="" enuminfo2="" delimiter="" unitinfo=""
        requirement="" csspropertyname="" csselementname="" normalpropertyname="UseLongPath"
        description="긴 경로 다운로드를 허용하도록 설정 합니다." />
+      <Property name="ZipFileNameUserSettingMode"
+       edittype="String" group="DEXT5Upload_Misc." subgroup="Misc." refreshinfo="" bind="false" mandatory="false" defaultvalue=""
+       readonly="false" initonly="false" hidden="false" control="false" style="false" expr="false" deprecated="false"
+       unused="false" objectinfo="" enuminfo="" enuminfo2="" delimiter="" unitinfo=""
+       requirement="" csspropertyname="" csselementname="" normalpropertyname="ZipFileNameUserSettingMode"
+       description="[html5] 여러 파일 다운로드 시 zip 파일명을 사용자가 설정할 수 있도록 설정" />
     </PropertyInfo>
 
     <CSSInfo>
@@ -1398,6 +1404,17 @@
       </EventHandler>
 
       <!-- add file -->
+      <EventHandler name="DEXT5UPLOAD_InitAddAllFile" group="DEXT5Upload_Event" deprecated="false" unused="false"
+                      requirement="IE8,IE9,IE10,IE11,Chrome,Safari,Firefox,Opera,Windows nexacro Browser,macOS nexacro Browser,Android nexacro Browser,iOS nexacro Browser,Android Default Web Browser,iOS Default Web Browser"
+                      description="Upload에 추가할 파일을 재정의 할 수 있는 있도록 모든 파일 추가 전에 발생하는 이벤트입니다. 추가할 파일의 리스트를 return 합니다.">
+        <Syntax text="DEXT5UPLOAD_InitAddAllFile(obj:nexacro.DEXT5Upload, paramObj:nexacro.DEXT5UploadEventInfo);">
+			<Return type="Array" description="추가할 파일의 리스트를 return 합니다." />
+          <Arguments>
+            <Argument name="obj" type="Object" in="true" out="false" option="false" variable="false" description="DEXT5Upload" />
+            <Argument name="paramObj" type="Object" in="true" out="false" option="false" variable="false" description="DEXT5UploadEventInfo" />
+          </Arguments>
+        </Syntax>
+      </EventHandler>
       <EventHandler name="DEXT5UPLOAD_BeforeAddItem" group="DEXT5Upload_Event" deprecated="false" unused="false"
                       requirement="IE8,IE9,IE10,IE11,Chrome,Safari,Firefox,Opera,Windows nexacro Browser,macOS nexacro Browser,Android nexacro Browser,iOS nexacro Browser,Android Default Web Browser,iOS Default Web Browser"
                       description="Upload에 파일이 추가 되기전에 발생하는 이벤트입니다. 파일의 추가 여부를 return true / false 로 설정합니다.">

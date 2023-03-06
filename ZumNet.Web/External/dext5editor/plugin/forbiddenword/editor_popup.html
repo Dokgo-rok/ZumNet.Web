@@ -13,9 +13,9 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="../' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer  + '" rel="stylesheet" type="text/css" />');
-        document.write('<link href="css' + (DEXTTOP.DEXT5.isRelease ? "" : "_dev") + '/popup.css?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="../' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="../' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp  + '" rel="stylesheet" type="text/css" />');
+        document.write('<link href="css' + (DEXTTOP.DEXT5.isRelease ? "" : "_dev") + '/popup.css?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        document.write('<scr' + 'ipt src="../' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <script type="text/javascript">
@@ -49,7 +49,7 @@
             var initHtml = '<!DOCTYPE html>\n';
             initHtml += '<html>';
             initHtml += '<head>';
-            initHtml += '<link href="css' + (DEXTTOP.DEXT5.isRelease ? "" : "_dev") + '/popup.css?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />';
+            initHtml += '<link href="css' + (DEXTTOP.DEXT5.isRelease ? "" : "_dev") + '/popup.css?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />';
             initHtml += '<style type="text/css">'
             initHtml += 'body { cursor: text; font-family: ' + LayerWin.changeFontFamily(DEXTTOP.G_CURREDITOR._setting['font_family']) + '; font-size: ' + DEXTTOP.G_CURREDITOR._setting['font_size'] + '; ' + strImemode + ' word-break: ' + DEXTTOP.G_CURREDITOR._setting['word_break_type'] + '; word-wrap: ' + DEXTTOP.G_CURREDITOR._setting['word_wrap_type'] + '; } ';
             initHtml += 'body p { line-height:' + DEXTTOP.G_CURREDITOR._setting['line_height'] + '; margin-top:' + DEXTTOP.G_CURREDITOR._config.defaultFontMarginTop + '; margin-bottom:' + DEXTTOP.G_CURREDITOR._config.defaultFontMarginBottom + '; }';

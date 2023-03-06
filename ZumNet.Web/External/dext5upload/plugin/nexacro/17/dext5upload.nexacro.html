@@ -1,6 +1,6 @@
 ﻿<html>
 <head>
-    <title>DEXT5 Upload with nexacro 17 Runtime</title>
+    <title>RAONWIZ with nexacro Runtime</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Pragma" content="no-cache">
@@ -60,7 +60,10 @@
             G_GetAllFileListForJson_ResultObj = DEXT5UPLOAD.GetAllFileListForJson(uploadID);
             G_GetAllFileListForText_ResultObj = DEXT5UPLOAD.GetAllFileListForText(uploadID);
             G_GetAllFileMergeListForJson_ResultObj = DEXT5UPLOAD.GetAllFileMergeListForJson(uploadID);
-            G_GetAllFileMergeListForText_ResultObj = DEXT5UPLOAD.GetAllFileMergeListForText(uploadID);
+            G_GetAllFileMergeListForText_ResultObj = DEXT5UPLOAD.GetAllFileMergeListForText( uploadID );
+
+            G_GetDeleteListForJson_ResultObj = DEXT5UPLOAD.GetDeleteListForJson( uploadID );
+            G_GetDeleteListForText_ResultObj = DEXT5UPLOAD.GetDeleteListForText( uploadID );
 
             isAndroid && window.NEXACROHTML.FireUserNotify("DEXT5UPLOAD_GetFileInfo#|" + JSON.stringify({
                 "G_GetNewUploadListForJson_ResultObj": G_GetNewUploadListForJson_ResultObj,
@@ -247,7 +250,12 @@
             args = args.split(",");
             var apiName = args[0];
             var returnValue = DEXT5UPLOAD[apiName](decodeURIComponent(args[1]), decodeURIComponent(args[2]), decodeURIComponent(args[3]), decodeURIComponent(args[4]), decodeURIComponent(args[5]), decodeURIComponent(args[6]), decodeURIComponent(args[7]), decodeURIComponent(args[8]), decodeURIComponent(args[9]));
-        }        
+        }
+
+        function fn_ResetUpload( uploadID ) {
+            DEXT5UPLOAD.ResetUpload( uploadID );
+            ( typeof fn_InitGlobalVar === 'function' ) && ( fn_InitGlobalVar() );
+        }
     </script>
 </head>
 <body onload="fn_bodyOnload();" style="padding:0; margin:0; height:100%; text-align: center; overflow: hidden; border: 0;">

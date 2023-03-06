@@ -16,8 +16,11 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <style type="text/css">
@@ -195,6 +198,35 @@
         }
 
         function setPage() {
+            // 문단 속성 단위 추가 by gipyeong 22.06.10 (아시아나 IDT)
+            var td_text_indent_type = document.getElementById("td_text_indent_type");
+            var td_margin_left_type = document.getElementById("td_margin_left_type");
+            var td_margin_right_type = document.getElementById("td_margin_right_type");
+            var td_margin_top_type = document.getElementById("td_margin_top_type");
+            var td_margin_bottom_type = document.getElementById("td_margin_bottom_type");
+
+            var arrElem = [td_text_indent_type, td_margin_left_type, td_margin_right_type, td_margin_top_type, td_margin_bottom_type];
+
+            if (Object.prototype.toString.call(DEXTTOP.G_CURREDITOR._config.paragraphAttributeType) === "[object Array]") {
+                var type = DEXTTOP.G_CURREDITOR._config.paragraphAttributeType;
+
+                for (var i = 0; i < arrElem.length; i++) {            
+                    var select = document.createElement("select");
+                    select.id = 'p_' + arrElem[i].id.substring(3);
+                    
+                    for (var j = 0; j < type.length; j++) {
+                        var opt = document.createElement("option");
+                        opt.innerText = type[j];
+                        opt.value = type[j];
+                        select.appendChild(opt);
+                    }
+                    arrElem[i].appendChild(select);
+                }
+            } else {
+                for (var i = 0; i < arrElem.length; i++) {
+                    arrElem[i].innerHTML = DEXTTOP.G_CURREDITOR._config.paragraphAttributeType;
+                }
+            }
             setFontFamilySelect();
             setParagraphAttribute();
         }
@@ -258,7 +290,23 @@
                 } catch (e) {
                     currFontFamily = DEXTTOP.DEXT5.util.getStyle(elemModify, "fontFamily");
                 }
+                // 문단 속성 단위 추가 by gipyeong 22.06.10 (아시아나 IDT)
+                var setAttribute = function (node, attr) {
+                    var currSize = '';
+                    var type = '';
+                    
+                    if (elemModify && elemModify.style && elemModify.style[attr]) {
+                        var styleSize = elemModify.style[attr];
+                        var currSize = DEXTTOP.DEXT5.util.parseIntOr0(styleSize);
+                        type = styleSize.substring(styleSize.indexOf(currSize.toString()) + currSize.toString().length);
 
+                        for (var i = 0; i < node.options.length; i++) {
+                            if (type == node.options[i].value) {
+                                node.options[i].selected = true;
+                            }
+                        }
+                    }
+                }
                 //문단 속성 fontType('px')추가 by dahyun 2019.07.22
                 var currFontSize = "";
                 var SizeType = "";
@@ -308,13 +356,28 @@
                 }
                 document.getElementById('p_margin_bottom').value = _tempMarginBottom;
 
+                // 문단 속성 단위 추가 by gipyeong 22.06.10 (아시아나 IDT)
+                if (Object.prototype.toString.call(DEXTTOP.G_CURREDITOR._config.paragraphAttributeType) === "[object Array]") {
+                    var p_text_indent_type = document.getElementById("p_text_indent_type");
+                    var p_margin_left_type = document.getElementById("p_margin_left_type");
+                    var p_margin_right_type = document.getElementById("p_margin_right_type");
+                    var p_margin_top_type = document.getElementById("p_margin_top_type");
+                    var p_margin_bottom_type = document.getElementById("p_margin_bottom_type");
+
+                    setAttribute(p_text_indent_type, 'textIndent');
+                    setAttribute(p_margin_left_type, 'marginLeft');
+                    setAttribute(p_margin_right_type, 'marginRight');
+                    setAttribute(p_margin_top_type, 'marginTop');
+                    setAttribute(p_margin_bottom_type, 'marginBottom');
+                } 
+
                 document.getElementById('p_letter_spacing').value = elemModify.style.letterSpacing == '' ? '' : DEXTTOP.DEXT5.util.parseIntOr0(elemModify.style.letterSpacing);
                 document.getElementById('p_word_spacing').value = elemModify.style.wordSpacing == '' ? '' : DEXTTOP.DEXT5.util.parseIntOr0(elemModify.style.wordSpacing);
             }
         }
     </script>
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event()">
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();">
     <div id="editor_popup_input" class="editor_popup">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -330,11 +393,11 @@
                 <div class="con border">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td width="20%"><label for="font_family_select" id="label_font_family">글꼴</label></td>
+                            <td width="18%"><label for="font_family_select" id="label_font_family">글꼴</label></td>
                             <td width="30%">
                                 <select id="font_family_select" style="width: 90px;"></select>
                             </td>
-                            <td><label for="p_font_size" id="label_font_size">글꼴 크기</label></td>
+                            <td width="22%"><label for="p_font_size" id="label_font_size">글꼴 크기</label></td>
                             <td>
                                 <table style="line-height: normal; table-layout: auto; width:100% !important;" cellpadding="0" cellspacing="0">
                                     <tbody>
@@ -374,7 +437,7 @@
                                                     </ul>
                                                 </div>
                                             </td>
-                                            <td>px</td>
+                                            <td id="td_text_indent_type"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -387,7 +450,7 @@
                 <div class="con border">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td width="20%"><label for="p_margin_left" id="label_margin_left">좌여백</label></td>
+                            <td width="18%"><label for="p_margin_left" id="label_margin_left">좌여백</label></td>
                             <td width="30%">
                                 <table style="line-height: normal; table-layout: auto; width:100% !important;" cellpadding="0" cellspacing="0">
                                     <tbody>
@@ -401,12 +464,12 @@
                                                     </ul>
                                                 </div>
                                             </td>
-                                            <td>px</td>
+                                            <td id="td_margin_left_type"></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </td>
-                            <td><label for="p_margin_right" id="label_margin_right">우여백</label></td>
+                            <td width="22%"><label for="p_margin_right" id="label_margin_right">우여백</label></td>
                             <td>
                                 <table style="line-height: normal; table-layout: auto; width:100% !important;" cellpadding="0" cellspacing="0">
                                     <tbody>
@@ -420,7 +483,7 @@
                                                     </ul>
                                                 </div>
                                             </td>
-                                            <td>px</td>
+                                            <td id="td_margin_right_type"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -441,7 +504,7 @@
                                                     </ul>
                                                 </div>
                                             </td>
-                                            <td>px</td>
+                                            <td id="td_margin_top_type"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -460,7 +523,7 @@
                                                     </ul>
                                                 </div>
                                             </td>
-                                            <td>px</td>
+                                            <td id="td_margin_bottom_type"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -471,7 +534,7 @@
                 <div class="con">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td width="20%"><label for="p_letter_spacing" id="label_letter_spacing">글자간격</label></td>
+                            <td width="18%"><label for="p_letter_spacing" id="label_letter_spacing">글자간격</label></td>
                             <td width="30%">
                                 <table style="line-height: normal; table-layout: auto; width:100% !important;" cellpadding="0" cellspacing="0">
                                     <tbody>
@@ -490,7 +553,7 @@
                                     </tbody>
                                 </table>
                             </td>
-                            <td><label for="p_word_spacing" id="label_word_spacing">단어간격</label></td>
+                            <td width="22%"><label for="p_word_spacing" id="label_word_spacing">단어간격</label></td>
                             <td>
                                 <table style="line-height: normal; table-layout: auto; width:100% !important;" cellpadding="0" cellspacing="0">
                                     <tbody>

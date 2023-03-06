@@ -15,8 +15,11 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <style type="text/css">
@@ -117,7 +120,7 @@
 
 	</script>
 </head>
-<body style="margin:0px; padding:0px;" onload="page_loaded_event()" >
+<body style="margin:0px; padding:0px;" onload="page_loaded_event(); page_dialog_loaded_event();">
     <div id="editor_popup_input" class="editor_popup">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -192,11 +195,11 @@
                         <tr>
                             <td colspan="2">
                                 <input id="input_disabled" type="checkbox"/>
-                                <label id="label_disabled" for="input_disabled"></label>
+                                <label style="vertical-align:middle;" id="label_disabled" for="input_disabled"></label>
                             </td>
                             <td colspan="2">
                                 <input id="input_readonly" type="checkbox"/>
-                                <label id="label_readonly" for="input_readonly"></label>
+                                <label style="vertical-align:middle;" id="label_readonly" for="input_readonly"></label>
                             </td>
                         </tr>
                     </table>

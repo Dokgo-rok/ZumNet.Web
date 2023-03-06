@@ -16,15 +16,18 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
         
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <script type="text/javascript">
-        document.write('<scr' + 'ipt src="' + LayerWin._dext_editor._config.symbolUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="' + LayerWin._dext_editor._config.symbolUrl + '" type="text/javascript"><\/scr' + 'ipt>');
         if (LayerWin._dext_editor._config.symbolCustomCssUrl != '') {
             var customCss = DEXTTOP.DEXT5.util.setProtocolBaseDomainURL(LayerWin._dext_editor._config.symbolCustomCssUrl);
-            document.write('<link href="' + customCss + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
+            document.write('<link href="' + customCss + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
         }
 
         var G_BASE_SYMBOL_RECENTLY = [];
@@ -374,7 +377,7 @@
         }
     </script>
 </head>
-<body style="margin:0px; padding:0px; " onload="javascript:page_loaded_event();">
+<body style="margin:0px; padding:0px; " onload="page_loaded_event(); page_dialog_loaded_event();">
     <div class="" id="dext_dialog_box">
         <!-- Header -->
         <div class="EdiTor_Popup_header">

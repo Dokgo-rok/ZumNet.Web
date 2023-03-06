@@ -3,8 +3,8 @@
 <head>
     <title>Release</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <script src="../config/dext_lang.js?ver=3.5.1540896.1106.01" type="text/javascript"></script>
-    <script src="../config/editor_crossdomain_config.js?ver=3.5.1540896.1106.01" type="text/javascript"></script>
+    <script src="../config/dext_lang.js?t=1772563101" type="text/javascript"></script>
+    <script src="../config/editor_crossdomain_config.js?t=1772563101" type="text/javascript"></script>
     <script type="text/javascript">
         var isNeedRefresh = true;
 
@@ -104,18 +104,27 @@
                     _dext_editor = new DEXT5_EDITOR(_editor_id, _config, _frame); _frame.editor = _dext_editor; _dext_editor.start();
 
                     if (_config.sourceViewtype == "3") {
-                        loadJavascript("../js/editor_pretty.min.js?ver=" + DEXTTOP.DEXT5.ReleaseVer);
+                        loadJavascript("../js/editor_pretty.min.js?t=" + DEXTTOP.DEXT5.UrlStamp);
                     }
 
                     if (_config.personalData.toLowerCase().indexOf('custom') > -1) {
-                        loadJavascript("../config/dext_personal_data.js?ver=" + DEXTTOP.DEXT5.ReleaseVer);
+                        loadJavascript("../config/dext_personal_data.js?t=" + DEXTTOP.DEXT5.UrlStamp);
                     }
+
+                    if (_config.security.fileExtensionDetector && _config.security.fileExtensionDetector != '0') {
+                        loadJavascript(_config.detectJSUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp);
+                    }
+
+                    if (_config.usePasteToolbarAndContext == '1') {
+                        loadJavascript(_config.clipboardJSUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp);
+                    }
+
                     DEXT5_CONTEXT._config = _config; _config = null; _frame = null;
                 };
 
-                loadJavascript("../js/lang/" + _config.lang + ".js?ver=" + DEXTTOP.DEXT5.ReleaseVer, function () {
+                loadJavascript("../js/lang/" + _config.lang + ".js?t=" + DEXTTOP.DEXT5.UrlStamp, function () {
                     if ((!DEXTTOP.DEXT5.browser.mobile && (_config.useMouseTableInoutdent || _config.dragResize == "1")) || (DEXTTOP.DEXT5.browser.mobile && _config.useAutoToolbar == '1')) {
-                        loadJavascript("../js/editor_dragresize.min.js?ver=" + DEXTTOP.DEXT5.ReleaseVer, loadEditorFn);
+                        loadJavascript("../js/editor_dragresize.min.js?t=" + DEXTTOP.DEXT5.UrlStamp, loadEditorFn);
                     } else {
                         loadEditorFn();
                     }

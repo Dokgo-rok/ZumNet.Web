@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <emoticons>
+  <items recent="1" tab_img="images/editor/emoticon/tab/emo_recent.png"></items>
   <items>
     <item>images/editor/emoticon/emotion/e_01.gif</item>
     <item>images/editor/emoticon/emotion/e_02.gif</item>
@@ -93,6 +94,5 @@
     <item>images/editor/emoticon/goods/g_48.gif</item>
     <item>images/editor/emoticon/goods/g_49.gif</item>
     <item>images/editor/emoticon/goods/g_50.gif</item>
-    
   </items>
 </emoticons>

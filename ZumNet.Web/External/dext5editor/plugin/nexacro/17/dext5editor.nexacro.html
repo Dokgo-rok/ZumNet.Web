@@ -1,6 +1,6 @@
 ﻿<html>
 <head>
-    <title>DEXT5 Editor with nexacro 17 Runtime</title>
+    <title>RAONWIZ with nexacro Runtime</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Pragma" content="no-cache">
@@ -144,6 +144,9 @@
         }
         function fn_dext5DecodeMime(editorID) {
             window.NEXACROHTML.FireUserNotify("Dext5DecodeMime|D5_nexacro_retunValue|" + DEXT5.dext5DecodeMime(editorID));
+        }
+        function fn_getForbiddenWordValidation(editorID) {
+            window.NEXACROHTML.FireUserNotify("GetForbiddenWordValidation|D5_nexacro_retunValue|" + DEXT5.getForbiddenWordValidation(editorID));
         }
     </script>
 </head>

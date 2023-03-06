@@ -16,11 +16,15 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.detectJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
 
         if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
-            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+            document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.ajaxUploadJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
         }
     </script>
 
@@ -151,6 +155,9 @@
             var file_title = document.getElementById('file_title');
             var input_id = document.getElementById('input_id');
             var input_class = document.getElementById('input_class');
+            // 파일 계속 삽입 기능 추가
+            var tr_create_only_item = document.getElementById('create_only_item');
+            tr_create_only_item.style.display = 'none';
 
             var modiHref = elemModify.href;
             var dataArr = modiHref.split('/');
@@ -254,6 +261,7 @@
             //document.getElementById("label_file_text").innerHTML = LayerWin.dext5_lang.insert_file.label_file_text;
             document.getElementById("label_file_text_view").innerHTML = LayerWin.dext5_lang.insert_file.label_file_text;// 표시할 텍스트 암호화로인해 보기용 태그 추가
             //document.getElementById("label_file_id").innerHTML = LayerWin.dext5_lang.insert_file.label_file_id;
+            document.getElementById("label_continue_insert").innerHTML = LayerWin.dext5_lang.insert_file.continue_insert; // 파일 계속 삽입 기능 추가
 
             if (Dext5LayerWin._dext_editor._config.uploadUseHTML5 == "1") {
                 if (DEXTTOP.DEXT5.browser.mobile == true || DEXTTOP.DEXT5.UserAgent.device.type == 'mobile') {
@@ -283,7 +291,7 @@
         }
     </script>
 </head>
-<body style="margin:0px; padding:0px; " onload="page_loaded_event();">
+<body style="margin:0px; padding:0px; " onload="page_loaded_event(); page_dialog_loaded_event();">
     <div id="dext_dialog_box" class="DEXT_fiVe_ED_Popup_Type01">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -314,7 +322,7 @@
                     <input type="hidden" id="originalfilename" name="originalfilename" value="" />
                     <input type="hidden" id="cd" name="cd" value="" />
                 </div>
-                <div class="contents" style="overflow:hidden;height:130px;">
+                <div class="contents" style="overflow:hidden;height:155px;">
                     <div class="con">
                         <table cellpadding="0" cellspacing="0">
                             <tr id="file_tag_or_drop_zone"></tr>
@@ -344,6 +352,13 @@
                                 </td>
                                 <td width="35%">
                                     <input id="input_class" name="" type="text" style="width: 113px;" class="con_input" />
+                                </td>
+                            </tr>
+                            <tr id="create_only_item">
+                                <td colspan="3"></td>
+                                <td colspan="2">
+                                    <input type="checkbox" id="continue_insert" />
+                                    <label style="vertical-align:middle;" for="continue_insert" id="label_continue_insert"></label>
                                 </td>
                             </tr>
                         </table>

@@ -2085,7 +2085,7 @@ $(function () {
                 if (bClose) s += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
                 s += '</div>';
             }
-            s += '<div class="z-pop-body"><div style="overflow-y: auto; height: ' + (autoComplete ? h - 6 : h - 40) + 'px">' + option.content + '</div></div>';
+            s += '<div class="z-pop-body"><div style="overflow-y: auto; max-height: ' + (autoComplete ? h - 6 : h - 40) + 'px">' + option.content + '</div></div>';
             if (footer != '') s += '<div class="z-pop-footer">' + footer + '</div>';
             s += '</div>';
 

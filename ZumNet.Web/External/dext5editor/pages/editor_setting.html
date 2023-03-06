@@ -16,8 +16,11 @@
         }
         var Dext5LayerWin = Dext5LayerFrame.contentWindow;
 
-        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" rel="stylesheet" type="text/css" />');
-        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?ver=' + DEXTTOP.DEXT5.ReleaseVer + '" type="text/javascript"><\/scr' + 'ipt>');
+        document.write('<link href="' + Dext5LayerWin._dext_editor._config.popupCssUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        if (Dext5LayerWin._dext_editor._config.customCssUrlDetailApply == "1") {
+            document.write('<link href="' + Dext5LayerWin._dext_editor._config.style.customCssUrl + "?t=" + DEXTTOP.DEXT5.UrlStamp + '" rel="stylesheet" type="text/css" />');
+        }
+        document.write('<scr' + 'ipt src="' + Dext5LayerWin._dext_editor._config.dialogJSUrl + '?t=' + DEXTTOP.DEXT5.UrlStamp + '" type="text/javascript"><\/scr' + 'ipt>');
     </script>
 
     <script type="text/javascript">
@@ -33,7 +36,7 @@
             }
 
             var _skin_name = LayerWin._dext_editor._config.style.skinName;
-            if (DEXTTOP.DEXT5.browser.mobile) { // mobile 환경에서 UI 개선junmo 19.06.03
+            if (DEXTTOP.DEXT5.browser.mobile) {
                 document.getElementById("dext_dialog_box").className = 'DEXT_fiVe_ED_Popup_Type03 DEXT_fiVe_PUi_' + _skin_name;
                 document.getElementById("label_page_title").parentElement.style.width = '29%';
                 document.getElementById('page_title').style.width = '185px';
@@ -114,7 +117,6 @@
                 document.getElementById('xhtml').checked = true;
             }
 
-            // 개인화 설정했을때만 보여주도록 설정 by jh 2018.06.07
             if (LayerWin._dext_editor._config.usePersonalSetting == '1' && DEXTTOP.DEXT5.browser.LocalStorageSupported) {
                 var _auto_save_params = LayerWin._dext_editor._setting.auto_save.toString().split(',');
                 if (_auto_save_params[0] != '0') {
@@ -131,9 +133,7 @@
                     }
                 }
 
-                if (LayerWin._dext_editor._config.autoList.use == '1') {
-                    document.getElementById('check_auto_list').checked = true;
-                }
+                document.getElementById('div_auto_list').style.display = '';
 
                 if (LayerWin._dext_editor._config.setAutoSave.mode != "2") {
                     document.getElementById('input_auto_save').disabled = true;
@@ -149,7 +149,6 @@
                     }
                 };
 
-                // 환경설정에 개인화 기능 추가 by jh 2018.05.15
                 var personal_font_family = document.getElementById('personal_font_family');
                 var personal_font_size = document.getElementById('personal_font_size');
                 var personal_line_height = document.getElementById('personal_line_height');
@@ -169,15 +168,75 @@
                     getPasteToImagePopupMode = dextPersonalSetting.pasteToImagePopupMode;
                 };
 
+                var setPersonalSettingKeyin = function (type) {
+                    var trElement = document.getElementById("tr_personal_" + type);
+
+                    var inputText = document.createElement('input');
+                    inputText.setAttribute('type', 'text');
+                    inputText.setAttribute('id', type + '_keyin');
+                    inputText.setAttribute('class', 'con_input');
+                    inputText.style.width = '90px';
+                    inputText.style.marginLeft = '5px';
+                    inputText.disabled = true;
+                    inputText.style.display = 'none';
+
+                    var personalElement = document.getElementById("personal_" + type);
+                    trElement.children[1].appendChild(inputText);
+                    DEXTTOP.DEXT5.util.addEvent(personalElement, 'change', changePersonalSetting);
+                }
+
+                if (LayerWin._dext_editor._config.personalSettingUseFontFamilyKeyin == '1') {
+                    setPersonalSettingKeyin("font_family");
+
+                    if (getFontFamily == '') {
+                        document.getElementById("font_family_keyin").value = LayerWin._dext_editor._config.defaultFontFamily;
+                    } else {
+                        document.getElementById("font_family_keyin").value = getFontFamily;
+                    }
+                }
+
+                if (LayerWin._dext_editor._config.personalSettingUseFontSizeKeyin == '1') {
+                    setPersonalSettingKeyin("font_size");
+
+                    if (getFontSize == '') {
+                        document.getElementById("font_size_keyin").value = LayerWin._dext_editor._config.defaultFontSize;
+                    } else {
+                        document.getElementById("font_size_keyin").value = getFontSize;
+                    }
+                }
+
+                if (LayerWin._dext_editor._config.personalSettingUseLineHeightKeyin == '1') {
+                    setPersonalSettingKeyin("line_height");
+
+                    if (getLineHeight == '') {
+                        document.getElementById("line_height_keyin").value = LayerWin._dext_editor._config.defaultLineHeight;
+                    } else {
+                        document.getElementById("line_height_keyin").value = getLineHeight;
+                    }
+                }
+
                 personalSetting(personal_font_family, 'fontFamily', getFontFamily);
                 personalSetting(personal_font_size, 'fontSize', getFontSize);
                 personalSetting(personal_line_height, 'lineHeight', getLineHeight);
 
+                var defaultValueText = LayerWin.dext5_lang.setting.arr_auto_list.text[0].split('(')[0];
+                LayerWin.dext5_lang.setting.arr_auto_list.text[0] = DEXTTOP.G_CURREDITOR._config.autoList.use == 1 ? defaultValueText + " (" + LayerWin.dext5_lang.setting.arr_auto_list.text[1] + ")" : defaultValueText + " (" + LayerWin.dext5_lang.setting.arr_auto_list.text[2] + ")";
+                setSelectBoxOption(LayerWin.dext5_lang.setting.arr_auto_list, "arr_auto_list", "auto_list", LayerWin.dext5_lang.setting.arr_auto_list.value.length);
+
+                var localStorageAutoListValue = DEXTTOP.DEXTWIN.localStorage['dext_' + DEXTTOP.G_CURREDITOR.ID + '_auto_list'];
+                var autoListOptions = document.getElementById('auto_list').options;
+                if (localStorageAutoListValue) {
+                    for (i = 0; i < autoListOptions.length; i++) {
+                        if (autoListOptions[i].value == localStorageAutoListValue) {
+                            autoListOptions[i].selected = true;
+                            break;
+                        }
+                    }
+                }
+
                 divPersonalSetting.style.display = '';
                 document.getElementById('div_auto_save').className = 'con border';
 
-                // 다중 눈금자 수정 by hyeokjoo 18.07.18
-                // 사용자별 눈금자 설정 by jh 2018.06.07
                 if (LayerWin.DEXTTOP.G_CURREDITOR._config.ruler.use == "1") {
                     var ruler_px = document.getElementById('ruler_px');
 
@@ -186,7 +245,7 @@
                         dextRuler = DEXTTOP.DEXT5.util.loadJsonFromLocalStorage('dext_' + DEXTTOP.G_CURREDITOR.ID + '_ruler');
                     }
 
-                    if (DEXTTOP.G_CURREDITOR._config.ruler.view == "1") { // 툴바의 룰러와 환경설정 메뉴에 있는 룰러의 sync를 맞추도록 수정 by hyeokjoo 20.03.03
+                    if (DEXTTOP.G_CURREDITOR._config.ruler.view == "1") {
                         document.getElementById('check_ruler').checked = true;
                         var rulerPosition = '';
                         if (dextRuler && dextRuler.use == '1') {
@@ -195,7 +254,6 @@
                         } else {
                             rulerPosition = LayerWin.DEXTTOP.G_CURREDITOR._setting['ruler_position'].split(',');
                         }
-                        // 다중 눈금자 수정 by hyeokjoo 18.07.18
                         var tempRulerPosition = rulerPosition.join(',');
                         tempRulerPosition = tempRulerPosition.replace('10,10,', '');
                         if (tempRulerPosition == "" || tempRulerPosition == "0") {
@@ -211,7 +269,6 @@
 
                     document.getElementById('check_ruler').onclick = function () {
                         if (document.getElementById('check_ruler').checked) {
-                            // 다중 눈금자 수정 by hyeokjoo 18.07.18
                             var rulerPosition = LayerWin._dext_editor._config.ruler.rulerInitPosition.split(',');
                             ruler_px.value = rulerPosition.join(',');
                             ruler_px.disabled = false;
@@ -225,7 +282,6 @@
                         }
                     };
                 }
-                // 이미지로 붙여넣기 활성화 추가 by dahyun 21.05.24
                 if (!LayerWin.DEXTTOP.DEXT5.browser.mobile && (LayerWin.DEXTTOP.G_CURREDITOR._config.runtimes == 'ieplugin' || (!LayerWin.DEXTTOP.DEXT5.browser.ie && LayerWin.DEXTTOP.G_CURREDITOR._config.runtimes == 'html5'))) {
                     var personal_paste_to_image = document.getElementById('personal_paste_to_image');
                     var personal_paste_to_image_popupMode = document.getElementById('personal_paste_to_image_popupMode');
@@ -237,6 +293,15 @@
                         pateToImageArr = LayerWin.dext5_lang.setting.html5_arr_paste_to_image;
                     }
                     var pastToImagePopupModeArr = LayerWin.dext5_lang.setting.arr_paste_to_image_popupMode;
+
+                    var personalPasteToImageDefaultValueText = pateToImageArr.text[0].split('(')[0];
+                    for (var i = 0; i < pateToImageArr.text.length; i++) {
+                        if (pateToImageArr.value[i] == LayerWin._dext_editor._setting['config_paste_to_image']) {
+                            personalPasteToImageDefaultValueText += " (" + pateToImageArr.text[i] + ")";
+                            break;
+                        }
+                    }
+                    pateToImageArr.text[0] = personalPasteToImageDefaultValueText;
 
                     var pateToImageCnt = pateToImageArr.value.length;
                     var pateToImagePopupModeCnt = pastToImagePopupModeArr.value.length;
@@ -252,8 +317,8 @@
                         }
                     }
                     for (var pIdx = 0; pIdx < pateToImageCnt; pIdx++) {
-                        if (getPasteToImage == '') {
-                            getPasteToImage = LayerWin._dext_editor._config.pasteToImage;
+                        if (getPasteToImage == '-1') {
+                            LayerWin._dext_editor._config.pasteToImage = LayerWin._dext_editor._setting['config_paste_to_image'];
                         }
                         if (getPasteToImage == "0") {
                             personal_paste_to_image_popupMode.disabled = true;
@@ -263,12 +328,11 @@
                             break;
                         }
                     }
-
                 }
 
                 //DEXTTOP.DEXT5.util.addEvent(ruler_px, 'keydown', LayerWin.onlyNumber);
                 DEXTTOP.DEXT5.util.addEvent(document.getElementById('input_auto_save'), 'keydown', LayerWin.onlyNumber);
-            } //
+            }
             //document.getElementById('input_auto_save').onkeydown = LayerWin.onlyNumber;
 
             document.getElementById("label_lang").innerHTML = LayerWin.dext5_lang.setting.lang;
@@ -283,7 +347,7 @@
             document.getElementById("label_xhtml").innerHTML = LayerWin.dext5_lang.setting.xhtml;
             document.getElementById("btn_ok").innerHTML = LayerWin.dext5_lang.setting.btn_ok;
             document.getElementById("btn_cancel").innerHTML = LayerWin.dext5_lang.setting.btn_cancel;
-            if (LayerWin._dext_editor._config.usePersonalSetting == '1') {  // 개인화 설정 사용할 때만 그려줌 by jh 2018.06.07
+            if (LayerWin._dext_editor._config.usePersonalSetting == '1') {
                 document.getElementById("label_auto_save").innerHTML = LayerWin.dext5_lang.setting.auto_save;
                 document.getElementById("label_auto_list").innerHTML = LayerWin.dext5_lang.setting.auto_list;
                 document.getElementById("span_auto_save_minute").innerHTML = LayerWin.dext5_lang.setting.auto_save_minute;
@@ -323,9 +387,7 @@
             setCursorPos(document.getElementById('page_title'), true, false);
             LayerWin.setFocusFirstAndLast(document, document.getElementById('page_title'));
 
-            // useWordBreakWrap 설정시에만 보여주도록 설정 by sj.yoo 19.04.29
             if (LayerWin._dext_editor._config.useLineBreak == '1') {
-                // 줄 바꿈 기능 사용 시 border line 설정 by sj.yoo 19.04.29
                 //document.getElementById('div_word_break_wrap_setting').className = 'con border';
                 document.getElementById('div_word_break_for_table').style.paddingTop = '0px';
                 //document.getElementById('div_word_break_for_table').className = 'con';
@@ -336,13 +398,11 @@
                 setSelectBoxOption(LayerWin.dext5_lang.setting.arr_word_break, "arr_word_break", "word_break", LayerWin.dext5_lang.setting.arr_word_break.value.length);
                 setSelectBoxOption(LayerWin.dext5_lang.setting.arr_word_wrap, "arr_word_wrap", "word_wrap", LayerWin.dext5_lang.setting.arr_word_wrap.value.length);
 
-                // autoBodyFit 설정 시에는 무조건 '글 내용 가로 길이 맞춤' 허용, disable 설정.
                 if (LayerWin._dext_editor._config.autoBodyFit == "1") {
                     getWordWrap = "break-word";
                     document.getElementById("word_wrap").disabled = 1;
                 }
 
-                // word_break, word_wrap 타입 관련하여 localStorage 저장이 아닌 설정값으로 적용되도록 by sj.yoo 19.04.29
                 var getWordBreak = LayerWin._dext_editor._setting["word_break_type"];
                 var getWordWrap = LayerWin._dext_editor._setting["word_wrap_type"];
 
@@ -370,7 +430,7 @@
                 //  document.getElementById('div_contents').style.height = parseInt(document.getElementById('div_contents').style.height, 10) + 10 + "px";
             }
 
-            if (DEXTTOP.DEXT5.browser.mobile) { //mobile 환경에서 UI 개선junmo 19.06.03
+            if (DEXTTOP.DEXT5.browser.mobile) {
                 /*
                 if (document.getElementById('word_break')) {
                     document.getElementById('word_break').style.width = '155px';
@@ -399,7 +459,6 @@
                 document.getElementById('check_apply_word_break_for_table').checked = true;
             }
 
-            // 환경설정 다이얼로그창 style 변경 by jh 2018.06.07
             if (LayerWin._dext_editor._config.usePersonalSetting == '1') {
                 if (LayerWin.DEXTTOP.G_CURREDITOR._config.ruler.use == "0") {
                     //document.getElementById('div_contents').style.height = '205px';
@@ -408,7 +467,6 @@
                     document.getElementById('div_ruler').style.display = '';
                 }
 
-                // 개인화 기능 사용으로 설정 시 div_contents 높이 변경 by jh 2018.05.15
                 // var div_contents_height = document.getElementById('div_contents').style.height;
                 //if (LayerWin.DEXTTOP.G_CURREDITOR._config.usePersonalSetting == "1" && divPersonalSetting.style.display != "none") {
                 //  div_contents_height = (parseInt(div_contents_height) + 120) + "px";
@@ -419,7 +477,6 @@
                 // document.getElementById('div_contents').style.height = '180px';
             }
 
-            // div_contents 동적으로 높이 구할 수 있도록 수정 by dahyun 21.05.27
             var divContents = document.getElementById('div_contents');
             var divContentsRect = divContents.getBoundingClientRect();
             var divContentsHeight = divContentsRect.bottom - divContentsRect.top;
@@ -444,13 +501,35 @@
             }
         }
 
-        // 환경설정에 개인화 기능 값 설정 by jh 2018.05.15
         function personalSetting(settingId, configValue, localStorageValue) {
             var config, cnt, value;
             config = DEXTTOP.G_CURREDITOR._config[configValue + 'List'];
             cnt = config.length;
 
             settingId.options.add(new Option(LayerWin.dext5_lang.setting.personal_default, ""));
+
+            var type = '';
+            var keyinChk = false;
+            if (configValue == 'fontFamily') {
+                if (LayerWin._dext_editor._config.personalSettingUseFontFamilyKeyin == '1') {
+                    settingId.options.add(new Option(LayerWin.dext5_lang.setting.keyin, LayerWin.dext5_lang.setting.keyin));
+                    type = 'font_family';
+                    keyinChk = true;
+                }
+            } else if (configValue == 'fontSize') {
+                if (LayerWin._dext_editor._config.personalSettingUseFontSizeKeyin == '1') {
+                    settingId.options.add(new Option(LayerWin.dext5_lang.setting.keyin, LayerWin.dext5_lang.setting.keyin));
+                    type = 'font_size';
+                    keyinChk = true;
+                }
+            } else if (configValue == 'lineHeight') {
+                if (LayerWin._dext_editor._config.personalSettingUseLineHeightKeyin == '1') {
+                    settingId.options.add(new Option(LayerWin.dext5_lang.setting.keyin, LayerWin.dext5_lang.setting.keyin));
+                    type = 'line_height';
+                    keyinChk = true;
+                }
+            }
+
             for (var _step = 0; _step < cnt; _step++) {
                 value = config[_step];
                 var textValue = Dext5LayerWin.getDisplayFontName(value);
@@ -460,6 +539,13 @@
                     option.selected = true;
                 }
                 settingId.options.add(option, settingId.options.length);
+            }
+
+            if (keyinChk) {
+                if (settingId.selectedIndex <= 0 && localStorageValue != '') {
+                    settingId.options[1].selected = true;
+                }
+                changePersonalSetting(settingId, type);
             }
         }
 
@@ -489,9 +575,54 @@
                 }
             }
         }
+
+        function changePersonalSetting(ele, type) {
+            var setPageChk = true;
+
+            if (!type) {
+                var evt = ele || window.event;
+                var target = evt.target ? evt.target : evt.srcElement;
+                ele = target;
+                type = target.id;
+                type = type.replace('personal_', '');
+                setPageChk = false;
+            }
+
+            var keyinEle = document.getElementById(type + "_keyin");
+            if (ele.value == LayerWin.dext5_lang.setting.keyin) {
+                document.getElementById("personal_" + type).style.width = '155px';
+                if (!setPageChk) {
+                    keyinEle.value = '';
+                }
+                keyinEle.style.display = '';
+                keyinEle.disabled = false;
+                keyinEle.focus();
+            } else if (ele.value == '') {
+                document.getElementById("personal_" + type).style.width = '260px';
+                keyinEle.style.display = 'none';
+                keyinEle.disabled = true;
+                if (type == 'font_family') {
+                    keyinEle.value = LayerWin._dext_editor._config.defaultFontFamily;
+                } else if (type == 'font_size') {
+                    keyinEle.value = LayerWin._dext_editor._config.defaultFontSize;
+                } else if (type == 'line_height') {
+                    keyinEle.value = LayerWin._dext_editor._config.defaultLineHeight;
+                }
+            } else {
+                document.getElementById("personal_" + type).style.width = '260px';
+                keyinEle.style.display = 'none';
+                keyinEle.disabled = true;
+                if (type == 'font_family') {
+                    keyinEle.value = Dext5LayerWin.getDisplayFontName(ele.value);
+                } else {
+                    keyinEle.value = ele.value;
+                }
+            }
+        }
+
     </script>
 </head>
-<body style="margin:0px; padding:0px; " onload="page_loaded_event();">
+<body style="margin:0px; padding:0px; " onload="page_loaded_event(); page_dialog_loaded_event();">
     <div id="dext_dialog_box">
         <!-- Header -->
         <div class="EdiTor_Popup_header">
@@ -862,16 +993,24 @@
                 <div id="div_auto_save" class="con" style="display:none;">
                     <table cellpadding="0" cellspacing="0">
                         <tr>
-                            <td style="width: 30%;">
+                            <td>
                                 <input id="check_auto_save" type="checkbox" />
                                 <label for="check_auto_save" id="label_auto_save" style="vertical-align: middle;"></label>
                             </td>
-                            <td style="width: 25%;">
-                                <input id="input_auto_save" class="con_input" style="width: 50px;" /> <span id="span_auto_save_minute"></span>
+                            <td>
+                                <input id="input_auto_save" class="con_input" style="width: 75px;" /> <span id="span_auto_save_minute" style="vertical-align: middle;"></span>
                             </td>
-                            <td style="width: 45%;">
-                                <input id="check_auto_list" type="checkbox" />
-                                <label for="check_auto_list" id="label_auto_list" style="vertical-align: middle;">자동 글머리 사용</label>
+                        </tr>
+                    </table>
+                </div>
+                <div id="div_auto_list" class="con border" style="display:none;">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>
+                                <label id="label_auto_list" style="vertical-align: middle;">자동 글머리</label>
+                            </td>
+                            <td>
+                                <select id="auto_list" style="width: 167px;"></select>
                             </td>
                         </tr>
                     </table>
