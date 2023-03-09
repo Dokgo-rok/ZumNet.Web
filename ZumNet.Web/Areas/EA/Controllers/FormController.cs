@@ -684,6 +684,86 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                         rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "SignLine", ViewBag);
                     }
+                    else if (jPost["M"].ToString() == "dl")
+                    {
+                        #region [조직도]
+                        string sOrgTree = "";
+                        using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                        {
+                            sPos = "200";
+                            svcRt = cb.GetGradeCode("1", Convert.ToInt32(Session["DNID"]), "A");
+                            if (svcRt != null && svcRt.ResultCode == 0) ViewBag.GradeCode = svcRt.ResultDataRowCollection;
+                            else throw new Exception(svcRt.ResultMessage);
+                        }
+
+                        using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+                        {
+                            sPos = "300";
+                            svcRt = op.GetOrgMapInfo(Convert.ToInt32(Session["DNID"]), 0, "D", Convert.ToInt32(Session["DeptID"]), DateTime.Now.ToString("yyyy-MM-dd"), "N");
+                            if (svcRt != null && svcRt.ResultCode == 0) sOrgTree = CtrlHandler.OrgTreeString(svcRt);
+                            else throw new Exception(svcRt.ResultMessage);
+
+                            sPos = "310";
+                            svcRt = op.GetGroupMemberList(Session["DNID"].ToString(), Session["DeptID"].ToString(), DateTime.Now.ToString("yyyy-MM-dd"), "Code1", "", Session["Admin"].ToString());
+                            if (svcRt != null && svcRt.ResultCode == 0) ViewBag.MemberList = svcRt.ResultDataSet;
+                            else throw new Exception(svcRt.ResultMessage);
+                        }
+
+                        sPos = "400";
+                        using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new DAL.FlowDac.EApprovalDac())
+                        {
+                            ViewBag.DL = eaDac.SelectXFormDL(0, jPost["xf"].ToString(), Convert.ToInt32(jPost["appid"]), "xform_dl");
+                        }
+
+                        sPos = "500";
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "SignLine", ViewBag)
+                                + jPost["boundary"].ToString() + sOrgTree;
+                        #endregion
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
+
+        #region [문서배포]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string SendDL()
+        {
+            string sPos = "";
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0) return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
+                    {
+                        sPos = "200";
+                        svcRt = ea.DistributeEAForm(jPost["xf"].ToString(), Convert.ToInt32(jPost["mi"].ToString()), Convert.ToInt32(jPost["oi"].ToString())
+                            , jPost["dt"].ToString(), jPost["dp"].ToString(), jPost["vlu"].ToString(), Convert.ToInt32(jPost["sdid"].ToString())
+                            , jPost["sd"].ToString(), jPost["sdmail"].ToString(), jPost["sddept"].ToString(), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), jPost["rsvd"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = "[" + sPos + "] " + svcRt.ResultMessage;
+                    }
                 }
                 catch (Exception ex)
                 {

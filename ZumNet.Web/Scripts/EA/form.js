@@ -265,6 +265,14 @@ $(function () {
                 _zw.signline.open(cmd, 'y', jPost);
                 break;
 
+            case "sendDL":
+                var jPost = {};
+                jPost["M"] = 'dl'; jPost["multi"] = 'y'; jPost["boundary"] = _zw.V.boundary; jPost["xf"] = _zw.V.xfalias;
+                jPost["appid"] = _zw.V.appid; jPost["oi"] = _zw.V.oid; jPost["docstatus"] = _zw.V.docstatus;
+
+                _zw.signline.open('dl', 'y', jPost);
+                break;
+
             case "reuse":
                 var qi = '{M:"reuse",mi:"' + _zw.V.appid + '",oi:"' + _zw.V.oid + '",wi:"' + _zw.V.wid + '",xf:"' + _zw.V.xfalias + '"}';
                 //console.log(location)
@@ -567,7 +575,7 @@ $(function () {
     _zw.fn.orgSelect = function (p, el) { if (_zw.formEx.orgSelect) _zw.formEx.orgSelect(p, el); }
     _zw.fn.onblur = function (e, v) {
         if (v[0] == "month") {
-            if (parseInt(e.value) > 12) { e.value = ''; e.focus(); return false; }
+            if (parseInt(e.value) < 1 || parseInt(e.value) > 12) { e.value = ''; e.focus(); return false; }
             if (_zw.formEx.calc) _zw.formEx.calc(e, v);
         }
         else if (v[0] == "number" || v[0] == "number-n" || v[0] == "percent") { if (_zw.formEx.calc) _zw.formEx.calc(e, v); }
@@ -662,7 +670,7 @@ $(function () {
         "open": function (m, multi, postData) {
             var p = $('#popSignLine');
 
-            if (m == 'draft' || m == 'approval') {
+            if (m == 'draft' || m == 'approval' || m == 'dl') {
                 if (p.find('.zf-sl[data-for="' + m + '"]').length > 0) { //console.log('1111')
                     _zw.signline.render(p, m);
                     p.modal('show');
@@ -680,8 +688,9 @@ $(function () {
                                 if (p.find('#sl_orgmaptree').length > 0) new PerfectScrollbar(p.find('#sl_orgmaptree')[0]);
                                 if (p.find('#personline').length > 0) new PerfectScrollbar(p.find('#personline')[0]);
                                 new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:first-child .card-body')[0]);
-                                new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:last-child .card-body')[0]);
-                                new PerfectScrollbar(p.find('.zf-sl .zf-sl-list .card-body')[0]);
+                                if (p.find('.zf-sl .zf-sl-member .card').length > 1) new PerfectScrollbar(p.find('.zf-sl .zf-sl-member .card:last-child .card-body')[0]);
+                                if (p.find('.zf-sl .zf-sl-list').length > 0) new PerfectScrollbar(p.find('.zf-sl .zf-sl-list .card-body')[0]);
+                                if (p.find('.zf-sl .zf-dl-list').length > 0) new PerfectScrollbar(p.find('.zf-sl .zf-dl-list .card-body')[0]);
 
                                 p.find('.nav-tabs-top a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                                     var s = e.target.getAttribute('aria-controls');
@@ -689,8 +698,10 @@ $(function () {
                                         p.find('.zf-sl .zf-sl-member .card:first-child').addClass('d-none');
                                         p.find('.zf-sl .zf-sl-member .card:last-child').removeClass('d-none');
                                     } else {
-                                        p.find('.zf-sl .zf-sl-member .card:first-child').removeClass('d-none');
-                                        p.find('.zf-sl .zf-sl-member .card:last-child').addClass('d-none');
+                                        if (p.find('.zf-sl .zf-sl-member .card').length > 1) {
+                                            p.find('.zf-sl .zf-sl-member .card:first-child').removeClass('d-none');
+                                            p.find('.zf-sl .zf-sl-member .card:last-child').addClass('d-none');
+                                        }
                                     }
                                     p.find('.zf-sl .zf-sl-member .card-body').html('');
                                 });
@@ -837,6 +848,43 @@ $(function () {
                                         if (tab == 'personline') {
                                             bootbox.alert('준비중')
                                         }
+                                    } else if (mn == 'addUser_dl') {
+                                        p.find('.zf-sl .zf-sl-member .card:first-child .card-body input:checkbox:checked').each(function () {
+                                            var jUser = JSON.parse($(this).attr('data-attr')); //console.log(jUser); return;
+                                            if ($('.zf-sl .zf-dl-list .zf-sl-line li[pt="ur"][partid="' + jUser.id + '"]').length > 0) {
+                                                bootbox.alert('중복된 사용자는 추가 할 수 없습니다!'); return false;
+                                            }
+
+                                            var temp = p.find('.zf-dl-template').html();
+                                            temp = temp.replace("{$pt}", "ur");
+                                            temp = temp.replace("{$ptid}", jUser.id);
+                                            temp = temp.replace("{$code}", jUser.logonid);
+                                            temp = temp.replace("{$mail}", jUser.smail);
+                                            temp = temp.replace("{$pn}", $(this).next().text());
+
+                                            $('.zf-sl .zf-dl-list .zf-sl-line').append(temp);
+                                        });
+
+                                    } else if (mn == 'addGroup_dl') {
+                                        var selected = p.find('#__OrgMapTree').jstree('get_selected', true); //console.log(selected)
+                                        if (selected.length > 0) {
+                                            var info = selected[0].li_attr; //alert(selected[0].text)
+                                            if (parseInt(info["level"]) < 1) { bootbox.alert('선택된 부서는 추가 할 수 없습니다!'); return false; }
+                                            if (info["rcv"] && info["rcv"] == 'N') { bootbox.alert('선택된 부서는 추가 할 수 없습니다!'); return false; }
+
+                                            if ($('.zf-sl .zf-dl-list .zf-sl-line li[pt="gr"][partid="' + info["id"] + '"]').length > 0) {
+                                                bootbox.alert('중복된 부서는 추가 할 수 없습니다!'); return false;
+                                            }
+
+                                            var temp = p.find('.zf-dl-template').html();
+                                            temp = temp.replace("{$pt}", "gr");
+                                            temp = temp.replace("{$ptid}", info["id"]);
+                                            temp = temp.replace("{$code}", info["gralias"]);
+                                            temp = temp.replace("{$mail}", info["gralias"] + '@' + _zw.V.domain);
+                                            temp = temp.replace("{$pn}", selected[0].text);
+
+                                            $('.zf-sl .zf-dl-list .zf-sl-line').append(temp);
+                                        }
                                     }
                                 });
 
@@ -851,6 +899,10 @@ $(function () {
                                             if (row.attr('wid') != '') _zw.signline.putDeleteLine(row.attr('wid'));
                                             row.remove();
                                             _zw.signline.setOrder(p, rowParent.find(' > li'));
+                                        });
+
+                                        p.find('.zf-dl-list input:checkbox:checked').each(function () {
+                                            var row = $(this).parent().parent().parent().parent(); row.remove();
                                         });
 
                                     } else if (mn == 'up' || mn == 'down') {
@@ -873,6 +925,39 @@ $(function () {
                                     p.modal('hide');
                                 });
 
+                                p.find('.modal-header .btn[data-zm-menu="send"]').click(function () {
+                                    var vlu = '';
+                                    p.find('.zf-dl-list li.zf-dl-add').each(function () {
+                                        vlu += '<part partid="' + $(this).attr('partid') + '" pt="' + $(this).attr('pt') + '" pc="' + $(this).attr("pc") + '">'
+                                            + '<pn>' + $(this).find("div > div:nth-child(2)").text() + '</pn><pm>' + $(this).attr("pm") + '</pm></part>';
+                                    });
+                                    //console.log(vlu)
+                                    if (vlu != '') {
+                                        bootbox.confirm('현 문서를 추가된 목록에 배포하시겠습니까?', function (rt) {
+                                            if (rt) {
+                                                var jSend = {};
+                                                jSend["xf"] = _zw.V.xfalias; jSend["mi"] = _zw.V.appid; jSend["oi"] = _zw.V.oid;
+                                                jSend["dt"] = 'xform_dl'; jSend["dp"] = ''; jSend["vlu"] = '<partinfo>' + vlu + '</partinfo>';
+                                                jSend["sdid"] = _zw.V.current.urid; jSend["sd"] = _zw.V.current.user;
+                                                jSend["sdmail"] = ''; jSend["sddept"] = _zw.V.current.dept; jSend["rsvd"] = '';
+                                                //console.log(jSend); return
+
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "/EA/Form/SendDL",
+                                                    data: JSON.stringify(jSend),
+                                                    success: function (res) {
+                                                        if (res == "OK") window.close();
+                                                        else bootbox.alert(res);
+                                                    },
+                                                    beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
+                                                });
+                                            }
+                                        });
+
+                                    }
+                                });
+
                                 if (p.find('.zf-sl-template-part').length > 0) {
                                     var jPart = JSON.parse(p.find('.zf-sl-template-part').text()); //console.log(jPart);
                                     for (var i = jPart.length - 1; i >= 0; i--) {
@@ -889,11 +974,13 @@ $(function () {
                                     //console.log(_zw.V.process.attributes);
                                 }
 
-                                if (!_zw.V.templine) _zw.V["templine"] = JSON.parse('{"signline":[],"attributes":[],"deleted":""}');
-                                //console.log(_zw.V.process["signline"]);
+                                if (m != 'dl') {
+                                    if (!_zw.V.templine) _zw.V["templine"] = JSON.parse('{"signline":[],"attributes":[],"deleted":""}');
+                                    //console.log(_zw.V.process["signline"]);
 
-                                _zw.signline.render(p, m);
-                                _zw.signline.userInfo(p, multi);
+                                    _zw.signline.render(p, m);
+                                    _zw.signline.userInfo(p, multi);
+                                }
 
                                 p.modal('show');
                             } else bootbox.alert(res);

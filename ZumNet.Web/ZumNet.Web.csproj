@@ -2210,6 +2210,7 @@
     <Content Include="Scripts\EA\Forms\FORM_INDUSTRIALPRO.js" />
     <Content Include="Scripts\EA\Forms\FORM_INTERNALAUDITRESULT.js" />
     <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
+    <Content Include="Scripts\EA\Forms\FORM_ISOPARTMONTHLYRETURN.js" />
     <Content Include="Scripts\EA\Forms\FORM_ITEMMASTERCHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_LOSSDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_LOSSREPORT.js" />

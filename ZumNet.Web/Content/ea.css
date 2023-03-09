@@ -81,6 +81,9 @@
 .zf-sl .zf-sl-list .card-body {
     height: 160px;
 }
+.zf-sl .zf-dl-list .card-body {
+    height: 220px;
+}
 .zf-sl .zf-sl-menu {
     padding: .75rem .5rem;
 }
@@ -120,6 +123,9 @@
     .zf-sl .zf-sl-list .card-body {
         height: 276px;
     }
+    .zf-sl .zf-dl-list .card-body {
+        height: 518px;
+    }
     .zf-sl .zf-sl-attr .nav-tabs-left {
         height: 116px;
     }
@@ -131,12 +137,12 @@
             margin: .5rem 0;
         }
 }
-.zf-sl .zf-sl-list .card-header {
+.zf-sl .zf-sl-list .card-header, .zf-sl .zf-dl-list .card-header {
     padding: 0.25rem 0.1rem !important;
 }
-.zf-sl .zf-sl-list .card-header div {
-    text-align: center;
-}
+    .zf-sl .zf-sl-list .card-header div, .zf-sl .zf-dl-list .card-header div {
+        text-align: center;
+    }
 .zf-sl .zf-sl-line, .zf-sl .zf-sl-subline {
     display: flex;
     -ms-flex-direction: column;
@@ -159,13 +165,21 @@
     .zf-sl .zf-sl-add > div, .zf-sl .zf-sl-subline .zf-sl-current > div, .zf-sl .zf-sl-subline .zf-sl-read > div, .zf-sl .zf-sl-subline .zf-sl-cancel > div {
         margin-top: .25rem !important;
     }
-.zf-sl .zf-sl-current {
-    background-color: rgba(255,217,25,0.15);
-}
+    .zf-sl .zf-sl-current {
+        background-color: rgba(255,217,25,0.15);
+    }
 .zf-sl .zf-sl-read .zf-btn-xs, .zf-sl .zf-sl-cancel .zf-btn-xs {
     padding: 0 2px 0 0;
 }
 .zf-sl .zf-sl-attr .tab-pane {
     overflow: auto;
+}
+
+.zf-sl .zf-dl-read, .zf-sl .zf-dl-add {
+    padding: 0.2rem 0.1rem !important;
+}
+.zf-sl .zf-dl-add {
+    font-weight: bolder;
+    color: #0062ff;
 }
 /* signline manager <----- */
