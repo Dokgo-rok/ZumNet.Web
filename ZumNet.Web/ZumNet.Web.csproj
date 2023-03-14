@@ -433,7 +433,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_CAREERSTATE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CERTIFICATIONDOCUMENT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CHANGEPLACELIST_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_CHANGEPLACEREQ_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_CHANGEPLACEREQ_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_CHANGEPOSREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CHANGEPOSREQ_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_CHANGEREQUEST_V1.xsl" />
@@ -2180,6 +2182,7 @@
     <Content Include="Scripts\EA\Forms\FORM_DESIGNFMEAREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_DESIGNREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_DEVPRODUCTLIST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DEVSAMPLEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_DISCONTINUENOTICE.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCCAREER.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />

@@ -965,8 +965,9 @@ $(function () {
                                     if (res == 'OK') {
                                         if (notiCls.indexOf('/ea') > 0) {
                                             //xf=ea,oi=315349,mi=333174,wi=e692a8741916498d917f73e68bb3660f
-                                            var temp = linkInfo.split(','); //wi->의미없음
-                                            _zw.fn.openXFormEx('read', temp[0].split('=')[1], temp[2].split('=')[1], temp[1].split('=')[1], '');
+                                            var temp = linkInfo.split(','); //wi->의미없음->삽입
+                                            var wi = temp[3] && temp[3] != '' ? temp[3].split('=')[1] : '';
+                                            _zw.fn.openXFormEx('read', temp[0].split('=')[1], temp[2].split('=')[1], temp[1].split('=')[1], wi);
                                             p.modal('hide'); _zw.fn.notice();
                                             
                                         } else {
