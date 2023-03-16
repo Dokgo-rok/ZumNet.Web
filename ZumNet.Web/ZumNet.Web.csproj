@@ -727,7 +727,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_OUTSOURCINGUC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_OUTWORK_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_OVERWORKREQ_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_OWNPRODUCTSPECIFICATION_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_OWNPRODUCTSPECIFICATION_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_OWNSELLINGUC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PARTSACKSPEC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PARTSACKSPEC_V2.xsl">
@@ -889,7 +891,9 @@
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGMAKINGREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGMAKINGREQ_V2.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_TOOLINGMOVEREQ_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_TOOLINGMOVEREQ_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGNEWDRAFT_V1.xsl">
       <SubType>Designer</SubType>
     </Content>
@@ -2249,6 +2253,7 @@
     <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUCC.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUCD.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OWNPRODUCTSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSINDITESTSTD.js" />
     <Content Include="Scripts\EA\Forms\FORM_PASSPORTLIST.js" />
