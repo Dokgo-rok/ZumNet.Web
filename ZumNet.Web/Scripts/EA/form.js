@@ -2073,8 +2073,8 @@ $(function () {
             });
             //if (iCnt == 0) tgtRow = p.find('tr.sub_table_row:last-child');
             if (iCnt < 2) {
-                newRow = tgtRow.clone(); _zw.form.resetField(newRow); tgtRow.after(newRow); _zw.fn.input(newRow); _zw.ut.picker('date');
-                _zw.form.orderRow(p); 
+                newRow = tgtRow.clone(); _zw.form.resetField(newRow); tgtRow.after(newRow); _zw.form.orderRow(p);
+                _zw.fn.input(newRow); _zw.ut.picker('date');
             }
         },
         "removeRow": function (sub) {
@@ -2099,21 +2099,39 @@ $(function () {
                 if (iCnt == 0) tgtRow = $(this);
             });
             if (iCnt < 2) {
-                newRow = tgtRow.clone(); tgtRow.after(newRow); _zw.fn.input(newRow); _zw.ut.picker('date');
-                _zw.form.orderRow(p); 
+                newRow = tgtRow.clone(); tgtRow.after(newRow); _zw.form.orderRow(p); _zw.fn.input(newRow); _zw.ut.picker('date');
                 if (_zw.formEx.autoCalc) _zw.formEx.autoCalc(p);
             }
         },
         "orderRow": function (p) {
-            p.find('tr.sub_table_row input[name="ROWSEQ"]').each(function (idx, el) { //checkbox 제거
-                $(this).val(idx + 1);
+            //p.find('tr.sub_table_row input[name="ROWSEQ"]').each(function (idx, el) { //checkbox 제거
+            //    $(this).val(idx + 1);
+            //});
+
+            p.find('tr.sub_table_row').each(function (idx, el) {
+                //console.log($(this).find('td:first-child input[name="ROWSEQ"]'));
+                var c = $(this).find('td:first-child input[name="ROWSEQ"]');
+                if (c.length > 0) {
+                    c.val(idx + 1);
+
+                    $(this).find('td:gt(1) :checkbox, td:gt(1) :radio').each(function () {
+                        var vId = $(this).attr('id');
+                        if (vId && vId != undefined) {
+                            vId = vId.split('.');
+                            $(this).attr('id', vId[0] + '.' + (idx + 1) + '.' + vId[2]); //console.log($(this))
+
+                            $(this).parent().find('label[for]').attr('for', vId[0] + '.' + (idx + 1) + '.' + vId[2])
+                        }
+                    });
+                }
             });
         },
         "resetField": function (el) {
-            el.find('input:text, input:hidden, textarea, select').val('');
+            el.find('input:text, input[type="hidden"], textarea, select').val('');
             el.find('input:checkbox, input:radio').prop('checked', false);
             el.find('select').attr('selectIndex', 0);
             //el.find('select').prop('selectIndex', 0);
+            //console.log(el.find('input[type="hidden"]'));
         },
         "validation": function (cmd) {
             if (cmd != null && (cmd == "reject" || cmd == "back" || cmd == "reserve" || cmd == "pre")) return true; //2013-02-21 (지정)반려, 2014-02-20 선결인 경우 체크 제외
@@ -2208,6 +2226,7 @@ $(function () {
             if (fld) {
                 $(p).find('input:hidden[name="' + fld + '"]').val(fld != '' && el.checked ? el.value : '');
             }
+            console.log($(p).find('input:hidden[name="' + fld + '"]').val());
             if (_zw.formEx.checkEvent) _zw.formEx.checkEvent(ckb, el, fld);
         },
         "view": function () {
