@@ -1,4 +1,7 @@
-﻿@using Newtonsoft.Json;
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
 @using ZumNet.Framework.Util;
 
 @{
@@ -6,7 +9,83 @@
     bool bDetail = false;
 }
 @functions{
-    
+    private string ShowFileMenu(JToken info)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        if (info["islocked"].ToString() == "Y")
+        {
+            sb.Append("<button type=\"button\" class=\"btn btn-lg btn-outline-default borderless p-1\" style=\"line-height: 1px\">");
+            sb.Append("<span class=\"fas fa-cloud-download-alt\"></span>");
+            sb.Append("</button>");
+
+            if (info["courid"].ToString() == ViewBag.R.current["urid"].ToString()) //반출 사용자만 반입 가능
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-lg btn-outline-success borderless p-1\" style=\"line-height: 1px\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"반입\" onclick=\"_zw.mu.checkIn({0})\">", info["attachid"].ToString());
+                sb.Append("<span class=\"fas fa-cloud-upload-alt\"></span>");
+                sb.Append("</button>");
+            }
+            else
+            {
+                sb.Append("<button type=\"button\" class=\"btn btn-lg btn-outline-default borderless p-1\" style=\"line-height: 1px\">");
+                sb.Append("<span class=\"fas fa-cloud-upload-alt\"></span>");
+                sb.Append("</button>");
+            }
+        }
+        else
+        {
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-lg btn-outline-success borderless p-1\" style=\"line-height: 1px\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"반출\" onclick=\"_zw.mu.checkOut({0})\">", info["attachid"].ToString());
+            sb.Append("<span class=\"fas fa-cloud-download-alt\"></span>");
+            sb.Append("</button>");
+            sb.Append("<button type=\"button\" class=\"btn btn-lg btn-outline-default borderless p-1\" style=\"line-height: 1px\">");
+            sb.Append("<span class=\"fas fa-cloud-upload-alt\"></span>");
+            sb.Append("</button>");
+        }
+
+        sb.AppendFormat("<button type=\"button\" class=\"btn btn-lg btn-outline-info borderless p-1\" style=\"line-height: 1px\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"버전정보\" onclick=\"_zw.mu.showFileVer({0})\">", info["attachid"].ToString());
+        sb.Append("<span class=\"fas fa-info-circle\"></span>");
+        sb.Append("</button>");
+
+        return sb.ToString();
+    }
+
+    private string RenderFile()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"zf-upload w-100\">");
+        sb.Append("<div class=\"zf-upload-select d-flex align-items-center\">");
+
+        sb.Append("<form id=\"uploadForm\" name=\"uploadForm\" action=\"/Common/Upload\" method=\"post\" enctype=\"multipart/form-data\" target=\"ifrView\">");
+        sb.Append("<div class=\"custom-file\">");
+        sb.Append("<input type=\"file\" class=\"custom-file-input\" id=\"file1\" name=\"file1\" />");
+        sb.Append("<input name=\"completed\" type=\"hidden\" value=\"parent._zw.fu.complete\" />");
+        sb.Append("<label class=\"custom-file-label\" for=\"customFile\">파일 선택</label>");
+        sb.Append("</div>"); //custom-file
+        sb.Append("</form>");
+
+        sb.Append("<div class=\"d-none\" data-help=\"file\">");
+        sb.Append("<div data-for=\"name\"></div>");
+        sb.Append("</div>"); //data-help
+
+        sb.Append("</div>"); //zf-upload-select
+
+        sb.Append("<div class=\"zf-upload-bar mt-1 d-none\">");
+        sb.Append("<button class=\"btn btn-sm btn-primary px-5\" type=\"button\" disabled=\"\">");
+        sb.Append("<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>");
+        sb.Append("<span class=\"ml-2\">uploading...</span>");
+        sb.Append("</button>");
+        sb.Append("</div>"); //zf-upload-bar
+
+        sb.Append("<div class=\"zf-upload-list border rounded mt-1 px-2 pt-2 pb-0 d-none\">");
+
+        var jArr = new JArray();
+        sb.AppendFormat("<textarea id=\"__FILEINFO\" style=\"display:none\">{0}</textarea>", JsonConvert.SerializeObject(jArr));
+        sb.Append("</div>");
+        sb.Append("</div>"); //zf-upload
+
+        return sb.ToString();
+    }
 }
 <!-- Header -->
 <div class="flex-grow-0">
@@ -18,7 +97,7 @@
                     <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
                 </div>
             }
-            
+
             <div class="btn-group">
                 <button class="btn btn-default font-weight-bold" onclick="_zw.mu.readMsg('reload');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh"><i class="fe-refresh-cw"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Refresh</span></button>
                 @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
@@ -27,7 +106,7 @@
                 }
                 @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
                 {
-                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class="far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
+                    @*<button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class="far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>*@
                 }
                 @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "D") || bOwner)
                 {
@@ -91,7 +170,26 @@
                 <div class="zf-attach">
                     @if (ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "R"))
                     {
-                        <div class="zf-uploader" id="__DextUpload"></div>
+                        @*<div class="zf-uploader" id="__DextUpload"></div>*@
+                        foreach (var j in ViewBag.R.app.attachlist)
+                        {
+                    <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
+                        <div class="mr-2">
+                            <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
+                        </div>
+                        <div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64("\\" + j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
+                        <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
+                        @if (ViewBag.R.app["rsvd1"].ToString() == "" && ViewBag.R.app["rsvd2"].ToString() == "") //이관문서 X
+                        {
+                            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
+                            {
+                            <div class="ml-2">
+                                @Html.Raw(ShowFileMenu(j))
+                            </div>
+                            }
+                        }
+                    </div>
+                        }
                     }
                     else
                     {
@@ -170,3 +268,69 @@
         }
     </div>
 </div>
+<script type="text/template" class="zf-checkout-template">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">반출 정보</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row mb-2">
+                    <label class="col-4 col-form-label font-weight-bold">반출자</label>
+                    <div class="col-8 input-group align-items-center">@Session["URName"]</div>
+                </div>
+                <div class="form-group row mb-2">
+                    <label class="col-4 col-form-label font-weight-bold">반납예정일</label>
+                    <div class="col-8 input-group align-items-center">
+                        <input type="text" class="form-control datepicker mr-sm-2" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-zm-menu="confirm">@Resources.Global.Confirm</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Global.Cancel</button>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/template" class="zf-checkin-template">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">원문 파일 반입 정보</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="custom-control custom-radio m-0 mr-3">
+                        <input type="radio" class="custom-control-input" name="rdoState" id="rdo01" value="0" checked="" />
+                        <span class="custom-control-label">원문 파일 수정하지 않음</span>
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="custom-control custom-radio m-0 mr-3">
+                        <input type="radio" class="custom-control-input" name="rdoState" id="rdo02" value="1" />
+                        <span class="custom-control-label">원문 파일 수정 반영</span>
+                    </label>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-3 col-form-label font-weight-bold">반입 파일</label>
+                    <div class="col-9">
+                        @Html.Raw(RenderFile())
+                    </div>
+                </div>
+                <div class="">
+                    <label class="custom-control custom-checkbox m-0 mr-3">
+                        <input type="checkbox" class="custom-control-input" name="ckbNewVer" disabled />
+                        <span class="custom-control-label">새 버전을 등록하고 수정 사항을 반영</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-zm-menu="confirm">@Resources.Global.Confirm</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Global.Cancel</button>
+            </div>
+        </div>
+    </div>
+</script>

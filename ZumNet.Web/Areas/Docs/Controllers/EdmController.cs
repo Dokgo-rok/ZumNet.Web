@@ -520,5 +520,136 @@ namespace ZumNet.Web.Areas.Docs.Controllers
             return strView;
         }
         #endregion
+
+        #region [반출입 관련]
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CheckOut()
+        {
+            string rt = "";
+            
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["mi"].ToString() == "") return "필수값 누락!";
+
+                    string sRealPath = Server.MapPath(jPost["path"].ToString().Replace(@"\", "/"));
+                    if (!System.IO.File.Exists(sRealPath))
+                    {
+                        rt = "NE" + "해당 파일이 존재하지 않습니다!";
+                    }
+                    else
+                    {
+                        ZumNet.Framework.Core.ServiceResult svcRt = null;
+                        using (ZumNet.BSL.ServiceBiz.DocBiz doc = new BSL.ServiceBiz.DocBiz())
+                        {
+                            svcRt = doc.CreateDocCheckOutInfo(Convert.ToInt32(jPost["mi"].ToString()), Convert.ToInt32(jPost["fi"].ToString())
+                                            , Convert.ToInt32(jPost["urid"].ToString()), jPost["exdt"].ToString(), jPost["desc"].ToString());
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            rt = "OK";
+                        }
+                        else
+                        {
+                            rt = svcRt.ResultMessage;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CheckIn()
+        {
+            string rt = "";
+            string sPos = "[100]";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["mi"].ToString() == "" || jPost["fi"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    sPos = "[200]";
+                    JObject jTemp = JObject.Parse("{}");
+                    jTemp["atttype"] = jPost["atttype"].ToString();
+                    jTemp["seq"] = jPost["seq"].ToString();
+                    jTemp["isfile"] = jPost["isfile"].ToString();
+                    jTemp["filename"] = jPost["filename"].ToString();
+                    jTemp["savedname"] = jPost["savedname"].ToString();
+                    jTemp["ext"] = jPost["ext"].ToString();
+                    jTemp["size"] = jPost["size"].ToString();
+                    jTemp["filepath"] = jPost["filepath"].ToString();
+                    jTemp["storagefolder"] = jPost["storagefolder"].ToString();
+
+                    if (jPost["ischange"].ToString() == "Y")
+                    {
+                        var jArr = new JArray();
+                        jArr.Add(jTemp);
+
+                        sPos = "[300]";
+                        AttachmentsHandler attachHdr = new AttachmentsHandler();
+                        svcRt = attachHdr.TempToStorage(Convert.ToInt32(Session["DNID"]), jPost["xf"].ToString(), jArr, null, null);
+                        if (svcRt.ResultCode != 0)
+                        {
+                            rt = svcRt.ResultMessage;
+                        }
+                        else
+                        {
+                            jTemp = (JObject)((JArray)svcRt.ResultDataDetail["FileInfo"])[0];
+                        }
+                    }
+                    else
+                    {
+                        sPos = "[400]";
+                        jTemp["prefix"] = "";
+                        jTemp["location"] = "";
+                    }
+
+                    if (rt == "")
+                    {
+                        sPos = "[500]";
+                        using (ZumNet.BSL.ServiceBiz.DocBiz doc = new BSL.ServiceBiz.DocBiz())
+                        {
+                            svcRt = doc.CreateDocCheckInInfo(Convert.ToInt32(Session["DNID"]), Convert.ToInt32(jPost["fi"].ToString()), Convert.ToInt32(jPost["parentid"].ToString())
+                                        , Convert.ToInt32(jPost["deptid"].ToString()), Convert.ToInt32(jPost["urid"].ToString()), jPost["ischange"].ToString(), jPost["xf"].ToString()
+                                        , Convert.ToInt32(jPost["mi"].ToString()), jTemp["filename"].ToString(), jTemp["savedname"].ToString(), jTemp["size"].ToString(), jTemp["ext"].ToString()
+                                        , jTemp["prefix"].ToString(), jTemp["location"].ToString(), jPost["autodel"].ToString()
+                                        , Convert.ToInt32(jPost["doclevel"].ToString()), Convert.ToInt32(jPost["keepyear"].ToString()));
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            rt = "OK";
+                        }
+                        else
+                        {
+                            rt = sPos + " " + svcRt.ResultMessage;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = sPos + " " + ex.Message;
+                }
+            }
+            return rt;
+        }
+        #endregion
     }
 }

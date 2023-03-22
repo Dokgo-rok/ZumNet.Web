@@ -388,10 +388,13 @@ namespace ZumNet.Web.Bc
                                 jTemp["doclevel"] = dr["DocLevel"].ToString();
                                 jTemp["keepyear"] = dr["KeepYear"].ToString();
                                 jTemp["docnumber"] = dr["DocNumber"].ToString().Trim();
-                                jTemp["exhdate"] = dr["ExhaustDate"].ToString();
-                                jTemp["regdate"] = dr["RegisteredDate"].ToString();
+                                jTemp["exhdate"] = CommonUtils.CheckDateTime(dr["ExhaustDate"].ToString(), "yyyy-MM-dd HH:mm:ss", "");
+                                jTemp["regdate"] = CommonUtils.CheckDateTime(dr["RegisteredDate"].ToString(), "yyyy-MM-dd HH:mm:ss", "");
                                 jTemp["docleveltext"] = dr["DocLevelName"].ToString();
                                 jTemp["keepyeartext"] = dr["KeepYearName"].ToString();
+
+                                jTemp["courid"] = dr["CheckOutUserID"].ToString();
+                                jTemp["parentid"] = dr["ParentAttachID"].ToString();
 
                                 jArr.Add(jTemp);
 
