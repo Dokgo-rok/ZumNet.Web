@@ -274,6 +274,9 @@
             </xsl:choose>
           </div>
           <div class="fm-editor">
+			  <xsl:if test="$mode!='new' and $mode!='edit'">
+				  <xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+			  </xsl:if>
             <xsl:choose>
               <xsl:when test="$mode='read'">
                 <xsl:if test="$mlvl='A' or $mlvl='B'">

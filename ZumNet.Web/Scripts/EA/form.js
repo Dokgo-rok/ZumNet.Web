@@ -2574,9 +2574,11 @@ $(function () {
 
             if (_zw.V.ft == 'MONTHFAULTYGOODS' || _zw.V.ft == 'MONTHFAULTYGOODSCTISM' || _zw.V.ft == 'MONTHLOSSCHART') { //작업불량품발생기안, 작업불량품발생기안CT(ISM), 월손실비용발생현황
                 doc["key1"] = $('#__mainfield[name="CORPORATION"]').val() + '-' + $('#__mainfield[name="STATSYEAR"]').val() + $('#__mainfield[name="STATSMONTH"]').val();
+                doc["key2"] = k2;
 
             } else if (_zw.V.ft == 'BIZTRIPDAILYREPORT') { //출장계획서, 해외출장일보
                 doc["key1"] = _zw.V.current.user + '-' + _zw.V.current.dept + '-' + $('#__mainfield[name="CORPORATION"]').val()
+                doc["key2"] = k2;
 
             } else {
                 doc["key1"] = k1;

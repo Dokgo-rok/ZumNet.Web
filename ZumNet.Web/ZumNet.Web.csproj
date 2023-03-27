@@ -854,7 +854,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_STAMPRECORD_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_STANDARDAPP_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_STANDARDAPP_V2.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_STANDARDAPP_V3.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_STANDARDAPP_V3.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_STANDARDCERTIFICATION_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_STANDARDCERTIFICATION_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_STANDARDDATA_V1.xsl" />
