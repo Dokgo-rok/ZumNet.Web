@@ -309,6 +309,7 @@ namespace ZumNet.Web.Bc
                         sPos = "300";
                         jV["parent"] = mainInfo["ParentMsgID"].ToString();
                         jV["att"] = mainInfo["AttType"].ToString();
+                        jV["inherited"] = mainInfo["Inherited"].ToString();
                         jV["msg"] = mainInfo["MsgType"].ToString();
                         jV["priority"] = "";
                         jV["state"] = mainInfo["State"].ToString();

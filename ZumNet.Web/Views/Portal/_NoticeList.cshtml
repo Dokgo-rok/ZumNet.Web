@@ -23,6 +23,8 @@
                 else if (row["noticls"].ToString().IndexOf("/ea") > 0) sNoticeCls = "전자결재";
                 else if (row["noticls"].ToString().IndexOf("/worktime") > 0) sNoticeCls = "근무관리";
                 else if (row["noticls"].ToString().IndexOf("/lcm") > 0) sNoticeCls = "교육관리";
+                else if (row["noticls"].ToString().IndexOf("/knowledge") > 0) sNoticeCls = "지식관리";
+                else if (row["noticls"].ToString().IndexOf("/edm") > 0) sNoticeCls = "문서관리";
                 else sNoticeCls = "알림";
 
                 sContents = row["contents"].ToString();

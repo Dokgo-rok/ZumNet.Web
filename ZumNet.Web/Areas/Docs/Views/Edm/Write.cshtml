@@ -65,12 +65,33 @@
 
             $('#_doc_acl :checkbox[data-for="acl"]').click(function () {
                 if ($(this).prop('checked')) {
-                    $('#_doc_Info').addClass('d-none');
+                    //$('#_doc_Info').addClass('d-none');
                     $('#_doc_acl > div:last()').removeClass('d-none');
+                    $('#_doc_acl .modal-footer .btn[data-zm-menu!="delete"]').focus();
                 } else {
-                    $('#_doc_Info').removeClass('d-none');
+                    //$('#_doc_Info').removeClass('d-none');
                     $('#_doc_acl > div:last()').addClass('d-none');
                 }
+            });
+
+            $('#_doc_acl :checkbox[aria-controls="acl"]').click(function () {
+                var selected = $('#_doc_acl .list-group-item-action.active[data-for]');
+                var sAcl = selected.attr('acl');
+
+                if ($(this).val() == 'V') sAcl = sAcl.substr(0, 5) + ($(this).prop('checked') ? 'V' : '_');
+                else if ($(this).val() == 'R') sAcl = sAcl.substr(0, 3) + 'M' + ($(this).prop('checked') ? 'R' : '_') + sAcl.substr(5); //읽기권한 경우 M 추가
+                else if ($(this).val() == 'E') sAcl = sAcl.substr(0, 2) + ($(this).prop('checked') ? 'E' : '_') + sAcl.substr(3);
+                else if ($(this).val() == 'D') sAcl = sAcl.substr(0, 1) + ($(this).prop('checked') ? 'D' : '_') + sAcl.substr(2);
+                else if ($(this).val() == 'S') sAcl = ($(this).prop('checked') ? 'S' : '_') + sAcl.substr(1);
+
+                selected.attr('acl', sAcl); //console.log(selected.attr('acl'));
+            });
+
+            $('#_doc_acl .modal-footer .btn[data-zm-menu="delete"]').click(function () {
+                var selected = $('#_doc_acl .list-group-item-action.active[data-for]');
+                var vId = selected.attr('data-for').split('.');
+                if (vId[0] == 'DN') bootbox.alert('삭제 할 수 없는 항목입니다!');
+                else selected.remove();
             });
         });
     </script>
@@ -103,10 +124,10 @@ else
     </div><!-- / .messages-wrapper -->
 }
 
-<script type="text/template" class="zf-coreg-template">
-    <li class="nav-item bg-info rounded d-flex align-items-center pl-2 pr-1 mt-1 mr-1" data-val="_1_{$id}">
-        <a class="text-white" href="javascript:void(0)" onclick="_zw.fn.viewUserSimpleInfo('{$id}');">{$coreg}</a>
-        <button class="btn btn-sm btn-18 ml-2 text-white"><span aria-hidden="true">×</span></button>
-    </li>
+<script type="text/template" class="zf-acl-template">
+    <a href="javascript:void(0)" onclick="_zw.fn.selectAcl();" class="list-group-item list-group-item-action py-1 d-flex" data-for="{$id}" acl="_____V">
+        <span class="wd-65 wd-lg-65 wd-xl-65 text-nowrap">{$dn}</span>
+        <span class="wd-35 wd-lg-35 wd-xl-35 text-nowrap">{$type}</span>
+    </a>
 </script>
 

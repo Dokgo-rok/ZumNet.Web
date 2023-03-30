@@ -462,7 +462,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
         }
         #endregion
 
-        #region [게시물 등록]
+        #region [게시물 등록, 수정, 삭제]
         /// <summary>
         /// 게시물 등록
         /// </summary>
@@ -473,7 +473,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
         public string Send()
         {
             string strView = "";
-            string strMsg = "등록 하였습니다";
+            string strMsg = "";
 
             if (Request.IsAjaxRequest())
             {
@@ -502,11 +502,19 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                     //jPost["attachxml"] = attachHdr.ConvertFileInfoToXml((JArray)jPost["attachlist"]);
                     //권한정보 -> xml 변환
                     string sAclInfo = "";
+                    if (jPost["hasacl"].ToString() == "Y" && jPost["acllist"].ToString() != "")
+                    {
+                        sAclInfo = WorkListHelper.JsonToXmlAcl((JArray)jPost["acllist"]);
+                    }
 
                     using (ZumNet.BSL.ServiceBiz.DocBiz docBiz = new BSL.ServiceBiz.DocBiz())
                     {
-                        svcRt = docBiz.SetDocMessage(Convert.ToInt32(Session["DNID"]), jPost, sAclInfo);
+                        if (jPost["M"].ToString() == "edit" && jPost["appid"].ToString() != "") svcRt = docBiz.ModifyDocMessage(Convert.ToInt32(Session["DNID"]), jPost, sAclInfo);
+                        else svcRt = docBiz.SetDocMessage(Convert.ToInt32(Session["DNID"]), jPost, sAclInfo);
                     }
+
+                    if (jPost["M"].ToString() == "edit") strMsg = "수정 하였습니다.";
+                    else strMsg = "등록 하였습니다.";
 
                     if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
                     else strView = "OK" + strMsg;
@@ -518,6 +526,43 @@ namespace ZumNet.Web.Areas.Docs.Controllers
             }
 
             return strView;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Delete()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["mi"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.DocBiz doc = new BSL.ServiceBiz.DocBiz())
+                    {
+                        svcRt = doc.DeleteDocMessage(jPost["xf"].ToString(), Convert.ToInt32(jPost["mi"].ToString()), Convert.ToInt32(jPost["urid"].ToString()));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
         }
         #endregion
 

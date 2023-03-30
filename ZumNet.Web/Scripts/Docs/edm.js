@@ -13,17 +13,17 @@ $(function () {
     }
 
     _zw.mu.editMsg = function (xf, m) { //alert(_zw.V.appid)
-        bootbox.alert('준비중!'); return;
+        //bootbox.alert('준비중!'); return;
         m = m || '';
         _zw.V.mode = '';
         _zw.V.wnd = 'popup';
         _zw.V.xfalias = xf;
 
-        if (m == 'temp') {
-            var el = event.target, p = $(el).parent().parent();
-            _zw.V.appid = p.attr('appid'); _zw.V.fdid = p.attr('fdid') != undefined ? p.attr('fdid') : _zw.V.fdid;
-            _zw.V.lv.sort = 'CreateDate'; _zw.V.lv.sortdir = 'DESC';
-        }
+        //if (m == 'temp') {
+        //    var el = event.target, p = $(el).parent().parent();
+        //    _zw.V.appid = p.attr('appid'); _zw.V.fdid = p.attr('fdid') != undefined ? p.attr('fdid') : _zw.V.fdid;
+        //    _zw.V.lv.sort = 'CreateDate'; _zw.V.lv.sortdir = 'DESC';
+        //}
         
         var postData = _zw.fn.getAppQuery(_zw.V.fdid); console.log(postData)
         var url = '/Docs/Edm/Edit?qi=' + encodeURIComponent(_zw.base64.encode(postData));
@@ -31,11 +31,36 @@ $(function () {
     }
 
     _zw.mu.deleteMsg = function () {
-        var el = event.target ? event.target : event.srcElement;
-        bootbox.alert('준비중!')
+        //for (var i = 0; i < _zw.V.app.attachlist.length; i++) {
+        //    console.log("LOCK => " + _zw.V.app.attachlist[i]["islocked"]);
+        //}
+
+        var idx = _zw.V.app.attachlist.findIndex(function (element) { if (element.islocked == 'Y') return true; });
+        if (idx > -1) {
+            bootbox.alert('반출 파일이 있는 문서는 삭제할 수 없습니다!'); return false;
+        } else {
+            bootbox.confirm("해당 문서를 삭제 하시겠습니까?", function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Docs/Edm/Delete",
+                        data: '{mi:"' + _zw.V.appid + '",xf:"' + _zw.V.xfalias + '",urid:"' + _zw.V.current.urid + '"}',
+                        success: function (res) {
+                            if (res == "OK") {
+                                if (opener && opener._zw.mu.refresh) opener._zw.mu.refresh();
+                                window.close();
+                            } else bootbox.alert(res);
+                        },
+                        beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
+                    });
+                }
+            });
+        }
     }
 
-    _zw.mu.registerMsg = function () {
+    _zw.mu.registerMsg = function (m) {
+        m = m || '';
+
         if (DEXT5UPLOAD.GetTotalFileSize() == 0) {
             bootbox.alert("파일을 선택하세요!"); return;
         }
@@ -50,7 +75,7 @@ $(function () {
             bootbox.alert("제목을 입력하세요.", function () { $subject.focus(); }); return;
         }
 
-        _zw.V.mode = "";
+        _zw.V.mode = m;
         bootbox.confirm("등록 하시겠습니까?", function (rt) {
             if (rt) { DEXT5UPLOAD.Transfer(); }
         });
@@ -65,6 +90,43 @@ $(function () {
             if (history.length > 1) history.back();
             else window.close();
         }
+    }
+
+    _zw.fn.selectAcl = function () {
+        var el = _zw.ut.eventBtn();
+
+        $('#_doc_acl .list-group-item-action[data-for]').each(function () {
+            $(this).removeClass('active');
+        });
+        el.addClass('active');
+
+        var vId = el.attr('data-for').split('.'), acl = el.attr('acl'); //console.log(vId + " : " + acl)
+        $('#_doc_acl :checkbox[aria-controls="acl"]').each(function () {
+            if ($(this).val() == 'V') {
+                $(this).prop('checked', acl.charAt(5) == 'V' ? true : false);
+                $(this).prop('disabled', vId[0] == 'DN' ? true : false);
+            }
+            else if ($(this).val() == 'R') $(this).prop('checked', acl.charAt(4) == 'R' ? true : false);
+            else if ($(this).val() == 'E') $(this).prop('checked', acl.charAt(2) == 'E' ? true : false);
+            else if ($(this).val() == 'D') $(this).prop('checked', acl.charAt(1) == 'D' ? true : false);
+            else if ($(this).val() == 'S') $(this).prop('checked', acl.charAt(0) == 'S' ? true : false);
+        });
+    }
+
+    _zw.fn.orgSelect = function (p, x) {
+        p.find('.zf-org .zf-org-select input:checkbox[data-for]').each(function () {
+            var info = JSON.parse($(this).attr('data-attr')); //console.log(info)
+            var dn = $(this).next().text(), vId = $(this).attr('data-for').split('.');
+
+            var s = $('.zf-acl-template').html();
+            s = s.replace('{$id}', vId[0].toUpperCase() + '.' + vId[1]);
+            s = s.replace('{$dn}', dn);
+            if (vId[0] == 'ur') s = s.replace('{$type}', '사용자');
+            else if (vId[0] == 'gr') s = s.replace('{$type}', '부서');
+
+            $('#_doc_acl .card .list-group').append(s);
+        });
+        p.modal('hide');
     }
 
     _zw.mu.checkOut = function (fi) {
@@ -195,7 +257,12 @@ $(function () {
     }
 
     _zw.mu.showFileVer = function (fi) {
-        bootbox.alert('준비중!')
+        $.post("/Docs/Edm/VersionInfo", '{"mi":"' + _zw.V.appid + '","fi":"' + fi + '"}', function (res) {
+            if (res.substr(0, 2) == 'OK') {
+                var p = $('#popBlank'); p.html(res.substr(2));
+
+            } else bootbox.alert(res);
+        });
     }
 
     _zw.mu.goList = function () {
@@ -302,12 +369,26 @@ $(function () {
 
     _zw.fn.sendForm = function () {
         var fileList = DEXT5UPLOAD.GetNewUploadListForText(); //DEXT5UPLOAD.GetNewUploadListForJson();
+        var fCnt = 0;
+        var jPost = {};
 
-        var jPost = _zw.V.app;
         jPost["ct"] = _zw.V.ct;
-        jPost["xfalias"] = $('#__FormView input[data-for="SelectedXFAlias"]').val();
-        jPost["fdid"] = $('#__FormView input[data-for="SelectedFolder"]').val();
         jPost["appid"] = _zw.V.appid;
+
+        if (_zw.V.mode == 'edit') {
+            if (_zw.V.fdid != $('#__FormView input[data-for="SelectedFolder"]').val()) {
+                jPost["xfalias"] = $('#__FormView input[data-for="SelectedXFAlias"]').val();
+                jPost["fdid"] = $('#__FormView input[data-for="SelectedFolder"]').val();
+                jPost["prev_fdid"] = _zw.V.fdid;
+            } else {
+                jPost["xfalias"] = _zw.V.xfalias;
+                jPost["fdid"] = 0;
+                jPost["prev_fdid"] = 0;
+            }
+        } else {
+            jPost["xfalias"] = $('#__FormView input[data-for="SelectedXFAlias"]').val();
+            jPost["fdid"] = $('#__FormView input[data-for="SelectedFolder"]').val();
+        }
 
         jPost["attachlist"] = []; //초기화
         if (fileList) {
@@ -331,18 +412,32 @@ $(function () {
                 jPost["attachlist"].push(v);
             }
 
-            jPost["attachcount"] = vFile.length > 2 ? 2 : vFile.length;
+            fCnt = _zw.V.app.attachlist.length + vFile.length;
+            jPost["attachcount"] = fCnt > 2 ? 2 : fCnt;
             jPost["attachsize"] = DEXT5UPLOAD.GetTotalFileSize();
         }
         else {
-            jPost["attachcount"] = 0;
+            fCnt = _zw.V.app.attachlist.length;
+            jPost["attachcount"] = fCnt > 2 ? 2 : fCnt;
         }
         //alert(vFile.length); return false;
         //console.log(jPost["imglist"]);
         //return;
 
         jPost["inherited"] = $('#_doc_acl :checkbox[data-for="acl"]').prop('checked') ? 'N' : 'Y';
-        jPost["hasacl"] = 'N';
+        jPost["acllist"] = [];
+        if (jPost["inherited"] == 'N') {
+            $('#_doc_acl .list-group-item-action[data-for]').each(function () {
+                var v = {}, vId = $(this).attr('data-for').split('.');
+                v["tgtype"] = vId[0];
+                v["tgid"] = vId[1];
+                v["acl"] = $(this).attr('acl');
+                v["isnew"] = ''; //new, change, delete (수정에서 사용)
+                v["desc"] = '';
+                jPost["acllist"].push(v);
+            });
+        }
+        jPost["hasacl"] = jPost["acllist"].length > 0 ? 'Y' : 'N';
 
         jPost["doclevel"] = $('#ddlDocLevel').val();
         jPost["keepyear"] = $('#ddlKeepYear').val();
@@ -399,7 +494,7 @@ function DEXT5UPLOAD_AfterAddItemEndTime() {
     // 파일 추가후 처리할 내용
     //DEXT5UPLOAD.TransferEx();
     var v = DEXT5UPLOAD.GetNewUploadListForJson();
-    if (v && (_zw.V.mode == '' || _zw.V.appid == '' || _zw.V.appid == '0')) {
+    if (v && (_zw.V.appid == '' || _zw.V.appid == '0')) {
         var fm = v.originalName[0];
         var pos = fm.lastIndexOf('.'); //alert(fm.substr(0, pos+1))
         $('#txtSubject').val(fm.substr(0, pos));
@@ -436,10 +531,16 @@ function DEXT5UPLOAD_CustomAction(uploadID, cmd) {
             var vFile = webFile.split(_zw.T.uploader.df);
             for (var i = 0; i < vFile.length; i++) {
                 var vInfo = vFile[i].split(_zw.T.uploader.da); //console.log(vInfo)
+
+                var idx = _zw.V.app.attachlist.findIndex(function (element) { if (element.attachid == vInfo[5] && element.islocked == 'Y') return true; });
+                if (idx > -1) {
+                    bootbox.alert('반출 중인 파일은 삭제할 수 없습니다!'); return false;
+                }
+
                 if (i > 0) sId += ';';
                 sId += vInfo[5];
             }
-        }
+        } //console.log(sId)
 
         if (newFile || webFile) {
             var msg = '삭제 하시겠습니까?' + (sId != '' ? ' 기존 첨부파일은 복구되지 않습니다.' : '');

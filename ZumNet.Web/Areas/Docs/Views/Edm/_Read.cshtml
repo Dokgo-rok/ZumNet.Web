@@ -3,10 +3,18 @@
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
 @using ZumNet.Framework.Util;
-
 @{
     bool bOwner = ViewBag.R.app["creurid"].ToString() == Session["URID"].ToString() ? true : false;
+    bool bDeletable = true;
     bool bDetail = false;
+
+    foreach (var j in ViewBag.R.app.attachlist)
+    {
+        if (j["islocked"].ToString() == "Y") //반출 중인 경우 삭제 불가
+        {
+            bDeletable = false; break;
+        }
+    }
 }
 @functions{
     private string ShowFileMenu(JToken info)
@@ -42,9 +50,9 @@
             sb.Append("</button>");
         }
 
-        sb.AppendFormat("<button type=\"button\" class=\"btn btn-lg btn-outline-info borderless p-1\" style=\"line-height: 1px\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"버전정보\" onclick=\"_zw.mu.showFileVer({0})\">", info["attachid"].ToString());
-        sb.Append("<span class=\"fas fa-info-circle\"></span>");
-        sb.Append("</button>");
+        //sb.AppendFormat("<button type=\"button\" class=\"btn btn-lg btn-outline-info borderless p-1\" style=\"line-height: 1px\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"버전정보\" onclick=\"_zw.mu.showFileVer({0})\">", info["attachid"].ToString());
+        //sb.Append("<span class=\"fas fa-info-circle\"></span>");
+        //sb.Append("</button>");
 
         return sb.ToString();
     }
@@ -86,6 +94,38 @@
 
         return sb.ToString();
     }
+
+    private string RenderACl(JArray info)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        if (info.Count > 0)
+        {
+            string sType = "";
+            foreach(JToken j in info)
+            {
+                if (j["tgttype"].ToString() == "DN") sType = "전사";
+                else if (j["tgttype"].ToString() == "GR") sType = "부서";
+                else if (j["tgttype"].ToString() == "UR") sType = "사용자";
+                else sType = "";
+
+                sb.AppendFormat("<a href=\"javascript:void(0)\" onclick=\"_zw.fn.selectAcl();\" class=\"list-group-item list-group-item-action py-1 d-flex\" data-for=\"{0}.{1}\" acl=\"{2}\">"
+            , j["tgttype"].ToString(), j["tgtid"].ToString(), j["acl"].ToString());
+                sb.AppendFormat("<span class=\"wd-65 wd-lg-65 wd-xl-65 text-nowrap\">{0}</span>", j["tgtname"].ToString());
+                sb.AppendFormat("<span class=\"wd-35 wd-lg-35 wd-xl-35 text-nowrap\">{0}</span>", sType);
+                sb.Append("</a>");
+            }
+        }
+        else
+        {
+            sb.AppendFormat("<a href=\"javascript:void(0)\" onclick=\"_zw.fn.selectAcl();\" class=\"list-group-item list-group-item-action py-1 d-flex\" data-for=\"DN.{0}\" acl=\"_____V\">", Session["DNID"].ToString());
+            sb.Append("<span class=\"wd-65 wd-lg-65 wd-xl-65 text-nowrap\">크레신</span>");
+            sb.Append("<span class=\"wd-35 wd-lg-35 wd-xl-35 text-nowrap\">전사</span>");
+            sb.Append("</a>");
+
+        }
+        return sb.ToString();
+    }
 }
 <!-- Header -->
 <div class="flex-grow-0">
@@ -106,9 +146,9 @@
                 }
                 @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
                 {
-                    @*<button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class="far fa-edit"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>*@
+                    <button class="btn btn-default font-weight-bold" onclick="_zw.mu.editMsg('@ViewBag.R.xfalias');" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify"><i class="far fa-edit text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Modify</span></button>
                 }
-                @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "D") || bOwner)
+                @if (bDeletable && (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "D") || bOwner))
                 {
                     <button class="btn btn-default font-weight-bold" onclick="_zw.mu.deleteMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
                 }
@@ -173,22 +213,22 @@
                         @*<div class="zf-uploader" id="__DextUpload"></div>*@
                         foreach (var j in ViewBag.R.app.attachlist)
                         {
-                    <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
-                        <div class="mr-2">
-                            <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
-                        </div>
-                        <div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64("\\" + j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
-                        <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
-                        @if (ViewBag.R.app["rsvd1"].ToString() == "" && ViewBag.R.app["rsvd2"].ToString() == "") //이관문서 X
-                        {
-                            if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
-                            {
-                            <div class="ml-2">
-                                @Html.Raw(ShowFileMenu(j))
+                            <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
+                                <div class="mr-2">
+                                    <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
+                                </div>
+                                <div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64("\\" + j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
+                                <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
+                                @if (ViewBag.R.app["rsvd1"].ToString() == "" && ViewBag.R.app["rsvd2"].ToString() == "") //이관문서 X
+                                {
+                                    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
+                                    {
+                                        <div class="ml-2">
+                                            @Html.Raw(ShowFileMenu(j))
+                                        </div>
+                                    }
+                                }
                             </div>
-                            }
-                        }
-                    </div>
                         }
                     }
                     else
@@ -209,9 +249,94 @@
             </div>
         }
 
-        <div class="container-p-x py-3">
-            @Html.Raw(ViewBag.R.app["body"])
+    <div class="container-p-x pt-3 mb-3">
+        <div class="form-group row mb-1">
+            <div class="col-form-label col-sm-2">문서등급</div>
+            <div class="col-sm-4 pt-2">@ViewBag.R.app["docleveltext"]</div>
+            <div class="col-form-label col-sm-2">보존년한</div>
+            <div class="col-sm-4 pt-2">@ViewBag.R.app["keepyeartext"]</div>
         </div>
+
+        <div class="form-group row mb-1">
+            <div class="col-form-label col-sm-2">개정번호</div>
+            <div class="col-sm-4 pt-2">@ViewBag.R.app["rsvd1"]</div>
+            <div class="col-form-label col-sm-2">키워드</div>
+            <div class="col-sm-4 pt-2">@ViewBag.R.app["rsvd2"]</div>
+        </div>
+
+        <div class="form-group row mb-1">
+            <div class="col-form-label col-sm-2">설명</div>
+            <div class="col-sm-10 pt-2">@Html.Raw(ViewBag.R.app["body"])</div>
+        </div>        
+    </div>  
+        
+    <div class="container-p-x py-3">
+        <div id="_doc_acl" class="">
+            <div class="form-group row mb-1">
+                <div class="col-form-label col-sm-2"><i class="fas fa-user-lock"></i> 보안</div>
+                <div class="col-sm-10 pt-2">
+                    <label class="custom-control custom-checkbox mb-0">
+                        <input type="checkbox" class="custom-control-input" disabled data-for="acl" @(ViewBag.R.app["inherited"].ToString() == "Y" ? " checked" : "") ) />
+                        <span class="custom-control-label">상위 폴더에서 권한 상속 받음</span>
+                    </label>
+                </div>
+            </div>
+            <div class="">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="card p-2">
+                            <div class="card-header bg-light py-1 px-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="wd-65 wd-lg-65 wd-xl-65 text-nowrap px-2">성명 / 부서명</div>
+                                    <div class="wd-35 wd-lg-35 wd-xl-35 text-nowrap">구분</div>
+                                </div>
+                            </div>
+                            <div class="card-body px-0 py-1" style="height: 200px; overflow: auto">
+                                <div class="list-group list-group-flush">
+                                    @Html.Raw(RenderACl(ViewBag.R.app["acllist"]))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 pt-2">
+                        <h6>문서에 대한 권한 설정</h6>
+                        <ul class="nav flex-column ml-3">
+                            <li class="nav-item my-1">
+                                <label class="custom-control custom-checkbox mb-0">
+                                    <input type="checkbox" class="custom-control-input" value="V" aria-controls="acl" />
+                                    <span class="custom-control-label">보기</span>
+                                </label>
+                            </li>
+                            <li class="nav-item my-1">
+                                <label class="custom-control custom-checkbox mb-0">
+                                    <input type="checkbox" class="custom-control-input" value="R" aria-controls="acl" />
+                                    <span class="custom-control-label">읽기</span>
+                                </label>
+                            </li>
+                            <li class="nav-item my-1">
+                                <label class="custom-control custom-checkbox mb-0">
+                                    <input type="checkbox" class="custom-control-input" value="E" aria-controls="acl" />
+                                    <span class="custom-control-label">수정</span>
+                                </label>
+                            </li>
+                            <li class="nav-item my-1">
+                                <label class="custom-control custom-checkbox mb-0">
+                                    <input type="checkbox" class="custom-control-input" value="D" aria-controls="acl" />
+                                    <span class="custom-control-label">삭제</span>
+                                </label>
+                            </li>
+                            <li class="nav-item my-1">
+                                <label class="custom-control custom-checkbox mb-0">
+                                    <input type="checkbox" class="custom-control-input" value="S" aria-controls="acl" />
+                                    <span class="custom-control-label">보안</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
         @if (bDetail)
         {

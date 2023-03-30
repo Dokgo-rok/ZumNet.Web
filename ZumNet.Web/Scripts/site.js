@@ -712,7 +712,7 @@ $(function () {
             var url = tgtPage + '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
             if (m == 'popup') {
-                if (_zw.V.xfalias == 'doc') _zw.ut.openWnd(url, "popupform" + (_zw.V.xfalias != '' ? '_' + _zw.V.xfalias : ''), 650, 500, "resize");
+                if (_zw.V.xfalias == 'doc') _zw.ut.openWnd(url, "popupform" + (_zw.V.xfalias != '' ? '_' + _zw.V.xfalias : ''), 640, 670, "resize");
                 else _zw.ut.openWnd(url, "popupform" + (_zw.V.xfalias != '' ? '_' + _zw.V.xfalias : ''), 800, 800, "resize");
 
             } else if (tgtPage.toLowerCase() == stdPage.toLowerCase()) {
@@ -969,7 +969,24 @@ $(function () {
                                             var wi = temp[3] && temp[3] != '' ? temp[3].split('=')[1] : '';
                                             _zw.fn.openXFormEx('read', temp[0].split('=')[1], temp[2].split('=')[1], temp[1].split('=')[1], wi);
                                             p.modal('hide'); _zw.fn.notice();
-                                            
+
+                                        } else if (notiCls.indexOf('/knowledge') > 0 || notiCls.indexOf('/edm') > 0) {
+                                            var temp = linkInfo.split(','); //ct=105,xf=knowledge,fdid=13222,appid=13222
+                                            var xf = temp[1].split('=')[1];
+                                            var postData = '{wnd:"popup",ct:"' + temp[0].split('=')[1] + '",ctalias:"",ot:"",alias:"",xfalias:"' + xf
+                                                + '",fdid:"' + temp[2].split('=')[1] + '",appid:"' + temp[3].split('=')[1] + '",opnode:"",ttl:"",acl:"'
+                                                + '",appacl:"",sort:"CreateDate",sortdir:"DESC",boundary:"' + _zw.V.lv.boundary + '"}'; //console.log(postData);
+
+                                            var url = '';
+                                            if (xf == 'knowledge') {
+                                                url = '/Docs/Kms/Read' + '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
+                                                _zw.ut.openWnd(url, "popupform_" + xf, 800, 800, "resize");
+
+                                            } else {
+                                                url = '/Docs/Edm/Read' + '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
+                                                _zw.ut.openWnd(url, "popupform_" + xf, 640, 670, "resize");
+                                            }
+
                                         } else {
                                             window.location.href = linkInfo;
                                         }
@@ -1153,11 +1170,11 @@ $(function () {
                                             bootbox.alert("중복된 부서 입니다!");
                                         } else {
                                             var s = $('.zf-org-template-group').html();
-                                            s = s.replace("{$id}", info["id"]).replace("{$group}", selected[0].text);
+                                            s = s.replace("{$id}", 'gr.' + info["id"]).replace("{$group}", selected[0].text);
 
                                             $('.zf-org .zf-org-select').append(s);
                                             //$('.zf-org .zf-org-select input:checkbox[data-for="' + info["id"] + '"]').attr('data-attr', '{"id":"' + info["id"] + '","gralias":"' + info["gralias"] + '", "hasmember": "' + info["hasmember"] + '","level":"' + info["level"] + '"}');
-                                            $('.zf-org .zf-org-select input:checkbox[data-for="' + info["id"] + '"]').attr('data-attr', JSON.stringify(info));
+                                            $('.zf-org .zf-org-select input:checkbox[data-for="gr.' + info["id"] + '"]').attr('data-attr', JSON.stringify(info));
                                         }
                                     }
                                 }
@@ -3063,13 +3080,16 @@ $(function () {
     }
 
     _zw.dext5 = {
-        "view": function (m) {
+        "view": function (m, xf) {
             if ($('#' + _zw.T.uploader.holder).length > 0) {
                 if (m == 'view') {
                     DEXT5UPLOAD.config.Mode = m;
                 } else if (m == 'edit') {
                     if (_zw.ut.isMobile()) DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,custom_remove|항목삭제';
-                    else DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,download,custom_remove|항목삭제,custom_up|위,custom_down|아래'; // remove,remove_all
+                    else {
+                        if (xf && xf == 'doc') DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,custom_remove|항목삭제,custom_up|위,custom_down|아래'; // remove,remove_all
+                        else DEXT5UPLOAD.config.ButtonBarEdit = 'add,open,download,custom_remove|항목삭제,custom_up|위,custom_down|아래'; // remove,remove_all
+                    }
                 }
 
                 DEXT5UPLOAD.config.UploadHolder = _zw.T.uploader.holder;
