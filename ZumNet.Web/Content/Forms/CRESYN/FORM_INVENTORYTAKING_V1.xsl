@@ -87,7 +87,7 @@
                         <!--<button onclick="parent.fnOption('external.chartcentercode',180,140,70,122,'','CORPORATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                           <img alt="" class="blt01" style="margin:0 0 1px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                         </button>-->
-						  <button type="button" class="btn btn-outline-secondary btn-18" title="법인" onclick="_zw.formEx.optionWnd('external.chartcentercode',200,304,-100,0,'','CORPORATION','COERPID','COERPSUBID','WRBGONGSURATE');">
+						  <button type="button" class="btn btn-outline-secondary btn-18" title="법인" onclick="_zw.formEx.optionWnd('external.chartcentercode',220,304,-100,0,'','CORPORATION','COERPID','COERPSUBID','WRBGONGSURATE');">
 							  <i class="fas fa-angle-down"></i>
 						  </button>
                       </xsl:when>
@@ -108,8 +108,8 @@
                       </xsl:when>
                       <xsl:when test="$mode='edit'">
                         <!--<input type="text" id="__mainfield" name="STATSYEAR" style="width:50px;font-size:13pt" class="txtYear" maxlength="4" data-inputmask="date;yyyy" value="{//forminfo/maintable/STATSYEAR}" />-->
-						  <select id="__mainfield" name="STATSYEAR" class="custom-select" style="width:100px;font-size:13pt">
-							  <xsl:value-of select="phxsl:optionYear2(2015, substring(string(//currentinfo/@date),1,4), string(//forminfo/maintable/STATSYEAR))" />
+						  <select id="__mainfield" name="STATSYEAR" class="custom-select d-inline-block" style="width:100px;font-size:13pt">
+							  <xsl:value-of disable-output-escaping="yes" select="phxsl:optionYear2(2015, substring(string(//currentinfo/@date),1,4), string(//forminfo/maintable/STATSYEAR))" />
 						  </select>
                       </xsl:when>
                       <xsl:otherwise>
