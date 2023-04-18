@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="XFormMain.aspx.cs" Inherits="ZumNet.Web.BizForce.EA.Forms.XFormMain" %>

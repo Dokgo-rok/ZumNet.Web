@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -512,7 +513,8 @@ namespace ZumNet.Web.Areas.WoA
 
 		private string CalcDateDiff(string sD, string eD)
 		{
-			TimeSpan ts = DateTime.Parse(eD) - DateTime.Parse(sD);
+			//TimeSpan ts = DateTime.Parse(eD) - DateTime.Parse(sD);
+			TimeSpan ts = Convert.ToDateTime(eD, new CultureInfo("ko-KR")) - Convert.ToDateTime(sD, new CultureInfo("ko-KR"));
 			if (ts.Days > 0) return ts.Days.ToString() + "d" + ts.Hours.ToString() + "h" + ts.Minutes.ToString() + "m";
 			else if (ts.Hours > 0) return ts.Hours.ToString() + "h" + ts.Minutes.ToString() + "m";
 			else return ts.Minutes.ToString() + "m";

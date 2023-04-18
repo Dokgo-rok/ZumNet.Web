@@ -790,13 +790,15 @@
       if (nodes[i].getAttribute("key") != '') {
         iT = calcTop(h, uY, nodes[i].getAttribute("key"));
         iL = iW/2 + i*iW;
-        szTo = iL + "px," + iT + "px";//log(iT + "==" + iL);
-        szVML += setTick(iT, iL, "", "", "", szStokeColor, "", nodes[i].text);
-        if (i > 0 && szFrom != "" && szTo != "") szVML += setLine(szFrom, szTo, "", szStokeColor, "", "", "", "");
+        //szTo = iL + "px," + iT + "px";//log(iT + "==" + iL);
+		szTo = iL + ";" + iT;
+        szVML += setTick2(iT, iL, "", "", "", szStokeColor, "", nodes[i].text);
+        //if (i > 0 && szFrom != "" && szTo != "") szVML += setLine(szFrom, szTo, "", szStokeColor, "", "", "", "");
+		if (i > 0 && szFrom != "" && szTo != "") szVML += setLine2(szFrom, szTo, "", szStokeColor, "", "", "", "");
         szFrom = szTo;
       }
     }
-    if (szVML != '') szVML += "<v:line></v:line>";//마지막 요소 표시가 안돼 강제로 넣음
+    //if (szVML != '') szVML += "<v:line></v:line>";//마지막 요소 표시가 안돼 강제로 넣음
     return szVML;
   }  
   function renderLineSpecialChart(data, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt) {
@@ -810,13 +812,15 @@
       if (v[0] != '') {
         iT = calcTop(h, uY, v[0]);
         iL = iW/2 + i*iW;
-        szTo = iL + "px," + iT + "px";
-        szVML += setTick(iT, iL, tw, th, tc, tsc, tdt, v[1], tls, tsw);
-        if (i > 0 && szFrom != "" && szTo != "") szVML += setLine(szFrom, szTo, lw, lc, "", "", ldt, "");
+        //szTo = iL + "px," + iT + "px";
+		szTo = iL + ";" + iT;
+        szVML += setTick2(iT, iL, tw, th, tc, tsc, tdt, v[1], tls, tsw);
+        //if (i > 0 && szFrom != "" && szTo != "") szVML += setLine(szFrom, szTo, lw, lc, "", "", ldt, "");
+		if (i > 0 && szFrom != "" && szTo != "") szVML += setLine(szFrom, szTo, lw, lc, "", "", ldt, "");
         szFrom = szTo;
       }
     }
-    if (szVML != '') szVML += "<v:line></v:line>";//마지막 요소 표시가 안돼 강제로 넣음
+    //if (szVML != '') szVML += "<v:line></v:line>";//마지막 요소 표시가 안돼 강제로 넣음
     return szVML;
   }
   function calcTop(y, uY, vlu) {
@@ -841,6 +845,28 @@
     if (dt == "") dt = "shortdash"; //Solid, ShortDash, ShortDot,ShortDashDot,ShortDashDotDot,Dot,Dash,LongDash,DashDot,LongDashDot,LongDashDotDot
     var ls = (arguments[8] != null && arguments[8] != "") ? arguments[8] : "single";
     return "<v:line from=\"" + f + "\" to=\"" + t + "\" strokeweight=\"" + sw + "\" strokecolor=\"" + sc + "\" style=\"position:absolute\" title=\"" + tt + "\"><v:stroke startarrow=\"" + sa + "\" endarrow=\"" + ea + "\" dashstyle=\"" + dt + "\" linestyle=\"" + ls + "\" /></v:line>"
+  }
+  function setTick2(t,l,w,h,c,sc,dt,tt) {//svg
+    if (w == "") w = 8; if (h == "") h = 8;
+    if (c == "") c = "#ff0000";
+    if (sc == "") sc = "#ff0000";//"#000000";
+    if (dt == "") dt = "solid";
+    var ls = (arguments[8] != null && arguments[8] != "") ? arguments[8] : "single";  //Single, ThinThin, ThinThick, ThickThin, ThickBetweenThin
+    var sw = (arguments[9] != null && arguments[9] != "") ? arguments[9] : "1";
+    //t -= h/2; l -= w/2;
+	return "<circle cx=\"" + l + "\" cy=\"" + t + "\" r=\"" + w/2 + "\" stroke=\"" + sc + "\" stroke-width=\"" + sw + "\" fill=\"" + c + "\" style=\"z-index:10; cursor:pointer\">" + (tt != '' ? "<title>" + tt + "</title>" : "") + "</circle>"
+  }
+  function setLine2(f,t,sw,sc,sa,ea,dt,tt) {//svg
+    if (sw == "") sw = "1";
+    if (sc == "") sc = "red";//"#000000";
+    if (sa == "") sa = "";  //block,classic,diamond,oval,open
+    if (ea == "") ea = "";
+    if (dt == "") dt = "2,2"; //"shortdash"; //Solid, ShortDash, ShortDot,ShortDashDot,ShortDashDotDot,Dot,Dash,LongDash,DashDot,LongDashDot,LongDashDotDot
+    var ls = (arguments[8] != null && arguments[8] != "") ? arguments[8] : "single";
+    //return "<v:line from=\"" + f + "\" to=\"" + t + "\" strokeweight=\"" + sw + "\" strokecolor=\"" + sc + "\" style=\"position:absolute\" title=\"" + tt + "\"><v:stroke startarrow=\"" + sa + "\" endarrow=\"" + ea + "\" dashstyle=\"" + dt + "\" linestyle=\"" + ls + "\" /></v:line>"
+	
+	var vf = f.split(';'), vt = t.split(';');
+	return "<line x1=\"" + vf[0] + "\" y1=\"" + vf[1] + "\" x2=\"" + vt[0] + "\" y2=\"" + vt[1] + "\" style=\"stroke:" + sc + ";stroke-width:" + sw + ";stroke-dasharray:" + dt + "\" />"
   }
   function baseStyle() {
     //return "html, body {margin:0px;padding:0px;width:100%}body {margin-bottom:2px;border:0;background-color:#ffffff;text-align:center;overflow:auto}.m,.m .ff,.m .fh,.m .fb,.m .fm,.m .fm1,.m .fm2,.m .fm3,.m .fm4,.m .fm-editor,.m .fm-lines {vertical-align:top}.m .ff {height:2px;font-size:1px}.m .fh {height:60px}.m .fb {height:80px}.m .fm-file,.m .fm-lines {text-align:left;}/* 폰트 */.fh h1 {font-family:굴림체;font-weight:bold}.si-tbl td {font-size:13px;font-family:궁서}.m .fm-lines .si-list td {font-size:12px;font-family:궁서}.m .ft td, .m .ft input, .m .ft select, .m .ft textarea, .m .ft div,.m .ft-sub td, .m .ft-sub input, .m .ft-sub select, .m .ft-sub textarea, .m .ft-sub div {font-size:13px;font-family:궁서}.m .ft-sub .ft-sub-sub td,.m .ft-sub .ft-sub-sub input,.m .ft-sub .ft-sub-sub select,.m .ft-sub .ft-sub-sub textarea,.m .ft-sub .ft-sub-sub div {font-size:13px;font-family:궁서}.m .fm span {font-size:14px;font-family:궁서}.m .fm label, .m .fm .fm-button, .m .fm .fm-button input, .m .fm-file td, .m .fm-file td a {font-size:13px;font-family:궁서}/* 로고 및 양식명 */.fh table {width:100%;height:100%}.fh .fh-l {width:150px;text-align:center}.fh .fh-m {padding-top:15px;text-align:center}.fh .fh-r {width:150px}.fh .fh-l img {border:0px solid red;vertical-align:middle;margin-top:0px}/* 결재칸 */.si-tbl {border:windowtext 1pt solid}.si-tbl td {vertical-align:middle;border-right:windowtext 1pt solid;border-bottom:windowtext 1pt solid}.si-tbl .si-title {text-align:center;background-color:#eeeeee}.si-tbl .si-top {height:20px;text-align:center;padding-top:1px}.si-tbl .si-middle {height:65px;text-align:center}.si-tbl .si-bottom {height:20px;text-align:center}.si-tbl img {margin:0px}.m .fm-lines {padding-top:10px}.m .fm-lines table {width:100%;height:100%}.m .fm-lines .si-list {border:windowtext 1pt solid}.m .fm-lines .si-list td {text-align:center;height:24px;word-break:break-all;border-right:windowtext 0pt solid;border-bottom:windowtext 1pt solid}.m .fm-lines .si-subtd {border:0;padding-left:8px}.m .fm-lines .si-subtd .si-sublist {border:0;border-left:1px dotted windowtext}.m .fm-lines .si-subtd .si-sublist td {text-align:center;height:20px;word-break:break-all;border-right:windowtext 0pt dotted;border-bottom:windowtext 1pt dotted}.m .fm-lines .si-hdr td {background-color:#eeeeee}.m .fm-lines .si-cur td {background-color:#f7f3c1}.m .fm-lines .si-list .si-pname, .m .fm-lines .si-subtd .si-sublist .si-pname {text-align:left;padding-left:2px;padding-right:1px}.m .fm-lines .si-list .si-cmnt, .m .fm-lines .si-subtd .si-sublist .si-cmnt {text-align:left;padding:2px}/* 버튼 스타일 */.btn_bg {height:21px;border:1 solid #b1b1b1;background:url('/BizForce/EA/Images/btn_bg.gif');background-color:#ffffff;font-size:11px;letter-spacing:-1px;margin:0 2 0 2;padding:0 0 0 0 ;	vertical-align:middle;cursor:pointer}img.blt01 {margin:0 2 0 -2 ; vertical-align:middle;}.si-tbl img {margin:0px}/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */.m .ft {border:windowtext 1pt solid}.m .ft td {height:24px;word-break:break-all;border-right:windowtext 1pt solid;border-bottom:windowtext 1pt solid;padding-left:2px;padding-right:2px;padding-top:1px}.m .ft .f-lbl,.m .ft .f-lbl1,.m .ft .f-lbl2,.m .ft .f-lbl3,.m .ft .f-lbl4 {text-align:center;background-color:#eeeeee}.m .ft input {height:20px}.fb table, .fm table, .fm1 table, .fm2 table, .fm3 table, .fm4 table {width:100%;height:100%}.fm span {width:100%;text-align:left}.fm .fm-button {text-align:right}/* 본문 하위 테이블 */.m .ft-sub {border:windowtext 1pt solid;table-layout:}.m .ft-sub td {height:24px;word-break:break-all;border-right:windowtext 1pt solid;border-top:windowtext 1pt solid;padding-left:2px;padding-right:2px;padding-top:1px}.m .ft-sub .f-lbl-sub {text-align:center;background-color:#eeeeee}.m .ft-sub textarea {height:90%}.m .ft-sub input {height:20px}.m .ft-sub .ft-sub-sub {width:100%;border:0}.m .ft-sub .ft-sub-sub td {height:24px;word-break:break-all;border:0;border-right:windowtext 1pt solid;border-bottom:windowtext 1pt solid;padding-left:2px;padding-right:2px;padding-top:1px}.m .ft-sub .ft-sub-sub .f-lbl-sub {text-align:center;background-color:#eeeeee}.m .ft-sub textarea,.m .ft-sub .ft-sub-sub textarea {height:90%}.m .ft-sub input,.m .ft-sub .ft-sub-sub input {height:20px}/* 첨부파일 */.m .fm-file table {height:100%}.m .fm-file td.file-title {vertical-align:top}.m .fm-file td.file-end {vertical-align:bottom;padding:0 0 3px 10px}.m .fm-file td.file-info {vertical-align:top}.m .fm-file td.file-info div {height:20px}/* 각종 필드 정의 - txt : input, txa : textarea */.m .txtText {ime-mode:active;width:100%;padding-top:1px}.m .txtText_m {ime-mode:active;width:100%;border:1px solid red;padding-top:1px}.m .txtText_u {ime-mode:active;width:100%;border:0;border-bottom:1px solid #aaaaaa}.m .txaText {ime-mode:active;width:100%;overflow:auto}.m .txtNo {width:100%;padding-top:1px;padding-right:2;text-align:right}.m .txtNumberic, .m .txtVolume {width:100%;padding-top:1px;direction:rtl;padding-right:2;ime-mode:disabled}.m .txtJuminDash {width:100%;padding-top:1px;padding-right:2;text-align:center;ime-mode:disabled}.m .txtCurrency, .m .txtDollar, .m .txtDollar1, .m .txtDollar2, .m .txtDollarMinus1, .m .txtDollarMinus2, .m .txtDollarMinus3{direction:rtl;ime-mode:active;width:100%;padding-top:1px;padding-right:2;text-align:right;}.m .txtDate,.m .txtDateDot,.m .txtDateSlash,m .txtDateKo,.m .txtYear,.m .txtMonth,.m .txtHHmm,.m .txtHHmmss{ime-mode:disabled;width:100%;padding-top:1px;text-align:center;}.m .txtCalculate {ime-mode:active;width:100%;padding-top:1px;padding-right:2}.m .txaRead {width:100%;text-align:left}.m .txtRead {width:100%;border:0;padding-top:1px}.m .txtRead_Right {width:100%;border:0;padding-top:1px;padding-right:2;text-align:right}.m .txtRead_Center {width:100%;border:0;padding-top:1px;text-align:center}.m .ddlSelect {width:100%}.m .tdRead_Center {text-align:center}.m .tdRead_Right {text-align:right}/* 인쇄 설정 : 맨하단으로 */@media print {.m .fb td a, .m .fm-file td a {text-decoration:none;color:#000000}.m .fm-lines {padding-top:0}.m .fm-lines .si-hdr td,.m .fm-lines .si-cur td,.si-tbl .si-title,.m .ft .f-lbl,.m .ft .f-lbl1,.m .ft .f-lbl2,.m .ft .f-lbl3,.m .ft .f-lbl4,.m .ft-sub .f-lbl-sub,.m .ft-sub .ft-sub-sub .f-lbl-sub {background-color:#ffffff}}"

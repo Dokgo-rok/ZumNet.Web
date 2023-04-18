@@ -1,0 +1,12 @@
+﻿.table th, .table td {
+    padding: .375rem 0.5rem;
+    vertical-align: middle;
+}
+
+.light-style div.card-datatable table.dataTable thead th:first-child, .light-style div.card-datatable table.dataTable tbody td:first-child, .light-style div.card-datatable table.dataTable tfoot th:first-child {
+    padding-left: .5rem;
+}
+
+.light-style div.card-datatable table.dataTable thead th:first-child, .light-style div.card-datatable table.dataTable tbody td:first-child, .light-style div.card-datatable table.dataTable tfoot th:first-child {
+    padding-left: .5rem !important;
+}

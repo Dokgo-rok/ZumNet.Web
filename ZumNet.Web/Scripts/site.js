@@ -1899,10 +1899,8 @@ $(function () {
                     guide: false
                 });
             }
-
-            $(e).blur(function () {
-                _zw.fn.onblur(e, v);
-            });
+            $(e).off('blur');
+            $(e).blur(function () { _zw.fn.onblur(e, v); });
         },
         "destroyInput": function (e) {
             var m = vanillaTextMask.maskInput({ inputElement: e }); m.destroy();

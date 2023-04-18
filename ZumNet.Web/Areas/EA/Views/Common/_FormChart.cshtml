@@ -21,9 +21,9 @@
         DataTable dt = null;
         StringBuilder sbData = null;
         StringBuilder sbData2 = null;
-        //StringBuilder sbData3 = null;
-        //StringBuilder sbColumn = null;
-        //StringBuilder sbSubColumn = null;
+        StringBuilder sbData3 = null;
+        StringBuilder sbColumn = null;
+        StringBuilder sbSubColumn = null;
 
         string strReturn = "";
 
@@ -39,9 +39,9 @@
 
             sbData = new StringBuilder();
             sbData2 = new StringBuilder();
-            //sbData3 = new StringBuilder();
-            //sbColumn = new StringBuilder();
-            //sbSubColumn = new StringBuilder();
+            sbData3 = new StringBuilder();
+            sbColumn = new StringBuilder();
+            sbSubColumn = new StringBuilder();
 
             int iCurrent = 0;
             if (postData["fk"].ToString().IndexOf('-') < 1) iCurrent = Convert.ToInt32(postData["fk"].ToString().Substring(4));
@@ -337,6 +337,176 @@
             else
             {
                 #region [차트]
+                if (dsChart != null && dsChart.Tables.Count > 0)
+                {
+                    //Response.Write("A:" + dsChart.Tables.Count.ToString() + "----");
+
+                    for (int j = 0; j < dsChart.Tables.Count; j++)
+                    {
+                        dt = dsChart.Tables[j];
+                        if (j == 0)
+                        {
+                            //Response.Write(dt.Rows.Count.ToString() + "----");
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                foreach (DataColumn col in dt.Columns)
+                                {
+                                    if (postData["ft"].ToString() == "FORM_MONTHFAULTYGOODS" && i > 36)
+                                    {
+                                        if (iCurrent + 36 == i)
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, postData["v5"].ToString());
+                                        }
+                                        else if (iCurrent + 48 == i)
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, postData["v4"].ToString());
+                                        }
+                                        else if (iCurrent + 60 == i)
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, postData["v2"].ToString());
+                                        }
+                                        else
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, row[col.ColumnName].ToString());
+                                        }
+
+                                        if (i > 37 && i <= 48) sbData2.Append(this._secondDel);
+                                        if (iCurrent + 36 == i)
+                                        {
+                                            sbData2.AppendFormat("{0}{1}{2}월 점유율:{0}%", postData["v5"].ToString(), this._firstDel, (i - 36).ToString());
+                                        }
+                                        else if (i <= 48)
+                                        {
+                                            sbData2.AppendFormat("{0}{1}{2}월 점유율:{0}%", row[col.ColumnName].ToString(), this._firstDel, (i - 36).ToString());
+                                        }
+                                    }
+                                    else if (i > 12)
+                                    {
+                                        if (iCurrent + 12 == i)
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, postData["v1"].ToString());
+                                        }
+                                        else if (iCurrent + 24 == i)
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, postData["v2"].ToString());
+                                        }
+                                        else if (iCurrent + 36 == i)
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, postData["v4"].ToString());
+                                        }
+                                        else if (iCurrent + 48 == i)
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, postData["v5"].ToString());
+                                        }
+                                        else
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, row[col.ColumnName].ToString());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (iCurrent == i)
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, postData["v3"].ToString());
+                                        }
+                                        else
+                                        {
+                                            sbColumn.AppendFormat("{0}{1}{2}{3}", this._secondDel, col.ColumnName, this._firstDel, row[col.ColumnName].ToString());
+                                        }
+
+                                        if (i > 1) sbData.Append(this._secondDel);
+                                        if (iCurrent == i)
+                                        {
+                                            sbData.AppendFormat("{0}{1}{2}월 점유율:{0}%", postData["v3"].ToString(), this._firstDel, i.ToString());
+                                        }
+                                        else
+                                        {
+                                            sbData.AppendFormat("{0}{1}{2}월 점유율:{0}%", row[col.ColumnName].ToString(), this._firstDel, i.ToString());
+                                        }
+                                    }
+                                    i++;
+                                }
+                            }
+                        }
+                        else if (j == 1)
+                        {
+                            for (int x = 0; x < dt.Columns.Count; x++)
+                            {
+                                if (x == iCurrent) break;
+                                //[["필드명",["순서;값","순서;값"]],["필드명",["순서;값","순서;값"]]]
+                                DataColumn col = dt.Columns[x];
+                                if (x == 0) sbSubColumn.AppendFormat("[\"{0}\",[", col.ColumnName);
+                                else sbSubColumn.AppendFormat(",[\"{0}\",[", col.ColumnName);
+                                for (int y = 0; y < dt.Rows.Count; y++)
+                                {
+                                    DataRow row = dt.Rows[y];
+                                    if (y == 0) sbSubColumn.AppendFormat("\"{0};{1}\"", row["ROWSEQ"].ToString(), row[col.ColumnName].ToString());
+                                    else sbSubColumn.AppendFormat(",\"{0};{1}\"", row["ROWSEQ"].ToString(), row[col.ColumnName].ToString());
+                                }
+                                sbSubColumn.Append("]]");
+                            }
+                        }
+                    }
+                    //Response.Write(sbData.ToString() + " : " + i.ToString());
+
+                    if (sbData2.Length > 0) strReturn = RenderLineChart(sbData.ToString(), Convert.ToInt32(postData["w"]), Convert.ToInt32(postData["h"]), Convert.ToDouble(postData["uY"])) + RenderLineChart(sbData2.ToString(), Convert.ToInt32(postData["w"]), Convert.ToInt32(postData["h"]), Convert.ToDouble(postData["uY"]), "blue") + sbColumn.ToString() + this._secondDel + "var jsonString = [" + sbSubColumn.ToString() + "]";
+                    else strReturn = RenderLineChart(sbData.ToString(), Convert.ToInt32(postData["w"]), Convert.ToInt32(postData["h"]), Convert.ToDouble(postData["uY"])) + sbColumn.ToString() + this._secondDel + "var jsonString = [" + sbSubColumn.ToString() + "]";
+                    //ResponseText(this._secondDel + strReturn);
+                    strReturn = "OK" + this._secondDel + strReturn;
+                }
+                else
+                {
+                    if (postData["ft"].ToString() == "FORM_MONTHLOSSCHART")
+                    {
+                        for (int k = 1; k <= 12; k++)
+                        {
+                            if (k > 1) sbData.Append(this._secondDel);
+                            if (k == iCurrent) sbData.AppendFormat("{0}{1}{2}월 점유율:{0}%", postData["v3"].ToString(), this._firstDel, k.ToString());
+                            else sbData.AppendFormat("{0}{1}", "", this._firstDel);
+                        }
+                        strReturn = RenderLineChart(sbData.ToString(), Convert.ToInt32(postData["w"]), Convert.ToInt32(postData["h"]), Convert.ToDouble(postData["uY"])) + this._secondDel + "var jsonString = []";
+                        strReturn = "OK" + this._secondDel + strReturn;
+                    }
+                    else
+                    {
+                        for (int k = 1; k <= 12; k++)
+                        {
+                            if (k > 1)
+                            {
+                                sbData.Append(this._secondDel);
+                                sbData2.Append(this._secondDel);
+                            }
+                            if (k == iCurrent)
+                            {
+                                sbColumn.AppendFormat("{0}SHARE{1}{2}{3}", this._secondDel, k.ToString(), this._firstDel, postData["v3"].ToString());
+                                sbColumn.AppendFormat("{0}SALES{1}{2}{3}", this._secondDel, k.ToString(), this._firstDel, postData["v1"].ToString());
+                                sbColumn.AppendFormat("{0}FAULT{1}{2}{3}", this._secondDel, k.ToString(), this._firstDel, postData["v2"].ToString());
+
+                                sbColumn.AppendFormat("{0}BUYSHARE{1}{2}{3}", this._secondDel, k.ToString(), this._firstDel, postData["v5"].ToString());
+                                sbColumn.AppendFormat("{0}BUY{1}{2}{3}", this._secondDel, k.ToString(), this._firstDel, postData["v4"].ToString());
+                                sbColumn.AppendFormat("{0}BUYFAULT{1}{2}{3}", this._secondDel, k.ToString(), this._firstDel, postData["v2"].ToString());
+
+                                sbData.AppendFormat("{0}{1}{2}월 점유율:{0}%", postData["v3"].ToString(), this._firstDel, k.ToString());
+                                sbData2.AppendFormat("{0}{1}{2}월 점유율:{0}%", postData["v5"].ToString(), this._firstDel, k.ToString());
+                            }
+                            else
+                            {
+                                sbColumn.AppendFormat("{0}SHARE{1}{2}", this._secondDel, k.ToString(), this._firstDel);
+                                sbColumn.AppendFormat("{0}SALES{1}{2}", this._secondDel, k.ToString(), this._firstDel);
+                                sbColumn.AppendFormat("{0}FAULT{1}{2}", this._secondDel, k.ToString(), this._firstDel);
+
+                                sbColumn.AppendFormat("{0}BUYSHARE{1}{2}", this._secondDel, k.ToString(), this._firstDel);
+                                sbColumn.AppendFormat("{0}BUY{1}{2}", this._secondDel, k.ToString(), this._firstDel);
+                                sbColumn.AppendFormat("{0}BUYFAULT{1}{2}", this._secondDel, k.ToString(), this._firstDel);
+
+                                sbData.AppendFormat("{0}{1}", "", this._firstDel);
+                                sbData2.AppendFormat("{0}{1}", "", this._firstDel);
+                            }
+                        }
+                        strReturn = RenderLineChart(sbData.ToString(), Convert.ToInt32(postData["w"]), Convert.ToInt32(postData["h"]), Convert.ToDouble(postData["uY"])) + RenderLineChart(sbData2.ToString(), Convert.ToInt32(postData["w"]), Convert.ToInt32(postData["h"]), Convert.ToDouble(postData["uY"]), "blue") + sbColumn.ToString() + this._secondDel + "var jsonString = [" + sbSubColumn.ToString() + "]";
+                        strReturn = "OK" + this._secondDel + strReturn;
+                    }
+                }
                 #endregion
             }
 
@@ -351,9 +521,9 @@
             if (dsChart != null) { dsChart.Dispose(); dsChart = null; }
             sbData = null;
             sbData2 = null;
-            //sbData3 = null;
-            //sbColumn = null;
-            //sbSubColumn = null;
+            sbData3 = null;
+            sbColumn = null;
+            sbSubColumn = null;
         }
 
         return strReturn;
@@ -472,5 +642,122 @@
         //}
 
     }
+
+    #region [VML, SVG 그리기]
+    private string RenderLineChart(string data, int w, int h, double uY)
+    {
+        return RenderLineChart(data, w, h, uY, "", "", "", "");
+    }
+
+    private string RenderLineChart(string data, int w, int h, double uY, string strokeColor)
+    {
+        return RenderLineChart(data, w, h, uY, strokeColor, "", "", "");
+    }
+
+    private string RenderLineChart(string data, int w, int h, double uY, string strokeColor, string tickColor, string tickDash, string lineDash)
+    {
+        double iW = 0;
+        double iH = h;
+        double iY = uY;
+        double iTop = 0;
+        double iLeft = 0;
+        string strFrom = "";
+        string strTo = "";
+
+        //string[] vData = "3.5;2.1;1.4;3.7;4.1;0.7;1.6;2.1;4.9;1.8;2.3;3.4".Split(';');
+        string strKey = "";
+        string strValue = "";
+        string[] vData = data.Split(this._secondDel);
+        iW = w / vData.Length;
+
+        //Response.Write(data + " : " + vData.Length.ToString() + " : " + iW.ToString());
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < vData.Length; i++)
+        {
+            strKey = vData[i].Split(this._firstDel)[0];
+            strValue = vData[i].Split(this._firstDel)[1];
+
+            if (strKey != "")
+            {
+                iTop = calcTop(iH, iY, Convert.ToDouble(strKey));
+                iLeft = iW / 2 + i * iW;
+                //strTo = iLeft.ToString() + "px," + iTop.ToString() + "px";
+                strTo = iLeft.ToString() + ";" + iTop.ToString();
+                sb.Append(setTick2(iTop, iLeft, 0, 0, tickColor, strokeColor, tickDash, strValue));
+                if (i > 0 && strFrom != "" && strTo != "") sb.Append(setLine2(strFrom, strTo, "", strokeColor, "", "", lineDash, strValue));
+                strFrom = strTo;
+            }
+            //Response.Write(" * " + i.ToString() + "-" + sb.ToString());
+        }
+        //if (sb.ToString() != "") sb.Append("<v:line></v:line>");//마지막 요소 표시가 안돼 강제로 넣음
+        return sb.ToString();
+    }
+
+    private double calcTop(double y, double uY, double vlu)
+    {
+        return y - Math.Round(y * vlu / uY);
+    }
+
+    private string RenderBarChart()
+    {
+        return "";
+    }
+
+    /// <summary>
+    /// 값이 위치한 지점 표시하기
+    /// </summary>
+    private string setTick(double top, double left, double width, double height, string color, string strokeColor, string dashType, string toolTip)
+    {
+        if (width == 0) width = 8;
+        if (height == 0) height = 8;
+        if (color == "") color = "#ffffff";
+        if (strokeColor == "") strokeColor = "red";// "#000000";
+        if (dashType == "") dashType = "solid";
+        top -= height / 2;
+        left -= width / 2;
+        return String.Format("<v:oval style=\"z-index:10;position:absolute;top:{0}px;left:{1}px;width:{2}px;height:{3}px;cursor:hand\" fillcolor=\"{4}\" strokecolor=\"{5}\" title=\"{6}\"><v:stroke dashstyle=\"{7}\" /></v:oval>", top.ToString(), left.ToString(), width.ToString(), height.ToString(), color, strokeColor, toolTip, dashType);
+    }
+
+    private string setTick2(double top, double left, double width, double height, string color, string strokeColor, string dashType, string toolTip)
+    {
+        if (width == 0) width = 8;
+        if (height == 0) height = 8;
+        if (color == "") color = "#ff0000";
+        if (strokeColor == "") strokeColor = "#ff0000";// "#000000";
+        if (dashType == "") dashType = "solid";
+        //top -= height / 2;
+        //left -= width / 2;
+        return String.Format("<circle cx=\"{0}\" cy=\"{1}\" r=\"{2}\" stroke=\"{3}\" stroke-width=\"{4}\" fill=\"{5}\" style=\"z-index:10; cursor:pointer\"><title>{6}</title></circle>"
+                , left.ToString(), top.ToString(), (width / 2).ToString(), strokeColor, "1", color, toolTip);
+    }
+
+    /// <summary>
+    /// 표시한 두 지점 연결하기
+    /// </summary>
+    private string setLine(string from, string to, string strokeWeight, string strokeColor, string startArrow, string endArrow, string dathType, string toolTip)
+    {
+        if (strokeWeight == "") strokeWeight = "1px";
+        if (strokeColor == "") strokeColor = "red";// "#000000";
+        if (startArrow == "") startArrow = "";  //block,classic,diamond,oval,open
+        if (endArrow == "") endArrow = "";
+        if (dathType == "") dathType = "shortdash"; //Solid, ShortDash, ShortDot,ShortDashDot,ShortDashDotDot,Dot,Dash,LongDash,DashDot,LongDashDot,LongDashDotDot
+        return String.Format("<v:line from=\"{0}\" to=\"{1}\" strokeweight=\"{2}\" strokecolor=\"{3}\" style=\"position:absolute\" title=\"{7}\"><v:stroke startarrow=\"{4}\" endarrow=\"{5}\" dashstyle=\"{6}\" /></v:line>", from, to, strokeWeight, strokeColor, startArrow, endArrow, dathType, toolTip);
+    }
+
+    private string setLine2(string from, string to, string strokeWeight, string strokeColor, string startArrow, string endArrow, string dathType, string toolTip)
+    {
+        if (strokeWeight == "") strokeWeight = "1";
+        if (strokeColor == "") strokeColor = "#ff0000";// "#000000";
+        if (startArrow == "") startArrow = "";  //block,classic,diamond,oval,open
+        if (endArrow == "") endArrow = "";
+        if (dathType == "") dathType = "2,2"; //shortdash, Solid, ShortDash, ShortDot,ShortDashDot,ShortDashDotDot,Dot,Dash,LongDash,DashDot,LongDashDot,LongDashDotDot
+        string[] vf = from.Split(';');
+        string[] vt = to.Split(';');
+
+        return String.Format("<line x1=\"{0}\" y1=\"{1}\" x2=\"{2}\" y2=\"{3}\" style=\"stroke:{4};stroke-width:{5};stroke-dasharray:{6}\" />"
+                        , vf[0], vf[1], vt[0], vt[1], strokeColor, strokeWeight, dathType);
+    }
+    #endregion
 }
 @Html.Raw(GetFormChart(ViewBag.JPost))

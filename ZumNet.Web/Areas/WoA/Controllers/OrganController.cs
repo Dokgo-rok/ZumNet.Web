@@ -1210,5 +1210,71 @@ namespace ZumNet.Web.Areas.WoA.Controllers
         }
 
         #endregion
+
+        #region [ /Woa/Oragn/ESPUser ]
+        [Authorize]
+        public ActionResult ESPUser()
+        {
+            ServiceResult svcRt = new ServiceResult();
+
+            System.Data.SqlClient.SqlParameter[] parameters = new System.Data.SqlClient.SqlParameter[]
+            {
+                Framework.Data.ParamSet.Add4Sql("@mode", SqlDbType.VarChar, 1, "")
+            };
+
+            using (ZumNet.BSL.InterfaceBiz.ExecuteBiz execBiz = new BSL.InterfaceBiz.ExecuteBiz())
+            {
+                svcRt = execBiz.ExecuteProcedure("dbo.zp_BT_selectESPUSR", 30, parameters);
+            }
+
+            return View(svcRt.ResultDataSet);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public string ESPUserCreate()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                ServiceResult svcRt = new ServiceResult();
+
+                System.Data.SqlClient.SqlParameter[] parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    Framework.Data.ParamSet.Add4Sql("@urid", SqlDbType.Int, StringHelper.SafeInt(jPost["urid"].ToString()))
+                };
+
+                using (ZumNet.BSL.InterfaceBiz.ExecuteBiz execBiz = new BSL.InterfaceBiz.ExecuteBiz())
+                {
+                    svcRt = execBiz.ExecuteProcedureTx("dbo.zp_BT_createESPUSR", 15, parameters);
+                }
+
+                if (svcRt.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = $"구매포탈 사용자 생성 실패 :: {svcRt.ResultMessage}";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+        #endregion
     }
 }

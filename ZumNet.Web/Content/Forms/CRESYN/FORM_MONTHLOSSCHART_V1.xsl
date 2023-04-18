@@ -20,7 +20,7 @@
   <!--<xsl:strip-space elements="*"/>-->
   <xsl:template match="/">
     <xsl:value-of select="phxsl:init(string($root), string(//config/@companycode), string(//config), string($partid), string($bizrole), string($actrole))"/>
-    <html xmlns:v="urn:schemas-microsoft-com:vml">
+    <html>
       <head>
         <title>전자결재</title>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -33,7 +33,7 @@
           .fm1 h2 {font-size:20pt;letter-spacing:1pt;margin:0}
 
           /* 차트 */
-          v\: * { behavior:url(#default#VML);display:inline-block }
+          <!--v\: * { behavior:url(#default#VML);display:inline-block }-->
 
           .m .fm-chart {border:windowtext 1pt solid}
           .m .fm-chart .fc {width:100%;height:100%}
@@ -43,7 +43,7 @@
           .m .fm-chart .fc-axis-y {font-size:1px;border-right:1px solid windowtext;border-left:0px solid red}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:8%} .m .ft .f-lbl1 {width:?} .m .ft .f-lbl2 {width:?}
@@ -60,18 +60,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -84,13 +80,16 @@
                             <xsl:value-of select="//forminfo/maintable/CORPORATION" />
                           </xsl:attribute>
                         </input>
-                        <button onclick="parent.fnOption('external.chartcentercode',180,140,70,122,'','CORPORATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                        <!--<button onclick="parent.fnOption('external.chartcentercode',180,140,70,122,'','CORPORATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                           <img alt="" class="blt01" style="margin:0 0 2px 0">
                             <xsl:attribute name="src">
                               /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                             </xsl:attribute>
                           </img>
-                        </button>
+                        </button>-->
+						  <button type="button" class="btn btn-outline-secondary btn-18" title="생산지" onclick="_zw.formEx.optionWnd('external.chartcentercode',240,274,-130,0,'','CORPORATION');">
+							  <i class="fas fa-angle-down"></i>
+						  </button>
                       </xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CORPORATION))" />
@@ -98,22 +97,18 @@
                     </xsl:choose>&nbsp;
                     <xsl:choose>
                       <xsl:when test="$mode='new'">
-                        <input type="text" id="__mainfield" name="STATSYEAR" style="width:80px;font-size:19pt">
-                          <xsl:attribute name="class">txtYear</xsl:attribute>
-                          <xsl:attribute name="maxlength">4</xsl:attribute>
-                          <xsl:attribute name="value">
-                            <xsl:value-of select="substring(string(//docinfo/createdate),1,4)" />
-                          </xsl:attribute>
-                        </input>
+                        <input type="text" id="__mainfield" name="STATSYEAR" class="txtYear" maxlength="4" data-inputmask="date;yyyy" style="width:80px;font-size:19pt">
+						    <xsl:attribute name="value">
+                                <xsl:value-of select="substring(string(//docinfo/createdate),1,4)" />
+                              </xsl:attribute>  
+					      </input>					  
                       </xsl:when>
                       <xsl:when test="$mode='edit'">
-                        <input type="text" id="__mainfield" name="STATSYEAR" style="width:80px;font-size:19pt">
-                          <xsl:attribute name="class">txtYear</xsl:attribute>
-                          <xsl:attribute name="maxlength">4</xsl:attribute>
-                          <xsl:attribute name="value">
-                            <xsl:value-of select="//forminfo/maintable/STATSYEAR" />
-                          </xsl:attribute>
-                        </input>
+						  <input type="text" id="__mainfield" name="STATSYEAR" class="txtYear" maxlength="4" data-inputmask="date;yyyy" style="width:80px;font-size:19pt">
+					        <xsl:attribute name="value">
+                                <xsl:value-of select="//forminfo/maintable/STATSYEAR" />
+                              </xsl:attribute>  
+					      </input>
                       </xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of select="//forminfo/maintable/STATSYEAR" />
@@ -121,19 +116,15 @@
                     </xsl:choose>년
                     <xsl:choose>
                       <xsl:when test="$mode='new'">
-                        <input type="text" id="__mainfield" name="STATSMONTH" style="width:35px;font-size:19pt">
-                          <xsl:attribute name="class">txtMonth</xsl:attribute>
-                          <xsl:attribute name="maxlength">2</xsl:attribute>
-                          <xsl:attribute name="value">
-                            <xsl:value-of select="phxsl:cvtMonth(substring(string(//docinfo/createdate),6,2))" />
-                          </xsl:attribute>
-                        </input>
+						  <input type="text" id="__mainfield" name="STATSMONTH" class="txtMonth" maxlength="2" data-inputmask="month" style="width:35px;font-size:19pt">
+							  <xsl:attribute name="value">
+								  <xsl:value-of select="phxsl:cvtMonth(substring(string(//docinfo/createdate),6,2))" />
+							  </xsl:attribute>
+						  </input>
                       </xsl:when>
                       <xsl:when test="$mode='edit'">
-                        <input type="text" id="__mainfield" name="STATSMONTH" style="width:30px;font-size:19pt">
-                          <xsl:attribute name="class">txtMonth</xsl:attribute>
-                          <xsl:attribute name="maxlength">2</xsl:attribute>
-                          <xsl:attribute name="value">
+                        <input type="text" id="__mainfield" name="STATSMONTH" class="txtMonth" maxlength="2" data-inputmask="month" style="width:30px;font-size:19pt">
+					  <xsl:attribute name="value">
                             <xsl:value-of select="//forminfo/maintable/STATSMONTH" />
                           </xsl:attribute>
                         </input>
@@ -201,7 +192,7 @@
                     <col style="width:184px"></col>
                   </xsl:when>
                   <xsl:otherwise>
-                    <col style="width:178px"></col>
+                    <col style="width:"></col>
                   </xsl:otherwise>
                 </xsl:choose>
                 <col style="width:960px"></col>
@@ -216,21 +207,24 @@
               <tr>
                 <td class="fc-lbl1">매출액<br />대비<br />손실비용<br />추이</td>
                 <td class="fc-lbl">
-                  매출액비(%)<br /><br />
+                  매출액비(%)
+					<div style="display: flex!important;justify-content: flex-end!important;align-items: center!important;margin: 16px 0">
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <button id="btnChart" disabled="disabled" onclick="parent.fnChart('','',960,260,5);" onfocus="this.blur()" class="btn_bg" style="width:64px;margin-top:-6px">
+                    <!--<button id="btnChart" disabled="disabled" onclick="parent.fnChart('','',960,260,5);" onfocus="this.blur()" class="btn_bg" style="width:64px;margin-top:-6px">
                       <img alt="" class="blt01">
                         <xsl:attribute name="src">
                           /<xsl:value-of select="$root"/>/EA/Images/ico_41.gif
                         </xsl:attribute>
                       </img>CHART
-                    </button>&nbsp;&nbsp;
+                    </button>-->
+					  <button id="btnChart" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="차트" onclick="_zw.formEx.chart('','',960,260,5);" disabled="disabled">
+						  <i class="fas fa-chart-line text-info"></i>
+						  <span class="ml-1">CHART</span>
+					  </button>&nbsp;&nbsp;
                   </xsl:if>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="CHATY" style="width:30px;height:21px;margin-top:2px">
-                        <xsl:attribute name="class">txtDollar1</xsl:attribute>
-                        <xsl:attribute name="maxlength">5</xsl:attribute>
+                      <input type="text" id="__mainfield" name="CHATY" class="txtDollar1" maxlength="5" data-inputmask="number;5;1" style="width:30px;height:21px;margin-top:2px">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <xsl:attribute name="value">5.0</xsl:attribute>
@@ -247,13 +241,13 @@
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CHATY))" />
                     </xsl:otherwise>
                   </xsl:choose>
-                  <br /><br />
+						</div>
                   <font color="red" align="left">*데이터 입력 후 ↑ 차트 버튼을 눌러 주어야 데이터 적용가능</font>
                 </td>
                 <td style="padding-top:40px">
-                  <div id="panChart" style="position:relative;width:100%;height:260px;border:0px solid blue">
+                  <svg id="panChart" style="position:relative;width:100%;height:260px;border:0px solid blue">
                     <xsl:value-of disable-output-escaping="yes" select="phxsl:renderLineChart(//chartinfo/fchart[@type='line']/chart, 960, 260, string(//forminfo/maintable/CHATY))"/>
-                  </div>
+                  </svg>
                 </td>
                 <td>&nbsp;</td>
               </tr>
@@ -279,13 +273,16 @@
                           <xsl:value-of select="//forminfo/maintable/CURRENCY" />
                         </xsl:attribute>
                       </input>
-                      <button onclick="parent.fnOption('iso.currency',160,140,10,115,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('iso.currency',160,140,10,115,'etc','CURRENCY');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_28.gif
                           </xsl:attribute>
                         </img>
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18 mr-1" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',220,274,-130,0,'etc','CURRENCY');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                       기준통화 :
                       <input type="text" id="__mainfield" name="STDCURRENCY" style="width:40px;height:16px">
                         <xsl:attribute name="class">txtText_u</xsl:attribute>
@@ -302,10 +299,7 @@
                         </xsl:choose>
                       </input>
                       환율일자 :
-                      <input type="text" id="__mainfield" name="EXCHANGEDATE" style="width:90px;height:20px">
-                        <xsl:attribute name="class">txtDate</xsl:attribute>
-                        <xsl:attribute name="maxlength">8</xsl:attribute>
-                        <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
+                      <input type="text" id="__mainfield" name="EXCHANGEDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width:90px;height:20px">
                         <xsl:if test="$mode='edit'">
                           <xsl:attribute name="value">
                             <xsl:value-of select="//forminfo/maintable/EXCHANGEDATE" />
@@ -329,13 +323,17 @@
                           </xsl:attribute>
                         </input>&nbsp;-->
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <button onclick="parent.fnFormEvent();" onfocus="this.blur()" class="btn_bg">
+                        <!--<button onclick="parent.fnFormEvent();" onfocus="this.blur()" class="btn_bg">
                           <img alt="" class="blt01">
                             <xsl:attribute name="src">
                               /<xsl:value-of select="$root"/>/EA/Images/form.gif
                             </xsl:attribute>
                           </img>작성
-                        </button>
+                        </button>-->
+						  <button class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="작성" onclick="_zw.formEx.event();">
+							  <i class="fe-upload text-success"></i>
+							  <span class="ml-1">작성</span>
+						  </button>
                       </xsl:if>
                     </td>
                   </tr>
@@ -1094,7 +1092,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES1">
+                            <input type="text" id="__mainfield" name="SALES1" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1111,7 +1109,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES2">
+                            <input type="text" id="__mainfield" name="SALES2" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1128,7 +1126,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES3">
+                            <input type="text" id="__mainfield" name="SALES3" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1145,7 +1143,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES4">
+                            <input type="text" id="__mainfield" name="SALES4" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1162,7 +1160,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES5">
+                            <input type="text" id="__mainfield" name="SALES5" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1179,7 +1177,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES6">
+                            <input type="text" id="__mainfield" name="SALES6" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1196,7 +1194,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES7">
+                            <input type="text" id="__mainfield" name="SALES7" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1213,7 +1211,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES8">
+                            <input type="text" id="__mainfield" name="SALES8" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1230,7 +1228,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES9">
+                            <input type="text" id="__mainfield" name="SALES9" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1247,7 +1245,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES10">
+                            <input type="text" id="__mainfield" name="SALES10" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1264,7 +1262,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES11">
+                            <input type="text" id="__mainfield" name="SALES11" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1281,7 +1279,7 @@
                       <td>
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="SALES12">
+                            <input type="text" id="__mainfield" name="SALES12" maxlength="20" data-inputmask="number;20;0">
                               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
                               <xsl:attribute name="readonly">readonly</xsl:attribute>
                               <xsl:attribute name="value">
@@ -1543,7 +1541,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE1" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE1', this, 'WORSTFILE1')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE1', this, 'WORSTFILE1')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE1),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1566,7 +1564,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE2" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE2', this, 'WORSTFILE2')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE2', this, 'WORSTFILE2')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE2),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1589,7 +1587,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE3" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE3', this, 'WORSTFILE3')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE3', this, 'WORSTFILE3')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE3),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1612,7 +1610,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE4" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE4', this, 'WORSTFILE4')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE4', this, 'WORSTFILE4')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE4),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1635,7 +1633,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE5" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE5', this, 'WORSTFILE5')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE5', this, 'WORSTFILE5')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE5),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1658,7 +1656,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE6" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE6', this, 'WORSTFILE6')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE6', this, 'WORSTFILE6')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE6),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1681,7 +1679,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE7" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE7', this, 'WORSTFILE7')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE7', this, 'WORSTFILE7')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE7),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1704,7 +1702,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE8" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE8', this, 'WORSTFILE8')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE8', this, 'WORSTFILE8')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE8),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1727,7 +1725,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE9" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE9', this, 'WORSTFILE9')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE9', this, 'WORSTFILE9')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE9),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1750,7 +1748,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE10" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE10', this, 'WORSTFILE10')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE10', this, 'WORSTFILE10')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE10),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1773,7 +1771,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE11" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE11', this, 'WORSTFILE11')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE11', this, 'WORSTFILE11')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE11),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1796,7 +1794,7 @@
                         <span class="f-option">
                           <input type="checkbox" name="ckbWORSTFILE12" value="Y" style="height:12px">
                             <xsl:if test="$mode='new' or $mode='edit'">
-                              <xsl:attribute name="onclick">parent.fnCheckYN('ckbWORSTFILE12', this, 'WORSTFILE12')</xsl:attribute>
+                              <xsl:attribute name="onclick">_zw.form.checkYN('ckbWORSTFILE12', this, 'WORSTFILE12')</xsl:attribute>
                               <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/WORSTFILE12),'Y')">
                                 <xsl:attribute name="disabled">disabled</xsl:attribute>
                               </xsl:if>
@@ -1828,15 +1826,15 @@
               <xsl:attribute name="style">display:none</xsl:attribute>
             </xsl:if>
             <div style="page-break-before:always;font-size:1px;height:1px">&nbsp;</div>
-            <table border="0" cellspacing="0" cellpadding="0">
+            <table border="0" cellspacing="0" cellpadding="0" style="width: 100%">
               <tr>
-                <td style="text-align:center">
+                <td style="text-align:center; padding-top: 12px; padding-bottom: 8px">
                   <h2>손실비용 WORST3 개선활동서</h2>
                 </td>
               </tr>
               <tr>
                 <td>
-                  <table id="__subtable2" class="ft-sub" header="1"  border="0" cellspacing="0" cellpadding="0">
+                  <table id="__subtable2" class="ft-sub" header="1"  border="0" cellspacing="0" cellpadding="0" style="width: 100%">
                     <xsl:if test="$mode='new' or $mode='edit'">
                       <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
                     </xsl:if>
@@ -1863,7 +1861,7 @@
             </table>
           </div>
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -1988,7 +1986,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES1">
+            <input type="text" name="EXPENSES1" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2005,7 +2003,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES2">
+            <input type="text" name="EXPENSES2" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2022,7 +2020,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES3">
+            <input type="text" name="EXPENSES3" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2039,7 +2037,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES4">
+            <input type="text" name="EXPENSES4" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2056,7 +2054,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES5">
+            <input type="text" name="EXPENSES5" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2073,7 +2071,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES6">
+            <input type="text" name="EXPENSES6" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2090,7 +2088,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES7">
+            <input type="text" name="EXPENSES7" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2107,7 +2105,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES8">
+            <input type="text" name="EXPENSES8" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2124,7 +2122,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES9">
+            <input type="text" name="EXPENSES9" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2141,7 +2139,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES10">
+            <input type="text" name="EXPENSES10" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2158,7 +2156,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES11">
+            <input type="text" name="EXPENSES11" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2175,7 +2173,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EXPENSES12">
+            <input type="text" name="EXPENSES12" maxlength="30" data-inputmask="number;30;0">
               <xsl:attribute name="class">txtRead_Right</xsl:attribute>
               <xsl:attribute name="readonly">readonly</xsl:attribute>
               <xsl:attribute name="value">
@@ -2244,7 +2242,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="WORSTITEMEXPENSES">
+            <input type="text" name="WORSTITEMEXPENSES" data-inputmask="number;20;0">
               <xsl:attribute name="class">txtCurrency</xsl:attribute>
               <xsl:attribute name="maxlength">20</xsl:attribute>
               <xsl:attribute name="value">
@@ -2261,7 +2259,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="WORSTITEMSHAARE">
+            <input type="text" name="WORSTITEMSHAARE" data-inputmask="number;6;4">
               <xsl:attribute name="class">txtDollar</xsl:attribute>
               <xsl:attribute name="maxlength">10</xsl:attribute>
               <xsl:attribute name="value">
@@ -2278,17 +2276,14 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <textarea name="CAUSE" style="height:196px">
-              <xsl:attribute name="class">txaText</xsl:attribute>
-              <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+            <textarea name="CAUSE" style="height:196px" class="txaText bootstrap-maxlength" maxlength="2000">
               <xsl:if test="$mode='edit'">
                 <xsl:value-of select="CAUSE" />
               </xsl:if>
             </textarea>
           </xsl:when>
           <xsl:otherwise>
-            <div name="DESCRIPTION" style="height:196px">
-              <xsl:attribute name="class">txaRead</xsl:attribute>
+            <div class="txaRead" style="min-height:196px">
               <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(CAUSE))" />
             </div>
           </xsl:otherwise>
@@ -2297,17 +2292,14 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <textarea name="CONTENTS" style="height:196px">
-              <xsl:attribute name="class">txaText</xsl:attribute>
-              <xsl:attribute name="onkeyup">parent.checkTextAreaLength(this, 2000)</xsl:attribute>
+            <textarea name="CONTENTS" style="height:196px" class="txaText bootstrap-maxlength" maxlength="2000">
               <xsl:if test="$mode='edit'">
                 <xsl:value-of select="CONTENTS" />
               </xsl:if>
             </textarea>
           </xsl:when>
           <xsl:otherwise>
-            <div name="DESCRIPTION" style="height:196px">
-              <xsl:attribute name="class">txaRead</xsl:attribute>
+			  <div class="txaRead" style="min-height:196px">
               <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(CONTENTS))" />
             </div>
           </xsl:otherwise>
@@ -2316,10 +2308,7 @@
       <td style="border-right:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="EPPLANDATE">
-              <xsl:attribute name="class">txtDate</xsl:attribute>
-              <xsl:attribute name="maxlength">8</xsl:attribute>
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
+            <input type="text" name="EPPLANDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd">
               <xsl:attribute name="value">
                 <xsl:value-of select="EPPLANDATE" />
               </xsl:attribute>

@@ -34,7 +34,7 @@
         {
             <!-- 메뉴 설정 -->
             <li class="sidenav-item@(currentPage.ToLower().StartsWith("menu") ? " active open" : "")">
-                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>메뉴 설정</div></a>
+                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-list-ul"></i><div>메뉴 설정</div></a>
 
                 <ul class="sidenav-menu">
                     <li class="sidenav-item@(currentPage.ToLower() == "menu/index" ? " active" : "")">
@@ -61,7 +61,7 @@
         {
             <!-- 전자결재 양식 관리 -->
             <li class="sidenav-item@(currentPage.ToLower().StartsWith("app") ? " active open" : "")">
-                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>양식 관리</div></a>
+                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-edit"></i><div>양식 관리</div></a>
 
                 <ul class="sidenav-menu">
                     <li class="sidenav-item@(currentPage.ToLower() == "app/index" ? " active" : "")">
@@ -87,7 +87,7 @@
 
             <!-- 전자결재 프로세스 관리 -->
             <li class="sidenav-item@(currentPage.ToLower().StartsWith("proc") ? " active open" : "")">
-                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>프로세스 관리</div></a>
+                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-sign-in-alt"></i><div>프로세스 관리</div></a>
 
                 <ul class="sidenav-menu">
                     <li class="sidenav-item@(currentPage.ToLower() == "proc/index" ? " active" : "")">
@@ -110,7 +110,7 @@
 
             <!-- 전자결재 부가 설정 -->
             <li class="sidenav-item@(currentPage.ToLower().StartsWith("ea") ? " active open" : "")">
-                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>결재 부가 설정</div></a>
+                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-highlighter"></i><div>결재 부가 설정</div></a>
 
                 <ul class="sidenav-menu">
                     <li class="sidenav-item@(currentPage.ToLower() == "ea/index" ? " active" : "")">
@@ -133,7 +133,7 @@
 
             <!-- 프로세스 조건 처리 현황 -->
             <li class="sidenav-item@(currentPage.ToLower().StartsWith("interface") ? " active open" : "")">
-                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-layer-group"></i><div>연동 처리 현황</div></a>
+                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon fas fa-share-alt"></i><div>연동 처리 현황</div></a>
 
                 <ul class="sidenav-menu">
                     <li class="sidenav-item@(currentPage.ToLower() == "interface/index" ? " active" : "")">
@@ -155,7 +155,7 @@
         {
             <!-- 포탈, 메뉴 관리 -->
             <li class="sidenav-item@(currentPage.ToLower().StartsWith("dashboard") ? " active open" : "")">
-                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="sidenav-icon ion ion-md-speedometer"></i><div>포탈 관리</div></a>
+                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="fe-home sidenav-icon"></i><div>포탈 관리</div></a>
 
                 <ul class="sidenav-menu">
                     <li class="sidenav-item@(currentPage.ToLower() == "dashboard/index" ? " active" : "")">
@@ -218,6 +218,9 @@
                 </li>
                 <li class="sidenav-item@(currentPage.ToLower() == "organ/grade" ? " active" : "")">
                     <a href="@Url.Action("Grade", "Organ")" class="sidenav-link"><div>직위/직급 관리</div></a>
+                </li>
+                <li class="sidenav-item@(currentPage.ToLower() == "organ/espuser" ? " active" : "")">
+                    <a href="@Url.Action("ESPUser", "Organ")" class="sidenav-link"><div>구매포탈 사용자 설정</div></a>
                 </li>
             </ul>
         </li>

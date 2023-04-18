@@ -6,6 +6,7 @@
 @model DataSet
 @{
     ViewBag.Title = "사용자 관리";
+    //Layout = "~/Areas/WoA/Views/Shared/_Layout2.cshtml";
 }
 
 @section Styles {
@@ -792,14 +793,14 @@
     </script>
 }
 
-<h4 class="d-flex justify-content-between align-items-center w-100 font-weight-bold py-3 mb-4">
-    <div>사용자 관리</div>
+<div class="d-flex justify-content-between align-items-center w-100 font-weight-bold mb-2">
+    <h4>사용자 관리</h4>
     <button type="button" class="btn btn-primary" data-toggle="modal" onclick="showNewMemberPopup()">신규</button>
-</h4>
+</div>
 
 <div class="modal fade" id="modalsDefault">
-    <div class="modal-dialog">
-        <form class="modal-content" style="width:800px;">
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width:800px;">
+        <form class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">사용자 생성</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>

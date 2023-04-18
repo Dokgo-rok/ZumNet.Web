@@ -15,15 +15,13 @@
 
     <!-- Icons. Uncomment required icon fonts -->
     @Styles.Render("~/bundle/vendor/fonts/fontawesome")
-    @Styles.Render("~/bundle/vendor/fonts/ionicons")
+    @Styles.Render("~/bundle/vendor/fonts/feather")
 
     <!-- Core stylesheets -->
     @Styles.Render("~/bundle/vendor/css/bootstrap")
     @Styles.Render("~/bundle/vendor/css/appwork")
     @Styles.Render("~/bundle/vendor/css/theme-twitlight")
-    @Styles.Render("~/bundle/vendor/css/colors")
-    @Styles.Render("~/bundle/vendor/css/uikit")
-    @Styles.Render("~/bundle/vendor/css/waves/waves")
+    @Styles.Render("~/bundle/vendor/css/csskit")
 
     <!-- Load polyfills -->
     @Scripts.Render("~/bundle/vendor/js/polyfills")
@@ -40,12 +38,16 @@
 
     <!-- Application stylesheets -->
     @Styles.Render("~/bundle/css/site")
+    @Styles.Render("~/bundle/css/main")
 
     @RenderSection("styles", required: false)
 </head>
 <body>
     <div class="page-loader"><div class="bg-primary"></div></div>
     @RenderBody()
+
+    <!-- Modal Popup -->
+    <div class="modal fade" id="popBlank" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false"></div>
 
     <!-- Modal Loader -->
     <div class="modal modal-ajaxloader" id="ajaxLoader" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">

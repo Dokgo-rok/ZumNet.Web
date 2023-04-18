@@ -72,6 +72,10 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         rt = RazorViewToString.RenderRazorViewToString(this, "_FormChart", ViewBag);
                         break;
 
+                    case "checkexternalkey":
+                        rt = CheckExternalKey(jPost);
+                        break;
+
                     default:
                         break;
                 }
@@ -376,6 +380,33 @@ namespace ZumNet.Web.Areas.EA.Controllers
             finally
             {
             }
+            return strReturn;
+        }
+        #endregion
+
+        #region [특정 외부키값을 가진 양식이 결재 진행중 또는 완료된 것이 있는지를 확인]
+        private string CheckExternalKey(JObject postData)
+        {
+            string strReturn = "필수항목 누락!";
+            if (!postData.ContainsKey("ft") || postData["fk"].ToString() == "") return strReturn;
+
+            bool bPosible = false;
+
+            try
+            {
+                using (BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
+                {
+                    bPosible = ea.CheckExternalKeyPossible(postData["ft"].ToString(), postData["fk"].ToString());
+                }
+                if (bPosible) strReturn = "OKY";
+                else strReturn = "OKN";
+            }
+            catch (Exception ex)
+            {
+                ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "CheckExternalKey");
+                strReturn = ex.Message;
+            }
+
             return strReturn;
         }
         #endregion

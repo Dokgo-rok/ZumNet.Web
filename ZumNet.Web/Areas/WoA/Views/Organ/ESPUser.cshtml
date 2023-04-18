@@ -1,0 +1,74 @@
+﻿@using System;
+@using System.Data;
+@{
+    ViewBag.Title = "구매포탈 사용자 설정";
+    //Layout = "~/Areas/WoA/Views/Shared/_Layout2.cshtml";
+
+}
+@section Scripts {
+    <script type="text/javascript">
+        (function () {
+            
+            _zw.fn.removeUser = function () {
+                var e = _zw.ut.eventBtn(), row = e.parent().parent();
+                alert(row.data('userid'))
+            }
+
+            _zw.fn.orgSelect = function (p, el) {
+                console.log(el)
+            }
+        }());
+    </script>
+}
+<div class="d-flex justify-content-between align-items-center w-100 font-weight-bold mb-2">
+    <h4>@ViewBag.Title</h4>
+    <button class="btn btn-outline-primary" data-toggle="tooltip" data-placement="bottom" title="구매포탈 사용자 추가" onclick="_zw.fn.org('user', 'y');"><i class="fas fa-user-plus mr-1"></i>추가</button>
+</div>
+
+<div class="z-list" id="__List">
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>성명</th>
+                <th>아이디</th>
+                <th>직급</th>
+                <th>부서</th>
+                <th>상태</th>
+                <th>가입일</th>
+                <th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Tables != null && Model.Tables.Count > 0 && Model.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow row in Model.Tables[0].Rows)
+                {
+                    <tr data-userid="@row["UserID"].ToString()">
+                        <td>@row["DisplayName"].ToString()</td>
+                        <td>@row["LogonID"].ToString()</td>
+                        <td>@row["Grade1"].ToString()</td>
+                        <td>@row["GroupName"].ToString()</td>
+                        @if (row["svcstatus"].ToString() == "1")
+                        {
+                            <td>가입</td>
+                        }
+                        else
+                        {
+                            <td>중지</td>
+                        }
+                        <td>@row["sttdate"].ToString()</td>
+                        <td>
+                            <button class="btn icon-btn btn-sm btn-outline-primary" data-toggle="tooltip" data-placement="bottom" title="구매포탈 사용자 삭제" onclick="_zw.fn.removeUser();"><i class="fe-x"></i></button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="w-100 text-center text-secondary py-3" colspan="8">@Resources.Global.NoItemShow</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

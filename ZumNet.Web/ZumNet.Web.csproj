@@ -333,6 +333,13 @@
     <Compile Include="Bc\EAFormManager.cs" />
     <Compile Include="Bc\FormHandler.cs" />
     <Compile Include="Bc\LunisolarDate.cs" />
+    <Compile Include="BizForce\EA\Forms\XFormMain.aspx.cs">
+      <DependentUpon>XFormMain.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BizForce\EA\Forms\XFormMain.aspx.designer.cs">
+      <DependentUpon>XFormMain.aspx</DependentUpon>
+    </Compile>
     <Compile Include="BizForce\PortalService\FileDown.aspx.cs">
       <DependentUpon>FileDown.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -378,8 +385,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\WoA\Content\main.css" />
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
+    <Content Include="BizForce\EA\Forms\XFormMain.aspx" />
     <Content Include="BizForce\PortalService\FileDown.aspx" />
     <Content Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx" />
     <Content Include="Blank.htm" />
@@ -673,7 +682,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_MONTHFAULTYGOODS_V5.xsl">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Content\Forms\CRESYN\FORM_MONTHLOSSCHART_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_MONTHLOSSCHART_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_MONTHPURCHASEUC_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MONTHPURCHASE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MONTHVAC_V1.xsl" />
@@ -2983,7 +2994,6 @@
     <Folder Include="Areas\ExS\Data\" />
     <Folder Include="Areas\ExS\Views\Shared\" />
     <Folder Include="Areas\TnC\Data\" />
-    <Folder Include="Areas\WoA\Content\" />
     <Folder Include="bin\" />
     <Folder Include="Content\Forms\IMPORT\" />
     <Folder Include="Views\Addr\" />
@@ -3224,6 +3234,7 @@
     <Content Include="Areas\ExS\Views\Num\_NUM_PG.cshtml" />
     <Content Include="Areas\ExS\Views\Num\_ListPagination.cshtml" />
     <Content Include="Areas\ExS\Views\Num\Sheet.cshtml" />
+    <Content Include="Areas\WoA\Views\Organ\ESPUser.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
