@@ -791,7 +791,7 @@
         iT = calcTop(h, uY, nodes[i].getAttribute("key"));
         iL = iW/2 + i*iW;
         //szTo = iL + "px," + iT + "px";//log(iT + "==" + iL);
-		szTo = iL + ";" + iT;
+		szTo = iL + "," + iT;
         szVML += setTick2(iT, iL, "", "", "", szStokeColor, "", nodes[i].text);
         //if (i > 0 && szFrom != "" && szTo != "") szVML += setLine(szFrom, szTo, "", szStokeColor, "", "", "", "");
 		if (i > 0 && szFrom != "" && szTo != "") szVML += setLine2(szFrom, szTo, "", szStokeColor, "", "", "", "");
@@ -813,10 +813,10 @@
         iT = calcTop(h, uY, v[0]);
         iL = iW/2 + i*iW;
         //szTo = iL + "px," + iT + "px";
-		szTo = iL + ";" + iT;
+		szTo = iL + "," + iT;
         szVML += setTick2(iT, iL, tw, th, tc, tsc, tdt, v[1], tls, tsw);
         //if (i > 0 && szFrom != "" && szTo != "") szVML += setLine(szFrom, szTo, lw, lc, "", "", ldt, "");
-		if (i > 0 && szFrom != "" && szTo != "") szVML += setLine(szFrom, szTo, lw, lc, "", "", ldt, "");
+		if (i > 0 && szFrom != "" && szTo != "") szVML += setLine2(szFrom, szTo, lw, lc, "", "", ldt, "");
         szFrom = szTo;
       }
     }
@@ -865,7 +865,7 @@
     var ls = (arguments[8] != null && arguments[8] != "") ? arguments[8] : "single";
     //return "<v:line from=\"" + f + "\" to=\"" + t + "\" strokeweight=\"" + sw + "\" strokecolor=\"" + sc + "\" style=\"position:absolute\" title=\"" + tt + "\"><v:stroke startarrow=\"" + sa + "\" endarrow=\"" + ea + "\" dashstyle=\"" + dt + "\" linestyle=\"" + ls + "\" /></v:line>"
 	
-	var vf = f.split(';'), vt = t.split(';');
+	var vf = f.split(','), vt = t.split(',');
 	return "<line x1=\"" + vf[0] + "\" y1=\"" + vf[1] + "\" x2=\"" + vt[0] + "\" y2=\"" + vt[1] + "\" style=\"stroke:" + sc + ";stroke-width:" + sw + ";stroke-dasharray:" + dt + "\" />"
   }
   function baseStyle() {
@@ -883,56 +883,56 @@
     if (pos == "TOTAL") {
       p = nodes[0].selectSingleNode("row[CORPORATION='CT']/TOTALSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#666666"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#666666"; ldt = "";
+        tw = "7"; th = "7"; tc = "#666666"; tsc = "#666666"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#666666"; ldt = "2,2";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str = renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='CT(HS)']/TOTALSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#666666"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#666666"; ldt = "";
+        tw = "7"; th = "7"; tc = "#666666"; tsc = "#666666"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#666666"; ldt = "2,2";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str = renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='CT(ISM)']/TOTALSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = "#daa520"; tsc = "#8b4513"; tdt = ""; tls = ""; tsw = "2px"; lw = "1"; lc = "#8b4513"; ldt = "shortdashdotdot";
+        tw = "7"; th = "7"; tc = "#b1871b"; tsc = "#b1871b"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#b1871b"; ldt = "3,1";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='CH']/TOTALSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#a52a2a"; tdt = "shortdash"; tls = "thinthin"; tsw = "2px"; lw = "1"; lc = "#a52a2a"; ldt = "shortdot";
+        tw = "7"; th = "7"; tc = "#a52a2a"; tsc = "#a52a2a"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#a52a2a"; ldt = "4,2";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='CD']/TOTALSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = "#0000ff"; tsc = "#0000ff"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#0000ff"; ldt = "shortdashdot";
+        tw = "7"; th = "7"; tc = "#0000ff"; tsc = "#0000ff"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#0000ff"; ldt = "3,3";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='IC']/TOTALSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#800080"; tdt = "shortdot"; tls = "thinthin"; tsw = "3px"; lw = "1"; lc = "#800080"; ldt = "dot";
+        tw = "7"; th = "7"; tc = "#800080"; tsc = "#800080"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#800080"; ldt = "2,3";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='IS']/TOTALSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#008000"; tdt = ""; tls = "thinthin"; tsw = "2px"; lw = "1"; lc = "#008000"; ldt = "longdashdot";
+        tw = "7"; th = "7"; tc = "#008000"; tsc = "#008000"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#008000"; ldt = "5,2";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='CL']/TOTALSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#191970"; tdt = "shortdot"; tls = ""; tsw = "2px"; lw = "1"; lc = "#191970"; ldt = "longdashdotdot";
+        tw = "7"; th = "7"; tc = "#191970"; tsc = "#191970"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#191970"; ldt = "2,4";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
@@ -940,7 +940,7 @@
       p = nodes[0].selectSingleNode("sum/TOTALFAULTSUM");
       c = nodes[0].selectSingleNode("sum/TOTALSALESSUM");
       if (p && c && p.text != "" && c.text != "" && p.text != "0" && c.text != "0") {
-        tw = "8"; th = "8"; tc = ""; tsc = ""; tdt = ""; tls = "thickthin"; tsw = "3px"; lw = "2"; lc = "#ff0000"; ldt = "solid";
+        tw = "8"; th = "8"; tc = "#ff0000"; tsc = "#ff0000"; tdt = ""; tls = ""; tsw = "3px"; lw = "3"; lc = "#ff0000"; ldt = "solid";
         vlu = rate(p.text, c.text, 2);
         rt = vlu + ";" + "GROUP TOTAL 점유율 : " + vlu + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
@@ -950,42 +950,42 @@
     } else if (pos == "TOTALBUY") {
       p = nodes[0].selectSingleNode("row[CORPORATION='CT']/TOTALBUYSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#666666"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#666666"; ldt = "";
+        tw = "7"; th = "7"; tc = ""; tsc = "#666666"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#666666"; ldt = "";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str = renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='CH']/TOTALBUYSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#a52a2a"; tdt = "shortdash"; tls = "thinthin"; tsw = "2px"; lw = "1"; lc = "#a52a2a"; ldt = "shortdot";
+        tw = "7"; th = "7"; tc = ""; tsc = "#a52a2a"; tdt = "shortdash"; tls = "thinthin"; tsw = "2px"; lw = "1"; lc = "#a52a2a"; ldt = "shortdot";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='CD']/TOTALBUYSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = "#0000ff"; tsc = "#0000ff"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#0000ff"; ldt = "shortdashdot";
+        tw = "7"; th = "7"; tc = "#0000ff"; tsc = "#0000ff"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#0000ff"; ldt = "shortdashdot";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='IC']/TOTALBUYSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#800080"; tdt = "shortdot"; tls = "thinthin"; tsw = "3px"; lw = "1"; lc = "#800080"; ldt = "dot";
+        tw = "7"; th = "7"; tc = ""; tsc = "#800080"; tdt = "shortdot"; tls = "thinthin"; tsw = "3px"; lw = "1"; lc = "#800080"; ldt = "dot";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='IS']/TOTALBUYSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#008000"; tdt = ""; tls = "thinthin"; tsw = "2px"; lw = "1"; lc = "#008000"; ldt = "longdashdot";
+        tw = "7"; th = "7"; tc = ""; tsc = "#008000"; tdt = ""; tls = "thinthin"; tsw = "2px"; lw = "1"; lc = "#008000"; ldt = "longdashdot";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
       p = null;
       p = nodes[0].selectSingleNode("row[CORPORATION='CL']/TOTALBUYSHARE");
       if (p) {
-        tw = "6"; th = "6"; tc = ""; tsc = "#191970"; tdt = "shortdot"; tls = ""; tsw = "2px"; lw = "1"; lc = "#191970"; ldt = "longdashdotdot";
+        tw = "7"; th = "7"; tc = ""; tsc = "#191970"; tdt = "shortdot"; tls = ""; tsw = "2px"; lw = "1"; lc = "#191970"; ldt = "longdashdotdot";
         rt = p.text + ";" + "CCT TOTAL 점유율 : " + p.text + "%";
         str += renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
       }
@@ -993,7 +993,7 @@
       return str;
 
     } else if (pos == "GROUP") {
-      tw = "6"; th = "6"; tc = ""; tsc = ""; tdt = ""; tls = "thickthin"; tsw = "3px"; lw = "2"; lc = "#ff0000"; ldt = "solid";
+      tw = "7"; th = "7"; tc = ""; tsc = ""; tdt = ""; tls = "thickthin"; tsw = "3px"; lw = "2"; lc = "#ff0000"; ldt = "solid";
       for (var i=1; i<=12; i++) {
         if (i>1) rt += "^";
         p = nodes[0].selectSingleNode("sum/FAULTSUM" + i.toString());
@@ -1003,14 +1003,14 @@
       }
       return renderLineSpecialChart(rt, w, h, uY, tw, th, tc, tsc, tdt, tls, tsw, lw, lc, ldt);
     } else {
-      if (pos == "CT" || pos == "CT(HS)") {tw = "6"; th = "6"; tc = ""; tsc = "#666666"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#666666"; ldt = "";}
-      else if (pos == "CT(ISM)") {tw = "6"; th = "6"; tc = "#daa520"; tsc = "#8b4513"; tdt = ""; tls = ""; tsw = "2px"; lw = "1"; lc = "#8b4513"; ldt = "shortdashdotdot";}
-      else if (pos == "CH") {tw = "6"; th = "6"; tc = ""; tsc = "#a52a2a"; tdt = "shortdash"; tls = "thinthin"; tsw = "2px"; lw = "1"; lc = "#a52a2a"; ldt = "shortdot";}
-      else if (pos == "CD") {tw = "6"; th = "6"; tc = "#0000ff"; tsc = "#0000ff"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#0000ff"; ldt = "shortdashdot";}
-      else if (pos == "IC") {tw = "6"; th = "6"; tc = ""; tsc = "#800080"; tdt = "shortdot"; tls = "thinthin"; tsw = "3px"; lw = "1"; lc = "#800080"; ldt = "dot";}
-      else if (pos == "IS") {tw = "6"; th = "6"; tc = ""; tsc = "#008000"; tdt = ""; tls = "thinthin"; tsw = "2px"; lw = "1"; lc = "#008000"; ldt = "longdashdot";}
-      else if (pos == "CL") {tw = "6"; th = "6"; tc = ""; tsc = "#191970"; tdt = "shortdot"; tls = ""; tsw = "2px"; lw = "1"; lc = "#191970"; ldt = "longdashdotdot";}
-      else if (pos == "VH") {tw = "6"; th = "6"; tc = ""; tsc = "#999"; tdt = ""; tls = ""; tsw = "1px"; lw = "1"; lc = "#999"; ldt = "solid";}
+      if (pos == "CT" || pos == "CT(HS)") {tw = "7"; th = "7"; tc = "#666666"; tsc = "#666666"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#666666"; ldt = "2,2";}
+      else if (pos == "CT(ISM)") {tw = "7"; th = "7"; tc = "#b1871b"; tsc = "#b1871b"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#b1871b"; ldt = "3,1";}
+      else if (pos == "CH") {tw = "7"; th = "7"; tc = "#a52a2a"; tsc = "#a52a2a"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#a52a2a"; ldt = "4,2";}
+      else if (pos == "CD") {tw = "7"; th = "7"; tc = "#0000ff"; tsc = "#0000ff"; tdt = ""; tls = ""; tsw = ""; lw = "1"; lc = "#0000ff"; ldt = "3,3";}
+      else if (pos == "IC") {tw = "7"; th = "7"; tc = "#800080"; tsc = "#800080"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#800080"; ldt = "2,3";}
+      else if (pos == "IS") {tw = "7"; th = "7"; tc = "#008000"; tsc = "#008000"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#008000"; ldt = "5,2";}
+      else if (pos == "CL") {tw = "7"; th = "7"; tc = "#191970"; tsc = "#191970"; tdt = ""; tls = ""; tsw = "1"; lw = "1"; lc = "#191970"; ldt = "2,4";}
+      else if (pos == "VH") {tw = "7"; th = "7"; tc = "#999"; tsc = "#999"; tdt = ""; tls = ""; tsw = "1px"; lw = "1"; lc = "#999"; ldt = "1,0";}
       
       nm = (arguments[5] && arguments[5] != '') ? arguments[5] : "SHARE";
       p = nodes[0].selectNodes("row[CORPORATION='" + pos + "']");

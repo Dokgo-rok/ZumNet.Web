@@ -30,7 +30,7 @@
               <xsl:value-of select="//chartdata/sum/CHATY"/>%
             </td>
             <td style="padding-top:40px">
-              <div id="panChart" style="position:relative;width:100%;height:260px;border:0px solid blue">
+			<svg id="panChart" style="position:relative;width:100%;height:260px;border:0px solid blue">
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:reportChart(//chartdata, 'CT(HS)', 720, 260, string(//chartdata/sum/CHATY))"/>
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:reportChart(//chartdata, 'CT(ISM)', 720, 260, string(//chartdata/sum/CHATY))"/>
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:reportChart(//chartdata, 'CH', 720, 260, string(//chartdata/sum/CHATY))"/>
@@ -40,12 +40,12 @@
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:reportChart(//chartdata, 'CL', 720, 260, string(//chartdata/sum/CHATY))"/>
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:reportChart(//chartdata, 'VH', 720, 260, string(//chartdata/sum/CHATY))"/>
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:reportChart(//chartdata, 'GROUP', 720, 260, string(//chartdata/sum/CHATY))"/>
-              </div>
+              </svg>
             </td>
             <td style="padding-top:40px;border-left:windowtext 1pt solid">
-              <div id="panChart2" style="position:relative;width:100%;height:260px;border:0px solid blue">
+              <svg id="panChart2" style="position:relative;width:100%;height:260px;border:0px solid blue">
                 <xsl:value-of disable-output-escaping="yes" select="phxsl:reportChart(//chartdata, 'TOTAL', 80, 260, string(//chartdata/sum/CHATY))"/>
-              </div>
+              </svg>
             </td>
           </tr>
         </table>
@@ -94,16 +94,18 @@
             <xsl:attribute name="id">_<xsl:value-of select="//chartdata/row[CORPORATION='CT(HS)']/MessageID"/></xsl:attribute>
             <td class="f-lbl-sub">
               <xsl:choose>
-                <xsl:when test="//chartdata/row[CORPORATION='CT(HS)']">
-                  <a href="#" onclick="openXForm(this);">CT(HS)</a>
-                </xsl:when>
+				  <xsl:when test="//chartdata/row[CORPORATION='CT(HS)']">
+					  <a class="z-lnk-navy" href="#" onclick="_zw.fn.openEAFormSimple({//chartdata/row[CORPORATION='CT(HS)']/MessageID});">CT(HS)</a>
+				  </xsl:when>
                 <xsl:otherwise>CT(HS)</xsl:otherwise>
               </xsl:choose>
             </td>
             <td style="position:relative;vertical-align:middle">
-              &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '', '#666666', '', '')"/>
-              <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 1, '#666666', '', '', '','')"/>
-            </td>
+				<svg style="width: 100%; height: 100%">
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 7, 7, '#666666', '#666666', '', '1')"/>
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 1, '#666666', '', '', '2,2','')"/>
+				</svg>
+			</td>
             <xsl:choose>
               <xsl:when test="//chartdata/row[CORPORATION='CT(HS)']">
                 <xsl:apply-templates select="//chartdata/row[CORPORATION='CT(HS)']"/>
@@ -132,14 +134,16 @@
             <td class="f-lbl-sub">
               <xsl:choose>
                 <xsl:when test="//chartdata/row[CORPORATION='CT(ISM)']">
-                  <a href="#" onclick="openXForm(this);">CT(ISM)</a>
+					<a class="z-lnk-navy" href="#" onclick="_zw.fn.openEAFormSimple({//chartdata/row[CORPORATION='CT(ISM)']/MessageID});">CT(ISM)</a>
                 </xsl:when>
                 <xsl:otherwise>CT(ISM)</xsl:otherwise>
               </xsl:choose>
             </td>
             <td style="position:relative;vertical-align:middle">
-              &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '#daa520', '#8b4513', '', '', '', '2px')"/>
-              <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 1, '#8b4513', '', '', 'shortdashdotdot','')"/>
+				<svg style="width: 100%; height: 100%">
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 7, 7, '#b1871b', '#b1871b', '', '', '', '1')"/>
+                    <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 1, '#b1871b', '', '', '3,1','')"/>
+				</svg>
             </td>
             <xsl:choose>
               <xsl:when test="//chartdata/row[CORPORATION='CT(ISM)']">
@@ -167,14 +171,16 @@
             <td class="f-lbl-sub">
               <xsl:choose>
                 <xsl:when test="//chartdata/row[CORPORATION='CH']">
-                  <a href="#" onclick="openXForm(this);">CH</a>
+					<a class="z-lnk-navy" href="#" onclick="_zw.fn.openEAFormSimple({//chartdata/row[CORPORATION='CH']/MessageID});">CH</a>
                 </xsl:when>
                 <xsl:otherwise>CH</xsl:otherwise>
               </xsl:choose>
             </td>
             <td style="position:relative;vertical-align:middle">
-              &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '', '#a52a2a', 'shortdash', '', 'thinthin', '2px')"/>
-              <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 1, '#a52a2a', '', '', 'shortdot','')"/>
+				<svg style="width: 100%; height: 100%">
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 7, 7, '#a52a2a', '#a52a2a', '', '', '', '1')"/>
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 1, '#a52a2a', '', '', '4,2','')"/>
+				</svg>
             </td>
             <xsl:choose>
               <xsl:when test="//chartdata/row[CORPORATION='CH']">
@@ -202,14 +208,16 @@
             <td class="f-lbl-sub">
               <xsl:choose>
                 <xsl:when test="//chartdata/row[CORPORATION='CD']">
-                  <a href="#" onclick="openXForm(this);">CD</a>
+					<a class="z-lnk-navy" href="#" onclick="_zw.fn.openEAFormSimple({//chartdata/row[CORPORATION='CD']/MessageID});">CD</a>
                 </xsl:when>
                 <xsl:otherwise>CD</xsl:otherwise>
               </xsl:choose>
             </td>
             <td style="position:relative;vertical-align:middle">
-              &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '#0000ff', '#0000ff', '', '')"/>
-              <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 1, '#0000ff', '', '', 'shortdashdot','')"/>
+				<svg style="width: 100%; height: 100%">
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 7, 7, '#0000ff', '#0000ff', '', '1')"/>
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 1, '#0000ff', '', '', '3,3','')"/>
+				</svg>
             </td>
             <xsl:choose>
               <xsl:when test="//chartdata/row[CORPORATION='CD']">
@@ -237,14 +245,16 @@
             <td class="f-lbl-sub">
               <xsl:choose>
                 <xsl:when test="//chartdata/row[CORPORATION='IC']">
-                  <a href="#" onclick="openXForm(this);">IC</a>
+					<a class="z-lnk-navy" href="#" onclick="_zw.fn.openEAFormSimple({//chartdata/row[CORPORATION='IC']/MessageID});">IC</a>
                 </xsl:when>
                 <xsl:otherwise>IC</xsl:otherwise>
               </xsl:choose>
             </td>
             <td style="position:relative;vertical-align:middle">
-              &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '', '#800080', 'shortdot', '', 'thinthin', '3px')"/>
-              <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 1, '#800080', '', '', 'dot','')"/>
+				<svg style="width: 100%; height: 100%">
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 7, 7, '#800080', '#800080', '', '', '', '1')"/>
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 1, '#800080', '', '', '2,3','')"/>
+				</svg>
             </td>
             <xsl:choose>
               <xsl:when test="//chartdata/row[CORPORATION='IC']">
@@ -272,14 +282,16 @@
             <td class="f-lbl-sub">
               <xsl:choose>
                 <xsl:when test="//chartdata/row[CORPORATION='IS']">
-                  <a href="#" onclick="openXForm(this);">IS</a>
+					<a class="z-lnk-navy" href="#" onclick="_zw.fn.openEAFormSimple({//chartdata/row[CORPORATION='IS']/MessageID});">IS</a>
                 </xsl:when>
                 <xsl:otherwise>IS</xsl:otherwise>
               </xsl:choose>
             </td>
             <td style="position:relative;vertical-align:middle">
-              &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '', '#008000', '', '', 'thinthin', '2px')"/>
-              <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 1, '#008000', '', '', 'longdashdot','')"/>
+				<svg style="width: 100%; height: 100%">
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 7, 7, '#008000', '#008000', '', '', '', '1')"/>
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 1, '#008000', '', '', '5,2','')"/>
+				</svg>
             </td>
             <xsl:choose>
               <xsl:when test="//chartdata/row[CORPORATION='IS']">
@@ -307,14 +319,16 @@
             <td class="f-lbl-sub">
               <xsl:choose>
                 <xsl:when test="//chartdata/row[CORPORATION='CL']">
-                  <a href="#" onclick="openXForm(this);">CL</a>
+                  <a class="z-lnk-navy" href="#" onclick="_zw.fn.openEAFormSimple({//chartdata/row[CORPORATION='CL']/MessageID});">CL</a>
                 </xsl:when>
                 <xsl:otherwise>CL</xsl:otherwise>
               </xsl:choose>
             </td>
             <td style="position:relative;vertical-align:middle">
-              &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '', '#191970', 'shortdot', '', '', '2px')"/>
-              <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 1, '#191970', '', '', 'longdashdotdot','')"/>
+				<svg style="width: 100%; height: 100%">
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 7, 7, '#191970', '#191970', '', '', '', '1')"/>
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 1, '#191970', '', '', '2,4','')"/>
+				</svg>
             </td>
             <xsl:choose>
               <xsl:when test="//chartdata/row[CORPORATION='CL']">
@@ -344,14 +358,16 @@
             <td class="f-lbl-sub">
               <xsl:choose>
                 <xsl:when test="//chartdata/row[CORPORATION='VH']">
-                  <a href="#" onclick="openXForm(this);">VH</a>
+					<a class="z-lnk-navy" href="#" onclick="_zw.fn.openEAFormSimple({//chartdata/row[CORPORATION='VH']/MessageID});">VH</a>
                 </xsl:when>
                 <xsl:otherwise>VH</xsl:otherwise>
               </xsl:choose>
             </td>
             <td style="position:relative;vertical-align:middle">
-              &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '', '#999', '', '', '', '1px')"/>
-              <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 1, '#999', '', '', 'solid','')"/>
+				<svg style="width: 100%; height: 100%">
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 7, 7, '#999', '#999', '', '', '', '1')"/>
+					<xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 1, '#999', '', '', '1,0','')"/>
+				</svg>
             </td>
             <xsl:choose>
               <xsl:when test="//chartdata/row[CORPORATION='VH']">
@@ -559,8 +575,10 @@
     <tr>
       <td class="f-lbl-sub">TOTAL</td>
       <td style="position:relative;vertical-align:middle">
-        &nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:setTick(10, 10, 6, 6, '', '', '', '', 'thickthin', '3px')"/>
-        <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine('7,9', '81,9', 2, '#ff0000', '', '', 'solid','')"/>
+		  <svg style="width: 100%; height: 100%">
+			  <xsl:value-of disable-output-escaping="yes" select="phxsl:setTick2(10, 10, 6, 6, '#ff0000', '#ff0000', '', '', '', '3')"/>
+			  <xsl:value-of disable-output-escaping="yes" select="phxsl:setLine2('7,10', '81,10', 2, '#ff0000', '', '', 'solid','')"/>
+		  </svg>
       </td>
       <td style="text-align:center">
         <xsl:value-of disable-output-escaping="yes" select="phxsl:rate2(string(FAULTSUM1), string(SALESSUM1), 2)"/>

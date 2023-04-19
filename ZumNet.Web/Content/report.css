@@ -1,0 +1,137 @@
+﻿/* 차트 */
+.ctm {
+    width: 980px;
+    height:;
+    border: 0px solid red
+}
+
+    .ctm .ff {
+        height: 10px;
+        font-size: 1px;
+        border: 0px solid red
+    }
+
+.fh h1 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: 1pt
+}
+
+.fm1 h2 {
+    font-size: 10pt;
+    letter-spacing: 1pt;
+    margin: 0
+}
+
+v\: * {
+    behavior: url(#default#VML);
+    display: inline-block
+}
+
+.ctm .fm-chart {
+    height:;
+    border: windowtext 1pt solid
+}
+
+    .ctm .fm-chart .fc {
+        width: 100%;
+        /*height: 100%*/
+    }
+
+    .ctm .fm-chart .fc-lbl {
+        vertical-align: top;
+        text-align: right;
+        padding: 5px 5px 0 0;
+        border-right: 1px solid windowtext
+    }
+
+    .ctm .fm-chart .fc-lbl1 {
+        vertical-align: middle;
+        text-align: center;
+        border-right: 1px solid windowtext;
+        background-color: #eeeeee
+    }
+
+    .ctm .fm-chart .fc-axis-y {
+        font-size: 1px;
+        border-right: 1px solid windowtext;
+        border-left: 0px solid red
+    }
+
+.ctm .ft {
+    border: windowtext 1pt solid
+}
+
+    .ctm .ft td {
+        height: 24px;
+        word-break: break-all;
+        border-right: windowtext 1pt solid;
+        border-bottom: windowtext 1pt solid;
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-top: 1px
+    }
+
+    .ctm .ft .f-lbl {
+        text-align: center;
+        background-color: #eeeeee
+    }
+
+.fm table {
+    width: 100%;
+    height: 100%
+}
+
+.fm span {
+    width: 100%;
+    text-align: left
+}
+
+.ctm .ft-sub {
+    border: windowtext 1pt solid;
+    table-layout:
+}
+
+    .ctm .ft-sub td {
+        height: 24px;
+        word-break: break-all;
+        border-right: windowtext 1pt solid;
+        border-top: windowtext 1pt solid;
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-top: 1px
+    }
+
+    .ctm .ft-sub .f-lbl-sub {
+        text-align: center;
+        background-color: #eeeeee
+    }
+
+        .ctm .ft-sub .f-lbl-sub a {
+            font-weight: bold
+        }
+
+    .ctm .ft-sub .f-sub-div {
+        border-bottom: 1px dotted #666
+    }
+
+/* 차트 폰트 */
+.fh h1 {
+    font-family: 맑은 고딕;
+    font-weight: bold
+}
+
+.ctm .ft td, .ctm .ft div, .ctm .ft-sub td, .ctm .ft-sub div {
+    font-size: 13px;
+    font-family: 맑은 고딕
+}
+
+.ctm .fm span, .ctm .fm label, .ctm .ft-sub label {
+    font-size: 13px;
+    font-family: 맑은 고딕
+}
+
+.ctm .fm-chart .fc td, .ctm .fm-chart .fc input {
+    font-size: 12px;
+    font-family: 맑은 고딕
+}

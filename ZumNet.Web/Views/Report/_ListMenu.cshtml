@@ -64,7 +64,14 @@ else if (ViewBag.R.ft == "REGISTER_GONGGA")
 {
     @*<a class="text-success mr-3" href="javascript:void(0);" onclick="_zw.fn.exportExcel();"><i class="fe-download"></i> 엑셀</a>*@
     @*<button class="btn icon-btn btn-outline-secondary m-0 btn-sm" aria-controls="vw-full-fill" onclick="_zw.ut.ctrls();"><i class="fas fa-expand"></i></button>*@
-    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="엑셀 내보내기" onclick="_zw.fn.exportExcel();"><i class="fe-download text-success"></i><span class="d-none d-sm-inline-block ml-1">엑셀</span></button>
+    if (ViewBag.R.ft == "FORM_MONTHLOSSCHART")
+    {
+        @*<button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="인쇄 미리보기" onclick="_zw.fn.preview();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">인쇄</span></button>*@
+    }
+    else
+    {
+        <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="엑셀 내보내기" onclick="_zw.fn.exportExcel();"><i class="fe-download text-success"></i><span class="d-none d-sm-inline-block ml-1">엑셀</span></button>        
+    }
     <button class="btn btn-default py-1 font-weight-bold" aria-controls="vw-full-fill" onclick="_zw.ut.ctrls();"><i class="fas fa-expand"></i></button>
 }
 

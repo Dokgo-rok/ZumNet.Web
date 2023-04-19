@@ -1,0 +1,107 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+
+@{
+    if (ViewBag.R.lv["start"].ToString() == "")
+    {
+        ViewBag.R.lv["start"] = DateTime.Now.Year.ToString();
+    }
+
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+    {
+        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+                , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString());
+    }
+}
+@functions {
+    /// <summary>
+    /// 월손실비용발생현황
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    private string MakeXmlData(DataSet data)
+    {
+        //<ph_ea_chartsheet><chartinfo type="차트 형태 line, bar, pie"><chartdata>필드명으로 구성</chartdata></chartinfo></ph_ea_chartsheet>
+        StringBuilder sb = new StringBuilder();
+        string strChartType = "line";
+        DataTable dt = null;
+        if (data != null && data.Tables.Count > 0)
+        {
+            sb.AppendFormat("<ph_ea_chartsheet><chartinfo type=\"{0}\"><chartdata>", strChartType);
+            for (int i = 0; i < data.Tables.Count; i++)
+            {
+                dt = data.Tables[i];
+                if (i == 0)
+                {
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        sb.Append("<row>");
+                        foreach (DataColumn col in dt.Columns)
+                        {
+                            sb.AppendFormat("<{0}>{1}</{0}>", col.ColumnName, row[col.ColumnName].ToString());
+                        }
+                        sb.Append("</row>");
+                    }
+                }
+                else if (i == 1)
+                {
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        sb.Append("<sum>");
+                        sb.AppendFormat("<{0}>{1}</{0}>", "STATSYEAR", ViewBag.R.lv["start"].ToString());
+                        foreach (DataColumn col in dt.Columns)
+                        {
+                            sb.AppendFormat("<{0}>{1}</{0}>", col.ColumnName, row[col.ColumnName].ToString());
+                        }
+                        sb.Append("</sum>");
+                    }
+                }
+            }
+            sb.Append("</chartdata></chartinfo></ph_ea_chartsheet>");
+            if (dt != null) { dt.Dispose(); dt = null; }
+        }
+        //return sb.ToString();
+
+        //Response.Write(sb.ToString());
+
+        string formPath = HttpContext.Current.Server.MapPath(ZumNet.Framework.Configuration.Config.Read("EAFormHtmlPath") + "/" + ViewBag.R.ft.ToString().Replace("FORM_", "CHART_") + ".xsl");
+
+        //Response.Write(formPath);
+
+        return FileHelper.ConvertXmlToHtml(sb.ToString(), formPath);
+    }
+}
+<div class="z-list-head d-flex justify-content-between my-2">
+    <div class="z-list-page d-flex align-items-center" id="__ListCount">
+
+    </div>
+    <div class="z-list-cond d-flex justify-content-end align-items-center">
+        <div class="mr-2"><i class="fe-chevron-right"></i> @Resources.Global.Date_View</div>
+        <div class="z-list-search input-group">
+            <select class="custom-select" data-for="year">
+                @Html.Raw(ZumNet.Web.Bc.CommonUtils.OptionYear(2009, DateTime.Now.Year, Convert.ToInt32(ViewBag.R.lv["start"].ToString())))
+            </select>
+            <div class="input-group-append">
+                <button class="btn btn-secondary" type="button" data-zv-menu="search"><i class="fe-search"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="z-list-body" id="__ListView">
+    <div class="mb-3" id="chart-list">
+        @if (svcRt != null && svcRt.ResultCode == 0)
+        {
+            @Html.Raw(MakeXmlData(svcRt.ResultDataSet))
+        }
+        else
+        {
+            <div>@Resources.Global.NoItemShow</div>
+        }
+    </div>
+</div>

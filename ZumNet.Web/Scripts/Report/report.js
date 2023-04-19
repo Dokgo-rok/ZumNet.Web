@@ -358,7 +358,7 @@ $(function () {
 
     _zw.fn.goSearch = function (page, sort, dir) {
         if (_zw.V.ft == 'REGISTER_PRODUCT_PALNT' || _zw.V.ft == 'REGISTER_EMPLOYEE_PALNT' || _zw.V.ft == 'REGISTER_PRODUCT_PALNT_MODEL'
-            || _zw.V.ft == 'REGISTER_EMPLOYEE_PALNT_MODEL' || _zw.V.ft == 'REGISTER_PROCESS_PALNT_MODEL') {
+            || _zw.V.ft == 'REGISTER_EMPLOYEE_PALNT_MODEL' || _zw.V.ft == 'REGISTER_PROCESS_PALNT_MODEL' || _zw.V.ft == 'FORM_MONTHLOSSCHART') {
             _zw.V.lv.start = $('.z-list-search select[data-for="year"]').val();
             _zw.V.lv.end = $('.z-list-search select[data-for="month"]').val();
             _zw.V.lv.cd1 = $('.z-list-search select[data-for="cond1"]').val();

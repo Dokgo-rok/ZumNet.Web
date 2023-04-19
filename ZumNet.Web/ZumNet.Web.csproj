@@ -398,6 +398,7 @@
     <Content Include="Content\env.css" />
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLECONTROL_V1.xsl" />
     <Content Include="Content\num.css" />
+    <Content Include="Content\report.css" />
     <Content Include="Content\search.css" />
     <Content Include="Content\voc.css" />
     <Content Include="Content\todo.css" />
@@ -3393,6 +3394,7 @@
     <Content Include="Views\Common\JusoPopup.cshtml" />
     <Content Include="Views\Portal\_NoticeList.cshtml" />
     <Content Include="Views\Portal\NoticeList.cshtml" />
+    <Content Include="Views\Report\_FORM_MONTHLOSSCHART.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
