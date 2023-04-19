@@ -16,10 +16,10 @@
       <div class="fm-chart">
         <table class="fc" border="0" cellspacing="0" cellpadding="0">
           <colgroup>
-            <col style="width:68px"></col>
-            <col style="width:90px"></col>
+            <col style="width:70px"></col>
+            <col style="width:100px"></col>
             <col style="width:720px"></col>
-            <col style="width:80px"></col>
+            <col style="width:82px"></col>
           </colgroup>
           <tr>
             <td class="fc-lbl1">
