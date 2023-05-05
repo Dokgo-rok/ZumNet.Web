@@ -199,22 +199,22 @@
                 </a>
             </li>
             @*<li class="nav-item dropdown mr-md-2">
-                    <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.FindPhoneNum">
-                        <i class="fe-phone"></i>
-                    </a>
-                    <div class="dropdown-menu py-0" style="margin-top: -0.25rem; left: -1.5rem">
-                        <div class="input-group" style="width: 10rem">
-                            <input type="search" class="form-control" placeholder="찾기(이름)..." onkeyup="if (event.keyCode == 13) _zw.mu.searchPhoneNum();" />
-                            <button type="button" class="btn btn-blue py-0" onclick="_zw.mu.searchPhoneNum();"><i class="fe-search"></i></button>
-                        </div>
-                    </div>
-                </li>*@
+            <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.FindPhoneNum">
+                <i class="fe-phone"></i>
+            </a>
+            <div class="dropdown-menu py-0" style="margin-top: -0.25rem; left: -1.5rem">
+                <div class="input-group" style="width: 10rem">
+                    <input type="search" class="form-control" placeholder="찾기(이름)..." onkeyup="if (event.keyCode == 13) _zw.mu.searchPhoneNum();" />
+                    <button type="button" class="btn btn-blue py-0" onclick="_zw.mu.searchPhoneNum();"><i class="fe-search"></i></button>
+                </div>
+            </div>
+        </li>*@
 
             @*<li class="nav-item mr-lg-2">
-                    <a class="nav-link z-wave text-large" href="@Url.Action("Index", "Organ", new { Area = "", qi = @vOrganQuery[1] })" data-toggle="tooltip" data-placement="bottom" title="@vOrganQuery[0]">
-                        <i class="mdi mdi-sitemap"></i>
-                    </a>
-                </li>*@
+            <a class="nav-link z-wave text-large" href="@Url.Action("Index", "Organ", new { Area = "", qi = @vOrganQuery[1] })" data-toggle="tooltip" data-placement="bottom" title="@vOrganQuery[0]">
+                <i class="mdi mdi-sitemap"></i>
+            </a>
+        </li>*@
 
             <li class="nav-item dropdown mr-md-2">
                 <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@vLinkSiteQuery[0]">
@@ -270,28 +270,31 @@
                 </a>
             </li>
 
-            <!--<li class="nav-item dropdown">
-                <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.LangSet">-->
-                    @*<i class="fe-navigation"></i>*@
-                    <!--<span class="btn btn-indigo btn-sm px-1" style="width: 28px">@sCurrentLocale.Substring(0, 2).ToUpper()</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
-                    <div class="list-group list-group-flush">
+            @if (ZumNet.Framework.Configuration.Config.Read("UseLangSet") == "Y")
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link z-wave text-large dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.LangSet">
+                        @*<i class="fe-navigation"></i>*@
+                        <span class="btn btn-indigo btn-sm px-1" style="width: 28px">@sCurrentLocale.Substring(0, 2).ToUpper()</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
+                        <div class="list-group list-group-flush">
 
-                        @for (int i = 0; i < vLocale.GetLength(0); i++)
-                        {
-                            if (vLocale[i, 0].Contains(sCurrentLocale))
+                            @for (int i = 0; i < vLocale.GetLength(0); i++)
                             {
-                                <a class="dropdown-item list-group-item list-group-item-action disabled" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
+                                if (vLocale[i, 0].Contains(sCurrentLocale))
+                                {
+                                    <a class="dropdown-item list-group-item list-group-item-action disabled" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
+                                }
+                                else
+                                {
+                                    <a class="dropdown-item list-group-item list-group-item-action" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
+                                }
                             }
-                            else
-                            {
-                                <a class="dropdown-item list-group-item list-group-item-action" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
-                            }
-                        }
+                        </div>
                     </div>
-                </div>
-            </li>-->
+                </li>
+            }
 
             <li class="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-50 mr-2 ml-1">|</li>
 
@@ -449,27 +452,31 @@
                         }
                     </div>
 
-                    @*<div class="dropdown">
-                <a class="btn text-big dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.LangSet">
-                    <span class="btn btn-indigo btn-sm px-1">@sCurrentLocale.Substring(0, 2).ToUpper()</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
-                    <div class="list-group list-group-flush">
+                    @if (ZumNet.Framework.Configuration.Config.Read("UseLangSet") == "Y")
+                    {
+                        <div class="dropdown">
+                            <a class="btn text-big dropdown-toggle hide-arrow" href="javascript:void(0)" data-toggle="dropdown" data-placement="bottom" title="@Resources.Global.LangSet">
+                                <span class="btn btn-indigo btn-sm px-1">@sCurrentLocale.Substring(0, 2).ToUpper()</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right mt-0 py-0">
+                                <div class="list-group list-group-flush">
 
-                        @for (int i = 0; i < vLocale.GetLength(0); i++)
-                        {
-                            if (vLocale[i, 0].Contains(sCurrentLocale))
-                            {
-                                <a class="dropdown-item list-group-item list-group-item-action disabled" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
-                            }
-                            else
-                            {
-                                <a class="dropdown-item list-group-item list-group-item-action" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
-                            }
-                        }
-                    </div>
-                </div>
-            </div>*@
+                                    @for (int i = 0; i < vLocale.GetLength(0); i++)
+                                    {
+                                        if (vLocale[i, 0].Contains(sCurrentLocale))
+                                        {
+                                            <a class="dropdown-item list-group-item list-group-item-action disabled" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="dropdown-item list-group-item list-group-item-action" href="javascript:void(0)" data-navmenu="locale" data-navval="@vLocale[i, 0]">@vLocale[i, 1]</a>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
                 </div>
             </div>
         </div>

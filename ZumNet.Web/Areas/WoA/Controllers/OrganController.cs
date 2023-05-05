@@ -1211,6 +1211,99 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
         #endregion
 
+        #region [ /Woa/Oragn/Search ]
+        [HttpPost]
+        [Authorize]
+        public string Search()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+                if (jPost == null || jPost.Count == 0) return "필수값 누락!";
+
+                ServiceResult svcRt = new ServiceResult();
+                ServiceResult svcRt2 = new ServiceResult();
+
+                try
+                {
+                    using (ZumNet.BSL.ServiceBiz.CommonBiz comBiz = new CommonBiz())
+                    {
+                        svcRt = comBiz.GetGroupType();
+                        svcRt2 = comBiz.GetGradeCode("1", Convert.ToInt32(Session["DNID"]), "A");
+                    }
+
+                    ViewBag.M = "";
+                    ViewBag.JPost = jPost;
+                    ViewBag.GroupType = svcRt.ResultDataTable;
+                    ViewBag.GradeCode = svcRt2.ResultDataTable;
+
+                    rt = "OK" + (RazorViewToString.RenderRazorViewToString(this, "_Search", ViewBag)).TrimStart();
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+                finally { ViewBag.JPost = null; ViewBag.GroupType = null; ViewBag.GradeCode = null; ViewBag.GradeCode = null; }
+            }
+            
+            return rt;
+        }
+
+        [HttpPost]
+        [Authorize]
+        public string SearchResult()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+                if (jPost == null || jPost.Count == 0 || jPost["M"].ToString() == "" || jPost["searchtext"].ToString() == "") return "필수값 누락!";
+
+                ServiceResult svcRt = new ServiceResult();
+                string sSearchText = "";
+
+                try
+                {
+                    if (jPost["M"].ToString() == "group")
+                    {
+                        sSearchText = " AND a.DisplayName LIKE '%" + jPost["searchtext"].ToString() + "%'";
+
+                        using (ZumNet.BSL.ServiceBiz.OfficePortalBiz opBiz = new OfficePortalBiz())
+                        {
+                            svcRt = opBiz.SearchDomainGroups(Session["DNID"].ToString(), "", jPost["type"].ToString(), "", "", sSearchText, "N");
+                        }
+                    }
+                    else
+                    {
+                        if (jPost["cd"].ToString() == "gr") sSearchText = " AND c.DisplayName LIKE '%" + jPost["searchtext"].ToString() + "%'";
+                        else sSearchText = " AND a.DisplayName LIKE '%" + jPost["searchtext"].ToString() + "%'";
+
+                        using (ZumNet.BSL.ServiceBiz.CommonBiz comBiz = new CommonBiz())
+                        {
+                            svcRt = comBiz.GetSearchUserList(Convert.ToInt32(Session["DNID"]), jPost["type"].ToString(), sSearchText, "N");
+                        }
+                    }
+
+                    ViewBag.M = "result";
+                    ViewBag.JPost = jPost;
+                    ViewBag.SearchList = svcRt.ResultDataTable;
+
+                    rt = "OK" + (RazorViewToString.RenderRazorViewToString(this, "_Search", ViewBag)).TrimStart();
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+                finally { ViewBag.JPost = null; ViewBag.GroupType = null; ViewBag.GradeCode = null; ViewBag.GradeCode = null; }
+            }
+
+            return rt;
+        }
+        #endregion
+
         #region [ /Woa/Oragn/ESPUser ]
         [Authorize]
         public ActionResult ESPUser()
@@ -1247,14 +1340,21 @@ namespace ZumNet.Web.Areas.WoA.Controllers
 
                 ServiceResult svcRt = new ServiceResult();
 
-                System.Data.SqlClient.SqlParameter[] parameters = new System.Data.SqlClient.SqlParameter[]
-                {
-                    Framework.Data.ParamSet.Add4Sql("@urid", SqlDbType.Int, StringHelper.SafeInt(jPost["urid"].ToString()))
-                };
+                string[] vUser = jPost["urid"].ToString().Split(';');
 
                 using (ZumNet.BSL.InterfaceBiz.ExecuteBiz execBiz = new BSL.InterfaceBiz.ExecuteBiz())
                 {
-                    svcRt = execBiz.ExecuteProcedureTx("dbo.zp_BT_createESPUSR", 15, parameters);
+                    foreach(string s in vUser)
+                    {
+                        System.Data.SqlClient.SqlParameter[] parameters = new System.Data.SqlClient.SqlParameter[]
+                        {
+                            Framework.Data.ParamSet.Add4Sql("@urid", SqlDbType.Int, StringHelper.SafeInt(s)),
+                            Framework.Data.ParamSet.Add4Sql("@outid", SqlDbType.Int, ParameterDirection.Output)
+                        };
+
+                        svcRt = execBiz.ExecuteProcedureTx("dbo.zp_BT_createESPUSR", 15, parameters);
+                    }
+                    
                 }
 
                 if (svcRt.ResultCode >= 0)
@@ -1265,6 +1365,56 @@ namespace ZumNet.Web.Areas.WoA.Controllers
                 {
                     ResultCode = "FAIL";
                     ResultMessage = $"구매포탈 사용자 생성 실패 :: {svcRt.ResultMessage}";
+                }
+            }
+            else
+            {
+                ResultCode = "FAIL";
+                ResultMessage = "IsAjaxRequest가 아님";
+            }
+
+            return CreateJsonData();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public string ESPUserDelete()
+        {
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+                if (jPost == null || jPost.Count == 0)
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = "필수값 누락";
+
+                    return CreateJsonData();
+                }
+
+                string mode = jPost["M"].ToString() == "" ? "P" : jPost["M"].ToString();
+
+                ServiceResult svcRt = new ServiceResult();
+
+                System.Data.SqlClient.SqlParameter[] parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    Framework.Data.ParamSet.Add4Sql("@mode", SqlDbType.Char, 1, mode),
+                    Framework.Data.ParamSet.Add4Sql("@epid", SqlDbType.Int, StringHelper.SafeInt(jPost["epid"].ToString())),
+                    Framework.Data.ParamSet.Add4Sql("@urid", SqlDbType.Int, StringHelper.SafeInt(jPost["urid"].ToString()))
+                };
+
+                using (ZumNet.BSL.InterfaceBiz.ExecuteBiz execBiz = new BSL.InterfaceBiz.ExecuteBiz())
+                {
+                    svcRt = execBiz.ExecuteProcedureTx("dbo.zp_BT_deleteESPUSR", 15, parameters);
+                }
+
+                if (svcRt.ResultCode >= 0)
+                {
+                    return CreateJsonData();
+                }
+                else
+                {
+                    ResultCode = "FAIL";
+                    ResultMessage = $"구매포탈 사용자 삭제 실패 :: {svcRt.ResultMessage}";
                 }
             }
             else

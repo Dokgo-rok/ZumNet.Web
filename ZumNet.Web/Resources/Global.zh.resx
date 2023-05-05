@@ -423,10 +423,10 @@
   <data name="Logout" xml:space="preserve">
     <value>登出</value>
   </data>
-  <data name="MaskRead" xml:space="preserve">
+  <data name="MarkRead" xml:space="preserve">
     <value>掩码读取</value>
   </data>
-  <data name="MaskUnRead" xml:space="preserve">
+  <data name="MarkUnRead" xml:space="preserve">
     <value>掩码为未读</value>
   </data>
   <data name="Modify" xml:space="preserve">

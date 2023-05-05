@@ -59,16 +59,7 @@ namespace Resources {
                 resourceCulture = value;
             }
         }
-
-        /// <summary>
-        /// 리소스이름으로 가져오기
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static string Get(string name) {
-            return ResourceManager.GetString(name, resourceCulture);
-        }
-
+        
         /// <summary>
         ///   Access과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
@@ -988,20 +979,20 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Mask as read과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Mark as read과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string MaskRead {
+        public static string MarkRead {
             get {
-                return ResourceManager.GetString("MaskRead", resourceCulture);
+                return ResourceManager.GetString("MarkRead", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Mask as unread과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Mark as unread과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string MaskUnRead {
+        public static string MarkUnRead {
             get {
-                return ResourceManager.GetString("MaskUnRead", resourceCulture);
+                return ResourceManager.GetString("MarkUnRead", resourceCulture);
             }
         }
         

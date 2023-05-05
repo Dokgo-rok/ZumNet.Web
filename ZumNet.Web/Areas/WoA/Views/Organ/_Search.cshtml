@@ -1,0 +1,193 @@
+﻿@using System;
+@using System.Data;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@{
+    ViewBag.Title = Resources.Global.Search;
+}
+@functions{
+    private string GetMemberAttr(string tgt, DataRow dr)
+    {
+        JObject j = JObject.Parse("{}");
+        if (tgt == "user")
+        {
+            j["id"] = dr["UserID"].ToString();
+            j["logonid"] = dr["LogonID"].ToString();
+            //j["smail"] = dr["MailAccount"].ToString();
+            j["grid"] = dr["GR_ID"].ToString();
+            j["gralias"] = dr["GRAlias"].ToString();
+            j["grdn"] = dr["DeptName"].ToString();
+            j["grade"] = dr["GradeCode1"].ToString();
+        }
+        else if (tgt == "group")
+        {
+            j["id"] = dr["GR_ID"].ToString();
+            j["gralias"] = dr["GRAlias"].ToString();
+            j["grtype"] = dr["GRType"].ToString();
+        }
+
+        return JsonConvert.SerializeObject(j);
+    }
+}
+@if (ViewBag.M == "")
+{
+    <div class="zf-modal modal-dialog">
+        <div class="modal-content bg-white" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+            <div class="modal-header">
+                <h6 class="modal-title">@ViewBag.Title</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div data-pos="search-cond">
+                    <div class="input-group mb-1">
+                        <label class="col-2 col-form-label font-weight-normal">대상</label>
+                        <div class="col-10">
+                            <select class="custom-select w-100" data-val="target" @(ViewBag.JPost["M"].ToString() == "all" ? "" : " disabled")>
+                                <option value="user" @(ViewBag.JPost["M"].ToString() == "user" ? " selected" : "")>사용자</option>
+                                <option value="group" @(ViewBag.JPost["M"].ToString() == "group" ? " selected" : "")>그룹</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div data-for="group" class="@(ViewBag.JPost["M"].ToString() == "group" ? "" : "d-none")">
+                        <div class="input-group mb-1">
+                            <label class="col-2 col-form-label font-weight-normal">그룹 유형</label>
+                            <div class="col-10">
+                                <select class="custom-select w-100" data-val="grtype">
+                                    @if (ViewBag.GroupType != null && ViewBag.GroupType.Rows.Count > 0)
+                                    {
+                                        foreach (DataRow row in ViewBag.GroupType.Rows)
+                                        {
+                                            <option value="@row["GRType"]">@row["TypeName"]</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group mb-1">
+                            <label class="col-2 col-form-label font-weight-normal">그룹명</label>
+                            <div class="col-10 input-group">
+                                <input type="text" class="form-control" placeholder="그룹 찾기" value="">
+                                <span class="input-group-append"><button class="btn btn-secondary" type="button"><i class="fe-search"></i></button></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-for="user" class="@(ViewBag.JPost["M"].ToString() == "all" || ViewBag.JPost["M"].ToString() == "user" ? "" : "d-none")">
+                        <div class="input-group mb-1">
+                            <label class="col-2 col-form-label font-weight-normal">@Resources.Global.Jikwi</label>
+                            <div class="col-10">
+                                <select class="custom-select w-100" data-val="code">
+                                    <option value="">전체</option>
+                                    @if (ViewBag.GradeCode != null && ViewBag.GradeCode.Rows.Count > 0)
+                                    {
+                                        foreach (DataRow row in ViewBag.GradeCode.Rows)
+                                        {
+                                            <option value="@row["Code"]">@row["CodeName"]</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group mb-1">
+                            <label class="col-2 col-form-label font-weight-normal">@Resources.Global.Search</label>
+                            <div class="col-10 input-group">
+                                <div class="input-group-prepend">
+                                    <select class="custom-select" data-val="cd">
+                                        <option value="ur">사용자</option>
+                                        <option value="gr">그룹</option>
+                                    </select>
+                                </div>
+                                <input type="text" class="form-control" placeholder="사용자 찾기" value="">
+                                <span class="input-group-append"><button class="btn btn-secondary" type="button"><i class="fe-search"></i></button></span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div data-pos="search-result" class="border mx-2 mt-2">
+                    <div class="card">
+                        <div style="height: 1.725rem">
+                        </div>
+                        <div class="card-body p-1" style="height: 13rem; overflow: auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-1">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Global.Close</button>
+                <button type="button" class="btn btn-primary" data-zm-menu="confirm">@Resources.Global.Confirm</button>
+            </div>
+        </div>
+    </div>
+}
+else if (ViewBag.M == "result")
+{
+    <div class="card">
+        @if (ViewBag.JPost["M"].ToString() == "group")
+        {
+            <div class="card-header bg-light py-1 px-2">
+                <div class="d-flex align-items-center">
+                    <div class="wd-50 wd-lg-50 wd-xl-50 text-nowrap">@Resources.Global.Name</div>
+                    <div class="wd-25 wd-lg-25 wd-xl-25 text-nowrap">그룹코드</div>
+                    <div class="wd-25 wd-lg-25 wd-xl-25 text-nowrap">유형</div>
+                </div>
+            </div>
+            <div class="card-body p-1" style="height: 13rem; overflow: auto">
+                @if (ViewBag.SearchList != null && ViewBag.SearchList.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in ViewBag.SearchList.Rows)
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="wd-50 wd-lg-50 wd-xl-50">
+                                <label class="flex-fill custom-control custom-checkbox mb-0">
+                                    <input type="checkbox" class="custom-control-input" data-for="gr.@dr["GR_ID"]" data-attr="@GetMemberAttr(ViewBag.JPost["M"].ToString(), dr)">
+                                    <span class="custom-control-label">@dr["DisplayName"]</span>
+                                </label>
+                            </div>
+                            <div class="wd-25 wd-lg-25 wd-xl-25 text-muted text-nowrap">@dr["GRAlias"]</div>
+                            <div class="wd-25 wd-lg-25 wd-xl-25 text-muted text-nowrap">@dr["TypeName"]</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center mt-3 h5 text-secondary">@Resources.Global.NoItemShow</div>
+                }
+            </div>
+
+        }
+        else if (ViewBag.JPost["M"].ToString() == "user")
+        {
+            <div class="card-header bg-light py-1 px-2">
+                <div class="d-flex align-items-center">
+                    <div class="wd-40 wd-lg-40 wd-xl-40 text-nowrap">@Resources.Global.Name</div>
+                    <div class="wd-20 wd-lg-20 wd-xl-20 text-nowrap">@Resources.Global.Jikwi</div>
+                    <div class="wd-40 wd-lg-40 wd-xl-40 text-nowrap">@Resources.Global.Department</div>
+                </div>
+            </div>
+            <div class="card-body p-1" style="height: 13rem; overflow: auto">
+                @if (ViewBag.SearchList != null && ViewBag.SearchList.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in ViewBag.SearchList.Rows)
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="wd-40 wd-lg-40 wd-xl-40">
+                                <label class="flex-fill custom-control custom-checkbox mb-0">
+                                    <input type="checkbox" class="custom-control-input" data-for="ur.@dr["UserID"]" data-attr="@GetMemberAttr(ViewBag.JPost["M"].ToString(), dr)">
+                                    <span class="custom-control-label">@(dr["DisplayName"].ToString() + "(" + dr["LogonID"].ToString() + ")")</span>
+                                </label>
+                            </div>
+                            <div class="wd-20 wd-lg-20 wd-xl-20 text-muted text-nowrap">@dr["GradeCodeName1"]</div>
+                            <div class="wd-40 wd-lg-40 wd-xl-40 text-muted text-nowrap">@dr["DeptName"]</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center mt-3 h5 text-secondary">@Resources.Global.NoItemShow</div>
+                }
+            </div>
+        }
+    </div>
+}

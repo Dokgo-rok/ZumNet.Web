@@ -98,7 +98,7 @@ $(function () {
 
     _zw.fn.getEACount('', 'ea', 'base2', '', 'N');
 
-    _zw.fn.readMask = function (opt) {
+    _zw.fn.readMark = function (opt) {
         var tgt = $('#__ListView .z-lv-row :checkbox:checked'), v = ''
         tgt.each(function (idx) {
             var temp = $(this).parent().parent().parent().attr('id').substr(1).split(".");

@@ -11,18 +11,65 @@
             
             _zw.fn.removeUser = function () {
                 var e = _zw.ut.eventBtn(), row = e.parent().parent();
-                alert(row.data('userid'))
+
+                bootbox.confirm('구매포탈 시스템을 사용중입니다.<br />삭제하시겠습니까?', function (rt) {
+                    if (rt) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/WoA/Organ/ESPUserDelete",
+                            dataType: 'JSON',
+                            data: '{M:"R",epid:"' + row.data('urid') + '",urid:"' + row.data('userid') + '"}',
+                            success: function (res) {
+                                if (res.code == "OK") {
+                                    //p.modal('hide');
+                                    window.location.reload();
+
+                                } else bootbox.alert(res.message);
+                            },
+                            beforeSend: function () { _zw.ut.ajaxLoader(true); }
+                        });
+                    }
+                });
             }
 
-            _zw.fn.orgSelect = function (p, el) {
-                console.log(el)
+            _zw.fn.orgSelect = function (p, el) { //console.log(el)
+                var s = ''
+                p.find('.modal-body div[data-pos="search-result"] .card-body .d-flex input:checkbox:checked').each(function (idx, e) {
+                    var v = $(this).attr('data-for').split('.');
+                    if ($('#__List tr[data-userid="' + v[1] + '"]').length > 0) {
+                        bootbox.alert($(this).next().text() + '(은)는 이미 선택되었습니다!', function () { }); s = ''; return false;
+                    } else {
+                        s += (s != '' ? ';' : '') + v[1];
+                    }
+                });
+
+                if (s != '') {
+                    bootbox.confirm('선택한 사용자를 등록하시겠습니까?', function (rt) {
+                        if (rt) {
+                            $.ajax({
+                                type: "POST",
+                                url: "/WoA/Organ/ESPUserCreate",
+                                dataType: 'JSON',
+                                data: '{urid:"' + s + '"}',
+                                success: function (res) {
+                                    if (res.code == "OK") {
+                                        //p.modal('hide');
+                                        window.location.reload();
+
+                                    } else bootbox.alert(res.message);
+                                },
+                                beforeSend: function () { _zw.ut.ajaxLoader(true); }
+                            });
+                        }
+                    });
+                }
             }
         }());
     </script>
 }
 <div class="d-flex justify-content-between align-items-center w-100 font-weight-bold mb-2">
     <h4>@ViewBag.Title</h4>
-    <button class="btn btn-outline-primary" data-toggle="tooltip" data-placement="bottom" title="구매포탈 사용자 추가" onclick="_zw.fn.org('user', 'y');"><i class="fas fa-user-plus mr-1"></i>추가</button>
+    <button class="btn btn-outline-primary" data-toggle="tooltip" data-placement="bottom" title="구매포탈 사용자 추가" onclick="_zw.fn.orgSearch('all', 'y', this);"><i class="fas fa-user-plus mr-1"></i>추가</button>
 </div>
 
 <div class="z-list" id="__List">
@@ -39,11 +86,11 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model.Tables != null && Model.Tables.Count > 0 && Model.Tables[0].Rows.Count > 0)
+            @if (Model != null && Model.Tables != null && Model.Tables.Count > 0 && Model.Tables[0].Rows.Count > 0)
             {
                 foreach (DataRow row in Model.Tables[0].Rows)
                 {
-                    <tr data-userid="@row["UserID"].ToString()">
+                    <tr data-userid="@row["UserID"].ToString()" data-urid="@row["urid"].ToString()">
                         <td>@row["DisplayName"].ToString()</td>
                         <td>@row["LogonID"].ToString()</td>
                         <td>@row["Grade1"].ToString()</td>

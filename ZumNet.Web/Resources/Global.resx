@@ -423,11 +423,11 @@
   <data name="Logout" xml:space="preserve">
     <value>Log Out</value>
   </data>
-  <data name="MaskRead" xml:space="preserve">
-    <value>Mask as read</value>
+  <data name="MarkRead" xml:space="preserve">
+    <value>Mark as read</value>
   </data>
-  <data name="MaskUnRead" xml:space="preserve">
-    <value>Mask as unread</value>
+  <data name="MarkUnRead" xml:space="preserve">
+    <value>Mark as unread</value>
   </data>
   <data name="Modify" xml:space="preserve">
     <value>Modify</value>

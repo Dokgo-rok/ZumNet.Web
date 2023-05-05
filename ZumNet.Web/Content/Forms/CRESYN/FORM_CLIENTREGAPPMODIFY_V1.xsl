@@ -49,17 +49,14 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'"><xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
@@ -72,18 +69,14 @@
                 <td class="fh-r">&nbsp;</td>
               </tr>
             </table>
-            <xsl:choose>
-              <xsl:when test="$mode='read'">
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value"><xsl:value-of select="//forminfo/maintable/LOGOPATH" /></xsl:attribute>
-                </input>
-              </xsl:when>
-              <xsl:otherwise>
-                <input type="hidden" id="__mainfield" name="LOGOPATH">
-                  <xsl:attribute name="value">/Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" /></xsl:attribute>
-                </input>
-              </xsl:otherwise>
-            </xsl:choose>
+			  <xsl:choose>
+				  <xsl:when test="$mode='read'">
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="{//forminfo/maintable/LOGOPATH}" />
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <input type="hidden" id="__mainfield" name="LOGOPATH" value="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+				  </xsl:otherwise>
+			  </xsl:choose>
           </div>
 
           <div class="fb">
@@ -106,10 +99,10 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <colgroup>
-                <col style="width:20%"/>
-                <col style="width:30%"/>
-                <col style="width:20%"/>
-                <col style="width:30%"/>
+				  <col style="width:15%"/>
+				  <col style="width:35%"/>
+				  <col style="width:15%"/>
+				  <col style="width:35%"/>
               </colgroup>
               <tr>
                 <td class="f-lbl">관리번호</td>
@@ -140,8 +133,8 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <colgroup>
-                <col style="width:20%" />
-                <col style="width:80%" />
+				  <col style="width:15%" />
+				  <col style="width:85%" />
               </colgroup>
               <tr>
                 <!--<td class="f-lbl" style="border-bottom:0;">ERP 등록번호</td>-->
@@ -161,11 +154,14 @@
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:40%"  type="text" id="__mainfield" name="COMPANY" value="{//forminfo/maintable/COMPANY}"/>
+                      <input style="width:40%"  type="text" id="__mainfield" name="COMPANY" class="txtText_u" value="{//forminfo/maintable/COMPANY}"/>
                       <input style="width:40%"  type="hidden" id="__mainfield" name="COMPANYCODE" value="{//forminfo/maintable/COMPANYCODE}"/>
-                      <button onclick="parent.fnOption('report.ERP_FACTORY',240,200,126,70,'COMPANY','COMPANY','COMPANYCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnOption('report.ERP_FACTORY',240,200,126,70,'COMPANY','COMPANY','COMPANYCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="등록법인" onclick="_zw.formEx.optionWnd('report.ERP_FACTORY',240,200,126,70,'COMPANY','COMPANY','COMPANYCODE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/COMPANY))" />
@@ -199,7 +195,7 @@
                   <span class="f-option1">
                     <input id="ckb1" name="ckbCLIENT_TYPE"  type="checkbox" value="CUST">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCLIENT_TYPE', this, 'CLIENT_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCLIENT_TYPE', this, 'CLIENT_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CLIENT_TYPE),'CUST')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -207,12 +203,13 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CLIENT_TYPE),'CUST')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input>고객
+                    </input>
+					  <label for="ckb1">고객</label>
                   </span>
                   <span class="f-option1">
                     <input id="ckb2" name="ckbCLIENT_TYPE"  type="checkbox" value="PROD">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCLIENT_TYPE', this, 'CLIENT_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCLIENT_TYPE', this, 'CLIENT_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CLIENT_TYPE),'PROD')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -220,7 +217,8 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CLIENT_TYPE),'PROD')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input>공급자
+                    </input>
+					  <label for="ckb2">공급자</label>
                   </span>
                   <input type="hidden" id="__mainfield" name="CLIENT_TYPE" value="{//forminfo/maintable/CLIENT_TYPE}" />
                 </td>
@@ -231,7 +229,7 @@
                   <span class="f-option1">
                     <input id="ckb3" name="ckbCOUNTRY_TYPE"  type="checkbox" value="D">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCOUNTRY_TYPE', this, 'COUNTRY_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCOUNTRY_TYPE', this, 'COUNTRY_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/COUNTRY_TYPE),'D')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -239,12 +237,14 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/COUNTRY_TYPE),'D')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input> 국내 <span style="font-size:7.0pt;text-align:left;padding-left:20px" >(Domestic)</span>
+                    </input>
+					  <label for="ckb3">국내(Domestic)</label>
+					  <!--국내 <span style="font-size:7.0pt;text-align:left;padding-left:20px" >(Domestic)</span>-->
                   </span>
                   <span class="f-option1">
                     <input id="ckb4" name="ckbCOUNTRY_TYPE"  type="checkbox" value="F">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCOUNTRY_TYPE', this, 'COUNTRY_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCOUNTRY_TYPE', this, 'COUNTRY_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/COUNTRY_TYPE),'F')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -252,7 +252,9 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/COUNTRY_TYPE),'F')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input> 국외 <span style="font-size:7.0pt;text-align:left;padding-left:20px" >(Foreign)</span>
+                    </input>
+					  <label for="ckb4">국외(Foreign)</label>
+					  <!--국외 <span style="font-size:7.0pt;text-align:left;padding-left:20px" >(Foreign)</span>-->
                     <input type="hidden" id="__mainfield" name="COUNTRY_TYPE" value="{//forminfo/maintable/COUNTRY_TYPE}" />
                   </span>
                 </td>
@@ -265,7 +267,7 @@
                   <span class="f-option1">
                     <input id="ckb5" name="ckbCUST_TYPE"  type="checkbox" value="COMPANY">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCUST_TYPE', this, 'CUST_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCUST_TYPE', this, 'CUST_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CUST_TYPE),'COMPANY')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -273,12 +275,13 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CUST_TYPE),'COMPANY')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input>Company
+                    </input>
+					  <label for="ckb5">Company</label>
                   </span>
                   <span class="f-option1">
                     <input id="ckb6" name="ckbCUST_TYPE"  type="checkbox" value="PEOPLE">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCUST_TYPE', this, 'CUST_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCUST_TYPE', this, 'CUST_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CUST_TYPE),'PEOPLE')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -286,12 +289,13 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CUST_TYPE),'PEOPLE')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input>People
+                    </input>
+					  <label for="ckb6">People</label>
                   </span>
                   <span class="f-option1">
                     <input id="ckb7" name="ckbCUST_TYPE"  type="checkbox" value="PUBLIC">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbCUST_TYPE', this, 'CUST_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbCUST_TYPE', this, 'CUST_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/COUNTRY_TYPE),'PUBLIC')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -299,7 +303,8 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CUST_TYPE),'PUBLIC')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input> Public
+                    </input>
+					  <label for="ckb7">Public</label>
                   </span>
                   <input type="hidden" id="__mainfield" name="CUST_TYPE" value="{//forminfo/maintable/CUST_TYPE}" />
                 </td>
@@ -312,7 +317,7 @@
                   <span class="f-option1">
                     <input id="ckb9" name="ckbPRODUCER_TYPE"  type="checkbox" value="SUPPLIER">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/PRODUCER_TYPE),'SUPPLIER')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -320,12 +325,13 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/PRODUCER_TYPE),'SUPPLIER')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input>Supplier
+                    </input>
+					  <label for="ckb9">Supplier</label>
                   </span>
                   <span class="f-option1">
                     <input id="ckb10" name="ckbPRODUCER_TYPE"  type="checkbox" value="OSP">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/PRODUCER_TYPE),'OSP')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -333,12 +339,13 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/PRODUCER_TYPE),'OSP')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input>Supplier(OSP)
+                    </input>
+					  <label for="ckb10">Supplier(OSP)</label>
                   </span>
                   <span class="f-option1">
                     <input id="ckb11" name="ckbPRODUCER_TYPE"  type="checkbox" value="OTHER">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/PRODUCER_TYPE),'OTHER')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -346,12 +353,13 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/PRODUCER_TYPE),'OTHER')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input>Supplier(Other)
+                    </input>
+					  <label for="ckb11">Supplier(Other)</label>
                   </span>
                   <span class="f-option1">
                     <input id="ckb12" name="ckbPRODUCER_TYPE"  type="checkbox" value="EMPLOYEE">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/PRODUCER_TYPE),'EMPLOYEE')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -359,12 +367,13 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/PRODUCER_TYPE),'EMPLOYEE')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input> Employee
+                    </input>
+					  <label for="ckb12">Employee</label>
                   </span>
                   <span class="f-option1">
                     <input id="ckb13" name="ckbPRODUCER_TYPE"  type="checkbox" value="BANK">
                       <xsl:if test="$mode='new' or $mode='edit'">
-                        <xsl:attribute name="onclick">parent.fnCheckYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
+                        <xsl:attribute name="onclick">_zw.form.checkYN('ckbPRODUCER_TYPE', this, 'PRODUCER_TYPE')</xsl:attribute>
                       </xsl:if>
                       <xsl:if test="phxsl:isEqual(string(//forminfo/maintable/PRODUCER),'BANK')">
                         <xsl:attribute name="checked">true</xsl:attribute>
@@ -372,9 +381,9 @@
                       <xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/PRODUCER_TYPE),'BANK')">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                       </xsl:if>
-                    </input>Bank Insurance
+                    </input>
+					  <label for="ckb13">Bank Insurance</label>
                     <input type="hidden" id="__mainfield" name="PRODUCER_TYPE" value="{//forminfo/maintable/PRODUCER_TYPE}" />
-
                   </span>
                 </td>
               </tr>
@@ -387,10 +396,10 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <colgroup>
-                <col style="width:20%"/>
-                <col style="width:30%"/>
-                <col style="width:20%"/>
-                <col style="width:30%"/>
+				  <col style="width:15%"/>
+				  <col style="width:35%"/>
+				  <col style="width:15%"/>
+				  <col style="width:35%"/>
               </colgroup>
               <tr>
                 <td class="f-lbl" style="border-right:0px" colspan="4">2.업체정보</td>
@@ -445,11 +454,14 @@
                 <td colspan="3" style="border-right:0px">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:96%"  type="text" id="__mainfield" name="COUNTRY" value="{//forminfo/maintable/COUNTRY}"/>
+                      <input class="txtText_u" style="width:92%"  type="text" id="__mainfield" name="COUNTRY" value="{//forminfo/maintable/COUNTRY}"/>
                       <input style="width:96%"  type="hidden" id="__mainfield" name="COUNTRYCODE" value="{//forminfo/maintable/COUNTRY}"/>
-                      <button onclick="parent.fnExternal('report.ERP_COUNTRY',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.ERP_COUNTRY',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="국가코드" onclick="_zw.formEx.externalWnd('report.ERP_COUNTRY',240,40,126,70,'COUNTRY','COUNTRY','COUNTRYCODE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/COUNTRY))" />
@@ -509,10 +521,11 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <colgroup>
-                <col style="width:20%"/>
-                <col style="width:30%"/>
-                <col style="width:20%"/>
-                <col style="width:30%"/>
+				  <col style="width:15%"/>
+				  <col style="width:35%"/>
+				  <col style="width:15%"/>
+				  <col style="width:10%"/>
+				  <col style="width:25%"/>
               </colgroup>
               <tr>
                 <td class="f-lbl" style="border-right:0px" colspan="5">3.거래정보</td>
@@ -524,28 +537,34 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:200px"  type="text" id="__mainfield" name="TAX_CODE" value="{//forminfo/maintable/TAX_CODE}"/>
+						<input class="txtText_u" style="width:92%"  type="text" id="__mainfield" name="TAX_CODE" value="{//forminfo/maintable/TAX_CODE}"/>
                       <input  type="hidden" id="__mainfield" name="TAXID" value="{//forminfo/maintable/TAXID}"/>
-                      <button onclick="parent.fnExternal('report.ERP_TAXCODE',240,40,126,70,'TAX_CODE','TAX_CODE','TAXID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.ERP_TAXCODE',240,40,126,70,'TAX_CODE','TAX_CODE','TAXID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="세금구분" onclick="_zw.formEx.optionWnd('report.ERP_TAXCODE',240,250,126,70,'TAX_CODE','TAX_CODE','TAXID');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/TAX_CODE))" />
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
-                <td class="f-lbl" >
+                <td class="f-lbl">
                   결제조건<span style="font-size:7.0pt;text-align:center;" >(Payment Term)</span>
                 </td>
                 <td style="border-right:0;" colspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:200px"  type="text" id="__mainfield" name="CUST_PAYMENT" value="{//forminfo/maintable/CUST_PAYMENT}"/>
+                      <input class="txtText_u" style="width:92%"  type="text" id="__mainfield" name="CUST_PAYMENT" value="{//forminfo/maintable/CUST_PAYMENT}"/>
                       <input  type="hidden" id="__mainfield" name="CUSTPAYMENTCODE" value="{//forminfo/maintable/CUSTPAYMENTCODE}"/>
-                      <button onclick="parent.fnExternal('report.ERP_PAYMENTCLT',240,40,126,70,'CUST_PAYMENT','CUST_PAYMENT','CUSTPAYMENTCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.ERP_PAYMENTCLT',240,40,126,70,'CUST_PAYMENT','CUST_PAYMENT','CUSTPAYMENTCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="결제조건" onclick="_zw.formEx.optionWnd('report.ERP_PAYMENTCLT',240,250,150,70,'CUST_PAYMENT','CUST_PAYMENT','CUSTPAYMENTCODE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CUST_PAYMENT))" />
@@ -560,11 +579,14 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:200px"  type="text" id="__mainfield" name="PRICE_LIST" value="{//forminfo/maintable/PRICE_LIST}"/>
+                      <input class="txtText_u" style="width:92%"  type="text" id="__mainfield" name="PRICE_LIST" value="{//forminfo/maintable/PRICE_LIST}"/>
                       <input  type="hidden" id="__mainfield" name="PRICELISTCODE" value="{//forminfo/maintable/PRICELISTCODE}"/>
-                      <button onclick="parent.fnExternal('report.ERP_PRICE',240,40,126,70,'PRICE_LIST','PRICE_LIST','PRICELISTCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.ERP_PRICE',240,40,126,70,'PRICE_LIST','PRICE_LIST','PRICELISTCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="" onclick="_zw.formEx.externalWnd('report.ERP_PRICE',240,40,126,70,'PRICE_LIST','PRICELISTCODE','PRICE_LIST');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PRICE_LIST))" />
@@ -577,11 +599,14 @@
                 <td style="border-right:0;" colspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:200px"  type="text" id="__mainfield" name="SHIPMENT_TERM" value="{//forminfo/maintable/SHIPMENT_TERM}"/>
+                      <input class="txtText_u" style="width:92%"  type="text" id="__mainfield" name="SHIPMENT_TERM" value="{//forminfo/maintable/SHIPMENT_TERM}"/>
                       <input  type="hidden" id="__mainfield" name="SHIPMENTTERMCODE" value="{//forminfo/maintable/SHIPMENT_TERMCODE}"/>
-                      <button onclick="parent.fnExternal('report.ERP_PRICE',240,40,126,70,'SHIPMENT_TERM','SHIPMENT_TERM','SHIPMENTTERMCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.ERP_PRICE',240,40,126,70,'SHIPMENT_TERM','SHIPMENT_TERM','SHIPMENTTERMCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="선적조건" onclick="_zw.formEx.optionWnd('external.shipmentcond',160,140,10,115,'etc','SHIPMENT_TERM');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SHIPMENT_TERMCODE))" />
@@ -596,7 +621,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:100%"  type="text" id="__mainfield" name="CUST_BANK" value="{//forminfo/maintable/CUST_BANK}"/>
+                      <input style="width:100%" type="text" id="__mainfield" name="CUST_BANK" value="{//forminfo/maintable/CUST_BANK}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CUST_BANK))" />
@@ -624,11 +649,14 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:200px"  type="text" id="__mainfield" name="SALES_PERSON" value="{//forminfo/maintable/SALES_PERSON}"/>
+                      <input class="txtText_u" style="width:92%" type="text" id="__mainfield" name="SALES_PERSON" value="{//forminfo/maintable/SALES_PERSON}"/>
                       <input  type="hidden" id="__mainfield" name="SALESPERSONID" value="{//forminfo/maintable/SALESPERSONID}"/>
-                      <button onclick="parent.fnExternal('report.ERP_SALSEMAN',240,40,126,70,'SALES_PERSON','SALES_PERSON','SALESPERSONID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.ERP_SALSEMAN',240,40,126,70,'SALES_PERSON','SALES_PERSON','SALESPERSONID');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="담당영업사원" onclick="_zw.formEx.optionWnd('report.ERP_SALSEMAN',240,300,126,70,'SALES_PERSON','SALES_PERSON','SALESPERSONID');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SALES_PERSON))" />
@@ -641,11 +669,14 @@
                 <td style="border-right:0;" colspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:200px"  type="text" id="__mainfield" name="ORDER_TYPE" value="{//forminfo/maintable/ORDER_TYPE}"/>
+                      <input class="txtText_u" style="width:92%" type="text" id="__mainfield" name="ORDER_TYPE" value="{//forminfo/maintable/ORDER_TYPE}"/>
                       <input  type="hidden" id="__mainfield" name="ORDERTYPECODE" value="{//forminfo/maintable/ORDERTYPECODE}"/>
-                      <button onclick="parent.fnExternal('report.ERP_ORDER',240,40,126,70,'ORDER_TYPE','ORDER_TYPE','ORDERTYPECODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.ERP_ORDER',240,40,126,70,'ORDER_TYPE','ORDER_TYPE','ORDERTYPECODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="주문유형" onclick="_zw.formEx.optionWnd('report.ERP_ORDER',240,200,126,70,'ORDER_TYPE','ORDER_TYPE','ORDERTYPECODE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ORDER_TYPE))" />
@@ -717,11 +748,14 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input style="width:200px"  type="text" id="__mainfield" name="PAYMENT_TERM" value="{//forminfo/maintable/PAYMENT_TERM}"/>
+                      <input class="txtText_u" style="width:92%" type="text" id="__mainfield" name="PAYMENT_TERM" value="{//forminfo/maintable/PAYMENT_TERM}"/>
                       <input  type="hidden" id="__mainfield" name="PAYMENTTERMCODE" value="{//forminfo/maintable/PAYMENTTERMCODE}"/>
-                      <button onclick="parent.fnExternal('report.ERP_PAYMENTPROD',240,40,126,70,'PAYMENT_TERM','PAYMENT_TERM','PAYMENTTERMCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <!--<button onclick="parent.fnExternal('report.ERP_PAYMENTPROD',240,40,126,70,'PAYMENT_TERM','PAYMENT_TERM','PAYMENTTERMCODE');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}//EA/Images/ico_28.gif" />
-                      </button>
+                      </button>-->
+						<button type="button" class="btn btn-outline-secondary btn-18" title="지급조건" onclick="_zw.formEx.optionWnd('report.ERP_PAYMENTPROD',240,200,126,70,'PAYMENT_TERM','PAYMENT_TERM','PAYMENTTERMCODE');">
+							<i class="fas fa-angle-down"></i>
+						</button>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PAYMENT_TERM))" />
@@ -745,10 +779,10 @@
               </tr>
               <tr>
                 <td class="f-lbl" colspan="2" style="border-bottom:0;">
-                  계좌정보전달 유선통화 확인<span style="font-size:7.0pt;text-align:center;" >(Bank account info submit phone call check)</span>
+                  계좌정보전달 유선통화 확인<span style="font-size:6.5pt;text-align:center;" >(Bank account info submit phone call check)</span>
                 </td>
                 <td class="f-lbl"  style="border-bottom:0;">
-                  전화통화일자<span style="font-size:7.0pt;text-align:center;" >(Phone call check date)</span>
+                  전화통화일자<span style="font-size:6.5pt;text-align:center;" >(Phone call check date)</span>
                 </td>
                 <td style="border-bottom:0;border-right:0;" colspan="2" >
                   <xsl:choose>
@@ -770,12 +804,12 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <colgroup>
-                <col style="width:16%"/>
-                <col style="width:16%"/>
-                <col style="width:16%"/>
-                <col style="width:16%"/>
-                <col style="width:16%"/>
-                <col style="width:16%"/>
+                <col style="width:16.67%"/>
+                <col style="width:16.67%"/>
+                <col style="width:16.67%"/>
+                <col style="width:16.67%"/>
+                <col style="width:16.67%"/>
+                <col style="width:16.67%"/>
               </colgroup>
               <tr>
                 <td class="f-lbl" style="border-right:0px" colspan="6">4.연락처 정보</td>
@@ -862,7 +896,7 @@
               </tr>
             </table>
           </div>
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
             <div class="fm-file">

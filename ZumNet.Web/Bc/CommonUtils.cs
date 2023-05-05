@@ -398,8 +398,11 @@ namespace ZumNet.Web.Bc
         public static string DateDiff(string sD, string eD, int d)
         {
             string strReturn = "";
-            //TimeSpan ts = DateTime.Parse(eD) - DateTime.Parse(sD);
-            TimeSpan ts = Convert.ToDateTime(eD, new CultureInfo("ko-KR")) - Convert.ToDateTime(sD, new CultureInfo("ko-KR"));
+
+            TimeSpan ts;
+            try { ts = DateTime.Parse(eD) - DateTime.Parse(sD); }
+            catch { ts = Convert.ToDateTime(eD, new CultureInfo("ko-KR")) - Convert.ToDateTime(sD, new CultureInfo("ko-KR")); }
+            
             if (ts.Days > 0) strReturn = ts.Days.ToString() + "d " + ts.Hours.ToString() + "h " + ts.Minutes.ToString() + "m";
             else if (ts.Hours > 0) strReturn = ts.Hours.ToString() + "h " + ts.Minutes.ToString() + "m";
             else strReturn = ts.Minutes.ToString() + "m";
@@ -429,8 +432,10 @@ namespace ZumNet.Web.Bc
         /// <returns></returns>
         public static double DateDiff(string sD, string eD, string f)
         {
-            //TimeSpan ts = DateTime.Parse(eD) - DateTime.Parse(sD);
-            TimeSpan ts = Convert.ToDateTime(eD, new CultureInfo("ko-KR")) - Convert.ToDateTime(sD, new CultureInfo("ko-KR"));
+            TimeSpan ts;
+            try { ts = DateTime.Parse(eD) - DateTime.Parse(sD); }
+            catch { ts = Convert.ToDateTime(eD, new CultureInfo("ko-KR")) - Convert.ToDateTime(sD, new CultureInfo("ko-KR")); }
+
             if (f == "h") return ts.TotalHours;
             else if (f == "m") return ts.TotalMinutes;
             else return ts.TotalDays;

@@ -2186,6 +2186,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPLACEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPPMODIFY.js" />
     <Content Include="Scripts\EA\Forms\FORM_COMPLAINTREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_COMPLETEPRODUCTTEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
@@ -3236,6 +3237,7 @@
     <Content Include="Areas\ExS\Views\Num\_ListPagination.cshtml" />
     <Content Include="Areas\ExS\Views\Num\Sheet.cshtml" />
     <Content Include="Areas\WoA\Views\Organ\ESPUser.cshtml" />
+    <Content Include="Areas\WoA\Views\Organ\_Search.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />

@@ -117,167 +117,79 @@ var dataTable_lang_kor = {
 
     //함수
     _zw.fn = {
-        "org": function (tgt, multi, el) {//tgt : user, group, all, multi : y, n
-            var boundary = _zw.V.boundary || _zw.V.lv.boundary;
+        "orgSearch": function (tgt, multi, el) {
+            $.ajax({
+                type: "POST",
+                url: "/WoA/Organ/Search",
+                data: '{M:"' + tgt + '",multi:"' + multi + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') {
+                        var p = $('#popBlank');
+                        p.html(res.substr(2)).find(".modal-dialog").css("max-width", "30rem");
+
+                        var scd = p.find('.modal-body div[data-pos="search-cond"]'), srt = p.find('.modal-body div[data-pos="search-result"]');
+                        scd.find('select[data-val="target"]').on('change', function () {
+                            if ($(this).val() == 'user') {
+                                scd.find('div[data-for="group"]').addClass('d-none');
+                                scd.find('div[data-for="user"]').removeClass('d-none');
+
+                            } else if ($(this).val() == 'group') {
+                                scd.find('div[data-for="group"]').removeClass('d-none');
+                                scd.find('div[data-for="user"]').addClass('d-none');
+                            }
+                        });
+
+                        var urBtn = scd.find('div[data-for="user"] .input-group .btn'), grBtn = scd.find('div[data-for="group"] .input-group .btn');
+                        var urTxt = scd.find('div[data-for="user"] .input-group :text'), grTxt = scd.find('div[data-for="group"] .input-group :text');
+
+                        urTxt.keyup(function (e) { if (e.which == 13) { urBtn.click(); } });
+                        grTxt.keyup(function (e) { if (e.which == 13) { grBtn.click(); } });
+
+                        urBtn.click(function () { _zw.fn.orgSearchClick(p, el, scd.find('select[data-val="target"]').val(), multi, urTxt, scd.find('select[data-val="code"]').val(), scd.find('select[data-val="cd"]').val()); });
+                        grBtn.click(function () { _zw.fn.orgSearchClick(p, el, scd.find('select[data-val="target"]').val(), multi, grTxt, scd.find('select[data-val="grtype"]').val()); });
+
+                        p.on('shown.bs.modal', function () { urTxt.focus(); });
+                        p.on('hidden.bs.modal', function () { p.html(''); });
+                        p.modal();
+
+                    } else bootbox.alert(res);
+                    
+                }
+            });
+        },
+        "orgSearchClick": function (p, el, tgt, multi, txt, type, cd) { //console.log(tgt + " : " + multi + " : " + type + " : " + cd + " : " + txt.val())
+            if ($.trim(txt.val()) == '' || txt.val().length < 1) { bootbox.alert('검색어를 입력하십시오!', function () { txt.focus(); }); return false; }
+            var exp = "['\\%^&\"*]", reg = new RegExp(exp, 'gi');
+            if (txt.val().search(reg) >= 0) { bootbox.alert(exp + ' 문자는 사용될 수 없습니다!', function () { txt.focus(); }); return false; }
+            cd = cd || '';
 
             $.ajax({
                 type: "POST",
-                url: "/Organ/Plate",
-                data: '{M:"' + tgt + '",multi:"' + multi + '",boundary:"' + boundary + '"}',
+                url: "/WoA/Organ/SearchResult",
+                data: '{M:"' + tgt + '",type:"' + type + '",cd:"' + cd + '",searchtext:"' + txt.val() + '"}',
                 success: function (res) {
-                    if (res.substr(0, 2) == "OK") {
-                        var v = res.substr(2).split(boundary); //console.log(JSON.parse(v[1]))
-                        var p = $('#popBlank'); p.html(v[0]); //body 없는 modal 경우 show.bs.modal 사용시 버튼 이벤트 안됨
+                    if (res.substr(0, 2) == 'OK') {
+                        p.find('.modal-body div[data-pos="search-result"]').html(res.substr(2));
 
-                        new PerfectScrollbar(p.find('.zf-org .tab-content .tab-pane')[0]);
-                        new PerfectScrollbar(p.find('.zf-org .zf-org-list')[0]);
-                        new PerfectScrollbar(p.find('.zf-org .zf-org-select')[0]);
-
-                        p.find('#__OrgMapTree').jstree({
-                            core: {
-                                data: JSON.parse(v[1]).data,
-                                multiple: false
-                            },
-                            plugins: ["types", "wholerow"],
-                            types: {
-                                default: { icon: "fas fa-user-friends text-secondary" },
-                                root: { icon: "fas fa-city text-indigo" }
-                            }
-                        })
-                            .on('select_node.jstree', function (e, d) {
-                                if (d.selected.length == 1) {
-                                    var n = d.instance.get_node(d.selected[0]);
-                                    if ('7777.' + n.id == _zw.V.opnode) return false; //'7777.' => 부서명 Navigation에 사용
-                                    if (n.li_attr.hasmember == 'Y') {
-                                        $.ajax({
-                                            type: "POST",
-                                            url: "/Organ/Plate",
-                                            data: '{M:"member",grid:"' + n.id + '",boundary:"' + boundary + '"}',
-                                            success: function (res) {
-                                                if (res.substr(0, 2) == "OK") {
-                                                    p.find('.zf-org .zf-org-list').html(res.substr(2));
-                                                    _zw.fn.orgUserClick(p, multi);
-                                                } else bootbox.alert(res);
-                                            },
-                                            beforeSend: function () { } //로딩 X
-                                        });
-                                    }
-                                }
-                            });
-
-                        //p.find('.zf-org .nav .nav-link').on('shown.bs.tab', function (e) {
-                        //    if ($(e.target).attr('aria-controls') == 'orgmaptree') {
-                        //    }
-                        //    //console.log(e.relatedTarget)
-                        //});
-
-                        p.find('#__OrgMapSearch input[data-for]').keyup(function (e) {
-                            if (e.which == 13) p.find('#__OrgSearch .btn-outline-success').click();
-                        });
-
-                        p.find('#__OrgMapSearch .btn-outline-success').click(function () {
-                            var j = {}; j['M'] = 'search'; j['boundary'] = boundary;
-                            if (p.find('#orgmapsearch').hasClass('active')) {//검색창 활성화 여부
-                                p.find('#__OrgMapSearch [data-for]').each(function () {
-                                    j[$(this).attr('data-for')] = $(this).val();
+                        var lst = p.find('.modal-body div[data-pos="search-result"] .card-body');
+                        lst.find('.d-flex input:checkbox').click(function () {
+                            var ckId = $(this).attr('data-for');
+                            if (multi == 'n') {
+                                lst.find('.d-flex input:checkbox:checked').each(function () {
+                                    if ($(this).attr('data-for') != ckId) $(this).prop('checked', false);
                                 });
-                            }
-                            $.ajax({
-                                type: "POST",
-                                url: "/Organ/Plate",
-                                data: JSON.stringify(j),
-                                success: function (res) {
-                                    if (res.substr(0, 2) == "OK") {
-                                        p.find('.zf-org .zf-org-list').html(res.substr(2));
-                                        _zw.fn.orgUserClick(p, multi);
-                                    } else bootbox.alert(res);
-                                },
-                                beforeSend: function () { } //로딩 X
-                            });
-                            return false;
-                        });
-
-                        _zw.fn.orgUserClick(p, multi);
-
-                        p.find('.btn[data-zm-menu]').click(function () {
-                            var mn = $(this).attr('data-zm-menu');
-                            if (mn == 'addUser') {
-                                if (multi == 'n') $('.zf-org .zf-org-select div.d-flex').remove();
-
-                                $('.zf-org .zf-org-list input:checkbox:checked').each(function () {
-                                    var jUser = JSON.parse($(this).attr('data-attr')); //console.log(jUser); return;
-
-                                    if ($('.zf-org .zf-org-select input:checkbox[data-for="' + $(this).attr('data-for') + '"]').length > 0) {
-                                        bootbox.alert("중복된 사용자 입니다!");
-                                    } else {
-                                        var s = $('.zf-org-template').html();
-                                        s = s.replace("{$id}", $(this).attr('data-for'));
-                                        //s = s.replace("{$attr}", $(this).attr('data-attr'));
-                                        s = s.replace("{$user}", $(this).next().text());
-                                        s = s.replace("{$grade}", $(this).parent().parent().next().text())
-                                        s = s.replace("{$dept}", jUser['grdn'])
-
-                                        $('.zf-org .zf-org-select').append(s);
-                                        $('.zf-org .zf-org-select input:checkbox[data-for="' + $(this).attr('data-for') + '"]').attr('data-attr', $(this).attr('data-attr'));
-                                    }
-                                    $(this).prop('checked', false);
-                                });
-                            } else if (mn == 'addGroup') {
-                                if (p.find('.zf-org .nav-tabs-top .tab-pane.active').attr('id') == 'orgmaptree') {
-                                    if (multi == 'n') $('.zf-org .zf-org-select div.d-flex').remove();
-
-                                    var selected = p.find('#__OrgMapTree').jstree('get_selected', true);
-                                    if (selected.length > 0) {
-                                        var info = selected[0].li_attr; //console.log(info)
-                                        if ($('.zf-org .zf-org-select input:checkbox[data-for="' + info["id"] + '"]').length > 0) {
-                                            bootbox.alert("중복된 부서 입니다!");
-                                        } else {
-                                            var s = $('.zf-org-template-group').html();
-                                            s = s.replace("{$id}", 'gr.' + info["id"]).replace("{$group}", selected[0].text);
-
-                                            $('.zf-org .zf-org-select').append(s);
-                                            //$('.zf-org .zf-org-select input:checkbox[data-for="' + info["id"] + '"]').attr('data-attr', '{"id":"' + info["id"] + '","gralias":"' + info["gralias"] + '", "hasmember": "' + info["hasmember"] + '","level":"' + info["level"] + '"}');
-                                            $('.zf-org .zf-org-select input:checkbox[data-for="gr.' + info["id"] + '"]').attr('data-attr', JSON.stringify(info));
-                                        }
-                                    }
-                                }
-                            } else if (mn == 'removeUser' || mn == 'removeGroup') {
-                                $('.zf-org .zf-org-select input:checkbox:checked').each(function () {
-                                    $(this).parent().parent().parent().remove();
-                                });
-                            } else if (mn == 'confirm') {
-                                if (_zw.fn.orgSelect) _zw.fn.orgSelect(p, el);
                             }
                         });
 
-                        //p.find('.zf-org-menu .btn[data-toggle="tooltip"][title!=""]').tooltip(); //<--적용X
-                        p.on('hidden.bs.modal', function () { p.html(''); });
-                        p.modal();
+                        p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
+                            if (_zw.fn.orgSelect) _zw.fn.orgSelect(p, el);
+                        });
+
                     } else bootbox.alert(res);
-                }
+                },
+                beforeSend: function () { _zw.ut.ajaxLoader(true); }
             });
-        },
-        "orgUserClick": function (p, multi) {
-            p.find('.zf-org .zf-org-list input:checkbox').click(function () {
-                if ($(this).prop('checked')) {
-                    if (multi == 'n') {
-                        p.find('.zf-org .zf-org-list input:checkbox[data-for!="' + $(this).attr('data-for') + '"]:checked').prop('checked', false);
-                    }
-
-                    var jUser = JSON.parse($(this).attr('data-attr'));
-                    $.ajax({
-                        type: "POST",
-                        url: "/Organ/Plate",
-                        data: '{M:"userinfo",urid:"' + jUser['id'] + '",grid:"' + jUser['grid'] + '"}',
-                        success: function (res) {
-                            if (res.substr(0, 2) == "OK") p.find('.zf-org .zf-org-info .table tbody').html(res.substr(2));
-                            else bootbox.alert(res);
-                        },
-                        beforeSend: function () { } //로딩 X
-                    });
-                }
-            });
-        },
+        }
     };
 
     //유틸

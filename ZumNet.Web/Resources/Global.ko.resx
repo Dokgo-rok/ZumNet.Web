@@ -423,10 +423,10 @@
   <data name="Logout" xml:space="preserve">
     <value>로그아웃</value>
   </data>
-  <data name="MaskRead" xml:space="preserve">
+  <data name="MarkRead" xml:space="preserve">
     <value>읽음 표시</value>
   </data>
-  <data name="MaskUnRead" xml:space="preserve">
+  <data name="MarkUnRead" xml:space="preserve">
     <value>안 읽음 표시</value>
   </data>
   <data name="Modify" xml:space="preserve">
