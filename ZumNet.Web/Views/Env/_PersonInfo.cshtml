@@ -5,7 +5,6 @@
 @using System.Threading;
 @using ZumNet.Framework.Util;
 @{
-    
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 }
 @functions {
@@ -20,14 +19,6 @@
             imageOpacity = " opacity-50";
         }
         return String.Format("<img src=\"{0}\" alt=\"User Image\" class=\"contact-content-img{1}\">", imagepath, imageOpacity);
-    }
-    private string CultureDate(string d)
-    {
-        if (d == null || d == "") return "";
-        string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
-        if (sCurrentLocale.Substring(0, 2).ToLower() != "ko" && sCurrentLocale.Substring(0, 2).ToLower() != "zh" && sCurrentLocale.Substring(0, 2).ToLower() != "ja") sCurrentLocale = "en-US";
-        DateTime dt = Convert.ToDateTime(d);
-        return dt.ToString("D", CultureInfo.CreateSpecificCulture(sCurrentLocale));
     }
     private string RenderData()
     {
@@ -69,9 +60,9 @@
         sb.Append("<div class=\"form-group row mb-2\">");
         sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">생년월일</label>");
         sb.Append("<div class=\"col-md-9 d-flex align-items-center\">");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" data-for=\"{0}\" value=\"{1}\" />", "BirthDay", FieldValue(row, "BirthDay"));
+        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" readonly data-for=\"{0}\" value=\"{1}\" />", "BirthDay", ZumNet.Web.Bc.CommonUtils.CultureDate(FieldValue(row, "BirthDay")));
         sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
-        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", StringHelper.SafeBool(FieldValue(row, "BirthType")) ? "" : "  checked");
+        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", StringHelper.SafeBool(FieldValue(row, "BirthType")) ? "  checked" : "");
         sb.Append("</label>");
         sb.Append("</div>");
         sb.Append("</div>");
@@ -79,7 +70,7 @@
         sb.Append("<div class=\"form-group row mb-2\">");
         sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">결혼일자</label>");
         sb.Append("<div class=\"col-md-9 d-flex align-items-center\">");
-        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" data-for=\"{0}\" value=\"{1}\" />", "MarriedDate", FieldValue(row, "MarriedDate"));
+        sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" readonly data-for=\"{0}\" value=\"{1}\" />", "MarriedDate", ZumNet.Web.Bc.CommonUtils.CultureDate(FieldValue(row, "MarriedDate")));
         //sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
         //sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", FieldValue(row, "BirthType") == "1" ? "" : "  checked");
         //sb.Append("</label>");
@@ -219,7 +210,7 @@
             <div class="row my-2">
                 <div class="col-4 opacity-75">입사일자</div>
                 @*<div class="col-8">@DateHelper.CheckDateTime(Session["InDate"].ToString(), "yyyy년 M월 d일", "")</div>*@
-                <div class="col-8">@CultureDate(Session["InDate"].ToString())</div>
+                <div class="col-8">@ZumNet.Web.Bc.CommonUtils.CultureDate(Session["InDate"].ToString(), "D")</div>
             </div>
         </div>
     </div>

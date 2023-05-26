@@ -43,11 +43,45 @@ $(function () {
     //_zw.fn.exportExcel = function () {}
 
     $('[data-zv-menu="importExcel"]').click(function () {
-        //var url = "/" + _ZF.V.root + "/EA/External/FileImport.aspx?M=MC_SUMMARY&cd=ce";
-        //_zw.ut.openWnd(url, "fileImport", 400, 100, "fix")
+        var url = '/Common/FileImport?M=MC_SUMMARY&sy=&cd=';
+        $.ajax({
+            type: "POST",
+            url: url,
+            success: function (res) {
+                var p = $('#popBlank');
+                p.html(res); _zw.fu.bind();
+                fm = p.find('#uploadForm')[0].action = url;
 
-        bootbox.alert('준비중!')
+                p.on('hidden.bs.modal', function () { p.html(''); });
+                p.modal();
+            }
+        });
     });
+
+    _zw.fn.complete = function (msg) {
+        var p = $('#popBlank');
+        p.find('.zf-upload #uploadForm')[0].reset();
+
+        var rt = decodeURIComponent(msg).replace(/\+/gi, ' ');
+        if (rt.substr(0, 2) == 'OK') {
+            var footer = '<div class="modal-footer justify-content-center">'
+                + '<button type="button" class="btn btn-primary" data-zm-menu="confirm">확인</button>'
+                + '<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>'
+                + '</div>';
+
+            p.find('.zf-upload .zf-upload-list').html(rt.substr(2)).removeClass('d-none');
+            p.find('.modal-content').append(footer);
+
+            p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
+                p.modal('hide'); _zw.fn.loadList();
+            });
+
+        } else {
+            p.find('.zf-upload .zf-upload-list').html(rt).removeClass('d-none');
+        }
+        p.find('.zf-upload .zf-upload-bar').addClass('d-none');
+        if (p.find('.modal-dialog').hasClass('modal-sm')) p.find('.modal-dialog').removeClass('modal-sm');
+    }
 
     _zw.mu.saveStd = function (t) {
         var pos = t ? t.attr('data-zf-menu').toLowerCase() : '';

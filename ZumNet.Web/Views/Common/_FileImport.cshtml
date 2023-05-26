@@ -3266,74 +3266,85 @@
 
         if (data.Rows.Count > 0)
         {
-            string[] vCol = { "", "", "", "", "", "", "", "", "", ""
-                            , "", "", "", "", "", "", "", "", "", ""
+            string[] vCol = { "", "", "", "", "", "", "", "", "", "", ""
+                            , "", "", "", "", "", "", "", "", "", "", ""
                             , "", "", "", "", "", "", "", "", "", ""};
 
             string strResult = "";
             iTotal = data.Rows.Count;
 
             sb.Append("<table class=\"table table-striped table-sm mb-0\">");
-            sb.Append("<colgroup><col style=\"width:80%\" /><col style=\"width:20%\" /></colgroup>");
+            sb.Append("<colgroup><col style=\"width:10%\" /><col style=\"width:70%\" /><col style=\"width:20%\" /></colgroup>");
             sb.Append("<thead>");
-            sb.Append("<tr><th>견적 정보</th><th>결과</th></tr>");
+            sb.Append("<tr><th>순번</th><th>견적 정보</th><th>결과</th></tr>");
             sb.Append("</thead>");
             sb.Append("<tbody>");
 
             using (ZumNet.BSL.InterfaceBiz.CostBiz costBiz = new ZumNet.BSL.InterfaceBiz.CostBiz())
             {
+                int iRowSeq = 1;
                 foreach (DataRow row in data.Rows)
                 {
                     vCol[0] = StringHelper.SafeString(row["모델번호"], "");
-                    vCol[1] = StringHelper.SafeString(row["법인"], "");
-                    vCol[2] = StringHelper.SafeString(row["품목분류"], "");
-                    vCol[3] = StringHelper.SafeString(row["고객"], "");
-                    vCol[4] = StringHelper.SafeString(row["기준환율"], "");
-                    vCol[5] = StringHelper.SafeString(row["기준임율"], "");
-                    vCol[6] = StringHelper.SafeString(row["외주임율"], "");
-                    vCol[7] = StringHelper.SafeString(row["재료비"], "");
-                    vCol[8] = StringHelper.SafeString(row["재료비비율"], "");
-                    vCol[9] = StringHelper.SafeString(row["가공비"], "");
-                    vCol[10] = StringHelper.SafeString(row["가공비비율"], "");
-                    vCol[11] = StringHelper.SafeString(row["소모품비"], "");
-                    vCol[12] = StringHelper.SafeString(row["소모품비비율"], "");
-                    vCol[13] = StringHelper.SafeString(row["변동원가"], "");
-                    vCol[14] = StringHelper.SafeString(row["변동원가비율"], "");
-                    vCol[15] = StringHelper.SafeString(row["고정원가"], "");
-                    vCol[16] = StringHelper.SafeString(row["고정원가비율"], "");
-                    vCol[17] = StringHelper.SafeString(row["제조원가"], "");
-                    vCol[18] = StringHelper.SafeString(row["제조원가비율"], "");
-                    vCol[19] = StringHelper.SafeString(row["판관비"], "");
-                    vCol[20] = StringHelper.SafeString(row["판관비비율"], "");
-                    vCol[21] = StringHelper.SafeString(row["총원가"], "");
-                    vCol[22] = StringHelper.SafeString(row["총원가비율"], "");
-                    vCol[23] = StringHelper.SafeString(row["판매가"], "");
-                    vCol[24] = StringHelper.SafeString(row["영업이익"], "");
-                    vCol[25] = StringHelper.SafeString(row["영업이익율"], "");
-                    vCol[26] = StringHelper.SafeString(row["공헌이익"], "");
-                    vCol[27] = StringHelper.SafeString(row["공헌이익율"], "");
-                    vCol[28] = StringHelper.SafeString(row["공수"], "");
+                    vCol[1] = StringHelper.SafeString(row["모델ID"], "");
+                    vCol[2] = StringHelper.SafeString(row["법인"], "");
+                    vCol[3] = StringHelper.SafeString(row["회계기간"], "");
+                    vCol[4] = StringHelper.SafeString(row["품목분류"], "");
+                    vCol[5] = StringHelper.SafeString(row["고객"], "");
+                    vCol[6] = StringHelper.SafeString(row["기준환율"], "");
+                    vCol[7] = StringHelper.SafeString(row["기준임율"], "");
+                    vCol[8] = StringHelper.SafeString(row["외주임율"], "");
+                    vCol[9] = StringHelper.SafeString(row["재료비"], "");
+                    vCol[10] = StringHelper.SafeString(row["재료비비율"], "");
+                    vCol[11] = StringHelper.SafeString(row["가공비"], "");
+                    vCol[12] = StringHelper.SafeString(row["가공비비율"], "");
+                    vCol[13] = StringHelper.SafeString(row["소모품비"], "");
+                    vCol[14] = StringHelper.SafeString(row["소모품비비율"], "");
+                    vCol[15] = StringHelper.SafeString(row["변동원가"], "");
+                    vCol[16] = StringHelper.SafeString(row["변동원가비율"], "");
+                    vCol[17] = StringHelper.SafeString(row["고정원가"], "");
+                    vCol[18] = StringHelper.SafeString(row["고정원가비율"], "");
+                    vCol[19] = StringHelper.SafeString(row["제조원가"], "");
+                    vCol[20] = StringHelper.SafeString(row["제조원가비율"], "");
+                    vCol[21] = StringHelper.SafeString(row["판관비"], "");
+                    vCol[22] = StringHelper.SafeString(row["판관비비율"], "");
+                    vCol[23] = StringHelper.SafeString(row["총원가"], "");
+                    vCol[24] = StringHelper.SafeString(row["총원가비율"], "");
+                    vCol[25] = StringHelper.SafeString(row["판매가"], "");
+                    vCol[26] = StringHelper.SafeString(row["영업이익"], "");
+                    vCol[27] = StringHelper.SafeString(row["영업이익율"], "");
+                    vCol[28] = StringHelper.SafeString(row["공헌이익"], "");
+                    vCol[29] = StringHelper.SafeString(row["공헌이익율"], "");
+                    vCol[30] = StringHelper.SafeString(row["공수"], "");
 
-                    svcRt = costBiz.InsertMCSUMMARY_EXCEL(0, 0, vCol[1], vCol[0], 0, vCol[2], vCol[3], vCol[4], vCol[5], vCol[6]
-                                            , vCol[7], vCol[8], vCol[9], vCol[10], vCol[11], vCol[12], vCol[13], vCol[14]
-                                            , vCol[15], vCol[16], "", "", vCol[17], vCol[18], vCol[19], vCol[20], vCol[21], vCol[22]
-                                            , vCol[23], vCol[24], vCol[25], vCol[26], vCol[27], vCol[28]);
-
-                    if (svcRt.ResultCode == 0)
+                    if (vCol[0] != "")
                     {
-                        strResult = svcRt.ResultDataString;
-                        if (strResult == "NO") strResult = "법인정보 누락";
+                        svcRt = costBiz.InsertMCSUMMARY_EXCEL(0, 0, vCol[2], vCol[3], vCol[0], StringHelper.SafeInt(vCol[1]), vCol[4], vCol[5]
+                                            , vCol[6], vCol[7], vCol[8], vCol[9], vCol[10], vCol[11], vCol[12], vCol[13], vCol[14]
+                                            , vCol[15], vCol[16], "", "", vCol[17], vCol[18], vCol[19], vCol[20], vCol[21], vCol[22]
+                                            , vCol[23], vCol[24], vCol[25], vCol[26], vCol[27], vCol[28], vCol[29], vCol[30]);
+
+                        if (svcRt.ResultCode == 0)
+                        {
+                            strResult = svcRt.ResultDataString;
+                            if (strResult == "NO") strResult = "법인정보 누락";
+                            else if (strResult == "PN") strResult = "회계기간 누락";
+                            else if (strResult == "PE") strResult = "회계기간 중복";
+                        }
+                        else strResult = svcRt.ResultMessage;
                     }
-                    else strResult = svcRt.ResultMessage;
+                    else strResult = "모델번호 누락";
 
                     if (strResult != "OK")
                     {
                         sb.Append("<tr>");
-                        sb.AppendFormat("<td>({0}_{1}_{2}) {3}</td>", vCol[1], vCol[2], vCol[3], vCol[0]);
-                        sb.AppendFormat("<td>{0}</td>", strResult);
+                        sb.AppendFormat("<td class=\"text-center\">{0}</td>", iRowSeq.ToString());
+                        sb.AppendFormat("<td>({0}_{1}_{2}_{3}) {4}</td>", vCol[2], vCol[3], vCol[4], vCol[5], vCol[0]);
+                        sb.AppendFormat("<td class=\"text-danger\">{0}</td>", strResult);
                         sb.Append("</tr>");
                     }
                     strResult = "";
+                    iRowSeq++;
                 }
             }
             sb.Append("</tbody>");

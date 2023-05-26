@@ -24,7 +24,7 @@
 
         StringBuilder sb = new StringBuilder();
         //전자결재 / 그룹웨어 부재설정
-        sb.Append("<div class=\"col-12 col-sm-6 px-0\">");
+        sb.Append("<div class=\"col-12 col-sm-7 px-0\">");
         sb.Append("<div class=\"card border-0\">");
 
         sb.Append("<div class=\"card-header with-elements px-3\">");
@@ -33,35 +33,63 @@
 
         sb.Append("<div class=\"card-body p-3\">");
         sb.Append("<div class=\"form-group row mb-2\">");
-        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">준비중!</label>");
-        //sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control bg-white border-0\" readonly data-for=\"{0}\" value=\"{1}\" /></div>", "MainMail", FieldValue(row, "MainMail"));
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">부재여부</label>");
+        sb.Append("<div class=\"col-md-9 pt-2\">");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox\"><input type=\"checkbox\" class=\"custom-control-input\" data-for=\"{0}\"{1} /><span class=\"custom-control-label\">{2}</span></label></div>"
+            , "IsAbsent", FieldValue(row, "IsAbsent") == "Y" ? " checked" : "", "부재중");
         sb.Append("</div>");
 
-        //sb.Append("<div class=\"form-group row mb-2\">");
-        //sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">영문명</label>");
-        //sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "EnName", FieldValue(row, "EnName"));
-        //sb.Append("</div>");
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">부재기간</label>");
+        sb.Append("<div class=\"col-md-9 datepicker input-group input-daterange\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control start-date\" data-for=\"{0}\" readonly value=\"{1}\" />", "AbsentDate1", ZumNet.Web.Bc.CommonUtils.CultureDate(FieldValue(row, "AbsentDate1")));
+        sb.Append("<div class=\"input-group-prepend\"><span class=\"input-group-text border-0\">~</span></div>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control end-date\" data-for=\"{0}\" readonly value=\"{1}\" />", "AbsentDate2", ZumNet.Web.Bc.CommonUtils.CultureDate(FieldValue(row, "AbsentDate2")));
+        sb.Append("</div>");
+        sb.Append("</div>"); //form-group
 
-        //sb.Append("<div class=\"form-group row mb-2\">");
-        //sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">한자</label>");
-        //sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "ChName", FieldValue(row, "ChName"));
-        //sb.Append("</div>");
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\"></label>");
+        sb.Append("<code for=\"\" class=\"col-md-9 font-weight-bold\">부재설정은 위 기간 동안 유효합니다.</code>");
+        sb.Append("</div>");
 
-        //sb.Append("<div class=\"form-group row mb-2\">");
-        //sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">생년월일</label>");
-        //sb.Append("<div class=\"col-md-9 d-flex align-items-center\">");
-        //sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" data-for=\"{0}\" value=\"{1}\" />", "BirthDay", FieldValue(row, "BirthDay"));
-        //sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
-        //sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", FieldValue(row, "BirthType") == "1" ? "" : "  checked");
-        //sb.Append("</label>");
-        //sb.Append("</div>");
-        //sb.Append("</div>");
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">부재유형</label>");
+        sb.Append("<div class=\"col-md-9 pt-2\">");
+        sb.AppendFormat("<label class=\"custom-control custom-radio\" for=\"rdo01\"><input type=\"radio\" class=\"custom-control-input\" id=\"rdo01\" name=\"{0}\" value=\"A\"{1} /><span class=\"custom-control-label\">{2}</span></label>"
+            , "rdoAbsentType", FieldValue(row, "AbsentType") == "A" ? " checked" : "", "회의중");
+        sb.AppendFormat("<label class=\"custom-control custom-radio\" for=\"rdo02\"><input type=\"radio\" class=\"custom-control-input\" id=\"rdo02\" name=\"{0}\" value=\"B\"{1} /><span class=\"custom-control-label\">{2}</span></label>"
+            , "rdoAbsentType", FieldValue(row, "AbsentType") == "B" ? " checked" : "", "교육중");
+        sb.AppendFormat("<label class=\"custom-control custom-radio\" for=\"rdo03\"><input type=\"radio\" class=\"custom-control-input\" id=\"rdo03\" name=\"{0}\" value=\"C\"{1} /><span class=\"custom-control-label\">{2}</span></label>"
+            , "rdoAbsentType", FieldValue(row, "AbsentType") == "C" ? " checked" : "", "외근중");
+        sb.AppendFormat("<label class=\"custom-control custom-radio\" for=\"rdo04\"><input type=\"radio\" class=\"custom-control-input\" id=\"rdo04\" name=\"{0}\" value=\"D\"{1} /><span class=\"custom-control-label\">{2}</span></label>"
+            , "rdoAbsentType", FieldValue(row, "AbsentType") == "D" ? " checked" : "", "출장중");
+        sb.AppendFormat("<label class=\"custom-control custom-radio\" for=\"rdo05\"><input type=\"radio\" class=\"custom-control-input\" id=\"rdo05\" name=\"{0}\" value=\"E\"{1} /><span class=\"custom-control-label\">{2}</span></label>"
+            , "rdoAbsentType", FieldValue(row, "AbsentType") == "E" ? " checked" : "", "기타 부재중");
+        sb.Append("</div>");
+        sb.Append("</div>");
 
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">부재사유</label>");
+        sb.AppendFormat("<div class=\"col-md-9\"><textarea class=\"form-control bootstrap-maxlength\" maxlength=\"100\" data-for=\"{0}\">{1}</textarea></div>", "AbsentReason", FieldValue(row, "AbsentReason"));
+        sb.Append("</div>");
 
-        //sb.Append("<div class=\"form-group row mb-2\">");
-        //sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">소개글</label>");
-        //sb.AppendFormat("<div class=\"col-md-9\"><textarea class=\"form-control\" row=\"3\" data-for=\"{0}\" style=\"height: 100px\">{1}</textarea></div>", "Description", FieldValue(row, "Description"));
-        //sb.Append("</div>");
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">대결설정</label>");
+        sb.Append("<div class=\"col-md-9 pt-2\">");
+        sb.AppendFormat("<label class=\"custom-control custom-checkbox\"><input type=\"checkbox\" class=\"custom-control-input\" data-for=\"{0}\"{1} /><span class=\"custom-control-label\">{2}</span></label></div>"
+            , "UseDeputy", FieldValue(row, "UseDeputy") == "Y" ? " checked" : "", "대결설정 (위 부재기간)");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">대결자</label>");
+        sb.AppendFormat("<div class=\"col-md-9 d-flex\"><input type=\"text\" class=\"form-control w-50\" readonly data-for=\"{0}\" value=\"{1}\" />", "RepresentorName", FieldValue(row, "RepresentorName"));
+        sb.Append("<button class=\"btn btn-default ml-2\" onclick=\"_zw.fn.org('user','n');\"><i class=\"fe-user\"></i> 지정</button>");
+        sb.Append("<button class=\"btn btn-default ml-2\" data-zp-menu=\"deleteDeputy\"><i class=\"fe-x\"></i> 삭제</button></div>");
+        sb.Append("</div>");
+
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"Deputy\" value=\"{0}\" />", FieldValue(row, "Deputy"));
+        sb.AppendFormat("<input type=\"hidden\" data-for=\"DeputyDeptCode\" value=\"{0}\" />", FieldValue(row, "DeputyDeptCode"));
 
         sb.Append("</div>"); //card-body
         sb.Append("</div>"); //card
@@ -78,5 +106,8 @@
 <div class="container-p-x pt-3">
     <div class="row mx-0">
         @Html.Raw(RenderData())
+    </div>
+    <div class="text-center mb-2">
+        <button class="btn btn-primary" data-zp-menu="savePersonAbsent">저&nbsp;&nbsp;&nbsp;&nbsp;장</button>
     </div>
 </div>

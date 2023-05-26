@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 
@@ -812,7 +813,7 @@ namespace ZumNet.Web.Bc
         }
         #endregion
 
-        #region [리스트뷰 날짜 표현]
+        #region [리스트뷰, DatePicker 날짜 표현]
 
         /// <summary>
         /// 리스트뷰 날짜 표현
@@ -867,6 +868,35 @@ namespace ZumNet.Web.Bc
             }
 
             return strRt;
+        }
+
+        /// <summary>
+        /// DatePicker 날짜 표현
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static string CultureDate(string d)
+        {
+            return CultureDate(d, "d");
+        }
+
+        /// <summary>
+        /// DatePicker 날짜 표현
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="f"></param>
+        /// <returns></returns>
+        public static string CultureDate(string d, string f)
+        {
+            if (d == null || d.Trim() == "") return "";
+            try
+            {
+                string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+                if (sCurrentLocale.Substring(0, 2).ToLower() != "ko" && sCurrentLocale.Substring(0, 2).ToLower() != "zh" && sCurrentLocale.Substring(0, 2).ToLower() != "ja") sCurrentLocale = "en-US";
+                DateTime dt = Convert.ToDateTime(d);
+                return dt.ToString(f, CultureInfo.CreateSpecificCulture(sCurrentLocale));
+            }
+            catch { return d.Trim(); }
         }
         #endregion
 

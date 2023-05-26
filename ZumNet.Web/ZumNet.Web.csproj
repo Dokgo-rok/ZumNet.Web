@@ -280,6 +280,9 @@
     <Reference Include="ZumNet.Framework">
       <HintPath>..\..\Library\Framework\bin\Debug\ZumNet.Framework.dll</HintPath>
     </Reference>
+    <Reference Include="ZumNet.Framework.AD">
+      <HintPath>..\..\Library\Framework\bin\Debug\ZumNet.Framework.AD.dll</HintPath>
+    </Reference>
     <Reference Include="ZumNet.Framework.Entities">
       <HintPath>..\..\Library\Framework\bin\Debug\ZumNet.Framework.Entities.dll</HintPath>
     </Reference>

@@ -140,7 +140,7 @@
                         sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\" fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
                     }
                     if (row["STATE"].ToString() == "7") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-edit\"></i> 임율작성</a></li>", GetQueryString("new", formTable, "", "0"), "기준임율 작성하기");
-                    else if (row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n text-danger\" title=\"{2}\"><i class=\"glyphicon glyphicon-duplicate\"></i> 임율재사용</a></li>", GetQueryString("reuse", formTable, "", ViewBag.R.appid.ToString()), "임율 재사용하기");
+                    else if (row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n text-danger\" title=\"{1}\"><i class=\"fas fa-copy\"></i> 임율재사용</a></li>", GetQueryString("reuse", formTable, "", ViewBag.R.appid.ToString()), "임율 재사용하기");
                 }
 
                 if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자

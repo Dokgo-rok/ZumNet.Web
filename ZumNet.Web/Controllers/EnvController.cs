@@ -8,6 +8,10 @@ using ZumNet.Web.Filter;
 
 using ZumNet.Framework.Util;
 using ZumNet.BSL.ServiceBiz;
+using ZumNet.BSL.FlowBiz;
+using System.Web.UI.WebControls;
+using System.Data;
+
 namespace ZumNet.Web.Controllers
 {
     public class EnvController : Controller
@@ -51,6 +55,190 @@ namespace ZumNet.Web.Controllers
 
                     if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
                     else rt = "OK";
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string SavePersonAbsent()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["UserID"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (OfficePortalBiz opBiz = new OfficePortalBiz())
+                    {
+                        svcRt = opBiz.SetPersonInfo(jPost, "absent");
+                    }
+
+                    string sMode = jPost["UseDeputy"].ToString() == "Y" && jPost["Deputy"].ToString() != "" ? "1" : "";
+                    {
+                        using (WorkList wk = new WorkList())
+                        {
+                            svcRt = wk.SetDeputyParticipant(sMode, StringHelper.SafeInt(jPost["UserID"].ToString()), jPost["Deputy"].ToString(), jPost["DeputyDeptCode"].ToString(), 0, "");
+                        }
+                    }
+
+                    if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
+                    else rt = "OK";
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string PwdChange()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0) return "필수값 누락!";
+
+                    if (Session["LogonPwd"] != null)
+                    {
+                        if (SecurityHelper.AESDecrypt(Session["LogonPwd"].ToString()) == jPost["cur"].ToString())
+                        {
+                            ZumNet.Framework.Core.ServiceResult svcRt = null;
+                            
+                            string strPasswordEncrypt = SecurityHelper.AESEncrypt(jPost["new"].ToString());
+                            string sAuthType = Framework.Configuration.Config.Read("AuthType");
+
+                            if (sAuthType == "AD")
+                            {
+                                //AD 암호 변경
+                                using (ZumNet.Framework.AD.ADHandler ad = new Framework.AD.ADHandler(Framework.Configuration.Config.Read("DomainName"), "", Framework.Configuration.Config.Read("SysAdmin")
+                                    , SecurityHelper.AESDecrypt(Framework.Configuration.ConfigINI.GetValue(Framework.Configuration.Sections.SECTION_ROOT, Framework.Configuration.Property.INIKEY_ROOT_SA1))))
+                                {
+                                    rt = ad.ChangePassword(jPost["logonid"].ToString(), jPost["cur"].ToString(), jPost["new"].ToString());
+                                }
+                                if (rt != "OK") rt = "비밀번호가 일치하지 않습니다!";
+                            }
+                            else if (sAuthType == "DB")
+                            {
+                                //DB 암호 변경
+                                using (CommonBiz comBiz = new CommonBiz())
+                                {
+                                    svcRt = comBiz.SetPasswordChange(jPost["urid"].ToString(), strPasswordEncrypt);
+                                    
+                                    if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
+                                    else rt = "OK";
+                                }
+                            }
+
+                            if (rt == "OK")
+                            {
+                                //ERP 암호 변경
+
+                                if (Session["IsESP"].ToString() == "Y")
+                                {
+                                    //구매포탈 암호 변경
+                                    string strQuery = @"UPDATE ZWESP.dbo.SVC_USR WITH (ROWLOCK) SET pwd = @pwd, pwdmod = GETDATE() WHERE logonid = @logonid";
+
+                                    System.Data.SqlClient.SqlParameter[] parameters = new System.Data.SqlClient.SqlParameter[]
+                                    {
+                                        Framework.Data.ParamSet.Add4Sql("@logonid", SqlDbType.VarChar, 50, jPost["logonid"].ToString()),
+                                        Framework.Data.ParamSet.Add4Sql("@pwd", SqlDbType.VarChar, 100, strPasswordEncrypt)
+                                    };
+
+                                    using (ZumNet.BSL.InterfaceBiz.ExecuteBiz execBiz = new BSL.InterfaceBiz.ExecuteBiz())
+                                    {
+                                        svcRt = execBiz.ExecuteQueryTx(strQuery, 15, parameters);
+                                    }
+
+                                    if (svcRt.ResultCode != 0) rt += svcRt.ResultMessage; //OK+오류메시지
+                                }                                
+                            }
+                        }
+                        else
+                        {
+                            rt = "비밀번호가 일치하지 않습니다!";
+                        }
+                    }
+                    else rt = "비밀번호 확인 실패!";
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string UseEAPassword()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0) return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (WorkList wk = new WorkList())
+                    {
+                        svcRt = wk.SetEApprovalPassword(Convert.ToInt32(jPost["urid"]), jPost["usepwd"].ToString());
+                    }
+
+                    if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
+                    else rt = "OK";
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string EAPwdChange()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0) return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (WorkList wk = new WorkList())
+                    {
+                        svcRt = wk.ChangeApprovalPassword("", Convert.ToInt32(jPost["urid"]), jPost["cur"].ToString(), jPost["new"].ToString());
+                    }
+
+                    if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
+                    else rt = svcRt.ResultDataString;
                 }
                 catch (Exception ex)
                 {

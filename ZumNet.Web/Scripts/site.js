@@ -2115,6 +2115,45 @@ $(function () {
 
             m.draggable();
             return m;
+        },
+        "checkPwd": function (id, pw, min, max, complex) {
+            min = min || 1; max = max || 20;
+            complex = complex || 2; //2 : 영문, 숫자, 3 : 특수문자 포함, 그외 : 대문자 포함
+            
+            var number = pw.search(/[0-9]/g),
+                english = pw.search(/[a-z]/ig),
+                spece = pw.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+            var reg = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+            if (pw.length < min || pw.length > max) {
+                return min.toString() + "자리 ~ " + max.toString() + "자리 이내로 입력해주세요.";
+            } else if (pw.search(/\s/) != -1) {
+                return "비밀번호는 공백 없이 입력해주세요.";
+            }
+
+            if (complex == 2) {//영문 + 숫자
+                if (number < 0 || english < 0) {
+                    return "영문,숫자를 혼합하여 입력해주세요.";
+                }
+            } else if (complex == 3) {//영문 + 숫자 + 특수문자
+                if (number < 0 || english < 0 || spece < 0) {
+                    return "영문,숫자,특수문자를 혼합하여 입력해주세요.";
+                }
+            } else {
+                if (false === reg.test(pw)) {
+                    return '비밀번호는 숫자/대문자/소문자/특수문자를 모두 포함해야 합니다.';
+                }
+            }
+
+            if (/(\w)\1\1\1/.test(pw)) {
+                return '같은 문자를 4번 이상 사용하실 수 없습니다.';
+            }
+
+            if (id != '' && pw.search(id) > -1) {
+                return "비밀번호에 아이디가 포함되었습니다.";
+            }
+
+            return '';
         }
     };
 

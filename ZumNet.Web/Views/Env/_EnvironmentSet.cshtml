@@ -7,65 +7,151 @@
 @{
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
+    ViewBag.R.app["pwd-complex"] = "";
+    ViewBag.R.app["pwd-length"] = "";
+    ViewBag.R.app["pwd-interval"] = "";
+    ViewBag.R.app["useeapwd"] = "";
 
+    ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+
+    using (ZumNet.BSL.ServiceBiz.CommonBiz comBiz = new ZumNet.BSL.ServiceBiz.CommonBiz())
+    {
+        svcRt = comBiz.GetPasswordPolicy();
+    }
+
+    if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+    {
+        DataRow row = svcRt.ResultDataSet.Tables[0].Rows[0];
+        ViewBag.R.app["pwd-complex"] = row["IsComplex"].ToString().ToUpper();
+        ViewBag.R.app["pwd-length"] = row["PWLenth"].ToString();
+        ViewBag.R.app["pwd-interval"] = row["PWInterval"].ToString();
+    }
+    //Response.Write("::::" + Session["IsESP"].ToString() + "====");
 }
 @functions {
     private string RenderData()
     {
-        DataRow row = null;
-        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        bool bUseEAPwd = ZumNet.Framework.Configuration.Config.Read("EPwdCheck") == "T" ? true : false;
 
-        using (ZumNet.BSL.ServiceBiz.OfficePortalBiz opBiz = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+        if (bUseEAPwd)
         {
-            svcRt = opBiz.GetUserConfiguration(Convert.ToInt32(Session["URID"]));
+            bool b = false;
+            using (ZumNet.DAL.FlowDac.EApprovalDac eaDac = new ZumNet.DAL.FlowDac.EApprovalDac())
+            {
+                b = eaDac.UseEApprovalPassword(Convert.ToInt32(Session["URID"]));
+            }
+            if (b) ViewBag.R.app["useeapwd"] = "Y";
         }
-        if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0) row = svcRt.ResultDataSet.Tables[0].Rows[0];
-
 
         StringBuilder sb = new StringBuilder();
-        //환경설정
+        //EKP 암호변경
         sb.Append("<div class=\"col-12 col-sm-6 px-0\">");
         sb.Append("<div class=\"card border-0\">");
 
         sb.Append("<div class=\"card-header with-elements px-3\">");
-        sb.AppendFormat("<div class=\"card-header-title\"><i class=\"fas fa-chevron-circle-right mr-1\"></i>{0}</div>", "환경설정");
+        sb.AppendFormat("<div class=\"card-header-title\"><i class=\"fas fa-chevron-circle-right mr-1\"></i>{0}</div>", "EKP 암호변경");
         sb.Append("</div>");
 
         sb.Append("<div class=\"card-body p-3\">");
         sb.Append("<div class=\"form-group row mb-2\">");
-        sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">준비중!</label>");
-        //sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control bg-white border-0\" readonly data-for=\"{0}\" value=\"{1}\" /></div>", "MainMail", FieldValue(row, "MainMail"));
+        sb.AppendFormat("<label for=\"\" class=\"col-md-5 col-form-label font-weight-normal\">{0}</label>", Resources.Global.Password_Current);
+        sb.Append("<div class=\"col-md-7 input-group\">");
+        sb.AppendFormat("<input type=\"password\" class=\"form-control\" data-for=\"{0}\" value=\"\" />", "pwd-current");
+        sb.Append("<div class=\"input-group-append\" data-password=\"false\"><span class=\"input-group-text fas fa-eye password-eye bg-light\"></span></div>");
+        sb.Append("</div>");
         sb.Append("</div>");
 
-        //sb.Append("<div class=\"form-group row mb-2\">");
-        //sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">영문명</label>");
-        //sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "EnName", FieldValue(row, "EnName"));
-        //sb.Append("</div>");
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.AppendFormat("<label for=\"\" class=\"col-md-5 col-form-label font-weight-normal\">{0}</label>", Resources.Global.Password_New);
+        sb.Append("<div class=\"col-md-7 input-group\">");
+        sb.AppendFormat("<input type=\"password\" class=\"form-control\" data-for=\"{0}\" value=\"\" />", "pwd-new");
+        sb.Append("<div class=\"input-group-append\" data-password=\"false\"><span class=\"input-group-text fas fa-eye password-eye bg-light\"></span></div>");
+        sb.Append("</div>");
+        sb.Append("</div>");
 
-        //sb.Append("<div class=\"form-group row mb-2\">");
-        //sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">한자</label>");
-        //sb.AppendFormat("<div class=\"col-md-9\"><input type=\"text\" class=\"form-control\" data-for=\"{0}\" value=\"{1}\" /></div>", "ChName", FieldValue(row, "ChName"));
-        //sb.Append("</div>");
+        sb.Append("<div class=\"form-group row mb-2\">");
+        sb.AppendFormat("<label for=\"\" class=\"col-md-5 col-form-label font-weight-normal\">{0}</label>", Resources.Global.Password_Confirm);
+        sb.Append("<div class=\"col-md-7 input-group\">");
+        sb.AppendFormat("<input type=\"password\" class=\"form-control\" data-for=\"{0}\" value=\"\" />", "pwd-confirm");
+        sb.Append("<div class=\"input-group-append\" data-password=\"false\"><span class=\"input-group-text fas fa-eye password-eye bg-light\"></span></div>");
+        sb.Append("</div>");
+        sb.Append("</div>");
 
-        //sb.Append("<div class=\"form-group row mb-2\">");
-        //sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">생년월일</label>");
-        //sb.Append("<div class=\"col-md-9 d-flex align-items-center\">");
-        //sb.AppendFormat("<input type=\"text\" class=\"form-control datepicker w-50\" data-for=\"{0}\" value=\"{1}\" />", "BirthDay", FieldValue(row, "BirthDay"));
-        //sb.Append("<label class=\"custom-control custom-checkbox m-0 ml-2\">");
-        //sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input id=\"ckb01\" data-for=\"{0}\"{1}><span class=\"custom-control-label\">음력</span>", "BirthType", FieldValue(row, "BirthType") == "1" ? "" : "  checked");
-        //sb.Append("</label>");
-        //sb.Append("</div>");
-        //sb.Append("</div>");
-
-
-        //sb.Append("<div class=\"form-group row mb-2\">");
-        //sb.Append("<label for=\"\" class=\"col-md-3 col-form-label font-weight-normal\">소개글</label>");
-        //sb.AppendFormat("<div class=\"col-md-9\"><textarea class=\"form-control\" row=\"3\" data-for=\"{0}\" style=\"height: 100px\">{1}</textarea></div>", "Description", FieldValue(row, "Description"));
-        //sb.Append("</div>");
+        sb.Append("<div class=\"form-group row mb-0\">");
+        sb.Append("<ul class=\"mb-0 text-danger\">");
+        sb.Append("<li>암호는 영문,숫자,특수문자 포함 8자~20자로 입력하여야 합니다.</li>");
+        sb.Append("<li>변경 사항이 적용되면 다시 로그온 합니다.</li>");
+        sb.Append("</ul>");
+        sb.Append("</div>");
 
         sb.Append("</div>"); //card-body
+
+
+        sb.Append("<div class=\"card-footer text-center\">");
+        sb.AppendFormat("<button class=\"btn btn-primary\" data-zp-menu=\"changePwd\">{0}</button>", Resources.Global.Confirm);
+        sb.Append("</div>"); //card-footer
         sb.Append("</div>"); //card
-        sb.Append("</div>");
+
+
+        if (bUseEAPwd)
+        {
+            //결재 암호변경
+            sb.Append("<div class=\"card border-0 mt-3\">");
+
+            sb.Append("<div class=\"card-header with-elements px-3\">");
+            sb.AppendFormat("<div class=\"card-header-title\"><i class=\"fas fa-chevron-circle-right mr-1\"></i>{0}</div>", "전자결재 암호변경");
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"card-body p-3\">");
+            sb.Append("<div class=\"form-group row mb-2\">");
+            sb.Append("<label for=\"\" class=\"col-md-5 col-form-label font-weight-normal\">암호사용여부</label>");
+            sb.Append("<div class=\"col-md-7\">");
+            sb.AppendFormat("<label class=\"custom-control custom-checkbox d-inline-block mr-3\"><input type=\"checkbox\" class=\"custom-control-input\" data-for=\"{0}\"{1} /><span class=\"custom-control-label\">{2}</span></label>"
+                , "UseEAPwd", ViewBag.R.app["useeapwd"].ToString() == "Y" ? " checked" : "", "사용");
+            sb.AppendFormat("<button class=\"btn btn-primary ml-2\" data-zp-menu=\"useEAPwd\">{0}</button>", Resources.Global.Confirm);
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"form-group row mb-2\">");
+            sb.AppendFormat("<label for=\"\" class=\"col-md-5 col-form-label font-weight-normal\">{0}</label>", Resources.Global.Password_Current);
+            sb.Append("<div class=\"col-md-7 input-group\">");
+            sb.AppendFormat("<input type=\"password\" class=\"form-control\" data-for=\"{0}\" value=\"\" />", "eapwd-current");
+            sb.Append("<div class=\"input-group-append\" data-password=\"false\"><span class=\"input-group-text fas fa-eye password-eye bg-light\"></span></div>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"form-group row mb-2\">");
+            sb.AppendFormat("<label for=\"\" class=\"col-md-5 col-form-label font-weight-normal\">{0}</label>", Resources.Global.Password_New);
+            sb.Append("<div class=\"col-md-7 input-group\">");
+            sb.AppendFormat("<input type=\"password\" class=\"form-control\" data-for=\"{0}\" value=\"\" />", "eapwd-new");
+            sb.Append("<div class=\"input-group-append\" data-password=\"false\"><span class=\"input-group-text fas fa-eye password-eye bg-light\"></span></div>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"form-group row mb-2\">");
+            sb.AppendFormat("<label for=\"\" class=\"col-md-5 col-form-label font-weight-normal\">{0}</label>", Resources.Global.Password_Confirm);
+            sb.Append("<div class=\"col-md-7 input-group\">");
+            sb.AppendFormat("<input type=\"password\" class=\"form-control\" data-for=\"{0}\" value=\"\" />", "eapwd-confirm");
+            sb.Append("<div class=\"input-group-append\" data-password=\"false\"><span class=\"input-group-text fas fa-eye password-eye bg-light\"></span></div>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"form-group row mb-0\">");
+            sb.Append("<ul class=\"mb-0 text-danger\">");
+            sb.Append("<li>암호는 영문,숫자 포함 20자 이내로 입력하여야 합니다.</li>");
+            sb.Append("<li>변경 사항은 바로 적용됩니다.</li>");
+            sb.Append("</ul>");
+            sb.Append("</div>");
+
+            sb.Append("</div>"); //card-body
+
+            sb.Append("<div class=\"card-footer text-center\">");
+            sb.AppendFormat("<button class=\"btn btn-primary\" data-zp-menu=\"changeEAPwd\">{0}</button>", Resources.Global.Confirm);
+            sb.Append("</div>"); //card-footer
+            sb.Append("</div>"); //card
+            sb.Append("</div>");
+        }
+
 
         return sb.ToString();
     }

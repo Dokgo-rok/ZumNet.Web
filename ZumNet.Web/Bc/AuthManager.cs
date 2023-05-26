@@ -36,7 +36,7 @@ namespace ZumNet.Web.Bc
             {
                 strReturn = AuthenticateUserAD(loginId, password);
                 Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}, {4}, {5}{6}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "AD", strReturn, loginId, HttpContext.Current.Request.ServerVariables["REMOTE_HOST"], Environment.NewLine));
-                if (strReturn == "NOAD" || strReturn == "FAIL") strReturn = "FAIL"; //보안상 계정이 없거나 비밀번호가 틀린 경우를 구분하면 안됨!!
+                if (strReturn == "NOAD" || strReturn == "ERROR" || strReturn == "FAIL") strReturn = "FAIL"; //보안상 계정이 없거나 비밀번호가 틀린 경우를 구분하면 안됨!!
             }
             else
             {
@@ -96,7 +96,7 @@ namespace ZumNet.Web.Bc
                         {
                             HttpContext.Current.Session["LogonPwd"] = password; //비번(암호화됨) 저장
 
-                            // MemberModel 객체 생성하여 세션에 저장
+                            //MemberModel 객체 생성하여 세션에 저장
                             //MemberModel model = new MemberModel(svcRt.ResultDataTable);
                             //HttpContext.Current.Session.Add("UserInfo", model);
 
@@ -131,6 +131,8 @@ namespace ZumNet.Web.Bc
                             
                             HttpContext.Current.Session["EmpID"] = dr["EmpID"].ToString();
                             HttpContext.Current.Session["IsSysName"] = dr["IsSysName"].ToString(); //IsPDM, IsERP, IsMSG
+
+                            HttpContext.Current.Session["IsESP"] = dr["Reserved1"] != null && dr["Reserved1"].ToString() == "ESP" ? "Y" : "N"; //구매포탈사용자여부
 
                             //관리자 권한 찾기
                             if (svcRt.ResultDataSet.Tables[1].Rows.Count > 0)
@@ -508,56 +510,78 @@ namespace ZumNet.Web.Bc
         /// <returns></returns>
         private string AuthenticateUserAD(string loginId, string password)
         {
-            DirectoryEntry dirEntry = null;
-            DirectorySearcher dirSrc = null;
-            DirectoryEntry entUser = null;
-
             string strReturn = "";
             string sPos = "";
 
+            #region [DirectoryEntry 이용]
+            //DirectoryEntry dirEntry = null;
+            //DirectorySearcher dirSrc = null;
+            //DirectoryEntry entUser = null;
+
+            //try
+            //{
+            //    sPos = "100";
+            //    string sLdapPath = "LDAP://" + Framework.Configuration.Config.Read("DomainName");
+            //    string sAuthUser = Framework.Configuration.Config.Read("SysAdmin");
+            //    string sAuthUserPwd = Framework.Util.SecurityHelper.AESDecrypt(Framework.Configuration.ConfigINI.GetValue(Framework.Configuration.Sections.SECTION_ROOT, Framework.Configuration.Property.INIKEY_ROOT_SA1));
+
+            //    sPos = "200";
+            //    dirEntry = new DirectoryEntry(sLdapPath, sAuthUser, sAuthUserPwd, System.DirectoryServices.AuthenticationTypes.Secure);
+            //    dirSrc = new DirectorySearcher(dirEntry);
+            //    dirSrc.Filter = "(&(objectCategory=person)(objectClass=user)(sAMAccountName=" + loginId + "))";
+
+            //    sPos = "300";
+            //    SearchResult srcRt = dirSrc.FindOne();
+            //    if (srcRt != null)
+            //    {
+            //        sPos = "400";
+            //        entUser = new DirectoryEntry(srcRt.Path, loginId, password, System.DirectoryServices.AuthenticationTypes.Secure);
+            //        try
+            //        {
+            //            strReturn = (entUser.NativeObject != null) ? "OK" : "FAIL"; //AD 비밀번호 틀림
+            //        }
+            //        catch
+            //        {
+            //            strReturn = "FAIL"; //사용자 이름 또는 암호가 올바르지 않습니다.
+            //        }
+            //    }
+            //    else
+            //    {
+            //        strReturn = "NOAD";  //AD 사용자 없음
+            //    }
+
+            //}
+            //catch(Exception ex)
+            //{
+            //    ex.Source = "[" + sPos + "] " + ex.Source;
+            //    ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, MethodBase.GetCurrentMethod().Name);
+            //}
+            //finally
+            //{
+            //    if (dirEntry != null) { dirEntry.Close(); dirEntry.Dispose(); }
+            //    if (entUser != null) { entUser.Close(); entUser.Dispose(); }
+            //    if (dirSrc != null) { dirSrc.Dispose(); }
+            //}
+            #endregion
+
+            #region [Framework.AD 이용]
             try
             {
                 sPos = "100";
-                string sLdapPath = "LDAP://" + Framework.Configuration.Config.Read("DomainName");
-                string sAuthUser = Framework.Configuration.Config.Read("SysAdmin");
-                string sAuthUserPwd = Framework.Util.SecurityHelper.AESDecrypt(Framework.Configuration.ConfigINI.GetValue(Framework.Configuration.Sections.SECTION_ROOT, Framework.Configuration.Property.INIKEY_ROOT_SA1));
-
-                sPos = "200";
-                dirEntry = new DirectoryEntry(sLdapPath, sAuthUser, sAuthUserPwd, System.DirectoryServices.AuthenticationTypes.Secure);
-                dirSrc = new DirectorySearcher(dirEntry);
-                dirSrc.Filter = "(&(objectCategory=person)(objectClass=user)(sAMAccountName=" + loginId + "))";
-
-                sPos = "300";
-                SearchResult srcRt = dirSrc.FindOne();
-                if (srcRt != null)
+                using (ZumNet.Framework.AD.ADHandler ad = new Framework.AD.ADHandler(Framework.Configuration.Config.Read("DomainName"), ""
+                    , Framework.Configuration.Config.Read("SysAdmin")
+                    , Framework.Util.SecurityHelper.AESDecrypt(Framework.Configuration.ConfigINI.GetValue(Framework.Configuration.Sections.SECTION_ROOT, Framework.Configuration.Property.INIKEY_ROOT_SA1))))
                 {
-                    sPos = "400";
-                    entUser = new DirectoryEntry(srcRt.Path, loginId, password, System.DirectoryServices.AuthenticationTypes.Secure);
-                    try
-                    {
-                        strReturn = (entUser.NativeObject != null) ? "OK" : "FAIL"; //AD 비밀번호 틀림
-                    }
-                    catch
-                    {
-                        strReturn = "FAIL"; //사용자 이름 또는 암호가 올바르지 않습니다.
-                    }
-                }
-                else
-                {
-                    strReturn = "NOAD";  //AD 사용자 없음
+                    sPos = "210";
+                    strReturn = ad.AuthenticateUser(loginId, password);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ex.Source = "[" + sPos + "] " + ex.Source;
                 ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, MethodBase.GetCurrentMethod().Name);
             }
-            finally
-            {
-                if (dirEntry != null) { dirEntry.Close(); dirEntry.Dispose(); }
-                if (entUser != null) { entUser.Close(); entUser.Dispose(); }
-                if (dirSrc != null) { dirSrc.Dispose(); }
-            }
+            #endregion
 
             return strReturn;
         }
