@@ -47,7 +47,7 @@
         {
             sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><strong>{0}</strong><input type=\"hidden\" data-zf-field=\"STDDT\" value=\"{1}\" /></td>", Convert.ToDateTime(row["STDDT"]).ToString("yyyy年 MM月 dd日 부터"), Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd"));
         }
-        
+
         sb.Append("<td style=\"width: 15%\">작성자</td>");
         if (ViewBag.Mode == "new")
         {
@@ -290,7 +290,7 @@
                 sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["USD_VND"].ToString(), 0));
                 sb.AppendFormat("<th>{0}</th>", CommonUtils.CvtNumeric(row["EUR_USD"].ToString(), 2));
             }
-                sb.Append("</tr>");
+            sb.Append("</tr>");
 
             sb.Append("<tr class=\"table-warning\">");
             sb.Append("<td>변동율</td>");
@@ -379,22 +379,23 @@
 
         sb.Append("</div>");
         sb.Append("</div>");
-        
+
         sb.Append("<div class=\"row pl-3\">");
-        sb.Append("<div class=\"col-md-2\"><strong>&#8251; 배포처</strong></div><div class=\"col-md-10\">KH, CD, CT, CH, IC, JY, IS, CL, VH</div>");
+        sb.Append("<div class=\"col-md-2\"><strong>&#8251; 배포처</strong></div><div class=\"col-md-10\">KH, CD, IS, JY, VH, VS, VU, VW</div>"); //KH, CD, CT, CH, IC, JY, IS, CL, VH
 
         sVal = CommonUtils.CvtPercent(row["S_USD_IDR"].ToString(), DataHelper.GetFieldValueToString(row, "USD_IDR", "0"), DataHelper.GetFieldValueToString(row, "USD_IDR", "0"), 2);
         if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
         {
-            sb.Append("<div class=\"col-md-2\"><strong>&#8251; 삼성 USD/IDR</strong></div><div class=\"col-md-10\"><span style=\"display: inline-block;width: 100px\">");
+            sb.Append("<div class=\"col-md-2 d-none\"><strong>&#8251; 삼성 USD/IDR</strong></div><div class=\"col-md-10 d-none\"><span style=\"display: inline-block;width: 100px\">");
             sb.AppendFormat("<input type=\"text\" class=\"form-control text-center\" style=\"display: inline-block\" data-zf-field=\"S_USD_IDR\" data-inputmask=\"number;10\" value=\"{0}\" /></span>", CommonUtils.CvtNumeric(row["S_USD_IDR"].ToString(), 0));
             sb.AppendFormat(" (기준환산율 대비 <span style=\"display: inline-block;width: 60px\"><input type=\"text\" class=\"form-control text-center\" readonly style=\"display: inline-block\" value=\"{0}\" /></span>%)</div>", sVal);
         }
         else
         {
-            sb.AppendFormat("<div class=\"col-md-2\"><strong>&#8251; 삼성 USD/IDR</strong></div><div class=\"col-md-10\"><span>{0}</span> (기준환산율 대비 <span>{1}</span>% {2})</div>"
+            sb.AppendFormat("<div class=\"col-md-2 d-none\"><strong>&#8251; 삼성 USD/IDR</strong></div><div class=\"col-md-10 d-none\"><span>{0}</span> (기준환산율 대비 <span>{1}</span>% {2})</div>"
                         , CommonUtils.CvtNumeric(row["S_USD_IDR"].ToString(), 0), sVal, Convert.ToDecimal(sVal) > 0 ? "높음" : "낮음");
-        }
+        } //23-05-26 안보이게 처리
+
         //sb.Append("<table class=\"table table-condensed\">");
         //sb.Append("<tbody>");
         //sb.Append("<tr><th>&#8251; 배포처</th><td>KH, CD, CT, CH, IC, JY, IS, CL, VH</td></tr>");
@@ -402,7 +403,7 @@
         //sb.AppendFormat("<td>{0} (기준환산율 대비 {1}% {2})</td></tr>", CommonUtils.CvtNumeric(row["S_USD_IDR"].ToString(), 0), sVal, Convert.ToDecimal(sVal) > 0 ? "높음" : "낮음");
         //sb.Append("</tbody>");
         //sb.Append("</table>");
-        
+
         //숨은필드
         //sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"REGID\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["REGID"].ToString());
         sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"STATE\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["STATE"].ToString());
@@ -412,7 +413,7 @@
         sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"CRDPTID\" value= {0} />", ViewBag.Mode == "new" ? Session["DeptID"].ToString() : row["CRDPTID"].ToString());
         sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"LNKEA\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["LNKEA"].ToString());
         sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"USD_EUR\" value= {0} />", ViewBag.Mode == "new" ? "0" : row["USD_EUR"].ToString());
-        
+
         sb.Append("</div>");
 
         return sb.ToString();

@@ -284,12 +284,12 @@ $(function () {
             });
 
             var t = $('#__List .row .col-md-10 span');
-            var s = $(t[0]).text() + ' (기준환산율 대비 ' + $(t[1]).text() + '%';
-            if (numeral($(t[1]).text()).value() > 0) s += ' 높음)';
-            else if (numeral($(t[1]).text()).value() < 0) s += ' 낮음)';
-            else s += ')';
+            //var s = $(t[0]).text() + ' (기준환산율 대비 ' + $(t[1]).text() + '%';
+            //if (numeral($(t[1]).text()).value() > 0) s += ' 높음)';
+            //else if (numeral($(t[1]).text()).value() < 0) s += ' 낮음)';
+            //else s += ')';
 
-            $('#_HiddenForm table').last().find('td').last().text(s); //console.log($('#_HiddenForm').html())
+            //$('#_HiddenForm table').last().find('td').last().text(s); //console.log($('#_HiddenForm').html())
             $('#_HiddenFormData').val($('#_HiddenForm').html())
 
         } else if (_zw.V.ft.toLowerCase() == 'stdpaydetail') {
