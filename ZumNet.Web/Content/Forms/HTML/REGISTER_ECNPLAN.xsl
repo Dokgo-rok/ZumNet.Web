@@ -252,7 +252,7 @@
         <td class="f-lbl">승인일자</td>
         <td style="width:35%;border-right:0">
           <span class="f-option" style="width:70px">
-            <input type="checkbox" id="ckb.11" name="ckbSTATUS" disabled="disabled">
+            <input type="checkbox" id="ckb.11" name="ckbSTATUS">
               <xsl:if test="//forminfo/maintable/APVRSTATUS='7'">
                 <xsl:attribute name="checked">checked</xsl:attribute>
               </xsl:if>

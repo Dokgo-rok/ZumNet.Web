@@ -2277,6 +2277,7 @@
     <Content Include="Scripts\EA\Forms\FORM_PASSPORTLIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_PCBSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PERSONNELAPPOINTMENTS.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PRECPRODUCTPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRIMECOSTESTIMATECHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_PROCESSFMEAREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODRELEASEREQ.js" />
