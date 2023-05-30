@@ -1985,6 +1985,13 @@ $(function () {
                         }
                     }
                 }
+            } else if (_zw.V.ft == 'CANCELREQUEST') { //캔슬요청서 : 2023-05/30
+                if (_zw.V.mode == 'new') {
+                    if ($('#__mainfield[name="DOCCLASS"]').val() == '중개') {
+                        p = signLine.filter(function (element) { if (element.bizrole == 'application' && element.actrole == '__r' && element.partid != '' && element.viewstate != '6') return true; });
+                        if (p.length == 0) { bootbox.alert("접수처를 지정하십시오!"); return 'N'; }
+                    }
+                }
             }
             return 'Y';
         },
