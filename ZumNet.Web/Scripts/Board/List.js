@@ -10,6 +10,19 @@ $(function () {
         }
     });
 
+    //암호 설정
+    $("[data-password]").on('click', function () {
+        if ($(this).attr('data-password') == "false") {
+            $(this).siblings("input").attr("type", "text");
+            $(this).attr('data-password', 'true');
+            $(this).addClass("show-password");
+        } else {
+            $(this).siblings("input").attr("type", "password");
+            $(this).attr('data-password', 'false');
+            $(this).removeClass("show-password");
+        }
+    });
+
     _zw.mu.writeMsg = function (xf, m) {
         var el, p, postData, tgtPage, stdPage;
         m = m || '';
@@ -23,11 +36,43 @@ $(function () {
     }
 
     _zw.mu.editMsg = function (xf) { //alert(_zw.V.appid)
-        _zw.V.mode = '';
-        _zw.V.xfalias = xf;
+        if (xf == 'anonymous') {
+            bootbox.prompt({
+                title: '비밀번호를 입력하십시오.',
+                inputType: 'password',
+                callback: function (result) {
+                    if (result && result != '') {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Board/AnonyMsgPwd",
+                            data: '{xfalias:"' + xf + '",msgid:"' + _zw.V.appid + '",pwd:"' + result + '"}',
+                            success: function (res) {
+                                if (res.substr(0, 2) == "OK") {
 
-        postData = _zw.fn.getAppQuery(_zw.V.fdid);
-        window.location.href = '/Board/Edit?qi=' + _zw.base64.encode(postData);
+                                    _zw.V.mode = '';
+                                    _zw.V.xfalias = xf;
+                                    _zw.V.lv.cd2 = result;
+
+                                    postData = _zw.fn.getAppQuery(_zw.V.fdid); //console.log(postData); return
+                                    window.location.href = '/Board/Edit?qi=' + _zw.base64.encode(postData);
+
+                                } else {
+                                    if (res.substr(0, 2) == "NO") bootbox.alert(res.substr(2));
+                                    else bootbox.alert(res);
+                                }
+                            },
+                            beforeSend: function () { } //로딩 X
+                        });
+                    }
+                }
+            });
+        } else {
+            _zw.V.mode = '';
+            _zw.V.xfalias = xf;
+
+            postData = _zw.fn.getAppQuery(_zw.V.fdid);
+            window.location.href = '/Board/Edit?qi=' + _zw.base64.encode(postData);
+        }
     }
 
     _zw.mu.readTemp = function () {
@@ -66,28 +111,54 @@ $(function () {
             if (!bDeletable) {
                 bootbox.alert('삭제할 수 없는 문서입니다!'); return false; //답글 또는 댓글 존재
             } else {
-                bootbox.confirm("삭제 하시겠습니까?", function (rt) {
-                    if (rt) {
-                        $.ajax({
-                            type: "POST",
-                            url: "/Common/DeleteMsg",
-                            data: '{xf:"' + _zw.V.xfalias + '",fdid:"' + _zw.V.fdid + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '"}',
-                            success: function (res) {
-                                if (res == "OK") {
-                                    bootbox.alert('삭제했습니다.', function () {
-                                        window.close();
-                                        if (opener) {
-                                            if (opener._zw.mu.search) opener._zw.mu.search(opener._zw.V.lv.page);
-                                            else opener.location.reload();
-                                        } else {
+
+                if (_zw.V.xfalias == 'anonymous') {
+                    bootbox.prompt({
+                        title: '삭제하시겠습니까? 비밀번호를 입력하십시오.',
+                        inputType: 'password',
+                        callback: function (result) {
+                            if (result && result != '') {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Common/DeleteMsg",
+                                    data: '{xf:"' + _zw.V.xfalias + '",fdid:"' + _zw.V.fdid + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '",pwd:"' + result + '"}',
+                                    success: function (res) {
+                                        if (res.substr(0, 2) == "OK") {
                                             _zw.mu.goList();
+
+                                        } else {
+                                            if (res.substr(0, 2) == "NO") bootbox.alert(res.substr(2));
+                                            else bootbox.alert(res);
                                         }
-                                    });
-                                } else bootbox.alert(res);
+                                    }
+                                });
                             }
-                        });
-                    }
-                });
+                        }
+                    });
+                } else {
+                    bootbox.confirm("삭제 하시겠습니까?", function (rt) {
+                        if (rt) {
+                            $.ajax({
+                                type: "POST",
+                                url: "/Common/DeleteMsg",
+                                data: '{xf:"' + _zw.V.xfalias + '",fdid:"' + _zw.V.fdid + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '"}',
+                                success: function (res) {
+                                    if (res == "OK") {
+                                        bootbox.alert('삭제했습니다.', function () {
+                                            window.close();
+                                            if (opener) {
+                                                if (opener._zw.mu.search) opener._zw.mu.search(opener._zw.V.lv.page);
+                                                else opener.location.reload();
+                                            } else {
+                                                _zw.mu.goList();
+                                            }
+                                        });
+                                    } else bootbox.alert(res);
+                                }
+                            });
+                        }
+                    });
+                }
             }
         }
     }
@@ -112,11 +183,27 @@ $(function () {
             bootbox.alert("작성된 내용이 없습니다. 내용을 입력하세요.", function () { DEXT5.setFocusToEditor(); }); return;
         }
 
+        if ($('#__FormView input[data-for="SelectedXFAlias"]').val() == 'anonymous') {
+            var pwd = $('#txtPassword'), cfmPwd = $('#txtPasswordConfirm');
+
+            if ($.trim(pwd.val()) == '') {
+                bootbox.alert('비밀번호 누락!', function () { pwd.focus(); }); return false;
+            }
+
+            var rt = _zw.ut.checkPwd('', pwd.val(), 2, 10, 1);
+            if (rt != '') {
+                bootbox.alert(rt, function () { pwd.focus(); }); return false;
+            }
+
+            if (pwd.val() != cfmPwd.val()) {
+                bootbox.alert('비밀번호가 일치하지 않습니다!', function () { cfmPwd.focus(); }); return false;
+            }
+        }
+
         _zw.V.mode = "";
         bootbox.confirm("등록 하시겠습니까?", function (rt) {
             if (rt) { DEXT5UPLOAD.Transfer(); }
-        });
-        
+        });        
     }
 
     _zw.mu.previewMsg = function () {
@@ -149,7 +236,7 @@ $(function () {
 
     _zw.mu.goList = function () {
         var postData = _zw.fn.getLvQuery();
-        window.location.href = '/Board/List?qi=' + _zw.base64.encode(postData);
+        window.location.href = (_zw.V.xfalias == 'anonymous' ? '/Board/Anonymous?qi=' : '/Board/List?qi=') + _zw.base64.encode(postData);
     }
 
     _zw.fn.loadList = function () {
@@ -229,7 +316,7 @@ $(function () {
     _zw.fn.initLv = function (tgt) {
         $('.z-lv-date .start-date').val('');
         $('.z-lv-date .end-date').val('');
-        $('.z-lv-search select').val('');
+        if ($('.z-lv-search select option').length > 1) $('.z-lv-search select').val(''); //console.log($('.z-lv-search select option').length)
         $('.z-lv-search .search-text').val('');
 
         $('.z-lv-hdr a[data-val]').each(function () {
@@ -336,17 +423,27 @@ $(function () {
         jPost["popdate"] = (!$('#ckbUsePopup').prop("disabled") && $('#ckbUsePopup').prop('checked') && $.trim($('#txtPopDate').val()) != '') ? $('#txtPopDate').val() : "";
         jPost["replymail"] = "N";
 
-        jPost["creur"] = _zw.V.current.user;
-        jPost["creurid"] = _zw.V.current.urid;
-        jPost["creurcn"] = _zw.V.current.urcn;
-        jPost["credept"] = _zw.V.current.dept;
-        jPost["credpid"] = _zw.V.current.deptid;
-        jPost["credpcd"] = _zw.V.current.deptcd;
+        if ($('#__FormView input[data-for="SelectedXFAlias"]').val() == 'anonymous') {
+            jPost["creur"] = $.trim($('#txtCreator').val()) == '' ? '익명' : $('#txtCreator').val();
+            jPost["creurid"] = 0;
 
+            jPost["pwd"] = $('#txtPassword').val(); //익명
+            if ($('#txtPrevPassword').length > 0) jPost["prevpwd"] = $('#txtPrevPassword').val();
+
+        } else {
+            jPost["creur"] = _zw.V.current.user;
+            jPost["creurid"] = _zw.V.current.urid;
+            jPost["creurcn"] = _zw.V.current.urcn;
+            jPost["credept"] = _zw.V.current.dept;
+            jPost["credpid"] = _zw.V.current.deptid;
+            jPost["credpcd"] = _zw.V.current.deptcd;
+
+            jPost["pwd"] = "";
+        }
+        
         jPost["subject"] = $('#txtSubject').val();
         jPost["body"] = DEXT5.getBodyValue();
-        jPost["bodytext"] = "";
-        jPost["pwd"] = ""; //익명
+        jPost["bodytext"] = "";        
 
         jPost["M"] = _zw.V.mode;
 
@@ -359,14 +456,21 @@ $(function () {
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
                     //console.log(JSON.parse(res.substr(2)));
-                    bootbox.alert(res.substr(2), function () {
-                        if (_zw.V.wnd == 'popup') {
-                            window.close(); opener.location.reload();
-                        } else {
-                            if (_zw.V.mode == 'save') window.location.href = '/Board/TempSave?qi=' + _zw.base64.encode(_zw.fn.getLvQuery());
-                            else _zw.mu.goList();
-                        }
-                    });
+                    //bootbox.alert(res.substr(2), function () {
+                    //    if (_zw.V.wnd == 'popup') {
+                    //        window.close(); opener.location.reload();
+                    //    } else {
+                    //        if (_zw.V.mode == 'save') window.location.href = '/Board/TempSave?qi=' + _zw.base64.encode(_zw.fn.getLvQuery());
+                    //        else _zw.mu.goList();
+                    //    }
+                    //});
+
+                    if (_zw.V.wnd == 'popup') {
+                        window.close(); opener.location.reload();
+                    } else {
+                        if (_zw.V.mode == 'save') window.location.href = '/Board/TempSave?qi=' + _zw.base64.encode(_zw.fn.getLvQuery());
+                        else _zw.mu.goList();
+                    }
 
                 } else bootbox.alert(res);
             }

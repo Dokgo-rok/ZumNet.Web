@@ -426,8 +426,8 @@ $(function () {
         j["sortdir"] = _zw.V.lv.sortdir;
         j["search"] = _zw.V.lv.search;
         j["searchtext"] = _zw.V.lv.searchtext;
-        j["start"] = _zw.V.lv.start;
-        j["end"] = _zw.V.lv.end;
+        j["start"] = _zw.ut.date(_zw.V.lv.start, 'YYYY-MM-DD');
+        j["end"] = _zw.ut.date(_zw.V.lv.end, 'YYYY-MM-DD') ;
         j["basesort"] = _zw.V.lv.basesort;
         j["boundary"] = _zw.V.lv.boundary;
 

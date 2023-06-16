@@ -49,7 +49,7 @@ namespace ZumNet.Web.Bc
             //}
 
             if (ctrl.ViewBag.R.xfalias == "bbs" || ctrl.ViewBag.R.xfalias == "notice" || ctrl.ViewBag.R.xfalias == "file") sJsonPath = "~/Content/Json/jform_bbs.json";
-            //else if (ctrl.ViewBag.R.xfalias == "doc") sJsonPath = "~/Content/Json/jform_doc.json";
+            else if (ctrl.ViewBag.R.xfalias == "anonymous") sJsonPath = "~/Content/Json/jform_anonymous.json";
             else if (ctrl.ViewBag.R.xfalias == "knowledge") sJsonPath = "~/Content/Json/jform_knowledge.json";
             //else if (ctrl.ViewBag.R.xfalias == "ea") sJsonPath = "~/Content/Json/jform_ea.json";
             else sJsonPath = "~/Content/Json/jform_bbs.json"; //xfalias='' 인 경우 일반게시 또는 공지사항으로 적용
@@ -88,36 +88,60 @@ namespace ZumNet.Web.Bc
                         if (formData.ResultDataDetail.ContainsKey("nextMsgID")) sNextApp = formData.ResultDataDetail["nextMsgID"].ToString();
 
                         sPos = "410";
-                        jV["parent"] = mainInfo["ParentMsgID"].ToString();
-                        jV["prev"] = sPrevApp;
-                        jV["next"] = sNextApp;
-                        jV["att"] = mainInfo["AttType"].ToString();
-                        jV["msg"] = mainInfo["MsgType"].ToString();
-                        jV["priority"] = mainInfo["Priority"].ToString();
+                        if (ctrl.ViewBag.R.xfalias == "anonymous")
+                        {
+                            jV["parent"] = mainInfo["ParentMsgID"].ToString();
+                            jV["prev"] = sPrevApp;
+                            jV["next"] = sNextApp;
+                            jV["att"] = mainInfo["AttType"].ToString();
+                            jV["priority"] = mainInfo["Priority"].ToString();
 
-                        jV["creur"] = mainInfo["CreatorName"].ToString();
-                        jV["creurid"] = mainInfo["CreatorID"].ToString();
-                        jV["creurcn"] = mainInfo["CreatorAccount"].ToString();
-                        jV["cremail"] = "";
-                        jV["creempid"] = "";
-                        jV["cregrade"] = "";
-                        jV["credept"] = mainInfo["CreatorDept"].ToString();
-                        jV["credpid"] = "";
-                        jV["credpcd"] = "";
-                        jV["credate"] = mainInfo["CreateDate"].ToString();
-                        jV["pubdate"] = mainInfo["PublishDate"].ToString();
-                        jV["expdate"] = mainInfo["ExpiredDate"].ToString();
-                        jV["popdate"] = mainInfo["PopUpDate"].ToString();
+                            jV["creur"] = mainInfo["Creator"].ToString();
+                            jV["credate"] = mainInfo["CreateDate"].ToString();
+                            jV["pubdate"] = mainInfo["PublishDate"].ToString();
+                            jV["expdate"] = mainInfo["ExpiredDate"].ToString();
 
-                        jV["subject"] = mainInfo["Subject"].ToString();
-                        jV["body"] = mainInfo["Body"].ToString();
-                        jV["seqid"] = mainInfo["SeqID"].ToString();
-                        jV["depth"] = mainInfo["Depth"].ToString();
-                        jV["topline"] = mainInfo["TopLine"].ToString();
-                        jV["ispopup"] = mainInfo["IsPopup"].ToString();
-                        jV["replymail"] = mainInfo["ReplyMail"].ToString();
-                        jV["rsvd1"] = mainInfo["Reserved1"].ToString();
-                        jV["rsvd2"] = mainInfo["Reserved2"].ToString();
+                            jV["subject"] = mainInfo["Subject"].ToString();
+                            jV["body"] = mainInfo["Body"].ToString();
+                            jV["seqid"] = mainInfo["SeqID"].ToString();
+                            jV["depth"] = mainInfo["Depth"].ToString();
+                            jV["topline"] = mainInfo["TopLine"].ToString();
+                            jV["pwd"] = ""; //mainInfo["Password"].ToString();
+                            jV["rsvd1"] = mainInfo["Reserved1"].ToString();
+                        }
+                        else
+                        {
+                            jV["parent"] = mainInfo["ParentMsgID"].ToString();
+                            jV["prev"] = sPrevApp;
+                            jV["next"] = sNextApp;
+                            jV["att"] = mainInfo["AttType"].ToString();
+                            jV["msg"] = mainInfo["MsgType"].ToString();
+                            jV["priority"] = mainInfo["Priority"].ToString();
+
+                            jV["creur"] = mainInfo["CreatorName"].ToString();
+                            jV["creurid"] = mainInfo["CreatorID"].ToString();
+                            jV["creurcn"] = mainInfo["CreatorAccount"].ToString();
+                            jV["cremail"] = "";
+                            jV["creempid"] = "";
+                            jV["cregrade"] = "";
+                            jV["credept"] = mainInfo["CreatorDept"].ToString();
+                            jV["credpid"] = "";
+                            jV["credpcd"] = "";
+                            jV["credate"] = mainInfo["CreateDate"].ToString();
+                            jV["pubdate"] = mainInfo["PublishDate"].ToString();
+                            jV["expdate"] = mainInfo["ExpiredDate"].ToString();
+                            jV["popdate"] = mainInfo["PopUpDate"].ToString();
+
+                            jV["subject"] = mainInfo["Subject"].ToString();
+                            jV["body"] = mainInfo["Body"].ToString();
+                            jV["seqid"] = mainInfo["SeqID"].ToString();
+                            jV["depth"] = mainInfo["Depth"].ToString();
+                            jV["topline"] = mainInfo["TopLine"].ToString();
+                            jV["ispopup"] = mainInfo["IsPopup"].ToString();
+                            jV["replymail"] = mainInfo["ReplyMail"].ToString();
+                            jV["rsvd1"] = mainInfo["Reserved1"].ToString();
+                            jV["rsvd2"] = mainInfo["Reserved2"].ToString();
+                        }   
 
                         //공동등록자
                         sPos = "500";
@@ -205,7 +229,7 @@ namespace ZumNet.Web.Bc
                                 jTemp["creur"] = dr["Creator"].ToString();
                                 jTemp["credate"] = dr["CreateDate"].ToString();
                                 jTemp["comment"] = dr["Comment"].ToString();
-                                jTemp["rsvd1"] = dr["Reserved1"].ToString();
+                                jTemp["rsvd1"] = ctrl.ViewBag.R.xfalias == "anonymous" ? "" : dr["Reserved1"].ToString();
 
                                 jArr.Add(jTemp);
                             }
@@ -231,10 +255,19 @@ namespace ZumNet.Web.Bc
                                 jTemp["step"] = dr["Step"].ToString();
                                 jTemp["depth"] = dr["Depth"].ToString();
                                 jTemp["subject"] = dr["Subject"].ToString();
-                                jTemp["displayname"] = dr["DisplayName"].ToString();
                                 jTemp["viewcount"] = dr["ViewCount"].ToString();
                                 jTemp["credate"] = dr["CreateDate"].ToString();
-                                jTemp["state"] = dr["State"].ToString();
+
+                                if (ctrl.ViewBag.R.xfalias == "anonymous")
+                                {
+                                    jTemp["displayname"] = dr["Creator"].ToString();
+                                    jTemp["pwd"] = ""; // dr["Password"].ToString();
+                                }
+                                else
+                                {
+                                    jTemp["displayname"] = dr["DisplayName"].ToString();
+                                    jTemp["state"] = dr["State"].ToString();
+                                }   
 
                                 jArr.Add(jTemp);
                             }
@@ -247,6 +280,14 @@ namespace ZumNet.Web.Bc
                         }
 
                         jV["viewcount"] = mainInfo["ViewCount"].ToString();
+                        jV["evalcount"] = DataHelper.GetFieldValueToString(mainInfo, "EvalCount", "0");
+
+                        if (jV.ContainsKey("react"))
+                        {
+                            jV["react"]["acttype"] = DataHelper.GetFieldValueToString(mainInfo, "ActType", "");
+                            jV["react"]["point"] = DataHelper.GetFieldValueToString(mainInfo, "Point", "0");
+                            jV["react"]["actdate"] = DataHelper.GetFieldValueToString(mainInfo, "ActDate", "");
+                        }                        
                     }                    
                 }
 

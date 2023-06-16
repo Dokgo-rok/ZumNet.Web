@@ -41,5 +41,10 @@
   "attachlist": [],
   "replylist": [],
   "cmntlist": [],
-  "acllist": []
+  "acllist": [],
+  "react": {
+    "acttype": "",
+    "point": "",
+    "actdate": ""
+  }
 }

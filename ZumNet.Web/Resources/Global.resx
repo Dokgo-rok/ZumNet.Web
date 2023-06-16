@@ -408,6 +408,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>Off Work</value>
   </data>
+  <data name="Like" xml:space="preserve">
+    <value>Like</value>
+  </data>
   <data name="List" xml:space="preserve">
     <value>List</value>
   </data>
@@ -478,13 +481,16 @@
     <value>Change Password</value>
   </data>
   <data name="Password_Confirm" xml:space="preserve">
-    <value>New password confirmation</value>
+    <value>Confirm password</value>
   </data>
   <data name="Password_Current" xml:space="preserve">
     <value>Current Password</value>
   </data>
   <data name="Password_New" xml:space="preserve">
     <value>New Password</value>
+  </data>
+  <data name="Password_NotMatch" xml:space="preserve">
+    <value>Passwords do not match</value>
   </data>
   <data name="Permission" xml:space="preserve">
     <value>Permission</value>

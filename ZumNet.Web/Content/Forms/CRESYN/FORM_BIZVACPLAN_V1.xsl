@@ -593,7 +593,7 @@
 			<div class="fm text-center">
             <span>
               <font color="red">한국에서 병원진료 예정이신 분은 E-ticket을 별도 전달바랍니다.</font>
-              <font color="black">(담당자:고선일)</font>
+              <font color="black">(담당자:나종문)</font>
             </span>
           </div>
           <div class="ff" />

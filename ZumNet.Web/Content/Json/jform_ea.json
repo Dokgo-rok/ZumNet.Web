@@ -37,12 +37,12 @@
   "showline": "",
   "tp": "",
   "pos": "",
-  "preapvwi": "", //¼±°á
-  "checkpwd": "", //ºñ¹Ğ¹øÈ£ Ã¼Å©¿©ºÎ
+  "preapvwi": "", //ì„ ê²°
+  "checkpwd": "", //ë¹„ë°€ë²ˆí˜¸ ì²´í¬ì—¬ë¶€
   "boundary": "",
 
-  "apvmode": "", //°áÀç¸ğµå
-  "pwid": "", //»óÀ§ workitemid
+  "apvmode": "", //ê²°ì¬ëª¨ë“œ
+  "pwid": "", //ìƒìœ„ workitemid
   "curactid": "",
   "curbiz": "",
   "curact": "",

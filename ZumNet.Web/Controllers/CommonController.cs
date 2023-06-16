@@ -258,7 +258,47 @@ namespace ZumNet.Web.Controllers
 
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
                 {
-                    svcRt = cb.AddViewCount(jPost["xf"].ToString(), iFolderId, Convert.ToInt32(jPost["urid"]), Convert.ToInt32(jPost["mi"]), Request.ServerVariables["REMOTE_ADDR"]);
+                    if (jPost["xf"].ToString() == "anonymous") svcRt = cb.AddViewCount(jPost["xf"].ToString(), 0, 0, Convert.ToInt32(jPost["mi"]), "", Session.SessionID);
+                    else svcRt = cb.AddViewCount(jPost["xf"].ToString(), iFolderId, Convert.ToInt32(jPost["urid"]), Convert.ToInt32(jPost["mi"]), Request.ServerVariables["REMOTE_ADDR"]);
+                }
+
+                if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                else strView = "OK";
+            }
+
+            return strView;
+        }
+
+        /// <summary>
+        /// 게시물 좋아요 기록
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string SetLike()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                JObject jPost = CommonUtils.PostDataToJson();
+
+                if (jPost == null || jPost.Count == 0)
+                {
+                    return "전송 데이터 누락!";
+                }
+                else if (StringHelper.SafeString(jPost["xf"]) == "" || StringHelper.SafeString(jPost["mi"]) == "")
+                {
+                    return "필수값 누락!";
+                }
+
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                {
+                    if (jPost["xf"].ToString() == "anonymous") svcRt = cb.SetLikeEvent(jPost["xf"].ToString(), Convert.ToInt32(jPost["mi"]), Session.SessionID, Convert.ToInt32(jPost["point"]));
+                    else svcRt = cb.SetLikeEvent(jPost["xf"].ToString(), Convert.ToInt32(jPost["mi"]), jPost["urid"].ToString(), Convert.ToInt32(jPost["point"]));
                 }
 
                 if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
@@ -297,11 +337,24 @@ namespace ZumNet.Web.Controllers
 
                 using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
                 {
-                    svcRt = bb.DelBoardMessage(iFolderId, Convert.ToInt32(Session["DNID"]), jPost["xf"].ToString(), jPost["mi"].ToString(), Convert.ToInt32(jPost["urid"]));
+                    if (jPost["xf"].ToString() == "anonymous")
+                    {
+                        svcRt = bb.GetAnonyMsgPwd(jPost["mi"].ToString(), jPost["xf"].ToString());
+
+                        if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                        else if (jPost["pwd"].ToString() != svcRt.ResultDataString) strView = "NO" + Resources.Global.Password_NotMatch;
+
+                        svcRt = null;
+                    }
+
+                    if (strView == "") svcRt = bb.DelBoardMessage(iFolderId, Convert.ToInt32(Session["DNID"]), jPost["xf"].ToString(), jPost["mi"].ToString(), Convert.ToInt32(jPost["urid"]));
                 }
 
-                if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
-                else strView = "OK";
+                if (strView == "")
+                {
+                    if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                    else strView = "OK";
+                }   
             }
 
             return strView;
@@ -334,15 +387,33 @@ namespace ZumNet.Web.Controllers
                         return "필수값 누락!";
                     }
 
-                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;                    
+                    int iSeqId = StringHelper.SafeInt(jPost["seqid"].ToString());                    
 
                     using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
                     {
-                        svcRt = bb.SetBoardMsgComment(jPost["xfalias"].ToString(), Convert.ToInt32(jPost["msgid"]), Convert.ToInt32(jPost["seqid"]), jPost["creurid"].ToString(), jPost["creur"].ToString(), jPost["comment"].ToString(), "");
+                        if (jPost["xfalias"].ToString() == "anonymous")
+                        {
+                            if (iSeqId > 0 && jPost.ContainsKey("prevpwd"))
+                            {
+                                svcRt = bb.GetCommentMessagePassword(jPost["msgid"].ToString(), jPost["xfalias"].ToString(), iSeqId);
+
+                                if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                                else if (jPost["prevpwd"].ToString() != svcRt.ResultDataString) strView = "NO" + Resources.Global.Password_NotMatch;
+
+                                svcRt = null;
+                            }
+
+                            if (strView == "") svcRt = bb.SetAnonyMsgComment(jPost["xfalias"].ToString(), jPost["msgid"].ToString(), iSeqId, jPost["creur"].ToString(), jPost["pwd"].ToString(), jPost["comment"].ToString());
+                        } 
+                        else svcRt = bb.SetBoardMsgComment(jPost["xfalias"].ToString(), Convert.ToInt32(jPost["msgid"]), iSeqId, jPost["creurid"].ToString(), jPost["creur"].ToString(), jPost["comment"].ToString(), "");
                     }
 
-                    if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
-                    else strView = "OK";
+                    if (strView == "")
+                    {
+                        if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                        else strView = "OK";
+                    }                        
                 }
                 catch(Exception ex)
                 {
@@ -383,11 +454,73 @@ namespace ZumNet.Web.Controllers
 
                     using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
                     {
-                        svcRt = bb.DeleteBoardMsgComment(jPost["xfalias"].ToString(), jPost["msgid"].ToString(), jPost["seqid"].ToString());
+                        if (jPost["xfalias"].ToString() == "anonymous")
+                        {
+                            svcRt = bb.GetCommentMessagePassword(jPost["msgid"].ToString(), jPost["xfalias"].ToString(), StringHelper.SafeInt(jPost["seqid"].ToString()));
+
+                            if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                            else if (jPost["pwd"].ToString() != svcRt.ResultDataString) strView = "NO" + Resources.Global.Password_NotMatch;
+
+                            svcRt = null;
+                        }
+
+                        if (strView == "") svcRt = bb.DeleteBoardMsgComment(jPost["xfalias"].ToString(), jPost["msgid"].ToString(), jPost["seqid"].ToString());
+                    }
+
+                    if (strView == "")
+                    {
+                        if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                        else strView = "OK";
+                    }   
+                }
+                catch (Exception ex)
+                {
+                    strView = ex.Message;
+                }
+            }
+
+            return strView;
+        }
+
+        /// <summary>
+        /// 댓글 비밀번호 확인
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CheckCommentPwd()
+        {
+            string strView = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0)
+                    {
+                        return "전송 데이터 누락!";
+                    }
+                    else if (StringHelper.SafeString(jPost["xfalias"]) == "" || StringHelper.SafeString(jPost["msgid"]) == "" || StringHelper.SafeString(jPost["seqid"]) == "")
+                    {
+                        return "필수값 누락!";
+                    }
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        svcRt = bb.GetCommentMessagePassword(jPost["msgid"].ToString(), jPost["xfalias"].ToString(), StringHelper.SafeInt(jPost["seqid"].ToString()));
                     }
 
                     if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
-                    else strView = "OK";
+                    else
+                    {
+                        if (jPost["pwd"].ToString() != svcRt.ResultDataString) strView = "NO" + Resources.Global.Password_NotMatch;
+                        else strView = "OK"; 
+                    }
                 }
                 catch (Exception ex)
                 {

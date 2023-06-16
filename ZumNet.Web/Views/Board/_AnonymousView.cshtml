@@ -1,0 +1,77 @@
+﻿@using System.Data;
+@if (ViewBag.BoardList != null && ViewBag.BoardList.Count > 0)
+{
+    foreach (DataRow row in ViewBag.BoardList)
+    {
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x" xf="@row["XFAlias"]" appid="@row["MessageID"]" acl="@row["AclKind"]" auth="">
+            <div class="wd-lg-6 wd-xl-5 text-sm-center pr-2">
+                <span class="flex-fill">@row["SeqID"]</span>
+            </div>
+
+            <div class="wd-92 flex-fill text-truncate d-flex align-items-center">
+                @if (Convert.ToInt32(row["Depth"]) > 0)
+                {
+                    for (int k = 1; k < Convert.ToInt32(row["Depth"]); k++)
+                    {
+                        <span class="px-1"></span>
+                    }
+                    <i class="fe-corner-down-right text-big text-warning font-weight-bold mx-1"></i>
+                }
+
+                @if (ZumNet.Web.Bc.CommonUtils.DateDiff(row["CreateDate"].ToString(), DateTime.Now.ToString()) <= 1)
+                {
+                    <img src="~/images/plugins/new.gif" alt="" class="mr-1" />
+                }
+                <a class="text-truncate" href="javascript:void(0)" onclick="_zw.mu.readMsg();">@row["Subject"].ToString()</a>
+                @if (Convert.ToInt32(row["CommentCount"]) > 0)
+                {
+                    <span class="badge badge-pill badge-outline-primary text-tiny ml-1 px-1">@row["CommentCount"].ToString()</span>
+                }
+            </div>
+
+            <div class="w-100 d-sm-none py-0"></div>
+
+            <div class="wd-99 wd-lg-45 wd-xl-40 d-flex">
+                <div class="wd-8 d-sm-none"></div>
+                @if (Convert.ToInt32(row["Depth"]) > 0)
+                {
+                    <div class="d-sm-none">
+                        <span class="d-inline-block">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        @for (int k = 0; k < Convert.ToInt32(row["Depth"]); k++)
+                        {
+                            <span class="d-inline-block">&nbsp;</span>
+                        }
+                    </div>
+                }
+                @if (row["HasAttachFile"].ToString() != "0")
+                {
+                    <div class="wd-15 wd-lg-20 wd-xl-15 text-sm-center">
+                        <a href="javascript:void(0)" class="text-blue"><i class="fe-paperclip"></i></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="wd-15 wd-lg-20 wd-xl-15"></div>
+                }
+
+                <div class="wd-45 wd-lg-50 wd-xl-50 t-sm text-sm-center">
+                    <span class="">@ZumNet.Web.Bc.CommonUtils.LvDate(row["CreateDate"].ToString())</span>
+                </div>
+
+                <div class="wd-lg-15 wd-xl-10 text-danger text-center text-truncate">
+                    <span class="">@row["EvalCount"]</span>
+                </div>
+
+                <div class="text-right text-pink flex-fill pr-1">
+                    <span class="">@row["ViewCount"]</span>
+                </div>
+            </div>
+        </li>
+    }
+}
+else
+{
+    <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x">
+        <div class="w-100 text-center pt-3">@Resources.Global.NoItemShow</div>
+    </li>
+}

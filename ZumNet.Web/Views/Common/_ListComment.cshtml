@@ -20,60 +20,159 @@
 
         return String.Format("<img src=\"data:{0};base64,{1}\" alt=\"User Image\" class=\"mr-3 rounded-circle{2}\"  style=\"height: 2.5rem\" alt=\"user\">", imageFormat, base64, imageOpacity);
     }
+
+    private string GetReactState()
+    {
+        string rt = "far fa-heart";
+        if (ViewBag.R.app["react"] != null && ViewBag.R.app["react"]["acttype"] != null && ViewBag.R.app["react"]["acttype"] == "like")
+        {
+            rt = "fas fa-heart";
+        }
+        return rt;
+    }
 }
 <div class="container-p-x my-3">
-    <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.R.app["cmntcount"]</span></h6>
-    <div class="bg-lighter border px-3 py-2">
-        <div id="__CommentList">
-            @if (Convert.ToInt32(ViewBag.R.app["cmntcount"]) > 0)
-            {
-                foreach (var j in ViewBag.R.app["cmntlist"])
+    @if (ViewBag.R.xfalias == "anonymous")
+    {
+        <h6 class="mb-2">
+            <a class="mr-3" href="javascript://" onclick="_zw.mu.setLike();" title="@Resources.Global.Like"><i class="@GetReactState() text-danger"></i> @ViewBag.R.app["evalcount"]</a>
+            <i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.R.app["cmntcount"]</span>
+        </h6>
+        <div class="bg-lighter border px-3 py-2">
+            <div id="__CommentList">
+                @if (Convert.ToInt32(ViewBag.R.app["cmntcount"]) > 0)
                 {
-                    <div class="media" data-for="comment_@j["seqid"]">
-                        @Html.Raw(GetUserImage(j["creurcn"].ToString()))
-                        <div class="media-body">
-                            <div class="d-flex justify-content-between">
-                                <div class="d-flex">
-                                    <div class="font-weight-bold mr-3" data-column="Creator">@j["creur"]</div><span class="d-none" data-column="CreatorID">@j["creurid"]</span>
-                                    <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(j["credate"].ToString())</div>
-                                </div>
-                                <div>
-                                    @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString())
-                                    {
+                    foreach (var j in ViewBag.R.app["cmntlist"])
+                    {
+                        <div class="media" data-for="comment_@j["seqid"]">
+                            @Html.Raw(GetUserImage(j["creurcn"].ToString()))
+                            <div class="media-body">
+                                <div class="d-flex justify-content-between">
+                                    <div class="d-flex">
+                                        <div class="font-weight-bold mr-3">@j["creur"]</div>
+                                        <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(j["credate"].ToString())</div>
+                                    </div>
+                                    <div>
                                         <a class="text-dark mr-2" href="javascript:void(0)" onclick="_zw.mu.editComment(@j["seqid"]);">@Resources.Global.Modify</a>
-                                    }
-                                    @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
-                                    {
                                         <a class="text-muted" href="javascript:void(0)" onclick="_zw.mu.deleteComment(@j["seqid"]);">@Resources.Global.Delete</a>
-                                    }
+                                    </div>
                                 </div>
-                            </div>
-                            <p class="mt-1 mb-3">@Html.Raw(ZumNet.Framework.Util.StringHelper.ReplaceReply(j["comment"].ToString()))</p>
-                            <div class="d-none mt-1 mb-3">
-                                <div>
-                                    <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment">@j["comment"]</textarea>
-                                </div>
-                                <div class="text-right mt-2">
-                                    <button class="btn btn-default" onclick="_zw.mu.cancelComment(@j["seqid"]);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Cancel">@Resources.Global.Cancel</button>
-                                    <button class="btn btn-primary" onclick="_zw.mu.setComment(@j["seqid"]);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify">@Resources.Global.Modify</button>
+                                <p class="mt-1 mb-3">@Html.Raw(ZumNet.Framework.Util.StringHelper.ReplaceReply(j["comment"].ToString()))</p>
+                                <div class="d-none mt-1 mb-3">
+                                    <div class="form-row">
+                                        <div class="col-6 col-sm-5 col-md-3">
+                                            <input type="text" class="form-control" data-column="Creator" placeholder="@j["creur"]" /><span class="d-none" data-column="CreatorID">@j["creurid"]</span>
+                                        </div>
+                                        <div class="col-6 col-sm-5 col-md-3">
+                                            <div class="text-muted pt-2">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(j["credate"].ToString())</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment">@j["comment"]</textarea>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <div style="width: 16rem">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">@Resources.Global.Password_New</span>
+                                                </div>
+                                                <input type="password" class="form-control" data-column="Password" maxlength="10" placeholder="@Resources.Global.Password" />
+                                                <div class="input-group-append" data-password="false">
+                                                    <span class="input-group-text fas fa-eye password-eye bg-light"></span>
+                                                </div>
+                                                <input type="hidden" data-column="PrevPassword" />
+                                            </div>
+                                        </div>
+                                        <div class="text-right mt-2">
+                                            <button class="btn btn-default" onclick="_zw.mu.cancelComment(@j["seqid"]);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Cancel">@Resources.Global.Cancel</button>
+                                            <button class="btn btn-primary" onclick="_zw.mu.setComment(@j["seqid"]);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify">@Resources.Global.Modify</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 }
-            }
-            <div class="" data-for="comment_0">
-                <div class="ml-2 mb-1">
-                    <span data-column="Creator">@ViewBag.R.current.user</span><span class="d-none" data-column="CreatorID">@ViewBag.R.current.urid</span>
-                </div>
-                <div>
-                    <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment"></textarea>
-                </div>
-                <div class="text-right mt-2">
-                    <button class="btn btn-primary" onclick="_zw.mu.setComment(0);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register">@Resources.Global.Register</button>
+                <div class="mt-2" data-for="comment_0">
+                    <div class="mb-1 form-row">
+                        @*<span data-column="Creator">@ViewBag.R.current.user</span><span class="d-none" data-column="CreatorID">@ViewBag.R.current.urid</span>*@
+                        <div class="col-6 col-sm-5 col-md-3">
+                            <input type="text" class="form-control" data-column="Creator" placeholder="@Resources.Global.Name" />
+                            <input type="hidden" data-column="CreatorID" value="" />
+                        </div>
+                        
+                        <div class="col-6 col-sm-5 col-md-3 input-group">
+                            <input type="password" class="form-control" data-column="Password" maxlength="10" placeholder="@Resources.Global.Password" />
+                            <div class="input-group-append" data-password="false">
+                                <span class="input-group-text fas fa-eye password-eye bg-light"></span>
+                            </div>
+                        </div>                        
+                    </div>
+                    <div>
+                        <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment"></textarea>
+                    </div>
+                    <div class="text-right mt-2">
+                        <button class="btn btn-primary" onclick="_zw.mu.setComment(0);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register">@Resources.Global.Register</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <h6 class="mb-2"><i class="far fa-comment-dots"></i> @Resources.Global.Comment <span class="text-danger">@ViewBag.R.app["cmntcount"]</span></h6>
+        <div class="bg-lighter border px-3 py-2">
+            <div id="__CommentList">
+                @if (Convert.ToInt32(ViewBag.R.app["cmntcount"]) > 0)
+                {
+                    foreach (var j in ViewBag.R.app["cmntlist"])
+                    {
+                        <div class="media" data-for="comment_@j["seqid"]">
+                            @Html.Raw(GetUserImage(j["creurcn"].ToString()))
+                            <div class="media-body">
+                                <div class="d-flex justify-content-between">
+                                    <div class="d-flex">
+                                        <div class="font-weight-bold mr-3" data-column="Creator">@j["creur"]</div><span class="d-none" data-column="CreatorID">@j["creurid"]</span>
+                                        <div class="text-muted">@ZumNet.Web.Bc.CommonUtils.CheckDateTime(j["credate"].ToString())</div>
+                                    </div>
+                                    <div>
+                                        @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString())
+                                        {
+                                            <a class="text-dark mr-2" href="javascript:void(0)" onclick="_zw.mu.editComment(@j["seqid"]);">@Resources.Global.Modify</a>
+                                        }
+                                        @if (j["creurid"].ToString() == ViewBag.R.current["urid"].ToString() || ViewBag.R.current["operator"].ToString() == "Y")
+                                        {
+                                            <a class="text-muted" href="javascript:void(0)" onclick="_zw.mu.deleteComment(@j["seqid"]);">@Resources.Global.Delete</a>
+                                        }
+                                    </div>
+                                </div>
+                                <p class="mt-1 mb-3">@Html.Raw(ZumNet.Framework.Util.StringHelper.ReplaceReply(j["comment"].ToString()))</p>
+                                <div class="d-none mt-1 mb-3">
+                                    <div>
+                                        <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment">@j["comment"]</textarea>
+                                    </div>
+                                    <div class="text-right mt-2">
+                                        <button class="btn btn-default" onclick="_zw.mu.cancelComment(@j["seqid"]);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Cancel">@Resources.Global.Cancel</button>
+                                        <button class="btn btn-primary" onclick="_zw.mu.setComment(@j["seqid"]);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Modify">@Resources.Global.Modify</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                <div class="" data-for="comment_0">
+                    <div class="ml-2 mb-1">
+                        <span data-column="Creator">@ViewBag.R.current.user</span><span class="d-none" data-column="CreatorID">@ViewBag.R.current.urid</span>
+                    </div>
+                    <div>
+                        <textarea class="form-control bootstrap-maxlength" rows="3" maxlength="500" data-column="Comment"></textarea>
+                    </div>
+                    <div class="text-right mt-2">
+                        <button class="btn btn-primary" onclick="_zw.mu.setComment(0);" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register">@Resources.Global.Register</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 

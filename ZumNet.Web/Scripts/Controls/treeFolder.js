@@ -219,7 +219,21 @@ $(function () {
                         bootbox.alert('준비중!');
                         break;
                     case "anonymous":
-                        bootbox.alert('준비중!');
+                        if (_zw.V.current.page.toLowerCase() == '/board/anonymous') {
+                            _zw.V.ot = n.li_attr.objecttype;
+                            _zw.V.alias = n.li_attr.alias;
+                            _zw.V.xfalias = n.li_attr.xfalias;
+                            _zw.V.fdid = vId[vId.length - 1];
+                            _zw.V.current.acl = n.li_attr.acl;
+                            _zw.V.opnode = n.id;
+                            _zw.V.ttl = ttl;
+
+                            _zw.fn.initLv(_zw.V.fdid);
+                            _zw.fn.loadList();
+
+                        } else {
+                            window.location.href = '/Board/Anonymous?qi=' + encodeURIComponent(encQi);
+                        }
                         break;
                     case "linksite":
                         bootbox.alert('준비중!');

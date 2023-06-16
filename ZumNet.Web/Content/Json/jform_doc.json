@@ -27,6 +27,7 @@
   "attachsize": "",
   "cmntcount": "",
   "viewcount": "",
+  "evalcount": "",
   "seqid": "",
   "depth": "",
   "topline": "",
@@ -38,5 +39,10 @@
   "replylist": [],
   "cmntlist": [],
   "acllist": [],
-  "ealine": []
+  "ealine": [],
+  "react": {
+    "acttype": "",
+    "point": "",
+    "actdate": ""
   }
+}

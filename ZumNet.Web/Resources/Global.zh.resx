@@ -408,6 +408,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>下班</value>
   </data>
+  <data name="Like" xml:space="preserve">
+    <value>喜欢</value>
+  </data>
   <data name="List" xml:space="preserve">
     <value>列表</value>
   </data>
@@ -478,13 +481,16 @@
     <value>更改密码</value>
   </data>
   <data name="Password_Confirm" xml:space="preserve">
-    <value>新密码确认</value>
+    <value>确认密码</value>
   </data>
   <data name="Password_Current" xml:space="preserve">
     <value>当前密码</value>
   </data>
   <data name="Password_New" xml:space="preserve">
     <value>新密码</value>
+  </data>
+  <data name="Password_NotMatch" xml:space="preserve">
+    <value>密码不匹配</value>
   </data>
   <data name="Permission" xml:space="preserve">
     <value>你没</value>

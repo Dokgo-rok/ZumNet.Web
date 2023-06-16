@@ -408,6 +408,9 @@
   <data name="LeaveWork" xml:space="preserve">
     <value>퇴근</value>
   </data>
+  <data name="Like" xml:space="preserve">
+    <value>좋아요</value>
+  </data>
   <data name="List" xml:space="preserve">
     <value>목록</value>
   </data>
@@ -478,13 +481,16 @@
     <value>비밀번호 변경</value>
   </data>
   <data name="Password_Confirm" xml:space="preserve">
-    <value>새 비밀번호 확인</value>
+    <value>비밀번호 확인</value>
   </data>
   <data name="Password_Current" xml:space="preserve">
     <value>현재 비밀번호</value>
   </data>
   <data name="Password_New" xml:space="preserve">
     <value>새 비밀번호</value>
+  </data>
+  <data name="Password_NotMatch" xml:space="preserve">
+    <value>비밀번호가 일치하지 않습니다.</value>
   </data>
   <data name="Permission" xml:space="preserve">
     <value>권한</value>

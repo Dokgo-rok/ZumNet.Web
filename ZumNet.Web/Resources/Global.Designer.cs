@@ -934,6 +934,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Like과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Like {
+            get {
+                return ResourceManager.GetString("Like", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   List과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string List {
@@ -1141,7 +1150,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   New password confirmation과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Confirm password과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Password_Confirm {
             get {
@@ -1164,6 +1173,15 @@ namespace Resources {
         public static string Password_New {
             get {
                 return ResourceManager.GetString("Password_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Passwords do not match과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Password_NotMatch {
+            get {
+                return ResourceManager.GetString("Password_NotMatch", resourceCulture);
             }
         }
         

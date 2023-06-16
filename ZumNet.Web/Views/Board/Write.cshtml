@@ -14,6 +14,7 @@
     {
         Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
     }
+    string sPartialView = ViewBag.R.xfalias == "anonymous" ? "_AnonymousWrite" : "_Write";
 
     //첨부파일 임시 저장 폴더
     string sUploadPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["LogonID"].ToString();
@@ -117,7 +118,7 @@
 @if (ViewBag.R.wnd.ToString() == "popup")
 {
     <div class="" id="__FormView">
-        @Html.Partial("_Write")
+        @Html.Partial(sPartialView)
     </div>
 }
 else
@@ -134,7 +135,7 @@ else
         <!-- / sidebox -->
         <!-- content -->
         <div class="d-flex flex-column w-100" id="__FormView">
-            @Html.Partial("_Write")
+            @Html.Partial(sPartialView)
         </div>
         <!-- / content -->
 

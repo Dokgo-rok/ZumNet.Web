@@ -14,7 +14,7 @@
     {
         Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
     }
-
+    string sPartialView = ViewBag.R.xfalias == "anonymous" ? "_AnonymousRead" : "_Read";
 
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
@@ -87,7 +87,7 @@
 @if (ViewBag.R.wnd.ToString() == "popup")
 {
     <div class="" id="__FormView">
-        @Html.Partial("_Read")
+        @Html.Partial(sPartialView)
     </div>
 }
 else
@@ -104,7 +104,7 @@ else
         <!-- / sidebox -->
         <!-- content -->
         <div class="d-flex flex-column w-100" id="__FormView">
-            @Html.Partial("_Read")
+            @Html.Partial(sPartialView)
         </div>
         <!-- / content -->
 

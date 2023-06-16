@@ -183,7 +183,7 @@
     z-index: 1100 !important;
 }
 
-/* ajax loader, workstatus-modal, left-worktime, schedule-repeat-setting, basic-uploader */
+/* ajax loader, workstatus-modal, left-worktime, schedule-repeat-setting, basic-uploader, password-eye */
 .modal-ajaxloader .modal-content {
     box-shadow: 1px 3px 10px rgba(0,0,0,0.5);
     border-radius: .45rem;
@@ -221,6 +221,26 @@
         padding: .5rem 1rem;
         margin-bottom: 1rem;
     }
+}
+
+.password-eye {
+    background-color: #efefef;
+    border: 1px solid #dddddd;
+    border-left: 0;
+}
+
+    .password-eye:before {
+        font-family: feather !important;
+        content: "\e86a";
+        font-style: normal;
+        font-weight: 400;
+        font-variant: normal;
+        line-height: 1.2;
+        font-size: 16px;
+    }
+
+.show-password .password-eye:before {
+    content: "\e86e";
 }
 
 

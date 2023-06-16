@@ -233,12 +233,45 @@ $(function () {
         var ct = $(this).attr('data-for');
 
         if (ct == 'board') {
-            _zw.V.mode = '';
-            _zw.V.wnd = 'popup';
-            _zw.V.appid = 0;
-            //_zw.V.xfalias = _zw.V.xfalias == '' ? 'bbs' : _zw.V.xfalias;
+            var j = {};
+            j["M"] = '';
+            j["wnd"] = 'popup';
+            j["ct"] = _zw.V.ct;
+            j["ctalias"] = _zw.V.ctalias;
+            j["ot"] = _zw.V.ot;
+            j["alias"] = _zw.V.alias;
+            j["xfalias"] = _zw.V.xfalias;
+            j["fdid"] = _zw.V.fdid;
+            j["appid"] = 0;
+            j["acl"] = _zw.V.current.acl;
+            j["appacl"] = _zw.V.current.appacl;
+            j["opnode"] = _zw.V.opnode;
+            j["ft"] = _zw.V.ft;
+            j["ttl"] = ''; //_zw.V.ttl;
 
-            var postData = _zw.fn.getAppQuery(_zw.V.fdid);
+            j["tgt"] = _zw.V.fdid;
+            j["page"] = _zw.V.lv.page;
+            j["count"] = _zw.V.lv.count;
+            j["sort"] = _zw.V.lv.sort;
+            j["sortdir"] = _zw.V.lv.sortdir;
+            j["search"] = _zw.V.lv.search;
+            j["searchtext"] = _zw.V.lv.searchtext;
+            j["start"] = _zw.V.lv.start;
+            j["end"] = _zw.V.lv.end;
+            j["basesort"] = _zw.V.lv.basesort;
+            j["boundary"] = _zw.V.lv.boundary;
+
+            j["cd1"] = _zw.V.lv.cd1;
+            j["cd2"] = _zw.V.lv.cd2;
+
+            //_zw.V.mode = '';
+            //_zw.V.wnd = 'popup';
+            //_zw.V.appid = 0;
+            ////_zw.V.xfalias = _zw.V.xfalias == '' ? 'bbs' : _zw.V.xfalias;
+
+            //var postData = _zw.fn.getAppQuery(_zw.V.fdid); console.log(postData); return
+            var postData = JSON.stringify(j);
+
             var url = '/Board/Write?qi=' + encodeURIComponent(_zw.base64.encode(postData));
             _zw.ut.openWnd(url, "popupform", 800, 800, "resize");
 
@@ -763,10 +796,27 @@ $(function () {
             jPost["msgid"] = _zw.V.appid;
             jPost["seqid"] = seq;
             jPost["creurid"] = p.find('[data-column="CreatorID"]').text();
-            jPost["creur"] = p.find('[data-column="Creator"]').text();
             jPost["comment"] = txt.val();
 
-            //alert(JSON.stringify(jPost)); return
+            if (_zw.V.xfalias == 'anonymous') {
+                var pwd = p.find('[data-column="Password"]');
+                var min = 2, max = pwd.attr('maxlength')
+
+                if (pwd.val().length < min || pwd.val().length > max) {
+                    bootbox.alert("비밀번호는 " + min.toString() + "자리 ~ " + max.toString() + "자리 이내로 입력하십시오.", function () { pwd.focus(); }); return false;
+                } else if (pwd.val().search(/\s/) != -1) {
+                    bootbox.alert("비밀번호는 공백 없이 입력하십시오.", function () { pwd.focus(); }); return false;
+                }
+                jPost["pwd"] = pwd.val();
+                var prevPwd = p.find('input[type="hidden"][data-column="PrevPassword"]');
+                if (prevPwd.length > 0) jPost["prevpwd"] = prevPwd.val();
+
+                jPost["creur"] = $.trim(p.find('[data-column="Creator"]').val()) == '' ? '익명' : p.find('[data-column="Creator"]').val();
+
+            } else {
+                jPost["creur"] = p.find('[data-column="Creator"]').text();
+            }
+            //console.log(jPost); return
 
             $.ajax({
                 type: "POST",
@@ -778,43 +828,124 @@ $(function () {
                     if (res.substr(0, 2) == "OK") {
                         _zw.mu.readMsg('reload');
 
-                    } else bootbox.alert(res);
+                    } else {
+                        if (res.substr(0, 2) == "NO") bootbox.alert(res.substr(2));
+                        else bootbox.alert(res);
+                    }
                 }
             });
         },
         "editComment": function (seq) {
             var el = event.target ? event.target : event.srcElement;
-            $(el).parent().hide();
 
-            var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
-            p.find('p').hide();
-            p.find('p').next().removeClass('d-none');
+            if (_zw.V.xfalias == 'anonymous') {
+                bootbox.prompt({
+                    title: '비밀번호를 입력하십시오.',
+                    inputType: 'password',
+                    callback: function (result) {
+                        if (result && result != '') {
+                            $.ajax({
+                                type: "POST",
+                                url: "/Common/CheckCommentPwd",
+                                data: '{xfalias:"' + _zw.V.xfalias + '",msgid:"' + _zw.V.appid + '",seqid:"' + seq + '",pwd:"' + result + '"}',
+                                success: function (res) {
+                                    if (res.substr(0, 2) == "OK") {
+                                        
+                                        var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
+                                        p.find('input[type="hidden"][data-column="PrevPassword"]').val(result);
+                                        p.find('input[type="password"]').val(result);
+                                        p.find('p').hide();
+                                        p.find('p').prev().removeClass('d-flex').addClass('d-none');
+                                        p.find('p').next().removeClass('d-none');
+
+                                    }  else {
+                                        if (res.substr(0, 2) == "NO") bootbox.alert(res.substr(2));
+                                        else bootbox.alert(res);
+                                    }
+                                },
+                                beforeSend: function () { } //로딩 X
+                            });
+                        }
+                    }
+                });
+            } else {
+                $(el).parent().hide();
+
+                var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
+                p.find('p').hide();
+                p.find('p').next().removeClass('d-none');
+            }
         },
         "cancelComment": function (seq) {
             var el = event.target ? event.target : event.srcElement;
-            var p = $(el).parent().parent();
+            var p = _zw.V.xfalias == 'anonymous' ? $(el).parent().parent().parent() : $(el).parent().parent();
             p.addClass('d-none');
             p.prev().show();
-            p.prev().prev().children().last().show();
+            if (_zw.V.xfalias == 'anonymous') p.prev().prev().removeClass('d-none').addClass('d-flex');
+            else p.prev().prev().children().last().show();
         },
         "deleteComment": function (seq) {
             var p = $('#__CommentList div[data-for="comment_' + seq.toString() + '"]');
 
-            bootbox.confirm("삭제하시겠습니까?", function (rt) {
-                if (rt) {
-                    $.ajax({
-                        type: "POST",
-                        url: "/Common/deleteComment",
-                        data: '{xfalias:"' + _zw.V.xfalias + '",msgid:"' + _zw.V.appid + '",seqid:"' + seq.toString() + '"}',
-                        success: function (res) {
-                            if (res.substr(0, 2) == "OK") {
-                                _zw.mu.readMsg('reload');
+            if (_zw.V.xfalias == 'anonymous') {
+                bootbox.prompt({
+                    title: '삭제하시겠습니까? 비밀번호를 입력하십시오.',
+                    inputType: 'password',
+                    callback: function (result) {
+                        if (result && result != '') {
+                            $.ajax({
+                                type: "POST",
+                                url: "/Common/deleteComment",
+                                data: '{xfalias:"' + _zw.V.xfalias + '",msgid:"' + _zw.V.appid + '",seqid:"' + seq + '",pwd:"' + result + '"}',
+                                success: function (res) {
+                                    if (res.substr(0, 2) == "OK") {
+                                        _zw.mu.readMsg('reload');
 
-                            } else bootbox.alert(res);
+                                    } else {
+                                        if (res.substr(0, 2) == "NO") bootbox.alert(res.substr(2));
+                                        else bootbox.alert(res);
+                                    }
+                                }
+                            });
                         }
-                    });
-                }
-            });
+                    }
+                });
+            } else {
+                bootbox.confirm("삭제하시겠습니까?", function (rt) {
+                    if (rt) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Common/deleteComment",
+                            data: '{xfalias:"' + _zw.V.xfalias + '",msgid:"' + _zw.V.appid + '",seqid:"' + seq.toString() + '"}',
+                            success: function (res) {
+                                if (res.substr(0, 2) == "OK") {
+                                    _zw.mu.readMsg('reload');
+
+                                } else bootbox.alert(res);
+                            }
+                        });
+                    }
+                });
+            }
+        },
+        "setLike": function () {
+
+            if (_zw.V.app.react) {
+                var sPoint = (_zw.V.app.react.acttype != '' && _zw.V.app.react.actdate != '') ? '0' : '1';
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Common/SetLike",
+                    data: '{xf:"' + _zw.V.xfalias + '",point:"' + sPoint + '",mi:"' + _zw.V.appid + '",urid:"' + _zw.V.current.urid + '"}',
+                    success: function (res) {
+                        if (res.substr(0, 2) == "OK") {
+                            _zw.mu.readMsg('reload');
+
+                        } else bootbox.alert(res);
+                    },
+                    beforeSend: function () { } //로딩 X
+                });
+            }            
         },
         "preview": function () {
             var url = "/Common/Preview?ctalias=" + _zw.V.ctalias + "&xfalias=" + _zw.V.xfalias;
@@ -2119,25 +2250,27 @@ $(function () {
         "checkPwd": function (id, pw, min, max, complex) {
             min = min || 1; max = max || 20;
             complex = complex || 2; //2 : 영문, 숫자, 3 : 특수문자 포함, 그외 : 대문자 포함
-            
+
             var number = pw.search(/[0-9]/g),
                 english = pw.search(/[a-z]/ig),
                 spece = pw.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
             var reg = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
             if (pw.length < min || pw.length > max) {
-                return min.toString() + "자리 ~ " + max.toString() + "자리 이내로 입력해주세요.";
+                return min.toString() + "자리 ~ " + max.toString() + "자리 이내로 입력하십시오.";
             } else if (pw.search(/\s/) != -1) {
-                return "비밀번호는 공백 없이 입력해주세요.";
+                return "비밀번호는 공백 없이 입력하십시오.";
             }
 
-            if (complex == 2) {//영문 + 숫자
+            if (complex == 1) {//임의
+
+            }  else if (complex == 2) {//영문 + 숫자
                 if (number < 0 || english < 0) {
-                    return "영문,숫자를 혼합하여 입력해주세요.";
+                    return "영문,숫자를 혼합하여 입력하십시오.";
                 }
             } else if (complex == 3) {//영문 + 숫자 + 특수문자
                 if (number < 0 || english < 0 || spece < 0) {
-                    return "영문,숫자,특수문자를 혼합하여 입력해주세요.";
+                    return "영문,숫자,특수문자를 혼합하여 입력하십시오.";
                 }
             } else {
                 if (false === reg.test(pw)) {
