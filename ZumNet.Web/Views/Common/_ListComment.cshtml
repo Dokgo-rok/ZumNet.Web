@@ -1,5 +1,5 @@
 ﻿@functions {
-    private string GetUserImage(string logonId)
+    private string GetUserImageEx(string logonId)
     {
         string imagepath = Server.MapPath("~/Storage/cresyn/PersonPhoto/" + logonId + ".jpg");
         string imageFormat = "image/jpg";
@@ -19,6 +19,21 @@
         var base64 = Convert.ToBase64String(byData);
 
         return String.Format("<img src=\"data:{0};base64,{1}\" alt=\"User Image\" class=\"mr-3 rounded-circle{2}\"  style=\"height: 2.5rem\" alt=\"user\">", imageFormat, base64, imageOpacity);
+    }
+
+    private string GetUserImage(string logonId)
+    {
+        string imagepath = "/Storage/cresyn/PersonPhoto/" + logonId + ".jpg";
+        string imageOpacity = "";
+
+        if (!File.Exists(Server.MapPath(imagepath)))
+        {
+            imagepath = "/images/plugins/user.png";
+            imageOpacity = " opacity-50";
+        }
+
+        //return String.Format("<span><img src=\"{0}\" alt=\"User Image\" class=\"rounded-circle\" style=\"width: 30px; height: 30px\" onerror=\"this.parentNode.className='h2 fas fa-user-circle mr-2 mb-0 align-middle'\"></span>", imagepath);
+        return String.Format("<img src=\"{0}\" alt=\"User Image\" class=\"mr-3 rounded-circle{1}\"  style=\"height: 2.5rem\" alt=\"user\">", imagepath, imageOpacity);
     }
 
     private string GetReactState()
