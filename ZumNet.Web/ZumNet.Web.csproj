@@ -397,6 +397,8 @@
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
     <Content Include="Content\ce.css" />
+    <Content Include="Content\Forms\CRESYN\FORM_CANCELREQUEST_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PRODUCTIONREQUEST_V1.xsl" />
     <Content Include="Content\notice.css" />
     <Content Include="Content\env.css" />
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLECONTROL_V1.xsl" />
@@ -2185,11 +2187,13 @@
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZVACPLAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CANCELREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CERTIFICATIONDOCUMENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPLACEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPPMODIFY.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CODCHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_COMPLAINTREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_COMPLETEPRODUCTTEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
@@ -2206,6 +2210,7 @@
     <Content Include="Scripts\EA\Forms\FORM_DEVPRODUCTLIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_DEVSAMPLEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_DISCONTINUENOTICE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_DISTRIBUTIONEXP.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCCAREER.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCDISABLESECU.js" />
     <Content Include="Scripts\EA\Forms\FORM_DOCSAFEREQUEST.js" />
@@ -2281,6 +2286,7 @@
     <Content Include="Scripts\EA\Forms\FORM_PRIMECOSTESTIMATECHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_PROCESSFMEAREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODRELEASEREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PRODUCTIONREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEBILL.js" />
@@ -2310,6 +2316,7 @@
     <Content Include="Scripts\EA\Forms\FORM_STANDARDAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDCERTIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDDATA.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SUGGESTPAPER.js" />
     <Content Include="Scripts\EA\Forms\FORM_SWSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMADDREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMDELETE.js" />
