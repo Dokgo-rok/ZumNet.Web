@@ -1,0 +1,200 @@
+﻿@using ZumNet.Framework.Util;
+@{
+    string XCLS = StringHelper.SafeString(HttpContext.Current.Request["Xc"], "");
+    ViewBag.Title = (XCLS == "" ? "" : "(" + SecurityHelper.Base64Decode(XCLS) + ")") + "개발원가견적서";
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
+}
+@section Styles {
+    @Styles.Render("~/Content/grid-preview.css")
+}
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            var d = opener.document, p_mode = opener._zw.V.mode;
+
+            $('.z-ce-head .left').html($('.z-ce-head .left', d).html());
+            $('.z-ce-head .right').html($('.z-ce-head .right .float-right', d).html());
+            $('.z-ce-head .right table').css('width', '100%');
+
+            if (p_mode != '' && p_mode != 'read') {
+                $('.z-ce-head select').each(function () {
+                    var p = $('#' + $(this).attr('id'), d).children('option:selected'); //alert($(this).attr('id') + " : " + p.val())
+                    if (p.val() == '') $(this).parent().text('');
+                    else $(this).parent().text(p.text());
+
+                    if ($(this).parent().hasClass('cell-select')) $(this).parent().toggleClass('cell-select', 'cell-read');
+                });
+                $('.z-ce-head input').each(function () {
+                    if ($(this).prop('type') == 'hidden') $(this).remove();
+                    else {
+                        if ($(this).attr('data-zf-field') != 'DOCNUM' && $(this).attr('data-zf-field') != 'VER') $(this).parent().text($('.z-ce-head input[data-zf-ftype="' + $(this).attr('data-zf-ftype') + '"][data-zf-field="' + $(this).attr('data-zf-field') + '"]', d).val());
+                        if ($(this).parent().hasClass('cell-input')) $(this).parent().toggleClass('cell-input', 'cell-read');
+                    }
+                });
+                $('.z-ce-head .right a').each(function () {
+                    $(this).parent().text($(this).text());
+                });
+            }
+
+            $('.z-ce-body .grid .float-right').html($('.z-ce-body .right .float-right', d).html());
+
+            if (p_mode == '' || p_mode == 'read') {
+                $('.z-ce-body .left .z-grid-container').html($('.z-ce-body .left .z-grid-container', d).html());
+
+            } else {
+                var s = '';
+                $('.z-ce-body .left .z-grid-container .z-grid', d).each(function (idx, e) {
+                    if (idx == 0) s += '<table class="z-grid z-grid-bordered">';
+                    else s += '<table class="z-grid z-grid-bordered" style="margin-top: 24px">';
+
+                    if ($(this).find('colgroup').length > 0) s += '<colgroup>' + $(this).find('colgroup').html() + '</colgroup>';
+                    if ($(this).find('thead').length > 0) s += '<thead>' + $(this).find('thead').html() + '</thead>';
+
+                    s += renderRowHTML($(this), 'tbody');
+                    s += renderRowHTML($(this), 'tfoot');
+
+                    s += '</table>';
+                });
+                $('.z-ce-body .left .z-grid-container').html(s);
+            }
+
+            var gc = opener._zw.G.getColumns();
+            var gd = opener._zw.G.getData();
+
+            s = '';
+            for (var i in gd) {
+                s += '<tr><td class="text-center">' + (parseInt(i) + 1) + '</td>';
+                for (var x in gc) {
+                    if (gc[x].name != 'CKFLAG' && !gc[x].hidden) {
+                        s += '<td class="text-' + gc[x].align + '">' + (gd[i][gc[x].name] && gd[i][gc[x].name] != '' ? gd[i][gc[x].name] : '') + '</td>';
+                    }
+                }
+                s += '</tr>'
+            }
+
+            $('.z-ce-body .grid .z-grid-container tbody').html(s);
+
+            window.setTimeout(function () {
+                $('.layout-load').addClass('d-none');
+                $('.layout-content').removeClass('d-none');
+            }, 1000);
+            
+
+            function renderRowHTML(t, tag) {
+                var s = '';
+                if (t.find(tag).length > 0) {
+                    s += '<' + tag + '>';
+                    t.find(tag + ' tr').each(function () {
+                        s += '<tr' + ($(this).attr('class') !== undefined ? ' class="' + $(this).attr('class') + '"' : '') + '>';
+                        $(this).find('th, td').each(function (x, c) {
+                            var temp = c.tagName.toLowerCase();
+                            if (c.firstChild && c.firstChild.tagName) {
+                                s += '<' + temp + ' class="' + c.className;
+                                if (c.firstChild.tagName.toLowerCase() == 'select') s += ' text-center';
+                                else if (c.firstChild.className != '') s += ' ' + c.firstChild.className;
+                                if (c.firstChild.tagName.toLowerCase() == 'select') {
+                                    if ($(c.firstChild).children('option:selected').val() != '') s += '">' + $(c.firstChild).children('option:selected').text() + '</' + temp + '>';
+                                    else s += '"></' + temp + '>';
+                                } else s += '">' + c.firstChild.value + '</' + temp + '>';
+                            } else s += c.outerHTML;
+                        });
+                        s += '</tr>';
+                    });
+                    s += '</' + tag + '>';
+                }
+                return s;
+            }
+        });
+    </script>
+}
+<div class="layout-wrapper">
+    <div class="layout-inner">
+        <div class="layout-container">
+            <!-- Header -->
+            <div class="layout-navbar w-100">
+                <div class="float-right">
+                    <button class="btn btn-default" onclick="window.print();">&#128240; 인 쇄</button>
+                    <button class="btn btn-default" onclick="window.close();">&#10004; 닫 기</button>
+                </div>
+            </div>
+            <div class="layout-load"><div class="msg">&#8987; 미리보기 불러오는 중입니다!!</div></div>
+            <!-- / Header -->
+            <div class="layout-content d-none">
+                <table class="z-ce-layout">
+                    <tr class="z-ce-head">
+                        <td class="left"></td>
+                        <td class="middle">@ViewBag.TiTle</td>
+                        <td class="right"></td>
+                    </tr>
+                    <tr class="z-ce-body">
+                        <td class="left">
+                            <div class="float-left" style="padding: 8px 0 4px 10px">● 원가구성</div>
+                            <div class="float-right" style="padding: 8px 10px 4px 0">단위 : USD</div>
+                            <div class="z-grid-container"></div>
+                        </td>
+                        <td class="grid" colspan="2">
+                            <div class="float-left" style="padding: 8px 0 4px 10px">● 부품구성 (금형, 치공구 포함)</div>
+                            <div class="float-right" style="padding: 8px 10px 4px 0"></div>
+                            <div class="z-grid-container">
+                                <table class="z-grid z-grid-bordered">
+                                    <thead>
+                                        @if (XCLS == "회로") {
+                                        <tr class="info">
+                                            <th style="width: 2.5%" rowspan="2">No.</th>
+                                            <th style="width: 5.5%" rowspan="2">부문코드</th>
+                                            <th style="width: 3.5%" rowspan="2">부문<br />입력</th>
+                                            <th style="width: 8.5%" rowspan="2">품목번호</th>
+                                            <th style="width: 14%" rowspan="2">부품명</th>
+                                            <th style="width: 4.5%" rowspan="2">금형<br />CAVITY</th>
+                                            <th style="width: 11%" rowspan="2">규격</th>
+                                            <th style="width: 8%" rowspan="2">업체</th>
+                                            <th style="width: 3.5%" rowspan="2">내수<br />구분</th>
+                                            <th style="width: 12%" rowspan="2">산출내역</th>
+                                            <th style="width: 3.5%" rowspan="2">통화</th>
+                                            <th style="width: 3.5%" rowspan="2">단가</th>
+                                            <th style="width: 3.5%" rowspan="2">수량</th>
+                                            <th style="width: 3.5%" rowspan="2">합계</th>
+                                            <th style="width: 7%" colspan="2">합계(USD)</th>
+                                            <th style="width: 6%" colspan="2">SMT(점)</th>
+                                        </tr>
+                                        <tr class="info">
+                                            <th style="width: 3.5%">환율</th>
+                                            <th style="width: 3.5%">금액</th>
+                                            <th style="width: 3%">점수</th>
+                                            <th style="width: 3%">합계</th>
+                                        </tr>
+                                        } else {
+                                        <tr class="info">
+                                            <th style="width: 2.5%" rowspan="2">No.</th>
+                                            <th style="width: 5.5%" rowspan="2">부문코드</th>
+                                            <th style="width: 3.5%" rowspan="2">부문<br />입력</th>
+                                            <th style="width: 9%" rowspan="2">품목번호</th>
+                                            <th style="width: 16%" rowspan="2">부품명</th>
+                                            <th style="width: 4.5%" rowspan="2">금형<br />CAVITY</th>
+                                            <th style="width: 12%" rowspan="2">규격</th>
+                                            <th style="width: 8.5%" rowspan="2">업체</th>
+                                            <th style="width: 3.5%" rowspan="2">내수<br />구분</th>
+                                            <th style="width: 14%" rowspan="2">산출내역</th>
+                                            <th style="width: 3.5%" rowspan="2">통화</th>
+                                            <th style="width: 3.5%" rowspan="2">단가</th>
+                                            <th style="width: 3.5%" rowspan="2">수량</th>
+                                            <th style="width: 3.5%" rowspan="2">합계</th>
+                                            <th style="width: 7%" colspan="2">합계(USD)</th>
+                                        </tr>
+                                        <tr class="info">
+                                            <th style="width: 3.5%">환율</th>
+                                            <th style="width: 3.5%">금액</th>
+                                        </tr>
+                                        }
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

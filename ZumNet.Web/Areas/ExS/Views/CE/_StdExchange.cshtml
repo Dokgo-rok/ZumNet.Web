@@ -98,40 +98,68 @@
 
         StringBuilder sb = new StringBuilder();
 
-        if (ViewBag.Mode != "StdExchange") sb.Append("<div class=\"col-md-4 mt-3\" id=\"_SimpleView\">");
-        sb.Append("<div class=\"card\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
-        sb.Append("<div class=\"card-header bg-light border-bottom-0\">");
-        sb.AppendFormat("<div class=\"h6 mb-0\">{0} : <span class=\"text-success\">{1}</span></div>", sTTL, sSTD);
-        sb.Append("</div>");
+        if (ViewBag.Mode == "XR")
+        {
+            sb.Append("<div class=\"modal-dialog modal-sm\">");
+            sb.Append("<div class=\"modal-content\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)\">");
+            sb.Append("<div class=\"modal-header\">");
+            sb.AppendFormat("<h4 class=\"modal-title\">{0} : {1}</h4>", sTTL, sSTD);
+            sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+            sb.Append("</div>"); //modal-header
 
-        sb.Append("<div class=\"card-body p-0\">");
-        sb.Append("<table class=\"table table-striped mb-0 border-bottom-0\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+            sb.Append("<div class=\"modal-body\">"); //modal-body
+            sb.Append("<table class=\"table table-striped table-sm mb-0 text-center\">");
+        }
+        else
+        {
+            if (ViewBag.Mode != "StdExchange") sb.Append("<div class=\"col-md-4 mt-3\" id=\"_SimpleView\">");
+            sb.Append("<div class=\"card\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+            sb.Append("<div class=\"card-header bg-light border-bottom-0\">");
+            sb.AppendFormat("<div class=\"h6 mb-0\">{0} : <span class=\"text-success\">{1}</span></div>", sTTL, sSTD);
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"card-body p-0\">");
+            sb.Append("<table class=\"table table-striped mb-0 border-bottom-0\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+        }
 
         sb.Append("<thead>");
-        sb.AppendFormat("<tr><th>{0}</th><th>{1}</th></tr>", "통화", "USD 환율");
+        sb.AppendFormat("<tr><th style=\"width: 50%\">{0}</th><th>{1}</th></tr>", "통화", "USD 환율");
         sb.Append("</thead>");
         sb.Append("<tbody>");
 
-        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "HKD", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sHKD));
-        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "CNY", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sCNY));
-        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "VND", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sVND));
-        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "IDR", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sIDR));
-        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "USD", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sUSD));
-        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "EUR", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sEUR));
-        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "KRW", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sKRW));
-        sb.AppendFormat("<tr><th>{0}</th><td>{1}</td></tr>", "JPY", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sJPY));
+        sb.AppendFormat("<tr><th>{0}</th><td class=\"text-right pr-5\">{1}</td></tr>", "HKD", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sHKD));
+        sb.AppendFormat("<tr><th>{0}</th><td class=\"text-right pr-5\">{1}</td></tr>", "CNY", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sCNY));
+        sb.AppendFormat("<tr><th>{0}</th><td class=\"text-right pr-5\">{1}</td></tr>", "VND", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sVND));
+        sb.AppendFormat("<tr><th>{0}</th><td class=\"text-right pr-5\">{1}</td></tr>", "IDR", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sIDR));
+        sb.AppendFormat("<tr><th>{0}</th><td class=\"text-right pr-5\">{1}</td></tr>", "USD", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sUSD));
+        sb.AppendFormat("<tr><th>{0}</th><td class=\"text-right pr-5\">{1}</td></tr>", "EUR", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sEUR));
+        sb.AppendFormat("<tr><th>{0}</th><td class=\"text-right pr-5\">{1}</td></tr>", "KRW", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sKRW));
+        sb.AppendFormat("<tr><th>{0}</th><td class=\"text-right pr-5\">{1}</td></tr>", "JPY", ZumNet.Web.Bc.CommonUtils.CvtNumeric(sJPY));
 
         sb.Append("</tbody>");
         sb.Append("</table>");
-        sb.Append("</div>");
-        sb.Append("</div>");
-        if (ViewBag.Mode != "StdExchange") sb.Append("</div>");
+
+        if (ViewBag.Mode == "XR")
+        {
+            sb.Append("</div>"); //body
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>"); //footer
+            sb.Append("</div>"); //content
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("</div>");
+            sb.Append("</div>");
+            if (ViewBag.Mode != "StdExchange") sb.Append("</div>");
+        }
 
         return sb.ToString();
     }
 }
 
-@if (ViewBag.Mode == "StdExchange")
+@if (ViewBag.Mode == "StdExchange" || ViewBag.Mode == "XR")
 {
     @Html.Raw(ViewStdRate(ViewBag.StdRate))
 }

@@ -1,0 +1,634 @@
+﻿@using System.Data;
+@using System.Text;
+@using ZumNet.Framework.Core;
+@using ZumNet.Framework.Exception;
+@using ZumNet.Framework.Util;
+@using ZumNet.BSL.InterfaceBiz;
+@{
+}
+@functions {
+    private string ViewList()
+    {
+        string rt = "";
+
+        switch (ViewBag.Pos.ToString())
+        {
+            case "ChildList":
+                rt = RenderChildList(ViewBag.JPost["M"].ToString(), ViewBag.BoardList);
+                break;
+
+            case "ModelVendor":
+                rt = GetOracleERP(ViewBag.Pos, ViewBag.JPost); ;
+                break;
+
+            case "VendorUnitPrice":
+                rt = GetOracleERP_VENDOR_UNIT_PRICE(ViewBag.Pos, ViewBag.JPost); ;
+                break;
+
+            case "ModelBom":
+                rt = GetOracleERP_MODEL_BOM(ViewBag.Pos, ViewBag.JPost);
+                break;
+
+            case "StateLine":
+                rt = ViewStateLine(ViewBag.Pos, ViewBag.JPost);
+                break;
+
+            default:
+                break;
+        }
+
+        return rt;
+    }
+
+    /// <summary>
+    /// 하위 견적표 목록
+    /// </summary>
+    /// <param name="mode"></param>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    private string RenderChildList(string mode, DataSet data)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<table class=\"table table-sm mb-0 bg-white border-0\">");
+        sb.Append("<colgroup>");
+        if (ViewBag.JPost["page"].ToString() == "mylist" || mode == "R") sb.Append("<col width=\"3%\" />");
+        sb.Append("<col width=\"3%\" /><col width=\"7%\" /><col width=\"20%\" /><col width=\"8%\" /><col width=\"9%\" /><col width=\"4%\" /><col /></colgroup>");
+
+        sb.Append("<tbody>");
+        if (data != null && data.Tables.Count > 0 && data.Tables[0].Rows.Count > 0)
+        {
+            DataRow drMain = data.Tables[0].Rows[0];
+            string sAcl = "";
+            bool bMenuOperator = false;
+            bool bShowRev = false;
+
+            if (ViewBag.JPost["mo"] != null) bMenuOperator = StringHelper.SafeBool(ViewBag.JPost["mo"].ToString());
+            if (ViewBag.JPost["acl"] != null) sAcl = ViewBag.JPost["acl"].ToString();
+
+            foreach (DataRow dr in data.Tables[1].Rows)
+            {
+                if (dr["ISLAST"].ToString() == "N") { bShowRev = true; break; }
+            }
+
+            if (mode == "R")
+            {
+                foreach (DataRow dr in data.Tables[1].Rows)
+                {
+                    sb.Append("<tr>");
+                    sb.Append("<td>&#9495;</td>");
+                    if (bShowRev && dr["ISLAST"].ToString() == "Y") sb.AppendFormat("<td><input type=\"checkbox\" value=\"{0}\" /></td>", dr["CEID"].ToString());
+                    else sb.Append("<td></td>");
+                    sb.AppendFormat("<td>{0}</td>", dr["XCLS"].ToString());
+                    sb.AppendFormat("<td style=\"text-align: left\"><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-query=\"{0}\" title=\"{1}\">{2}</a></td>"
+                        , GridQuery("read", ViewBag.JPost["ct"].ToString(), ViewBag.JPost["ctalias"].ToString(), dr["CEID"].ToString()), Server.HtmlEncode(dr["SUBJECT"].ToString()), dr["SUBJECT"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", dr["CORP"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", dr["ITEMCLS"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", dr["VER"].ToString());
+                    if (dr["ISLAST"].ToString() == "Y") sb.Append("<td></td>");
+                    else sb.Append("<td style=\"text-align: left\"><em class=\" text-warning\" style=\"font-weight: bold\"><i class=\"far fa-star\"></i> 최신 버전 있음 !!</em></td>");
+
+                    sb.Append("</tr>");
+                }
+
+                if (data.Tables[2].Rows.Count > 0)
+                {
+                    sb.Append("<th colspan=\"8\" class=\"table-active pt-2\"></th>");
+
+                    foreach (DataRow dr in data.Tables[2].Rows)
+                    {
+                        sb.Append("<tr>");
+                        sb.Append("<td></td>");
+                        sb.AppendFormat("<td><input type=\"checkbox\" value=\"{0}\" /></td>", dr["CEID"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", dr["XCLS"].ToString());
+                        sb.AppendFormat("<td style=\"text-align: left\"><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-query=\"{0}\" title=\"{1}\">{2}</a></td>"
+                            , GridQuery("read", ViewBag.JPost["ct"].ToString(), ViewBag.JPost["ctalias"].ToString(), dr["CEID"].ToString()), Server.HtmlEncode(dr["SUBJECT"].ToString()), dr["SUBJECT"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", dr["CORP"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", dr["ITEMCLS"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", dr["VER"].ToString());
+                        sb.AppendFormat("<td style=\"text-align: left\">{0}</td>", dr["STATE"].ToString() == "7" ? "완료" : "작성");
+                        sb.Append("</tr>");
+                    }
+                }
+
+                if (bShowRev || drMain["LNKEA"].ToString() != "" || (drMain["CEID"].ToString() != drMain["ORGCEID"].ToString() && Convert.ToInt32(drMain["SEQ"]) > 1))
+                {
+                    sb.Append("<tr><th colspan=\"8\" class=\"table-active pt-2\">");
+                    if (drMain["CEID"].ToString() != drMain["ORGCEID"].ToString() && Convert.ToInt32(drMain["SEQ"]) > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm\" onclick=\"_zw.mu.showCompTable('{0}')\"><i class=\"fas fa-chart-line\"></i> 견적비교표</button>", drMain["CEID"].ToString());
+                    if (drMain["LNKEA"].ToString() != "") sb.AppendFormat("<button class=\"btn btn-primary btn-sm\" onclick=\"_zw.fn.openEAFormSimple('{0}');\"><i class=\"fas fa-tag\"></i> 관련문서</button>", drMain["LNKEA"].ToString());
+                    if (bShowRev) sb.AppendFormat("<button class=\"btn btn-warning btn-sm\" data-btn=\"revise\" value=\"{0}\"><i class=\"fas fa-level-up-alt\"></i> 개   정</button>", ViewBag.JPost["pntid"].ToString());
+                    sb.Append("</th></tr>");
+                }
+            }
+            else
+            {
+                foreach (DataRow dr in data.Tables[1].Rows)
+                {
+                    sb.Append("<tr>");
+                    if (ViewBag.JPost["page"].ToString() == "mylist") sb.Append("<td>&nbsp;</td>");
+                    sb.Append("<td>&#9495;</td>");
+                    sb.AppendFormat("<td>{0}</td>", dr["XCLS"].ToString());
+                    sb.AppendFormat("<td style=\"text-align: left\"><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-query=\"{0}\" title=\"{1}\">{2}</a></td>"
+                        , GridQuery("read", ViewBag.JPost["ct"].ToString(), ViewBag.JPost["ctalias"].ToString(), dr["CEID"].ToString()), Server.HtmlEncode(dr["SUBJECT"].ToString()), dr["SUBJECT"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", dr["CORP"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", dr["ITEMCLS"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", dr["VER"].ToString());
+                    if (dr["ISLAST"].ToString() == "Y") sb.Append("<td></td>");
+                    else sb.Append("<td style=\"text-align: left\"><em class=\"text-warning\" style=\"font-weight: bold\"><i class=\"far fa-star\"></i> 최신 버전 있음 !!</em></td>");
+
+                    //if (i == 0 && bShowRev) sb.AppendFormat("<td rowspan=\"{0}\"><button type=\"button\" class=\"btn btn-success\" data-btn=\"reviseGrid\">개 정</button></td>", iRowCnt.ToString());
+
+                    sb.Append("</tr>");
+                }
+
+                if (bMenuOperator || (sAcl != "" && StringHelper.HasAcl(sAcl, "W")))
+                {
+                    if (drMain["LNKEA"].ToString() != "" || (drMain["CEID"].ToString() != drMain["ORGCEID"].ToString() && Convert.ToInt32(drMain["SEQ"]) > 1))
+                    {
+                        sb.Append("<tr><th colspan=\"8\" class=\"table-active pt-2\">");
+                        if (drMain["CEID"].ToString() != drMain["ORGCEID"].ToString() && Convert.ToInt32(drMain["SEQ"]) > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm\" onclick=\"_zw.mu.showCompTable('{0}')\"><i class=\"fas fa-chart-line\"></i> 견적비교표</button>", drMain["CEID"].ToString());
+                        if (drMain["LNKEA"].ToString() != "") sb.AppendFormat("<button class=\"btn btn-primary btn-sm\" onclick=\"_zw.fn.openEAFormSimple('{0}');\"><i class=\"fas fa-tag\"></i> 관련문서</button>", drMain["LNKEA"].ToString());
+                        sb.Append("</th></tr>");
+                    }
+                }
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            sb.AppendFormat("<th class=\"py-3\">{0}</th>", Resources.Global.NoItemShow);
+            sb.Append("</tr>");
+        }
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        if (data != null) { data.Dispose(); data = null; }
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 모델번호, 품목, 벤더 조회
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="postData"></param>
+    /// <returns></returns>
+    private string GetOracleERP(string pos, Newtonsoft.Json.Linq.JObject postData)
+    {
+        ServiceResult svcRt = new ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        string strReturn = "";
+
+        int iTotal = 0;
+        int iTotalPage = 0;
+        int iPage = 1;
+        int iPageCount = 50;
+
+        try
+        {
+            if (postData.ContainsKey("page")) iPage = Convert.ToInt32(postData["page"].ToString());
+            if (postData.ContainsKey("count")) iPageCount = Convert.ToInt32(postData["count"].ToString());
+
+            using (OracleBiz oraBiz = new OracleBiz())
+            {
+                if (postData["req"].ToString() == "model" || postData["req"].ToString() == "submodel")
+                {
+                    svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["search"].ToString(), iPageCount, iPage);
+                }
+                else if (postData["req"].ToString() == "itemno")
+                {
+                    svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_D(postData["search"].ToString(), iPageCount, iPage, postData["param1"].ToString());
+                }
+                else if (postData["req"].ToString() == "vendor")
+                {
+                    svcRt = oraBiz.Cresyn_Get_PO_VENDORS("VENDOR_NAME", postData["search"].ToString(), iPageCount, iPage);
+                }
+            }
+
+            if (svcRt.ResultCode == 0)
+            {
+                iTotal = svcRt.ResultItemCount;
+                iTotalPage = iTotal / iPageCount + 1;
+
+                sb.Append("<div class=\"zf-modal modal-dialog modal-dialog-scrollable\" style=\"max-width: 30rem\">");
+                sb.Append("<div class=\"modal-content\" data-for=\"external\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5); max-height: 40rem !important\">");
+                sb.Append("<div class=\"modal-header\">");
+                sb.Append("<div class=\"d-flex align-items-center w-100\">");
+                sb.Append("<div class=\"input-group w-50\">");
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" placeholder=\"검색\" data-zf-field=\"modal_searchtext\" value=\"{0}\" />", postData["search"].ToString());
+                sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"modal_req\" value=\"{0}\" />", postData["req"].ToString());
+                sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"modal_page\" value=\"{0}\" />", iPage.ToString());
+
+                if (postData["req"].ToString() == "itemno")
+                {
+                    sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"modal_rowkey\" value=\"{0}\" />", postData["rowkey"].ToString());
+                    sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"modal_param1\" value=\"{0}\" />", postData["param1"].ToString());
+                }
+                else if (postData["req"].ToString() == "vendor")
+                {
+                    sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"modal_rowkey\" value=\"{0}\" />", postData["rowkey"].ToString());
+                }
+                sb.Append("<span class=\"input-group-append\"><button class=\"btn btn-secondary\" type=\"button\"><i class=\"fe-search\"></i></button></span>");
+                sb.Append("</div>"); //input-group
+                sb.Append("<div class=\"ml-2 d-flex align-items-center zf-modal-page\">");
+                sb.AppendFormat("<span>Total {0}</span>", iTotal.ToString());
+                sb.AppendFormat("<span class=\"px-10\">{0} / {1} page</span>", iPage.ToString(), iTotalPage.ToString());
+                if (iPage > 1) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-left\"></i></button>", (iPage - 1).ToString());
+                if (iPage < iTotalPage) sb.AppendFormat("<button class=\"btn btn-primary btn-sm icon-btn mr-1\" title=\"{0}페이지\" data-for=\"{0}\"><i class=\"fe-chevron-right\"></i></button>", (iPage + 1).ToString());
+                sb.Append("</div>");
+                sb.Append("</div>"); //d-flex
+                sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+                sb.Append("</div>"); //modal-header
+
+                sb.Append("<div class=\"modal-body\">"); //modal-body
+
+                sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                sb.Append("<thead><tr>");
+                if (postData["req"].ToString() == "model") sb.Append("<th>모델</th><th>품명</th>");
+                else if (postData["req"].ToString() == "itemno") sb.Append("<th>품목번호</th><th>ID</th><th>품명</th>");
+                else if (postData["req"].ToString() == "vendor") sb.Append("<th>업체명</th><th>ID</th><th>코드</th>");
+                sb.Append("</tr></thead>");
+                sb.Append("<tbody>");
+
+                if (svcRt.ResultItemCount > 0)
+                {
+                    foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                    {
+                        sb.Append("<tr>");
+                        if (postData["req"].ToString() == "vendor")
+                        {
+                            sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" title=\"{0} 선택\">{0}</a></td>", row["VENDOR_NAME"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", row["VENDOR_ID"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", row["SEGMENT1"].ToString());
+                        }
+                        else if (postData["req"].ToString() == "itemno")
+                        {
+                            sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" title=\"{0} 선택\">{0}</a></td>", row["SEGMENT1"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", row["INVENTORY_ITEM_ID"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString());
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" title=\"{0} 선택\">{0}</a></td>", row["SEGMENT1"].ToString());
+                            sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString());
+                        }
+                        sb.Append("</tr>");
+                    }
+                }
+                else
+                {
+                    sb.AppendFormat("<tr><td colspan=\"3\"><p class=\"text-center mt-3 h5 text-secondary\">{0}</p></td></tr>", Resources.Global.NoItemShow);
+                }
+
+                sb.Append("</tbody>");
+                sb.Append("</table>");
+
+                sb.Append("</div>"); //body
+                sb.Append("<div class=\"modal-footer\">");
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+                //sb.Append("<button type=\"button\" class=\"btn btn-primary btn-sm\" data-zm-menu=\"confirm\">확인</button>");
+                sb.Append("</div>"); //footer
+
+                sb.Append("</div>"); //content
+                sb.Append("</div>");
+
+                strReturn = "OK" + sb.ToString();
+            }
+            else
+            {
+                strReturn = svcRt.ResultMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "GetOracleERP");
+            strReturn = (strReturn != "" ? "[" + strReturn + "] " : "") + ex.Message;
+        }
+        finally
+        {
+            svcRt = null;
+        }
+        return strReturn;
+    }
+
+    /// <summary>
+    /// 품목번호로 업체, 단가 조회하기
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="postData"></param>
+    /// <returns></returns>
+    private string GetOracleERP_VENDOR_UNIT_PRICE(string pos, Newtonsoft.Json.Linq.JObject postData)
+    {
+        ServiceResult svcRt = new ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        string strReturn = "";
+
+        try
+        {
+            using (OracleBiz oraBiz = new OracleBiz())
+            {
+                svcRt = oraBiz.Cresyn_Get_PHA_VENDOR_UNIT_PRICE(postData["orgid"].ToString(), postData["itemno"].ToString());
+            }
+
+            if (svcRt.ResultCode == 0)
+            {
+                if (svcRt.ResultItemCount > 0)
+                {
+                    sb.Append("<div class=\"zf-modal modal-dialog modal-dialog-scrollable\" style=\"max-width: 30rem\">");
+                    sb.Append("<div class=\"modal-content\" data-for=\"external\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5); max-height: 40rem !important\">");
+                    sb.Append("<div class=\"modal-header\">");
+                    sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"modal_req\" value=\"{0}\" />", postData["req"].ToString());
+                    sb.AppendFormat("<input type=\"hidden\" data-zf-field=\"modal_rowkey\" value=\"{0}\" />", postData["rowkey"].ToString());
+                    sb.Append("<div class=\"input-group pl-10 text-muted\">");
+                    sb.AppendFormat("<span>Total {0}</span>", svcRt.ResultItemCount.ToString());
+                    sb.Append("</div>");
+                    sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+                    sb.Append("</div>"); //modal-header
+
+                    sb.Append("<div class=\"modal-body\">"); //modal-body
+
+                    sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                    sb.Append("<thead><tr><th>업체명</th><th>통화</th><th>단가</th></tr></thead>");
+                    sb.Append("<tbody>");
+
+                    foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" title=\"{0} 선택\">{0}</a></td>", row["VENDOR_NAME"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["CURRENCY_CODE"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["UNIT_PRICE"].ToString());
+                        sb.Append("</tr>");
+                    }
+
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+
+                    sb.Append("</div>"); //body
+                    sb.Append("<div class=\"modal-footer\">");
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+                    sb.Append("</div>"); //footer
+
+                    sb.Append("</div>"); //content
+                    sb.Append("</div>");
+
+                    strReturn = "OK" + sb.ToString();
+                }
+                else
+                {
+                    strReturn = "NO품목번호 관련 업체, 단가를 조회하지 못했습니다!";
+                }
+            }
+            else
+            {
+                strReturn = svcRt.ResultMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "GetOracleERP_VENDOR_UNIT_PRICE");
+            Response.Write(ex);
+        }
+        finally
+        {
+            svcRt = null;
+        }
+        return strReturn;
+    }
+
+    /// <summary>
+    /// 모델번호에 해당되는 BOM 가져오기
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="postData"></param>
+    /// <returns></returns>
+    private string GetOracleERP_MODEL_BOM(string pos, Newtonsoft.Json.Linq.JObject postData)
+    {
+        ServiceResult svcRt = new ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        string strReturn = "";
+
+        try
+        {
+            using (OracleBiz oraBiz = new OracleBiz())
+            {
+                svcRt = oraBiz.Cresyn_Get_CBO_BOM_EXPLODE_ORG(postData["orgid"].ToString(), postData["model"].ToString());
+            }
+
+            if (svcRt.ResultCode == 0)
+            {
+                if (svcRt.ResultItemCount > 0)
+                {
+                    sb.Append("<div class=\"modal-dialog modal-dialog-scrollable\">");
+                    sb.Append("<div class=\"modal-content\" data-for=\"external\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)\">");
+                    sb.Append("<div class=\"modal-header\">");
+                    sb.AppendFormat("<h4 class=\"modal-title\">&#12300;{0}&#12301; BOM 목록</h4>", postData["model"].ToString());
+                    sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+                    sb.Append("</div>"); //modal-header
+
+                    sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+
+                    sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                    sb.Append("<thead><tr class=\"text-center\"><th style=\"width: 5%;\"><div class=\"form-check mb-1\"><input type=\"checkbox\" class=\"form-check-input\" name=\"ckbAll\" /></div></th>");
+                    sb.Append("<th style=\"width: 5%\">Lv.</th><th style=\"width: 25%\">품목번호</th><th>부품명</th><th style=\"width: 28%\">규격</th></tr></thead>");
+                    sb.Append("<tbody>");
+
+                    foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                    {
+                        sb.Append("<tr>");
+                        sb.AppendFormat("<td><div class=\"form-check\"><input type=\"checkbox\" class=\"form-check-input\" name=\"ckbRow\" value=\"{0}\" /></div></td>", row["COM_ITEM_ID"].ToString());
+                        sb.AppendFormat("<th class=\"text-danger\">{0}</th>", row["PLAN_LEVEL_DESC"].ToString().Replace("-", ""));
+                        sb.AppendFormat("<td>{0}</td>", row["COM_ITEM_CODE"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["COM_ITEM_DESC"].ToString());
+                        sb.AppendFormat("<td>{0}</td>", row["COM_ITEM_SPEC"].ToString());
+                        sb.Append("</tr>");
+                    }
+
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+
+                    sb.Append("</div>"); //body
+                    sb.Append("<div class=\"modal-footer d-flex justify-content-between\">");
+                    if (svcRt.ResultItemCount > 0) sb.Append("<button type=\"button\" class=\"btn btn-success\" data-zm-menu=\"apply\">선택 품목 적용</button>");
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+                    sb.Append("</div>"); //footer
+
+                    sb.Append("</div>"); //content
+                    sb.Append("</div>");
+
+                    strReturn = "OK" + sb.ToString();
+                }
+                else
+                {
+                    strReturn = "NO[" + postData["model"].ToString() + "]에 해당되는 BOM이 없습니다!";
+                }
+            }
+            else
+            {
+                strReturn = svcRt.ResultMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "GetOracleERP_MODEL_BOM");
+            Response.Write(ex);
+        }
+        finally
+        {
+            svcRt = null;
+        }
+        return strReturn;
+    }
+
+    /// <summary>
+    /// 검토요청, 확인
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="postData"></param>
+    /// <returns></returns>
+    private string ViewStateLine(string pos, Newtonsoft.Json.Linq.JObject postData)
+    {
+        ServiceResult svcRt = new ServiceResult();
+        StringBuilder sb = new StringBuilder();
+        string strReturn = "";
+
+        DataRow row = null;
+        int iNestedStatus = 0;
+
+        try
+        {
+            if (postData["nested"].ToString() == "" || postData["nested"].ToString() == "0") iNestedStatus = 0;
+            else iNestedStatus = Convert.ToInt32(postData["nested"]);
+
+            using (CostBiz cost = new CostBiz())
+            {
+                svcRt = cost.GetCEMAIN_NESTED(postData["mode"].ToString(), Convert.ToInt32(postData["appid"].ToString()));
+            }
+
+            if (svcRt.ResultCode == 0)
+            {
+                row = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+                sb.Append("<div class=\"modal-dialog modal-sm\">");
+                sb.Append("<div class=\"modal-content\" data-for=\"grid-review\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5); max-height: 40rem !important\">");
+                sb.Append("<div class=\"modal-header\">");
+                sb.AppendFormat("<h4 class=\"modal-title\">{0}</h4>", postData["mode"].ToString() == "V" ? ">재검토 요청" : "작성 확인");
+                sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+                sb.Append("</div>"); //modal-header
+
+                sb.Append("<div class=\"modal-body\">"); //modal-body
+
+                if (postData["mode"].ToString() == "V") //2020-11-16 사용안함
+                {
+                    if (row["REQSTATE"].ToString() == "0")
+                    {
+                        sb.Append("<h5>요청 사유</h5>");
+                        sb.Append("<form class=\"mt-2\">");
+                        sb.Append("<textarea class=\"form-control\" rows=\"3\"></textarea>");
+                        sb.Append("</form>");
+                    }
+                    else
+                    {
+                        sb.Append("<table class=\"table table-striped text-center\">");
+                        sb.Append("<tbody>");
+                        sb.AppendFormat("<tr><th style=\"width: 30%\">요청자</th><td>{0} {1}</td></tr>", row["REQDPT"].ToString(), row["REQNM"].ToString());
+                        sb.AppendFormat("<tr><th>요청일시</th><td>{0}</td></tr>", DateHelper.CheckDateTime(row["REQDT"].ToString(), "MM-dd HH:mm", ""));
+                        sb.AppendFormat("<tr><th>요청사유</th><td style=\"min-height: 44px\">{0}</td></tr>", row["REQCOMNT"].ToString());
+                        sb.AppendFormat("<tr><th>처리상태</th><td>{0}</td></tr>", row["REQSTATE"].ToString() == "7" ? "재작성" : "처리중");
+                        sb.AppendFormat("<tr><th>처리일시</th><td>{0}</td></tr>", DateHelper.CheckDateTime(row["REQCOMPDT"].ToString(), "MM-dd HH:mm", ""));
+                        sb.Append("</tbody>");
+                        sb.Append("</table>");
+                    }
+                }
+                else
+                {
+                    sb.Append("<table class=\"table table-striped text-center\">");
+                    sb.Append("<thead><tr><th style=\"width: 40%\">확인자</th><th style=\"width: 30%\">일자</th><th>상태</th></tr></thead>");
+                    sb.Append("<tbody>");
+
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td>(작성자) {0}</td>", row["CRNM"].ToString());
+                    sb.AppendFormat("<td>{0}</td>", DateHelper.CheckDateTime(row["FCFMDT"].ToString(), "MM-dd HH:mm", ""));
+                    if (Session["URID"].ToString() == row["CRID"].ToString() && iNestedStatus == 0)
+                    {
+                        sb.AppendFormat("<th><button type=\"button\" class=\"btn btn-success btn-sm\" data-btn=\"send\" data-for=\"FCFMSS\">{0}</button></th>", row["FCFMSS"].ToString() == "Y" ? "확인취소" : "확인");
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<th>{0}</th>", row["FCFMSS"].ToString() == "Y" ? "확인" : "");
+                    }
+                    sb.Append("</tr>");
+
+                    sb.Append("<tr>");
+
+                    if (row["SCFMNM"].ToString() != "") sb.AppendFormat("<td>(부서장) {0}</td>", row["SCFMNM"].ToString());
+                    else if (postData["chief"] != null && postData["chief"].ToString() == "Y") sb.AppendFormat("<td>(부서장) {0}</td>", Session["URName"].ToString());
+                    else sb.Append("<td>(부서장) </td>");
+
+                    if (row["SCFMSS"].ToString() == "Y") sb.AppendFormat("<td>{0}</td>", DateHelper.CheckDateTime(row["SCFMDT"].ToString(), "MM-dd HH:mm", ""));
+                    else sb.Append("<td></td>");
+
+                    if (postData["chief"] != null && postData["chief"].ToString() == "Y" && iNestedStatus == 0)
+                    {
+                        if (row["SCFMSS"].ToString() == "Y")
+                        {
+                            if (Session["URID"].ToString() == row["SCFMID"].ToString()) sb.Append("<th><button type=\"button\" class=\"btn btn-success btn-xs\" data-btn=\"send\" data-for=\"SCFMSS\">확인취소</button></th>");
+                            else sb.Append("<th>확인</th>");
+                        }
+                        else
+                        {
+                            sb.Append("<th><button type=\"button\" class=\"btn btn-success btn-sm\" data-btn=\"send\" data-for=\"SCFMSS\">확인</button></th>");
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<th>{0}</th>", row["SCFMSS"].ToString() == "Y" ? "확인" : "");
+                    }
+                    sb.Append("</tr>");
+
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                }
+
+                sb.Append("</div>"); //body
+                sb.Append("<div class=\"modal-footer\">");
+                if (postData["mode"].ToString() == "V" && row["REQSTATE"].ToString() == "0")
+                {
+                    sb.Append("<button type=\"button\" class=\"btn btn-success btn-sm\" data-btn=\"send\" data-for=\"REQSTATE\">요청</button>");
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+                }
+                else //if (postData["mode"].ToString() == "V")
+                {
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+                }
+                sb.Append("</div>"); //footer
+
+                sb.Append("</div>"); //content
+                sb.Append("</div>");
+
+                strReturn = "OK" + sb.ToString();
+            }
+            else
+            {
+                strReturn = svcRt.ResultMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "ViewStateLine");
+            Response.Write(ex);
+        }
+        finally
+        {
+            svcRt = null;
+        }
+        return strReturn;
+    }
+
+    #region [기타]
+    private string GridQuery(string m, string ct, string ctAlias, string appId)
+    {
+        return "?qi=" + Server.UrlEncode(ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ct + "\",ctalias:\"" + ctAlias + "\",ttl:\"\",opnode:\"\",ft:\"Grid\",appid:\"" + appId + "\"}"));
+    }
+    #endregion
+}
+@Html.Raw(ViewList())

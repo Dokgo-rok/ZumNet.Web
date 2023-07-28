@@ -1,123 +1,1760 @@
-﻿@using System.Data;
+﻿@using System.Collections;
+@using System.Data;
 @using System.Text;
 @using System.Threading;
 @using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
 @{
-    ViewBag.R["ttl"] = "개발원가견적표";
-    ViewBag.Title = ViewBag.R["ttl"];
-
-    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
-
+    Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
+    //화면 제목 설정
+    InitTitle(ViewBag.R.mode.ToString(), ViewBag.R.rptid.ToString(), Convert.ToInt32(ViewBag.R.appid.Value), ViewBag.DataInfo);
 
+    if (ViewBag.R.mode == "xls")
+    {
+        ExcelBind(RenderExcelData());
+        Response.End();
+    }
 
-    //Response.Write("--" + ViewBag.CodeTable["ce.center"].ToString());
+    //Response.Write("==" + Request.UrlReferrer.AbsolutePath);
+    //Response.Write("==" + ViewBag.R.mode.ToString() + " : " + ViewBag.R.rptmode.Value);
     //Response.End();
-
 }
 @functions{
-    private string GetQueryString(string m, string page, string ttl, string appId)
+    private DataRow _gridMain = null;
+    private DataRowCollection _grid1 = null; //재료비
+    private DataRowCollection _grid2 = null; //수입경비
+    private DataRowCollection _grid3 = null; //가공비
+    private DataRowCollection _grid4 = null; //판관비
+
+    private DataRowCollection _stdInfo1 = null; //환율
+    private DataRowCollection _stdInfo2 = null; //기준임율
+    private DataRowCollection _stdInfo3 = null; //외주임율
+
+    private DataTable _gridData = null;
+
+    private string _listView = "";
+
+    //private int _reportMode = 3; //0 : 신규집계 시뮬, 1 : 신규집계 작성/편집, 2 : 집계 조회, 3 : 하위
+
+    public int EnableRowCount = 0; //집계 경우 Grid 내 UNIT, 회로 Row 수
+
+    /// <summary>
+    /// 초기 설정
+    /// </summary>
+    private void InitTitle(string mode, string reportId, int appId, DataSet ds)
     {
-        return "?qi=" + ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"" + ttl + "\",opnode:\"\",ft:\"" + page + "\",appid:\"" + appId + "\"}");
+        //Mode => new : 신규작성, add : 추가신규작성, simul : 시뮬레이션, reuse : 재사용, renew : 개정(재작성), edit : 편집, 그외 : 조회
+
+        if (mode != "xls")
+        {
+            ViewBag.R["gvmode"] = true;
+
+            string sTitle = "";
+            switch (mode)
+            {
+                case "new": sTitle = " 작성"; break;
+                case "add": sTitle = " 추가 작성"; break;
+                case "simul": sTitle = " 시뮬레이션"; break;
+                case "reuse": sTitle = " 재사용"; break;
+                case "renew": sTitle = " 개정"; break;
+                case "edit": sTitle = " 편집"; break;
+                default: sTitle = " 조회"; break;
+            }
+
+            ViewBag.R["ttl"] = "개발원가견적표" + sTitle;
+            ViewBag.Title = ViewBag.R["ttl"];
+        }
+
+        if (ViewBag.STDINFO != null && ViewBag.STDINFO.Tables.Count > 0)
+        {
+            _stdInfo1 = ViewBag.STDINFO.Tables[0].Rows;
+            _stdInfo2 = ViewBag.STDINFO.Tables[1].Rows;
+            _stdInfo3 = ViewBag.STDINFO.Tables[2].Rows;
+        }
+
+        if (ds != null && ds.Tables.Count > 0)
+        {
+            if (reportId != "")
+            {
+                ViewBag.R["rptmode"] = "1";
+
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    if (row["STATE"].ToString() != "7")
+                    {
+                        ViewBag.R["rptmode"] = "0";
+                        break;
+                    }
+                }
+
+                _gridMain = ds.Tables[1].Rows[0];
+                _gridData = ds.Tables[2];
+
+                foreach (DataRow row in ds.Tables[2].Rows)
+                {
+                    if (row["CLSPOS"].ToString() == "음향" || row["CLSPOS"].ToString() == "회로")
+                    {
+                        EnableRowCount++;
+                    }
+                }
+
+                _grid3 = ds.Tables[3].Rows;
+                _grid4 = ds.Tables[4].Rows;
+            }
+            else if (appId > 0)
+            {
+                _gridMain = ds.Tables[0].Rows[0];
+
+                if (_gridMain["XCLS"].ToString() == "ALL")
+                {
+                    if (mode == "simul") ViewBag.R["rptmode"] = "0";
+                    else if (mode == "new" || mode == "edit") ViewBag.R["rptmode"] = "1";
+                    else ViewBag.R["rptmode"] = "2";
+                }
+                else
+                {
+                    //2020-11-16 포함관계 설정
+                    foreach (DataRow row in ds.Tables[1].Rows)
+                    {
+                        if (Convert.ToInt16(row["PNTSTATE"]) < 8)
+                        {
+                            //상위 포함 상태가 0, 1, 7 이 하나라도 있는 경우 -> 재작성o, 재사용x
+                            ViewBag.R["nsstatus"] = "1";
+                            break;
+                        }
+                        else if (Convert.ToInt16(row["PNTSTATE"]) == 8)
+                        {
+                            //상위 반려(8) -> 재작성x, 재사용o
+                            ViewBag.R["nsstatus"] = "2";
+                        }
+                    }
+                }
+
+                //Master.PntAppID = Convert.ToInt32(_gridMain["PNTCEID"]); //2020-11-02
+
+                if (mode != "add") _gridData = ds.Tables[2];
+
+                if (ViewBag.R.rptmode.ToString() == "1")
+                {
+                    foreach (DataRow row in ds.Tables[2].Rows)
+                    {
+                        if (row["CLSPOS"].ToString() == "음향" || row["CLSPOS"].ToString() == "회로")
+                        {
+                            EnableRowCount++;
+                        }
+                    }
+                }
+
+                if (mode != "add")
+                {
+                    _grid1 = ds.Tables[3].Rows;
+                    _grid2 = ds.Tables[4].Rows;
+                    _grid3 = ds.Tables[5].Rows;
+                    _grid4 = ds.Tables[6].Rows;
+                }
+            }
+        }
     }
 
-    private string RenderMenu(string formTable, DataSet ds)
+    private string GridQuery(string m, string appId)
     {
+        return "?qi=" + Server.UrlEncode(ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"\",opnode:\"\",ft:\"Grid\",appid:\"" + appId + "\"}"));
+    }
+
+    private string RenderMenu(string mode, int reportMode)
+    {
+        bool bPrev = false;
+        if (Request.UrlReferrer != null)
+        {
+            bPrev = Request.UrlReferrer.AbsolutePath.ToLower() != ViewBag.R.current.page.ToString().ToLower() ? false : true; //다르면 새로 열린 창
+        }
+
+        int iNestedStatus = StringHelper.SafeInt(ViewBag.R["nsstatus"].ToString());
+
         StringBuilder sb = new StringBuilder();
 
-        if (formTable == "Grid")
-        {
-            sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
-        }
-        else if (formTable == "MyList" || formTable == "DeptList" || formTable == "List" || formTable == "Report")
-        {
-            sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
-        }
-        else if (formTable == "")
-        {
+        if (bPrev) sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:history.back();\" class=\"z-lnk-navy-n\" title=\"{0}\"><i class=\"fas fa-backward\"></i> {0}</a></li>", Resources.Global.Previous);
 
+        if (reportMode > 0 && mode != "simul" && (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W") || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R")))  //관리자, 작성권한, 21-03-10 읽기 권한 추가
+        {
+            if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
+            {
+                sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n text-danger\" title=\"{0}\" data-zf-menu=\"showGridDscpt\"><i class=\"fas fa-highlighter\"></i> 특기사항</a></li>", "특기사항 입력 조회");
+
+                if (mode == "new" || mode == "add" || mode == "reuse" || mode == "renew" || mode == "edit")
+                {
+                    if (mode == "new" || mode == "add" || (_gridMain != null && _gridMain["STATE"].ToString() == "9"))
+                    {
+                        //21-01-18 임시저장 : 신규, 재사용 또는 상태값 9 인 경우
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"saveTemp\"><i class=\"fas fa-save\"></i> 임시저장</a></li>", "견적표 임시 저장하기");
+                    }
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n text-success\" title=\"{0}\" data-zf-menu=\"saveStd\"><i class=\"fas fa-check\"></i> 저장</a></li>", "견적표 저장하기");
+                }
+                else
+                {
+                    if (_gridMain != null)
+                    {
+                        if (_gridMain["STATE"].ToString() == "0" && _gridMain["XCLS"].ToString() != "ALL" && (ViewBag.R.current["chief"].ToString() == "Y" || Session["URID"].ToString() == _gridMain["CRID"].ToString()))
+                        {
+                            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"viewConfirm\"><i class=\"fas fa-check\"></i> 확인</a></li>", "확인하기");
+                        }
+
+                        if (Session["URID"].ToString() == _gridMain["CRID"].ToString())
+                        {
+                            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n\" title=\"{2}\"><i class=\"fe-check-square\"></i> 편집</a></li>", ViewBag.R.current.page.ToString(), GridQuery("edit", ViewBag.R.appid.ToString()), "견적표 편집하기");
+                            if (_gridMain["XCLS"].ToString() == "ALL" && _gridMain["STATE"].ToString() == "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
+                        }
+
+                        if ((ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == _gridMain["CRID"].ToString())) sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"deleteStd\"><i class=\"fas fa-times\"></i> {0}</a></li>", Resources.Global.Delete);
+                    }
+                }
+            }
+
+            if (mode != "new" && mode != "add" && mode != "reuse" && mode != "renew" && mode != "edit")
+            {
+                if ((ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W")) && _gridMain != null && _gridMain["XCLS"].ToString() != "" && _gridMain["XCLS"].ToString() != "ALL" && _gridMain["ISLAST"].ToString() == "Y")
+                {
+                    //신규작성
+                    if (_gridMain["STATE"].ToString() != "0" && _gridMain["STATE"].ToString() != "9") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-edit\"></i> 견적표작성</a></li>", ViewBag.R.current.page.ToString(), GridQuery("new", ViewBag.R.appid.ToString()), "견적표 신규 작성하기");
+
+                    //추가작성 - 자신이 작성한 견적표 조회 경우 가능
+                    if (Session["URID"].ToString() == _gridMain["CRID"].ToString() && _gridMain["STATE"].ToString() == "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n text-success\" title=\"{2}\"><i class=\"fas fa-plus\"></i> 추가작성</a></li>", ViewBag.R.current.page.ToString(), GridQuery("add", ViewBag.R.appid.ToString()), "견적표 신규 추가 작성하기");
+
+                    //재작성 - 버전증가(상위 완료, 반려 경우)
+                    //if ((_gridMain["PNTSTATE"].ToString() == "7" || _gridMain["PNTSTATE"].ToString() == "8") && (_gridMain["STATE"].ToString() == "7" || _gridMain["STATE"].ToString() == "8"))
+                    if (iNestedStatus == 1 && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == _gridMain["CRID"].ToString())) sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n text-danger\" title=\"{2}\"><i class=\"fas fa-plus-square\"></i> 개정</a></li>", ViewBag.R.current.page.ToString(), GridQuery("renew", ViewBag.R.appid.ToString()), "견적표 개정(버전 증가)하기"); //20-11-30 재작성 -> 개정 명칭 변경
+                    if (iNestedStatus == 2 && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == _gridMain["CRID"].ToString())) sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n text-danger\" title=\"{2}\"><i class=\"fas fa-copy\"></i> 재사용</a></li>", ViewBag.R.current.page.ToString(), GridQuery("reuse", ViewBag.R.appid.ToString()), "견적표 재사용하기");
+
+                    if (_gridMain["STATE"].ToString() == "7") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"viewConfirm\"><i class=\"fas fa-check\"></i> 확인</a></li>", "작성 확인하기");
+
+                    //if (Master.MenuOperator && Master.AppID == Master.PntAppID && _gridMain["STATE"].ToString() == "7")
+                    //{
+                    //    if (_gridMain["REQSTATE"].ToString() == "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n text-danger\" title=\"{0}\" data-zf-menu=\"reqReview\"><i class=\"glyphicon glyphicon-refresh\"></i> 재검토요청</a></li>", "재검토 요청하기");
+                    //    else if (_gridMain["REQSTATE"].ToString() == "6" || _gridMain["REQSTATE"].ToString() == "7") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n text-success\" title=\"{0}\" data-zf-menu=\"reqReview\"><i class=\"glyphicon glyphicon-refresh\"></i> 요청상태</a></li>", "재검토 요청 상태 조회하기");
+                    //}
+                }
+                sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n text-success\" title=\"{2}\"><i class=\"fe-bar-chart-2\"></i> 시뮬레이션</a></li>", ViewBag.R.current.page.ToString(), GridQuery("simul", ViewBag.R.appid.ToString()), "시뮬레이션 모드로 전환하기");
+                if (_gridMain != null && (_gridMain["CEID"].ToString() != _gridMain["ORGCEID"].ToString() || _gridMain["ISLAST"].ToString() != "Y"))
+                {
+                    if (_gridMain["XCLS"].ToString() == "ALL") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n text-danger\" title=\"{0}\" data-zf-menu=\"showCompTable\"><i class=\"fas fa-chart-line\"></i> 견적비교표</a></li>", "견적비교표 조회하기");
+                    sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"showHistory\"><i class=\"fas fa-flag\"></i> 이력정보</a></li>", "이력정보 조회하기");
+                }
+                if (_gridMain != null && _gridMain["LNKEA"].ToString() != "" && _gridMain["LNKEA"].ToString() != "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" onclick=\"_zw.fn.openXForm('{0}');\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-tag\"></i> {1}</a></li>", _gridMain["LNKEA"].ToString(), "관련문서");
+            }
         }
-        //sb.Append("</ul>");
+
+        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"previewGrid\"><i class=\"fas fa-print\"></i> 인쇄</a></li>", "견적표 인쇄하기");
+        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n text-muted\" title=\"{0}\" onclick=\"window.close();\"><i class=\"fe-log-out\"></i> {0}</a></li>", Resources.Global.Close);
+        //<button class="btn btn-default py-1 font-weight-bold" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
+
         return sb.ToString();
     }
 
-    private string RenderSearch(string formTable)
+    private string RenderHead(string mode, int reportMode)
     {
-        string sSelected = "";
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"z-ce-head\">");
+        sb.Append("<div class=\"left\">");
+        sb.Append("<table class=\"z-grid z-grid-bordered\">");
+        sb.Append("<colgroup><col style=\"width: 20%\" /><col style=\"width: 30%\" /><col style=\"width: 20%\" /><col style=\"width: 30%\" /></colgroup>");
+        sb.Append("<tbody>");
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">품명</td>");
+        sb.Append(CellValue(mode, _gridMain, "MODELNM", "", false));
+
+        sb.Append("<td class=\"text-center info\">BUYER</td>");
+        sb.Append(CellValue(mode, _gridMain, "BUYER", "", true));
+
+        sb.Append("</tr>");
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">품목분류</td>");
+        sb.Append(CellSelect(mode, _gridMain, "ITEMCLS", ""));
+        //sb.Append("<td class=\"cell-select\"><select id=\"ddlITEMCLS\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"ITEMCLS\">");
+        //sb.Append("<option value=\"\">선택</option>");
+        //foreach (object[] o in (ArrayList)Master.CodeList[Master.CodeConfig[3, 0] + "." + Master.CodeConfig[3, 1]])
+        //{
+        //    sb.AppendFormat("<option value=\"{0}\">{0}</option>", o[3].ToString());
+        //}
+        //sb.Append("</td>");
+        sb.Append("<td class=\"text-center info\">BUYER분류</td>");
+        sb.Append(CellSelect(mode, _gridMain, "BUYERCLS", ""));
+        //sb.Append("<td class=\"cell-select\"><select id=\"ddlBUYERCLS\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"BUYERCLS\">");
+        //sb.Append("<option value=\"\">선택</option>");
+        //foreach (object[] o in (ArrayList)Master.CodeList[Master.CodeConfig[2, 0] + "." + Master.CodeConfig[2, 1]])
+        //{
+        //    sb.AppendFormat("<option value=\"{0}\">{0}</option>", o[3].ToString());
+        //}
+        //sb.Append("</td>");
+        sb.Append("</tr>");
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">기획수량</td>");
+        if (reportMode > 1) sb.Append(CellValue(mode, _gridMain, "PLANCNT", "", false));
+        else sb.Append(CellValue(mode, null, "PLANCNT", "", false));
+
+        sb.Append("<td class=\"text-center info\">생산지</td>");
+        sb.Append(CellSelect(mode, _gridMain, "CORP", ""));
+
+        //sb.Append("<td class=\"cell-select\"><select id=\"ddlCORP\">");
+        //sb.Append("<option value=\"\">선택</option>");
+        //foreach (object[] o in (ArrayList)Master.CodeList[Master.CodeConfig[4, 0] + "." + Master.CodeConfig[4, 1]])
+        //{
+        //    sb.AppendFormat("<option value=\"{0}_{1}_{2}\">{0}</option>", o[3].ToString(), o[4].ToString(), o[6].ToString());
+        //}
+        //sb.Append("</td>");
+        sb.Append("</tr>");
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">MODEL</td>");
+        if (reportMode > 1) sb.Append(CellValue(mode, _gridMain, "MODEL", "", false));
+        else sb.Append(CellValue(mode, _gridMain, "MODEL", "", true));
+
+        sb.Append("<td class=\"text-center info\">생산지통화</td>");
+        sb.Append(CellValue(mode, _gridMain, "CORPCURRENCY", "", true));
+
+        sb.Append("</tr>");
+
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">품목번호</td>");
+        if (reportMode > 1) sb.Append(CellValue(mode, _gridMain, "SUBMODEL", "", false));
+        else sb.Append(CellValue(mode, _gridMain, "SUBMODEL", "", true));
+
+        sb.Append("<td class=\"text-center info\">기타</td>");
+        if (reportMode > 1) sb.Append(CellValue(mode, _gridMain, "SUBMODELDESC", "", false));
+        else sb.Append(CellValue(mode, _gridMain, "SUBMODELDESC", "", true));
+
+        sb.Append("</tr>");
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>"); //left
+
+        sb.Append("<div class=\"middle\"></div>"); //middle
+
+        sb.Append("<div class=\"right\">");
+        sb.Append("<div class=\"ttl\">");
+        if (reportMode < 3)
+        {
+            sb.AppendFormat("개발원가견적표<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"XCLS\" value=\"{0}\" />", mode == "new" ? "ALL" : _gridMain["XCLS"].ToString());
+        }
+        else
+        {
+            if (mode == "new" || mode == "add" || mode == "reuse" || mode == "edit" || mode == "simul")
+            {
+                sb.AppendFormat("<select class=\"\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"XCLS\"{0}>", mode == "simul" ? " disabled" : "");
+                sb.AppendFormat("<option value=\"\"{0}>구분</option>", (mode != "new" && mode != "add" && (_gridMain == null || _gridMain["XCLS"].ToString() == "")) ? " selected" : "");
+                //sb.AppendFormat("<option value=\"UNIT\"{0}>UNIT</option>", (Master.Mode != "new" && (_gridMain != null && _gridMain["XCLS"].ToString() == "UNIT")) ? " selected" : "");
+                //sb.AppendFormat("<option value=\"기구\"{0}>기구</option>", (Master.Mode != "new" && (_gridMain != null && _gridMain["XCLS"].ToString() == "기구")) ? " selected" : "");
+                //sb.AppendFormat("<option value=\"회로\"{0}>회로</option>", (Master.Mode != "new" && (_gridMain != null && _gridMain["XCLS"].ToString() == "회로")) ? " selected" : "");
+                //sb.AppendFormat("<option value=\"투자비용\"{0}>투자비용</option>", (Master.Mode != "new" && (_gridMain != null && _gridMain["XCLS"].ToString() == "투자비용")) ? " selected" : "");
+
+                foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.xcls"])
+                {
+                    sb.AppendFormat("<option value=\"{0}\" aria-selected=\"{1}\"{2}>{0}</option>", o[3].ToString(), o[4].ToString(), (mode != "new" && mode != "add" && (_gridMain != null && _gridMain["XCLS"].ToString() == o[3].ToString())) ? " selected" : "");
+                }
+
+                sb.Append("</select> 개발원가견적표");
+            }
+            else
+            {
+                //if (_gridMain["PARTCLS"].ToString() == "회로")
+                //{
+                //    sb.AppendFormat("(회로) 개발원가견적표<h6 style=\"font-size: 15px; letter-spacing: 0; margin-top: 4px\">{0}</h6><input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"XCLS\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "XCLS", ""));
+                //}
+                //else sb.AppendFormat("({0}) 개발원가견적표<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"XCLS\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "XCLS", ""));
+                sb.AppendFormat("({0}) 개발원가견적표<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"XCLS\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "XCLS", ""));
+            }
+        }
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PARTCLS\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "PARTCLS", "")); //작성파트
+        sb.Append("</div>"); //ttl
+
+        //sb.Append("<div class=\"ttl-bottom\">");
+        //sb.Append("<textarea></textarea>");
+        //sb.Append("</div>"); //ttl-bottom
+
+        sb.Append("<div class=\"float-right\">");
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"width: 380px\">");
+        sb.Append("<colgroup><col style=\"width: 20%\" /><col style=\"width: 30%\" /><col style=\"width: 20%\" /><col style=\"width: 30%\" /></colgroup>");
+        sb.Append("<tbody>");
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">시트명</td>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse" || mode == "reuse")
+        {
+            sb.AppendFormat("<td class=\"cell-input\" colspan=\"3\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SUBJECT\" value=\"{0}\" maxlength=\"30\" /></td>", mode == "new" || mode == "add" ? "" : DataHelper.GetFieldValueToString(_gridMain, "SUBJECT", ""));
+        }
+        else sb.AppendFormat("<td class=\"cell-read\" colspan=\"3\">{0}</td>", DataHelper.GetFieldValueToString(_gridMain, "SUBJECT", ""));
+        sb.Append("</tr>");
+
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">관리 NO</td>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<td class=\"cell-read\" colspan=\"3\"><input type=\"text\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"DOCNUM\" value=\"{0}\" style=\"width: 80%\" />", mode == "new" || mode == "add" ? "" : DataHelper.GetFieldValueToString(_gridMain, "DOCNUM", ""));
+            sb.AppendFormat("<span class=\"float-right\">Rev. <input type=\"text\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"VER\" value=\"{0}\" style=\"width: 20px\" /></span></td>", mode == "new" || mode == "add" ? "0" : DataHelper.GetFieldValueToString(_gridMain, "VER", ""));
+        }
+        else
+        {
+            sb.AppendFormat("<td class=\"cell-read\" colspan=\"3\">{0}", DataHelper.GetFieldValueToString(_gridMain, "DOCNUM", ""));
+            sb.AppendFormat("<span class=\"float-right pr-10\">Rev. {0}<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"VER\" value=\"{0}\" /></span></td>", mode == "new" || mode == "add" ? "0" : DataHelper.GetFieldValueToString(_gridMain, "VER", ""));
+        }
+        sb.Append("</tr>");
+
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">작성부서</td>");
+        if (reportMode > 1) sb.AppendFormat("<td>{0}</td>", DataHelper.GetFieldValueToString(_gridMain, "CRDPT", Session["DeptName"].ToString()));
+        else sb.AppendFormat("<td>{0}</td>", Session["DeptName"].ToString());
+
+        //sb.Append("<td class=\"text-center info\">기준환율</td>");
+        //string[] v = Master.StdList["XR"].ToString().Split(';');
+        //sb.AppendFormat("<td><a href=\"javascript:\" onclick=\"_ZF.fn.viewStdInfo('XR', '{0}');\" title=\"{1} 일자 기준환율 보기\">{1}</a>", v[0], v[1]);
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"XRATE\" value=\"{0}\" />", v[1]); //기준환율일자
+        //sb.Append("</td></tr>");
+
+        sb.Append("<td class=\"text-center info\"><a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"_zw.fn.modalStdInfo('XR');\" title=\"선택 일자 기준환율 보기\">기준환율</a></td>");
+        sb.Append(CellSelect(mode, _gridMain, "XRATEDT", ""));
+        sb.Append("</tr>");
+
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">작성자</td>");
+        if (reportMode > 1) sb.AppendFormat("<td>{0}</td>", DataHelper.GetFieldValueToString(_gridMain, "CRNM", Session["URName"].ToString()));
+        else sb.AppendFormat("<td>{0}</td>", Session["URName"].ToString());
+
+        //sb.Append("<td class=\"text-center info\">기준임율</td>");
+        //v = Master.StdList["SP"] != null ? Master.StdList["SP"].ToString().Split(';') : "0;".Split(';');
+        //sb.AppendFormat("<td><a href=\"javascript:\" onclick=\"_ZF.fn.viewStdInfo('SP', '{0}');\" title=\"{1} 일자 기준임율 보기\">{1}</a>", v[0], v[1]);
+        //if (Master.AppID != 0 || Master.ReportMode < 2) sb.Append("<a id=\"_calcPay\" class=\"btn btn-warning btn-xs float-right\" title=\"기준임율 계산표 보기\" style=\"padding:0 3px;font-size:11px\"><i class=\"glyphicon glyphicon-stats\"></i></a>");
+        //else sb.Append("<a id=\"_calcPay\" class=\"btn btn-default btn-xs float-right\" disabled=\"disabled\" title=\"기준임율 계산표 보기\" style=\"padding:0 3px;font-size:11px\"><i class=\"glyphicon glyphicon-stats\"></i></a>");
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"STDPAYDT\" value=\"{0}\" />", v[1]); //기준임율일자
+        //sb.Append("</td></tr>");
+
+        sb.Append("<td class=\"text-center info\"><a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"_zw.fn.modalStdInfo('SP');\" title=\"선택 일자 기준임율 보기\">기준임율</a></td>");
+        sb.Append(CellSelect(mode, _gridMain, "STDPAYDT", ""));
+        sb.Append("</tr>");
+
+        sb.Append("<tr>");
+        sb.Append("<td class=\"text-center info\">작성일자</td>");
+        if (reportMode > 1) sb.AppendFormat("<td>{0}</td>", _gridMain != null ? Convert.ToDateTime(_gridMain["CRDT"]).ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"));
+        else sb.AppendFormat("<td>{0}</td>", DateTime.Now.ToString("yyyy-MM-dd"));
+
+        //sb.Append("<td class=\"text-center info\">외주임율</td>");
+        //v = Master.StdList["OP"].ToString().Split(';');
+        //sb.AppendFormat("<td><a href=\"javascript:\" onclick=\"_ZF.fn.viewStdInfo('OP', '{0}');\" title=\"{1} 일자 외주임율 보기\">{1}</a>", v[0], v[1]);
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"OUTPAYDT\" value=\"{0}\" />", v[1]); //외주임율일자
+        //sb.Append("</td></tr>");
+
+        sb.Append("<td class=\"text-center info\"><a class=\"z-lnk-navy-n\" href=\"javascript:void(0)\" onclick=\"_zw.fn.modalStdInfo('OP');\" title=\"선택 일자 외주임율 보기\">외주임율</a></td>");
+        sb.Append(CellSelect(mode, _gridMain, "OUTPAYDT", ""));
+        sb.Append("</tr>");
+
+        //sb.Append("<tr>");
+        //sb.Append("<td class=\"text-center info\">Ver.</td>");
+        //if (Master.Mode == "new" || Master.Mode == "add" || Master.Mode == "edit" || Master.Mode == "simul" || Master.Mode == "renew" || Master.Mode == "reuse")
+        //{
+        //    sb.AppendFormat("<td class=\"cell-read\" colspan=\"3\"><input type=\"text\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"VER\" value=\"{0}\" /></td>", Master.Mode == "new" || Master.Mode == "add" ? "0" : DataHelper.GetFieldValueToString(_gridMain, "VER", ""));
+        //}
+        //else sb.AppendFormat("<td class=\"cell-read\" colspan=\"3\">{0}<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"VER\" value=\"{0}\" /></td>", DataHelper.GetFieldValueToString(_gridMain, "VER", "0"));
+        //sb.Append("</tr>");
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        sb.Append("</div>"); //float-right
+        sb.Append("</div>"); //right
+
+        //HIdden Main Field --------->
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PNTCEID\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "PNTCEID", "0")); //상위견적표
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PNTSTATE\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "PNTSTATE", "0")); //상위연계상태
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"REQSTATE\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "REQSTATE", "0")); //요청상태
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"FCFMSS\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "FCFMSS", "N")); //작성자 확인상태
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SCFMSS\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "SCFMSS", "N")); //부서장 확인상태
+
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"STATE\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "STATE", "0")); //상태
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"ORGCEID\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "ORGCEID", "0")); //처음작성견적표
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SEQ\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "SEQ", "1")); //순번
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"ISLAST\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "ISLAST", "Y")); //최신버전여부
+
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"CRNM\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "CRNM", Session["URName"].ToString()));
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"CRID\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "CRID", Session["URID"].ToString()));
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"CRDPT\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "CRDPT", Session["DeptName"].ToString()));
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"CRDPTID\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "CRDPTID", Session["DeptID"].ToString()));
+
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"LNKEA\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "LNKEA", "0")); //관련결재문서
+
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"CORP\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "CORP", "")); //생산지
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"CORPID\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "CORPID", ""));
+        //sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PLANCNT\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "PLANCNT", "0")); //기획수량
+
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"CURRENCY\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "CURRENCY", "USD")); //원가구성단위
+        sb.AppendFormat("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"TTL\" value=\"{0}\" />", DataHelper.GetFieldValueToString(_gridMain, "TTL", "")); //TTL (20-11-27 추가)
+
+        sb.AppendFormat("<textarea class=\"d-none\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"DSCPT\">{0}</textarea>", DataHelper.GetFieldValueToString(_gridMain, "DSCPT", "")); //설명글(재작성, 재사용 사유)
+                                                                                                                                                                                    //<---------
+
+        sb.Append("</div>"); //z-ce-head
+
+        return sb.ToString();
+    }
+
+    private string RenderBody(string mode, int reportMode)
+    {
+        ArrayList vClass = (ArrayList)ViewBag.CodeTable["ce.class"];
+        string sTempValue = "";
+        int iRowCnt = 0;
 
         StringBuilder sb = new StringBuilder();
 
-        sb.Append("<div class=\"z-list-page d-flex align-items-center\">");
-        sb.Append("<i class=\"fe-clock mr-2\"></i>");
-        sb.Append("<div class=\"z-list-cnt mr-3\">");
-        sb.Append("<select class=\"custom-select\" id=\"_SearchYear\">");
-        sb.Append("<option value=\"\">전체</option>");
-        sb.Append("<option value=\"1\" selected>이전 1년</option>");
-        for (int i = DateTime.Now.Year; i >= 2020; i--)
+        sb.Append("<div class=\"z-ce-body\">");
+
+        sb.Append("<div class=\"left\">");
+        sb.Append("<div class=\"float-left pl-10\">&#9679; 원가구성</div>");
+        sb.AppendFormat("<div class=\"float-right pr-10\">단위 : {0}</div>", DataHelper.GetFieldValueToString(_gridMain, "CURRENCY", "USD"));
+        sb.Append("<div class=\"z-grid-container\">");
+
+        #region [재료비]
+        sb.Append("<table class=\"z-grid z-grid-bordered\" data-zf-subtable=\"CE_COST_MTR\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col style=\"width: 25%\" /><col style=\"width: 22%\" /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"info\">");
+        sb.Append("<td rowspan=\"2\">구분</td><td colspan=\"3\">재료비 구성</td><td rowspan=\"2\">%</td>");
+        sb.Append("</tr>");
+        sb.Append("<tr class=\"info\">");
+        sb.Append("<td>내수</td><td>수입</td><td>합계</td>");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        iRowCnt = (_grid1 != null && _grid1.Count > 0) ? _grid1.Count : 4;
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
         {
-            sb.AppendFormat("<option value=\"{0}\">{0}년</option>", i.ToString());
+            for (int i = 0; i < iRowCnt; i++)
+            {
+                sb.Append("<tr>");
+
+                sTempValue = (_grid1 == null) ? ((object[])vClass[i])[3].ToString() : DataHelper.GetFieldValueToString(_grid1[i], "CLSDESC", ((object[])vClass[i])[3].ToString());
+                sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"CLSDESC\" value=\"{0}\" /></th>", sTempValue);
+
+                sTempValue = (_grid1 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid1[i], "INCOST", ""), 4, "");
+                sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"INCOST\" value=\"{0}\" /></td>", sTempValue);
+
+                sTempValue = (_grid1 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid1[i], "OUTCOST", ""), 4, "");
+                sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"OUTCOST\" value=\"{0}\" /></td>", sTempValue);
+
+                sTempValue = (_grid1 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid1[i], "SUM", ""), 4, "");
+                sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"SUM\" value=\"{0}\" /></th>", sTempValue);
+
+                sTempValue = (mode == "new" || _grid1 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid1[i], "RATE", ""), 2, "");
+                sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"RATE\" value=\"{0}\" /></th>", sTempValue);
+                sb.Append("</tr>");
+            }
         }
-        sb.Append("</select>");
+        else
+        {
+
+            for (int i = 0; i < iRowCnt; i++)
+            {
+                //sb.Append((i + 1).ToString() + " : " + DataHelper.GetFieldValueToString(_grid1[i], "CLSDESC", "") + "<br />");
+                sb.Append("<tr>");
+
+                sTempValue = (_grid1 == null) ? "" : DataHelper.GetFieldValueToString(_grid1[i], "CLSDESC", ((object[])vClass[i])[3].ToString());
+                sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+
+                sTempValue = (_grid1 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid1[i], "INCOST", ""), 4, "");
+                sb.AppendFormat("<td class=\"text-right\">{0}</td>", sTempValue);
+
+                sTempValue = (_grid1 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid1[i], "OUTCOST", ""), 4, "");
+                sb.AppendFormat("<td class=\"text-right\">{0}</td>", sTempValue);
+
+                sTempValue = (_grid1 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid1[i], "SUM", ""), 4, "");
+                sb.AppendFormat("<th class=\"text-right\">{0}</th>", sTempValue);
+
+                sTempValue = (_grid1 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid1[i], "RATE", ""), 2, "");
+                sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+                sb.AppendFormat("</tr>");
+            }
+        }
+        sb.Append("</tbody>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">재료비 계 (A)</th>");
+        if ((mode != "edit" && reportMode < 2) || mode == "add")
+        {
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"MTRCOSTIN\" value=\"\" /></th>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"MTRCOSTOUT\" value=\"\" /></th>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"MTRCOST\" value=\"\" /></th>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"MTRCOSTRT\" value=\"\" /></th>");
+        }
+        else if (mode == "new" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"MTRCOSTIN\" value=\"{0}\" /></th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "MTRCOSTIN", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"MTRCOSTOUT\" value=\"{0}\" /></th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "MTRCOSTOUT", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"MTRCOST\" value=\"{0}\" /></th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "MTRCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"MTRCOSTRT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "MTRCOSTRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "MTRCOSTIN", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "MTRCOSTOUT", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "MTRCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "MTRCOSTRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
+
+        iRowCnt = 0;
+        #endregion
+
+        #region [수입경비]
+        sb.Append("<table class=\"z-grid z-grid-bordered\" data-zf-subtable=\"CE_COST_IM\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col style=\"width: 25%\" /><col style=\"width: 22%\" /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"info\">");
+        sb.Append("<td rowspan=\"2\">구분</td><td colspan=\"3\">수입경비 구성</td><td rowspan=\"2\">%</td>");
+        sb.Append("</tr>");
+        sb.Append("<tr class=\"info\">");
+        sb.Append("<td>기준</td><td>%</td><td>합계</td>");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append("<tr>");
+
+            sTempValue = (_grid2 == null) ? "수입경비(b1)" : DataHelper.GetFieldValueToString(_grid2[0], "CLSDESC", "수입경비(b1)");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"CLSDESC\" value=\"{0}\" /></th>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "수입재료비 기준" : DataHelper.GetFieldValueToString(_grid2[0], "STDDESC", "수입재료비 기준");
+            sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"STDDESC\" value=\"{0}\" /></td>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid2[0], "IMRATE", ""), 2, "");
+            sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"IMRATE\" value=\"{0}\" /></td>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid2[0], "SUM", ""), 4, "");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"SUM\" value=\"{0}\" /></th>", sTempValue);
+
+            sTempValue = (mode == "new" || _grid2 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid2[0], "RATE", ""), 2, "");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"RATE\" value=\"{0}\" /></th>", sTempValue);
+            sb.Append("</tr>");
+            sb.Append("<tr>");
+
+            sTempValue = (_grid2 == null) ? "자재물류비(b2)" : DataHelper.GetFieldValueToString(_grid2[1], "CLSDESC", "자재물류비(b2)");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"CLSDESC\" value=\"자재물류비(b2)\" /></th>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "KRW 재료비" : DataHelper.GetFieldValueToString(_grid2[1], "STDDESC", "KRW 재료비");
+            sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"STDDESC\" value=\"KRW 재료비\" /></td>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid2[1], "IMRATE", ""), 2, "");
+            sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"IMRATE\" value=\"2.00%\" /></td>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid2[1], "SUM", ""), 4, "");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"SUM\" value=\"{0}\" /></th>", sTempValue);
+
+            sTempValue = (mode == "new" || _grid2 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid2[1], "RATE", ""), 2, "");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"RATE\" value=\"{0}\" /></th>", sTempValue);
+            sb.Append("</tr>");
+        }
+        else
+        {
+            sb.Append("<tr>");
+
+            sTempValue = (_grid2 == null) ? "수입경비(b1)" : DataHelper.GetFieldValueToString(_grid2[0], "CLSDESC", "수입경비(b1)");
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "수입재료비 기준" : DataHelper.GetFieldValueToString(_grid2[0], "STDDESC", "수입재료비 기준");
+            sb.AppendFormat("<td class=\"text-center\">{0}</td>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid2[0], "IMRATE", ""), 2, "");
+            sb.AppendFormat("<td class=\"text-right\">{0}</td>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid2[0], "SUM", ""), 4, "");
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid2[0], "RATE", ""), 2, "");
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+            sb.Append("</tr>");
+            sb.Append("<tr>");
+
+            sTempValue = (_grid2 == null) ? "자재물류비(b2)" : DataHelper.GetFieldValueToString(_grid2[1], "CLSDESC", "자재물류비(b2)");
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "KRW 재료비" : DataHelper.GetFieldValueToString(_grid2[1], "STDDESC", "KRW 재료비");
+            sb.AppendFormat("<td class=\"text-center\">{0}</td>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid2[1], "IMRATE", ""), 2, "");
+            sb.AppendFormat("<td class=\"text-right\">{0}</td>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid2[1], "SUM", ""), 4, "");
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", sTempValue);
+
+            sTempValue = (_grid2 == null) ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid2[1], "RATE", ""), 2, "");
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">수입경비 (B)</th><th> = (b1) + (b2)</th>");
+        if ((mode != "edit" && reportMode < 2) || mode == "add")
+        {
+            sb.Append("<th class=\"text-right\"></th>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"IMCOST\" value=\"\" /></th>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"IMCOSTRT\" value=\"\" /></th>");
+        }
+        else if (mode == "new" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append("<th class=\"text-right\"></th>");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"IMCOST\" value=\"{0}\" /></th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "IMCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"IMCOSTRT\" value=\"{0}\" /></th>", mode == "new" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "IMCOSTRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.Append("<th class=\"text-right\"></th>");
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "IMCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "IMCOSTRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
+        #endregion
+
+        #region [가공비]
+        sb.Append("<div class=\"z-grid-top\">");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append("<div class=\"z-grid-btn\">");
+            sb.Append("<button type=\"button\" class=\"btn btn-success btn-xs\" title=\"추가\" data-btn=\"add\"><i class=\"fas fa-plus\"></i></button>");
+            sb.Append("<button type=\"button\" class=\"btn btn-success btn-xs\" title=\"삭제\" data-btn=\"del\"><i class=\"fas fa-minus\"></i></button>");
+            sb.Append("</div>");
+
+            sb.Append("<script type=\"text/template\" class=\"zf-sp-template\">"); //template script
+            sb.Append("<tr>");
+            sb.Append("<th class=\"cell-select\"><select data-zf-ftype=\"SUBFIELD\" data-zf-field=\"CLSDESC\" onchange=\"sub_cell_onchange();\">");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.costpc"])
+            {
+                sb.AppendFormat("<option value=\"{0}\" aria-label=\"{1}\" aria-selected=\"{2}\">{0}</option>", o[3].ToString(), o[4].ToString(), o[5].ToString());
+            }
+            sb.Append("</th>");
+            sb.Append("<td class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"MPNT\" data-inputmask=\"number;10;2\" value=\"\" /></td>");
+            sb.Append("<td class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"MPAY\" value=\"\" /></td>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"SUM\" value=\"\" /></th>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"RATE\" value=\"\" /></th>");
+            sb.Append("</tr>");
+            sb.Append("</script>"); //template script
+
+            sb.Append("<table class=\"z-grid z-grid-bordered\" data-zf-subtable=\"CE_COST_PC\">");
+        }
+        else
+        {
+            sb.Append("<table class=\"z-grid z-grid-bordered\" data-zf-subtable=\"CE_COST_PC\" style=\"margin-top: 24px\">");
+        }
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col style=\"width: 25%\" /><col style=\"width: 22%\" /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"info\">");
+        sb.Append("<td rowspan=\"2\">구분</td><td colspan=\"3\">가공비 구성</td><td rowspan=\"2\">%</td>");
+        sb.Append("</tr>");
+        sb.Append("<tr class=\"info\">");
+        sb.Append("<td>공수/점수</td><td>분임/점당가격</td><td>합계</td>");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        iRowCnt = (_grid3 != null && _grid3.Count > 0) ? _grid3.Count : 3;
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            if (iRowCnt < 3) iRowCnt = 3;
+
+            for (int i = 0; i < iRowCnt; i++)
+            {
+                sb.Append("<tr>");
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0 && i < _grid3.Count) ? DataHelper.GetFieldValueToString(_grid3[i], "CLSDESC", "") : "";
+                sb.Append("<th class=\"cell-select\"><select data-zf-ftype=\"SUBFIELD\" data-zf-field=\"CLSDESC\" onchange=\"sub_cell_onchange();\">");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.costpc"])
+                {
+                    sb.AppendFormat("<option value=\"{0}\" aria-label=\"{1}\" aria-selected=\"{2}\"{3}>{0}</option>", o[3].ToString(), o[4].ToString(), o[5].ToString(), o[3].ToString() == sTempValue ? " selected" : "");
+                }
+                sb.Append("</th>");
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0 && i < _grid3.Count) ? StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid3[i], "MPNT", ""), 2, "") : "";
+                sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-right\" data-zf-ftype=\"SUBFIELD\" data-zf-field=\"MPNT\" data-inputmask=\"number;10;2\" value=\"{0}\" /></td>", sTempValue);
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0 && i < _grid3.Count) ? StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid3[i], "MPAY", ""), 4, "") : "";
+                sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"MPAY\" value=\"{0}\" /></td>", sTempValue);
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0 && i < _grid3.Count) ? StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid3[i], "SUM", ""), 4, "") : "";
+                sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"SUM\" value=\"{0}\" /></th>", sTempValue);
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0 && i < _grid3.Count) ? StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid3[i], "RATE", ""), 2, "") : "";
+                sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"RATE\" value=\"{0}\" /></th>", sTempValue);
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            for (int i = 0; i < iRowCnt; i++)
+            {
+                sb.Append("<tr>");
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0) ? DataHelper.GetFieldValueToString(_grid3[i], "CLSDESC", "") : "";
+                sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0) ? StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid3[i], "MPNT", ""), 2, "") : "";
+                sb.AppendFormat("<td class=\"text-right\">{0}</td>", sTempValue);
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0) ? StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid3[i], "MPAY", ""), 4, "") : "";
+                sb.AppendFormat("<td class=\"text-right\">{0}</td>", sTempValue);
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0) ? StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid3[i], "SUM", ""), 4, "") : "";
+                sb.AppendFormat("<th class=\"text-right\">{0}</th>", sTempValue);
+
+                sTempValue = (_grid3 != null && _grid3.Count > 0) ? StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid3[i], "RATE", ""), 2, "") : "";
+                sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+                sb.Append("</tr>");
+            }
+        }
+        sb.Append("</tbody>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">가공비 계 (C)</th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PCCOSTMPNT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "PCCOSTMPNT", ""), 2, ""));
+            sb.Append("<th class=\"text-right\"></th>");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PCCOST\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "PCCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PCCOSTRT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "PCCOSTRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "PCCOSTMPNT", ""), 2, ""));
+            sb.Append("<th class=\"text-right\"></th>");
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "PCCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "PCCOSTRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
         sb.Append("</div>");
 
-        if (formTable == "MyList")
+        iRowCnt = 0;
+        #endregion
+
+        #region [소모품비, 변동원가, 고정원가]
+        //소모품비
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">소모품비 (D)</th><th> = ( A + C ) * 소모품비율</th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
         {
-            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "9" ? " checked" : "";
-            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
-            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"9\"{0}>", sSelected);
-            sb.Append("<span class=\"custom-control-label\">임시 저장</span>");
-            sb.Append("</label>");
-
-            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "" ? " checked" : "";
-            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
-            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"\"{0}>", sSelected);
-            sb.Append("<span class=\"custom-control-label\">전체</span>");
-            sb.Append("</label>");
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SPLEX\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "SPLEX", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SPLEXRT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "SPLEXRT", ""), 2, ""));
         }
-        else if (formTable == "DeptList")
+        else
         {
-            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "Y" ? " checked" : "";
-            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo01\">");
-            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo01\" value=\"Y\"{0}>", sSelected);
-            sb.Append("<span class=\"custom-control-label\">확인 대상</span>");
-            sb.Append("</label>");
-
-            sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd1"]) == "" ? " checked" : "";
-            sb.Append("<label class=\"custom-control custom-radio m-0 mr-2\" for=\"rdo02\">");
-            sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoSearch\" id=\"rdo02\" value=\"\"{0}>", sSelected);
-            sb.Append("<span class=\"custom-control-label\">전체</span>");
-            sb.Append("</label>");
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "SPLEX", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "SPLEXRT", ""), 2, ""));
         }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
 
+        //변동원가
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">변동원가 (E)</th><th> = (A) + (B) + (C) + (D)</th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"VARCOST\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "VARCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"VARCOSTRT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "VARCOSTRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "VARCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "VARCOSTRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
+
+        //고정원가
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">고정원가 (F)</th><th> = ( E - B - D ) * 고정경비율</th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"FIXCOST\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "FIXCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"FIXCOSTRT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "FIXCOSTRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "FIXCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "FIXCOSTRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
+
+        //제조원가
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">제조원가 (G)</th><th> = 변동원가 (E) + 고정원가 (F)</th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PRODCOST\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "PRODCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"PRODCOSTRT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "PRODCOSTRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "PRODCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "PRODCOSTRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
+        #endregion
+
+        #region [기타원가(판관비)]
+        sb.Append("<div class=\"z-grid-top\">");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append("<div class=\"z-grid-btn\">");
+            sb.Append("<button type=\"button\" class=\"btn btn-success btn-xs\" title=\"추가\" data-btn=\"add\"><i class=\"fas fa-plus\"></i></button>");
+            sb.Append("<button type=\"button\" class=\"btn btn-success btn-xs\" title=\"삭제\" data-btn=\"del\"><i class=\"fas fa-minus\"></i></button>");
+            sb.Append("</div>");
+
+            sb.Append("<script type=\"text/template\" class=\"zf-sp-template\">"); //template script
+            sb.Append("<tr>");
+            sb.Append("<th class=\"cell-select\"><select data-zf-ftype=\"SUBFIELD\" data-zf-field=\"CLSDESC\" onchange=\"sub_cell_onchange();\">");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.costsga"])
+            {
+                sb.AppendFormat("<option value=\"{0}\" aria-label=\"{1}\" aria-selected=\"{2}\" aria-checked=\"{3}\"{4}>{0}</option>", o[3].ToString(), o[4].ToString(), o[5].ToString(), o[6].ToString(), o[3].ToString() == sTempValue ? " selected" : "");
+            }
+            sb.Append("</th>");
+            sb.Append("<td class=\"cell-read\"><input type=\"text\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"STDDESC\" value=\"\" /></td>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"SUM\" data-inputmask=\"number;10;4\" value=\"\" /></th>");
+            sb.Append("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"RATE\" value=\"\" /></th>");
+            sb.Append("</tr>");
+            sb.Append("</script>"); //template script
+
+            sb.Append("<table class=\"z-grid z-grid-bordered\" data-zf-subtable=\"CE_COST_SGA\">");
+        }
+        else
+        {
+            sb.Append("<table class=\"z-grid z-grid-bordered\" data-zf-subtable=\"CE_COST_SGA\" style=\"margin-top: 24px\">");
+        }
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"info\">");
+        sb.Append("<td rowspan=\"2\">구분</td><td colspan=\"2\">기타원가 구성</td><td rowspan=\"2\">%</td>");
+        sb.Append("</tr>");
+        sb.Append("<tr class=\"info\">");
+        sb.Append("<td>계산 내역</td><td>합계</td>");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        iRowCnt = (_grid4 != null && _grid4.Count > 0) ? _grid4.Count : 5;
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            string sSeletedValue = "";
+            string sSeletedOption = "";
+
+            if (iRowCnt < 5) iRowCnt = 5;
+
+            for (int i = 0; i < iRowCnt; i++)
+            {
+                sb.Append("<tr>");
+
+                sTempValue = (_grid4 != null && _grid4.Count > 0 && i < _grid4.Count) ? DataHelper.GetFieldValueToString(_grid4[i], "CLSDESC", "") : "";
+                sb.Append("<th class=\"cell-select\"><select data-zf-ftype=\"SUBFIELD\" data-zf-field=\"CLSDESC\" onchange=\"sub_cell_onchange();\">");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.costsga"])
+                {
+                    sb.AppendFormat("<option value=\"{0}\" aria-label=\"{1}\" aria-selected=\"{2}\" aria-checked=\"{3}\"{4}>{0}</option>", o[3].ToString(), o[4].ToString(), o[5].ToString(), o[6].ToString(), o[3].ToString() == sTempValue ? " selected" : "");
+
+                    sSeletedValue = o[3].ToString() == sTempValue ? o[3].ToString() : "";
+                    sSeletedOption = o[3].ToString() == sTempValue ? o[5].ToString() : "";
+                }
+                sb.Append("</th>");
+
+                sTempValue = (_grid4 != null && _grid4.Count > 0 && i < _grid4.Count) ? DataHelper.GetFieldValueToString(_grid4[i], "STDDESC", "") : "";
+                if (sSeletedValue == "기타") sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" data-zf-ftype=\"SUBFIELD\" data-zf-field=\"STDDESC\" value=\"{0}\" /></td>", sTempValue);
+                else sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"STDDESC\" value=\"{0}\" /></td>", sTempValue);
+
+                sTempValue = (_grid4 != null && _grid4.Count > 0 && i < _grid4.Count) ? StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid4[i], "SUM", ""), 4, "") : "";
+                if (sSeletedOption == "w") sb.AppendFormat("<th class=\"cell-input\"><input type=\"text\" class=\"text-right\" data-zf-ftype=\"SUBFIELD\" data-zf-field=\"SUM\" data-inputmask=\"number;10;4\" value=\"{0}\" /></th>", sTempValue);
+                else sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"SUM\" data-inputmask=\"number;10;4\" value=\"{0}\" /></th>", sTempValue);
+
+                sTempValue = (_grid4 != null && _grid4.Count > 0 && i < _grid4.Count) ? StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid4[i], "RATE", ""), 2, "") : "";
+                sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"SUBFIELD\" data-zf-field=\"RATE\" value=\"{0}\" /></th>", sTempValue);
+                sb.Append("</tr>");
+            }
+        }
+        else
+        {
+            for (int i = 0; i < iRowCnt; i++)
+            {
+                sb.Append("<tr>");
+
+                sTempValue = (_grid4 != null && _grid4.Count > 0) ? DataHelper.GetFieldValueToString(_grid4[i], "CLSDESC", "") : "";
+                sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+
+                sTempValue = (_grid4 != null && _grid4.Count > 0) ? DataHelper.GetFieldValueToString(_grid4[i], "STDDESC", "") : "";
+                sb.AppendFormat("<td>{0}</td>", sTempValue);
+
+                sTempValue = (_grid4 != null && _grid4.Count > 0) ? StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_grid4[i], "SUM", ""), 4, "") : "";
+                sb.AppendFormat("<th class=\"text-right\">{0}</th>", sTempValue);
+
+                sTempValue = (_grid4 != null && _grid4.Count > 0) ? StringHelper.StrPercent(DataHelper.GetFieldValueToString(_grid4[i], "RATE", ""), 2, "") : "";
+                sb.AppendFormat("<th class=\"text-center\">{0}</th>", sTempValue);
+                sb.Append("</tr>");
+            }
+        }
+        sb.Append("</tbody>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">판관비 계 (H)</th><th> = 제조원가 (G) * 관리비율</th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SGACOST\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "SGACOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SGACOSTRT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "SGACOSTRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "SGACOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "SGACOSTRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
+        sb.Append("</div>");
+        #endregion
+
+        #region [총원가, 판매예정가, 예상영업이익률, 예상공헌이익률]
+        //총원가
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 17%\" /><col style=\"width: 12%\" /></colgroup>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">총원가 (I)</th><th> = 제조원가 (G) + 판관비 (H)</th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-center\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"TOTALCOST\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "TOTALCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">100%</th>");
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"TOTALCOST\" value=\"{0}\" /></th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "TOTALCOST", ""), 4, ""));
+            sb.AppendFormat("<th class=\"text-center\">100%</th>");
+        }
+        sb.Append("</tr>");
+        sb.Append("</tfoot>");
+        sb.Append("</table>");
+
+        //판매예정가
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 29%\" /></colgroup>");
+        sb.Append("<tbody>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\">판매예정가 (J)</th><th></th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-input\"><input type=\"text\" class=\"text-right\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"EXSALEPRICE\" data-inputmask=\"number;10;4\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "EXSALEPRICE", ""), 4, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"EXSALEPRICE\" value=\"{0}\" /></th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "EXSALEPRICE", ""), 4, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        //예상영업이익 이익률
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 29%\" /></colgroup>");
+        sb.Append("<tbody>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\" rowspan=\"2\">예상영업이익 이익률%</th><th rowspan=\"2\"> = (J) - (I)</th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"EXOPPROFIT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "EXOPPROFIT", ""), 4, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "EXOPPROFIT", ""), 4, ""));
+        }
+        sb.Append("</tr><tr class=\"warning\">");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-input\"><input type=\"text\" class=\"text-right\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"EXOPPROFITRT\" data-inputmask=\"percent;2;2\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "EXOPPROFITRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "EXOPPROFITRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        //예상공헌이익 공헌이익률
+        sb.Append("<table class=\"z-grid z-grid-bordered\" style=\"margin-top: 24px\">");
+        sb.Append("<colgroup><col style=\"width: 24%\" /><col /><col style=\"width: 29%\" /></colgroup>");
+        sb.Append("<tbody>");
+        sb.Append("<tr class=\"warning\">");
+        sb.Append("<th class=\"text-center\" rowspan=\"2\">예상공헌이익 공헌이익률%</th><th rowspan=\"2\"></th>");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"EXCTBPROFIT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "EXCTBPROFIT", ""), 4, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.CvtNumeric(DataHelper.GetFieldValueToString(_gridMain, "EXCTBPROFIT", ""), 4, ""));
+        }
+        sb.Append("</tr><tr class=\"warning\">");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.AppendFormat("<th class=\"cell-read\"><input type=\"text\" class=\"text-right\" readonly data-zf-ftype=\"MAINFIELD\" data-zf-field=\"EXCTBPROFITRT\" value=\"{0}\" /></th>", mode == "new" || mode == "add" ? "" : StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "EXCTBPROFITRT", ""), 2, ""));
+        }
+        else
+        {
+            sb.AppendFormat("<th class=\"text-right\">{0}</th>", StringHelper.StrPercent(DataHelper.GetFieldValueToString(_gridMain, "EXCTBPROFITRT", ""), 2, ""));
+        }
+        sb.Append("</tr>");
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+        #endregion
+
+        sb.Append("</div>"); //z-grid-container
+        sb.Append("</div>"); //left
+
+        sb.Append("<div class=\"middle\">");
+        sb.Append("<div class=\"pt-15\" style=\"margin-top: .625rem\">");
+        sb.Append("<button type=\"button\" class=\"btn btn-pink btn-xs\" aria-expanded=\"true\"><i class=\"fas fa-chevron-left text-white\"></i></button>");
+        sb.Append("</div>");
         sb.Append("</div>");
 
-        sb.Append("<div class=\"flex-fill z-lv-cond d-flex\">");
-        sb.Append("<div class=\"input-group justify-content-end\">");
-
-        if (formTable == "MyList" || formTable == "DeptList" || formTable == "List" || formTable == "Report")
+        sb.Append("<div class=\"right\">");
+        sb.Append("<div class=\"float-left\">");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
         {
-            sb.Append("<div class=\"input-group-prepend\">");
-            sb.AppendFormat("<span class=\"input-group-text bg-light\">{0}</span>", "모델 + 고객");
-            sb.Append("</div>");
-            sb.AppendFormat("<input type=\"text\" class=\"form-control search-text\" placeholder=\"{0}\" style=\"max-width: 150px\" value=\"{1}\">", Resources.Global.Search, ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["searchtext"]));
-            sb.Append("<div class=\"input-group-append\">");
-            sb.Append("<button class=\"btn btn-primary\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
-            sb.Append("</div>");
-        }
-        else if (formTable == "ExcelList")
-        {
+            if (reportMode > 2)
+            {
+                sb.Append("<a class=\"btn btn-success\"><i class=\"fas fa-plus\"></i> 추가</a>&nbsp;");
+                sb.Append("<a class=\"btn btn-success\"><i class=\"fas fa-minus\"></i> 삭제</a>&nbsp;");
+
+                sb.Append("<a class=\"btn btn-success\"><i class=\"fas fa-arrow-up\"></i></a>&nbsp;"); //21-03-10 집계모드에서 위치 이동 막음
+                sb.Append("<a class=\"btn btn-success\"><i class=\"fas fa-arrow-down\"></i></a>&nbsp;");
+            }
+            sb.Append("<a class=\"btn btn-success\"><i class=\"fas fa-exchange-alt\"></i> 계산</a>&nbsp;");
+            //sb.Append("<a class=\"btn btn-success\"><i class=\"glyphicon glyphicon-refresh\"></i> 새로고침</a>&nbsp;");
         }
 
+        if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
+        {
+            if (mode == "" || mode == "edit" || mode == "read") sb.Append("<a class=\"btn btn-success\"><i class=\"fe-download\"></i> 엑셀내보내기</a>&nbsp;");
+        }
+
+        sb.Append("&nbsp;&nbsp;&nbsp;<span>&#9679; 부품구성 (금형, 치공구 포함)</span>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"float-right pr-10\">동일 단가의 부품 L, R은 각각 표기하지 말고 묶어서 L/R 표기");
+        sb.Append("<span class=\"pl-10 text-danger\" data-for=\"_rowCount\"></span></div>");
+        sb.Append("<div class=\"z-grid-container\">");
+        sb.Append("<div id=\"_tuiGrid\"></div>");
+        sb.Append("</div>");
         sb.Append("</div>");
         sb.Append("</div>");
 
         return sb.ToString();
     }
+
+    #region [셀 Form 렌더링 함수]
+    /// <summary>
+    /// input
+    /// </summary>
+    /// <param name="row"></param>
+    /// <param name="field"></param>
+    /// <param name="alt"></param>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    private string CellValue(string mode, DataRow row, string field, string alt, bool r)
+    {
+        string sValue = (row != null && row[field] != null) ? row[field].ToString() : alt;
+
+        bool bCell = mode == "new" || mode == "add" || mode == "edit" || mode == "reuse" || mode == "simul" ? false : true;
+        bool bRead = r || mode == "simul" ? true : false;
+
+        if ((field == "PLANCNT" || field == "SUBMODEL" || field == "SUBMODELDESC") && mode == "renew")
+        {
+            bCell = false; bRead = false;
+        }
+
+        //bCell = false; bRead = true;
+        if (bCell) return String.Format("<td class=\"cell-read\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"{0}\" value=\"{1}\" title=\"{2}\" readonly /></td>", field, sValue, Server.HtmlEncode(sValue));
+        else
+        {
+            if (bRead) return String.Format("<td class=\"cell-read\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"{0}\" value=\"{1}\" title=\"{2}\" readonly /></td>", field, sValue, Server.HtmlEncode(sValue));
+            else return String.Format("<td class=\"cell-input\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"{0}\" value=\"{1}\" title=\"{2}\" /></td>", field, sValue, Server.HtmlEncode(sValue));
+        }
+    }
+
+    /// <summary>
+    /// select
+    /// </summary>
+    /// <param name="row"></param>
+    /// <param name="field"></param>
+    /// <param name="alt"></param>
+    /// <returns></returns>
+    private string CellSelect(string mode, DataRow row, string field, string alt)
+    {
+        string sReturn = "";
+        string sValue = (row != null && row[field] != null) ? row[field].ToString() : alt;
+
+        DataRowCollection colStdInfo = null;
+        JArray vStdInfo = null;
+        string sStdType = "";
+
+        if (field == "XRATEDT" || field == "STDPAYDT" || field == "OUTPAYDT")
+        {
+            if (field == "XRATEDT") { sStdType = "xrate"; colStdInfo = _stdInfo1; }
+            else if (field == "STDPAYDT") { sStdType = "stdpay"; colStdInfo = _stdInfo2; }
+            else if (field == "OUTPAYDT") { sStdType = "outpay"; colStdInfo = _stdInfo3; }
+
+            vStdInfo = (JArray)ViewBag.R.stdinfo[sStdType];
+            if (sValue == "") sValue = vStdInfo[1].ToString();
+        }
+
+        bool bCell = mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse" ? false : true;
+        bool bRead = mode == "simul" ? true : false;
+        if (mode == "simul" && (field == "ITEMCLS" || field == "BUYERCLS" || field == "CORP" || field == "XRATEDT" || field == "STDPAYDT" || field == "OUTPAYDT")) bRead = false; //21-03-10 시뮬모드 품목, 바이어 선택 가능하게
+
+        //if (field != "ITEMCLS" && field != "CORP" && Master.ReportMode < 2) bCell = true;
+
+        //bCell = false; bRead = true;
+        if (bCell) sReturn = String.Format("<td class=\"cell-read\">{1}<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"{0}\" value=\"{1}\" /></td>", field, sValue);
+        else
+        {
+            if (bRead)
+            {
+                //if (field == "CORP") sReturn = String.Format("<td class=\"cell-read\">{0}</td>", sValue);
+                //else sReturn = String.Format("<td class=\"cell-read\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"{0}\" value=\"{1}\" readonly /></td>", field, sValue);
+                sReturn = String.Format("<td class=\"cell-read\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"{0}\" value=\"{1}\" readonly /></td>", field, sValue);
+            }
+            else
+            {
+                if (field == "CORP" || field == "XRATEDT" || field == "STDPAYDT" || field == "OUTPAYDT") sReturn = String.Format("<td class=\"cell-select\"><select id=\"ddl{0}\"{1}>", field, field != "CORP" ? " style=\"width: 88px\"" : "");
+                else sReturn = String.Format("<td class=\"cell-select\"><select id=\"ddl{0}\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"{0}\"{1}>", field, field == "BUYERCLS" && StringHelper.SafeInt(ViewBag.R.rptmode.Value) < 2 ? " disabled" : "");
+
+                sReturn += String.Format("<option value=\"\">선택</option>");
+
+                if (field == "ITEMCLS")
+                {
+                    foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.item"])
+                    {
+                        sReturn += String.Format("<option value=\"{0}\"{1}>{0}</option>", o[3].ToString(), o[3].ToString() == sValue ? " selected" : "");
+                    }
+                }
+                else if (field == "BUYERCLS")
+                {
+                    foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.buyer"])
+                    {
+                        sReturn += String.Format("<option value=\"{0}\"{1}>{0}</option>", o[3].ToString(), o[3].ToString() == sValue ? " selected" : "");
+                    }
+                }
+                else if (field == "CORP")
+                {
+                    foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.center"])
+                    {
+                        sReturn += String.Format("<option value=\"{0}_{1}_{2}\"{3}>{0}</option>", o[3].ToString(), o[4].ToString(), o[6].ToString(), o[3].ToString() == sValue ? " selected" : "");
+                    }
+                }
+                else if (field == "XRATEDT" || field == "STDPAYDT" || field == "OUTPAYDT")
+                {
+                    foreach (DataRow r in colStdInfo)
+                    {
+                        sReturn += String.Format("<option value=\"{0}_{1}\"{2}>{1}</option>", r["REGID"].ToString(), r["STDDT"].ToString(), vStdInfo[0].ToString() == r["REGID"].ToString() ? " selected" : "");
+                    }
+                }
+                sReturn += String.Format("</select>");
+
+                if (field == "STDPAYDT")
+                {
+                    if (StringHelper.SafeInt(ViewBag.R.appid.Value) != 0 || StringHelper.SafeInt(ViewBag.R.rptmode.Value) < 2) sReturn += String.Format("<button id=\"_calcPay\" class=\"btn btn-pink btn-xs float-right\" title=\"기준임율 계산표 보기\" style=\"padding:1px 3px 0\"><i class=\"fas fa-chart-bar text-white\"></i></button>");
+                    else sReturn += String.Format("<button id=\"_calcPay\" class=\"btn btn-default btn-xs float-right\" disabled title=\"기준임율 계산표 보기\" style=\"padding:1px 3px 0\"><i class=\"fas fa-chart-bar\"></i></button>");
+                }
+
+                if (field == "ITEMCLS" || field == "BUYERCLS" || field == "CORP" || field == "XRATEDT" || field == "STDPAYDT" || field == "OUTPAYDT") sReturn += String.Format("<input type=\"hidden\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"{0}\" value=\"{1}\" />", field, sValue); //생산지
+                sReturn += String.Format("</td>");
+            }
+        }
+        return sReturn;
+    }
+    #endregion
+
+    #region [엑셀연결]
+    /// <summary>
+    /// Grid Data
+    /// </summary>
+    /// <returns></returns>
+    private string RenderExcelData()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+        sb.Append("<thead><tr>");
+        //sb.Append("<th class=\"xls_th\" style=\"width:80px\">No.</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:80px\">부문코드</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:60px\">부문입력</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:200px\">품목번호</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:200px\">부품명</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:70px\">금형 CAVITY</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:200px\">규격</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:150px\">업체</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:60px\">내수구분</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:300px\">산출내역</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:50px\">통화</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:70px\">단가</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:70px\">수량</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:70px\">합계</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:70px\">USD환율</th>");
+        sb.Append("<th class=\"xls_th\" style=\"width:70px\">USD합계</th>");
+        sb.Append("</tr></thead>");
+
+        sb.Append("<tbody>");
+
+        int iSeq = 1;
+        if (_gridData != null && _gridData.Rows.Count > 0)
+        {
+            foreach (DataRow row in _gridData.Rows)
+            {
+                sb.Append("<tr>");
+                //sb.AppendFormat("<td>{0}</td>", iSeq.ToString());
+                sb.AppendFormat("<td class='text-center'>{0}</td>", row["CLSCD"].ToString());
+                sb.AppendFormat("<td class='text-center'>{0}</td>", row["CLS"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["ITEMNO"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["ITEMNM"].ToString());
+                sb.AppendFormat("<td class='text-center'>{0}</td>", row["CAVITY"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["STDDESC"].ToString());
+                sb.AppendFormat("<td class='text-center'>{0}</td>", row["VENDOR"].ToString());
+                sb.AppendFormat("<td class='text-center'>{0}</td>", row["IOCLS"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["DESC"].ToString());
+                sb.AppendFormat("<td class='text-center'>{0}</td>", row["CURRENCY"].ToString());
+                sb.AppendFormat("<td class='xl66'>{0}</td>", StringHelper.CvtNumeric(row["PRICE"].ToString(), 4));
+                sb.AppendFormat("<td class='xl66'>{0}</td>", StringHelper.CvtNumeric(row["CNT"].ToString(), 4));
+                sb.AppendFormat("<td class='xl66'>{0}</td>", StringHelper.CvtNumeric(row["SUM"].ToString(), 4));
+                sb.AppendFormat("<td class='xl66'>{0}</td>", StringHelper.CvtNumeric(row["USDEX"].ToString(), 4));
+                sb.AppendFormat("<td class='xl66'>{0}</td>", StringHelper.CvtNumeric(row["USDSUM"].ToString(), 4));
+                sb.Append("</tr>");
+
+                iSeq++;
+            }
+        }
+        else
+        {
+            sb.Append("<tr>");
+            for (int i = 0; i < 15; i++) sb.Append("<td>&nbsp;</td>");
+            sb.Append("</tr>");
+        }
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strFileName = HttpUtility.UrlEncode(_gridMain["BUYER"].ToString() + "_" + _gridMain["MODELNM"].ToString() + "_" + _gridMain["MODEL"].ToString() + "_" + DateTime.Now.ToString("yyMMddHHmm") + ".xls", new UTF8Encoding());
+
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strFileName);
+        Response.ContentType = "application/vnd.ms-excel";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\">");
+        Response.Write("<head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\" />");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    //2018-08-21 thead th => .xls_th 로 변경
+    private string ExcelStyle()
+    {
+        return @"
+body {width: 100%}
+table {width: ; border-top: 0.5pt solid windowtext; border-right: 0.5pt solid windowtext}
+.xls_th {border-bottom: 0.5pt solid windowtext; border-left: 0.5pt solid windowtext; padding: 4px; text-align: center}
+td {border-bottom: 0.5pt solid windowtext; border-left: 0.5pt solid windowtext; padding: 4px;}
+.text-center {text-align: center}
+.xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+";
+    }
+    #endregion
+
+    #region [그리드 데이타]
+    public string RenderGridData(string mode)
+    {
+        StringBuilder sb = new StringBuilder();
+        DataColumnCollection cols = null;
+
+        if (_gridData != null && _gridData.Rows.Count > 0) cols = _gridData.Columns;
+
+        #region [grid]
+        //Grid Custom Event
+        //sb.Append("class CustomTextEditor {");
+        //sb.Append("constructor(props) {");
+        //sb.Append("var el = document.createElement('input');");
+        //sb.Append("var maxLength = props.columnInfo.editor.options;");
+        //sb.Append(" ");
+        //sb.Append("el.type = 'text';");
+        //sb.Append("el.maxLength = maxLength;");
+        //sb.Append("el.value = String(props.value);");
+        //sb.Append(" ");
+        //sb.Append("this.el = el;");
+        //sb.Append("}");
+        //sb.Append(" ");
+        //sb.Append("getElement() {");
+        //sb.Append("return this.el;");
+        //sb.Append("}");
+        //sb.Append(" ");
+        //sb.Append("getValue() {");
+        //sb.Append("return this.el.value;");
+        //sb.Append("}");
+        //sb.Append(" ");
+        //sb.Append("mounted() {");
+        //sb.Append("this.el.select();");
+        //sb.Append("}");
+        //sb.Append("}");
+
+        //Columns
+        sb.Append("var gridColumns = [");
+
+        sb.Append("{header: 'ID', name: 'IID', hidden: true},");
+        sb.Append("{header: '순번', name: 'ROWSEQ', hidden: true},");
+        sb.Append("{header: '원품목ID', name: 'ORGIID', hidden: true},");
+        sb.Append("{header: '버전', name: 'VER', hidden: true},");
+        sb.Append("{header: '구분', name: 'CLSPOS', hidden: true},");
+        sb.Append("{header: '구분ID', name: 'CLSCEID', hidden: true},");
+        sb.Append("{header: '품번ID', name: 'ITEMID', hidden: true},");
+        sb.Append("{header: '기준일자', name: 'STDDT', hidden: true},");
+        sb.Append("{header: '업체ID', name: 'VENDORID', hidden: true},");
+        sb.Append("{header: '업체코드', name: 'VENDORCODE', hidden: true},");
+        sb.Append("{header: 'USD단가', name: 'USDPRICE', hidden: true},");
+
+        sb.Append("{header: '확인', name: 'CKFLAG', align: 'center', width: 35, whiteSpace: 'nowrap', ellipsis: true, hidden: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", formatter: 'listItemText', editor: {");
+            sb.Append("type: 'select',");
+            sb.Append("options: {");
+            sb.Append("listItems: [");
+            sb.Append("{ text: ' ', value: 'N' },");
+            sb.Append("{ text: '√', value: 'Y' }");
+            sb.Append("]");
+            sb.Append("}");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '부문코드', name: 'CLSCD', align: 'center', width: 80, whiteSpace: 'nowrap', ellipsis: true");
+        //sb.Append("validation: { required: true },");
+        //if (this._reportMode > 2 && (mode == "new" || mode == "edit" || mode == "simul" || mode == "renew"))
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 50 }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '부문입력', name: 'CLS', align: 'center', width: 80, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", onAfterChange: function(e) { cell_onchange(e); },");
+            sb.Append("formatter: 'listItemText', editor: {");
+            sb.Append("type: 'select',");
+            sb.Append("options: {");
+            sb.Append("listItems: [");
+            foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.class"])
+            {
+                //sb.Append("{ text: '" + o[3].ToString() + "', value: '" + o[3].ToString() + "' },");
+                sb.Append("{");
+                sb.AppendFormat(" text: '{0}', value: '{0}'", o[3].ToString());
+                sb.Append("},");
+            }
+            sb.Append("]");
+            sb.Append("}");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '품목번호', name: 'ITEMNO', align: 'center', width: 150, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", onAfterChange: function(e) { cell_onchange(e); },");
+            sb.Append("editor: {");
+            sb.Append("type: CustomTextEditor,");
+            //sb.Append("options: { maxLength: 50, event: 'keyup' }");
+            sb.Append("options: { maxLength: 50 }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '부품명', name: 'ITEMNM', align: 'left', width: 150, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            //sb.Append("validation: { required: true },");
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 50 }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '금형CAVITY', name: 'CAVITY', align: 'center', width: 60, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 50 }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '규격', name: 'STDDESC', align: 'left', width: 150, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 50 }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '업체', name: 'VENDOR', align: 'left', width: 100, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 50 }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '내수구분', name: 'IOCLS', align: 'center', width: 60, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", onAfterChange: function(e) { cell_onchange(e); },");
+            sb.Append("formatter: 'listItemText', editor: {");
+            sb.Append("type: 'select',");
+            sb.Append("options: {");
+            sb.Append("listItems: [");
+            foreach (object[] o in (ArrayList)ViewBag.CodeTable["ce.domestic"])
+            {
+                //sb.Append("{ text: '" + o[3].ToString() + "', value: '" + o[3].ToString() + "' },");
+                sb.Append("{");
+                sb.AppendFormat(" text: '{0}', value: '{0}'", o[3].ToString());
+                sb.Append("},");
+            }
+            sb.Append("]");
+            sb.Append("}");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '산출내역', name: 'DESC', align: 'left', width: 200, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 50 }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '통화', name: 'CURRENCY', align: 'center', width: 60, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", onAfterChange: function(e) { cell_onchange(e); },");
+            sb.Append("formatter: 'listItemText', editor: {");
+            sb.Append("type: 'select',");
+            sb.Append("options: {");
+            sb.Append("listItems: [");
+            sb.Append("{ text: 'HKD', value: 'HKD' },");
+            sb.Append("{ text: 'CNY', value: 'CNY' },");
+            sb.Append("{ text: 'VND', value: 'VND' },");
+            sb.Append("{ text: 'IDR', value: 'IDR' },");
+            sb.Append("{ text: 'USD', value: 'USD' },");
+            sb.Append("{ text: 'EUR', value: 'EUR' },");
+            sb.Append("{ text: 'KRW', value: 'KRW' },");
+            sb.Append("{ text: 'JPY', value: 'JPY' },");
+            sb.Append("]");
+            sb.Append("}");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '단가', name: 'PRICE', align: 'right', width: 80, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", onAfterChange: function(e) { cell_onchange(e); },");
+            sb.Append("editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 20, inputmask: 'number;10;4;-' }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '수량', name: 'CNT', align: 'center', width: 60, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", onAfterChange: function(e) { cell_onchange(e); },");
+            sb.Append("editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 10, inputmask: 'number;10;5' }"); //20-12-11 자리수변경
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '합계', name: 'SUM', align: 'right', width: 80, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 20, inputmask: 'number;10;4;-' }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '환율', name: 'USDEX', align: 'right', width: 80, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 10, inputmask: 'number;10;4' }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '금액', name: 'USDSUM', align: 'right', width: 80, whiteSpace: 'nowrap', ellipsis: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 20, inputmask: 'number;10;4;-' }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        //2020-11-27 SMT 추가
+        sb.Append("{header: '점수', name: 'SMTPNT', align: 'center', width: 60, whiteSpace: 'nowrap', ellipsis: true, hidden: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", onAfterChange: function(e) { cell_onchange(e); },");
+            sb.Append("editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 10, inputmask: 'number;10' }");
+            sb.Append("}");
+        }
+        sb.Append("},");
+
+        sb.Append("{header: '합계', name: 'SMTTTL', align: 'center', width: 60, whiteSpace: 'nowrap', ellipsis: true, hidden: true");
+        if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse")
+        {
+            sb.Append(", onAfterChange: function(e) { cell_onchange(e); },");
+            sb.Append("editor: {");
+            sb.Append("type: CustomTextEditor,");
+            sb.Append("options: { maxLength: 10, inputmask: 'number;10' }");
+            sb.Append("}");
+        }
+        sb.Append("}");
+
+        sb.Append("];");
+
+        sb.Append("var gridHeader = {");
+        sb.Append("height: 48,");
+        sb.Append("complexColumns: [");
+        sb.Append("{header: '합계(USD)', name: 'c1', childNames: ['USDEX', 'USDSUM']}, ");
+        sb.Append("{header: 'SMT(점)', name: 'c2', childNames: ['SMTPNT', 'SMTTTL']}");
+        sb.Append("]");
+        sb.Append("};");
+
+        //데이터
+        sb.Append("var gridData = [");
+        if (_gridData != null && _gridData.Rows.Count > 0)
+        {
+            for (int i = 0; i < _gridData.Rows.Count; i++)
+            {
+                DataRow row = _gridData.Rows[i];
+                //string temp = row["CORP"].ToString();
+
+                sb.Append("{");
+                for (int j = 0; j < cols.Count; j++)
+                {
+                    DataColumn c = cols[j];
+                    if (c.ColumnName != "CEID")
+                    {
+                        if (c.ColumnName == "CKFLAG")
+                        {
+                            if (mode == "" || mode == "read")
+                            {
+                                //if (row[c.ColumnName].ToString() == "Y") sb.Append(c.ColumnName + ":'√'");
+                                //else sb.Append(c.ColumnName + ":' '");
+
+                                if (row[c.ColumnName].ToString() == "Y") sb.AppendFormat("{0}:'√'", c.ColumnName);
+                                else sb.AppendFormat("{0}:' '", c.ColumnName);
+                            }
+                            //else sb.Append(c.ColumnName + ":" + "'" + StringHelper.JsonDecode(row[c.ColumnName].ToString()) + "'");
+                            else sb.AppendFormat("{0}:" + "'{1}'", c.ColumnName, StringHelper.JsonDecode(row[c.ColumnName].ToString()));
+                        }
+                        else
+                        {
+                            //sb.Append(c.ColumnName + ":" + "'" + StringHelper.JsonDecode(row[c.ColumnName].ToString()) + "'");
+                            sb.AppendFormat("{0}:" + "'{1}'", c.ColumnName, StringHelper.JsonDecode(row[c.ColumnName].ToString()));
+                        }
+
+                        if (j < cols.Count - 1) sb.Append(",");
+                    }
+                }
+                sb.Append("}");
+                if (i < _gridData.Rows.Count - 1) sb.Append(",");
+            }
+        }
+        else
+        {
+            //sb.Append("{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}"); //기본 빈칸 20
+            //sb.Append("CLSCD: '', CLS: '', ITEMNO:'', CAVITY:'', STDDESC:'', VENDOR:'', IOCLS:'', DESC:'', CURRENCY:'', PRICE:'', CNT:'', SUM:'', USDEX:'', USDSUM:''"); //빈칸 필요
+        }
+
+        sb.Append("];");
+        #endregion
+
+        return sb.ToString();
+    }
+    #endregion
 }
 @section Styles {
-    @Styles.Render("~/bundle/vendor/css/pages/messages")
-    @Styles.Render("~/Content/ce.css")
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/External/tui-grid-4.21.14/tui-grid.min.css")
+    @Styles.Render("~/Content/grid.css")
 }
 
 @section Scripts {
@@ -126,50 +1763,988 @@
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
 
+    @Scripts.Render("~/External/tui-grid-4.21.14/tui-grid.min.js")
+    @Scripts.Render("~/External/tui-grid-4.21.14/tui-custom.js")
+
     @Scripts.Render("~/Scripts/ExS/ce.js")
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
 
     <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+
+    <script type="text/javascript">
+        @if (StringHelper.SafeInt(ViewBag.R.rptmode.Value) == 3) {
+            <text>
+            $(window).on("beforeunload", function () {
+                if (_zw.V.mode == 'new' || _zw.V.mode == 'edit' || _zw.V.mode == 'add' || _zw.V.mode == 'reuse' || _zw.V.mode == 'renew') {
+                    //if (_zw.V.checkunload) return "이 페이지를 벗어나면 작성된 내용은 저장되지 않습니다. 나가시겠습니까?";
+                }
+            });
+            </text>
+        }
+
+        $(function () {
+            if ((parseInt(_zw.V.rptmode) < 2 || (parseInt(_zw.V.appid) != 0 && (_zw.V.mode == 'new' || _zw.V.mode == 'add' || _zw.V.mode == 'renew' || _zw.V.mode == 'simul' || _zw.V.mode == 'edit'))) && _zw.V.calcpay['변동원가'] === undefined) {
+                var res = _zw.ut.ajaxSync("/ExS/CE/StdPayCalc", '{item:"' + $('[data-zf-field="ITEMCLS"]').val() + '",buyer:"' + $('[data-zf-field="BUYERCLS"]').val() + '",corp:"' + $('[data-zf-field="CORP"]').val() + '",sp:"' + _zw.V.stdinfo["stdpay"][0] + '",op:"' + _zw.V.stdinfo["outpay"][0] + '",rate:"' + _zw.V.stdrate["USD_" + $('[data-zf-field="CORPCURRENCY"]').val()] + '"}');
+                if (res.substr(0, 2) == "OK") _zw.V.calcpay = JSON.parse(res.substr(2));
+                else bootbox.alert(res);
+            }
+
+            $('.z-ce-body .middle .btn[aria-expanded]').click('on', function () {
+                var btn = $(this);
+                $('.z-ce-body .left').fadeToggle('fast', function () {
+                    if ($(this).css('display') == 'none') {
+                        $('.z-ce-layout').addClass('expanded');
+                        btn.find('i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+                        btn.attr('aria-expanded', 'false');
+                    } else {
+                        $('.z-ce-layout').removeClass('expanded');
+                        btn.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
+                        btn.attr('aria-expanded', 'true');
+                    }
+                    _zw.G.refreshLayout();
+                });
+            });
+
+            $('select[data-zf-field="XCLS"]').on('change', function (e) {
+                e.preventDefault();
+
+                var o = $(this).children('option:selected'), v = o.attr('aria-selected');
+                $('input[data-zf-field="PARTCLS"]').val(v);
+
+                //2021-01-06 그리드 부문입력 값 설정
+                if (v !== undefined && (v == '기구' || v == '회로' || v == '음향')) {
+                    for (var x = 0; x < _zw.G.getRowCount(); x++) {
+                        var cv = _zw.G.getValue(x, 'CLS');
+                        if (cv == null || cv == '') _zw.G.setValue(x, 'CLS', v);
+                    }
+
+                    //var gc = _zw.G.getColumnValues('CLS');
+                    //for(var x in gc) {
+                    //    if (gc[x] == null || gc[x] == '') _zw.G.setValue(x, 'CLS', v);
+                    //}
+                }
+
+                //2020-11-27 구분에 따른 SMT 설정
+                if (v !== undefined && v == '회로') {
+                    _zw.G.showColumn('SMTPNT'); _zw.G.showColumn('SMTTTL');
+                } else {
+                    _zw.G.setColumnValues('SMTPNT', ''); _zw.G.hideColumn('SMTPNT');
+                    _zw.G.setColumnValues('SMTTTL', ''); _zw.G.hideColumn('SMTTTL'); $('input[data-zf-field="TTL"]').val('');
+                }
+
+                //alert($('[data-zf-field="XCLS"]').val() + " : " + $('input[data-zf-field="PARTCLS"]').val())
+
+                //재료비 초기화
+                if (v !== undefined && (v == '기술' || v == '기타' || v == '투자')) {
+                    $('.z-grid[data-zf-subtable="CE_COST_MTR"] [data-zf-field]').each(function () {
+                        if ($(this).attr('data-zf-field') != 'CLSDESC') $(this).val('');
+                    });
+                }
+
+                //수입경비 초기화
+                if (v !== undefined && (v == '기술' || v == '투자')) {
+                    $('.z-grid[data-zf-subtable="CE_COST_IM"] [data-zf-field]').each(function () {
+                        if ($(this).attr('data-zf-field') != 'CLSDESC' && $(this).attr('data-zf-field') != 'STDDESC') $(this).val('');
+                    });
+                }
+
+                //가공비 초기화
+                //            $('.z-grid[data-zf-subtable="CE_COST_PC"] [data-zf-field]').each(function() {
+                //                if ($(this).prop('tagName') == 'SELECT') $(this).prop('disabled', true).val('');
+                //                else $(this).prop('readonly', true).val('');
+                //                if ($(this).parent().hasClass('cell-input')) { $(this).parent().removeClass('cell-input'); $(this).parent().addClass('cell-read');}
+                //
+                //                if (v !== undefined && v == '기술') {
+                //                    if ($(this).prop('tagName') == 'SELECT') $(this).prop('disabled', false);
+                //                    if ($(this).attr('data-zf-field') == 'MPNT') {
+                //                        $(this).prop('readonly', false).parent().addClass('cell-input');
+                //                        _ZF.fn.input($(this)[0]);
+                //                    }
+                //                }
+                //            });
+                //
+                //            var b = $('.z-grid[data-zf-subtable="CE_COST_PC"]').parent().find('.z-grid-btn .btn')
+                //            if (v !== undefined && v == '기술') b.removeClass('blind');
+                //            else b.addClass('blind')
+
+                //기타원가구성 초기화
+                $('.z-grid[data-zf-subtable="CE_COST_SGA"] [data-zf-field]').each(function () {
+                    $(this).prop('readonly', true).val('');
+                    if ($(this).parent().hasClass('cell-input')) { $(this).parent().removeClass('cell-input'); $(this).parent().addClass('cell-read'); }
+                });
+
+                if (v !== undefined && v != '') {
+                    var ddl = [];
+                    $('.z-grid[data-zf-subtable="CE_COST_SGA"] tbody tr').each(function (idx, el) {
+                        $(el.cells[0].firstChild).children('option').each(function () {
+                            var p = $(this).parent().parent(), cls = $(this).attr('aria-checked');
+                            if (cls !== undefined && (cls == 'ALL' || cls.indexOf(v) > -1)) {
+                                var bSelected = false;
+                                for (var z in ddl) {
+                                    if (ddl[z] == $(this).val()) { bSelected = true; break; }
+                                }
+                                if (!bSelected) {
+                                    $(this).prop('selected', true); ddl.push($(this).val());
+                                    p.next().children('input').val($(this).attr('aria-label'));
+                                    if ($(this).attr('aria-selected') == 'w') {
+                                        if ($(this).val() == '기타') {
+                                            p.next().removeClass('cell-read').addClass('cell-input');
+                                            p.next().children('input').prop('readonly', false);
+                                        }
+
+                                        var c = p.next().next();
+                                        c.removeClass('cell-read').addClass('cell-input');
+                                        c.children('input').prop('readonly', false);
+                                        _zw.fn.input(c.children('input')[0]);
+                                    }
+
+                                    return false;
+                                }
+                            }
+                        });
+                    });
+                }
+
+                calcCost(0, 0);
+            });
+
+            $('#ddlITEMCLS, #ddlBUYERCLS, #ddlCORP, #ddlXRATEDT, #ddlSTDPAYDT, #ddlOUTPAYDT').on('change', function (e) {
+                e.preventDefault();
+
+                if (e.target.id == 'ddlCORP') {
+                    var v = $(this).val().split('_');
+                    $('input[data-zf-field="CORP"]').val(v[0]);
+                    $('input[data-zf-field="CORPCURRENCY"]').val(v[1]);
+                    $('input[data-zf-field="CORPID"]').val(v[2]);
+
+                } else if (e.target.id == 'ddlITEMCLS') {
+                    $('[data-zf-field="ITEMCLS"]').val($(this).val());
+
+                } else if (e.target.id == 'ddlBUYERCLS') {
+                    $('[data-zf-field="BUYERCLS"]').val($(this).val());
+
+                    var n = $('input[data-zf-field="BUYER"]');
+                    if ($(this).val() != '기타') {
+                        n.val($(this).val()).prop('readonly', true).parent().removeClass('cell-input').addClass('cell-read');
+                    } else {
+                        n.val('').prop('readonly', false).parent().removeClass('cell-read').addClass('cell-input');
+                    }
+                } else if (e.target.id == 'ddlXRATEDT') {
+                    var v = $(this).val().split('_');
+                    $('input[data-zf-field="XRATEDT"]').val(v[1]);
+                    _zw.V.stdinfo['xrate'][0] = v[0]; _zw.V.stdinfo['xrate'][1] = v[1];
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/ExS/CE/ExchangeRate",
+                        data: '{ri:' + v[0] + '}',
+                        asyc: false,
+                        success: function (res) {
+                            if (res.substr(0, 2) == 'OK') {
+                                _zw.V.stdrate = JSON.parse(res.substr(2)); //alert(_ZF.V.stdRate["USD_VND"])
+                            } else alert(res)
+                        }
+                    });
+
+                } else if (e.target.id == 'ddlSTDPAYDT') {
+                    var v = $(this).val().split('_');
+                    $('input[data-zf-field="STDPAYDT"]').val(v[1]);
+                    _zw.V.stdinfo['stdpay'][0] = v[0]; _zw.V.stdinfo['stdpay'][1] = v[1];
+
+                } else if (e.target.id == 'ddlOUTPAYDT') {
+                    var v = $(this).val().split('_');
+                    $('input[data-zf-field="OUTPAYDT"]').val(v[1]);
+                    _zw.V.stdinfo['outpay'][0] = v[0]; _zw.V.stdinfo['outpay'][1] = v[1];
+                }
+
+                var ddl1 = $('#ddlITEMCLS'), ddl2 = $('#ddlBUYERCLS'), ddl3 = $('#ddlCORP');
+
+                //alert('{item:"' + ddl1.val() + '",buyer:"' + ddl2.val() + '",corp:"' + ddl3.val().split('_')[0] + '",sp:"' + _ZF.V.stdInfo["stdPay"][0] + '",rate:"' + _ZF.V.stdRate["USD_" + ddl3.val().split('_')[1]]+ '"}'); return
+
+                if (ddl1.val() != '' && ddl2.val() != '' && ddl3.val() != '') {//기준임율, 외주임율 계산설정
+                    $.ajax({
+                        type: "POST",
+                        url: "/ExS/CE/StdPayCalc",
+                        data: '{item:"' + ddl1.val() + '",buyer:"' + ddl2.val() + '",corp:"' + ddl3.val().split('_')[0] + '",sp:"' + _zw.V.stdinfo["stdpay"][0] + '",op:"' + _zw.V.stdinfo["outpay"][0] + '",rate:"' + _zw.V.stdrate["USD_" + ddl3.val().split('_')[1]] + '"}',
+                        asyc: false,
+                        success: function (res) {
+                            if (res.substr(0, 2) == 'OK') {
+                                _zw.V.calcpay = JSON.parse(res.substr(2));
+                                //for(var s in _ZF.V.calcpay) {
+                                //    alert(s + " :"  + _ZF.V.calcpay[s])
+                                //}
+                                $('#_calcPay').prop('disabled', false).removeClass('btn-default').addClass('btn-pink');
+                                $('#_calcPay').find('i').addClass('text-white');
+
+                            } else bootbox.alert(res)
+                        },
+                        beforeSend: function () { } //로딩 X
+                    });
+                } else {
+                    $('#_calcPay').prop('disabled', true).removeClass('btn-pink').addClass('btn-default');
+                    $('#_calcPay').find('i').removeClass('text-white');
+
+                    _zw.V.calcpay = {};
+                }
+
+                //calcCost(0, 0);
+            });
+
+            $('#_calcPay').click(function () {//alert(_ZF.V.calcpay['변동원가'] === undefined)
+                if (!$('#_calcPay').prop('disabled')) {
+                    var s = '<div class="modal-dialog modal-sm">'
+                        + '<div class="modal-content" style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)">'
+                        + '<div class="modal-header"><h4 class="modal-title">임율 계산표</h4><button type="button" class="close" data-dismiss="modal"><span>×</span></button></div>'
+                        + '<div class="modal-body">'
+                        + '<table class="table table-striped text-center"><tbody><tr><th>항목</th><th>값</th></tr>';
+
+                    for (var n in _zw.V.calcpay) {
+                        s += '<tr><th>' + n + '</th><th>' + (_zw.V.calcpay[n] == '' ? '&nbsp;' : (n == '변동원가' || n == '변동원가_USD' || n == 'SMT임율' || n == 'SMT임율_USD' || n == '외주임율' || n == '외주임율_USD' ? numeral(_zw.V.calcpay[n]).format('0,0.0000') : numeral(_zw.V.calcpay[n]).format('0,0.00') + '%')) + '</th><tr>';
+                    }
+
+                    s += '</tr><tbody></table>'
+                        + '</div><div class="modal-footer"><button type="button\" class="btn btn-default" data-dismiss="modal">닫기</button></div>'
+                        + '</div></div>';
+
+                    //_zw.util.modal("_Modal", s, 0);
+                    var p = $('#popBlank');
+                    p.html(s).modal();
+                }
+            });
+
+            $('input[data-zf-field="MODEL"], input[data-zf-field="SUBMODEL"], input[data-zf-field="____BUYER"]').keyup(function (e) { //바이어 추후 고려
+                if (e.which == 13) {
+                    e.preventDefault();
+                    if ($.trim($(this).val()) != '') _zw.fn.modalERP($(this).attr('data-zf-field').toLowerCase(), 1, $(this).val());
+                }
+            });
+
+            $('input[data-zf-field="MODELNM"], input[data-zf-field="MODEL"], input[data-zf-field="BUYER"], input[data-zf-field="SUBMODEL"]').on('blur', function (e) {
+                $(this).val(function (i, val) {
+                    return val.toUpperCase();
+                });
+            });
+
+            $('.z-ce-body .right .float-left .btn').click(function () { //alert($(this).is(':has("i.fe-download")'))
+                var rows = null;
+
+                if ($(this).is(':has("i.fa-plus")')) {
+                    _zw.V.checkUnload = true; //21-01-17 추가
+                    rows = _zw.G.getCheckedRows();
+
+                    if (rows.length == 0) {
+                        _zw.G.appendRow();
+                    } else if (rows.length == 1) {
+                        _zw.G.appendRow({}, { at: _zw.G.getIndexOfRow(rows[0].rowKey) + 1 });
+                    }
+                    _zw.fn.calcGridRow();
+
+                } else if ($(this).is(':has("i.fa-minus")')) {
+                    rows = _zw.G.getCheckedRows();
+
+                    if (rows.length > 0) {
+                        bootbox.confirm("선택한 " + rows.length.toString() + "개 행을 삭제하시겠습니까?", function (rt) {
+                            if (rt) {
+                                _zw.V.checkUnload = true; //21-01-17 추가
+
+                                _zw.G.removeCheckedRows(false);
+                                _zw.fn.calcGridRow();
+
+                                calcCost(0);
+                            }
+                        });
+                    }
+                } else if ($(this).is(':has("i.fa-arrow-up, i.fa-arrow-down")')) {//alert($(this).html()); return;
+                    rows = _zw.G.getCheckedRows();
+                    if (rows.length > 1) {
+
+                    } else if (rows.length == 1) {
+                        _zw.V.checkUnload = true; //21-01-17 추가
+
+                        var idx = _zw.G.getIndexOfRow(rows[0].rowKey), iMax = _zw.G.getRowCount(), iTo = $(this).find('i').hasClass('fa-arrow-up') ? idx - 1 : idx + 1; //alert(idx + " : " + iTo)
+                        if (iTo >= 0 && iTo <= iMax) _zw.G.moveRow(rows[0].rowKey, iTo);
+                    }
+                } else if ($(this).is(':has("i.fa-exchange-alt")')) {//계산
+                    calcCost(0, 0);
+                } else if ($(this).is(':has("i.fe-download")')) {//엑셀
+                    //aspnetForm.action = "?M=xls&app=" + _zw.V.appid + "&Rp=" + _zw.V.rptid;
+                    //aspnetForm.submit();
+
+                    var qi = '{M:"xls",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ft:"' + _zw.V.ft + '",appid:"' + _zw.V.appid + '",rptid:"' + _zw.V.rptid + '",opnode:"",ttl:""}'; console.log(qi)
+                    window.open('?qi=' + encodeURIComponent(_zw.base64.encode(qi)), 'ifrView');
+                }
+            });
+
+            $('.z-grid-top').each(function () {
+                var $this = $(this), tp = $this.find('.zf-sp-template');
+
+                $this.find('button[data-btn="add"]').on('click', function () {
+                    $this.find('.z-grid tbody').append(tp.html());
+
+                    //                var row = $this.find('table tbody tr').last();
+                    //                row.find('button[data-btn="del"]').on('click', function() {
+                    //                    _ZF.fn.setCode('delete', $this, cd, row);
+                    //                });
+                    //                row.find('button[data-btn="save"]').on('click', function() {
+                    //                    _ZF.fn.setCode('save', $this, cd, row);
+                    //                });
+                });
+
+                $this.find('button[data-btn="del"]').on('click', function () {
+                    if ($this.find('.z-grid tbody tr').length > 1) $this.find('.z-grid tbody tr:last-child').remove();
+                });
+            });
+
+            @Html.Raw(RenderGridData(ViewBag.R.mode.ToString()));
+
+            _zw.G = new tui.Grid({
+                el: $('#_tuiGrid')[0],
+                data: gridData,
+                header: gridHeader,
+                rowHeight: 24, //셀 선택위치 맞춤을 위한 최소 높이
+                minRowHeight: 24,
+                bodyHeight: 'fitToParent',
+                columnOptions: {
+                    frozenCount: 4,
+                    frozenBorderWidth: 1,
+                    resizable: true
+                },
+                scrollX: true,
+                scrollY: 'auto',
+                //showDummyRows: true,
+                //heightResizable: true,
+
+                rowHeaders: @if(ViewBag.R.mode == "" || ViewBag.R.mode == "read" || ViewBag.R.rptmode < 3) { <text> ['rowNum'], </text> } else { <text> ['checkbox'], </text> }
+                columns: gridColumns
+            });
+
+            tui.Grid.applyTheme('default', {
+                cell: {
+                    normal: {
+                        background: '#fff',
+                        border: '#bbb',
+                        showVerticalBorder: true,
+                        showHorizontalBorder: true
+                    }
+                }
+            });
+
+            @if (StringHelper.SafeInt(ViewBag.R.rptmode.Value) == 1) {
+                <text>
+                for (var i = @EnableRowCount; i <= _zw.G.getColumns().length; i++) {
+                    _zw.G.disableRow(i); _zw.G.enableRowCheck(i);
+            }
+                </text>
+            }
+
+            @if (StringHelper.SafeInt(ViewBag.R.rptmode.Value) == 3) {
+                <text>
+                _zw.G.showColumn('CKFLAG'); _zw.G.setFrozenColumnCount(5);
+                </text>
+            }
+
+            if ($('[data-zf-field="XCLS"]').val() == '회로') {
+                _zw.G.showColumn('SMTPNT'); _zw.G.showColumn('SMTTTL');
+            }
+
+            _zw.G.on('dblclick', function (e) {
+                //alert(e.targetType + " : " + e.rowKey + " : " + e.columnName)
+                //alert(_zw.G.getValue(e.rowKey, e.columnName))
+
+                if (_zw.V.rptmode > 2 && (e.targetType == 'etc' || e.targetType == 'dummy')) { _zw.G.appendRow(); _zw.fn.calcGridRow(); }
+                else {
+
+                }
+
+                //_zw.G.enableColumn('CAVITY');
+
+            });
+
+            _zw.G.on('focusChange', function (e) { });
+
+            _zw.G.on('editingStart', function (e) {
+                var b = _zw.fn.validate('grid');
+                if (!b) e.stopped = true; //이벤트 취소
+
+                if (e.columnName == 'VENDOR') {
+                    //_ZF.fn.getVendorUnitPrice(e.rowKey, $('input[data-zf-field="CORPID"]').val(), _zw.G.getValue(e.rowKey, 'ITEMNO'));
+                }
+            });
+
+            _zw.G.on('editingFinish', function (e) {
+                //alert(e.rowKey + " : " + e.columnName + " : " + e.value)
+                var el, e2, e3, e4, e5;
+                if (e.columnName == 'ITEMNO') {
+                    if (e.value != '') _zw.fn.modalERP(e.columnName.toLowerCase(), 1, e.value, [e.rowKey, $('input[data-zf-field="CORPID"]').val()]);
+                } else if (e.columnName == 'VENDOR') {
+                    if ($.trim(e.value) != '') _zw.fn.modalERP(e.columnName.toLowerCase(), 1, e.value, [e.rowKey]);
+                    else _zw.fn.getVendorUnitPrice('vendor_unit_price', e.rowKey, $('input[data-zf-field="CORPID"]').val(), _zw.G.getValue(e.rowKey, 'ITEMNO'));
+
+                } else if (e.columnName == 'CURRENCY') {
+                    //alert(_zw.V.stdRate['USD_' + e.value] + _zw.V.stdRate[e.value + '_USD'])
+                    e1 = e.value == 'USD' ? '1.0000' : (_zw.V.stdrate['USD_' + e.value] != '' ? _zw.V.stdrate['USD_' + e.value] : _zw.V.stdrate[e.value + '_USD']);
+
+                    _zw.G.setValue(e.rowKey, 'USDEX', numeral(e1).format('0,0.0000'));
+
+                } else if (e.columnName == 'PRICE' || e.columnName == 'CNT' || e.columnName == 'SMTPNT') {
+                    e1 = _zw.G.getValue(e.rowKey, 'PRICE');
+                    e2 = _zw.G.getValue(e.rowKey, 'CNT');
+                    e5 = _zw.G.getValue(e.rowKey, 'SMTPNT');
+
+                    e3 = numeral(_zw.G.getValue(e.rowKey, 'USDEX')).value();
+                    e4 = numeral(e1).value() * numeral(e2).value()
+
+                    _zw.G.setValue(e.rowKey, 'SUM', numeral(e4).format('0,0.0000'));
+                    _zw.G.setValue(e.rowKey, 'USDPRICE', numeral(numeral(e1).value() / e3).format('0,0.0000'));
+                    _zw.G.setValue(e.rowKey, 'USDSUM', numeral(numeral(e4).value() / e3).format('0,0.0000'));
+
+                    if (e5 != null && e5 != '') { //2020-11-27 계산 추가
+                        _zw.G.setValue(e.rowKey, 'SMTTTL', numeral(numeral(e2).value() * numeral(e5).value()).format('0,0'));
+
+                        var v = _zw.G.getColumnValues('SMTTTL'), ttl = 0;
+                        for (var x in v) {
+                            if (v[x] && v[x] != '') ttl += numeral(v[x]).value()
+                        }
+                        $('input[data-zf-field="TTL"]').val(ttl);
+                    }
+
+                    calcCost(1);
+
+                } else if (e.columnName == 'DESC') {
+                    _zw.fn.showGridRowDesc(e.columnName, e.rowKey);
+                }
+            });
+
+            _zw.fn.input();
+
+            _zw.fn.calcGridRow();
+        });
+
+        function cell_onchange(e) {
+            var el, e2, e3, e4;
+            if (e.columnName == 'CLS' || e.columnName == 'IOCLS') {
+                //alert(e.targetType + " : " + e.rowKey + " : " + e.columnName)
+
+                e1 = _zw.G.getValue(e.rowKey, 'CLS');
+                e2 = _zw.G.getValue(e.rowKey, 'IOCLS');
+                if (e1 && e1 != '' && e2 && e2 != '') {
+                    _zw.G.setValue(e.rowKey, 'CLSCD', e1 + e2);
+                    //_zw.G.setValue(e.rowKey, 'VENDORID', e1 + e2);
+                    //_zw.G.setValue(e.rowKey, 'iiD', "AAAAAAAAAAAAAAA");
+                }
+            }
+        }
+
+        function sub_cell_onchange() {
+            var el = event.target;
+
+            var p = $(el).parent(), n = p.next(), o = $(el).children('option:selected');
+            do {
+                n.children('input').prop('readonly', true).val('');
+                //if (n.hasClass('cell-input')) _zw.fn.input(n.children('input')[0]);
+                n.removeClass('cell-input').addClass('cell-read')
+
+                n = n.next();
+            } while (n.length > 0)
+
+            if ($(el).val() != '') {
+                if (o.attr('aria-label').trim() != '') {
+                    p.next().children('input').val(o.attr('aria-label'));
+                }
+                if (o.attr('aria-selected') == 'w') {
+                    if (o.val() == '기타') {
+                        p.next().removeClass('cell-read').addClass('cell-input');
+                        p.next().children('input').prop('readonly', false);
+                    }
+
+                    var c = o.attr('aria-label').trim() == '' ? p.next() : p.next().next();
+                    c.removeClass('cell-read').addClass('cell-input');
+                    c.children('input').prop('readonly', false);
+                    _zw.fn.input(c.children('input')[0]);
+                }
+
+                if (p.parent().parent().parent().attr('data-zf-subtable') == 'CE_COST_PC') {
+                    var v = _zw.V.calcpay['변동원가_USD'], v2 = _zw.V.calcpay['외주임율_USD'], v3 = _zw.V.calcpay['SMT임율_USD'];
+
+                    //if ($(el).val() == '외주가공비') { if (v2 && v2 != '') p.next().next().children('input').val(numeral(v2).format('0,0.0000')); }
+                    //else { if (v && v != '') p.next().next().children('input').val(numeral(v).format('0,0.0000')); }
+
+                    //2020-11-27 아래 추가, 21-01-05 수정
+                    if ($(el).val() == 'SMT') {
+                        v = $('input[data-zf-field="TTL"]').val();
+                        if (v3 && v3 != '') {
+                            p.next().next().children('input').val(numeral(v3).format('0,0.0000'));
+                            if (v && v != '') {
+                                p.next().children('input').val(v);
+                                var x = numeral(numeral(p.next().children('input').val()).value() * numeral(v3).value()).format('0,0.0000');
+                                p.next().next().next().children('input').val(x);
+                            }
+                        }
+                    } else {
+                        if (window.confirm('내부임율 적용 하시겠습니까?')) { if (v && v != '') p.next().next().children('input').val(numeral(v).format('0,0.0000')); }
+                        else { if (v2 && v2 != '') p.next().next().children('input').val(numeral(v2).format('0,0.0000')); }
+                    }
+                }
+            }
+
+            //계산
+            if (p.parent().parent().parent().attr('data-zf-subtable') == 'CE_COST_PC') calcCost(2, 0);
+            else if (p.parent().parent().parent().attr('data-zf-subtable') == 'CE_COST_SGA') calcCost(3, 0);
+        }
+
+        function calcCost(step, idx) {
+            var b = _zw.fn.validate('grid');
+
+            //IID,ITEMID,STDDT,VENDORID,VENDORCODE,USDPRICE,CLSCD,CLS,ITEMNO,ITEMNM,CAVITY,STDDESC,VENDOR,IOCLS,DESC,CURRENCY,PRICE,CNT,SUM,USDEX,USDSUM
+
+            //_zw.G.resetOriginData();
+            //var gc = _zw.G.getColumns();
+
+            //var t = '';
+            //for(var x in gc) t += ',' + gc[x].name;
+            //alert(s + " : " + $.trim(s) + " : " + _zw.util.emSpace(s))
+
+            if (step < 1) calcCost_Grid();
+
+            var gd = _zw.G.getData();
+
+            if (step <= 1) calcCost_MTR(gd);
+
+            if (step <= 1) calcCost_IM(gd);
+
+            if (step <= 2) calcCost_PC();
+
+            if (step <= 2) calcCost_Plus();
+
+            if (step <= 3) calcCost_SGA(gd);
+
+            if (step <= 3) calcCost_Total();
+
+            if (step <= 4) calcCost_Exp();
+
+            calcCost_Rate();
+        }
+
+        function calcCost_Grid() {
+            //var gd = _zw.G.getData()
+            var e1, e2, e3, e4, rt = '';
+
+            for (var i = 0; i < _zw.G.getRowCount(); i++) {//2021-01-06 : i는 rowKey
+                //var s1 = gd[i]['ITEMNO'], s2 = gd[i]['VENDOR'], bCur = false;
+                var s1 = _zw.G.getValue(i, 'ITEMNO'), s2 = _zw.G.getValue(i, 'VENDOR'), bCur = false;
+                //console.log(i.toString() + " : " + $.trim(s1) + "=" + $.trim(s2) + "=" + ((s1 && $.trim(s1) != '') || (s2 && $.trim(s2) != '')))
+                if ((s1 && $.trim(s1) != '') || (s2 && $.trim(s2) != '')) {
+                    var res = _zw.ut.ajaxSync("/ExS/CE/ErpColumnCheck", '{orgid:"' + $('input[data-zf-field="CORPID"]').val() + '",itemno:"' + $.trim(s1) + '",vendor:"' + _zw.ut.emSpace(s2) + '"}');
+                    if (res.substr(0, 2) == "OK") {
+                        var j = JSON.parse(res.substr(2));
+                        for (var x in j) {
+                            if (j[x] != '') {
+                                _zw.G.setValue(i, x, j[x]);
+                                if (x == 'CURRENCY') _zw.G.setValue(i, 'USDEX', j[x] == 'USD' ? '1.0000' : numeral(_zw.V.stdrate['USD_' + j[x]]).format('0,0.0000'));
+                            } else {
+                                if (x == 'CURRENCY' && _zw.G.getValue(i, 'CURRENCY') != null && _zw.G.getValue(i, 'CURRENCY') != '') bCur = true;
+                            }
+                        }
+                    } else bootbox.alert(res);
+
+                } else {
+                    if (_zw.G.getValue(i, 'CURRENCY') != null && _zw.G.getValue(i, 'CURRENCY') != '') bCur = true;
+                }
+
+                //_zw.G.setValue(i, 'CURRENCY', 'HKD'); bCur = true;
+
+                if (bCur) {
+                    _zw.G.setValue(i, 'USDEX', _zw.G.getValue(i, 'CURRENCY') == 'USD' ? '1.0000' : numeral(_zw.V.stdrate['USD_' + _zw.G.getValue(i, 'CURRENCY')]).format('0,0.0000'));
+                }
+
+                //if (gd[i]['PRICE'] != null && gd[i]['PRICE'] != '' && gd[i]['CNT'] != null && gd[i]['CNT'] != '') {
+                if (_zw.G.getValue(i, 'PRICE') != null && _zw.G.getValue(i, 'PRICE') != '' && _zw.G.getValue(i, 'CNT') != null && _zw.G.getValue(i, 'CNT') != '') {
+                    e1 = _zw.G.getValue(i, 'PRICE'); //gd[i]['PRICE'];
+                    e2 = _zw.G.getValue(i, 'CNT'); //gd[i]['CNT'];
+
+                    e3 = numeral(_zw.G.getValue(i, 'USDEX')).value();
+                    e4 = numeral(e1).value() * numeral(e2).value()
+
+                    _zw.G.setValue(i, 'SUM', numeral(e4).format('0,0.0000'));
+                    _zw.G.setValue(i, 'USDPRICE', numeral(numeral(e1).value() / e3).format('0,0.0000'));
+                    _zw.G.setValue(i, 'USDSUM', numeral(numeral(e4).value() / e3).format('0,0.0000'));
+                }
+
+                //if (gd[i]['SMTPNT'] != null && gd[i]['SMTPNT'] != '' && gd[i]['CNT'] != null && gd[i]['CNT'] != '') {
+                if (_zw.G.getValue(i, 'SMTPNT') != null && _zw.G.getValue(i, 'SMTPNT') != '' && _zw.G.getValue(i, 'CNT') != null && _zw.G.getValue(i, 'CNT') != '') {
+                    e1 = _zw.G.getValue(i, 'SMTPNT'); //gd[i]['SMTPNT'];
+                    e2 = _zw.G.getValue(i, 'CNT'); //gd[i]['CNT'];
+                    _zw.G.setValue(i, 'SMTTTL', numeral(numeral(e1).value() * numeral(e2).value()).format('0,0'));
+                }
+            }
+
+            if ($('[data-zf-field="XCLS"]').val() == '회로') {
+                var v = _zw.G.getColumnValues('SMTTTL'), ttl = 0;
+                for (var x in v) {
+                    if (v[x] && v[x] != '') ttl += numeral(v[x]).value()
+                }
+                $('input[data-zf-field="TTL"]').val(ttl);
+            }
+        }
+
+        function calcCost_MTR(gd) { //재료비
+            //var gd = _zw.G.getData();
+            var s1 = 0, s2 = 0, s3 = 0;
+            var x = $('[data-zf-field="XCLS"]').val();
+
+            //필드 초기화
+            $('table[data-zf-subtable="CE_COST_MTR"] [data-zf-field]').each(function () {
+                if ($(this).attr('data-zf-field') != 'CLSDESC') $(this).val('');
+            });
+
+            if (x == '기구' || x == '회로' || x == '음향' || x == '포장' || x == 'ALL') {
+                $('table[data-zf-subtable="CE_COST_MTR"] tbody tr').each(function (idx, e) {
+                    var sIN = e.cells[0].firstChild.value + '내수', sOUT = e.cells[0].firstChild.value + '수입';
+
+                    for (var i = 0; i < gd.length; i++) {
+                        var bCalc = true;
+                        if (x == 'ALL' && gd[i]["CLSPOS"] != '기구' && gd[i]["CLSPOS"] != '회로' && gd[i]["CLSPOS"] != '음향' && gd[i]["CLSPOS"] != '포장') bCalc = false;
+
+                        if (bCalc) {
+                            if (gd[i]["CLSCD"] == sIN) s1 += numeral(gd[i]["USDSUM"]).value();
+                            else if (gd[i]["CLSCD"] == sOUT) s2 += numeral(gd[i]["USDSUM"]).value();
+                        }
+                    }
+
+                    if (s1 != 0) e.cells[1].firstChild.value = numeral(s1).format('0,0.0000');
+                    if (s2 != 0) e.cells[2].firstChild.value = numeral(s2).format('0,0.0000');
+                    if (s1 + s2 != 0) e.cells[3].firstChild.value = numeral(s1 + s2).format('0,0.0000');
+
+                    s1 = 0; s2 = 0;
+                });
+
+                $('table[data-zf-subtable="CE_COST_MTR"] input[data-zf-ftype="SUBFIELD"]').each(function () {
+                    if ($(this).attr('data-zf-field') == 'INCOST') s1 += numeral($(this).val()).value();
+                    if ($(this).attr('data-zf-field') == 'OUTCOST') s2 += numeral($(this).val()).value();
+                    if ($(this).attr('data-zf-field') == 'SUM') s3 += numeral($(this).val()).value();
+                });
+
+                if (s1 != 0) $('input[data-zf-field="MTRCOSTIN"]').val(numeral(s1).format('0,0.0000'));
+                else $('input[data-zf-field="MTRCOSTIN"]').val('');
+
+                if (s2 != 0) $('input[data-zf-field="MTRCOSTOUT"]').val(numeral(s2).format('0,0.0000'));
+                else $('input[data-zf-field="MTRCOSTOUT"]').val('');
+
+                if (s3 != 0) $('input[data-zf-field="MTRCOST"]').val(numeral(s3).format('0,0.0000'));
+                else $('input[data-zf-field="MTRCOST"]').val('');
+            }
+        }
+
+        function calcCost_IM(gd) { //수입경비
+            //var gd = _zw.G.getData();
+            var s1 = 0, s2 = 0, s3 = 0;
+            var x = $('[data-zf-field="XCLS"]').val();
+
+            //필드 초기화
+            $('table[data-zf-subtable="CE_COST_IM"] [data-zf-field]').each(function () {
+                if ($(this).attr('data-zf-field') != 'CLSDESC' && $(this).attr('data-zf-field') != 'STDDESC') {
+                    if ($(this).attr('data-zf-field') == 'IMRATE' && $(this).parent().prev().find('input').val() == 'KRW 재료비') {
+                    } else $(this).val('');
+                }
+            });
+
+            if (x == '기구' || x == '회로' || x == '음향' || x == '포장' || x == 'ALL') {
+                $('table[data-zf-subtable="CE_COST_IM"] tbody tr').each(function (idx, e) {
+                    var d = e.cells[0].firstChild.value;
+                    if (d.substr(0, 2) == '수입') {
+                        s1 = _zw.V.calcpay['수입경비율'];
+                        e.cells[2].firstChild.value = s1 && s1 != '' ? numeral(s1).format('0,0.00') + '%' : '';
+
+                        s2 = numeral($('input[data-zf-field="MTRCOSTOUT"]').val()).value(); //alert(s2)
+                        if (s2 && s2 != 0) e.cells[3].firstChild.value = numeral(s1 * s2 / 100).format('0,0.0000');
+                    }
+
+                    if (d.substr(0, 2) == '자재') {
+                        for (var i = 0; i < gd.length; i++) {
+                            var bCalc = true;
+                            if (x == 'ALL' && gd[i]["CLSPOS"] != '기구' && gd[i]["CLSPOS"] != '회로' && gd[i]["CLSPOS"] != '음향' && gd[i]["CLSPOS"] != '포장') bCalc = false;
+
+                            if (bCalc) {
+                                if (gd[i]["CURRENCY"] == 'KRW') s3 += numeral(gd[i]["USDSUM"]).value();
+                            }
+                        }
+                        if (s3 && s3 != 0) e.cells[3].firstChild.value = numeral(s3 * 0.02).format('0,0.0000'); //21-03-10 2% 적용
+                    }
+                });
+                s1 = 0; s2 = 0; s3 = 0;
+
+                $('table[data-zf-subtable="CE_COST_IM"] input[data-zf-ftype="SUBFIELD"]').each(function () {
+                    if ($(this).attr('data-zf-field') == 'SUM') s1 += numeral($(this).val()).value();
+                });
+
+                if (s1 && s1 != 0) $('input[data-zf-field="IMCOST"]').val(numeral(s1).format('0,0.0000'));
+                else $('input[data-zf-field="IMCOST"]').val('');
+            }
+        }
+
+        function calcCost_PC() { //기공비
+            var s1 = 0, s2 = 0;
+
+            //필드 초기화 X
+            //$('table[data-zf-subtable="CE_COST_PC"] [data-zf-field]').each(function() { $(this).val(''); });
+
+            $('table[data-zf-subtable="CE_COST_PC"] select[data-zf-field="CLSDESC"]').each(function () { //alert($(this).val())
+                if ($(this).val() == 'SMT') {
+                    var v = $('input[data-zf-field="TTL"]').val(), p = $(this).parent(), v2 = p.next().next().children('input').val();
+                    if (v && v != '' && v2 != '') {
+                        p.next().children('input').val(numeral(v).format('0,0.00'));
+                        var x = numeral(numeral(p.next().children('input').val()).value() * numeral(v2).value()).format('0,0.0000');
+                        p.next().next().next().children('input').val(x);
+                    }
+                }
+            });
+
+            //if ($('[data-zf-field="XCLS"]').val() == 'ALL' || $('[data-zf-field="XCLS"]').val() == '기술') {
+            $('table[data-zf-subtable="CE_COST_PC"] input[data-zf-ftype="SUBFIELD"]').each(function () {
+                if ($(this).attr('data-zf-field') == 'MPNT') s1 += numeral($(this).val()).value();
+                if ($(this).attr('data-zf-field') == 'SUM') s2 += numeral($(this).val()).value();
+            });
+            //}
+
+            if (s1 && s1 != 0) $('input[data-zf-field="PCCOSTMPNT"]').val(numeral(s1).format('0,0.00'));
+            else $('input[data-zf-field="PCCOSTMPNT"]').val('');
+
+            if (s2 && s2 != 0) $('input[data-zf-field="PCCOST"]').val(numeral(s2).format('0,0.0000'));
+            else $('input[data-zf-field="PCCOST"]').val('');
+        }
+
+        function calcCost_Plus() { //소모품
+            $('input[data-zf-field="SPLEX"]').val('');
+            $('input[data-zf-field="VARCOST"]').val('');
+            $('input[data-zf-field="FIXCOST"]').val('');
+            $('input[data-zf-field="PRODCOST"]').val('');
+
+
+            var a = numeral($('input[data-zf-field="MTRCOST"]').val()).value(); //재료비
+            var b = numeral($('input[data-zf-field="IMCOST"]').val()).value(); //수입경비
+            var c = numeral($('input[data-zf-field="PCCOST"]').val()).value(); //가공비
+
+            var d = numeral((a + c) * numeral(_zw.V.calcpay['소모품비율'] / 100).value()).value(); //소모품비
+            var e = numeral(a + b + c + d).value(); //변동원가
+            var f = numeral((e - b - d) * numeral(_zw.V.calcpay['고정경비율'] / 100).value()).value(); //고정원가
+            var g = numeral(e + f).value(); //제조원가
+
+            if (d != 0) $('input[data-zf-field="SPLEX"]').val(numeral(d).format('0,0.0000'));
+            if (e != 0) $('input[data-zf-field="VARCOST"]').val(numeral(e).format('0,0.0000'));
+            if (f != 0) $('input[data-zf-field="FIXCOST"]').val(numeral(f).format('0,0.0000'));
+            if (g != 0) $('input[data-zf-field="PRODCOST"]').val(numeral(g).format('0,0.0000'));
+        }
+
+        function calcCost_SGA(gd) { //판관비
+            //var gd = _zw.G.getData();
+            var x = $('[data-zf-field="XCLS"]').val();
+            var g = numeral($('input[data-zf-field="PRODCOST"]').val()).value(); //제조원가
+            var r = numeral(_zw.V.calcpay['원가율']).value();
+            var s = 0;
+
+            //필드 초기화 X
+            //$('table[data-zf-subtable="CE_COST_SGA"] [data-zf-field]').each(function() { $(this).val(''); });
+
+            $('table[data-zf-subtable="CE_COST_SGA"] tbody tr').each(function (idx, e) {
+                var d = e.cells[0].firstChild.value;
+                if (d.substr(0, 2) == '재고') {
+                    s = numeral(_zw.V.calcpay['재고비용율']).value();
+                    e.cells[2].firstChild.value = numeral(g / r * s).format('0,0.0000');
+                    s = 0;
+
+                } else if (d.substr(0, 2) == '생산') {
+                    s = numeral(_zw.V.calcpay['생산지판관비']).value();
+                    e.cells[2].firstChild.value = numeral(g / r * s).format('0,0.0000');
+                    s = 0;
+
+                } else if (d.substr(0, 2) == '본사') {
+                    s = numeral(_zw.V.calcpay['공통판관비']).value();
+                    e.cells[2].firstChild.value = numeral(g / r * s).format('0,0.0000');
+                    s = 0;
+
+                } else if (d.substr(0, 2) == '투자') {
+                    if (x == '투자' || x == 'ALL') {
+                        for (var i = 0; i < gd.length; i++) {
+                            //if (gd[i]["CLS"] == '투자비용') s += numeral(gd[i]["USDSUM"]).value();
+                            if (x == '투자' || (x == 'ALL' && gd[i]["CLSPOS"] == '투자')) s += numeral(gd[i]["USDSUM"]).value();
+                        }
+                    } else s = 0;
+
+                    if (s && s != 0) e.cells[2].firstChild.value = numeral(s).format('0,0.0000');
+                    s = 0;
+                }
+            });
+            s = 0;
+
+            $('table[data-zf-subtable="CE_COST_SGA"] input[data-zf-ftype="SUBFIELD"]').each(function () {
+                if ($(this).attr('data-zf-field') == 'SUM') s += numeral($(this).val()).value();
+            });
+
+            if (s && s != 0) $('input[data-zf-field="SGACOST"]').val(numeral(s).format('0,0.0000'));
+            else $('input[data-zf-field="SGACOST"]').val('');
+        }
+
+        function calcCost_Total() { //총원가
+            $('input[data-zf-field="TOTALCOST"]').val('');
+
+            var g = numeral($('input[data-zf-field="PRODCOST"]').val()).value(); //제조원가
+            var h = numeral($('input[data-zf-field="SGACOST"]').val()).value(); //판관비
+            var i = numeral(g + h).value();
+
+            if (i != 0) {
+                $('input[data-zf-field="TOTALCOST"]').val(numeral(i).format('0,0.0000'));
+                $('input[data-zf-field="EXSALEPRICE"]').val(numeral(i).format('0,0.0000')); //21-03-10 기본 계산시 총원가 = 판매예정가
+            }
+        }
+
+        function calcCost_Exp() { //예상
+            if ($('input[data-zf-field="TOTALCOST"]').val() == '') $('input[data-zf-field="EXSALEPRICE"]').val(''); //판매예정가 초기화
+            $('input[data-zf-field="EXOPPROFIT"]').val('');
+            $('input[data-zf-field="EXCTBPROFIT"]').val('');
+
+            var e = numeral($('input[data-zf-field="VARCOST"]').val()).value(); //변동원가
+            var g = numeral($('input[data-zf-field="PRODCOST"]').val()).value(); //제조원가
+            var i = numeral($('input[data-zf-field="TOTALCOST"]').val()).value(); //총원가
+            var j = numeral($('input[data-zf-field="EXSALEPRICE"]').val()).value(); //판매예정가
+
+            if (j && j != 0) {
+                var h1 = 0, h2 = 0;
+
+                $('table[data-zf-subtable="CE_COST_SGA"] tbody tr').each(function (idx, e) {
+                    var d = e.cells[0].firstChild.value;
+                    if (d.substr(0, 2) == '재고') {
+                        h1 = numeral(e.cells[2].firstChild.value).value();
+
+                    } else if (d.substr(0, 2) == '투자') {
+                        h2 = numeral(e.cells[2].firstChild.value).value();
+                    }
+                });
+
+                var r = numeral(_zw.V.calcpay['원가율']).value();
+                var s = numeral(_zw.V.calcpay['변동판관비']).value();
+
+                var k1 = numeral(j - i).value(); //예상영업이익
+                var k2 = numeral(j - (e + h1 + h2 + g / r * s)).value(); //예상공헌이익
+
+                if (k1 && k1 != 0) $('input[data-zf-field="EXOPPROFIT"]').val(numeral(k1).format('0,0.0000'));
+                if (k2 && k2 != 0) $('input[data-zf-field="EXCTBPROFIT"]').val(numeral(k2).format('0,0.0000'));
+            }
+        }
+
+        function calcCost_Rate() { //비율 계산
+            var s = 0, r = 0;
+            var i = numeral($('input[data-zf-field="TOTALCOST"]').val()).value(); //총원가, 100%
+
+            $('input[data-zf-field="MTRCOSTRT"]').val('');
+            $('input[data-zf-field="IMCOSTRT"]').val('');
+            $('input[data-zf-field="PCCOSTRT"]').val('');
+            $('input[data-zf-field="SPLEXRT"]').val('');
+            $('input[data-zf-field="VARCOSTRT"]').val('');
+            $('input[data-zf-field="FIXCOSTRT"]').val('');
+            $('input[data-zf-field="PRODCOSTRT"]').val('');
+            $('input[data-zf-field="SGACOSTRT"]').val('');
+            $('input[data-zf-field="EXOPPROFITRT"]').val('');
+            $('input[data-zf-field="EXCTBPROFITRT"]').val('');
+
+            if (i && i != 0) {
+
+                //            $('table[data-zf-subtable="CE_COST_MTR"] tbody tr').each(function(idx, e) {
+                //                if (e.cells[0].firstChild.value != '') {
+                //                    s = numeral(e.cells[3].firstChild.value).value();
+                //                    if (s && s >= 0) e.cells[4].firstChild.value = numeral(s / i).format('0,0.00%');
+                //                    s = 0;
+                //                }
+                //            });
+                //
+                //            $('table[data-zf-subtable="CE_COST_IM"] tbody tr').each(function(idx, e) {
+                //                if (e.cells[0].firstChild.value != '') {
+                //                    s = numeral(e.cells[3].firstChild.value).value();
+                //                    if (s && s >= 0) e.cells[4].firstChild.value = numeral(s / i).format('0,0.00%');
+                //                    s = 0;
+                //                }
+                //            });
+                //
+                //            $('table[data-zf-subtable="CE_COST_PC"] tbody tr').each(function(idx, e) {
+                //                if (e.cells[0].firstChild.value != '') {
+                //                    s = numeral(e.cells[3].firstChild.value).value();
+                //                    if (s && s >= 0) e.cells[4].firstChild.value = numeral(s / i).format('0,0.00%');
+                //                    s = 0;
+                //                }
+                //            });
+
+                $('table[data-zf-subtable]').each(function () {
+                    var p = $(this), n = 0;
+                    p.find('tbody tr').each(function (idx, e) {
+                        if (e.cells[0].firstChild.value != '') {
+                            n = p.attr('data-zf-subtable') == 'CE_COST_SGA' ? 2 : 3;
+                            s = numeral(e.cells[n].firstChild.value).value();
+                            e.cells[n + 1].firstChild.value = s && s >= 0 ? numeral(s / i).format('0,0.00%') : '';
+                            s = 0;
+                        }
+                    });
+                });
+
+                var a = numeral($('input[data-zf-field="MTRCOST"]').val()).value(); //재료비
+                $('input[data-zf-field="MTRCOSTRT"]').val(numeral(a / i).format('0,0.00%'));
+
+                var b = numeral($('input[data-zf-field="IMCOST"]').val()).value(); //수입경비
+                $('input[data-zf-field="IMCOSTRT"]').val(numeral(b / i).format('0,0.00%'));
+
+                var c = numeral($('input[data-zf-field="PCCOST"]').val()).value(); //가공비
+                $('input[data-zf-field="PCCOSTRT"]').val(numeral(c / i).format('0,0.00%'));
+
+                var d = numeral($('input[data-zf-field="SPLEX"]').val()).value(); //소모품비
+                $('input[data-zf-field="SPLEXRT"]').val(numeral(d / i).format('0,0.00%'));
+
+                var e = numeral($('input[data-zf-field="VARCOST"]').val()).value(); //변동원가
+                $('input[data-zf-field="VARCOSTRT"]').val(numeral(e / i).format('0,0.00%'));
+
+                var f = numeral($('input[data-zf-field="FIXCOST"]').val()).value(); //고정원가
+                $('input[data-zf-field="FIXCOSTRT"]').val(numeral(f / i).format('0,0.00%'));
+
+                var g = numeral($('input[data-zf-field="PRODCOST"]').val()).value(); //제조원가
+                $('input[data-zf-field="PRODCOSTRT"]').val(numeral(g / i).format('0,0.00%'));
+
+                var h = numeral($('input[data-zf-field="SGACOST"]').val()).value(); //판관비
+                $('input[data-zf-field="SGACOSTRT"]').val(numeral(h / i).format('0,0.00%'));
+
+                var j = numeral($('input[data-zf-field="EXSALEPRICE"]').val()).value(); //판매예정가
+                if (j && j != 0) {
+                    var k1 = numeral($('input[data-zf-field="EXOPPROFIT"]').val()).value(); //예상영업이익
+                    var k2 = numeral($('input[data-zf-field="EXCTBPROFIT"]').val()).value(); //예상공헌이익
+
+                    $('input[data-zf-field="EXOPPROFITRT"]').val(numeral(k1 / j).format('0,0.00%'));
+                    $('input[data-zf-field="EXCTBPROFITRT"]').val(numeral(k2 / j).format('0,0.00%'));
+                }
+            }
+        }
+    </script>
 }
-
-<!--
-=================================================================
-**************************** CONTENT ****************************
--->
-<!-- `.messages-wrapper` fills all available space of container -->
-<div class="messages-wrapper">
-
-    <!-- sidebox -->
-    @Html.Partial("_LeftMenu")
-    <!-- / sidebox -->
-    <!-- content -->
-    <div class="d-flex flex-column w-100 bg-white" data-controls="vw-full-fill">
-        <!-- Header -->
-        <div class="flex-grow-0">
-            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
-                <div class="d-flex align-items-center font-weight-bold">
-                    <div class="h5 mb-0">
-                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
-                    </div>
-
+<div class="layout-wrapper">
+    <div class="layout-inner">
+        <div class="layout-container">
+            <!-- Header -->
+            <div class="layout-navbar d-flex justify-content-between">
+                <div class="navbar-header">
                     <div class="h5 mb-0 z-ttl py-0 text-truncate">
                         <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
                     </div>
                 </div>
-                <ul class="nav d-flex align-items-center justify-content-end z-lv-menu">
+                <ul class="nav">
+                    @Html.Raw(RenderMenu(ViewBag.R.mode.ToString(), Convert.ToInt32(ViewBag.R.rptmode.Value)))
                 </ul>
             </div>
-        </div>
-
-        <div class="flex-grow-0" style="border-top: 2px solid #eee">
-            <div class="d-flex justify-content-between px-3 my-2">
-                준비중
+            <!-- / Header -->
+            <div class="layout-content">
+                <div class="z-ce-layout">
+                    @Html.Raw(RenderHead(ViewBag.R.mode.ToString(), Convert.ToInt32(ViewBag.R.rptmode.Value)))
+                    @Html.Raw(RenderBody(ViewBag.R.mode.ToString(), Convert.ToInt32(ViewBag.R.rptmode.Value)))
+                </div>
             </div>
-        </div>
-        <!-- / Header -->
 
-        <div class="flex-grow-1 position-relative">
-            
         </div>
     </div>
-    <!-- / content -->
-</div><!-- / .messages-wrapper -->
+</div>

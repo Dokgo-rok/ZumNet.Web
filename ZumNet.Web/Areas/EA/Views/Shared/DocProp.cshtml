@@ -1,15 +1,26 @@
 ﻿@using System.Data;
 @{
+    Newtonsoft.Json.Linq.JArray jCat = (Newtonsoft.Json.Linq.JArray)ViewBag.JPost["category"];
     string sSelected = "";
 }
 
 <div class="form-group row mb-1">
     <label class="col-sm-2 col-form-label">문서분류</label>
     <div class="col-sm-10">
-        <input type="text" class="form-control bg-white" readonly data-for="addinfo" value="@ViewBag.JPost["category"][0]["desc"]" />
-        <input type="hidden" data-for="addinfo2" value="@ViewBag.JPost["category"][0]["fdid"]" />
-        <input type="hidden" data-for="addinfo3" value="@ViewBag.JPost["category"][0]["xfalias"]" />
-        <input type="hidden" data-for="addinfo4" value="@ViewBag.JPost["category"][0]["atttype"]" />
+        @if (jCat.Count > 0)
+        {
+            <input type="text" class="form-control bg-white" readonly data-for="addinfo" value="@ViewBag.JPost["category"][0]["desc"]" />
+            <input type="hidden" data-for="addinfo2" value="@ViewBag.JPost["category"][0]["fdid"]" />
+            <input type="hidden" data-for="addinfo3" value="@ViewBag.JPost["category"][0]["xfalias"]" />
+            <input type="hidden" data-for="addinfo4" value="@ViewBag.JPost["category"][0]["atttype"]" />
+        }
+        else
+        {
+            <input type="text" class="form-control bg-white" readonly data-for="addinfo" value="" />
+            <input type="hidden" data-for="addinfo2" value="" />
+            <input type="hidden" data-for="addinfo3" value="" />
+            <input type="hidden" data-for="addinfo4" value="" />
+        }
     </div>
 </div>
 
@@ -27,6 +38,7 @@
                 {
                     sSelected = " selected";
                 }
+
                 else
                 {
                     sSelected = "";

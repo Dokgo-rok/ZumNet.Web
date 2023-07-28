@@ -155,15 +155,15 @@
                         strValue = row[strID].ToString();
                         //strValue = String.Format("<a href=\"Grid.aspx?app={0}\" title=\"{1}\">{2}</a>", row["CEID"].ToString(), Server.HtmlEncode(strValue), strValue);
                         //strValue = String.Format("<a href=\"Grid.aspx?app={0}&pnt={1}\" title=\"{2}\">{3}</a>", row["CEID"].ToString(), row["PNTCEID"].ToString(), Server.HtmlEncode(strValue), strValue);
-                        strValue = String.Format("<a class=\"z-lnk-navy\" href=\"/ExS/CE/Grid?app={0}&lv={1}\" title=\"{2}\">{3}</a>", row["CEID"].ToString(), ViewBag.R.ft.ToString(), Server.HtmlEncode(strValue), strValue);
+                        strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-query=\"{0}\" title=\"{1}\">{2}</a>", GridQuery("read", row["CEID"].ToString()), Server.HtmlEncode(strValue), strValue);
 
                     }
                     else if (strID == "SUBJECT")
                     {
                         strValue = String.Format("<button class=\"btn btn-facebook zf-btn-xs mr-1\" aria-expanded=\"false\" value=\"{0}\"><i class=\"fas fa-plus\"></i></button>", row["CEID"].ToString());
-                        strValue += String.Format("<a class=\"z-lnk-navy\" href=\"/ExS/CE/Grid?app={0}&lv={1}\" title=\"{2}\">{3}</a>", row["CEID"].ToString(), ViewBag.R.ft.ToString(), Server.HtmlEncode(row[strID].ToString()), row[strID].ToString());
+                        strValue += String.Format("<a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-query=\"{0}\" title=\"{1}\">{2}</a>", GridQuery("read", row["CEID"].ToString()), Server.HtmlEncode(row[strID].ToString()), row[strID].ToString());
                         //if (Convert.ToInt32(row["REVCNT"]) > 0) strValue += String.Format(" <button type=\"button\" class=\"btn btn-warning\" data-btn=\"reviseGrid\"><i class=\"glyphicon glyphicon-level-up\"></i> 개정</button>");
-                        if (Convert.ToInt32(row["REVCNT"]) > 0) strValue += String.Format(" <span class=\"text-danger\"><i class=\"glyphicon glyphicon-level-up\"></i></span>");
+                        if (Convert.ToInt32(row["REVCNT"]) > 0) strValue += String.Format(" <span class=\"text-danger\"><i class=\"fas fa-file-upload\"></i></span>");
 
                     }
                     else if (strID == "STATE")
@@ -198,6 +198,11 @@
 
         if (data != null) { data.Dispose(); data = null; }
         return sb.ToString();
+    }
+
+    private string GridQuery(string m, string appId)
+    {
+        return "?qi=" + Server.UrlEncode(ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"\",opnode:\"\",ft:\"Grid\",appid:\"" + appId + "\"}"));
     }
 }
 

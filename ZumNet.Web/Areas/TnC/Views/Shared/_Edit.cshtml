@@ -65,14 +65,16 @@
         if (!bRpt || selectedDate == "x" || editOption == "all")
         {
             dtStart = Convert.ToDateTime(j["periodfrom"].ToString() + " " + j["start"].ToString());
-            dtEnd = Convert.ToDateTime(j["periodto"].ToString() + " " + j["end"].ToString());
+            if (j["end"].ToString() == "24:00") dtEnd = Convert.ToDateTime(j["periodto"].ToString() + " 23:30");
+            else dtEnd = Convert.ToDateTime(j["periodto"].ToString() + " " + j["end"].ToString());
         }
         else
         {
             double dDiff = ZumNet.Framework.Util.DateHelper.DateDiff(j["periodfrom"].ToString(), j["periodto"].ToString(), "");
 
             dtStart = Convert.ToDateTime(selectedDate.ToString() + " " + j["start"].ToString());
-            dtEnd = Convert.ToDateTime(selectedDate.ToString() + " " + j["end"].ToString()).AddDays(dDiff);
+            if (j["end"].ToString() == "24:00") dtEnd = Convert.ToDateTime(selectedDate.ToString() + " 23:30").AddDays(dDiff);
+            else dtEnd = Convert.ToDateTime(selectedDate.ToString() + " " + j["end"].ToString()).AddDays(dDiff);
         }
 
         sb.Append("<div class=\"form-group row mb-1\">");

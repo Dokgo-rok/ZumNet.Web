@@ -289,6 +289,14 @@ $(function () {
 
         } else if (ct == 'booking') {
             _zw.mu.writeEvent('booking');
+
+        } else if (ct == 'ce') {
+            if (_zw.ut.isMobile()) { bootbox.alert('모바일 환경에서는 지원되지 않습니다!'); return false; }
+
+            var w = window.screen.width, h = window.screen.height;
+            w = w >= 1600 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h;
+
+            _zw.ut.openWnd('/ExS/CE/Grid' + $(this).attr('data-query'), 'CEGrid', w, h, 'resize');
         }
 
         _zw.ut.hideRightBar();
@@ -1988,6 +1996,9 @@ $(function () {
         },
         "maskInput": function (e) {
             var v = $(e).attr('data-inputmask').split(';'); //console.log('v[0] => ' + v[0])
+            var lang = $('#current_culture').length == 0 || $('#current_culture').val() == '' ? 'ko' : $('#current_culture').val().toLowerCase().substr(0, 2);
+            //console.log(lang);
+
             if (v[0] == "number" || v[0] == "percent" || v[0] == "number-n" || v[0] == "month") {
                 if (v[0] == "month") {
                     vanillaTextMask.maskInput({
@@ -2017,9 +2028,14 @@ $(function () {
             } else if (v[0] == "date" || v[0] == "time" || v[0] == "year") {
                 var mv = [];
                 if (v[0] == "date") {
-                    if (v[1] == 'yyyy') mv = [/[1-2]/, /\d/, /\d/, /\d/];
-                    else if (v[1] == 'yyyy/MM/dd') mv = [/[1-2]/, /\d/, /\d/, /\d/, '/', /[0-1]/, /\d/, '/', /[0-3]/, /\d/];
-                    else mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
+                    if (v[1] == 'yyyy' || v[1] == 'YYYY') mv = [/[1-2]/, /\d/, /\d/, /\d/];
+                    else if (v[1] == 'yyyy/MM/dd' || v[1] == 'YYYY/MM/DD') {
+                        if (lang == 'en') mv = [/[0-1]/, /\d/, '/', /[0-3]/, /\d/, '/', /[1-2]/, /\d/, /\d/, /\d/];
+                        else mv = [/[1-2]/, /\d/, /\d/, /\d/, '/', /[0-1]/, /\d/, '/', /[0-3]/, /\d/];
+                    } else {
+                        if (lang == 'en') mv = [/[0-1]/, /\d/, '-', /[0-3]/, /\d/, '-', /[1-2]/, /\d/, /\d/, /\d/];
+                        else mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
+                    }
                 } else if (v[0] == "time") {
                     mv = v[1] == 'HH:MM' ? [/\d/, /\d/, ':', /\d/, /\d/] : [/\d/, /\d/, ':', /\d/, /\d/, ':', /\d/, /\d/];
                 }
@@ -2191,6 +2207,19 @@ $(function () {
             //} else {
             //    bootbox.hideAll();
             //}
+        },
+        "ajaxSync": function (url, data) {
+            var rt = '';
+            $.ajax({
+                type: "POST",
+                url: url,
+                async: false,
+                data: data,
+                success: function (res) {
+                    rt = res;
+                }, beforeSend: function () { }
+            });
+            return rt;
         },
         "isMobile": function () {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent);

@@ -92,6 +92,10 @@
     text-align: center
 }
 
+.z-grid tr > th > input {
+    font-weight: 500;
+}
+
 .z-grid .cell-input, .z-grid .cell-select {
 }
 
@@ -104,49 +108,11 @@
     .z-grid .cell-input input {
         background-color: #eee
     }
-
-.tui-grid-header-area .tui-grid-cell-header {
-    color: #666;
-    white-space: normal;
-    padding: 2px;
-    background-color: #d9edf7;
-    border: 1px solid #999
-}
-
-.tui-grid-body-area .tui-grid-cell {
-    color: #444;
-    white-space: normal
-}
-
-    .tui-grid-body-area .tui-grid-cell .tui-grid-cell-content {
-        padding: 4px 4px 0 4px;
-    }
-
-.tui-grid-header-area .tui-grid-cell-header, .tui-grid-body-area .tui-grid-cell {
-    font-size: 12px
-}
-
-.tui-grid-container input, .tui-grid-container p, .tui-grid-container textarea {
-    font-size: 12px;
-}
-
-.tui-select-box-input, .tui-select-box-item, .tui-select-box-item-group-label {
-    padding: 0 4px;
-    height: 22px;
-    font-size: 12px;
-}
-
-.tui-select-box-item, .tui-select-box-item-group-label, .tui-select-box-placeholder {
-    line-height: 22px;
-}
-
-.tui-grid-table .tui-grid-cell-row-header {
-    border-color: #bbb
-}
-
-.tui-grid-row-header-checkbox {
-    padding: 5px 0 0 0;
-}
+        .z-grid .cell-input input:focus, .z-grid .cell-read input:focus, .z-grid .cell-select select:focus, .ttl select:focus {
+            border-color: rgba(254,183,68,1);
+            outline: 0;
+            box-shadow: none;
+        }
 /* grid <----- */
 
 /* z-list-sticky -----> */

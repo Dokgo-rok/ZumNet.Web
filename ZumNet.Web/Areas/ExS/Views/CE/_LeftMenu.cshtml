@@ -25,9 +25,10 @@
 <div class="messages-sidebox messages-scroll bg-body border-right">
     <div class="z-mobile-navbar"></div>
 
-    <div class="pt-3 px-4">
-        <div class="media align-items-center px-1">
+    <div class="py-3 px-4">
+        <div class="media align-items-center">
             <div class="media-body">
+                <a id="__NewMessage" href="javascript:void(0)" class="btn btn-tumblr rounded-pill btn-block" data-for="ce" data-query="@GetQueryString(vBox[0, 0], vBox[0, 1])"><i class="fe-edit mr-2"></i>@Html.Raw(vBox[0, 1])</a>
             </div>
             <a href="javascript:void(0)" class="messages-sidebox-toggler d-none text-muted text-large font-weight-light pl-4">&times;</a>
         </div>
@@ -41,19 +42,16 @@
 
             @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W")) //작성권한
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    <li class="sidenav-item@(currentPage.ToLower() == vBox[i, 0].ToLower() ? " active" : "")">
-                        <a href="@GetQueryString(vBox[i, 0], vBox[0, 1])" class="sidenav-link@(vBox[i, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[i, 1])">
-                            <i class="@vBox[i, 3] sidenav-icon"></i><span>@Html.Raw(vBox[i, 1])</span>
-                        </a>
-                    </li>
-                }
+                <li class="sidenav-item@(currentPage.ToLower() == vBox[1, 0].ToLower() ? " active" : "")">
+                    <a href="@GetQueryString(vBox[1, 0], vBox[1, 1])" class="sidenav-link@(vBox[1, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[1, 1])">
+                        <i class="@vBox[1, 3] sidenav-icon"></i><span>@Html.Raw(vBox[1, 1])</span>
+                    </a>
+                </li>
 
                 if (ViewBag.R.current["operator"].ToString() == "Y" || ViewBag.R.current["chief"].ToString() == "Y")
                 {
                     <li class="sidenav-item@(currentPage.ToLower() == vBox[2, 0].ToLower() ? " active" : "")">
-                        <a href="@GetQueryString(vBox[2, 0], vBox[0, 1])" class="sidenav-link@(vBox[2, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[2, 1])">
+                        <a href="@GetQueryString(vBox[2, 0], vBox[2, 1])" class="sidenav-link@(vBox[2, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[2, 1])">
                             <i class="@vBox[2, 3] sidenav-icon"></i><span>@Html.Raw(vBox[2, 1])</span>
                         </a>
                     </li>
@@ -63,12 +61,12 @@
             @if (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R")) //읽기권한
             {
                 <li class="sidenav-item@(currentPage == "" || currentPage.ToLower() == vBox[3, 0].ToLower() ? " active" : "")">
-                    <a href="@GetQueryString(vBox[3, 0], vBox[0, 1])" class="sidenav-link@(vBox[3, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[3, 1])">
+                    <a href="@GetQueryString(vBox[3, 0], vBox[3, 1])" class="sidenav-link@(vBox[3, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[3, 1])">
                         <i class="@vBox[3, 3] sidenav-icon"></i><span>@Html.Raw(vBox[3, 1])</span>
                     </a>
                 </li>
                 <li class="sidenav-item@(currentPage.ToLower() == vBox[4, 0].ToLower() ? " active" : "")">
-                    <a href="@GetQueryString(vBox[4, 0], vBox[0, 1])" class="sidenav-link@(vBox[4, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[4, 1])">
+                    <a href="@GetQueryString(vBox[4, 0], vBox[4, 1])" class="sidenav-link@(vBox[4, 2] == "Y" ? " font-weight-bold" : "")" data-toggle="tooltip" data-placement="bottom" title="@Html.Raw(vBox[4, 1])">
                         <i class="@vBox[4, 3] sidenav-icon"></i><span>@Html.Raw(vBox[4, 1])</span>
                     </a>
                 </li>

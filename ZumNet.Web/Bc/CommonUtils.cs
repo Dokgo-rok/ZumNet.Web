@@ -1438,7 +1438,7 @@ namespace ZumNet.Web.Bc
                     jV["nsstatus"] = StringHelper.SafeString(jReq["nsstatus"], "0"); //2020-11-16 : 상위 포함관계, 0: 미포함, 1 : 상위정상포함, 2 : 상위반려
                     jV["rptid"] = StringHelper.SafeString(jReq["rptid"], "");
                     jV["rptmode"] = StringHelper.SafeString(jReq["rptmode"], "3"); //0 : 신규집계 시뮬, 1 : 신규집계 작성/편집, 2 : 집계 조회, 3 : 하위
-                    jV["gvmode"] = "";
+                    jV["gvmode"] = false;
                 }
 
                 ctrl.ViewBag.R = jV;
@@ -2221,11 +2221,12 @@ namespace ZumNet.Web.Bc
                 #region [기본정보 설정]
                 if (strReturn == "")
                 {
+                    string[] vPage = ctrl.ViewBag.R.current["page"].ToString().Split('/');
                     try
                     {
                         using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
                         {
-                            if (ctrl.ViewBag.R.current["page"].ToString().ToLower() == "grid" && ctrl.ViewBag.R.mode.ToString() != "new"
+                            if (vPage[vPage.Length - 1].ToLower() == "grid" && ctrl.ViewBag.R.mode.ToString() != "new"
                                 && ctrl.ViewBag.R.mode.ToString() != "add" && StringHelper.SafeInt(ctrl.ViewBag.R.appid.Value) != 0)
                             {
                                 svcRt = cost.GetSTDDAY(StringHelper.SafeInt(ctrl.ViewBag.R.appid.Value), "");

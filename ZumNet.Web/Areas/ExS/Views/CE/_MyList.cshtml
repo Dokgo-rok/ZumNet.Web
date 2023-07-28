@@ -15,8 +15,8 @@
     private void ConfigColumn(string mode)
     {
         //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
-        string[,] arr = { { "SEQ", "순번", "4%", "", "", ""} , { "MODEL", "모델번호", "14%", "left", "", "" }, { "BUYER", "고객", "10%", "", "", "" }
-                        , { "_CHECK_", "", "2%", "", "", "" }, { "XCLS", "구분", "5%", "", "", ""}, { "SUBJECT", "시트명", "19%", "left", "", ""}
+        string[,] arr = { { "SEQ", "순번", "4%", "", "", ""} , { "MODEL", "모델번호", "14%", "L", "", "" }, { "BUYER", "고객", "10%", "", "", "" }
+                        , { "_CHECK_", "", "2%", "", "", "" }, { "XCLS", "구분", "5%", "", "", ""}, { "SUBJECT", "시트명", "19%", "L", "", ""}
                         , { "CORP", "생산지", "6%", "", "", "" }, { "ITEMCLS", "품목분류", "8%", "", "", "" }, { "VER", "버전", "5%", "", "", "" }
                         , { "STATE", "상태", "7%", "", "", "" }, { "CRDT", "작성일자", "10%", "", "", "" }, { "_CDT_", "완료/확인", "10%", "", "", "" }
                     };
@@ -165,18 +165,16 @@
 
                         if (row["STATE"].ToString() == "9")
                         {
-                            strValue = String.Format("<a href=\"Grid.aspx?M=edit&app={0}&lv={1}\" title=\"{2}\">{3}{4}</a>", row["CEID"].ToString()
-                                                    , ViewBag.R.ft.ToString(), Server.HtmlEncode(strValue), strValue, strStatus);
+                            strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-query=\"{0}\" title=\"{1}\">{2}{3}</a>", GridQuery("edit", row["CEID"].ToString()), Server.HtmlEncode(strValue), strValue, strStatus);
                         }
                         else
                         {
-                            strValue = String.Format("<a href=\"Grid.aspx?app={0}&lv={1}\" title=\"{2}\">{3}{4}</a>", row["CEID"].ToString()
-                                                    , ViewBag.R.ft.ToString(), Server.HtmlEncode(strValue), strValue, strStatus);
+                            strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-query=\"{0}\" title=\"{1}\">{2}{3}</a>", GridQuery("read", row["CEID"].ToString()), Server.HtmlEncode(strValue), strValue, strStatus);
                         }
 
                         if (strID == "SUBJECT" && row["XCLS"].ToString() == "ALL")
                         {
-                            strValue += String.Format("<button type=\"button\" class=\"btn btn-primary\" aria-expanded=\"false\" value=\"{0}\"><i class=\"glyphicon glyphicon-plus\"></i></button>", row["CEID"].ToString());
+                            strValue += String.Format("<button type=\"button\" class=\"btn btn-facebook zf-btn-xs ml-1\" aria-expanded=\"false\" value=\"{0}\"><i class=\"fas fa-plus\"></i></button>", row["CEID"].ToString());
                         }
                     }
                     else if (strID == "STATE")
@@ -199,11 +197,11 @@
                         if (row["XCLS"].ToString() == "ALL") strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row["COMPDT"].ToString(), "MM-dd HH:mm", "");
                         else
                         {
-                            if (row["FCFMSS"].ToString() == "Y") strValue = "<span title=\"작성자 확인\" class=\"text-success\"><i class=\"glyphicon glyphicon-ok\"></i></span>";
-                            else strValue = "<span title=\"작성자 확인 전\" class=\"text-muted\"><i class=\"glyphicon glyphicon-minus\"></i></span>";
+                            if (row["FCFMSS"].ToString() == "Y") strValue = "<span title=\"작성자 확인\" class=\"text-success\"><i class=\"fas fa-check\"></i></span>";
+                            else strValue = "<span title=\"작성자 확인 전\" class=\"text-muted\"><i class=\"fas fa-minus\"></i></span>";
 
-                            if (row["SCFMSS"].ToString() == "Y") strValue += " / <span title=\"부서장 확인\" class=\"text-success\"><i class=\"glyphicon glyphicon-ok\"></i></span>";
-                            else strValue += " / <span title=\"부서장 확인 전\" class=\"text-muted\"><i class=\"glyphicon glyphicon-minus\"></i></span>";
+                            if (row["SCFMSS"].ToString() == "Y") strValue += " / <span title=\"부서장 확인\" class=\"text-success\"><i class=\"fas fa-check\"></i></span>";
+                            else strValue += " / <span title=\"부서장 확인 전\" class=\"text-muted\"><i class=\"fas fa-minus\"></i></span>";
                         }
                     }
                     else
@@ -229,6 +227,11 @@
 
         if (data != null) { data.Dispose(); data = null; }
         return sb.ToString();
+    }
+
+    private string GridQuery(string m, string appId)
+    {
+        return "?qi=" + Server.UrlEncode(ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"\",opnode:\"\",ft:\"Grid\",appid:\"" + appId + "\"}"));
     }
 }
 

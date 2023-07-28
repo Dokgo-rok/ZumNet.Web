@@ -1,0 +1,161 @@
+﻿.pt-10, .py-10 {
+    padding-top: 10px !important
+}
+
+.pb-10, .py-10 {
+    padding-bottom: 10px !important
+}
+
+.pl-10, .px-10 {
+    padding-left: 10px !important
+}
+
+.pr-10, .px-10 {
+    padding-right: 10px !important
+}
+
+.pt-15, .py-15 {
+    padding-top: 15px !important
+}
+
+.pb-15, .py-15 {
+    padding-bottom: 15px !important
+}
+
+.pl-15, .px-15 {
+    padding-left: 15px !important
+}
+
+.pr-15, .px-15 {
+    padding-right: 15px !important
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+th {
+    text-align: left;
+}
+
+.layout-navbar {
+    height: 40px;
+    background-color: rgba(85, 142, 151, 0.1);
+    border-bottom: 2px solid #ddd !important;
+    padding: 2px 2px 2px 0
+}
+
+.layout-load {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    text-align: center
+}
+
+    .layout-load .msg {
+        margin-top: 300px;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        color: #3e8f3e;
+    }
+
+.layout-content {
+    position: absolute;
+    top: 44px;
+    left: 8px;
+    right: 8px;
+    font-size: 12px;
+}
+
+.z-ce-layout .grid {
+    padding-left: 10px
+}
+
+.z-ce-layout .left, .z-ce-layout .right, .z-ce-layout .middle, .z-ce-layout .grid {
+    vertical-align: top
+}
+
+.z-ce-layout .z-ce-head .middle {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #444;
+    letter-spacing: 6px;
+}
+
+.z-ce-head .left, .z-ce-head .right {
+    width: 390px
+}
+
+
+.z-grid {
+    width: 100%;
+    max-width: 100%;
+}
+
+.z-grid-bordered {
+    border: 1px solid #666;
+}
+
+.z-grid > tbody > tr > td, .z-grid > tbody > tr > th, .z-grid > tfoot > tr > td, .z-grid > tfoot > tr > th, .z-grid > thead > tr > td, .z-grid > thead > tr > th {
+    vertical-align: middle;
+    padding: 2px;
+    line-height: 1.4285;
+    height: 24px;
+}
+
+.z-grid-bordered > tbody > tr > td, .z-grid-bordered > tbody > tr > th, .z-grid-bordered > tfoot > tr > td, .z-grid-bordered > tfoot > tr > th, .z-grid-bordered > thead > tr > td, .z-grid-bordered > thead > tr > th {
+    border: 1px solid #999;
+}
+
+.z-grid > tbody > tr.info > td, .z-grid > tbody > tr.info > th, .z-grid > tbody > tr > td.info, .z-grid > tbody > tr > th.info, .z-grid > tfoot > tr.info > td, .z-grid > tfoot > tr.info > th, .z-grid > tfoot > tr > td.info, .z-grid > tfoot > tr > th.info, .z-grid > thead > tr.info > td, .z-grid > thead > tr.info > th, .z-grid > thead > tr > td.info, .z-grid > thead > tr > th.info {
+    background-color: #d9edf7;
+}
+
+.z-grid > thead > tr > td, .z-grid > thead > tr > th {
+    text-align: center;
+}
+
+    .z-grid > tbody > tr.warning > td, .z-grid > tbody > tr.warning > th, .z-grid > tbody > tr > td.warning, .z-grid > tbody > tr > th.warning, .z-grid > tfoot > tr.warning > td, .z-grid > tfoot > tr.warning > th, .z-grid > tfoot > tr > td.warning, .z-grid > tfoot > tr > th.warning, .z-grid > thead > tr.warning > td, .z-grid > thead > tr.warning > th, .z-grid > thead > tr > td.warning, .z-grid > thead > tr > th.warning {
+        background-color: #fcf8e3;
+    }
+
+.z-grid .cell-input input, .z-grid .cell-read input, .z-grid .cell-select select {
+    height: 100%;
+    width: 100%;
+    border: 0
+}
+
+@page {
+    size: 297mm 210mm; /*A4*/
+    margin: 10mm;
+}
+
+@media print {
+    body {
+        width: 420mm;
+        height: 297mm
+    }
+    /* 인쇄화면비율 조절 효과 :A3 크기 */
+    .layout-navbar, .layout-load {
+        display: none
+    }
+
+    .layout-content {
+        top: 0;
+        left: 0;
+        right: 0;
+        font-size: 10px;
+    }
+
+    .z-ce-head .left, .z-ce-head .right {
+        width: 320px
+    }
+}

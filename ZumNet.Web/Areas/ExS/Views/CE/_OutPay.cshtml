@@ -71,14 +71,29 @@
 
         StringBuilder sb = new StringBuilder();
 
-        if (ViewBag.Mode != "OutPay") sb.Append("<div class=\"col-md-6 mt-3\" id=\"_SimpleView\">");
-        sb.Append("<div class=\"card\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
-        sb.Append("<div class=\"card-header bg-light border-bottom-0\">");
-        sb.AppendFormat("<div class=\"h6 mb-0\">{0} : <span class=\"text-success\">{1}</span></div>", "적용일시", ZumNet.Framework.Util.StringHelper.SafeString(rowOut["STDDT"]));
-        sb.Append("</div>");
+        if (ViewBag.Mode == "OP")
+        {
+            sb.Append("<div class=\"zf-modal modal-dialog modal-dialog-scrollable\">");
+            sb.Append("<div class=\"modal-content\" style=\"box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)\">");
+            sb.Append("<div class=\"modal-header\">");
+            sb.AppendFormat("<h4 class=\"modal-title\">{0} : {1}</h4>", "적용일시", ZumNet.Framework.Util.StringHelper.SafeString(rowOut["STDDT"]));
+            sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+            sb.Append("</div>"); //modal-header
 
-        sb.Append("<div class=\"card-body p-0\">");
-        sb.Append("<table class=\"table table-striped mb-0 border-bottom-0\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+            sb.Append("<div class=\"modal-body p-3\">"); //modal-body
+            sb.Append("<table class=\"table table-striped table-sm mb-0 text-center\">");
+        }
+        else
+        {
+            if (ViewBag.Mode != "OutPay") sb.Append("<div class=\"col-md-6 mt-3\" id=\"_SimpleView\">");
+            sb.Append("<div class=\"card\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+            sb.Append("<div class=\"card-header bg-light border-bottom-0\">");
+            sb.AppendFormat("<div class=\"h6 mb-0\">{0} : <span class=\"text-success\">{1}</span></div>", "적용일시", ZumNet.Framework.Util.StringHelper.SafeString(rowOut["STDDT"]));
+            sb.Append("</div>");
+
+            sb.Append("<div class=\"card-body p-0\">");
+            sb.Append("<table class=\"table table-striped mb-0 border-bottom-0\" style=\"border-color: rgba(24, 28, 33, 0.15);\">");
+        }
 
         sb.Append("<thead>");
         sb.AppendFormat("<tr><th>{0}</th><th>{1}</th><th>{2}</th><th>{3}</th><th class=\"d-none d-sm-table-cell\">{4}</th></tr>", "법인명", "적용통화", "적용금액", "USD", "법인구분");
@@ -100,9 +115,21 @@
         sb.Append("</tbody>");
         sb.Append("</table>");
 
-        sb.Append("</div>");
-        sb.Append("</div>");
-        if (ViewBag.Mode != "OutPay") sb.Append("</div>");
+        if (ViewBag.Mode == "OP")
+        {
+            sb.Append("</div>"); //body
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>"); //footer
+            sb.Append("</div>"); //content
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("</div>");
+            sb.Append("</div>");
+            if (ViewBag.Mode != "OutPay") sb.Append("</div>");
+        }
 
         rowOut = null;
         rowRate = null;
@@ -111,7 +138,7 @@
     }
 }
 
-@if (ViewBag.Mode == "OutPay")
+@if (ViewBag.Mode == "OutPay" || ViewBag.Mode == "OP")
 {
     @Html.Raw(ViewStdRate(ViewBag.StdRate))
 }

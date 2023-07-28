@@ -23,6 +23,107 @@ $(function () {
         if (e.which == 13) _zw.fn.goSearch();
     });
 
+    _zw.fn.bindCtrl = function () {
+        _zw.fn.openGrid();
+
+        $('.z-list-body :checkbox[aria-posinset]').on('click', function () {
+            var seq = $(this).attr('aria-posinset'), tgl = $(this).attr('data-toggle');
+
+            if ($(this).prop('checked')) {
+                $('.z-list-body :checkbox[aria-posinset]').each(function () {
+                    if ($(this).attr('aria-posinset') != seq || $(this).attr('data-toggle') != tgl) {
+                        if ($(this).prop('checked')) $(this).prop('checked', false);
+                    }
+                });
+
+                $('.z-lv-menu a[data-zf-menu]').each(function () {
+                    if ($(this).attr('data-zf-menu') == tgl) $(this).removeClass('text-muted').addClass('z-lnk-navy-n').prop('disabled', false);
+                    else $(this).removeClass('z-lnk-navy-n').addClass('text-muted').prop('disabled', true);
+                });
+            } else {
+                var bCheck = false;
+                $('.z-list-body :checkbox[aria-posinset]').each(function () {
+                    if ($(this).prop('checked')) { bCheck = true; return false; }
+                });
+                if (!bCheck) $('.z-lv-menu a[data-zf-menu]').removeClass('z-lnk-navy-n').addClass('text-muted').prop('disabled', true);
+            }
+        });
+
+        $('.z-list-body .table .btn[aria-expanded]').on('click', function () {
+            var row = $(this).parent().parent();
+
+            if (_zw.V.ft.toLowerCase() == 'report') {
+                var lvl = row.attr('aria-level');
+                var fst = $('.z-list-body .table tbody tr[aria-level="' + lvl + '"]:first'); //alert($(this).attr('data-value'))
+                var idx = fst.find('th[rowspan]').prop('rowspan'); //alert(idx)
+
+                if ($(this).attr('aria-expanded') == 'false') {
+                    var s = '';
+                    var res = _zw.ut.ajaxSync("/ExS/CE/ChildList", '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",pntid:"' + $(this).val() + '",page:"' + _zw.V.ft.toLowerCase() + '",mo:"' + _zw.V.current.operator + '",acl:"' + _zw.V.current.acl + '"}');
+                    if (res.substr(0, 2) == "OK") s = res.substr(2);
+                    else bootbox.alert(res);
+
+                    if (s != '') {
+                        s = '<tr><td colspan="11" class="table-active"" style="padding: 6px">' + s + '</td></tr>';
+                        $(s).insertAfter(row);
+                        fst.find('th[rowspan], td[rowspan]').prop('rowspan', idx + 1);
+
+                        $(this).attr('aria-expanded', 'true');
+                        $(this).find('i').removeClass('fa-plus').addClass('fa-minus');
+
+                        _zw.fn.openGrid();
+                    }
+
+                } else {
+                    row.next().remove();
+                    fst.find('th[rowspan], td[rowspan]').prop('rowspan', idx - 1);
+
+                    $(this).attr('aria-expanded', 'false');
+                    $(this).find('i').removeClass('fa-minus').addClass('fa-plus');
+                }
+
+            } else if (_zw.V.ft.toLowerCase() == 'list' || _zw.V.ft.toLowerCase() == 'mylist' || _zw.V.ft.toLowerCase() == 'deptlist') {
+                if ($(this).attr('aria-expanded') == 'false') {
+                    var s = '';
+                    var res = _zw.ut.ajaxSync("/ExS/CE/ChildList", '{ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",pntid:"' + $(this).val() + '",page:"' + _zw.V.ft.toLowerCase() + '",mo:"' + _zw.V.current.operator + '",acl:"' + _zw.V.current.acl + '"}');
+                    if (res.substr(0, 2) == "OK") s = res.substr(2);
+                    else bootbox.alert(res);
+
+                    if (s != '') {
+                        s = '<tr><td colspan="9" class="table-active"" style="padding: 6px">' + s + '</td></tr>';
+                        $(s).insertAfter(row);
+                        row.find('td:nth-child(1), td:nth-child(2), td:nth-child(3)').prop('rowspan', 2);
+
+                        $(this).attr('aria-expanded', 'true');
+                        $(this).find('i').removeClass('fa-plus').addClass('fa-minus');
+
+                        _zw.fn.openGrid();
+
+                        row.next().find('.btn[data-btn="revise"]').on('click', function () {
+                            var sPnt = $(this).val(), sID = '';
+                            $(this).parent().parent().parent().find(':checked').each(function () {
+                                sID += ';' + $(this).val()
+                            }); //alert(sPnt + " : " + sID); return false;
+                            if (sID != '') window.location.href = "Grid.aspx?M=renew&lv=list&app=" + sPnt + "&Rp=" + escape(sID.substr(1));
+                            else alert('개정에 포함할 부문견적표를 선택하십시오!');
+                        });
+
+                        //row.next().find('.btn[data-btn="showCompTable"]').on('click', function() {
+                        //    _ZF.menu.showCompTable($(this).val());
+                        //});
+                    }
+
+                } else {
+                    row.next().remove();
+                    row.find('td:nth-child(1), td:nth-child(2), td:nth-child(3)').prop('rowspan', 1);
+
+                    $(this).attr('aria-expanded', 'false');
+                    $(this).find('i').removeClass('fa-minus').addClass('fa-plus');
+                }
+            }
+        });
+    }
+
     _zw.mu.exportExcel = function () {
     }
 
@@ -37,7 +138,8 @@ $(function () {
 
     _zw.mu.saveStd = function (t) {
         var pos = t ? t.attr('data-zf-menu').toLowerCase() : '';
-        var page = _zw.V.current.page.toLowerCase() == "grid" ? _zw.V.current.page.toLowerCase() : _zw.V.ft.toLowerCase();
+        //var page = _zw.V.current.page.toLowerCase() == "grid" ? _zw.V.current.page.toLowerCase() : _zw.V.ft.toLowerCase();
+        var page = _zw.V.ft.toLowerCase();
         var ckValid = true;
         if (pos != 'savetemp') ckValid = _zw.fn.validate();
 
@@ -62,9 +164,9 @@ $(function () {
             }
 
             if (page == "stdpaydetail") {
-                //                    var gc = _ZF.TUG.getColumns();
-                //                    var gd = _ZF.TUG.getData();
-                //                    //var cv = _ZF.TUG.getColumnValues('CORP');
+                //                    var gc = _zw.G.getColumns();
+                //                    var gd = _zw.G.getData();
+                //                    //var cv = _zw.G.getColumnValues('CORP');
                 //                    //alert(t[5]["ROWSEQ"]); return false;
                 //                    
                 //                    var v = [];
@@ -117,7 +219,7 @@ $(function () {
                 //grid                  
                 var gc = _zw.G.getColumns();
                 var gd = _zw.G.getData();
-                //var cv = _ZF.TUG.getColumnValues('CORP');
+                //var cv = _zw.G.getColumnValues('CORP');
                 //alert(t[5]["ROWSEQ"]); return false;
 
                 var p = {}, v = [], iSeq = 1;
@@ -182,14 +284,20 @@ $(function () {
 
                                     var r = res.substr(2).split('^');
                                     if (r[0] != '' && r[0] != '0') _zw.V.appid = r[0];
-                                    bootbox.alert(r[1], function () { _zw.mu.goList(page == 'grid' ? 'grid' : _zw.V.ft.replace('Detail', '')); });
+                                    bootbox.alert(r[1], function () {
+                                        if (page == 'grid') {
+                                            if (pos == 'savetemp') window.location.reload();
+                                            else { opener.location.reload(); window.close(); }
+                                        } else _zw.mu.goList(_zw.V.ft.replace('Detail', ''));
+                                    });
 
                                 } else {
                                     bootbox.alert(res.substr(2));
                                 }
 
                             } else bootbox.alert(res);
-                        }
+                        },
+                        beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
                     });
                 }
             });
@@ -334,7 +442,7 @@ $(function () {
             $('#_HiddenForm .p-html').html(s); //console.log($('#_HiddenForm').html())
             $('#_HiddenFormData').val($('#_HiddenForm').html());
 
-        } else if (_zw.V.current.page == 'grid') {
+        } else if (_zw.V.ft.toLowerCase() == 'grid') {
             ft = _zw.V.rptmode < 3 ? 'PRIMECOSTESTIMATECHART' : 'PRIMECOSTESTIMATEPART';
             tp = 'CE_MAIN'; k1 = $('input[data-zf-field="MODEL"]').val(); k2 = _zw.V.appid;
 
@@ -354,6 +462,137 @@ $(function () {
     _zw.mu.goList = function (page) {
         var qi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"' + page + '"}';
         window.location.href = '/ExS/CE?qi=' + _zw.base64.encode(qi);
+    }
+
+    _zw.mu.reportGrid = function () {
+        var sID = ''
+        $(':checkbox[aria-posinset]').each(function () {
+            if ($(this).prop('checked')) { sID += ';' + $(this).val() }
+        });
+        if (sID != '') sID = sID.substr(1);
+        window.location.href = "Grid.aspx?M=new&Rp=" + escape(sID);
+    }
+
+    _zw.mu.copyGrid = function () {
+        var sID = $(':checked[aria-posinset]').val();
+        if (sID !== undefined && sID != '') {
+            $.ajax({
+                type: "POST",
+                url: "/ExS/CE/GridCopy",
+                data: '{appid:"' + sID + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        var p = $('#popBlank'); p.html(res.substr(2));
+                        p.on('hidden.bs.modal', function () { p.html(''); });
+                        p.modal();
+
+                    } else bootbox.alert(res);
+                }
+            });
+        }
+    }
+
+    _zw.mu.showGridDscpt = function () {
+        var txt = $('textarea[data-zf-field="DSCPT"]').val();
+
+        var s = '<div class="modal-dialog modal-sm">'
+            + '<div class="modal-content" data-for="grid-dscpt">'
+            + '<div class="modal-header">'
+            + '<h4 class="modal-title">특기사항</h4>'
+            + '<button type="button" class="close" data-dismiss="modal"><span>×</span></button>'
+            + '</div>'
+            + '<div class="modal-body">'
+            + '<form>'
+            + '<textarea class="form-control" rows="10">' + txt + '</textarea>'
+            + '</form>'
+            + '</div>'
+            + '<div class="modal-footer">';
+
+        if (_zw.V.mode == '' || _zw.V.mode == 'simul' || _zw.V.mode == 'read') s += '<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>';
+        else s += '<button type="button" class="btn btn-success" data-btn="send">저장</button><button type="button" class="btn btn-default" data-dismiss="modal">취소</button>';
+
+        s += '</div></div></div>';
+
+        var p = $('#popBlank'); p.html(s);
+        p.find('.modal-footer .btn[data-btn="send"]').click(function () {
+            $('textarea[data-zf-field="DSCPT"]').val($(this).parent().prev().find('textarea').val());
+            p.modal('hide');
+        });
+
+        p.on('hidden.bs.modal', function () { p.html(''); });
+        p.modal();
+    }
+
+    //_zw.mu.reqReview = function () {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/ExS/CE/StateLine",
+    //        data: '{mode:"V",appid:"' + _zw.V.appid + '",nested:"' + _zw.V.nsstatus + '"}',
+    //        success: function (res) {
+    //            if (res.substr(0, 2) == "OK") {
+    //                var p = $('#popBlank'); p.html(res.substr(2));
+    //                p.on('hidden.bs.modal', function () { p.html(''); });
+    //                p.modal();
+    //            } else bootbox.alert(res);
+    //        }
+    //    });
+    //}
+
+    _zw.mu.viewConfirm = function () {
+        $.ajax({
+            type: "POST",
+            url: "/ExS/CE/StateLine",
+            data: '{mode:"",appid:"' + _zw.V.appid + '",chief:"' + _zw.V.current.chief + '",nested:"' + _zw.V.nsstatus + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    var p = $('#popBlank'); p.html(res.substr(2));
+                    p.on('hidden.bs.modal', function () { p.html(''); });
+                    p.modal();
+                } else bootbox.alert(res);
+            }
+        });
+    }
+
+    _zw.mu.viewChiefCfm = function () {
+    }
+
+    _zw.mu.showHistory = function () {
+        var sID = typeof arguments[0] === 'string' ? arguments[0] : _zw.V.appid;
+
+        $.ajax({
+            type: "POST",
+            url: "/ExS/CE/HistoryInfo",
+            data: '{mode:"",appid:"' + sID + '",page:"' + _zw.V.current.page + '",mo:"' + _zw.V.current.operator + '",acl:"' + _zw.V.acl + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    var p = $('#popBlank'); p.html(res.substr(2));
+                    p.on('hidden.bs.modal', function () { p.html(''); });
+                    p.modal();
+                } else bootbox.alert(res);
+            }
+        });
+    }
+
+    _zw.mu.showCompTable = function () {
+    }
+
+    _zw.fn.openGrid = function () {
+        $('.z-list-body a[data-query]').on('click', function () {
+            if (_zw.ut.isMobile()) { bootbox.alert('모바일 환경에서는 지원되지 않습니다!'); return false; }
+
+            var w = window.screen.width, h = window.screen.height;
+            w = w >= 1600 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h; //console.log($(this).attr('data-query'))
+
+            _zw.ut.openWnd('/ExS/CE/Grid' + $(this).attr('data-query'), 'CEGrid', w, h, 'resize');
+        });
+    }
+
+    _zw.mu.previewGrid = function () {
+        var url = "/ExS/CE/GridPreview?Xc=" + ($('[data-zf-field="XCLS"]').val() == 'ALL' ? '' : encodeURI(_zw.base64.encode($('[data-zf-field="XCLS"]').val())));
+        var w = window.screen.width, h = window.screen.height;
+        w = w >= 1600 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h; //console.log($(this).attr('data-query'))
+
+        _zw.ut.openWnd(url, 'CEGridPreview', w, h, 'resize');
     }
 
     _zw.fn.viewListItem = function (f, fld, model, t, sub) {
@@ -378,29 +617,32 @@ $(function () {
         });
     }
 
-    _zw.fn.viewStdInfo = function (id) {
-        var page = _zw.V.ft + 'Detail';
-        var qi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"' + page + '",appid:"' + id + '"}';
-        window.location.href = '/ExS/CE?qi=' + _zw.base64.encode(qi);
-    }
+    //_zw.fn.viewStdInfo = function (id) {
+    //    var page = _zw.V.ft + 'Detail';
+    //    var qi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"' + page + '",appid:"' + id + '"}';
+    //    window.location.href = '/ExS/CE?qi=' + _zw.base64.encode(qi);
+    //}
 
     _zw.fn.modalStdInfo = function (cls, id) {
-        var url = '', w = 0, v = null;
-        if (cls == 'XR') { url = 'StdExchange.aspx?M=modal'; w = 350; v = ($('#ddlXRATEDT').length > 0 && $('#ddlXRATEDT').val() != '') ? $('#ddlXRATEDT').val().split('_') : _zw.V.stdInfo['xrate']; }
-        else if (cls == 'SP') { url = 'StdPay.aspx?M=modal'; w = 500; v = ($('#ddlSTDPAYDT').length > 0 && $('#ddlSTDPAYDT').val() != '') ? $('#ddlSTDPAYDT').val().split('_') : _zw.V.stdInfo['stdpay']; }
-        else if (cls == 'OP') { url = 'OutPay.aspx?M=modal'; w = 500; v = ($('#ddlOUTPAYDT').length > 0 && $('#ddlOUTPAYDT').val() != '') ? $('#ddlOUTPAYDT').val().split('_') : _zw.V.stdInfo['outpay']; }
+        var v = null;
+        if (cls == 'XR') { v = ($('#ddlXRATEDT').length > 0 && $('#ddlXRATEDT').val() != '') ? $('#ddlXRATEDT').val().split('_') : _zw.V.stdinfo['xrate']; }
+        else if (cls == 'SP') { v = ($('#ddlSTDPAYDT').length > 0 && $('#ddlSTDPAYDT').val() != '') ? $('#ddlSTDPAYDT').val().split('_') : _zw.V.stdinfo['stdpay']; }
+        else if (cls == 'OP') { v = ($('#ddlOUTPAYDT').length > 0 && $('#ddlOUTPAYDT').val() != '') ? $('#ddlOUTPAYDT').val().split('_') : _zw.V.stdinfo['outpay']; }
 
         id = v[0];
 
-        if (url != '') {
+        if (id != '') {
             $.ajax({
                 type: "POST",
-                url: url,
-                data: '{ri:"' + id + '"}',
+                url: "/ExS/CE/SimpleView",
+                data: '{M:"' + cls + '",ri:"' + id + '"}',
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {
-                        //_ZF.util.modal("_Modal", res.substr(2), w);
-                    } else bootbox.alert(res)
+                        var p = $('#popBlank'); p.html(res.substr(2));
+                        p.on('hidden.bs.modal', function () { p.html(''); });
+                        p.modal();
+
+                    }  else bootbox.alert(res);
                 },
                 beforeSend: function () { } //로딩 X
             });
@@ -408,7 +650,7 @@ $(function () {
     }
 
     _zw.fn.modalERP = function (req, page, s) {
-        if (req == 'model' && $('#ddlCORP').val() == '') { bootbox.alert('[생산지]를 먼저 선택하십시오!', function () { $('#ddlCORP').focus(); }); return false; }
+        if (req == 'model' && $('#ddlCORP').val() == '') { bootbox.alert('[생산지]를 선택하십시오!', function () { $('#ddlCORP').focus(); }); return false; }
         var param = '';
         if (arguments[3] && typeof arguments[3] === 'object') {
             for (var i in arguments[3]) {
@@ -423,7 +665,92 @@ $(function () {
             data: '{req:"' + req + '",page:"' + page + '",search:"' + s + '"' + param + '}',
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
-                    //_ZF.util.modal("_Modal", res.substr(2), 500);
+                    var p = $('#popBlank'); p.html(res.substr(2));
+                    var searchBtn = p.find('.modal-header .input-group .btn');
+                    var searchTxt = $('.modal-header .input-group :text');
+
+                    searchTxt.keyup(function (e) { if (e.which == 13) { searchBtn.click(); } });
+                    searchBtn.click(function () {
+                        var sReq = $(".modal-header :hidden[data-zf-field='modal_req']").val();
+                        var pg = $('.modal-header :hidden[data-zf-field="modal_page"]');
+                        var iPage = pg.length > 0 ? pg.val() : 1;
+
+                        var v = null;
+                        if (sReq == 'itemno') {
+                            v = [$(".modal-header :hidden[data-zf-field='modal_rowkey']").val(), $(".modal-header :hidden[data-zf-field='modal_param1']").val()];
+                        } else if (sReq == 'vendor') {
+                            v = [$(".modal-header :hidden[data-zf-field='modal_rowkey']").val()];
+                        }
+
+                        _zw.fn.modalERP(sReq, iPage, $(".modal-header input[data-zf-field='modal_searchtext']").val(), v);
+                    });
+
+                    p.find('.zf-modal-page .btn[data-for]').click(function () {
+                        p.find('.modal-header :hidden[data-zf-field="modal_page"]').val($(this).attr('data-for'));
+                        searchBtn.click();
+                    });
+
+                    p.find('.modal-body table a.z-lnk-navy').click(function () {
+                        var sReq = $(".modal-header :hidden[data-zf-field='modal_req']").val();
+                        if (sReq == 'model') {
+                            //모델명 기존 견적표와 중복 체크
+                            var res = _zw.ut.ajaxSync("/ExS/CE/CheckDuplModel", '{model:"' + $(this).text() + '",appid:"' + _zw.V.appid + '"}');
+                            if (res.substr(0, 2) == "OK") { }
+                            else if (res.substr(0, 2) == 'NO') { if (!window.confirm(res.substr(2) + '\n\r' + '계속하시겠습니까?')) { return false; } }
+                            else bootbox.alert(res);
+
+                            $('input[data-zf-ftype="MAINFIELD"][data-zf-field="MODEL"]').val($(this).text());
+                            $('input[data-zf-ftype="MAINFIELD"][data-zf-field="MODELNM"]').val($(this).parent().next().text().split('.')[0]);
+
+                            //BOM 가져오기
+                            _zw.fn.getModelBOM($('input[data-zf-field="CORPID"]').val(), $(this).text());
+
+                        } else if (sReq == 'submodel') {
+                            $('input[data-zf-ftype="MAINFIELD"][data-zf-field="SUBMODEL"]').val($(this).text());
+
+                        } else if (sReq == 'itemno') {
+                            var rowKey = $(".modal-header :hidden[data-zf-field='modal_rowkey']").val();
+                            var desc = $(this).parent().next().next().text()
+                            var idx = desc.indexOf('.');
+
+                            //기존값과 비교 20-10-20
+                            if (_zw.G.getValue(rowKey, 'ITEMNO') != $(this).text() || _zw.G.getValue(rowKey, 'ITEMID') != $(this).parent().next().text()) {
+                                _zw.G.setValue(rowKey, 'IID', '');
+                            }
+
+                            _zw.G.setValue(rowKey, 'ITEMNO', $(this).text());
+                            _zw.G.setValue(rowKey, 'ITEMID', $(this).parent().next().text());
+                            _zw.G.setValue(rowKey, 'ITEMNM', idx < 0 ? desc : desc.substr(0, idx));
+                            _zw.G.setValue(rowKey, 'STDDESC', idx < 0 ? '' : desc.substr(idx + 1));
+
+                            _zw.fn.getUnitPrice(rowKey, $('input[data-zf-field="CORPID"]').val(), _zw.G.getValue(rowKey, 'ITEMID'), _zw.G.getValue(rowKey, 'VENDORCODE'));
+
+                        } else if (sReq == 'vendor') {
+                            var rowKey = $(".modal-header :hidden[data-zf-field='modal_rowkey']").val();
+
+                            _zw.G.setValue(rowKey, 'VENDOR', $(this).text());
+                            _zw.G.setValue(rowKey, 'VENDORID', $(this).parent().next().text());
+                            _zw.G.setValue(rowKey, 'VENDORCODE', $(this).parent().next().next().text());
+
+                            _zw.fn.getUnitPrice(rowKey, $('input[data-zf-field="CORPID"]').val(), _zw.G.getValue(rowKey, 'ITEMID'), _zw.G.getValue(rowKey, 'VENDORCODE'));
+
+                        } else if (sReq == 'vendor_unit_price') {
+                            var rowKey = $(".modal-header :hidden[data-zf-field='modal_rowkey']").val();
+
+                            _zw.G.setValue(rowKey, 'VENDOR', $(this).text());
+                            _zw.G.setValue(rowKey, 'CURRENCY', $(this).parent().next().text());
+                            _zw.G.setValue(rowKey, 'PRICE', numeral($(this).parent().next().next().text()).format('0,0.0000'));
+                            _zw.G.setValue(rowKey, 'USDEX', $(this).parent().next().text() == 'USD' ? '1.0000' : numeral(_zw.V.stdRate['USD_' + $(this).parent().next().text()]).format('0,0.0000'));
+
+                            if ($(this).parent().next().next().text() != null && $(this).parent().next().next().text() != '') _zw.G.setValue(rowKey, 'DESC', 'ERP 단가');
+                        }
+
+                        p.modal('hide');
+                    });
+                    
+                    p.on('hidden.bs.modal', function () { p.html(''); });
+                    p.modal();
+
                 } else bootbox.alert(res);
             }
         });
@@ -453,7 +780,7 @@ $(function () {
         }
     }
 
-    _zw.fn.getUnitPrice = function (req, idx, p1, p2) {
+    _zw.fn.getVendorUnitPrice = function (req, idx, p1, p2) {
         if (p1 && p1 != '' && p2 && p2 != '' && req && req != '') {
             $.ajax({
                 type: "POST",
@@ -461,7 +788,21 @@ $(function () {
                 data: '{req:"' + req + '",rowkey:"' + idx + '",orgid:"' + p1 + '",itemno:"' + p2 + '"}',
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {
-                        //_ZF.util.modal("_Modal", res.substr(2), 500);
+                        var p = $('#popBlank'); p.html(res.substr(2));
+                        p.find('.modal-body table a.z-lnk-navy').click(function () {
+                            _zw.G.setValue(idx, 'VENDOR', $(this).text());
+                            _zw.G.setValue(idx, 'CURRENCY', $(this).parent().next().text());
+                            _zw.G.setValue(idx, 'PRICE', numeral($(this).parent().next().next().text()).format('0,0.0000'));
+                            _zw.G.setValue(idx, 'USDEX', $(this).parent().next().text() == 'USD' ? '1.0000' : numeral(_zw.V.stdRate['USD_' + $(this).parent().next().text()]).format('0,0.0000'));
+
+                            if ($(this).parent().next().next().text() != null && $(this).parent().next().next().text() != '') _zw.G.setValue(idx, 'DESC', 'ERP 단가');
+
+                            p.modal('hide');
+                        });
+
+                        p.on('hidden.bs.modal', function () { p.html(''); });
+                        p.modal();
+
                     } else if (res.substr(0, 2) == "NO") {
                         bootbox.alert(res.substr(2));
                     } else {
@@ -479,53 +820,46 @@ $(function () {
             data: '{orgid:"' + p1 + '",model:"' + p2 + '"}',
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
-                    $('.z-ce-layout-hhd').fadeIn("slow", function () {
-                        var p = $(this);
-                        p.html(res.substr(2)); //alert(p.html())
+                    var p = $('#popBlank'); p.html(res.substr(2));
 
-                        if (!p.hasClass("show")) {
-                            p.removeClass("fade").addClass("show");
-                        }
-
-                        p.find("button[data-dismiss='modal']").click(function () {
-                            p.html('').removeClass("show").addClass("fade").fadeOut();
-                        });
-
-                        p.find('thead input[name="ckbAll"]').on('click', function () {
-                            var b = $(this).prop('checked')
-                            p.find('tbody input[name="ckbRow"]').each(function () {
-                                $(this).prop('checked', b);
-                            });
-                        });
-
-                        p.find('.modal-footer .btn-success').on('click', function () {
-                            p.find('tbody input[name="ckbRow"]:checked').each(function () {
-                                var rows = _zw.G.findRows({
-                                    //'ITEMID': $(this).val(),
-                                    'ITEMNO': $(this).parent().next().next().text()
-                                });
-                                if (rows.length > 0) {
-                                    //if (window.confirm('품목 [' + $(this).parent().next().text() + '](이)가 이미 존재합니다. 덮어씌우겠습니까?')) {
-                                    _zw.G.setValue(rows[0].rowKey, 'ITEMID', $(this).val());
-                                    _zw.G.setValue(rows[0].rowKey, 'ITEMNO', $(this).parent().next().next().text());
-                                    _zw.G.setValue(rows[0].rowKey, 'ITEMNM', $(this).parent().next().next().next().text());
-                                    if ($.trim($(this).parent().next().next().next().next().text()) != '') _zw.G.setValue(rows[0].rowKey, 'STDDESC', $(this).parent().next().next().next().next().text());
-
-                                    _zw.G.setValue(rows[0].rowKey, 'DESC', rows.length + '개 중복');
-                                    //}
-                                } else {
-                                    _zw.G.appendRow({
-                                        'ITEMID': $(this).val(),
-                                        'ITEMNO': $(this).parent().next().next().text(),
-                                        'ITEMNM': $(this).parent().next().next().next().text(),
-                                        'STDDESC': $(this).parent().next().next().next().next().text()
-                                    });
-                                }
-                            });
-
-                            _zw.ut.calcGridRow();
+                    p.find('thead input[name="ckbAll"]').on('click', function () {
+                        var b = $(this).prop('checked')
+                        p.find('tbody input[name="ckbRow"]').each(function () {
+                            $(this).prop('checked', b);
                         });
                     });
+
+                    p.find('.modal-footer .btn[data-zm-menu="apply"]').on('click', function () {
+                        p.find('tbody input[name="ckbRow"]:checked').each(function (idx) {
+                            var cell = $(this).parent().parent(); console.log(idx + " : " + cell.next().next().text())
+                            var rows = _zw.G.findRows({
+                                //'ITEMID': $(this).val(),
+                                'ITEMNO': cell.next().next().text()
+                            });
+                            if (rows.length > 0) {
+                                //if (window.confirm('품목 [' + $(this).parent().next().text() + '](이)가 이미 존재합니다. 덮어씌우겠습니까?')) {
+                                _zw.G.setValue(rows[0].rowKey, 'ITEMID', $(this).val());
+                                _zw.G.setValue(rows[0].rowKey, 'ITEMNO', cell.next().next().text());
+                                _zw.G.setValue(rows[0].rowKey, 'ITEMNM', cell.next().next().next().text());
+                                if ($.trim(cell.next().next().next().next().text()) != '') _zw.G.setValue(rows[0].rowKey, 'STDDESC', cell.next().next().next().next().text());
+
+                                _zw.G.setValue(rows[0].rowKey, 'DESC', rows.length + '개 중복');
+                                //}
+                            } else {
+                                _zw.G.appendRow({
+                                    'ITEMID': $(this).val(),
+                                    'ITEMNO': cell.next().next().text(),
+                                    'ITEMNM': cell.next().next().next().text(),
+                                    'STDDESC': cell.next().next().next().next().text()
+                                });
+                            }
+                        });
+
+                        _zw.fn.calcGridRow();
+                    });
+
+                    p.on('hidden.bs.modal', function () { p.html(''); });
+                    p.modal();
 
                 } else if (res.substr(0, 2) == "NO") {
                     bootbox.alert(res.substr(2));
@@ -539,7 +873,47 @@ $(function () {
     _zw.fn.validate = function (pos) {
         var m, s;
 
-        if (_zw.V.ft.toLowerCase() == "stdexchangedetail" || _zw.V.ft.toLowerCase() == "stdpaydetail" || _zw.V.ft.toLowerCase() == "outpaydetail") {
+        if (_zw.V.ft.toLowerCase() == "grid") {
+            m = ["XCLS;구분", "CORP;생산지", "MODEL;모델번호", "ITEMCLS;품목분류", "BUYER;BUYER", "BUYERCLS;BUYER분류", "SUBJECT;시트명"];
+
+            //if (_ZF.V.rptMode > 2) {//if (pos == 'grid') {
+            for (var i in m) {
+                var v = m[i].split(';');
+                var f = $('[data-zf-ftype="MAINFIELD"][data-zf-field="' + v[0] + '"]');
+                if (f.val() == '') {
+                    if (v[0] == 'SUBJECT') { if (pos != 'grid') { bootbox.alert("필수항목[" + v[1] + "] 입력 누락!", function () { f.focus(); }); return false; } }
+                    else { bootbox.alert("필수항목[" + v[1] + "] 입력 누락!", function () { f.focus(); }); return false; }
+                }
+            }
+            //}
+
+            if (_zw.V.calcpay['변동원가'] === undefined) {
+                bootbox.alert('기준임율 정보가 없습니다. 확인하기 바랍니다!'); return false;
+            }
+
+            if (pos != 'grid') {
+                var g = ["CLSCD;부문코드", "ITEMNM;부품명", "CURRENCY;통화", "PRICE;단가", "CNT;수량", "SUM;합계", "USDEX;USD환율", "USDSUM;USD금액"];
+                for (var i in g) {
+                    var v = g[i].split(';');
+                    if (_zw.G.getValue(0, v[0]) == null || _zw.G.getValue(0, v[0]) == '') {
+                        bootbox.alert("품목표 첫줄 [" + v[1] + "] 항목은 필수 입니다!"); return false;
+                    }
+                }
+
+                if ($('[data-zf-ftype="MAINFIELD"][data-zf-field="XCLS"]').val() == '회로' || $('[data-zf-ftype="MAINFIELD"][data-zf-field="XCLS"]').val() == '음향') {
+                    if ($('[data-zf-ftype="MAINFIELD"][data-zf-field="SUBMODEL"]').val() == '') {
+                        bootbox.alert('"' + $('[data-zf-ftype="MAINFIELD"][data-zf-field="XCLS"]').val() + '" 선택 경우 [품목번호] 입력은 필수입니다!', function () { $('[data-zf-ftype="MAINFIELD"][data-zf-field="SUBMODEL"]').focus(); }); return false;
+                    }
+                }
+
+                if (_zw.V.mode == 'reuse' || _zw.V.mode == 'renew') {
+                    if ($('[data-zf-ftype="MAINFIELD"][data-zf-field="DSCPT"]').val() == '') {
+                        bootbox.alert('재사용 또는 개정 경우 [특기사항] 입력은 필수입니다!', function () { _zw.menu.showGridDscpt(); }); return false;
+                    }
+                }
+            }
+
+        } else if (_zw.V.ft.toLowerCase() == "stdexchangedetail" || _zw.V.ft.toLowerCase() == "stdpaydetail" || _zw.V.ft.toLowerCase() == "outpaydetail") {
             m = ["STDDT;적용시점", "XCLS;구분"];
 
             for (var i in m) {
@@ -554,32 +928,40 @@ $(function () {
     }
 
     _zw.fn.showGridRowDesc = function (req, rowKey) {
-        var s = '<div class="modal-dialog modal-dialog-scrollable">'
+        var s = '<div class="modal-dialog modal-sm">'
             + '<div class="modal-content" data-for="grid-row-desc">'
             + '<div class="modal-header">'
             + '<h4 class="modal-title">산출내역</h4>'
             + '<button type="button" class="close" data-dismiss="modal"><span>×</span></button>'
             + '</div>'
-            + '<div class="modal-body">'
-            + '<form>'
-            + '<input type="hidden" data-zf-field="modal_req" value="' + req + '" />'
-            + '<input type="hidden" data-zf-field="modal_rowkey" value="' + rowKey + '" />'
-            + '<table class="table table-striped table-condensed">'
+            + '<div class="modal-body p-3">'
+            //+ '<input type="hidden" data-zf-field="modal_req" value="' + req + '" />'
+            //+ '<input type="hidden" data-zf-field="modal_rowkey" value="' + rowKey + '" />'
+            + '<table class="table table-striped mb-0">'
             + '<tbody>'
-            + '<tr><td style="width: 80%">ERP 단가</td><td><button type="button" class="btn btn-success modal-inline-btn"><i class="glyphicon glyphicon-ok"></i></button></td></tr>'
-            + '<tr><td>개발구매 입수단가</td><td><button type="button" class="btn btn-success modal-inline-btn"><i class="glyphicon glyphicon-ok"></i></button></td></tr>'
-            + '<tr><td>설계 계산단가</td><td><button type="button" class="btn btn-success modal-inline-btn"><i class="glyphicon glyphicon-ok"></i></button></td></tr>'
-            + '<tr><td>업체 견적단가</td><td><button type="button" class="btn btn-success modal-inline-btn"><i class="glyphicon glyphicon-ok"></i></button></td></tr>'
-            + '<tr><td><input type="text" class="form-control modal-inline-input" /></td><td><button type="button" class="btn btn-success modal-inline-btn"><i class="glyphicon glyphicon-ok"></i></button></td></tr>'
+            + '<tr><td style="width: 80%">ERP 단가</td><td><button type="button" class="btn btn-success btn-sm"><i class="fas fa-check"></i></button></td></tr>'
+            + '<tr><td>개발구매 입수단가</td><td><button type="button" class="btn btn-success btn-sm"><i class="fas fa-check"></i></button></td></tr>'
+            + '<tr><td>설계 계산단가</td><td><button type="button" class="btn btn-success btn-sm"><i class="fas fa-check"></i></button></td></tr>'
+            + '<tr><td>업체 견적단가</td><td><button type="button" class="btn btn-success btn-sm"><i class="fas fa-check"></i></button></td></tr>'
+            + '<tr><td><input type="text" class="form-control modal-inline-input" /></td><td><button type="button" class="btn btn-success btn-sm"><i class="fas fa-check"></i></button></td></tr>'
             + '</tbody>'
             + '</table>'
-            + '</form>'
             + '</div>'
             + '<div class="modal-footer">'
             + '<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>'
             + '</div></div></div>';
 
-        //_ZF.util.modal("_Modal", s);
+        var p = $('#popBlank'); p.html(s);
+        p.find(".modal-body table .btn").click(function () {
+            //var sReq = p.find(".modal-body :hidden[data-zf-field='modal_req']").val(), rowKey = p.find(".modal-body :hidden[data-zf-field='modal_rowkey']").val();
+            var c = $(this).parent().prev(), v = c.find('input').val() || c.text(); //alert(sReq + " : " + rowKey + " : " + v)
+
+            _zw.G.setValue(rowKey, req, v);
+            p.modal('hide');
+        });
+
+        p.on('hidden.bs.modal', function () { p.html(''); });
+        p.modal();
     }
 
     _zw.fn.onblurCategory = function (e, v) { //console.log(e); console.log(v);
@@ -716,7 +1098,7 @@ $(function () {
     }
 
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery(true); console.log(postData)
+        var postData = _zw.fn.getLvQuery(); //console.log(postData)
         var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({
@@ -728,13 +1110,16 @@ $(function () {
 
                     $('#__List').html(res.substr(2));
 
+                    _zw.fn.bindCtrl();
+
                 } else bootbox.alert(res);
             }
         });
     }
     
-    _zw.fn.getLvQuery = function () {
-        var j = {};
+    _zw.fn.getLvQuery = function (m) {
+        var j = {}; m = m || '';
+        j["M"] = m;
         j["ct"] = _zw.V.ct;
         j["ctalias"] = _zw.V.ctalias;
         j["ot"] = _zw.V.ot;
@@ -781,7 +1166,7 @@ $(function () {
         _zw.V.lv.cd1 = ''; _zw.V.lv.cd2 = ''; _zw.V.lv.cd3 = '';
     }
 
-    _zw.ut.calcGridRow = function () {
+    _zw.fn.calcGridRow = function () {
         $('span[data-for="_rowCount"]').text('(' + _zw.G.getRowCount() + '행)');
         var v = $('select[data-zf-field="XCLS"]').val();
         if (v !== undefined && (v == '기구' || v == '회로' || v == '음향')) {
@@ -791,4 +1176,6 @@ $(function () {
             }
         }
     }
+
+    _zw.fn.bindCtrl();
 });

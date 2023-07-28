@@ -17,7 +17,7 @@
     {
         //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
         string[,] arr = { { "SEQ", "순번", "4%", "", "", "" }, { "MODEL", "모델번호", "10%", "", "", "" }, { "BUYER", "고객", "10%", "", "", "" }
-                        , { "_CHECK_", "", "2%", "", "", "" }, { "XCLS", "구분", "5%", "", "", "" }, { "SUBJECT", "시트명", "15%", "left", "", "" }
+                        , { "_CHECK_", "", "2%", "", "", "" }, { "XCLS", "구분", "5%", "", "", "" }, { "SUBJECT", "시트명", "15%", "L", "", "" }
                         , { "CORP", "생산지", "5%", "", "", "" }, { "ITEMCLS", "품목분류", "6%", "", "", "" }, { "VER", "버전", "4%", "", "", "" }
                         , { "STATE", "상태", "5%", "", "", "" }, { "CRNM", "작성자", "7%", "", "", "" }, { "CRDPT", "작성부서", "11%", "", "", "" }
                         , { "CRDT", "작성일자", "8%", "", "", "" }, { "COMPDT", "완료일자", "8%", "", "", "" }
@@ -183,7 +183,7 @@
                                 else strStatus = "";
 
                                 strValue = dr[strID].ToString();
-                                strValue = String.Format("<a class=\"z-lnk-navy\" href=\"/ExS/CE/Grid?app={0}&lv={1}\" title=\"{2}\">{3}{4}</a>", dr["CEID"].ToString(), ViewBag.R.ft.ToString()
+                                strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-query=\"{0}\" title=\"{1}\">{2}{3}</a>", GridQuery("read", dr["CEID"].ToString())
                                     , Server.HtmlEncode(strValue + (dr["XCLS"].ToString() != "ALL" && Convert.ToInt16(dr["NESTEDCNT"]) == 0 && Convert.ToInt32(dr["VER"].ToString()) > 1 ? " (개정판)" : "")), strValue, strStatus);
 
                                 if (dr["XCLS"].ToString() == "ALL")
@@ -222,7 +222,7 @@
                                 if (dr["XCLS"].ToString() == "ALL")
                                 {
                                     if (dr["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M"))) strValue = String.Format("<input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" style=\"\" />", iSeq.ToString(), dr["CEID"].ToString(), "reqApproval");
-                                    else if (dr["STATE"].ToString() == "8") strValue = "<span class=\"text-danger\"><i class=\"glyphicon glyphicon-repeat\" style=\"top: 3px\"></i></span>";
+                                    else if (dr["STATE"].ToString() == "8") strValue = "<span class=\"text-danger\"><i class=\"fas fa-redo\" style=\"top: 3px\"></i></span>";
                                     else strValue = "<span class=\"text-danger\"><i class=\"fe-send\" style=\"top: 3px\"></i></span>";
                                 }
                                 else
@@ -237,8 +237,8 @@
                             }
 
                             //sb.AppendFormat("<td{1}>{0}</td>", strValue, dr["ISLAST"].ToString() != "Y" || dr["REQSTATE"].ToString() == "6" || dr["DELDT"].ToString() != "" ? " class=\"text-dim\"" : "");
-                            if (_columnConfig[i, 3].ToString() != "") sb.AppendFormat("<td style=\"text-align: {0}\">{1}</td>", _columnConfig[i, 3].ToString(), strValue);
-                            else sb.AppendFormat("<td>{0}</td>", strValue);
+
+                            sb.AppendFormat("<td style=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-align: left" : "", strValue);
                         }
                         sb.Append("</tr>");
                     }
@@ -268,6 +268,11 @@
 
         if (data != null) { data.Dispose(); data = null; }
         return sb.ToString();
+    }
+
+    private string GridQuery(string m, string appId)
+    {
+        return "?qi=" + Server.UrlEncode(ZumNet.Framework.Util.SecurityHelper.ToBase64("{M:\"" + m + "\",ct:\"" + ViewBag.R.ct + "\",ctalias:\"" + ViewBag.R.ctalias + "\",ttl:\"\",opnode:\"\",ft:\"Grid\",appid:\"" + appId + "\"}"));
     }
 }
 

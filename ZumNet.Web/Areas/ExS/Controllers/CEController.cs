@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -199,7 +202,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                         else if ((formTable.ToLower() == "grid" || formTable.ToLower() == "mylist" || formTable.ToLower() == "deptlist")) { if (!StringHelper.HasAcl(jPost["current"]["acl"].ToString(), "W")) bPer = false; }
                         else if (formTable.ToLower() == "deptlist") { if (jPost["current"]["chief"].ToString() != "Y") bPer = false; }
                         else if (formTable.ToLower() == "codemgr") { if (jPost["current"]["operator"].ToString() != "Y") bPer = false; }
-                        else if (!StringHelper.HasAcl(jPost["corrent"]["acl"].ToString(), "R")) bPer = false;
+                        else if (!StringHelper.HasAcl(jPost["current"]["acl"].ToString(), "R")) bPer = false;
                     }
                     if (!bPer) return Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
 
@@ -262,6 +265,10 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         #endregion
 
         #region [기준정보 조회]
+        /// <summary>
+        /// 환율, 기준임율, 외주임률 조회
+        /// </summary>
+        /// <returns></returns>
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
@@ -288,18 +295,22 @@ namespace ZumNet.Web.Areas.ExS.Controllers
 
                     if (rt == "")
                     {
+                        string sPatialView = "";
                         using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
                         {
-                            if (jPost["M"].ToString() == "StdExchange")
+                            if (jPost["M"].ToString() == "StdExchange" || jPost["M"].ToString() == "XR")
                             {
+                                sPatialView = "_StdExchange";
                                 svcRt = cost.GetXRATE("S", Convert.ToInt32(jPost["ri"].ToString()), "");
                             }
-                            else if (jPost["M"].ToString() == "StdPay")
+                            else if (jPost["M"].ToString() == "StdPay" || jPost["M"].ToString() == "SP")
                             {
+                                sPatialView = "_StdPay";
                                 svcRt = cost.GetSTDPAY("S", Convert.ToInt32(jPost["ri"].ToString()), "");
                             }
-                            else if (jPost["M"].ToString() == "OutPay")
+                            else if (jPost["M"].ToString() == "OutPay" || jPost["M"].ToString() == "OP")
                             {
+                                sPatialView = "_OutPay";
                                 svcRt = cost.GetOUTPAY("S", Convert.ToInt32(jPost["ri"].ToString()), "");
                             }
                         }
@@ -309,7 +320,8 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                             ViewBag.Mode = jPost["M"].ToString();
                             ViewBag.StdRate = svcRt.ResultDataSet;
 
-                            rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_" + jPost["M"].ToString(), ViewBag);
+                            rt = RazorViewToString.RenderRazorViewToString(this, sPatialView, ViewBag);
+                            rt = "OK" + rt.TrimStart();
                         }
                         else
                         {
@@ -325,9 +337,138 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             }
             return rt;
         }
+
+        /// <summary>
+        /// 기준임율, 외주임율 계산식 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string StdPayCalc()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0 || jPost["item"].ToString() == "" || jPost["buyer"].ToString() == "" || jPost["corp"].ToString() == ""
+                         || jPost["sp"].ToString() == "" || jPost["op"].ToString() == "" || jPost["rate"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                    {
+                        svcRt = cost.GetSTDPAY_CALC(Convert.ToInt32(jPost["sp"]), Convert.ToInt32(jPost["op"]), jPost["item"].ToString()
+                            , jPost["buyer"].ToString(), jPost["corp"].ToString(), Convert.ToDouble(jPost["rate"].ToString().Replace(",", "")));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        int i = 0;
+
+                        if (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count == 2)
+                        {
+                            sb.Append("{");
+                            foreach (DataTable dt in svcRt.ResultDataSet.Tables)
+                            {
+                                foreach (DataColumn c in dt.Columns)
+                                {
+                                    if (i > 0) sb.Append(",");
+                                    sb.AppendFormat("\"{0}\":\"{1}\"", c.ColumnName, (dt.Rows.Count == 1 ? dt.Rows[0][c.ColumnName] : ""));
+                                    i++;
+                                }
+                            }
+                            sb.Append("}");
+
+                            rt = "OK" + sb.ToString();
+                        }
+                        else
+                        {
+                            throw new Exception("반환 테이블 갯수 오류!");
+                        }
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 기준환율 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ExchangeRate()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0 || jPost["ri"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                    {
+                        svcRt = cost.GetXRATE("S", StringHelper.SafeInt(jPost["ri"].ToString()), "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append("{");
+                        if (svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0)
+                        {
+                            DataRow row = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+                            int i = 0;
+                            foreach (DataColumn col in svcRt.ResultDataSet.Tables[0].Columns)
+                            {
+                                if (col.ColumnName != "REGID" && col.ColumnName != "STDDT" && col.ColumnName != "XCLS")
+                                {
+                                    if (i > 0) sb.Append(",");
+                                    sb.AppendFormat("\"{0}\":\"{1}\"", col.ColumnName, row[col.ColumnName].ToString());
+                                    i++;
+                                }
+                            }
+                            row = null;
+                        }
+                        sb.Append("}");
+
+                        rt = "OK" + sb.ToString();
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
         #endregion
 
-        #region [Grid 관련]
+        #region [Grid 조회]
         [SessionExpireFilter]
         [Authorize]
         public ActionResult Grid(string Qi)
@@ -335,13 +476,13 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             string rt = Bc.CtrlHandler.PageInit(this, false);
             if (rt != "")
             {
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
             rt = Resources.Global.Auth_InvalidPath;
             if (ViewBag.R == null || ViewBag.R.ct == null || ViewBag.R.ct == "0")
             {
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
             int iCategoryId = StringHelper.SafeInt(ViewBag.R.ct.Value);
@@ -350,20 +491,76 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             rt = Bc.CtrlHandler.CostInit(this, iCategoryId, StringHelper.SafeString(ViewBag.R.ctalias.Value));
             if (rt != "")
             {
-                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                return View("~/Views/Shared/_ErrorPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
             rt = Resources.Global.Auth_NoPermission; //"권한이 없습니다!!";
-            if (ViewBag.R.current["operator"].ToString() == "N" && !StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W")) //쓰기권한
+            if (ViewBag.R.current["operator"].ToString() == "N" && !StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "R")) //읽기권한
             {
-                return View("~/Views/Shared/_NoPermission.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                return View("~/Views/Shared/_NoPermissionPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            int iAppId = Convert.ToInt32(ViewBag.R.appid.Value);
+            //string sReportID = ViewBag.R.rptid.ToString();
+
+            if (ViewBag.R.mode.ToString() == "") ViewBag.R["mode"] = iAppId > 0 ? "read" : "new";
+
+            ZumNet.BSL.InterfaceBiz.CostBiz cost = new ZumNet.BSL.InterfaceBiz.CostBiz();
+            ZumNet.Framework.Core.ServiceResult svcRt = cost.GetSTDINFO();
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                ViewBag.STDINFO = svcRt.ResultDataSet;
+            }
+            else
+            {
+                rt = svcRt == null ? "GetSTDINFO 오류" : svcRt.ResultMessage;
+                return View("~/Views/Shared/_NoPermissionPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+            svcRt = null;
+
+            if (ViewBag.R.rptid.ToString() != "" || iAppId > 0)
+            {
+                if (ViewBag.R.rptid.ToString() != "")
+                {
+                    svcRt = cost.GetCEMAIN(iAppId, ViewBag.R.rptid.ToString().Replace(';', ','), 0);
+                }
+                else if (iAppId > 0)
+                {
+                    svcRt = cost.GetCEMAIN(iAppId, "", 0);
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.DataInfo = svcRt.ResultDataSet;
+                }
+                else
+                {
+                    rt = svcRt == null ? "GetCEMAIN 오류" : svcRt.ResultMessage;
+                    return View("~/Views/Shared/_NoPermissionPopup.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
             }
 
             return View();
         }
+
+        /// <summary>
+        /// 견적표 미리보기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
+        public ActionResult GridPreview()
+        {
+            return View();
+        }
         #endregion
 
-        #region [기준정보, 견적표]
+        #region [기준정보, 견적표 처리]
+        /// <summary>
+        /// 기즌정보, 견적표 저장 : 환율, 기준임율, 외주임율, 견적표
+        /// </summary>
+        /// <returns></returns>
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
@@ -436,6 +633,10 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             return rt;
         }
 
+        /// <summary>
+        /// 기준정보 삭제, 상태변경
+        /// </summary>
+        /// <returns></returns>
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
@@ -485,6 +686,10 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             return rt;
         }
 
+        /// <summary>
+        /// 견적표 복사
+        /// </summary>
+        /// <returns></returns>
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
@@ -524,6 +729,527 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                 }
             }
 
+            return rt;
+        }
+        #endregion
+
+        #region [오라클 ERP 정보 가져오기]
+        /// <summary>
+        /// 모델번호, 품목, 벤더 조회
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ModelVendor()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["req"].ToString() == "") return "필수값 누락!";
+
+                    ViewBag.Pos = this.RouteData.Values["action"].ToString();
+                    ViewBag.JPost = jPost;
+
+                    rt = RazorViewToString.RenderRazorViewToString(this, "_EtcView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt.TrimStart();
+        }
+
+        /// <summary>
+        /// 단가 조회
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string UnitPrice()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["orgid"].ToString() == "" || jPost["itemno"].ToString() == "" || jPost["vendor"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.InterfaceBiz.OracleBiz oraBiz = new BSL.InterfaceBiz.OracleBiz())
+                    {
+                        svcRt = oraBiz.Cresyn_Get_PLA_UNIT_PRICE(jPost["orgid"].ToString(), jPost["itemno"].ToString(), jPost["vendor"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            DataRow row = svcRt.ResultDataTable.Rows[0];
+                            rt = "OK" + row["CURRENCY_CODE"].ToString() + ";" + row["UNIT_PRICE"].ToString();
+                            row = null;
+                        }
+                        else
+                        {
+                            rt = "NO해당 품목단가가 없습니다!";
+                        }
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 품목, 업체, 단가 확인
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ErpColumnCheck()
+        {
+            ZumNet.BSL.InterfaceBiz.OracleBiz oraBiz = null;
+            ZumNet.Framework.Core.ServiceResult svcRt = null;
+            ZumNet.Framework.Core.ServiceResult svcRt2 = null;
+
+            Hashtable ht = null;
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || (jPost["orgid"].ToString() == "" && jPost["itemno"].ToString() == "" && jPost["vendor"].ToString() == "")) return "필수값 누락!";
+
+                    oraBiz = new BSL.InterfaceBiz.OracleBiz();
+                    svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_PO_VENDORS(jPost["orgid"].ToString(), jPost["itemno"].ToString(), jPost["vendor"].ToString());
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ht = (Hashtable)svcRt.ResultDataDetail["ItemVendor"];
+
+                        ht.Add("CURRENCY", "");
+                        ht.Add("PRICE", "");
+
+                        if (jPost["orgid"].ToString() != "" && ht["ITEMID"].ToString() != "" && ht["VENDORCODE"].ToString() != "")
+                        {
+                            svcRt2 = oraBiz.Cresyn_Get_PLA_UNIT_PRICE(jPost["orgid"].ToString(), ht["ITEMID"].ToString(), ht["VENDORCODE"].ToString());
+                            if (svcRt2 != null && svcRt2.ResultCode == 0)
+                            {
+                                if (svcRt2.ResultDataTable.Rows.Count > 0)
+                                {
+                                    ht["CURRENCY"] = svcRt2.ResultDataTable.Rows[0]["CURRENCY_CODE"].ToString();
+                                    ht["PRICE"] = StringHelper.CvtNumeric(svcRt2.ResultDataTable.Rows[0]["UNIT_PRICE"].ToString(), 4);
+                                }
+                            }
+                            else
+                            {
+                                rt = svcRt2.ResultMessage;
+                            }
+                        }
+
+                        if (rt == "")
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            int i = 0;
+                            sb.Append("{");
+                            foreach (string k in ht.Keys)
+                            {
+                                if (i > 0) sb.Append(",");
+                                sb.AppendFormat("\"{0}\":\"{1}\"", k, ht[k].ToString());
+                                i++;
+                            }
+                            sb.Append("}");
+                            rt = "OK" + sb.ToString();
+                        }
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+                finally
+                {
+                    if (oraBiz != null) { oraBiz.Dispose(); }
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 품목번호로 업체, 단가 조회하기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string VendorUnitPrice()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["orgid"].ToString() == "" || jPost["itemno"].ToString() == "") return "필수값 누락!";
+
+                    ViewBag.Pos = this.RouteData.Values["action"].ToString();
+                    ViewBag.JPost = jPost;
+
+                    rt = RazorViewToString.RenderRazorViewToString(this, "_EtcView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt.TrimStart();
+        }
+
+        /// <summary>
+        /// 모델번호에 해당되는 BOM 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ModelBom()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["orgid"].ToString() == "" || jPost["model"].ToString() == "") return "필수값 누락!";
+
+                    ViewBag.Pos = this.RouteData.Values["action"].ToString();
+                    ViewBag.JPost = jPost;
+
+                    rt = RazorViewToString.RenderRazorViewToString(this, "_EtcView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt.TrimStart();
+        }
+        #endregion
+
+        #region [팝업, 모달, 리스트뷰 HTML 요청]
+        /// <summary>
+        /// 하위 견적표 목록 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ChildList()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0 || jPost["ct"].ToString() == "" || jPost["pntid"].ToString() == "" || jPost["page"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    string sAcl = "";
+                    bool bMenuOperator = false;
+
+                    if (jPost["mo"] != null) bMenuOperator = StringHelper.SafeBool(jPost["mo"].ToString());
+                    if (jPost["acl"] != null) sAcl = jPost["acl"].ToString();
+
+                    jPost["M"] = jPost["page"].ToString() == "list" && (bMenuOperator || (sAcl != "" && StringHelper.HasAcl(sAcl, "M"))) ? "R" : "C";
+
+                    using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                    {
+                        svcRt = cost.GetCEMAIN_NESTED(jPost["M"].ToString(), StringHelper.SafeInt(jPost["pntid"].ToString()));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.Pos = this.RouteData.Values["action"].ToString();
+                        ViewBag.JPost = jPost;
+                        ViewBag.BoardList = svcRt.ResultDataSet;
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_EtcView", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 검토요청, 확인
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string StateLine()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["appid"].ToString() == "") return "필수값 누락!";
+
+                    ViewBag.Pos = this.RouteData.Values["action"].ToString();
+                    ViewBag.JPost = jPost;
+
+                    rt = RazorViewToString.RenderRazorViewToString(this, "_EtcView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt.TrimStart();
+        }
+
+        /// <summary>
+        /// 견적표 복사 위한 모달 화면 구성
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CopyInfo()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["appid"].ToString() == "") return "필수값 누락!";
+
+                    ViewBag.Pos = this.RouteData.Values["action"].ToString();
+                    ViewBag.JPost = jPost;
+
+                    rt = RazorViewToString.RenderRazorViewToString(this, "_EtcView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt.TrimStart();
+        }
+
+        /// <summary>
+        /// 이력정보 보기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string HistoryInfo()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["appid"].ToString() == "") return "필수값 누락!";
+
+                    ViewBag.Pos = this.RouteData.Values["action"].ToString();
+                    ViewBag.JPost = jPost;
+
+                    rt = RazorViewToString.RenderRazorViewToString(this, "_EtcView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt.TrimStart();
+        }
+
+        /// <summary>
+        /// 개발원가견적 비교표
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CompTable()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["appid"].ToString() == "") return "필수값 누락!";
+
+                    ViewBag.Pos = this.RouteData.Values["action"].ToString();
+                    ViewBag.JPost = jPost;
+
+                    rt = RazorViewToString.RenderRazorViewToString(this, "_EtcView", ViewBag);
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt.TrimStart();
+        }
+        #endregion
+
+        #region [기타]
+        /// <summary>
+        /// 모델번호 중복 체크
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CheckDuplModel()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["model"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                    {
+                        svcRt = cost.GetCEMAIN_MODEL(jPost["model"].ToString(), StringHelper.SafeInt(jPost["appid"].ToString()));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultDataString == "Y") rt = "NO중복된 모델번호 입니다!";
+                        else rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 견적표 재검토 요청
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string RequestReview()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["appid"].ToString() == "" || jPost["mode"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    string sReqCmnt = jPost["mode"].ToString() == "Y" ? jPost["reqcmnt"].ToString() : "";
+
+                    using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                    {
+                        svcRt = cost.UpdateCEMAIN_STATE(jPost["mode"].ToString(), StringHelper.SafeInt(jPost["appid"].ToString()), 0, jPost["ss"].ToString()
+                            , Session["URID"].ToString(), Session["URName"].ToString(), Session["DeptID"].ToString(), Session["DeptName"].ToString(), sReqCmnt);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0) rt = "OK처리 했습니다!";
+                    else rt = svcRt.ResultMessage;
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        /// <summary>
+        /// 견적표 부서장 확인
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string ConfirmChief()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["appid"].ToString() == "" || jPost["ss"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
+                    {
+                        svcRt = cost.UpdateCEMAIN_CFM("S", jPost["appid"].ToString(), 0, jPost["ss"].ToString(), Session["URID"].ToString()
+                                            , Session["URName"].ToString(), Session["DeptID"].ToString(), Session["DeptName"].ToString(), "");
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0) rt = "OK처리 했습니다!";
+                    else rt = svcRt.ResultMessage;
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
             return rt;
         }
         #endregion

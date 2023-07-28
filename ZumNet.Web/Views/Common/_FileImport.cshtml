@@ -24,6 +24,7 @@
     private string _uploadPath = String.Empty;
     private string _standardYear = String.Empty;
     private string _subCondition = String.Empty;
+    private string _currentLocale = String.Empty; //23-06-28 추가
 
     private void InitConfig()
     {
@@ -35,6 +36,8 @@
         _mode = (Request["M"] == null) ? _mode = "" : _mode = Request["M"].ToString();
         _standardYear = (Request["sy"] == null || Request["sy"].ToString() == "") ? DateTime.Now.Year.ToString() : Request["sy"].ToString();
         _subCondition = (Request["cd"] == null || Request["cd"].ToString() == "") ? "" : Request["cd"].ToString();
+
+        _currentLocale = Thread.CurrentThread.CurrentUICulture.Name;
     }
 
     private string PageLoad()
@@ -1883,10 +1886,10 @@
                         iH++;
                         strCompanyCode = row["업체코드"].ToString();
                         strBPANo = row["BPA"].ToString();
-                        strApplyDate = row["적용시점"].ToString().Substring(0, 10);
+                        strApplyDate = _currentLocale.Substring(0, 2).ToLower() == "en" ? DateHelper.CheckDateTime(row["적용시점"].ToString(), "MM/dd/yyyy") : DateHelper.CheckDateTime(row["적용시점"].ToString(), "yyyy-MM-dd");
                         strEtc = row["비고"].ToString();
 
-                        if (_mode == "FORM_PURCHASEUCB" && strApplyDate != "" && DateTime.Compare(Convert.ToDateTime(strApplyDate), Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))) > 0)
+                        if (_mode == "FORM_PURCHASEUCB" && strApplyDate != "" && DateTime.Compare(Convert.ToDateTime(strApplyDate), DateTime.Now) > 0)
                         {
                             //21-03-23 적용시점 체크
                             bApplyDate = false;
@@ -2203,7 +2206,8 @@
                     //strLEAVEDATE = EApproval.CheckDateTiem(row["적용시점"].ToString(), "yyyy-MM-dd"); //row["적용시점"].ToString(); //2019-07-26 수정
                     try
                     {
-                        strLEAVEDATE = Convert.ToDateTime(row["적용시점"].ToString()).ToString("yyyy-MM-dd"); //2019-09-10 다시 수정
+                        //strLEAVEDATE = Convert.ToDateTime(row["적용시점"].ToString()).ToString("yyyy-MM-dd"); //2019-09-10 다시 수정
+                        strLEAVEDATE = _currentLocale.Substring(0, 2).ToLower() == "en" ? DateHelper.CheckDateTime(row["적용시점"].ToString(), "MM/dd/yyyy") : DateHelper.CheckDateTime(row["적용시점"].ToString(), "yyyy-MM-dd");
                     }
                     catch
                     {
