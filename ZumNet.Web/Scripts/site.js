@@ -2208,6 +2208,9 @@ $(function () {
             //    bootbox.hideAll();
             //}
         },
+        "ajaxLoading": function () {
+            return $('#ajaxLoader').hasClass("show") ? true : false;
+        },
         "ajaxSync": function (url, data) {
             var rt = '';
             $.ajax({
