@@ -660,9 +660,14 @@ namespace ZumNet.Web.Areas.ExS.Controllers
 
                 string sMode = StringHelper.SafeString(jPost["M"]);
                 string sPage = StringHelper.SafeString(jPost["page"]);
+                string sState = "";
                 int iAppId = StringHelper.SafeInt(jPost["appid"]);
 
-                if (jPost["state"].ToString() != "") sMode = "S";
+                if (jPost.ContainsKey("state") && jPost["state"].ToString() != "")
+                {
+                    sState = jPost["state"].ToString();
+                    sMode = "S"; //상태변경
+                }
 
                 if (sMode == "S") sMsg = "상태 변경 했습니다!";
                 else sMsg = "삭제했습니다!";
@@ -670,7 +675,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                 ZumNet.Framework.Core.ServiceResult svcRt = null;
                 using (ZumNet.BSL.InterfaceBiz.CostBiz cost = new BSL.InterfaceBiz.CostBiz())
                 {
-                    svcRt = cost.SetSTDINFO(sMode, sPage, iAppId, jPost["state"].ToString());
+                    svcRt = cost.SetSTDINFO(sMode, sPage, iAppId, sState);
                 }
 
                 if (svcRt != null && svcRt.ResultCode == 0)

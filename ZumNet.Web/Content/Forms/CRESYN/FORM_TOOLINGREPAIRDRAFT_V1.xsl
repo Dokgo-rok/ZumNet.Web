@@ -971,7 +971,7 @@
                       </xsl:attribute>
                     </img>
                   </button>-->
-					<button type="button" class="btn btn-outline-secondary btn-18" title="사용처" onclick="_zw.formEx.externalWnd('erp.vendorcustomer',240,40,126,70,'BUYER','STOREPLACE','STOREPLACEID','STOREPLACESITEID');">
+					<button type="button" class="btn btn-outline-secondary btn-18" title="사용처" onclick="_zw.formEx.externalWnd('erp.vendorcustomer',240,40,126,70,'VENDOR','STOREPLACE','STOREPLACEID','STOREPLACESITEID');">
 						<i class="fas fa-angle-down"></i>
 					</button>
                 </xsl:when>
@@ -1051,7 +1051,7 @@
                       <xsl:attribute name="src">/<xsl:value-of select="$root"/>/EA/Images/ico_28.gif</xsl:attribute>
                     </img>
                   </button>-->
-					<button type="button" class="btn btn-outline-secondary btn-18" title="수정(리)업체" onclick="_zw.formEx.externalWnd('erp.vendorcustomer',240,40,126,70,'BUYER','REPAIRPLACE','REPAIRPLACEID','REPAIRPLACESITEID');">
+					<button type="button" class="btn btn-outline-secondary btn-18" title="수정(리)업체" onclick="_zw.formEx.externalWnd('erp.vendorcustomer',240,40,126,70,'VENDOR','REPAIRPLACE','REPAIRPLACEID','REPAIRPLACESITEID');">
 						<i class="fas fa-angle-down"></i>
 					</button>
                 </xsl:when>

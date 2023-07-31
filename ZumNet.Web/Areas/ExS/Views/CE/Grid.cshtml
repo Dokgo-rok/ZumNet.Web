@@ -242,7 +242,7 @@
                     if (_gridMain["XCLS"].ToString() == "ALL") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n text-danger\" title=\"{0}\" data-zf-menu=\"showCompTable\"><i class=\"fas fa-chart-line\"></i> 견적비교표</a></li>", "견적비교표 조회하기");
                     sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"showHistory\"><i class=\"fas fa-flag\"></i> 이력정보</a></li>", "이력정보 조회하기");
                 }
-                if (_gridMain != null && _gridMain["LNKEA"].ToString() != "" && _gridMain["LNKEA"].ToString() != "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" onclick=\"_zw.fn.openXForm('{0}');\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-tag\"></i> {1}</a></li>", _gridMain["LNKEA"].ToString(), "관련문서");
+                if (_gridMain != null && _gridMain["LNKEA"].ToString() != "" && _gridMain["LNKEA"].ToString() != "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-tag\"></i> {1}</a></li>", _gridMain["LNKEA"].ToString(), "관련문서");
             }
         }
 

@@ -306,23 +306,29 @@ $(function () {
 
     _zw.mu.deleteStd = function (t) {
         if (_zw.V.appid == '' || _zw.V.appid == '0') return false;
-
+        var page = _zw.V.ft.replace('Detail', '').toLowerCase();
         var d = {};
+        d["M"] = 'D';
         d["appid"] = _zw.V.appid;
-        d["page"] = _zw.V.current.page;
-        d["ft"] = _zw.V.ft;
+        d["page"] = page;
+        d["state"] = '';
 
         bootbox.confirm("삭제 하시겠습니까?", function (rt) {
             if (rt) {
                 $.ajax({
                     type: "POST",
-                    url: "/ExS/CE/DeleteStd",
+                    url: "/ExS/CE/SetStd",
                     data: JSON.stringify(d),
                     success: function (res) {
                         if (res.substr(0, 2) == "OK") {
-                            bootbox.alert(res.substr(2));
+                            bootbox.alert(res.substr(2), function () {
+                                if (page == 'grid') {
+                                    opener.location.reload(); window.close();
+                                } else _zw.mu.goList(page);
+                            });
                         } else bootbox.alert(res);
-                    }
+                    },
+                    beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
                 });
             }
         });
@@ -347,7 +353,8 @@ $(function () {
                         if (res.substr(0, 2) == "OK") {
                             bootbox.alert(res.substr(2));
                         } else bootbox.alert(res);
-                    }
+                    },
+                    beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
                 });
             }
         });
@@ -546,6 +553,54 @@ $(function () {
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
                     var p = $('#popBlank'); p.html(res.substr(2));
+
+                    p.find(".modal-body table .btn[data-btn='send'][data-for]").click(function () {
+                        var d = {}, msg = '';
+                        d["appid"] = _zw.V.appid;
+
+                        if ($(this).attr('data-for') == 'REQSTATE') {
+                            var cmnt = $(this).parent().prev().find('textarea');
+                            if ($.trim(cmnt.val()) == '') { bootbox.alert("요청 사유을 입력하십시오!", function () { cmnt.focus(); }); return false; }
+
+                            d["mode"] = "V";
+                            d["ss"] = '6';
+                            d["reqcmnt"] = cmnt.val();
+                            msg = "재검토 요청을 하시겠습니까?\n처리 후 변경 할 수 없습니다!"
+
+                        } else if ($(this).attr('data-for') == 'FCFMSS') {
+                            d["mode"] = "F";
+                            if ($(':hidden[data-zf-ftype="MAINFIELD"][data-zf-field="FCFMSS"]').val() == 'Y') {
+                                d["ss"] = 'N'; msg = "작성 확인 취소 하시겠습니까?";
+                            } else {
+                                d["ss"] = 'Y'; msg = "작성 확인 하시겠습니까?";
+                            }
+
+                        } else if ($(this).attr('data-for') == 'SCFMSS') {
+                            d["mode"] = "S";
+                            if ($(':hidden[data-zf-ftype="MAINFIELD"][data-zf-field="SCFMSS"]').val() == 'Y') {
+                                d["ss"] = 'N'; msg = "부서장 확인 취소 하시겠습니까?";
+                            } else {
+                                d["ss"] = 'Y'; msg = "부서장 확인 하시겠습니까?";
+                            }
+                        }
+
+                        bootbox.confirm(msg, function (rt) {
+                            if (rt) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/ExS/CE/RequestReview",
+                                    data: JSON.stringify(d),
+                                    success: function (res) {
+                                        if (res.substr(0, 2) == "OK") {
+                                            bootbox.alert(res.substr(2), function () { window.location.reload(); });
+                                        } else bootbox.alert(res);
+                                    },
+                                    beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
+                                });
+                            }
+                        });
+                    });
+
                     p.on('hidden.bs.modal', function () { p.html(''); });
                     p.modal();
                 } else bootbox.alert(res);
@@ -617,11 +672,11 @@ $(function () {
         });
     }
 
-    //_zw.fn.viewStdInfo = function (id) {
-    //    var page = _zw.V.ft + 'Detail';
-    //    var qi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"' + page + '",appid:"' + id + '"}';
-    //    window.location.href = '/ExS/CE?qi=' + _zw.base64.encode(qi);
-    //}
+    _zw.fn.viewStdInfo = function (id) {
+        var page = _zw.V.ft + 'Detail';
+        var qi = '{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"' + page + '",appid:"' + id + '"}';
+        window.location.href = '/ExS/CE?qi=' + _zw.base64.encode(qi);
+    }
 
     _zw.fn.modalStdInfo = function (cls, id) {
         var v = null;
@@ -1060,7 +1115,8 @@ $(function () {
                         _zw.fn.setCode('save', p, cd, $(this).parent().parent().parent());
                     });
                 } else bootbox.alert(res);
-            }
+            },
+            beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
         });
     }
 

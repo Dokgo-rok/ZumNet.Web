@@ -343,6 +343,13 @@
     <Compile Include="BizForce\EA\Forms\XFormMain.aspx.designer.cs">
       <DependentUpon>XFormMain.aspx</DependentUpon>
     </Compile>
+    <Compile Include="BizForce\ExtensionService\CE\Grid.aspx.cs">
+      <DependentUpon>Grid.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BizForce\ExtensionService\CE\Grid.aspx.designer.cs">
+      <DependentUpon>Grid.aspx</DependentUpon>
+    </Compile>
     <Compile Include="BizForce\PortalService\FileDown.aspx.cs">
       <DependentUpon>FileDown.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -392,6 +399,7 @@
     <Content Include="Areas\WoA\Scripts\main.js" />
     <Content Include="Areas\WoA\Scripts\tree.js" />
     <Content Include="BizForce\EA\Forms\XFormMain.aspx" />
+    <Content Include="BizForce\ExtensionService\CE\Grid.aspx" />
     <Content Include="BizForce\PortalService\FileDown.aspx" />
     <Content Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx" />
     <Content Include="Blank.htm" />
