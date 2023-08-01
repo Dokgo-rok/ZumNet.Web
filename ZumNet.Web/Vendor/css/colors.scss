@@ -18,7 +18,12 @@ $custom-colors: (
 
   windows: #26AAE1,
   macos: #343434,
-  linux: #800080
+  linux: #800080,
+
+    brown: #a52a2a, /* Ãß°¡ */
+    peru: #cd853f,
+    chocolate: #d2691e,
+    seagreen: #2e8b57
 ) !default;
 
 @each $color-name, $color-value in $custom-colors {

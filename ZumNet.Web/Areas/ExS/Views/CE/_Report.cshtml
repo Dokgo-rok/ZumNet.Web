@@ -178,7 +178,7 @@
                             //}
                             else if (strID == "SUBJECT")
                             {
-                                if (Convert.ToInt16(dr["NESTEDCNT"]) > 0) strStatus = String.Format(" <span class=\"text-warning\">({0})</span>", dr["NESTEDCNT"].ToString());
+                                if (Convert.ToInt16(dr["NESTEDCNT"]) > 0) strStatus = String.Format(" <span class=\"text-peru\">({0})</span>", dr["NESTEDCNT"].ToString());
                                 //else if (dr["XCLS"].ToString() != "ALL") strStatus = String.Format(" <span class=\"text-warning\"><i class=\"glyphicon glyphicon-star-empty\"></i></span>");
                                 else strStatus = "";
 
@@ -192,7 +192,7 @@
                                 }
                                 else
                                 {
-                                    if (Convert.ToInt16(dr["NESTEDCNT"]) == 0 && Convert.ToInt32(dr["VER"].ToString()) > 1) strValue += String.Format(" <span class=\"text-warning\"><i class=\"glyphicon glyphicon-level-up\"></i></span>");
+                                    if (Convert.ToInt16(dr["NESTEDCNT"]) == 0 && Convert.ToInt32(dr["VER"].ToString()) > 1) strValue += String.Format(" <span class=\"text-peru\"><i class=\"fas fa-book-medical\"></i></span>");
                                 }
                             }
                             else if (strID == "STATE")
@@ -202,7 +202,7 @@
                                 if (strValue == "7") strValue = "완료";
                                 else if (strValue == "1") strValue = "진행중";
                                 else if (strValue == "8") strValue = "<strong class=\"text-danger\">반려</strong>";
-                                else if (strValue == "9") strValue = "<strong class=\"text-warning\">임시</strong>";
+                                else if (strValue == "9") strValue = "<strong class=\"text-muted\">임시</strong>";
                                 else strValue = "작성";
                             }
                             else if (strID == "_CHECK_")

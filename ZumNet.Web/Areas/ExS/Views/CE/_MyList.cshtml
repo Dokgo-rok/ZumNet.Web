@@ -156,7 +156,7 @@
                     }
                     else if (strID == "MODEL" || strID == "SUBJECT")
                     {
-                        if (strID == "SUBJECT" && Convert.ToInt16(row["NESTEDCNT"]) > 0) strStatus = String.Format(" <span class=\"text-warning\">({0})</span>", row["NESTEDCNT"].ToString());
+                        if (strID == "SUBJECT" && Convert.ToInt16(row["NESTEDCNT"]) > 0) strStatus = String.Format(" <span class=\"text-peru\">({0})</span>", row["NESTEDCNT"].ToString());
                         else strStatus = "";
 
                         strValue = row[strID].ToString();
@@ -183,7 +183,7 @@
                         if (strValue == "7") strValue = "완료";
                         else if (strValue == "1") strValue = "진행중";
                         else if (strValue == "8") strValue = "<strong class=\"text-danger\">반려</strong>";
-                        else if (strValue == "9") strValue = "<strong class=\"text-warning\">임시</strong>";
+                        else if (strValue == "9") strValue = "<strong class=\"text-muted\">임시</strong>";
                         else strValue = "작성";
                     }
                     else if (strID == "REQSTATE")

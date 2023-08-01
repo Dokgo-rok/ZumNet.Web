@@ -225,7 +225,7 @@
 
                     //재작성 - 버전증가(상위 완료, 반려 경우)
                     //if ((_gridMain["PNTSTATE"].ToString() == "7" || _gridMain["PNTSTATE"].ToString() == "8") && (_gridMain["STATE"].ToString() == "7" || _gridMain["STATE"].ToString() == "8"))
-                    if (iNestedStatus == 1 && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == _gridMain["CRID"].ToString())) sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n text-danger\" title=\"{2}\"><i class=\"fas fa-plus-square\"></i> 개정</a></li>", ViewBag.R.current.page.ToString(), GridQuery("renew", ViewBag.R.appid.ToString()), "견적표 개정(버전 증가)하기"); //20-11-30 재작성 -> 개정 명칭 변경
+                    if (iNestedStatus == 1 && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == _gridMain["CRID"].ToString())) sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n text-danger\" title=\"{2}\"><i class=\"fas fa-book-medical\"></i> 개정</a></li>", ViewBag.R.current.page.ToString(), GridQuery("renew", ViewBag.R.appid.ToString()), "견적표 개정(버전 증가)하기"); //20-11-30 재작성 -> 개정 명칭 변경
                     if (iNestedStatus == 2 && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == _gridMain["CRID"].ToString())) sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n text-danger\" title=\"{2}\"><i class=\"fas fa-copy\"></i> 재사용</a></li>", ViewBag.R.current.page.ToString(), GridQuery("reuse", ViewBag.R.appid.ToString()), "견적표 재사용하기");
 
                     if (_gridMain["STATE"].ToString() == "7") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"viewConfirm\"><i class=\"fas fa-check\"></i> 확인</a></li>", "작성 확인하기");
@@ -382,7 +382,8 @@
         sb.Append("<td class=\"text-center info\">시트명</td>");
         if (mode == "new" || mode == "add" || mode == "edit" || mode == "simul" || mode == "renew" || mode == "reuse" || mode == "reuse")
         {
-            sb.AppendFormat("<td class=\"cell-input\" colspan=\"3\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SUBJECT\" value=\"{0}\" maxlength=\"30\" /></td>", mode == "new" || mode == "add" ? "" : DataHelper.GetFieldValueToString(_gridMain, "SUBJECT", ""));
+            //sb.AppendFormat("<td class=\"cell-input\" colspan=\"3\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SUBJECT\" value=\"{0}\" maxlength=\"30\" /></td>", mode == "new" || mode == "add" ? "" : DataHelper.GetFieldValueToString(_gridMain, "SUBJECT", ""));
+            sb.AppendFormat("<td class=\"cell-input\" colspan=\"3\"><input type=\"text\" data-zf-ftype=\"MAINFIELD\" data-zf-field=\"SUBJECT\" value=\"{0}\" maxlength=\"30\" /></td>", DataHelper.GetFieldValueToString(_gridMain, "SUBJECT", ""));
         }
         else sb.AppendFormat("<td class=\"cell-read\" colspan=\"3\">{0}</td>", DataHelper.GetFieldValueToString(_gridMain, "SUBJECT", ""));
         sb.Append("</tr>");

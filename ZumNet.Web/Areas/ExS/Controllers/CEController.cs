@@ -1055,7 +1055,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
-        public string CopyInfo()
+        public string GridCopy()
         {
             string rt = "";
             if (Request.IsAjaxRequest())

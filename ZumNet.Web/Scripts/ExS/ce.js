@@ -104,8 +104,11 @@ $(function () {
                             $(this).parent().parent().parent().find(':checked').each(function () {
                                 sID += ';' + $(this).val()
                             }); //alert(sPnt + " : " + sID); return false;
-                            if (sID != '') window.location.href = "Grid.aspx?M=renew&lv=list&app=" + sPnt + "&Rp=" + escape(sID.substr(1));
-                            else alert('개정에 포함할 부문견적표를 선택하십시오!');
+                            if (sID != '') {
+                                //window.location.href = "Grid.aspx?M=renew&lv=list&app=" + sPnt + "&Rp=" + escape(sID.substr(1));
+                                var qi = '{M:"renew",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"Grid",appid:"' + sPnt + '",rptid:"' + sID.substr(1) + '"}';
+                                _zw.fn.openGrid('?qi=' + encodeURIComponent(_zw.base64.encode(qi)));
+                            } else bootbox.alert('개정에 포함할 부문견적표를 선택하십시오!');
                         });
 
                         //row.next().find('.btn[data-btn="showCompTable"]').on('click', function() {
@@ -286,8 +289,8 @@ $(function () {
                                     if (r[0] != '' && r[0] != '0') _zw.V.appid = r[0];
                                     bootbox.alert(r[1], function () {
                                         if (page == 'grid') {
-                                            if (pos == 'savetemp') window.location.reload();
-                                            else { opener.location.reload(); window.close(); }
+                                            if (opener) opener.location.reload();
+                                            window.close();
                                         } else _zw.mu.goList(_zw.V.ft.replace('Detail', ''));
                                     });
 
@@ -476,8 +479,11 @@ $(function () {
         $(':checkbox[aria-posinset]').each(function () {
             if ($(this).prop('checked')) { sID += ';' + $(this).val() }
         });
-        if (sID != '') sID = sID.substr(1);
-        window.location.href = "Grid.aspx?M=new&Rp=" + escape(sID);
+        if (sID != '') {
+            sID = sID.substr(1);
+            var qi = '{M:"new",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"",ft:"Grid",appid:"0",rptid:"' + sID + '"}';
+            _zw.fn.openGrid('?qi=' + encodeURIComponent(_zw.base64.encode(qi)));
+        }
     }
 
     _zw.mu.copyGrid = function () {
@@ -490,6 +496,51 @@ $(function () {
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {
                         var p = $('#popBlank'); p.html(res.substr(2));
+
+                        p.find("select[data-modal-column='BUYERCLS']").on('change', function (e) {
+                            e.preventDefault();
+
+                            var n = p.find("input[data-modal-column='BUYER']");
+                            if ($(this).val() != '기타') n.val($(this).val()).prop('readonly', true);
+                            else n.val('').prop('readonly', false);
+                        });
+
+                        p.find("input[data-modal-column='MODEL'], input[data-modal-column='MODELNM'], input [data-modal-column='BUYER']").on('blur', function (e) {
+                            $(this).val(function (i, val) {
+                                return val.toUpperCase();
+                            });
+                        });
+
+                        p.find('.modal-footer .btn[data-btn="send"]').click(function () {
+                            var d = {}, msg = '', b = true;
+                            p.find("[data-modal-column]").each(function () {
+                                if ($(this).attr('data-modal-column') != 'DSCPT' && $.trim($(this).val()) == '') {
+                                    bootbox.alert('[' + $(this).parent().prev().text() + ']란은 필수입니다!', function () { $(this).focus(); });  b = false; return false;
+                                }
+                                if ($(this).attr('data-modal-column') == 'MODEL') msg = $(this).val();
+                                d[$(this).attr('data-modal-column').toLowerCase()] = $(this).val();
+                            }); //alert(JSON.stringify(d))
+
+                            if (b) {
+                                bootbox.confirm('[' + msg + '] 모델 견적표를 복사하시겠습니까?', function (rt) {
+                                    if (rt) {
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/ExS/CE/CopyGrid",
+                                            data: JSON.stringify(d),
+                                            success: function (res) {
+                                                if (res.substr(0, 2) == "OK") {
+                                                    var r = res.substr(2).split('^'); //alert(r[1]); window.location.href = "Grid.aspx?M=edit&app=" + r[0];
+                                                    bootbox.alert(r[1], function () { window.location.reload(); });
+                                                } else bootbox.alert(res);
+                                            },
+                                            beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
+                                        });
+                                    }
+                                }); 
+                            }
+                        });
+
                         p.on('hidden.bs.modal', function () { p.html(''); });
                         p.modal();
 
@@ -609,6 +660,29 @@ $(function () {
     }
 
     _zw.mu.viewChiefCfm = function () {
+        var sID = ''
+        $(':checkbox[aria-posinset]').each(function () {
+            if ($(this).prop('checked')) { sID += ';' + $(this).val() }
+        });
+        if (sID != '') {
+            sID = sID.substr(1);
+
+            bootbox.confirm("선택한 견적표에 대한 부서장 [확인]을 하시겠습니까?<br />[확인 취소]는 개별 견적표에서 가능합니다", function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/ExS/CE/ConfirmChief",
+                        data: '{mode:"",appid:"' + sID + '",chief:"' + _zw.V.current.chief + '",ss:"Y"}',
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                bootbox.alert(res.substr(2), function () { window.location.reload(); });
+                            } else bootbox.alert(res);
+                        },
+                        beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
+                    });
+                }
+            });
+        }
     }
 
     _zw.mu.showHistory = function () {
@@ -617,7 +691,7 @@ $(function () {
         $.ajax({
             type: "POST",
             url: "/ExS/CE/HistoryInfo",
-            data: '{mode:"",appid:"' + sID + '",page:"' + _zw.V.current.page + '",mo:"' + _zw.V.current.operator + '",acl:"' + _zw.V.acl + '"}',
+            data: '{mode:"",appid:"' + sID + '",page:"' + _zw.V.ft.toLowerCase() + '",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '"}',
             success: function (res) {
                 if (res.substr(0, 2) == "OK") {
                     var p = $('#popBlank'); p.html(res.substr(2));
@@ -629,17 +703,46 @@ $(function () {
     }
 
     _zw.mu.showCompTable = function () {
+        var sID = typeof arguments[0] === 'string' ? arguments[0] : _zw.V.appid;
+
+        $.ajax({
+            type: "POST",
+            url: "/ExS/CE/CompTable",
+            data: '{mode:"",appid:"' + sID + '",page:"' + _zw.V.ft.toLowerCase() + '",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == "OK") {
+                    var p = $('#popBlank'); p.html(res.substr(2));
+
+                    p.find('.modal-body a[data-query]').click(function () {
+                        if (_zw.V.ft.toLowerCase() == 'grid') window.location.href = _zw.V.current.page + $(this).attr("data-query");
+                        else _zw.fn.openGrid($(this).attr("data-query"));
+                        p.modal('hide');
+                    });
+
+                    p.on('hidden.bs.modal', function () { p.html(''); });
+                    p.modal();
+                } else bootbox.alert(res);
+            }
+        });
     }
 
-    _zw.fn.openGrid = function () {
-        $('.z-list-body a[data-query]').on('click', function () {
-            if (_zw.ut.isMobile()) { bootbox.alert('모바일 환경에서는 지원되지 않습니다!'); return false; }
-
+    _zw.fn.openGrid = function (qi) {
+        if (qi && qi != '' && qi.indexOf('?') >= 0) {
             var w = window.screen.width, h = window.screen.height;
             w = w >= 1600 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h; //console.log($(this).attr('data-query'))
 
-            _zw.ut.openWnd('/ExS/CE/Grid' + $(this).attr('data-query'), 'CEGrid', w, h, 'resize');
-        });
+            _zw.ut.openWnd('/ExS/CE/Grid' + qi, 'CEGrid', w, h, 'resize');
+
+        } else {
+            $('.z-list-body a[data-query]').on('click', function () {
+                if (_zw.ut.isMobile()) { bootbox.alert('모바일 환경에서는 지원되지 않습니다!'); return false; }
+
+                var w = window.screen.width, h = window.screen.height;
+                w = w >= 1600 ? parseInt(w * 0.85) : w; h = h >= 900 ? parseInt(h * 0.85) : h; //console.log($(this).attr('data-query'))
+
+                _zw.ut.openWnd('/ExS/CE/Grid' + $(this).attr('data-query'), 'CEGrid', w, h, 'resize');
+            });
+        }
     }
 
     _zw.mu.previewGrid = function () {
@@ -963,7 +1066,7 @@ $(function () {
 
                 if (_zw.V.mode == 'reuse' || _zw.V.mode == 'renew') {
                     if ($('[data-zf-ftype="MAINFIELD"][data-zf-field="DSCPT"]').val() == '') {
-                        bootbox.alert('재사용 또는 개정 경우 [특기사항] 입력은 필수입니다!', function () { _zw.menu.showGridDscpt(); }); return false;
+                        bootbox.alert('재사용 또는 개정 경우 [특기사항] 입력은 필수입니다!', function () { _zw.mu.showGridDscpt(); }); return false;
                     }
                 }
             }
