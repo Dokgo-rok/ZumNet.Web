@@ -184,7 +184,8 @@
                             else
                             {
                                 if (Convert.ToInt16(row["NESTEDCNT"]) > 0) strValue += " / <span title=\"부서장 확인 전\" class=\"text-muted\"><i class=\"fas fa-minus\"></i></span>";
-                                else strValue += String.Format(" / <input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" />", iSeq.ToString(), row["CEID"].ToString(), "viewChiefCfm");
+                                //else strValue += String.Format(" / <input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" />", iSeq.ToString(), row["CEID"].ToString(), "viewChiefCfm");
+                                else strValue += String.Format(" / <input type=\"checkbox\" aria-posinset=\"{0}\" value=\"{1}\" data-toggle=\"{2}\" />", "0", row["CEID"].ToString(), "viewChiefCfm");
                             }
                         }
                     }

@@ -583,7 +583,7 @@
                     {
                         if (row["SCFMSS"].ToString() == "Y")
                         {
-                            if (Session["URID"].ToString() == row["SCFMID"].ToString()) sb.Append("<th><button type=\"button\" class=\"btn btn-success btn-xs\" data-btn=\"send\" data-for=\"SCFMSS\">확인취소</button></th>");
+                            if (Session["URID"].ToString() == row["SCFMID"].ToString()) sb.Append("<th><button type=\"button\" class=\"btn btn-success btn-sm\" data-btn=\"send\" data-for=\"SCFMSS\">확인취소</button></th>");
                             else sb.Append("<th>확인</th>");
                         }
                         else

@@ -91,11 +91,11 @@
             if (formTable == "Report" && (ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "M")))
             {
                 sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"text-muted\" disabled title=\"{0}\" data-zf-menu=\"reportGrid\"><i class=\"fe-edit\"></i> {0}</a></li>", "집계견적표작성");
-                sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"text-muted\" disabled title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"fe-send\"></i> {0}</a></li>", "결재요청");
+                sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"text-muted\" disabled title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"fas fa-paper-plane\"></i> {0}</a></li>", "결재요청");
             }
             else if (formTable == "DeptList")
             {
-                sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"viewChiefCfm\"><i class=\"fe-check\"></i> {0}</a></li>", "확인");
+                sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"text-muted\" disabled title=\"{0}\" data-zf-menu=\"viewChiefCfm\"><i class=\"fas fa-check\"></i> {0}</a></li>", "확인");
             }
             else if (formTable == "MyList")
             {
@@ -119,8 +119,8 @@
                 {
                     if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
                     {
-                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fe-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "환율 편집하기", Resources.Global.Edit);
-                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\" fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "환율 편집하기", Resources.Global.Edit);
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
                     }
                     if (row["STATE"].ToString() == "7" || row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-edit\"></i> 환율작성</a></li>", GetQueryString("new", formTable, "", "0"), "환율 작성하기");
                 }
@@ -148,8 +148,8 @@
                 {
                     if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
                     {
-                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fe-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "기준임율 편집하기", Resources.Global.Edit);
-                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\" fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "기준임율 편집하기", Resources.Global.Edit);
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
                     }
                     if (row["STATE"].ToString() == "7") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-edit\"></i> 임율작성</a></li>", GetQueryString("new", formTable, "", "0"), "기준임율 작성하기");
                     else if (row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n text-danger\" title=\"{1}\"><i class=\"fas fa-copy\"></i> 임율재사용</a></li>", GetQueryString("reuse", formTable, "", ViewBag.R.appid.ToString()), "임율 재사용하기");
@@ -177,7 +177,7 @@
                 {
                     if (row != null && row["STATE"].ToString() == "0" && (ViewBag.R.current["operator"].ToString() == "Y" || Session["URID"].ToString() == row["CRID"].ToString())) //관리자, 작성자
                     {
-                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fe-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "외주임율 편집하기", Resources.Global.Edit);
+                        sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-check-square\"></i> {2}</a></li>", GetQueryString("edit", formTable, "", ViewBag.R.appid.ToString()), "외주임율 편집하기", Resources.Global.Edit);
                     }
                     if (row["STATE"].ToString() == "7" || row["STATE"].ToString() == "8" || row["STATE"].ToString() == "6") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-edit\"></i> 임율작성</a></li>", GetQueryString("new", formTable, "", "0"), "외주임율 작성하기");
                 }
@@ -202,7 +202,7 @@
         sb.Append("<i class=\"fe-clock mr-2\"></i>");
         sb.Append("<div class=\"z-list-cnt mr-3\">");
         sb.Append("<select class=\"custom-select\" id=\"_SearchYear\">");
-        sb.Append("<option value=\"\">전체</option>");
+        sb.Append("<option value=\"ALL\">전체</option>");
         sb.AppendFormat("<option value=\"1\"{0}>이전 1년</option>", StringHelper.SafeString(ViewBag.R.lv["start"]) == "1" ? " selected" : "");
         for (int i = DateTime.Now.Year; i >= 2020; i--)
         {

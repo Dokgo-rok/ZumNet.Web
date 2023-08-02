@@ -381,6 +381,7 @@ $(function () {
         if (!window.confirm("결재요청 하시겠습니까?\n\r\n\r처리 중 화면을 새로고침 하지 마십시오!")) return false;
 
         _zw.ut.ajaxLoader(true, '양식 준비중 입니다');
+        //_zw.ut.ajaxLoader(true);
 
         if (_zw.V.ft.toLowerCase() == 'stdexchangedetail') {
             ft = 'DRAFT'; tp = 'CE'; k1 = 'XRATE'; k2 = _zw.V.appid;
@@ -662,7 +663,7 @@ $(function () {
     _zw.mu.viewChiefCfm = function () {
         var sID = ''
         $(':checkbox[aria-posinset]').each(function () {
-            if ($(this).prop('checked')) { sID += ';' + $(this).val() }
+            if ($(this).prop('checked')) { sID += ',' + $(this).val() }
         });
         if (sID != '') {
             sID = sID.substr(1);

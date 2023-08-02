@@ -204,7 +204,7 @@
 
                         if (Session["URID"].ToString() == _gridMain["CRID"].ToString())
                         {
-                            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n\" title=\"{2}\"><i class=\"fe-check-square\"></i> 편집</a></li>", ViewBag.R.current.page.ToString(), GridQuery("edit", ViewBag.R.appid.ToString()), "견적표 편집하기");
+                            sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"{0}{1}\" class=\"z-lnk-navy-n\" title=\"{2}\"><i class=\"fas fa-check-square\"></i> 편집</a></li>", ViewBag.R.current.page.ToString(), GridQuery("edit", ViewBag.R.appid.ToString()), "견적표 편집하기");
                             if (_gridMain["XCLS"].ToString() == "ALL" && _gridMain["STATE"].ToString() == "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:void(0)\" class=\"z-lnk-navy-n\" title=\"{0}\" data-zf-menu=\"reqApproval\"><i class=\"fas fa-paper-plane\"></i> 결재요청</a></li>", "결재요청하기");
                         }
 
@@ -1780,7 +1780,7 @@ td {border-bottom: 0.5pt solid windowtext; border-left: 0.5pt solid windowtext; 
             <text>
             $(window).on("beforeunload", function () {
                 if (_zw.V.mode == 'new' || _zw.V.mode == 'edit' || _zw.V.mode == 'add' || _zw.V.mode == 'reuse' || _zw.V.mode == 'renew') {
-                    //if (_zw.V.checkunload) return "이 페이지를 벗어나면 작성된 내용은 저장되지 않습니다. 나가시겠습니까?";
+                    if (_zw.V.checkunload) return "이 페이지를 벗어나면 작성된 내용은 저장되지 않습니다. 나가시겠습니까?";
                 }
             });
             </text>

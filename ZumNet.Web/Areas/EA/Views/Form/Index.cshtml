@@ -198,6 +198,13 @@
     }
 
     <script type="text/javascript">
+        $(window).on("beforeunload", function () { //23-08-02
+            if (opener && opener._zw && opener._zw.ut) {
+                //if (opener._zw.ut.ajaxLoading()) { opener._zw.ut.ajaxLoader(false); opener._zw.fn.loadList(); }
+                if (opener._zw.ut.ajaxLoading()) opener.location.reload();
+            }
+        });
+
     (function () {
         _zw.V = @Html.Raw(ViewBag.JForm);
 
