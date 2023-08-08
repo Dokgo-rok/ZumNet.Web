@@ -210,6 +210,11 @@
             strReturn = String.Format("** 대상 파일(<a class=\"z-lnk-navy-n\" href=\"/Content/Forms/IMPORT/개발원가견적.xlsx\" target=\"_blank\">개발원가견적</a>)을 선택하시오!");
             strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 덮어씌워집니다.";
         }
+        else if (_mode == "CE_STDPAY") //개발원가견적 기준임율 업로드
+        {
+            strReturn = String.Format("** 대상 파일(<a class=\"z-lnk-navy-n\" href=\"/Content/Forms/IMPORT/기준임율.xlsx\" target=\"_blank\">기준임율</a>)을 선택하시오!");
+            strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 덮어씌워집니다.";
+        }
         #endregion
 
         return strReturn;
@@ -315,6 +320,10 @@
                 rt = "파일명이 올바르지 않습니다!";
             }
             else if (_mode == "MC_SUMMARY" && !strUploadFile.Contains("개발원가견적")) //모델별원가 시스템 개발원가견적 업로드
+            {
+                rt = "파일명[" + strUploadFile + "]이 올바르지 않습니다!";
+            }
+            else if (_mode == "CE_STDPAY" && !strUploadFile.Contains("기준임율")) //개발원가견적 기준임율 업로드
             {
                 rt = "파일명[" + strUploadFile + "]이 올바르지 않습니다!";
             }
@@ -491,7 +500,11 @@
                     }
                     else if (_mode == "MC_SUMMARY") //모델별원가
                     {
-                        rt = DoRegisterMC(dtList);
+                        rt = DoMCSummary(dtList);
+                    }
+                    else if (_mode == "CE_STDPAY") //개발원가견적 기준임율
+                    {
+                        rt = DoCEStdPay(dtList);
                     }
                     #endregion
                     tp = null;
@@ -3261,7 +3274,7 @@
     #endregion
 
     #region [모델별원가]
-    private string DoRegisterMC(DataTable data)
+    private string DoMCSummary(DataTable data)
     {
         int iTotal = 0; //총 자료 건수
 
@@ -3359,6 +3372,230 @@
             sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
         }
         return sb.ToString();
+    }
+    #endregion
+
+    #region [개발원가견적 - 기준임율]
+    private string DoCEStdPay(DataTable data)
+    {
+        string strReturn = "";
+
+        if (data != null && data.Rows.Count > 0)
+        {
+            ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+            string[,] codeConfig = { { "ce", "buyer", "BUYER 분류" }, { "ce", "item", "품목 분류" }, { "ce", "center", "생산지 분류" } };
+
+            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new ZumNet.BSL.ServiceBiz.CommonBiz())
+            {
+                svcRt = cb.SelectCodeDescription(codeConfig);
+            }
+
+            //return data.Rows[0]["생산지"].ToString() + " : " + data.Rows[0]["구분"].ToString();
+
+            if (svcRt != null && svcRt.ResultCode == 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                dynamic codeTable = svcRt.ResultDataDetail;
+
+                DataRow[] q = null;
+                bool bUse = false;
+                int iTotal = 0; //총 자료 건수
+
+                foreach (object[] o in codeTable["ce.center"]) //corp
+                {
+                    q = data.Select("생산지 = '" + o[3].ToString() + "'");
+
+                    if (q != null && q.Length > 0) bUse = true;
+                    else if (o[7].ToString() != "N") bUse = true;
+                    else bUse = false;
+
+                    sb.AppendFormat("<div class=\"accordion\" id=\"accordion_{0}\">", o[3].ToString());
+                    sb.AppendFormat("<div class=\"card mt-3\" data-zf-code=\"{0}\">", o[3].ToString());
+                    sb.AppendFormat("<div class=\"card-header bg-light d-flex justify-content-between\" id=\"heading_{0}\">", o[3].ToString());
+                    sb.AppendFormat("<a href=\"#collapse_{0}\" class=\"z-lnk-navy font-weight-bold\" data-toggle=\"{2}\" aria-expanded=\"false\" data-target=\"#collapse_{0}\" aria-controls=\"collapse_{0}\">생산지 : {0},&nbsp;&nbsp;&nbsp;통화 : {1}</a>"
+                                , o[3].ToString(), o[4].ToString(), bUse ? "collapse" : "");
+                    sb.Append("<div>");
+
+                    sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 mr-2\" for=\"_ckb_{0}\"><input type=\"checkbox\" class=\"custom-control-input\" id=\"_ckb_{0}\"{1}>", o[3].ToString(), bUse ? " checked" : "");
+                    sb.Append("<span class=\"custom-control-label\">임율 사용 여부</span>");
+                    sb.Append("</label>");
+                    //sb.Append("<button class=\"btn btn-default icon-btn btn-sm\"><i class=\"fas fa-down\"></i></button>");
+                    sb.Append("</div></div>"); //header
+
+                    sb.AppendFormat("<div id=\"collapse_{0}\" class=\"collapse\" aria-labelledby=\"heading_{0}\" data-parent=\"#accordion_{0}\">", o[3].ToString());
+                    sb.Append("<div class=\"card-body p-1\">");
+
+                    sb.Append(RenderCorpTable(codeTable, data, q, o[3].ToString(), o[4].ToString(), o[7].ToString()));
+
+                    sb.Append("</div>");
+                    sb.Append("</div>");
+
+                    sb.Append("</div>");//card
+                    sb.Append("</div>");//accordion
+
+                    q = null;
+                }
+
+                strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div><div class=\"d-none\" id=\"__RESULTINFO\">{1}</div>", "엑셀 내용을 적용하시겠습니까?", sb.ToString());
+            }
+            else
+            {
+                strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", svcRt.ResultMessage);
+            }
+        }
+        else
+        {
+            strReturn = String.Format("<div class=\"text-center mt-3 h5\">{0}</div>", "정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+
+        //sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
+
+        return strReturn;
+    }
+
+    private string RenderCorpTable(dynamic codeTable, DataTable items, DataRow[] q, string corp, string currency, string isUse)
+    {
+        ArrayList vItem = codeTable["ce.item"];
+
+        StringBuilder sb = new StringBuilder();
+        //sb.AppendFormat("<div class=\"{0}\">", isUse == "N" ? "blind" : "");
+
+        sb.Append("<table class=\"z-grid z-grid-bordered\">");
+        sb.Append("<colgroup><col width=\"5.9%\" /><col width=\"5.9%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" />");
+        sb.Append("<col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /></colgroup>");
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"info\">");
+        sb.AppendFormat("<th>{0}</th>", "고객");
+        sb.AppendFormat("<th>{0}</th>", "구분");
+        sb.AppendFormat("<th>{0}</th>", "직접<br />노무임율");
+        sb.AppendFormat("<th>{0}</th>", "SMT<br />점당임율");
+        sb.AppendFormat("<th>{0}</th>", "변동<br />경비임율");
+        sb.AppendFormat("<th>{0}</th>", "수입<br />경비율");
+        sb.AppendFormat("<th>{0}</th>", "소모품<br />비율");
+        //sb.AppendFormat("<th>{0}</th>", "고정<br />원가율");  //21-08-23 막음
+        sb.AppendFormat("<th>{0}</th>", "간접<br />고정비율");  //21-08-23 추가
+        sb.AppendFormat("<th>{0}</th>", "간접<br />노무비율");  //21-08-23 추가
+        sb.AppendFormat("<th>{0}</th>", "감가<br />비율");      //21-08-23 추가
+        sb.AppendFormat("<th>{0}</th>", "재고<br />비용율");
+        sb.AppendFormat("<th>{0}</th>", "생산지<br />판관비");
+        sb.AppendFormat("<th>{0}</th>", "판매<br />물류비율");  //21-08-23 추가
+        sb.AppendFormat("<th>{0}</th>", "판관<br />비율");      //21-08-23 추가
+        sb.AppendFormat("<th>{0}</th>", "공통<br />판관비");
+        sb.AppendFormat("<th>{0}</th>", "변동<br />판관비");
+        sb.AppendFormat("<th>{0}</th>", "원가율");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+
+        DataRow[] rowQuery = null;
+        DataRow[] rowTemp = null;
+
+        if (items == null || q == null || q.Length == 0)
+        {
+            int iSeq = 1;
+            foreach (object[] b in codeTable["ce.buyer"])
+            {
+                sb.AppendFormat("<tr><th rowspan=\"{0}\" class=\"cell-read\"><input type=\"text\" class=\"text-center\" value=\"{1}\" readonly /></th>", vItem.Count.ToString(), b[3].ToString());
+
+                int i = 0;
+                foreach (object[] o in vItem) //item
+                {
+                    if (i > 0) sb.Append("<tr>");
+                    sb.AppendFormat("<th class=\"cell-read\">");
+                    sb.AppendFormat("<input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly />", "ITEMCLS", o[3].ToString());
+
+                    sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "CORP", corp);
+                    sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "BUYER", b[3].ToString());
+                    sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "ROWSEQ", iSeq);
+                    sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "CURRENCY", currency);
+                    sb.Append("</th>");
+
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "DIR_COST", "number;10;4", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SMT_COST", "number;10;4", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FL_COST", "number;10;4", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IM_RT", "percent;3;2", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CS_RT", "percent;3;2", "");
+                    //sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FX_EM", "percent;3;2", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IND_FX", "percent;3;2", ""); //21-08-23 추가
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IND_LB", "percent;3;2", ""); //21-08-23 추가
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "DPC_RT", "percent;3;2", ""); //21-08-23 추가
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "ST_EM", "percent;3;2", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CORP_SGA", "percent;3;2", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SL_LGT", "percent;3;2", ""); //21-08-23 추가
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SGC_RT", "percent;3;2", ""); //21-08-23 추가
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CN_SGA", "percent;3;2", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FL_SGA", "percent;3;2", "");
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "COSTRT", "percent;3;2", "");
+                    sb.Append("</tr>");
+
+                    i++;
+                    iSeq++;
+                }
+            }
+        }
+        else
+        {
+            string sInputMask = (corp == "VH" || corp == "IC" || corp == "IS") ? "number;10;4" : "number;10;4";
+            int iSeq = 1;
+
+            foreach (object[] b in codeTable["ce.buyer"]) //buyer
+            {
+                sb.AppendFormat("<tr><th rowspan=\"{0}\" class=\"cell-read\"><input type=\"text\" class=\"text-center\" value=\"{1}\" readonly /></th>", vItem.Count.ToString(), b[3].ToString());
+
+                int i = 0;
+                foreach (object[] o in vItem) //item
+                {
+                    rowQuery = items.Select("생산지 = '" + corp + "' AND 고객 = '" + b[3].ToString() + "' AND 구분 = '" + o[3].ToString() + "'");
+                    DataRow r = rowQuery != null && rowQuery.Length > 0 ? rowQuery[0] : null;
+
+                    if (i > 0) sb.Append("<tr>");
+                    sb.AppendFormat("<th class=\"cell-read\">");
+                    sb.AppendFormat("<input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly />", "ITEMCLS", o[3].ToString());
+
+                    sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "CORP", corp);
+                    sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "BUYER", b[3].ToString());
+                    sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "ROWSEQ", iSeq);
+                    sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "CURRENCY", currency);
+                    sb.Append("</th>");
+
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "DIR_COST", sInputMask, DataHelper.GetFieldValueToString(r, "직접노무임율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SMT_COST", sInputMask, DataHelper.GetFieldValueToString(r, "SMT점당임율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FL_COST", sInputMask, DataHelper.GetFieldValueToString(r, "변동경비임율", ""));
+
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IM_RT", "percent;3;2", ExcelPercentField(r, "수입경비율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CS_RT", "percent;3;2", ExcelPercentField(r, "소모품비율", ""));
+                    //sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FX_EM", "percent;3;2", ExcelPercentField(r, "FX_EM", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IND_FX", "percent;3;2", ExcelPercentField(r, "간접고정비율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IND_LB", "percent;3;2", ExcelPercentField(r, "간접노무비율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "DPC_RT", "percent;3;2", ExcelPercentField(r, "감가비율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "ST_EM", "percent;3;2", ExcelPercentField(r, "재고비용율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CORP_SGA", "percent;3;2", ExcelPercentField(r, "생산지판관비", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SL_LGT", "percent;3;2", ExcelPercentField(r, "판매물류비율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SGC_RT", "percent;3;2", ExcelPercentField(r, "판관비율", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CN_SGA", "percent;3;2", ExcelPercentField(r, "공통판관비", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FL_SGA", "percent;3;2", ExcelPercentField(r, "변동판관비", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "COSTRT", "percent;3;2", ExcelPercentField(r, "원가율", ""));
+                    sb.Append("</tr>");
+
+                    i++;
+                    iSeq++;
+                }
+            }
+        }
+
+        rowQuery = null;
+        rowTemp = null;
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        return sb.ToString();
+    }
+
+    private string ExcelPercentField(DataRow r, string column_name, string default_value)
+    {
+        string sValue = DataHelper.GetFieldValueToString(r, column_name, "");
+
+        return sValue != "" ? (Convert.ToDecimal(sValue) * 100).ToString() : "";
     }
     #endregion
 

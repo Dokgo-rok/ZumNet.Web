@@ -1,9 +1,8 @@
 ﻿@using System.Data;
 @using System.Text;
-
+@using System.Threading;
 @using ZumNet.Web.Bc;
 @using ZumNet.Framework.Util;
-
 @functions{
     private string ViewXRate(DataSet ds)
     {
@@ -41,7 +40,12 @@
         sb.Append("<th style=\"width: 15%\">적용시점</th>");
         if (ViewBag.Mode == "new" || ViewBag.Mode == "edit")
         {
-            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><input type=\"text\" class=\"datepicker form-control text-center\" data-zf-field=\"STDDT\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{0}\" /></td>", ViewBag.Mode == "new" ? DateTime.Now.ToString("yyyy-MM-01") : Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd"));
+            string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+            string sSTDDT = "";
+            if (sCurrentLocale == "en-US") sSTDDT = ViewBag.Mode == "new" ? DateTime.Now.ToString("MM/01/yyyy") : Convert.ToDateTime(row["STDDT"]).ToString("MM/dd/yyyy");
+            else sSTDDT = ViewBag.Mode == "new" ? DateTime.Now.ToString("yyyy-MM-01") : Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd");
+
+            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><input type=\"text\" class=\"datepicker form-control text-center\" data-zf-field=\"STDDT\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{0}\" /></td>", sSTDDT);
         }
         else
         {

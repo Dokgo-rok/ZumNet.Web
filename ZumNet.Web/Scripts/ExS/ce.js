@@ -128,11 +128,67 @@ $(function () {
     }
 
     _zw.mu.exportExcel = function () {
+        var qi = '{M:"xls",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ttl:"",opnode:"' + $('input[data-zf-field="STDDT"]').val() + '",ft:"' + _zw.V.ft + '",appid:"' + _zw.V.appid + '"}';
+        //window.open('?qi=' + encodeURIComponent(_zw.base64.encode(qi)));
+        window.open('?qi=' + encodeURIComponent(_zw.base64.encode(qi)), 'ifrView');
     }
 
     _zw.mu.importExcel = function () {
-        //var url = "/" + _ZF.V.root + "/EA/External/FileImport.aspx?M=MC_SUMMARY&cd=ce";
-        //_zw.ut.openWnd(url, "fileImport", 400, 100, "fix")
+        var url = '/Common/FileImport?M=CE_STDPAY&sy=&cd=';
+        $.ajax({
+            type: "POST",
+            url: url,
+            success: function (res) {
+                var p = $('#popBlank');
+                p.html(res); _zw.fu.bind();
+                fm = p.find('#uploadForm')[0].action = url;
+
+                p.on('hidden.bs.modal', function () { p.html(''); });
+                p.modal();
+            }
+        });
+    }
+
+    _zw.fn.complete = function (msg) {
+        var p = $('#popBlank');
+        p.find('.zf-upload #uploadForm')[0].reset();
+
+        var rt = decodeURIComponent(msg).replace(/\+/gi, ' ');
+        if (rt.substr(0, 2) == 'OK') {
+            var footer = '<div class="modal-footer justify-content-center">'
+                + '<button type="button" class="btn btn-primary" data-zm-menu="confirm">확인</button>'
+                + '<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>'
+                + '</div>';
+
+            p.find('.zf-upload .zf-upload-list').html(rt.substr(2)).removeClass('d-none');
+            p.find('.modal-content').append(footer);
+
+            p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
+                p.modal('hide');
+
+                $('#_Corp_StdPay').html(p.find('#__RESULTINFO').html()); _zw.fn.input();
+
+                $('.accordion .card[data-zf-code] .card-header :checkbox').click(function () {
+                    var lnk = $(this).parent().parent().prev();
+                    if ($(this).prop('checked')) {
+                        bootbox.confirm('해당 생산지 임율 정보를 저장할 수 있습니다. 계속하시겠습니까?', function () {
+                            lnk.attr('data-toggle', 'collapse'); $(lnk.attr('data-target')).collapse('show'); //console.log(lnk.attr('data-target'))
+                        });
+
+                    } else {
+                        bootbox.confirm('해당 생산지 신규 또는 변경 임율 정보가 저장되지 않습니다. 계속하시겠습니까?', function () {
+                            lnk.attr('data-toggle', ''); $(lnk.attr('data-target')).collapse('hide');
+                        });
+                    }
+                });
+
+            });
+
+        } else {
+            p.find('.zf-upload .zf-upload-list').html(rt).removeClass('d-none');
+        }
+        p.find('.zf-upload .zf-upload-bar').addClass('d-none');
+        if (p.find('.modal-dialog').hasClass('modal-sm')) p.find('.modal-dialog').removeClass('modal-sm');
     }
 
     _zw.mu.saveTemp = function (t) {
@@ -160,6 +216,8 @@ $(function () {
                 $('[data-zf-field]').each(function () {
                     if ($(this).attr('data-zf-field') == 'USD_EUR') {
                         d[$(this).attr('data-zf-field').toLowerCase()] = numeral(1 / numeral($('input[data-zf-field="EUR_USD"]').val()).value()).format('0,0.0000');
+                    } else if ($(this).attr('data-zf-field') == 'STDDT') {
+                        d[$(this).attr('data-zf-field').toLowerCase()] = _zw.ut.date($(this).val(), 'YYYY-MM-DD');
                     } else {
                         d[$(this).attr('data-zf-field').toLowerCase()] = $(this).val();
                     }

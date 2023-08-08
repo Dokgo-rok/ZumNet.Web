@@ -1,10 +1,18 @@
 ﻿@using System.Collections;
 @using System.Data;
 @using System.Text;
-
+@using System.Threading;
 @using ZumNet.Web.Bc;
 @using ZumNet.Framework.Util;
-
+@{
+    //string strReturn = DateTime.Now.ToString("MM-dd-yyyy");
+    //Response.Write(strReturn);
+    if (ViewBag.Mode.ToString() == "xls")
+    {
+        ExcelBind(RenderExcelData(ViewBag.Mode, ViewBag.BoardList), ViewBag.R["opnode"].ToString());
+        Response.End();
+    }
+}
 @functions{
     private string ViewStdPay(string mode, DataSet ds)
     {
@@ -34,7 +42,12 @@
         sb.Append("<th style=\"width: 15%\">적용시점</th>");
         if (mode == "new" || mode == "reuse" || mode == "edit")
         {
-            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><input type=\"text\" class=\"datepicker form-control text-center\" data-zf-field=\"STDDT\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{0}\" /></td>", mode == "new" || mode == "reuse" ? DateTime.Now.ToString("yyyy-MM-01") : Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd"));
+            string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+            string sSTDDT = "";
+            if (sCurrentLocale == "en-US") sSTDDT = mode == "new" || mode == "reuse" ? DateTime.Now.ToString("MM/01/yyyy") : Convert.ToDateTime(row["STDDT"]).ToString("MM/dd/yyyy");
+            else sSTDDT = mode == "new" || mode == "reuse" ? DateTime.Now.ToString("yyyy-MM-01") : Convert.ToDateTime(row["STDDT"]).ToString("yyyy-MM-dd");
+
+            sb.AppendFormat("<td class=\"\" style=\"width: 35%; color: #8a6d3b\"><input type=\"text\" class=\"datepicker form-control text-center\" data-zf-field=\"STDDT\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{0}\" /></td>", sSTDDT);
         }
         else
         {
@@ -79,7 +92,13 @@
         sb.Append("</div>");
 
         //21-08-27 SMT 관련 작업 ----------------->
-        sb.Append("<div id=\"_Corp_SMT\" class=\"mt-3\" style=\"margin-bottom: 20px\">");
+        sb.Append("<div id=\"_Corp_SMT\" class=\"mt-1\" style=\"margin-bottom: 20px\">");
+        sb.Append("<div class=\"float-right mr-1 mb-1\">");
+
+        if (mode == "" || mode == "read") sb.Append("<a class=\"btn btn-success btn-sm\" onclick=\"_zw.mu.exportExcel();\"><i class=\"fe-download\"></i> 엑셀내보내기</a>&nbsp;");
+        else sb.Append("<a class=\"btn btn-success btn-sm\" onclick=\"_zw.mu.importExcel();\"><i class=\"fe-upload\"></i> 엑셀불러오기</a>&nbsp;");
+
+        sb.Append("</div>");
         sb.Append("<div>");
         sb.Append("<table class=\"z-grid z-grid-bordered\">");
         sb.Append("<colgroup><col width=\"12%\" /><col width=\"11%\" /><col width=\"11%\" /><col width=\"11%\" /><col width=\"11%\" /><col width=\"11%\" /><col width=\"11%\" /><col width=\"11%\" /><col width=\"11%\" /></colgroup>");
@@ -111,7 +130,7 @@
 
         // SMT 관련 작업 <--------------------------
 
-        sb.Append("<div>");
+        sb.Append("<div id=\"_Corp_StdPay\">");
         //sb.Append("<div class=\"pl-15\">&#42; 생산지별 기준율</div>");
 
         //2020-09-18 tui-grid 막음
@@ -145,7 +164,7 @@
             sb.AppendFormat("<div class=\"accordion\" id=\"accordion_{0}\">", o[3].ToString());
             sb.AppendFormat("<div class=\"card mt-3\" data-zf-code=\"{0}\">", o[3].ToString());
             sb.AppendFormat("<div class=\"card-header bg-light d-flex justify-content-between\" id=\"heading_{0}\">", o[3].ToString());
-            sb.AppendFormat("<a href=\"#collapse_{0}\" class=\"z-lnk-navy font-weight-bold\" data-toggle=\"{2}\" aria-expanded=\"false\" aria-controls=\"collapse_{0}\">생산지 : {0},&nbsp;&nbsp;&nbsp;통화 : {1}</a>"
+            sb.AppendFormat("<a href=\"#collapse_{0}\" class=\"z-lnk-navy font-weight-bold\" data-toggle=\"{2}\" aria-expanded=\"false\" data-target=\"#collapse_{0}\" aria-controls=\"collapse_{0}\">생산지 : {0},&nbsp;&nbsp;&nbsp;통화 : {1}</a>"
                         , o[3].ToString(), o[4].ToString(), bUse ? "collapse" : "");
             sb.Append("<div>");
 
@@ -155,7 +174,7 @@
             //sb.Append("</div>");
 
             sb.AppendFormat("<label class=\"custom-control custom-checkbox m-0 mr-2\" for=\"_ckb_{0}\"><input type=\"checkbox\" class=\"custom-control-input\" id=\"_ckb_{0}\"{1}{2}>"
-                        , o[3].ToString(), (mode == "new" || mode == "reuse" || mode == "edit") ? "" : "", bUse ? " checked" : "");
+                        , o[3].ToString(), (mode == "new" || mode == "reuse" || mode == "edit") ? "" : " disabled", bUse ? " checked" : "");
             sb.Append("<span class=\"custom-control-label\">임율 사용 여부</span>");
             sb.Append("</label>");
             //sb.Append("<button class=\"btn btn-default icon-btn btn-sm\"><i class=\"fas fa-down\"></i></button>");
@@ -449,6 +468,136 @@
 
         return sb.ToString();
     }
-}
 
+    #region [엑셀연결]
+    private string RenderExcelData(string mode, DataSet ds)
+    {
+        DataRow[] q = null;
+
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+        sb.Append("<thead><tr>");
+        sb.AppendFormat("<th>{0}</th>", "생산지");
+        sb.AppendFormat("<th>{0}</th>", "통화");
+        sb.AppendFormat("<th>{0}</th>", "고객");
+        sb.AppendFormat("<th>{0}</th>", "구분");
+        sb.AppendFormat("<th>{0}</th>", "직접노무임율");
+        sb.AppendFormat("<th>{0}</th>", "SMT점당임율");
+        sb.AppendFormat("<th>{0}</th>", "변동경비임율");
+        sb.AppendFormat("<th>{0}</th>", "수입경비율");
+        sb.AppendFormat("<th>{0}</th>", "소모품비율");
+        //sb.AppendFormat("<th>{0}</th>", "고정원가율");  //21-08-23 막음
+        sb.AppendFormat("<th>{0}</th>", "간접고정비율");
+        sb.AppendFormat("<th>{0}</th>", "간접노무비율");
+        sb.AppendFormat("<th>{0}</th>", "감가비율");
+        sb.AppendFormat("<th>{0}</th>", "재고비용율");
+        sb.AppendFormat("<th>{0}</th>", "생산지판관비");
+        sb.AppendFormat("<th>{0}</th>", "판매물류비율");
+        sb.AppendFormat("<th>{0}</th>", "판관비율");
+        sb.AppendFormat("<th>{0}</th>", "공통판관비");
+        sb.AppendFormat("<th>{0}</th>", "변동판관비");
+        sb.AppendFormat("<th>{0}</th>", "원가율");
+        sb.Append("</tr></thead>");
+
+        sb.Append("<tbody>");
+
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[1].Rows.Count > 0)
+        {
+            foreach (object[] o in ViewBag.CodeTable["ce.center"]) //corp
+            {
+                q = ds.Tables[1].Select("CORP = '" + o[3].ToString() + "'");
+
+                if (q.Length > 0)
+                {
+                    sb.Append(RenderExcelData_CorpTable(mode, ds.Tables[1], o[3].ToString(), o[4].ToString()));
+                }
+            }
+        }
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        return sb.ToString();
+    }
+
+    private string RenderExcelData_CorpTable(string mode, DataTable items, string corp, string currency)
+    {
+        ArrayList vItem = ViewBag.CodeTable["ce.item"];
+        DataRow[] rowQuery = null;
+
+        StringBuilder sb = new StringBuilder();
+
+        foreach (object[] b in ViewBag.CodeTable["ce.buyer"]) //buyer
+        {
+            foreach (object[] o in vItem) //item
+            {
+                rowQuery = items.Select("CORP = '" + corp + "' AND BUYER = '" + b[3].ToString() + "' AND ITEMCLS = '" + o[3].ToString() + "'");
+                DataRow r = rowQuery != null && rowQuery.Length > 0 ? rowQuery[0] : null;
+
+                sb.Append("<tr>");
+                sb.AppendFormat("<td class=\"text-center\">{0}</td>", corp);
+                sb.AppendFormat("<td class=\"text-center\">{0}</td>", currency);
+                sb.AppendFormat("<td class=\"text-center\">{0}</td>", b[3].ToString());
+                sb.AppendFormat("<td class=\"text-center\">{0}</td>", o[3].ToString());
+
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["DIR_COST"].ToString(), 4, ""));
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["SMT_COST"].ToString(), 4, ""));
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["FL_COST"].ToString(), 4, ""));
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["IM_RT"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["CS_RT"].ToString(), 2) + "%");
+                //sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["FX_EM"].ToString(), 2) + "%" );
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["IND_FX"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["IND_LB"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["DPC_RT"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["ST_EM"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["CORP_SGA"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["SL_LGT"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["SGC_RT"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["CN_SGA"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["FL_SGA"].ToString(), 2) + "%");
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["COSTRT"].ToString(), 2) + "%");
+
+                sb.Append("</tr>");
+            }
+        }
+
+
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data, string stdDate)
+    {
+        string strFileName = HttpUtility.UrlEncode("기준임율(" + stdDate + ")" + "_" + DateTime.Now.ToString("yyMMddHHmm") + ".xls", new UTF8Encoding());
+
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strFileName);
+        Response.ContentType = "application/vnd.ms-excel";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\">");
+        Response.Write("<head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\" />");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    //2018-08-21 thead th => .xls_th 로 변경
+    private string ExcelStyle()
+    {
+        return @"
+body {width: 100%}
+table {width: ; border-top: 0.5pt solid windowtext; border-right: 0.5pt solid windowtext}
+.xls_th {border-bottom: 0.5pt solid windowtext; border-left: 0.5pt solid windowtext; padding: 4px; text-align: center}
+td {border-bottom: 0.5pt solid windowtext; border-left: 0.5pt solid windowtext; padding: 4px;}
+.text-center {text-align: center}
+.xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+";
+    }
+    #endregion
+}
 @Html.Raw(ViewStdPay(ViewBag.Mode, ViewBag.BoardList))
