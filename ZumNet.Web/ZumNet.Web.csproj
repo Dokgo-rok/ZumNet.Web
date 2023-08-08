@@ -3433,6 +3433,8 @@
     <Content Include="Views\Board\_AnonymousRead.cshtml" />
     <Content Include="Views\Board\_AnonymousWrite.cshtml" />
     <Content Include="Views\Board\_AnonymousEdit.cshtml" />
+    <Content Include="Views\Report\_FORM_UNITJAEGO.cshtml" />
+    <Content Include="Views\Report\_FORM_WIREJAEGO.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

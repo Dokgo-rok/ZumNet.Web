@@ -1,0 +1,348 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@using ZumNet.Web.Filter;
+@{
+    //WIRE 재고현황, FORM_WIREJAEGO
+    InitConfig();
+
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+    using (ZumNet.BSL.InterfaceBiz.OracleBiz oraBiz = new ZumNet.BSL.InterfaceBiz.OracleBiz())
+    {
+        svcRt = oraBiz.Cresyn_Get_GL_WIREJAEGO(ViewBag.R.lv.cd2.ToString());
+    }
+
+    if (svcRt != null && svcRt.ResultCode == 0)
+    {
+        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+    }
+    else
+    {
+        ViewBag.R.lv["total"] = 0;
+    }
+
+    if (ViewBag.R.mode == "xls")
+    {
+        ExcelBind(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet));
+        Response.End();
+    }
+
+    //Response.Write(CommonUtils.CultureDate(ViewBag.R.lv.start));
+}
+@functions {
+
+    string[,] _columnConfig = null;
+    string _tblWidth = "";
+
+    private void InitConfig()
+    {
+        //초기 설정
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "WIRE 재고현황";
+
+        //크레신 : 부재자현황
+        string[,] arr = { { "SEGMENT1", "품번", "100px", "", "Y" }, { "DESCRIPTION", "품명", "100px", "", "" }, { "CH_ACTIVE", "가용", "100px", "", "" }
+                            , { "CH_INACTIVE", "사장", "50px", "", "" }, { "CH_NG_MAT", "원불", "50px", "", "" }, { "CH_DISUSE", "불용", "50px", "", "" }
+                            , { "CT_ACTIVE", "가용", "50px", "", "" }, { "CT_INACTIVE", "사장", "50px", "", "" }, { "CT_NG_MAT", "원불", "50px", "", "" }, { "CT_DISUSE", "불용", "50px", "", "" }
+                            , { "CD_ACTIVE", "가용", "50px", "", "" }, { "CD_INACTIVE", "사장", "50px", "", "" }, { "CD_NG_MAT", "원불", "50px", "", "" }, { "CD_DISUSE", "불용", "50px", "", "" }
+                            , { "IC_ACTIVE", "가용", "50px", "", "" }, { "IC_INACTIVE", "사장", "50px", "", "" }, { "IC_NG_MAT", "원불", "50px", "", "" }, { "IC_DISUSE", "불용", "50px", "", "" }
+                            , { "VH_ACTIVE", "가용", "50px", "", "" }, { "VH_INACTIVE", "사장", "50px", "", "" }, { "VH_NG_MAT", "원불", "50px", "", "" }, { "VH_DISUSE", "불용", "50px", "", "" }
+                            , { "SUM_ACTIVE", "가용", "50px", "", "" }, { "SUM_INACTIVE", "사장", "50px", "", "" }, { "SUM_NG_MAT", "원불", "50px", "", "" }, { "SUM_DISUSE", "불용", "50px", "", "" }, { "MODEL_CODE", "대표모델", "50px", "", "" }
+            };
+        this._columnConfig = arr;
+        this._tblWidth = "1800px";
+    }
+
+    private string RenderColumnHeader(string mode)
+    {
+        StringBuilder sb = new StringBuilder();
+        string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
+
+        sb.Append("<thead>");
+
+        sb.AppendFormat("<tr class=\"table-success\"><td rowspan=\"2\" style=\"font-weight:bold;text-align:center\">{0}</td><td rowspan=\"2\"  style=\"font-weight:bold;text-align:center\">{1}</td><td rowspan=\"2\"  style=\"font-weight:bold;text-align:center\">{32}</td><td colspan=\"4\" style=\"font-weight:bold;background:#d1dae7;text-align:center\">{2}</td><td colspan=\"4\"  style=\"font-weight:bold;text-align:center\">{3}</td><td colspan=\"4\"  style=\"font-weight:bold;background:#d1dae7;text-align:center\">{4}</td><td colspan=\"4\"  style=\"font-weight:bold;text-align:center\">{5}</td><td colspan=\"4\"  style=\"font-weight:bold;background:#d1dae7;text-align:center\">{6}</td><td colspan=\"4\"  style=\"font-weight:bold;text-align:center\">{7}</td></tr><tr class=\"col-header\"><td  style=\"background:#d1dae7;text-align:center\">{8}</td><td style=\"background:#d1dae7;text-align:center\">{9}</td><td style=\"background:#d1dae7;text-align:center\">{10}</td><td style=\"background:#d1dae7;text-align:center\">{11}</td><td style=\"text-align:center\">{12}</td><td style=\"text-align:center\">{13}</td><td style=\"text-align:center\">{14}</td><td style=\"text-align:center\">{15}</td><td  style=\"background:#d1dae7;text-align:center\">{16}</td><td  style=\"background:#d1dae7;text-align:center\">{17}</td><td  style=\"background:#d1dae7;text-align:center\">{18}</td><td  style=\"background:#d1dae7;text-align:center\">{19}</td><td style=\"text-align:center\">{20}</td><td style=\"text-align:center\">{21}</td><td style=\"text-align:center\">{22}</td><td style=\"text-align:center\">{23}</td><td style=\"background:#d1dae7;text-align:center\">{24}</td><td style=\"background:#d1dae7;text-align:center\">{25}</td><td style=\"background:#d1dae7;text-align:center\">{26}</td><td style=\"background:#d1dae7;text-align:center\">{27}</td><td  style=\"text-align:center\">{28}</td><td  style=\"text-align:center\">{29}</td><td  style=\"text-align:center\">{30}</td><td  style=\"text-align:center\">{31}</td></tr>"
+                            , _columnConfig[0, 1].ToString(), _columnConfig[1, 1].ToString(), "CH", "CT", "CD", "IC", "VH", "합계", _columnConfig[2, 1].ToString(), _columnConfig[3, 1].ToString(), _columnConfig[4, 1].ToString(), _columnConfig[5, 1].ToString(), _columnConfig[6, 1].ToString(), _columnConfig[7, 1].ToString(), _columnConfig[8, 1].ToString(), _columnConfig[9, 1].ToString(), _columnConfig[10, 1].ToString(), _columnConfig[11, 1].ToString(), _columnConfig[12, 1].ToString(), _columnConfig[13, 1].ToString(), _columnConfig[14, 1].ToString(), _columnConfig[15, 1].ToString(), _columnConfig[16, 1].ToString(), _columnConfig[17, 1].ToString(), _columnConfig[18, 1].ToString(), _columnConfig[19, 1].ToString(), _columnConfig[20, 1].ToString(), _columnConfig[21, 1].ToString(), _columnConfig[22, 1].ToString(), _columnConfig[23, 1].ToString(), _columnConfig[24, 1].ToString(), _columnConfig[25, 1].ToString(), _columnConfig[26, 1].ToString());
+
+        //sb.Append("<tr class=\"table-success\">");
+        //for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        //{
+        //    if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
+        //    {
+        //        sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"</a></th>"
+        //                         , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
+        //                        , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
+        //    }
+        //    else sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
+        //}
+        //sb.Append("</tr>");
+        sb.Append("</thead>");
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            int iRow = 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            sb.Append(RenderColumnHeader(mode));
+            sb.Append("<tbody>");
+
+            DataTable dt = data.Tables[0];
+
+            string ch1 = "";
+            string ch2 = "";
+            string ch3 = "";
+            string ch4 = "";
+            string ct1 = "";
+            string ct2 = "";
+            string ct3 = "";
+            string ct4 = "";
+            string cd1 = "";
+            string cd2 = "";
+            string cd3 = "";
+            string cd4 = "";
+            string ic1 = "";
+            string ic2 = "";
+            string ic3 = "";
+            string ic4 = "";
+            string vh1 = "";
+            string vh2 = "";
+            string vh3 = "";
+            string vh4 = "";
+            string sum1 = "";
+            string sum2 = "";
+            string sum3 = "";
+            string sum4 = "";
+
+            foreach (DataRow row in dt.Rows)
+            {
+                if (row["CH_ACTIVE"].ToString() == "0") ch1 = ".";
+                else ch1 = row["CH_ACTIVE"].ToString();
+
+                if (row["CH_INACTIVE"].ToString() == "0") ch2 = ".";
+                else ch2 = row["CH_INACTIVE"].ToString();
+
+                if (row["CH_NG_MAT"].ToString() == "0") ch3 = ".";
+                else ch3 = row["CH_NG_MAT"].ToString();
+
+                if (row["CH_DISUSE"].ToString() == "0") ch4 = ".";
+                else ch4 = row["CH_DISUSE"].ToString();
+
+                if (row["CT_ACTIVE"].ToString() == "0") ct1 = ".";
+                else ct1 = row["CT_ACTIVE"].ToString();
+
+                if (row["CT_INACTIVE"].ToString() == "0") ct2 = ".";
+                else ct2 = row["CT_INACTIVE"].ToString();
+
+                if (row["CT_NG_MAT"].ToString() == "0") ct3 = ".";
+                else ct3 = row["CT_NG_MAT"].ToString();
+
+                if (row["CT_DISUSE"].ToString() == "0") ct4 = ".";
+                else ct4 = row["CT_DISUSE"].ToString();
+
+                if (row["CD_ACTIVE"].ToString() == "0") cd1 = ".";
+                else cd1 = row["CD_ACTIVE"].ToString();
+
+                if (row["CD_INACTIVE"].ToString() == "0") cd2 = ".";
+                else cd2 = row["CD_INACTIVE"].ToString();
+
+                if (row["CD_NG_MAT"].ToString() == "0") cd3 = ".";
+                else cd3 = row["CD_NG_MAT"].ToString();
+
+                if (row["CD_DISUSE"].ToString() == "0") cd4 = ".";
+                else cd4 = row["CD_DISUSE"].ToString();
+
+                if (row["IC_ACTIVE"].ToString() == "0") ic1 = ".";
+                else ic1 = row["IC_ACTIVE"].ToString();
+
+                if (row["IC_INACTIVE"].ToString() == "0") ic2 = ".";
+                else ic2 = row["IC_INACTIVE"].ToString();
+
+                if (row["IC_NG_MAT"].ToString() == "0") ic3 = ".";
+                else ic3 = row["IC_NG_MAT"].ToString();
+
+                if (row["IC_DISUSE"].ToString() == "0") ic4 = ".";
+                else ic4 = row["IC_DISUSE"].ToString();
+
+                if (row["VH_ACTIVE"].ToString() == "0") vh1 = ".";
+                else vh1 = row["VH_ACTIVE"].ToString();
+
+                if (row["VH_INACTIVE"].ToString() == "0") vh2 = ".";
+                else vh2 = row["VH_INACTIVE"].ToString();
+
+                if (row["VH_NG_MAT"].ToString() == "0") vh3 = ".";
+                else vh3 = row["VH_NG_MAT"].ToString();
+
+                if (row["VH_DISUSE"].ToString() == "0") vh4 = ".";
+                else vh4 = row["VH_DISUSE"].ToString();
+
+                if ((Convert.ToDecimal((Convert.ToDecimal(row["CH_ACTIVE"]) + Convert.ToDecimal(row["CT_ACTIVE"]) + Convert.ToDecimal(row["CD_ACTIVE"]) + Convert.ToDecimal(row["IC_ACTIVE"]) + Convert.ToDecimal(row["VH_ACTIVE"])).ToString()).ToString("#,##0")) == "0") sum1 = ".";
+                else sum1 = Convert.ToDecimal((Convert.ToDecimal(row["CH_ACTIVE"]) + Convert.ToDecimal(row["CT_ACTIVE"]) + Convert.ToDecimal(row["CD_ACTIVE"]) + Convert.ToDecimal(row["IC_ACTIVE"]) + Convert.ToDecimal(row["VH_ACTIVE"])).ToString()).ToString("#,##0");
+
+                if ((Convert.ToDecimal((Convert.ToDecimal(row["CH_INACTIVE"]) + Convert.ToDecimal(row["CT_INACTIVE"]) + Convert.ToDecimal(row["CD_INACTIVE"]) + Convert.ToDecimal(row["IC_INACTIVE"]) + Convert.ToDecimal(row["VH_INACTIVE"])).ToString()).ToString("#,##0")) == "0") sum2 = ".";
+                else sum2 = Convert.ToDecimal((Convert.ToDecimal(row["CH_INACTIVE"]) + Convert.ToDecimal(row["CT_INACTIVE"]) + Convert.ToDecimal(row["CD_INACTIVE"]) + Convert.ToDecimal(row["IC_INACTIVE"]) + Convert.ToDecimal(row["VH_INACTIVE"])).ToString()).ToString("#,##0");
+
+                if ((Convert.ToDecimal((Convert.ToDecimal(row["CH_NG_MAT"]) + Convert.ToDecimal(row["CT_NG_MAT"]) + Convert.ToDecimal(row["CD_NG_MAT"]) + Convert.ToDecimal(row["IC_NG_MAT"]) + Convert.ToDecimal(row["VH_NG_MAT"])).ToString()).ToString("#,##0")) == "0") sum3 = ".";
+                else sum3 = Convert.ToDecimal((Convert.ToDecimal(row["CH_NG_MAT"]) + Convert.ToDecimal(row["CT_NG_MAT"]) + Convert.ToDecimal(row["CD_NG_MAT"]) + Convert.ToDecimal(row["IC_NG_MAT"]) + Convert.ToDecimal(row["VH_NG_MAT"])).ToString()).ToString("#,##0");
+
+                if ((Convert.ToDecimal((Convert.ToDecimal(row["CH_DISUSE"]) + Convert.ToDecimal(row["CT_DISUSE"]) + Convert.ToDecimal(row["CD_DISUSE"]) + Convert.ToDecimal(row["IC_DISUSE"]) + Convert.ToDecimal(row["VH_DISUSE"])).ToString()).ToString("#,##0")) == "0") sum4 = ".";
+                else sum4 = Convert.ToDecimal((Convert.ToDecimal(row["CH_DISUSE"]) + Convert.ToDecimal(row["CT_DISUSE"]) + Convert.ToDecimal(row["CD_DISUSE"]) + Convert.ToDecimal(row["IC_DISUSE"]) + Convert.ToDecimal(row["VH_DISUSE"])).ToString()).ToString("#,##0");
+
+                sb.Append("<tr>");
+                sb.AppendFormat("<td>{0}</td>", row["SEGMENT1"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString());
+                sb.AppendFormat("<td>{0}</td>", row["MODEL_CODE"].ToString());
+
+                sb.AppendFormat("<td style=\"\">{0}</td>", ch1.ToString());
+                sb.AppendFormat("<td>{0}</td>", ch2.ToString());
+                sb.AppendFormat("<td>{0}</td>", ch3.ToString());
+                sb.AppendFormat("<td style=\"border-right-color:red\">{0}</td>", ch4.ToString());
+
+                sb.AppendFormat("<td>{0}</td>", ct1.ToString());
+                sb.AppendFormat("<td>{0}</td>", ct2.ToString());
+                sb.AppendFormat("<td>{0}</td>", ct3.ToString());
+                sb.AppendFormat("<td style=\"border-right-color:red\">{0}</td>", ct4.ToString());
+
+                sb.AppendFormat("<td>{0}</td>", cd1.ToString());
+                sb.AppendFormat("<td>{0}</td>", cd2.ToString());
+                sb.AppendFormat("<td>{0}</td>", cd3.ToString());
+                sb.AppendFormat("<td style=\"border-right-color:red\">{0}</td>", cd4.ToString());
+
+                sb.AppendFormat("<td>{0}</td>", ic1.ToString());
+                sb.AppendFormat("<td>{0}</td>", ic2.ToString());
+                sb.AppendFormat("<td>{0}</td>", ic3.ToString());
+                sb.AppendFormat("<td style=\"border-right-color:red\">{0}</td>", ic4.ToString());
+
+                sb.AppendFormat("<td>{0}</td>", vh1.ToString());
+                sb.AppendFormat("<td>{0}</td>", vh2.ToString());
+                sb.AppendFormat("<td>{0}</td>", vh3.ToString());
+                sb.AppendFormat("<td style=\"border-right-color:red\">{0}</td>", vh4.ToString());
+
+                sb.AppendFormat("<td>{0}</td>", sum1.ToString());
+                sb.AppendFormat("<td>{0}</td>", sum2.ToString());
+                sb.AppendFormat("<td>{0}</td>", sum3.ToString());
+                sb.AppendFormat("<td>{0}</td>", sum4.ToString());
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            dt = null;
+            return sb.ToString();
+        }
+        return "";
+    }
+
+    private string ListCount()
+    {
+        string sPage = "";
+        int totalCount = 0;
+        if (ViewBag.R.ft.ToString() == "___")
+        {
+            int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+            int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+            int totalPage = totalCount / pageCount;
+
+            if (totalCount % pageCount > 0) { totalPage++; }
+            if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+            sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+
+        }
+        else
+        {
+            totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+            sPage = String.Format("{0} {1} {2}", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count);
+        }
+
+        return sPage;
+    }
+
+    private string ListCond()
+    {
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-45 wd-md-45 wd-lg-35 wd-xl-30" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
+
+        if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
+        {
+            sb.Append("<div class=\"z-list-search input-group d-flex\">");
+            sb.Append("<select class=\"custom-select ml-1\" id=\"_SearchSelect\">");
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", "SEGMENT1", "품번");
+            sb.Append("</select>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, ViewBag.R.lv.cd2.ToString());
+
+            sb.Append("<span class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</span>");
+            sb.Append("</div>");
+        }
+
+        sb.Append("</div>"); //z-list-cond
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = ViewBag.R.ft.ToString() + "_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    public string ExcelStyle()
+    {
+        return @"
+            body {width: 100%}
+            table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+            td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+            .xls_warning {background-color: #fcf8e3}
+            .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+            .text-center {text-align: center}
+            .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+            .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+            ";
+    }
+}
+@if (svcRt == null || svcRt.ResultCode != 0)
+{
+    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+}
+else
+{
+    <div class="z-list-head d-flex justify-content-between my-2">
+        <div class="z-list-page d-flex align-items-center" id="__ListCount">
+            <div class="z-list-total mt-1 mr-1">
+                <i class="fe-chevron-right"></i> @ListCount()
+            </div>
+        </div>
+        @Html.Raw(ListCond())
+    </div>
+
+    <div class="z-list-body" id="__ListView">
+        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+    </div>
+}
