@@ -738,29 +738,47 @@ $(function () {
                                 });
 
                                 p.find('#__OrgMapSearch input[data-for]').keyup(function (e) {
-                                    if (e.which == 13) p.find('#__OrgSearch .btn-outline-success').click();
+                                    if (e.which == 13) p.find('#__OrgMapSearch .btn-outline-success').click();
                                 });
 
                                 p.find('#__OrgMapSearch .btn-outline-success').click(function () {
                                     var j = {}; j['M'] = 'search'; j['boundary'] = _zw.V.boundary;
+                                    var bSearch = false;
+
                                     if (p.find('#sl_orgmapsearch').hasClass('active')) {//검색창 활성화 여부
+                                        var s = "['\\%^&\"*]";
+                                        var reg = new RegExp(s, 'g');
+
+                                        p.find('#__OrgMapSearch [data-for]').each(function () {
+                                            if ($(this).val() != '') {
+                                                if ($(this).val().search(reg) >= 0) {
+                                                    //bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { $(this).val(''); $(this).focus(); });
+                                                    alert(s + " 문자는 사용될 수 없습니다!");
+                                                    $(this).val(''); $(this).focus();
+                                                    return false;
+                                                } else bSearch = true;
+                                            }
+                                        });
+                                    }
+
+                                    if (bSearch) {
                                         p.find('#__OrgMapSearch [data-for]').each(function () {
                                             j[$(this).attr('data-for')] = $(this).val();
                                         });
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/Organ/Plate",
+                                            data: JSON.stringify(j),
+                                            success: function (res) {
+                                                if (res.substr(0, 2) == "OK") {
+                                                    p.find('.zf-sl .zf-sl-member .card:first-child .card-body').html(res.substr(2));
+                                                    _zw.signline.userInfo(p, multi);
+                                                } else bootbox.alert(res);
+                                            },
+                                            beforeSend: function () { } //로딩 X
+                                        });
                                     }
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "/Organ/Plate",
-                                        data: JSON.stringify(j),
-                                        success: function (res) {
-                                            if (res.substr(0, 2) == "OK") {
-                                                p.find('.zf-sl .zf-sl-member .card:first-child .card-body').html(res.substr(2));
-                                                _zw.signline.userInfo(p, multi);
-                                            } else bootbox.alert(res);
-                                        },
-                                        beforeSend: function () { } //로딩 X
-                                    });
-                                    return false;
                                 });
 
                                 p.find('#personline :checkbox').click(function () {

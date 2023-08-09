@@ -82,17 +82,11 @@
         _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
 
         $('#__OrgSearch input[data-for]').keyup(function (e) {
-            if (e.which == 13) $('#__OrgSearch .btn-outline-success').click();
+            if (e.which == 13) _zw.fn.goSearch();
         });
 
         $('#__OrgSearch .btn-outline-success').click(function () {
-
-            $('.z-ttl').find('span').html('검색 결과');
-
-            _zw.fn.initLv('');
-            _zw.fn.loadList();
-
-            return false;
+            _zw.fn.goSearch();
         });
 
         _zw.fn.bindCtrl = function () {
@@ -107,6 +101,29 @@
                 _zw.ut.setCookie('orgLvCount', $(this).val(), 365);
                 _zw.fn.loadList();
             });
+        }
+
+        _zw.fn.goSearch = function () {
+            var s = "['\\%^&\"*]";
+            var reg = new RegExp(s, 'g');
+            var bSearch = false;
+            $('#__OrgSearch [data-for]').each(function () {
+                if ($(this).val() != '') {
+                    if ($(this).val().search(reg) >= 0) {
+                        //bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { $(this).val(''); $(this).focus(); });
+                        alert(s + " 문자는 사용될 수 없습니다!");
+                        $(this).val(''); $(this).focus();
+                        return false;
+                    } else bSearch = true;
+                }
+            });
+
+            if (bSearch) {
+                $('.z-ttl').find('span').html('검색 결과');
+
+                _zw.fn.initLv('');
+                _zw.fn.loadList();
+            }
         }
 
         _zw.fn.loadList = function () {
@@ -230,8 +247,8 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-outline-success py-1 mr-1">@Resources.Global.Search</button>
-                        <button class="btn btn-outline-secondary py-1 ml-1" type="reset">@Resources.Global.Reset</button>
+                        <button type="button" class="btn btn-outline-success py-1 mr-1">@Resources.Global.Search</button>
+                        <button type="reset" class="btn btn-outline-secondary py-1 ml-1">@Resources.Global.Reset</button>
                     </div>
                 </form>
             </div>
