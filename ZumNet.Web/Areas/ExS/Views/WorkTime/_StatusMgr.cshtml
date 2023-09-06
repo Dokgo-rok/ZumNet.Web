@@ -11,7 +11,7 @@
 }
 
 @functions {
-    
+
     private int _tableWidth = 0;
     private Hashtable _weekHourInfo = null;
 
@@ -101,7 +101,7 @@
         _weekHourInfo.Add("extra", ZumNet.Web.Bc.CommonUtils.CvtCurrency(iExtraHour.ToString(), 2));
         #endregion
     }
-    
+
     private string RenderColumnHeader(string viewDate, string sortCol, string sortType)
     {
         string sBlind = "blind ";
@@ -125,7 +125,7 @@
         sb.AppendFormat("<col style=\"width:{0}\" />", "5.5%"); //4주차
         sb.AppendFormat("<col style=\"width:{0}\" />", "5.5%"); //5주차
         sb.AppendFormat("<col style=\"width:{0}\" />", "5.5%"); //6주차 - 9/22 추가
-        
+
         sb.AppendFormat("<col style=\"width:{0}\" />", "8%"); //이상
         sb.AppendFormat("<col style=\"width:{0}\" />", "14.5%"); //비고
         sb.Append("</colgroup>");
@@ -352,7 +352,7 @@
 
                             if (bExcept) sExcept += ", " + wd.Month.ToString() + "/" + wd.Day.ToString();
                             #endregion
-                            
+
                             vWeekHour[iWeek] = lSum.ToString();
 
                             bOut = (_weekHourInfo[iWeek].ToString() != "" && DateTime.Compare(Convert.ToDateTime(_weekHourInfo[iWeek]), wd) > 0) ? false : true;
@@ -406,7 +406,7 @@
                         sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[3]));
                         sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[4]));
                         sb.AppendFormat("<td>{0}</td>", StrHour(vWeekHour[5]));
-                        
+
                         sb.AppendFormat("<td class=\"text-left text-danger\">{0}</td>", (sExcept.Length > 0) ? sExcept.Substring(2) : "&nbsp;");
                         sb.AppendFormat("<td class=\"text-left\">{0}</td>", (sEtc.Length > 0) ? sEtc.Substring(2) : "&nbsp;");
 
@@ -491,7 +491,8 @@
         try
         {
             long h = Convert.ToInt64(t);
-            return (h != 0) ? (new TimeSpan(h)).TotalHours.ToString("0.#") : "0";
+            //return (h != 0) ? (new TimeSpan(h)).TotalHours.ToString("0.##") : "0";
+            return (h != 0) ? (Math.Truncate((new TimeSpan(h)).TotalHours * 10) / 10).ToString("0.#") : "0";
         }
         catch
         {

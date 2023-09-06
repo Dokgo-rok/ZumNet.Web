@@ -356,7 +356,8 @@
         try
         {
             long h = Convert.ToInt64(t);
-            return (h != 0) ? (new TimeSpan(h)).TotalHours.ToString("0.#") : "0";
+            //return (h != 0) ? (new TimeSpan(h)).TotalHours.ToString("0.##") : "0";
+            return (h != 0) ? (Math.Truncate((new TimeSpan(h)).TotalHours * 10) / 10).ToString("0.#") : "0";
         }
         catch
         {

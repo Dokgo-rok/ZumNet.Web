@@ -11,7 +11,7 @@
 }
 
 @functions {
-    
+
     private Hashtable _weekHourInfo = null;
 
     private void GetWeekWorkInfo(string viewDate, DataRowCollection hDay)
@@ -100,7 +100,7 @@
         _weekHourInfo.Add("extra", ZumNet.Web.Bc.CommonUtils.CvtCurrency(iExtraHour.ToString(), 2));
         #endregion
     }
-    
+
     private string RenderColumnHeader(string viewDate)
     {
         StringBuilder sb = new StringBuilder();
@@ -121,7 +121,7 @@
         sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //4주차
         sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //5주차
         sb.AppendFormat("<col style=\"width:{0}\" />", "6%"); //6주차 - 9/22 추가
-        
+
         sb.AppendFormat("<col style=\"width:{0}\" />", "16%"); //비고
         sb.Append("</colgroup>");
 
@@ -364,7 +364,8 @@
         try
         {
             long h = Convert.ToInt64(t);
-            return (h != 0) ? (new TimeSpan(h)).TotalHours.ToString("0.#") : "0";
+            //return (h != 0) ? (new TimeSpan(h)).TotalHours.ToString("0.##") : "0";
+            return (h != 0) ? (Math.Truncate((new TimeSpan(h)).TotalHours * 10) / 10).ToString("0.#") : "0";
         }
         catch
         {
