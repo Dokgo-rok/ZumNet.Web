@@ -2545,6 +2545,7 @@ $(function () {
                 if (sRType >= 3) sRType--;
 
                 if (!$('input[name="ckbRepeatEnd"]').prop('checked')) {
+                    if (sRInterval == '' || sRInterval == '0') return 'INTERVAL'; //23-09-06 추가
                     if (!moment($('#txtRepeatEnd').val()).isValid()) return 'INVALID';
                     if (moment($('#txtRepeatEnd').val() + ' 00:00:00').diff(moment($('#txtStart').val() + ' 00:00:00')) <= 0) return 'END';
                 }

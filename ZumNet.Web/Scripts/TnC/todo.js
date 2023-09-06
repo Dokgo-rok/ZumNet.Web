@@ -202,7 +202,8 @@
 
         var vRRule = _zw.cdr.getRepeat(p).split('|'); //repeat_type, end, count, interval_type, interval, cond_day, cond_week, cond_date
         //2018-09-07 반복유효체크
-        if (vRRule == 'CHECK') { bootbox.alert("반복요일을 선택하십시오!"); return false; }
+        if (vRRule == 'INTERVAL') { bootbox.alert("반복주기를 확인하십시오!"); return false; }
+        else if (vRRule == 'CHECK') { bootbox.alert("반복요일을 선택하십시오!"); return false; }
         else if (vRRule == 'INVALID') { bootbox.alert("반복종료일은 확인하십시오!", function () { $("#txtRepeatEnd").focus(); }); return false; }
         else if (vRRule == 'END') { bootbox.alert("반복종료일은 시작일 이후로 선택하십시오!", function () { $("#txtRepeatEnd").focus(); }); return false; }
 

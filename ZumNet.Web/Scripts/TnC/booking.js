@@ -324,7 +324,8 @@
 
         var vRRule = _zw.cdr.getRepeat(p).split('|'); //console.log(vRRule);
         var rptEnd = $("#txtRepeatEnd");
-        if (vRRule == 'CHECK') { bootbox.alert("반복요일을 선택하십시오!"); return false; }
+        if (vRRule == 'INTERVAL') { bootbox.alert("반복주기를 확인하십시오!"); return false; }
+        else if (vRRule == 'CHECK') { bootbox.alert("반복요일을 선택하십시오!"); return false; }
         else if (vRRule == 'INVALID') { bootbox.alert("반복종료일은 확인하십시오!", function () { rptEnd.focus(); }); return false; }
         else if (vRRule == 'END') { bootbox.alert("반복종료일은 시작일 이후로 선택하십시오!", function () { rptEnd.focus(); }); return false; }
 
