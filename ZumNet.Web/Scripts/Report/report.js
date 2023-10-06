@@ -295,7 +295,7 @@ $(function () {
     }
 
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery(); //console.log(postData)
+        var postData = _zw.fn.getLvQuery(); //console.log(postData); return
         var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({
@@ -426,14 +426,16 @@ $(function () {
         j["sortdir"] = _zw.V.lv.sortdir;
         j["search"] = _zw.V.lv.search;
         j["searchtext"] = _zw.V.lv.searchtext;
-        j["start"] = _zw.ut.date(_zw.V.lv.start, 'YYYY-MM-DD');
-        j["end"] = _zw.ut.date(_zw.V.lv.end, 'YYYY-MM-DD') ;
+        //j["start"] = _zw.ut.date(_zw.V.lv.start, 'YYYY-MM-DD');
+        //j["end"] = _zw.ut.date(_zw.V.lv.end, 'YYYY-MM-DD');
+        j["start"] = _zw.V.lv.start;
+        j["end"] = _zw.V.lv.end;
         j["basesort"] = _zw.V.lv.basesort;
         j["boundary"] = _zw.V.lv.boundary;
 
         j["cd1"] = _zw.V.lv.cd1; j["cd2"] = _zw.V.lv.cd2; j["cd3"] = _zw.V.lv.cd3; j["cd4"] = _zw.V.lv.cd4; j["cd5"] = _zw.V.lv.cd5; j["cd6"] = _zw.V.lv.cd6;
         j["cd7"] = _zw.V.lv.cd7; j["cd8"] = _zw.V.lv.cd8; j["cd9"] = _zw.V.lv.cd9; j["cd10"] = _zw.V.lv.cd10; j["cd11"] = _zw.V.lv.cd11; j["cd12"] = _zw.V.lv.cd12;
-        console.log(j)
+        //console.log(j)
         return JSON.stringify(j);
     }
 

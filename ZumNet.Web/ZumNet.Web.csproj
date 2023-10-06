@@ -3435,6 +3435,12 @@
     <Content Include="Views\Board\_AnonymousEdit.cshtml" />
     <Content Include="Views\Report\_FORM_UNITJAEGO.cshtml" />
     <Content Include="Views\Report\_FORM_WIREJAEGO.cshtml" />
+    <Content Include="Views\Report\_FORM_COMPLAINTREQUEST.cshtml" />
+    <Content Include="Views\Report\_PURCHASEKPI.cshtml" />
+    <Content Include="Views\Report\_PURCHASENEWSTATE.cshtml" />
+    <Content Include="Views\Report\_PURCHASESTATE.cshtml" />
+    <Content Include="Views\Report\_PURCHASEUCF.cshtml" />
+    <Content Include="Views\Report\_DEVSAMPLELIST.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
