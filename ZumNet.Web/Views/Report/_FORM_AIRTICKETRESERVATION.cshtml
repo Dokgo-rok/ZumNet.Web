@@ -53,8 +53,9 @@
 
         if (Session["Admin"].ToString() == "N" || ViewBag.R.current["operator"].ToString() != "Y")
         {
-            if (ViewBag.R.current["acl"].ToString() == 0) ViewBag.R["mode"] = "ur";
+            if (ViewBag.R.current["acl"].ToString() == "") ViewBag.R["mode"] = "ur";
             else if (ViewBag.R.current["acl"].ToString().Substring(6, 1) == "_") ViewBag.R["mode"] = "ur";//____RVS____RV <= S가 6번째
+            else ViewBag.R["mode"] = "dn";
 
             if (ViewBag.R["mode"] == "ur") ViewBag.R.lv["tgt"] = Convert.ToInt32(Session["URID"]);
         }
