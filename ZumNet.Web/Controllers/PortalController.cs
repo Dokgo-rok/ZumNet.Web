@@ -500,6 +500,17 @@ namespace ZumNet.Web.Controllers
         /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
+        public ActionResult SSOsys()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// SSO
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [Authorize]
         public ActionResult SSOerp()
         {
             return View();

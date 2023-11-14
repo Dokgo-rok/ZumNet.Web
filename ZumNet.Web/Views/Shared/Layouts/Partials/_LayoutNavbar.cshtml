@@ -11,6 +11,7 @@
     //Response.Write("Host  => " + Request.Url.Host + ", Authority  => " + Request.Url.Authority);
 
     bool hideToggle = ViewData["LayoutNavbarHideToggle"] != null && ViewData["LayoutNavbarHideToggle"].ToString() == "True";
+    bool bViewESP = Session["IsESP"] != null && Session["IsESP"].ToString() == "Y";
 
     string[,] vLocale = { { "en-US", "English (US)" }, { "ko-KR", "한국어" }, { "zh-CN", "中文(简体)" }, { "ja-JP", "日本語" } };
 
@@ -159,7 +160,14 @@
         </div>
     }
 
-    <a class="nav-link z-wave text-large text-white py-0 mr-2 d-block d-md-none" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Alarm" data-navmenu="alarm" style="line-height: 56px;">
+    @if (bViewESP)
+    {
+        <a class="nav-link z-wave text-large text-white py-0 px-2 d-block d-md-none" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ShortcutSP" data-navmenu="esp" style="line-height: 56px;">
+            <i class="fab fa-product-hunt"></i>
+        </a>
+    }
+
+    <a class="nav-link z-wave text-large text-white py-0 px-2 mr-2 d-block d-md-none" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Alarm" data-navmenu="alarm" style="line-height: 56px;">
         <i class="fe-bell"></i>
         <span class="badge badge-pill badge-blue indicator mt-3">0</span>
     </a>
@@ -262,6 +270,15 @@
                     </div>
                 }
             </li>
+
+            @if (bViewESP)
+            {
+                <li class="nav-item mr-md-2">
+                    <a class="nav-link z-wave text-large" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ShortcutSP" data-navmenu="esp">
+                        <i class="fab fa-product-hunt"></i>
+                    </a>
+                </li>
+            }
 
             <li class="nav-item mr-md-2">
                 <a class="nav-link z-wave text-large pr-3" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Alarm" data-navmenu="alarm">

@@ -588,6 +588,9 @@
   <data name="Shortcut" xml:space="preserve">
     <value>快捷菜单</value>
   </data>
+  <data name="ShortcutSP" xml:space="preserve">
+    <value>供应商门户的快捷方式</value>
+  </data>
   <data name="Skip" xml:space="preserve">
     <value>跳过</value>
   </data>

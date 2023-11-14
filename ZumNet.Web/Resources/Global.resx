@@ -588,6 +588,9 @@
   <data name="Shortcut" xml:space="preserve">
     <value>Shortcut menu</value>
   </data>
+  <data name="ShortcutSP" xml:space="preserve">
+    <value>Shortcut to Supplier Portal</value>
+  </data>
   <data name="Skip" xml:space="preserve">
     <value>Skip</value>
   </data>

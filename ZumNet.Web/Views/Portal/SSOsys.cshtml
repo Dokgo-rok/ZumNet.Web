@@ -1,0 +1,50 @@
+﻿@using ZumNet.Framework.Util;
+
+@{
+    ViewBag.Title = "SSO Work";
+    Layout = "~/Views/Shared/Layouts/_LayoutNone.cshtml";
+
+    string _sysName = StringHelper.SafeString(Request["sys"], "");
+    string _ssoUrl = "";
+
+
+    if (_sysName != "")
+    {
+        _sysName = SecurityHelper.Base64Decode(_sysName);
+
+        if (_sysName == "esp")
+        {
+            _ssoUrl = SecurityHelper.ToBase64("{\"id\":\"" + Session["LogonID"].ToString() + "\",\"pwd\":\"" + Session["LogonPwd"].ToString() + "\"}"); //암호 SecurityHelper.AESEncrypt
+        }
+    }
+
+}
+@if (_sysName == "")
+{
+    @Html.Partial("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception("시스템 정보가 없습니다!"), "SSO", ViewBag.Title))
+}
+else
+{
+    <div style="margin-top: 100px; text-align: center; font-weight: bold">
+        <h4>잠시만 기다려 주십시오!</h4>
+        @*<h5>@SecurityHelper.Base64Decode(_ssoUrl)</h5>*@
+    </div>
+
+    @*<form id="ssoForm" name="ssoForm" method="post" action="@ZumNet.Framework.Configuration.Config.Read("espUrl")/Auth">
+        <input type="hidden" name="username" value="" />
+        <input type="hidden" name="password" value="" />
+    </form>*@
+
+    @section Scripts {
+        <script type="text/javascript">
+        //$(function () { $('ssoForm').submit(); });
+
+        (function () {
+            //ssoForm.submit();
+            location.href = "@ZumNet.Framework.Configuration.Config.Read("espUrl")Account?q=@_ssoUrl";
+        }());
+        </script>
+    }
+}
+
+

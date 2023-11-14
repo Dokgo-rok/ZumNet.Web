@@ -1474,6 +1474,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Shortcut to Supplier Portal과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ShortcutSP {
+            get {
+                return ResourceManager.GetString("ShortcutSP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Skip과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Skip {

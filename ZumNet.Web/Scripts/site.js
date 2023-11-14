@@ -163,6 +163,9 @@ $(function () {
             case "erp":
                 _zw.ut.openWnd("/Portal/SSOerp", "erpWin");
                 break;
+            case "esp": //구매포탈
+                _zw.ut.openWnd("/Portal/SSOsys?sys=" + _zw.base64.encode($(this).attr('data-navmenu')), $(this).attr('data-navmenu')  + "Win");
+                break;
             case "messenger":
                 var url = "http://meeting.cresyn.com/app/?uid=";
                 _zw.ut.openWnd(url, "meeting", 800, 500, "fix");

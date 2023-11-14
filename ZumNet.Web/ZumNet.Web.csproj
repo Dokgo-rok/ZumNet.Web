@@ -3441,6 +3441,7 @@
     <Content Include="Views\Report\_PURCHASESTATE.cshtml" />
     <Content Include="Views\Report\_PURCHASEUCF.cshtml" />
     <Content Include="Views\Report\_DEVSAMPLELIST.cshtml" />
+    <Content Include="Views\Portal\SSOsys.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
