@@ -525,7 +525,7 @@ $(function () {
                         if (cmd == 'draft') jSend["M"] = 'newdraft';
                     }
                 }
-                console.log(jSend); return
+                //console.log(jSend); return
 
                 $.ajax({
                     type: "POST",
