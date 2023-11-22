@@ -525,7 +525,7 @@ $(function () {
                         if (cmd == 'draft') jSend["M"] = 'newdraft';
                     }
                 }
-                //console.log(jSend); return
+                console.log(jSend); return
 
                 $.ajax({
                     type: "POST",
@@ -2388,7 +2388,8 @@ $(function () {
                         if ($(this).is(":checkbox") || $(this).is(":radio")) {
                             p[nm] = $(this).prop('checked') ? $(this).val() : '';
                         } else {
-                            p[nm] = $(this).val();
+                            //p[nm] = $(this).val();
+                            p[nm] = _zw.ut.dateVal($(this));
                         }
                     } else {
                         p[nm] = $(this).val();
@@ -2417,9 +2418,10 @@ $(function () {
                             if ($(this).is(":checkbox") || $(this).is(":radio")) {
                                 p[nm] = $(this).prop('checked') ? $(this).val() : '';
                             } else if ($(this).hasClass('txtDate')) {
-                                if (org == null || $(this).val() != org.substr(0, 10)) p[nm] = $(this).val();
+                                if (org == null || $(this).val() != org.substr(0, 10)) p[nm] = _zw.ut.dateVal($(this));
                             } else {
-                                p[nm] = $(this).val();
+                                //p[nm] = $(this).val();
+                                p[nm] = _zw.ut.dateVal($(this));
                             }
                         }
                     } else {
@@ -2453,10 +2455,12 @@ $(function () {
                                         if (nm != 'ROWSEQ' && ($(this).is(":checkbox") || $(this).is(":radio"))) {
                                             s[nm] = $(this).prop('checked') ? $(this).val() : '';
                                         } else {
-                                            s[nm] = $(this).val();
+                                            //s[nm] = $(this).val();
+                                            s[nm] = _zw.ut.dateVal($(this));
                                         }
                                     } else {
-                                        s[nm] = $(this).val();
+                                        //s[nm] = $(this).val();
+                                        s[nm] = _zw.ut.dateVal($(this));
                                     }
                                 }
                             });
@@ -2484,10 +2488,12 @@ $(function () {
                                 if ($(this).is(":checkbox") || $(this).is(":radio")) {
                                     s[nm] = $(this).prop('checked') ? $(this).val() : '';
                                 } else {
-                                    s[nm] = $(this).val();
+                                    //s[nm] = $(this).val();
+                                    s[nm] = _zw.ut.dateVal($(this));
                                 }
                             } else {
-                                s[nm] = $(this).val();
+                                //s[nm] = $(this).val();
+                                s[nm] = _zw.ut.dateVal($(this));
                             }
                         }
                     });
@@ -2516,10 +2522,12 @@ $(function () {
                                     if (node.is(":checkbox") || node.is(":radio")) {
                                         s[fld[x]] = node.prop('checked') ? node.val() : '';
                                     } else {
-                                        s[fld[x]] = node.val();
+                                        //s[fld[x]] = node.val();
+                                        s[fld[x]] = _zw.ut.dateVal(node);
                                     }
                                 } else {
-                                    s[fld[x]] = node.val();
+                                    //s[fld[x]] = node.val();
+                                    s[fld[x]] = _zw.ut.dateVal(node);
                                 }
                             }
                         }

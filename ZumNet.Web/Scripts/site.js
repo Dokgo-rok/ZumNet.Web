@@ -2102,6 +2102,13 @@ $(function () {
             }
             return rt;
         },
+        "dateVal": function (j) {
+            if (j.hasClass('txtDate') || j.hasClass('datepicker')) {
+                return _zw.ut.date(j.val(), 'YYYY-MM-DD');
+            } else {
+                return j.val();
+            }
+        },
         "diff": function (f, s, e) {
             if (f == 'day') {//console.log(s + " : " + e)
                 if (moment(s).isValid() && moment(e).isValid()) return moment(s).diff(moment(e), 'days');
