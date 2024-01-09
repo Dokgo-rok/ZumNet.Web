@@ -9,7 +9,7 @@ using ZumNet.Framework.Exception;
 using ZumNet.Framework.Log;
 using ZumNet.Framework.Util;
 
-namespace DocSecurity.App_Code
+namespace ZumNet.Web.Bc
 {
     /// <summary>
     /// SoftcampDS
@@ -27,7 +27,7 @@ namespace DocSecurity.App_Code
 
         public SoftcampDS()
         {
-            _executionTimeLog = Convert.ToBoolean(Config.Read("bExecutionTimeLog"));
+            _executionTimeLog = Convert.ToBoolean(Config.Read(Property.CONFIGKEY_BTIMESTAMP));
             _settingInfo = Config.Read("DocSecuritySetInfo");
             _keyFile = Config.Read("DocSecurityKeyFile");
         }

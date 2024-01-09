@@ -559,7 +559,7 @@
         string strHttp = Request.Url.AbsoluteUri.Substring(0, iPos);
         strHttp += "//";
 
-        string sEncrypServer = strHttp + Session["FrontName"].ToString();
+        string sEncrypServer = strHttp + Session["FrontName"].ToString() + (ZumNet.Framework.Configuration.Config.Read("drmPort") != "" ? ":" + ZumNet.Framework.Configuration.Config.Read("drmPort") : "");
         string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}", sEncrypServer, "dec", Server.UrlEncode(filePath));
         string strResult = "";
 
@@ -569,6 +569,7 @@
         try
         {
             HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+            HttpWReq.Timeout = 5000;
             HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
             using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
             {
@@ -582,7 +583,7 @@
                 ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strResult, Environment.NewLine));
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + ex.Message, Environment.NewLine));
         }
@@ -591,6 +592,22 @@
             HttpWReq = null;
             if (HttpWResp != null) { HttpWResp.Close(); HttpWResp = null; }
         }
+
+        //2024-01-03 아래로 변경
+        //string strResult = "";
+
+        //try
+        //{
+        //    strResult = ZumNet.Web.Bc.CommonUtils.DocSecurity(Server.UrlEncode(filePath), "enc", "", "");
+        //    if (strResult.Substring(0, 2) != "OK")
+        //    {
+        //        ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "DecrypFile", filePath + " : " + strResult, Environment.NewLine));
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+        //    ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "DecrypFile", filePath + " : " + ex.Message, Environment.NewLine));
+        //}
     }
 
     #region [연차 관리대장 기록]

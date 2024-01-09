@@ -1164,6 +1164,51 @@ namespace ZumNet.Web.Bc
             return strReturn;
         }
         #endregion
+
+        #region [SoftCamp 이용 파일 암복호화]
+        /// <summary>
+        /// SoftCamp 이용 파일 암복호화
+        /// </summary>
+        /// <param name="realPath"></param>
+        /// <param name="convertType"></param>
+        /// <param name="ext"></param>
+        /// <param name="downFolder"></param>
+        /// <returns></returns>
+        public static string DocSecurity(string realPath, string convertType, string ext, string downFolder)
+        {
+            //string strTargetPath = ""; //암복호화 후 파일경로
+            string strReturn = "파일 경로 누락!";
+            if (realPath == "") return strReturn;
+
+            strReturn = "암호화 구분 누락!";
+            if (convertType == "") return strReturn;
+
+            SoftcampDS scDS = new SoftcampDS();
+            if (convertType == "dec")
+            {
+                //파일 업로드일 경우 복호화
+                strReturn = scDS.DecFile(realPath);
+                if (strReturn == "OK" || strReturn.Substring(0, 2) == "NS" || strReturn.Substring(0, 2) == "NE") strReturn = "OK";// + strTargetPath;
+            }
+            else if (convertType == "enc")
+            {
+                //파일 다운로드일 경우 암호화
+                strReturn = "확장자 누락!";
+                if (ext == "") return strReturn;
+
+                strReturn = "다운로드 경로 누락!";
+                if (downFolder == "") return strReturn;
+
+                downFolder = HttpContext.Current.Server.MapPath(downFolder + "/DocSecurity/");
+                strReturn = scDS.EncFile(realPath, downFolder, ext);
+                if (strReturn == "OK" || strReturn.Substring(0, 2) == "NS") strReturn = "OK" + strReturn.Substring(2);
+            }
+
+            scDS = null;
+
+            return strReturn;
+        }
+        #endregion
     }
 
     #region [RazorViewToString 클래스]

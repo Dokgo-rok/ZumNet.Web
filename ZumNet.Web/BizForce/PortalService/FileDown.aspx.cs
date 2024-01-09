@@ -65,6 +65,8 @@ namespace ZumNet.Web.BizForce.PortalService
                     {
                         _disableDocSecurity = true;
                     }
+
+                    sRealPath = Server.MapPath(sRealPath.Replace("\\", "/")); //2024-01-09
                 }
             }
             else
@@ -79,16 +81,20 @@ namespace ZumNet.Web.BizForce.PortalService
             //2019-05-31 첨부경로 확인
             if (!System.IO.File.Exists(sRealPath))
             {
+                //throw new Exception("해당 파일을 찾을 수 없습니다!"); //2024-01-03
+                //Response.Write("해당 파일(" + sRealPath + ")을 찾을 수 없습니다!");
+                //Response.End();
+
                 //sRealPath = sRealPath.ToLower().Replace(@"\storage\", @"\Archive\");
                 //Response.Write("여기 => " + sNewPath + " : " + File.Exists(Server.MapPath(sNewPath)).ToString());
                 //DownloadWithDotNet(strRealPath, strFileName, ext);
             }
 
             //2020-10-27 스토리지 2차 추가로 인한 경로 추가확인
-            if (!System.IO.File.Exists(sRealPath))
-            {
-                //sRealPath = sRealPath.ToLower().Replace(@"\archive\", @"\ArchiveD\");
-            }
+            //if (!System.IO.File.Exists(sRealPath))
+            //{
+            //    sRealPath = sRealPath.ToLower().Replace(@"\archive\", @"\ArchiveD\");
+            //}
 
             //2020-02-04 첨부파일 클릭 로깅
             try
@@ -213,7 +219,7 @@ namespace ZumNet.Web.BizForce.PortalService
             string strHttp = Request.Url.AbsoluteUri.Substring(0, iPos);
             strHttp += "//";
 
-            string sEncrypServer = strHttp + Session["FrontName"].ToString();
+            string sEncrypServer = strHttp + Session["FrontName"].ToString() + (ZumNet.Framework.Configuration.Config.Read("drmPort") != "" ? ":" + ZumNet.Framework.Configuration.Config.Read("drmPort") : "");
             string strVPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["URAccount"].ToString();
             string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}&df={3}&ext={4}", sEncrypServer, "enc", Server.UrlEncode(filePath), strVPath, ext);
             string strReturn = "";
@@ -224,6 +230,7 @@ namespace ZumNet.Web.BizForce.PortalService
             try
             {
                 HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+                HttpWReq.Timeout = 5000;
                 HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
                 using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
                 {
@@ -249,6 +256,26 @@ namespace ZumNet.Web.BizForce.PortalService
                 HttpWReq = null;
                 if (HttpWResp != null) { HttpWResp.Close(); HttpWResp = null; }
             }
+
+            //2024-01-03 아래로 변경
+            //string strVPath = "/" + ZumNet.Framework.Configuration.Config.Read("UploadPath") + "/" + Session["URAccount"].ToString();
+            //string strReturn = "";
+
+            //try
+            //{
+            //    strReturn = ZumNet.Web.Bc.CommonUtils.DocSecurity(filePath, "enc", ext, strVPath);
+            //    if (strReturn.Substring(0, 2) != "OK")
+            //    {
+            //        ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "EncrypFile", filePath + " : " + strVPath + " : " + strReturn, Environment.NewLine));
+            //        strReturn = filePath;
+            //    }
+            //    else strReturn = strReturn.Substring(2);
+            //}
+            //catch (Exception ex)
+            //{
+            //    ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), Request.Url.AbsolutePath, "EncrypFile", filePath + " : " + strVPath + " : " + ex.Message, Environment.NewLine));
+            //    strReturn = filePath;
+            //}
 
             return strReturn;
         }

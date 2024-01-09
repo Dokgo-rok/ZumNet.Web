@@ -336,6 +336,7 @@
     <Compile Include="Bc\EAFormManager.cs" />
     <Compile Include="Bc\FormHandler.cs" />
     <Compile Include="Bc\LunisolarDate.cs" />
+    <Compile Include="Bc\SoftcampDS.cs" />
     <Compile Include="BizForce\EA\Forms\XFormMain.aspx.cs">
       <DependentUpon>XFormMain.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3463,6 +3464,17 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="DSAPILib">
+      <Guid>{E122402A-C8A7-4840-A288-38A1713880CD}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
