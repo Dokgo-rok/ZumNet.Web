@@ -27,7 +27,7 @@ namespace DocSecurity.App_Code
 
         public SoftcampDS()
         {
-            _executionTimeLog = Convert.ToBoolean(Config.Read("bExecutionTimeLog"));
+            _executionTimeLog = Convert.ToBoolean(Config.Read("bTimeStamp"));
             _settingInfo = Config.Read("DocSecuritySetInfo");
             _keyFile = Config.Read("DocSecurityKeyFile");
         }
@@ -211,7 +211,7 @@ namespace DocSecurity.App_Code
 
                 sbLog.AppendFormat("{0} {1}ms  ", DateTime.Now.ToString("HH:mm:ss"), iDuringTime.ToString().PadLeft(6, ' '));
                 sbLog.AppendFormat("{0} {1}{2}", method, log, Environment.NewLine);
-                Logging.WriteLog(Logging.LogType.Debug, sbLog.ToString(), _nameSpace);
+                Logging.WriteLog(Logging.LogType.Per, sbLog.ToString(), _nameSpace);
                 sbLog = null;
                 _startTick = 0;
             }

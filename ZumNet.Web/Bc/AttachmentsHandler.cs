@@ -52,7 +52,7 @@ namespace ZumNet.Web.Bc
                 {
                     foreach (JObject j in fileInfo)
                     {
-                        //string rt = DecrypFile(xfAlias, j["filepath"].ToString()); //오류 반환해도 그냥 통과
+                        string rt = DecrypFile(xfAlias, j["filepath"].ToString()); //오류 반환해도 그냥 통과
 
                         string sFileOrImg = j["isfile"].ToString() == "N" ? "Img" : "File";
                         sFile = TempToStorage(dnId, xfAlias, j["savedname"].ToString(), j["filepath"].ToString(), sFileOrImg);
@@ -355,26 +355,47 @@ namespace ZumNet.Web.Bc
         {
             string strReturn = "";
 
-            if (Framework.Configuration.Config.Read("UseDRM") == "Y" && (xfAlias == "ea" || xfAlias == "doc" || xfAlias == "tooling" || xfAlias == "ecnplan"))
+            //if (Framework.Configuration.Config.Read("UseDRM") == "Y" && (xfAlias == "ea" || xfAlias == "doc" || xfAlias == "tooling" || xfAlias == "ecnplan"))
+            if (Framework.Configuration.Config.Read("UseDRM") == "Y")
             {
-                string sEncrypServer = HttpContext.Current.Session["FrontName"].ToString();
-                string strUrl = String.Format("https://{0}/DocSecurity/?cvt={1}&rp={2}", sEncrypServer, "dec", HttpContext.Current.Server.UrlEncode(filePath));
+                int iPos = HttpContext.Current.Request.Url.AbsoluteUri.IndexOf("//");
+                string strHttp = HttpContext.Current.Request.Url.AbsoluteUri.Substring(0, iPos);
+                strHttp += "//";
 
-                System.Net.HttpWebRequest HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
-                System.Net.HttpWebResponse HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
-                using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
-                {
-                    strReturn = sr.ReadToEnd();
-                }
-                HttpWResp.Close();
+                string sEncrypServer = strHttp + HttpContext.Current.Session["FrontName"].ToString() + (ZumNet.Framework.Configuration.Config.Read("drmPort") != "" ? ":" + ZumNet.Framework.Configuration.Config.Read("drmPort") : "");
+                string strUrl = String.Format("{0}/DocSecurity/?cvt={1}&rp={2}", sEncrypServer, "dec", HttpContext.Current.Server.UrlEncode(filePath));
 
-                if (strReturn.Substring(0, 2) == "OK")
+                System.Net.HttpWebRequest HttpWReq = null;
+                System.Net.HttpWebResponse HttpWResp = null;
+
+                try
                 {
-                    strReturn = strReturn.Substring(2);
+                    HttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strUrl);
+                    HttpWReq.Timeout = 5000;
+                    HttpWResp = (System.Net.HttpWebResponse)HttpWReq.GetResponse();
+                    using (System.IO.StreamReader sr = new System.IO.StreamReader(HttpWResp.GetResponseStream()))
+                    {
+                        strReturn = sr.ReadToEnd();
+                    }
+                    HttpWResp.Close();
+
+                    if (strReturn.Substring(0, 2) == "OK")
+                    {
+                        strReturn = strReturn.Substring(2);
+                    }
+                    else
+                    {
+                        ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strReturn, Environment.NewLine));
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    ExceptionManager.Publish(new Exception(strReturn), ExceptionManager.ErrorLevel.Error, "DecrypFile");
+                    ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + ex.Message, Environment.NewLine));
+                }
+                finally
+                {
+                    HttpWReq = null;
+                    if (HttpWResp != null) { HttpWResp.Close(); HttpWResp = null; }
                 }
             }
             return strReturn;

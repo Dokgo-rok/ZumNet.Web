@@ -185,7 +185,9 @@ $(function () {
                 else $(':checkbox[name="ckbWHOMONEYDETAIL"]').prop('disabled', true).prop('checked', false);
             }
         },
-        "change": function () {
+        "change": function (x) {
+            var row = $(x).parent().parent(), p = row.parent().parent(); //console.log(p)
+            $(x).next().val($(x).children('option:selected').text());
         },
         "optionWnd": function (pos, w, h, l, t, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.');
