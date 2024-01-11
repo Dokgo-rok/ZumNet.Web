@@ -45,8 +45,11 @@
         //검색조건 설정
 
         //크레신 : 마스터진행현황
-        string[,] arr = { { "SEQ", "NO", "3%", "", "" }, { "subject", "제목", "37%", "L", "" }, { "DocName", "양식구분", "16%", "", "" }, { "CreatorDept", "작성부서", "12%", "", "" }
-                            , { "Creator", "작성자", "7%", "", "" }, { "PublishDate", "작성일", "12%", "", "" }, { "DocStatus", "결재상태", "12%", "", "" }
+        string[,] arr = { { "SEQ", "NO", "3%", "", "" }, { "subject", "제목", "22%", "L", "" }, { "DocName", "양식구분", "11%", "", "" }
+                    , { "CreatorDept", "작성부서", "10%", "", "" }, { "Creator", "작성자", "8%", "", "" }, { "PIStart", "작성일", "8%", "", "" }
+                    , { "Approver", "결재자", "7%", "", "" }, { "ApproveDate", "결재일", "8%", "", "" }
+                    , { "Redrafter", "재기안자", "7%", "", "" }, { "RedraftDate", "재기안일", "8%", "", "" }
+                    , { "DocStatus", "결재상태", "8%", "", "" }
             };
         this._columnConfig = arr;
         this._tblWidth = "100%";
@@ -110,7 +113,7 @@
                     {
                         strValue = iRow.ToString();
                     }
-                    else if (strID == "PublishDate")
+                    else if (strID == "PIStart" || strID == "ApproveDate" || strID == "RedraftDate")
                     {
                         strValue = ZumNet.Web.Bc.CommonUtils.CheckDateTime(row[strID].ToString());
                     }
