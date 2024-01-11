@@ -52,7 +52,7 @@ namespace ZumNet.Web.Bc
                 {
                     foreach (JObject j in fileInfo)
                     {
-                        string rt = DecrypFile(xfAlias, j["filepath"].ToString()); //오류 반환해도 그냥 통과
+                        string rt = DecrypFile(xfAlias, HttpContext.Current.Server.MapPath(j["filepath"].ToString())); //오류 반환해도 그냥 통과
 
                         string sFileOrImg = j["isfile"].ToString() == "N" ? "Img" : "File";
                         sFile = TempToStorage(dnId, xfAlias, j["savedname"].ToString(), j["filepath"].ToString(), sFileOrImg);
