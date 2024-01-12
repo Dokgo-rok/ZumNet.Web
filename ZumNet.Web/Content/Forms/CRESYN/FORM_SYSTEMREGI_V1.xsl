@@ -27,7 +27,7 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:1360px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
+          .m {width:1280px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
           .fh h1 {font-size:20.0pt;letter -spacing:2pt}
 
           /* 결재칸 넓이 */
@@ -222,14 +222,14 @@
                       <col style="width:80px"></col>
                       <col style="width:80px"></col>
                       <col style="width:80px"></col>
-                      <col style="width:80px"></col>
+                      <!--<col style="width:80px"></col>-->
                     </colgroup>
                     <tr>
                       <td class="f-lbl-sub" style="border-top:0" rowspan="3">NO</td>
                       <td class="f-lbl-sub" style="border-top:0" colspan="4">조직</td>
                       <td class="f-lbl-sub" style="border-top:0" rowspan="3">구분</td>
                       <td class="f-lbl-sub" style="border-top:0" colspan="4">이름</td>
-                      <td class="f-lbl-sub" style="border-top:0;border-right:0" colspan="6">사용시스템</td>
+                      <td class="f-lbl-sub" style="border-top:0;border-right:0" colspan="5">사용시스템</td>
                     </tr>
                     <tr>
                       <td class="f-lbl-sub" style="" rowspan="2">법인</td>
@@ -243,8 +243,8 @@
                       <td class="f-lbl-sub" style="" rowspan="2">ERP</td>                      
                       <td class="f-lbl-sub" style="" rowspan="2">EKP</td>
                       <td class="f-lbl-sub" style="" rowspan="2">VPN</td>
-                      <td class="f-lbl-sub" style="" rowspan="2">문서보안</td>
-                      <td class="f-lbl-sub" style="border-right:0" rowspan="2">Accumeet</td>
+                      <td class="f-lbl-sub" style="border-right:0" rowspan="2">문서보안</td>
+                      <!--<td class="f-lbl-sub" style="border-right:0" rowspan="2">Accumeet</td>-->
                     </tr>
                     <tr>
                       <td class="f-lbl-sub" style="">성(Last)</td>
@@ -723,7 +723,7 @@
           </xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center;width:60px">
+      <td style="text-align:center;border-right:0;width:60px">
         <span class="f-option2">
           <input type="checkbox" name="ckbSEC" value="SEC">
             <xsl:if test="$mode='new' or $mode='edit'">
@@ -743,7 +743,7 @@
           </xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center;border-right:0;width:60px">
+      <!--<td style="text-align:center;border-right:0;width:60px">
         <span class="f-option2">
           <input type="checkbox" name="ckbACCU" value="ACCU">
             <xsl:if test="$mode='new' or $mode='edit'">
@@ -762,7 +762,7 @@
             <xsl:value-of select="CHECKACCU"></xsl:value-of>
           </xsl:attribute>
         </input>
-      </td>
+      </td>-->
     </tr>
   </xsl:template>
   <xsl:template match="//linkeddocinfo/linkeddoc">
