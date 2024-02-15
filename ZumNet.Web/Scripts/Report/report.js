@@ -45,6 +45,13 @@ $(function () {
             fchart.render();
         }
 
+        $('#__ListView thead input:checkbox').click(function () {
+            var b = $(this).prop('checked');
+            $('#__ListView tbody input:checkbox').each(function () {
+                if (!$(this).prop('disabled')) $(this).prop('checked', b);
+            });
+        });
+
         if (_zw.V.ft == 'FORM_BIZTRIPPLAN') {
             $('#__ListView td[data-for="popup"]').on('mouseover', function () {
                 $(this).addClass('table-primary');
@@ -292,6 +299,47 @@ $(function () {
     }
 
     _zw.fn.requestApproval = function () {
+        var c = $('#__ListView tbody input:checkbox:checked');
+        if (c.length > 0) {
+            bootbox.confirm('선택된 대상자에게 결재요청 하시겠습니까?', function (rt) {
+                if (rt) {
+                    var dialog = bootbox.dialog({
+                        message: '<p class="text-center mb-0"><i class="fas fa-spin fa-cog"></i> Please wait while processing...</p>',
+                        closeButton: false
+                    });
+
+                    c.each(function () {
+                        var row = $(this).parent().parent().parent();
+                        var v = row.prop('id').substr(1).split('.');
+                        var jSend = {};
+                        jSend["M"] = "simpledraft"; jSend["fi"] = row.attr('fi');
+                        jSend["k1"] = v[0]; jSend["k2"] = v[1]; jSend["k3"] = v[2];
+                        //console.log(jSend);
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/EA/Process",
+                            data: JSON.stringify(jSend),
+                            async: false,
+                            success: function (res) {
+                                if (res.substr(0, 2) == "OK") row.find('td:last-child').html('<span class="fe-cicle text-success"></span>')
+                                else row.find('td:last-child').html('<span class="fe-x text-danger"></span>')
+                            },
+                            beforeSend: function () { }
+                        });
+                    });
+
+                    dialog.init(function () {
+                        setTimeout(function () {
+                            _zw.fn.loadList(); dialog.modal('hide');
+                        }, 60000);
+                    });
+                    
+                }
+            });
+        } else {
+            bootbox.alert('처리 대상자를 선택하십시오!');
+        }
     }
 
     _zw.fn.loadList = function () {

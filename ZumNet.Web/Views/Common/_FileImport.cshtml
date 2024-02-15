@@ -577,11 +577,11 @@
             }
             HttpWResp.Close();
 
-            if (strResult.Substring(0, 2) != "OK")
-            {
+            //if (strResult.Substring(0, 2) != "OK")
+            //{
                 //22-08-06 임시로 암호화 실패 경우 로그 기록만
-                ZumNet.Framework.Log.Logging.WriteLog(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strResult, Environment.NewLine));
-            }
+                ZumNet.Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strResult, Environment.NewLine));
+            //}
         }
         catch (Exception ex)
         {

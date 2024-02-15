@@ -27,7 +27,7 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
 			/* 화면 넓이, 에디터 높이, 양식명크기 */
-			.m {width:820px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
+			.m {width:820px} .m .fm-editor {height:250px;border:windowtext 1px solid}
 			.fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
 			/* 결재칸 넓이 */
@@ -44,7 +44,7 @@
 			<!--.subtbl_div button {height:16px;width:16px}-->
 
 			/* 인쇄 설정 : 맨하단으로 */
-			@media print {.m .fm-editor {height:650px}}
+			@media print {.m .fm-editor {height:250px}}
 		</style>
       </head>
       <body>
@@ -191,14 +191,14 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="DESCRIPTION" style="height:80px" class="txaText bootstrap-maxlength" maxlength="2000">
+                      <textarea id="__mainfield" name="DESCRIPTION" style="height:60px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:if test="$mode='edit'">
                           <xsl:value-of select="//forminfo/maintable/DESCRIPTION" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div class="txaRead" style="min-height:80px">
+                      <div class="txaRead" style="min-height:60px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DESCRIPTION))" />
                       </div>
                     </xsl:otherwise>
@@ -212,6 +212,32 @@
           <div class="ff" />
           <div class="ff" />
           <div class="ff" />
+
+			<div class="fm-editor">
+				<xsl:if test="$mode!='new' and $mode!='edit'">
+					<xsl:attribute name="class">fm-editor h-auto</xsl:attribute>
+				</xsl:if>
+				<xsl:choose>
+					<xsl:when test="$mode='read'">
+						<div name="WEBEDITOR" id="__mainfield" class="txaRead" style="width:100%;height:100%;padding:4px;position:relative">
+							<xsl:value-of disable-output-escaping="yes" select="//forminfo/maintable/WEBEDITOR" />
+						</div>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:if test="$mode='edit'">
+							<textarea id="bodytext" style="display:none">
+								<xsl:value-of select="//forminfo/maintable/WEBEDITOR" />
+							</textarea>
+						</xsl:if>
+						<div class="h-100" id="__DextEditor"></div>
+					</xsl:otherwise>
+				</xsl:choose>
+			</div>
+			
+			<div class="ff" />
+			<div class="ff" />
+			<div class="ff" />
+			<div class="ff" />
 
           <div class="fm">
             <table border="0" cellspacing="0" cellpadding="0">

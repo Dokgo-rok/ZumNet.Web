@@ -22,8 +22,10 @@ namespace ZumNet.Web.Controllers
         {
             //AuthManager.SetLocaleCookie(true);
 
+            AccountViewModels model = new AccountViewModels(); //2024-02-15 추가
+
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            return View(model);
         }
 
         /// <summary>

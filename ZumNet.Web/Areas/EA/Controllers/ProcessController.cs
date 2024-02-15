@@ -20,6 +20,7 @@ using ZumNet.Framework.Core;
 using ZumNet.Framework.Entities.Flow;
 using ZumNet.Framework.Exception;
 using ZumNet.Framework.Util;
+using static EcmaScript.NET.Node;
 
 namespace ZumNet.Web.Areas.EA.Controllers
 {
@@ -804,8 +805,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                 jBiz = (JObject)jForm["biz"];
                 jDoc = (JObject)jForm["doc"];
-                jMain = (JObject)jForm["form"]["maintable"];
-                jSub = (JObject)jForm["form"]["subtables"];
+                //jMain = (JObject)jForm["form"]["maintable"];
+                //jSub = (JObject)jForm["form"]["subtables"];
                 jProcess = (JObject)jForm["process"];
                 jCreator = (JObject)jForm["creator"];
 
@@ -817,6 +818,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 jBiz["inherited"] = (vEdmInfo.Length > 1) ? vEdmInfo[1] : "G"; //2015-06-10 inherited, priority, secret 설정 추가
                 jBiz["priority"] = "N";
                 jBiz["secret"] = "N";
+                jBiz["doclevel"] = vEdmInfo[3]; //24-02-15 추가
+                jBiz["keepyear"] = vEdmInfo[2]; //24-02-15 추가
 
                 strReturn = "XML 값 할당 - 작성자";
                 jCreator["user"] = Session["URName"].ToString();
@@ -846,7 +849,9 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 if (DateTime.Compare(DateTime.Parse(strNow), DateTime.Parse(strPublishDate)) > 0) strPublishDate = strNow;
 
                 strReturn = "본문 구성";
-                jMain = ComposeFormData(xfDef.MainTable, dsFormData, ref jDoc);
+                jForm["form"] = ComposeFormData(xfDef.MainTable, dsFormData, ref jDoc);
+                jMain = (JObject)jForm["form"]["maintable"]; //24-02-15 위에서 여기로
+                jSub = (JObject)jForm["form"]["subtables"];
 
                 //Response.Write(" 여기 => " + oFormInfo.InnerXml.ToString()); return;
 
@@ -977,6 +982,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
         private JObject ComposeFormData(string formTable, DataSet formData, ref JObject docInfo)
         {
             DataRow row = null;
+            JObject jForm = JObject.Parse("{}");
             JObject j = JObject.Parse("{}");
             if (formData != null && formData.Tables.Count > 0)
             {
@@ -1011,6 +1017,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                         docInfo["key1"] = row["FromYear"].ToString() + "-" + row["SalaryType"].ToString() + "-" + row["UserID"].ToString();
                     }
+                    jForm["maintable"] = j;
+                    jForm["subtables"] = JObject.Parse("{}");
                 }
                 else if (formTable == "FORM_ETHICALMANAGEMENT")
                 {
@@ -1030,6 +1038,8 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                         docInfo["key1"] = row["NowYear"].ToString() + "-" + row["UserID"].ToString();
                     }
+                    jForm["maintable"] = j;
+                    jForm["subtables"] = JObject.Parse("{}");
                 }
                 else if (formTable == "FORM_GONGDONGGONGGA")
                 {
@@ -1060,11 +1070,13 @@ namespace ZumNet.Web.Areas.EA.Controllers
 
                         docInfo["key1"] = row["StdDate1"].ToString() + "-" + row["UserID"].ToString();
                     }
+                    jForm["maintable"] = j;
+                    jForm["subtables"] = JObject.Parse("{}");
                 }
             }
 
             row = null;
-            return j;
+            return jForm;
         }
 
         /// <summary>

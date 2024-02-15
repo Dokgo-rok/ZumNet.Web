@@ -9,7 +9,7 @@
 @{
     //REGISTER_GONGGA
     string _requestMode = ViewBag.R.mode;
-    InitConfig();
+    InitConfig(_requestMode);
 
     ZumNet.Framework.Core.ServiceResult svcRt = null;
     using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
@@ -37,7 +37,7 @@
     string[,] _columnConfig = null;
     string _tblWidth = "";
 
-    private void InitConfig()
+    private void InitConfig(string mode)
     {
         //초기 설정
         if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.Year.ToString(); //해당년도
@@ -46,7 +46,7 @@
         //검색조건 설정
 
         //크레신 : 공가휴가관리대장 
-        string[,] arr = { {"", "<input type='checkbox' id='chkHeader' onClick='checkAll(this)' hidefocus />", "40px", "", ""},  { "Seq", "NO", "40px", "", "" }
+        string[,] arr = { {"", "<label class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input'><span class='custom-control-label'></span></label>", "40px", "", ""},  { "Seq", "NO", "40px", "", "" }
                             , { "StdDate1", "공동연차1", "90px", "", "" } , { "StdType1", "연차타입1", "80px", "", "" }, { "StdDate2", "공동연차2", "90px", "", "" } , { "StdType2", "연차타입2", "80px", "", "" }
                             , { "StdDate3", "공동연차3", "90px", "", "" } , { "StdType3", "연차타입3", "80px", "", "" }, { "StdDate4", "공동연차4", "90px", "", "" } , { "StdType4", "연차타입4", "80px", "", "" }
                             , { "StdDate5", "공동연차5", "90px", "", "" } , { "StdType5", "연차타입5", "80px", "", "" }, { "StdDay", "연차일수", "80px", "", "" }
@@ -62,9 +62,10 @@
     {
         StringBuilder sb = new StringBuilder();
         string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
+        int iStart = mode == "xls" ? 1 : 0; //체크박스 있는 경우
 
         sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
-        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        for (int i = iStart; i < _columnConfig.GetLength(0); i++)
         {
             sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
         }
@@ -72,7 +73,8 @@
 
         sb.Append("<thead>");
         sb.Append("<tr class=\"table-success\">");
-        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+
+        for (int i = iStart; i < _columnConfig.GetLength(0); i++)
         {
             sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
         }
@@ -97,18 +99,20 @@
             sb.Append(RenderColumnHeader(mode));
             sb.Append("<tbody>");
 
+            int iStart = mode == "xls" ? 1 : 0; //체크박스 있는 경우
+
             foreach (DataRow row in data.Tables[0].Rows)
             {
-                sb.AppendFormat("<tr id=\"_{0}.{1}.{2}.{3}\" fi=\"{4}\">", row["StdDate1"].ToString(), row["UserID"].ToString(), row["Seq"].ToString(), row["MESSAGEID"].ToString(), "FORM_GONGDONGGONGGA");
+                sb.AppendFormat("<tr id=\"_{0}.{1}.{2}.{3}\" fi=\"{4}\">", row["StdDate1"].ToString(), row["UserID"].ToString(), row["Seq"].ToString(), row["MESSAGEID"].ToString(), "659121526B004EBF8102E6669CF03904");
 
-                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                for (int i = iStart; i < _columnConfig.GetLength(0); i++)
                 {
                     strID = _columnConfig[i, 0].ToString();
 
                     if (strID == "")
                     {
                         if (row["State"].ToString() == "1" || row["State"].ToString() == "7") strValue = "";
-                        else strValue = "<input name=\"ckbRow\" type=\"checkbox\" />";
+                        else strValue = "<label class='custom-control custom-checkbox'><input type='checkbox' class='custom-control-input'><span class='custom-control-label'></span></label>";
                     }
                     else if (strID == "Seq")
                     {
@@ -133,7 +137,7 @@
                     else if (strID == "LogonID")
                     {
                         strValue = row[strID].ToString();
-                        if (mode != "xls" && strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MESSAGEID"].ToString() + "');\">" + strValue + "</a>";
+                        if (mode != "xls" && strValue != "" && row["State"].ToString() != "" && row["State"].ToString() != "0") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MESSAGEID"].ToString() + "');\">" + strValue + "</a>";
                     }
                     else
                     {
