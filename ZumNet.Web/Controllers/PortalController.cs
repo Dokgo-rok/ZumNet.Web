@@ -178,9 +178,10 @@ namespace ZumNet.Web.Controllers
                         {
                             //제외부서 : 부서명 영문 I, C, V, G가 들어가는 경우, 재무광동, 재무베트남, 재무인니, 업무지원, 금형관리, 임원실(산업)
                             //23-09-06 수정 : 부서명 영문 IS, CD, CT, CL, VH, G가 들어가는 경우로 변경
-                            if (Session["DeptName"].ToString().IndexOf("IS") != -1 || Session["DeptName"].ToString().IndexOf("CD") != -1 || Session["DeptName"].ToString().IndexOf("CT") != -1
-                                || Session["DeptName"].ToString().IndexOf("CL") != -1 || Session["DeptName"].ToString().IndexOf("VH") != -1
-                                || Session["DeptName"].ToString().IndexOf('G') != -1 || Session["DeptName"].ToString().IndexOf("하노이") != -1
+                            //24-02-16 수정 : 부서명 G 들어가는 경우 제거
+                            if (Session["DeptName"].ToString().IndexOf("IS") != -1 || Session["DeptName"].ToString().IndexOf("CD") != -1
+                                || Session["DeptName"].ToString().IndexOf("CT") != -1 || Session["DeptName"].ToString().IndexOf("CL") != -1
+                                || Session["DeptName"].ToString().IndexOf("VH") != -1 || Session["DeptName"].ToString().IndexOf("하노이") != -1
                                 || Session["DeptName"].ToString() == "재무광동" || Session["DeptName"].ToString() == "재무베트남"
                                 || Session["DeptName"].ToString() == "재무인니" || Session["DeptName"].ToString() == "업무지원"
                                 || Session["DeptName"].ToString() == "금형관리" || Session["DeptName"].ToString() == "임원실(산업)"
