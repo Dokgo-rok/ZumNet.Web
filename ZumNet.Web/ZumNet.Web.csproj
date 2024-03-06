@@ -2205,6 +2205,7 @@
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZVACPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_CANCELREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CARACCIDENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CERTIFICATIONDOCUMENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPLACEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPOSREQ.js" />
