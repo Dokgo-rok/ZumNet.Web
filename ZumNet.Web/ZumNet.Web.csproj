@@ -2207,6 +2207,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CANCELREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CERTIFICATIONDOCUMENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPLACEREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CHANGEPOSREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPPMODIFY.js" />
