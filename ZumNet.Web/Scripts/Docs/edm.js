@@ -267,7 +267,7 @@ $(function () {
 
     _zw.mu.goList = function () {
         var postData = _zw.fn.getLvQuery();
-        window.location.href = '/Docs/Edm/List?qi=' + _zw.base64.encode(postData);
+        window.location.href = '/Docs/Edm/List?qi=' + encodeURIComponent(_zw.base64.encode(postData));
     }
 
     _zw.fn.loadList = function () {

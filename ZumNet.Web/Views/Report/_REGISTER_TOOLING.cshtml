@@ -167,7 +167,7 @@
             if (ViewBag.JPost["cd1"].ToString() == "" && ViewBag.JPost["cd2"].ToString() == "" && ViewBag.JPost["cd4"].ToString() == ""
                 && ViewBag.JPost["cd5"].ToString() == "" && ViewBag.JPost["cd8"].ToString() == "" && ViewBag.JPost["cd9"].ToString() == "")
             {
-                if (ViewBag.JPost["start"] == null || ViewBag.JPost["start"].ToString() == "") ViewBag.JPost["start"] = DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd"); //최근 1개월
+                if (ViewBag.JPost["start"] == null || ViewBag.JPost["start"].ToString() == "") ViewBag.JPost["start"] = DateTime.Now.AddYears(-5).ToString("yyyy-MM-dd"); //최근 3개월 -> 최근 5년(24-03-07)
             }
         }
         else
@@ -175,7 +175,7 @@
             if (ViewBag.R.lv.cd1 == "" && ViewBag.R.lv.cd2 == "" && ViewBag.R.lv.cd3 == "" && ViewBag.R.lv.cd4 == "" && ViewBag.R.lv.cd5 == "" && ViewBag.R.lv.cd6 == ""
             && ViewBag.R.lv.cd7 == "" && ViewBag.R.lv.cd8 == "" && ViewBag.R.lv.cd9 == "" && ViewBag.R.lv.cd10 == "" && ViewBag.R.lv.cd11 == "" && ViewBag.R.lv.cd12 == "")
             {
-                if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+                if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddYears(-5).ToString("yyyy-MM-dd"); //최근 1개월 -> 최근 5년(24-03-07)
             }
 
             if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "금형대장리스트";
@@ -593,7 +593,7 @@
             sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zm-menu=\"search\"><i class=\"fe-search\"></i></button>");
             sb.Append("</div>");
             sb.Append("<div class=\"input-group-append\">"); //d-none d-sm-flex
-            sb.Append("<button class=\"btn btn-default\" aria-controls=\"vw-search-cond\" onclick=\"_zw.ut.ctrls();\" title=\"상세\"><i class=\"fas fa-angle-down\"></i></button>");
+            sb.Append("<button class=\"btn btn-default\" aria-controls=\"vw-search-cond\" onclick=\"_zw.ut.ctrls();\" title=\"상세\"><i class=\"fas fa-angle-up\"></i></button>");
             sb.Append("</div>");
             sb.Append("</div>");
 
@@ -611,7 +611,7 @@
             sb.AppendFormat("<input type=\"hidden\" data-for=\"pos\" value=\"{0}\" />", ViewBag.JPost["pos"] != null ? ViewBag.JPost["pos"].ToString() : ""); //table row
             sb.Append("</div>"); //d-flex
 
-            sb.Append("<div class=\"d-none mt-2 w-100\" data-controls=\"vw-search-cond\">");
+            sb.Append("<div class=\"mt-2 w-100\" data-controls=\"vw-search-cond\">");
             sb.Append("<table class=\"table text-center mb-0\">");
             sb.Append("<colgroup><col style=\"width: 10%\" /><col style=\"width: 23.3%\" /><col style=\"width: 10%\" /><col style=\"width: 23.3%\" /><col style=\"width: 10%\" /><col style=\"width: 23.4%\" /></colgroup>");
             sb.Append("<tbody>");
