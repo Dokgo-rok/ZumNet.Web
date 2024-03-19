@@ -76,6 +76,7 @@
         <div class="wd-92 flex-fill text-truncate d-flex align-items-center">
             @if (ViewBag.CurBox[2] == "do")
             {
+                strOption = "";
                 if (row["Col3"].ToString() != "" && row["Col3"].ToString() != "0")
                 {
                     strOption = String.Format("<i class=\"fas fa-arrow-circle-down text-success ml-1\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"({0})로부터 이관됨\"></i>", row["Col5"].ToString());
