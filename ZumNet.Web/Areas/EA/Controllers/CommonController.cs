@@ -76,6 +76,14 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         rt = CheckExternalKey(jPost);
                         break;
 
+                    //case "searchworknoticepartinfo":
+                    //    rt = SearchWorkNoticePartInfo(jPost);
+                    //    break;
+
+                    case "transferworknotice":
+                        rt = TransferWorkNotice(jPost);
+                        break;
+
                     default:
                         break;
                 }
@@ -385,6 +393,11 @@ namespace ZumNet.Web.Areas.EA.Controllers
         #endregion
 
         #region [특정 외부키값을 가진 양식이 결재 진행중 또는 완료된 것이 있는지를 확인]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="postData"></param>
+        /// <returns></returns>
         private string CheckExternalKey(JObject postData)
         {
             string strReturn = "필수항목 누락!";
@@ -404,6 +417,38 @@ namespace ZumNet.Web.Areas.EA.Controllers
             catch (Exception ex)
             {
                 ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "CheckExternalKey");
+                strReturn = ex.Message;
+            }
+
+            return strReturn;
+        }
+        #endregion
+
+        #region [나의 할일(work_notice) 관련]
+        /// <summary>
+        /// 나의 할일 이관
+        /// </summary>
+        /// <param name="postData"></param>
+        /// <returns></returns>
+        private string TransferWorkNotice(JObject postData)
+        {
+            string strReturn = "필수항목 누락!";
+            if (!postData.ContainsKey("post") || postData["post"].ToString() == "" || !postData.ContainsKey("tgturid") || postData["tgturid"].ToString() == "") return strReturn;
+
+            try
+            {
+                ServiceResult svcRt = new ServiceResult();
+                using (BSL.InterfaceBiz.ReportBiz rptBiz = new BSL.InterfaceBiz.ReportBiz())
+                {
+                    svcRt = rptBiz.TransferWorkNotice(postData["post"].ToString(), postData["tgturid"].ToString()
+                            , postData["tgtname"].ToString(), postData["tgtcode"].ToString(), postData["tgtmail"].ToString());
+                }
+                if (svcRt != null && svcRt.ResultCode == 0) strReturn = "OK";
+                else strReturn = svcRt.ResultMessage;
+            }
+            catch (Exception ex)
+            {
+                ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "TransferWorkNotice");
                 strReturn = ex.Message;
             }
 

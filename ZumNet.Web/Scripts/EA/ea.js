@@ -96,6 +96,60 @@ $(function () {
     //    }
     //});
 
+    _zw.mu.transfer = function () {
+        var tgt = $('#__ListView .z-lv-row :checkbox:checked'), app = ''
+        tgt.each(function (idx) {
+            var temp = $(this).parent().parent().parent().attr('app');
+            if (temp.length > 0) { app = temp.split('^')[0]; return; }
+        });
+        if (app == '') {
+            return;
+        } else if (app == "ea" || app == "tooling") {
+            var rt = '';
+            tgt.each(function (idx) {
+                var temp = $(this).parent().parent().parent().attr('app');
+                if (temp.length > 0) {
+                    if (temp.split('^')[0] == app) {
+                        rt += ',' + $(this).parent().parent().parent().attr('id').substr(1).split(".")[0];
+                    } else {
+                        bootbox.alert("[할일이관]은 [동일 유형]만 가능합니다!"); rt = '';  return;
+                    }
+                }
+            });
+
+            if (rt != '') {
+                _zw.fn.org('user', 'n', rt.substr(1));
+            }
+
+        } else if (app == "ecnplan") {
+            bootbox.alert("[할일이관]은 [결재문서, 금형대장]만 가능합니다!"); return;
+        }
+    }
+
+    _zw.fn.orgSelect = function (p, v) {
+        p.find('.zf-org .zf-org-select input:checkbox[data-for]').each(function () {
+            var info = JSON.parse($(this).attr('data-attr')); //console.log(info)
+            var dn = $(this).next().text();
+            var j = {};
+            j["M"] = "transferworknotice";  j["post"] = v;  j["tgturid"] = info["id"]; j["tgtname"] = dn; j["tgtcode"] = info["logonid"]; j["tgtmail"] = info["smail"];
+            //console.log(j); return
+            bootbox.confirm('선택한 [할일]을 [' + info["grdn"] + '.' + info["grade"] + '.' + dn + ']에게 이관하시겠습니까?', function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/EA/Common",
+                        data: JSON.stringify(j),
+                        success: function (res) {
+                            if (res == "OK") _zw.mu.refresh();
+                            else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
+        });
+        p.modal('hide');
+    }
+
     _zw.fn.getEACount('', 'ea', 'base2', '', 'N');
 
     _zw.fn.readMark = function (opt) {
