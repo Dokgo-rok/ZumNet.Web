@@ -1,6 +1,15 @@
-﻿
+﻿@using System.Text;
 @{
+    //Model["WorkStatus"] = "A";
     ViewBag.Title = Resources.Global.GotoWork;
+
+    if (Model["WorkStatus"] == "A" || Model["WorkStatus"] == "Z")
+    {
+    }
+    else if (Model["PwdChange"] == "Y")
+    {
+        ViewBag.Title = Resources.Global.Password_Change;
+    }
     Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
 
     //Response.Write("WorkStatus => " + Model["PwdChange"]);
@@ -8,7 +17,6 @@
     //Model["WorkStatus"] = "_";
     //Model["PwdChange"] = "Y";
 }
-
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/pages/authentication")
 
@@ -115,33 +123,48 @@
 
         @if (Model["PwdChange"] == "Y")
         {
-        <div id="__PwdChange" class="@((Model["WorkStatus"] == "A" || Model["WorkStatus"] == "Z") ? "d-none" : "")">
-            <div class="mb-3">
-                <div class="h3 text-primary">@Resources.Global.Password_Change</div>
-            </div>
+            <div id="__PwdChange" class="@((Model["WorkStatus"] == "A" || Model["WorkStatus"] == "Z") ? "d-none" : "")">
+                <div class="mb-3">
+                    <div class="h3 text-primary">@Resources.Global.Password_Change</div>
+                </div>
 
-            <!-- Form -->
-            <form>
-                <div class="form-group">
-                    @*<label class="form-label">현재 비밀번호</label>
-                    <input type="password" class="form-control" id="prevPassword" placeholder="">*@
-                    @Html.Password("Password", "", new { @class = "form-control", placeholder = @Resources.Global.Password_Current })
-                    @Html.ValidationMessage("Password", "", new { @class = "text-danger" })
+                <!-- Form -->
+                <div>
+                    <div class="form-group mb-2">
+                        <div class="input-group">
+                            @Html.Password("Password", "", new { @class = "form-control", placeholder = @Resources.Global.Password_Current })
+                            @Html.ValidationMessage("Password", "", new { @class = "text-danger" })
+                            <div class="input-group-append" data-password="false"><span class="input-group-text fas fa-eye password-eye bg-light"></span></div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group">
+                            @Html.Password("NewPassword", "", new { @class = "form-control", placeholder = @Resources.Global.Password_New })
+                            @Html.ValidationMessage("NewPassword", "", new { @class = "text-danger" })
+                            <div class="input-group-append" data-password="false"><span class="input-group-text fas fa-eye password-eye bg-light"></span></div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group">
+                            @Html.Password("NewPassword2", "", new { @class = "form-control", placeholder = @Resources.Global.Password_Confirm })
+                            @Html.ValidationMessage("NewPassword2", "", new { @class = "text-danger" })
+                            <div class="input-group-append" data-password="false"><span class="input-group-text fas fa-eye password-eye bg-light"></span></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <ul class="mb-0 text-danger">
+                            <li>암호는 영문,숫자,특수문자 포함 8자~20자로 입력하여야 합니다.</li>
+                            <li>변경 사항이 적용되면 다시 로그온 합니다.</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary btn-block" data-menu="changePwd">@Resources.Global.Confirm</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    @Html.Password("NewPassword", "", new { @class = "form-control", placeholder = @Resources.Global.Password_New })
-                    @Html.ValidationMessage("NewPassword", "", new { @class = "text-danger" })
-                </div>
-                <div class="form-group">
-                    @Html.Password("NewPassword2", "", new { @class = "form-control", placeholder = @Resources.Global.Password_Confirm })
-                    @Html.ValidationMessage("NewPassword2", "", new { @class = "text-danger" })
-                </div>
-                <div class="form-group text-center">
-                    <button class="btn btn-primary btn-block" data-menu="changePwd">@Resources.Global.Confirm</button>
-                </div>
-            </form>
-            <!-- / Form -->
-        </div>
+                <!-- / Form -->
+            </div>
         }
 
     </div>
@@ -153,6 +176,25 @@
             var workTimeStatus = "@Model["WorkStatus"]";
             var passwordChange = "@Model["PwdChange"]";
             var returnUrl = "@ViewBag.ReturnUrl";
+
+            var userLogonId = "@Session["LogonID"]";
+            var userId = "@Session["URID"]";
+
+            $("[data-password]").on('click', function () {
+                if ($(this).attr('data-password') == "false") {
+                    $(this).siblings("input").attr("type", "text");
+                    $(this).attr('data-password', 'true');
+                    $(this).addClass("show-password");
+                } else {
+                    $(this).siblings("input").attr("type", "password");
+                    $(this).attr('data-password', 'false');
+                    $(this).removeClass("show-password");
+                }
+            });
+
+            $('#NewPassword2').keyup(function (e) {
+                if (e.which == 13) $('.btn[data-menu="changePwd"]').click();
+            });
 
             $('.btn[data-menu]').on('click', function () {
 
@@ -172,11 +214,40 @@
                 } else if ($(this).attr('data-menu') == "skipNext") {
                     $('#__ClockIn').hide();
 
-                    if (passwordChange == 'Y') $('#__PwdChange').removeClass('d-none');
-                    else window.location.href = '/'; //returnUrl != '' ? returnUrl : '/';
+                    if (passwordChange == 'Y') {
+                        window.document.title = "@Resources.Global.Password_Change";
+                        $('#__PwdChange').removeClass('d-none');
+                    } else window.location.href = '/'; //returnUrl != '' ? returnUrl : '/';
 
                 } else if ($(this).attr('data-menu') == "changePwd") {
+                    var curPwd = $('#Password'), newPwd = $('#NewPassword'), cfmPwd = $('#NewPassword2');
 
+                    if ($.trim(curPwd.val()) == '') {
+                        bootbox.alert('현재 비밀번호 누락!', function () { curPwd.focus(); }); return false;
+                    }
+
+                    var rt = _zw.ut.checkPwd(userLogonId, newPwd.val(), 8, 20, 3);
+                    if (rt != '') {
+                        bootbox.alert(rt, function () { newPwd.focus(); }); return false;
+                    }
+
+                    if (newPwd.val() != cfmPwd.val()) {
+                        bootbox.alert('비밀번호가 일치하지 않습니다!', function () { cfmPwd.focus(); }); return false;
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Env/PwdChange",
+                        data: '{urid:"' + userId + '",logonid:"' + userLogonId + '",cur:"' + curPwd.val() + '",new:"' + newPwd.val() + '",cfm:"' + cfmPwd.val() + '"}',
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                if (res == 'OK') bootbox.alert('설정됐습니다!', function () { window.location.href = '/Account/Logout'; });
+                                else bootbox.alert('타시스템 비밀번호 변경 오류!<br />' + res.substr(2), function () { window.location.href = '/Account/Logout'; }); //ekp 비밀번호 변경 성공
+
+                            } else bootbox.alert(res);
+                        },
+                        beforeSend: function () { _zw.ut.ajaxLoader(true, 'Processing...'); }
+                    });
                 }
             });
         });

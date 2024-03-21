@@ -2248,6 +2248,7 @@
     <Content Include="Scripts\EA\Forms\FORM_EQUIPMAKEPURCHASE.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPPURCHASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_ESTIMATEAGREE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_ETCFORM.js" />
     <Content Include="Scripts\EA\Forms\FORM_FIRSTVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_FLOWERMONEY.js" />
     <Content Include="Scripts\EA\Forms\FORM_GONGDONGGONGGA.js" />
