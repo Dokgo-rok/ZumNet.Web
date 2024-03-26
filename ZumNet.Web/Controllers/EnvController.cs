@@ -125,30 +125,32 @@ namespace ZumNet.Web.Controllers
                             string strPasswordEncrypt = SecurityHelper.AESEncrypt(jPost["new"].ToString());
                             string sAuthType = Framework.Configuration.Config.Read("AuthType");
 
-                            if (sAuthType == "AD")
+                            //if (sAuthType == "DB")
+                            //{
+                            //DB 암호 변경
+                            using (CommonBiz comBiz = new CommonBiz())
                             {
-                                //AD 암호 변경
-                                using (ZumNet.Framework.AD.ADHandler ad = new Framework.AD.ADHandler(Framework.Configuration.Config.Read("DomainName"), "", Framework.Configuration.Config.Read("SysAdmin")
-                                    , SecurityHelper.AESDecrypt(Framework.Configuration.ConfigINI.GetValue(Framework.Configuration.Sections.SECTION_ROOT, Framework.Configuration.Property.INIKEY_ROOT_SA1))))
-                                {
-                                    rt = ad.ChangePassword(jPost["logonid"].ToString(), jPost["cur"].ToString(), jPost["new"].ToString());
-                                }
-                                if (rt != "OK") rt = "비밀번호가 일치하지 않습니다!";
+                                svcRt = comBiz.SetPasswordChange(jPost["urid"].ToString(), strPasswordEncrypt);
+
+                                if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
+                                else rt = "OK";
                             }
-                            else if (sAuthType == "DB")
-                            {
-                                //DB 암호 변경
-                                using (CommonBiz comBiz = new CommonBiz())
-                                {
-                                    svcRt = comBiz.SetPasswordChange(jPost["urid"].ToString(), strPasswordEncrypt);
-                                    
-                                    if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
-                                    else rt = "OK";
-                                }
-                            }
+                            //}
 
                             if (rt == "OK")
                             {
+                                //EKP 암호 변경
+                                if (sAuthType == "AD")
+                                {
+                                    //AD 암호 변경
+                                    using (ZumNet.Framework.AD.ADHandler ad = new Framework.AD.ADHandler(Framework.Configuration.Config.Read("DomainName"), "", Framework.Configuration.Config.Read("SysAdmin")
+                                        , SecurityHelper.AESDecrypt(Framework.Configuration.ConfigINI.GetValue(Framework.Configuration.Sections.SECTION_ROOT, Framework.Configuration.Property.INIKEY_ROOT_SA1))))
+                                    {
+                                        rt = ad.ChangePassword(jPost["logonid"].ToString(), jPost["cur"].ToString(), jPost["new"].ToString());
+                                    }
+                                    if (rt != "OK") rt = "비밀번호가 일치하지 않습니다!";
+                                }
+
                                 //ERP 암호 변경
 
                                 if (Session["IsESP"].ToString() == "Y")
