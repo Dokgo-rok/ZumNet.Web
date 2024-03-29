@@ -28,17 +28,7 @@ $(function () {
         });
     }
 
-    var sw = window.screen.availWidth, sh = window.screen.availHeight, w = $('#__FormView .m').outerWidth() + 100;
-    //console.log(sw + " : " + sh + " : " + fw)
-    if (sw < 860) {
-        window.moveTo(1, 1); window.resizeTo(sw, sh);
-    } else if (sw < w) {
-        window.moveTo(1, 10); window.resizeTo(sw, sh - 20);
-    } else {
-        window.moveTo(sw / 2 - w / 2, 10); window.resizeTo(w < 900 ? 900 : w, sh - 20);
-    }
-
-    _zw.fu.bind();
+    //_zw.fu.bind();
 
     $('.zf-menu .btn[data-zf-menu]').click(function () {
         var mn = $(this).attr('data-zf-menu');

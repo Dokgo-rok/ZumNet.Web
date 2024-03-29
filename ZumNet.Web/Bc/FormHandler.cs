@@ -1266,6 +1266,8 @@ namespace ZumNet.Web.Bc
                 jV["wnid"] = oConfig.Attributes["wnid"].Value;
                 jV["acl"] = oConfig.Attributes["acl"].Value;
                 
+                jV["style"] = JObject.Parse("{\"current\":\"\",\"prev\":\"\"}");  //24-03-28
+
                 sPos = "400";
                 jV["current"]["urid"] = oCurrentInfo.Attributes["uid"].Value;
                 jV["current"]["urcn"] = oCurrentInfo.Attributes["account"].Value;

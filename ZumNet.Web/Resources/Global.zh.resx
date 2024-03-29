@@ -225,6 +225,12 @@
   <data name="Cresyn" xml:space="preserve">
     <value>Cresyn</value>
   </data>
+  <data name="Current" xml:space="preserve">
+    <value>今天</value>
+  </data>
+  <data name="CurrentWork" xml:space="preserve">
+    <value>当前任务</value>
+  </data>
   <data name="Date_Approve" xml:space="preserve">
     <value>批准日期</value>
   </data>
@@ -354,6 +360,9 @@
   <data name="Help" xml:space="preserve">
     <value>帮助</value>
   </data>
+  <data name="History" xml:space="preserve">
+    <value>记录</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>家</value>
   </data>
@@ -449,6 +458,9 @@
   </data>
   <data name="Next" xml:space="preserve">
     <value>下一个</value>
+  </data>
+  <data name="NextWork" xml:space="preserve">
+    <value>下一个工作</value>
   </data>
   <data name="NoItemShow" xml:space="preserve">
     <value>没有要显示的项目。</value>

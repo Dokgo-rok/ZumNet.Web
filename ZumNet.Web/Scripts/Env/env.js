@@ -128,9 +128,9 @@ $(function () {
     });
 
     $('.btn[data-zp-menu="changePwd"]').click(function () {
-        var curPwd = $('.card-body :password[data-for="pwd-current"]'),
-            newPwd = $('.card-body :password[data-for="pwd-new"]'),
-            cfmPwd = $('.card-body :password[data-for="pwd-confirm"]');
+        var curPwd = $('.card-body input[data-for="pwd-current"]'),
+            newPwd = $('.card-body input[data-for="pwd-new"]'),
+            cfmPwd = $('.card-body input[data-for="pwd-confirm"]');
 
         if ($.trim(curPwd.val()) == '') {
             bootbox.alert('현재 비밀번호 누락!', function () { curPwd.focus(); }); return false;
@@ -176,9 +176,9 @@ $(function () {
     });
 
     $('.btn[data-zp-menu="changeEAPwd"]').click(function () {
-        var curPwd = $('.card-body :password[data-for="eapwd-current"]'),
-            newPwd = $('.card-body :password[data-for="eapwd-new"]'),
-            cfmPwd = $('.card-body :password[data-for="eapwd-confirm"]');
+        var curPwd = $('.card-body input[data-for="eapwd-current"]'),
+            newPwd = $('.card-body input[data-for="eapwd-new"]'),
+            cfmPwd = $('.card-body input[data-for="eapwd-confirm"]');
 
         if ($.trim(curPwd.val()) == '') {
             bootbox.alert('현재 비밀번호 누락!', function () { newPwd.focus(); }); return false;
@@ -206,11 +206,11 @@ $(function () {
         });
     });
 
-    $('.card-body :password[data-for="pwd-confirm"]').keyup(function (e) {
+    $('.card-body input[data-for="pwd-confirm"]').keyup(function (e) {
         if (e.which == 13) $('.btn[data-zp-menu="changePwd"]').click();
     });
 
-    $('.card-body :password[data-for="eapwd-confirm"]').keyup(function (e) {
+    $('.card-body input[data-for="eapwd-confirm"]').keyup(function (e) {
         if (e.which == 13) $('.btn[data-zp-menu="changeEAPwd"]').click();
     });
 });

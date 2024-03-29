@@ -385,6 +385,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Currently과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Current {
+            get {
+                return ResourceManager.GetString("Current", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Current Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CurrentWork {
+            get {
+                return ResourceManager.GetString("CurrentWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Approved과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Date_Approve {
@@ -772,6 +790,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   History과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string History {
+            get {
+                return ResourceManager.GetString("History", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Home과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Home {
@@ -1056,6 +1083,15 @@ namespace Resources {
         public static string Next {
             get {
                 return ResourceManager.GetString("Next", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Next Work과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string NextWork {
+            get {
+                return ResourceManager.GetString("NextWork", resourceCulture);
             }
         }
         

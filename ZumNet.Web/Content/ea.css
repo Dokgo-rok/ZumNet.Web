@@ -183,3 +183,8 @@
     color: #0062ff;
 }
 /* signline manager <----- */
+
+.zf-tab .nav-link {
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+}

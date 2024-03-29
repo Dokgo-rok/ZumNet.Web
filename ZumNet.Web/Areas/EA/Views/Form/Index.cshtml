@@ -10,7 +10,7 @@
     }
     else if (ViewBag.JForm["xfalias"].ToString() == "ecnplan")
     {
-        ViewBag.Title = "ecnplan";
+        ViewBag.Title = "ECN업무처리계획서";
     }
 
     //첨부파일 임시 저장 폴더
@@ -26,11 +26,16 @@
     InitVariables();
 
     //본문 변환
-    HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
-    doc.LoadHtml(ViewBag.FormHtml);
+    //HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+    //doc.LoadHtml(ViewBag.FormHtml);
 
-    HtmlAgilityPack.HtmlNode bodyNode = doc.DocumentNode.SelectSingleNode("//body");
-    HtmlAgilityPack.HtmlNode styleNode = doc.DocumentNode.SelectSingleNode("//style");
+    //HtmlAgilityPack.HtmlNode bodyNode = doc.DocumentNode.SelectSingleNode("//body");
+    //HtmlAgilityPack.HtmlNode styleNode = doc.DocumentNode.SelectSingleNode("//style");
+
+    //==> 위 본문변환 Framework 사용으로 변경 24/3/28
+    string sBody = "";
+    string sStyle = "";
+    ZumNet.Framework.Web.HtmlHandler.BodyInnerHtml(ViewBag.FormHtml, out sBody, out sStyle);
 
     //_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.JForm))}()
 
@@ -41,7 +46,7 @@
     //Response.Write(ZumNet.Framework.Util.WorkListHelper.JsonToXmlSubTables(Convert.ToInt32(ViewBag.JForm["def"]["subtablecount"].ToString()), ViewBag.JForm["form"]["subtables"]));
     //Response.Write("op=====>" + Session["OPGroupID"].ToString());
     //Response.Write(":::=====>" + Server.MapPath("/BizForceFileTemp/sjaekim/959535f0-9cc4-4e47-8e6f-472c050ed445.xlsx"));
-    
+
 }
 @functions{
     private void InitVariables()
@@ -159,10 +164,10 @@
     @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
     @Styles.Render("~/Content/ea.css")
     @Styles.Render("~/Content/Forms/xform.2.0_debug.css")
-    <style type="text/css">
-        @if (styleNode != null)
+    <style type="text/css" id="__FormStyle">
+        @if (sStyle != "")
         {
-            @Html.Raw(styleNode.InnerHtml)
+            @Html.Raw(sStyle)
         }
     </style>
 }
@@ -232,7 +237,68 @@
             new Dext5editor(_zw.T.editor.id);
         }
 
+        $('#__FormView .zf-tab .nav-link[data-toggle="tab"]').on('show.bs.tab', function (event) {
+            //console.log($(this)) // newly activated tab
+            //event.relatedTarget // previous active tab
+            var tgt = $($(this).attr('data-target'));
+            //console.log(_zw.V.style)
+
+            if (tgt.attr('data-for') == 'prev') {
+                $('.zf-menu .btn[data-zf-menu]').prop('disabled', true);
+
+                if (_zw.V.style['prev'] == null || _zw.V.style['prev'] == '') {
+                    $.ajax({
+                        type: "POST",
+                        url: "/EA/Form/Html",
+                        data: '{M:"html",mi:"' + _zw.V.wn['premid'] + '",oi:"' + _zw.V.wn['prepiid'] + '",xf:"' + _zw.V.wn['preappalias'] + '",boundary:"' + _zw.V.boundary + '"}',
+                        success: function (res) {
+                            if (res.substr(0, 2) == 'OK') {
+                                var v = res.substr(2).split(_zw.V.boundary);
+                                _zw.V.style['prev'] = v[1];
+                                _zw.V.style['current'] = $('#__FormStyle').html();
+
+                                tgt.html(v[0]); $('#__FormStyle').html(v[1]);
+                                _zw.ut.resizeWnd('', 'prev');
+                            } else {
+                                event.preventDefault();
+                                bootbox.alert(res);
+                            }
+                        }
+                    });
+                } else {
+                    $('#__FormStyle').html(_zw.V.style['prev']);
+                    _zw.ut.resizeWnd('', 'prev');
+                }
+
+            } else if (tgt.attr('data-for') == 'history') {
+                $('.zf-menu .btn[data-zf-menu]').prop('disabled', true);
+
+                if (_zw.V.xfalias == 'tooling') {
+                    $.ajax({
+                        type: "POST",
+                        url: "/EA/Common",
+                        data: '{M:"gettooling",k1:"HISTORY",k2:"",mi:"' + _zw.V.appid + '"}',
+                        success: function (res) {
+                            if (res.substr(0, 2) == 'OK') {
+                                tgt.html(res.substr(2));
+                            } else {
+                                event.preventDefault();
+                                bootbox.alert(res);
+                            }
+                        }
+                    });
+                }
+
+            } else if (tgt.attr('data-for') == 'current') {
+                $('.zf-menu .btn[data-zf-menu]').prop('disabled', false);
+
+                if (_zw.V.style['current'] != '') $('#__FormStyle').html(_zw.V.style['current']);
+                _zw.ut.resizeWnd();
+            }
+        });
+
         _zw.fu.bind();
+        _zw.ut.resizeWnd();
     }());
 
     function dext_editor_loaded_event() {// 에디터가 로드된 후
@@ -283,7 +349,7 @@
     <div class="layout-inner" style="height: 100vh">
         <div class="d-flex flex-column bg-white w-100" id="__FormView">
             <!-- Header -->
-            <div class="flex-grow-0">
+            <div class="flex-grow-0" style="border-bottom: 2px solid #dee2e6">
                 <div class="zf-menu d-flex justify-content-between container-p-x m-0 py-2">
                     <div class="btn-group">
                         @if (ViewBag.JForm["xfalias"].ToString() == "ea")
@@ -346,38 +412,71 @@
                             <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="문서정보" data-zf-menu="docProp"><i class="fe-file-text"></i><span class="d-none d-sm-inline-block ml-1">문서정보</span></button>
                         }
                     </div>
-                    <div>
-                        <div class="btn-group">
-                            @if (ViewBag.JForm["xfalias"].ToString() == "ea")
+                    <div class="btn-group">
+                        @if (ViewBag.JForm["xfalias"].ToString() == "ea")
+                        {
+                            if ((ViewBag.JForm["mode"].ToString() == "new" || ViewBag.JForm["mode"].ToString() == "edit" || ViewBag.JForm["mode"].ToString() == "reuse") && ViewBag.JForm["def"]["webeditor"].ToString() != "")
                             {
-                                if ((ViewBag.JForm["mode"].ToString() == "new" || ViewBag.JForm["mode"].ToString() == "edit" || ViewBag.JForm["mode"].ToString() == "reuse") && ViewBag.JForm["def"]["webeditor"].ToString() != "")
-                                {
-                                    <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.EditorExpand" data-zf-menu="toggleEditor" aria-expanded="false" aria-label="@Resources.Global.EditorExpand|@Resources.Global.EditorFold"><i class="fas fa-arrow-up"></i></button>
-                                }
-                                if (ViewBag.JForm["apvmode"].ToString() == "draft")
-                                {
-                                    <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" data-zf-menu="saveTemp"><i class="fas fa-save text-blue"></i></button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="파일로 저장" data-zf-menu="saveFile"><i class="fas fa-download text-blue"></i></button>
-                                }
-                                <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Help" data-zf-menu="showHelp"><i class="fas fa-question-circle text-info"></i></button>
+                                <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.EditorExpand" data-zf-menu="toggleEditor" aria-expanded="false" aria-label="@Resources.Global.EditorExpand|@Resources.Global.EditorFold"><i class="fas fa-arrow-up"></i></button>
                             }
-                            @if (ViewBag.JForm["xfalias"].ToString() != "ecnplan")
+                            if (ViewBag.JForm["apvmode"].ToString() == "draft")
                             {
-                                <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" data-zf-menu="preview"><i class="fas fa-print"></i></button>
+                                <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" data-zf-menu="saveTemp"><i class="fas fa-save text-blue"></i></button>
                             }
-                            <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close" onclick="window.close();"><i class="fas fa-sign-out-alt"></i></button>
-                        </div>
+                            else
+                            {
+                                <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="파일로 저장" data-zf-menu="saveFile"><i class="fas fa-download text-blue"></i></button>
+                            }
+                            <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Help" data-zf-menu="showHelp"><i class="fas fa-question-circle text-info"></i></button>
+                        }
+                        @if (ViewBag.JForm["xfalias"].ToString() != "ecnplan")
+                        {
+                            <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" data-zf-menu="preview"><i class="fas fa-print"></i></button>
+                        }
+                        <button class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close" onclick="window.close();"><i class="fas fa-sign-out-alt"></i></button>
                     </div>
                 </div>
             </div>
             <!-- / Header -->
 
-            <div class="flex-grow-1 position-relative" style="border-top: 2px solid #dee2e6 ">
-                <div class="z-list-scroll pb-2" style="border-left: 0.5rem solid #999999; border-right: 0.5rem solid #999999">
-                    @Html.Raw(bodyNode.InnerHtml)
+            @if (ViewBag.WorkNotice != null || (ViewBag.JForm["xfalias"].ToString() == "tooling" && ViewBag.JForm["mode"].ToString() != "new"))
+            {
+                <!-- Tab button -->
+                <div class="flex-grow-0 px-3" style="background-color: #ddd">
+                    <ul class="zf-tab nav nav-tabs mt-1" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" type="button" role="tab" data-toggle="tab" data-target="#tabpanel1" aria-controls="tabpanel1" aria-selected="true">@Resources.Global.CurrentWork</button>
+                        </li>
+                        @if (ViewBag.WorkNotice != null)
+                        {
+                            <li class="nav-item">
+                                <button class="nav-link" type="button" role="tab" data-toggle="tab" data-target="#tabpanel2" aria-controls="tabpanel2" aria-selected="false">@Resources.Global.PrevWork</button>
+                            </li>
+                        }
+                        @if (ViewBag.JForm["xfalias"].ToString() == "tooling" && ViewBag.JForm["mode"].ToString() != "new")
+                        {
+                            <li class="nav-item">
+                                <button class="nav-link" type="button" role="tab" data-toggle="tab" data-target="#tabpanel3" aria-controls="tabpanel3" aria-selected="false">@Resources.Global.History</button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <!-- / Tab button -->
+            }
+
+            <div class="flex-grow-1 position-relative">
+                <div class="z-list-scroll pb-2 tab-content" style="border-left: 0.5rem solid #999999; border-right: 0.5rem solid #999999">
+                    <div class="tab-pane fade show active" id="tabpanel1" role="tabpanel" aria-labelledby="tabpanel1-tab" data-for="current">
+                        @Html.Raw(sBody)
+                    </div>
+                    @if (ViewBag.WorkNotice != null)
+                    {
+                        <div class="tab-pane fade" id="tabpanel2" role="tabpanel" aria-labelledby="tabpanel2-tab" data-for="prev"></div>
+                    }
+                    @if (ViewBag.JForm["xfalias"].ToString() == "tooling" && ViewBag.JForm["mode"].ToString() != "new")
+                    {
+                        <div class="tab-pane fade" id="tabpanel3" role="tabpanel" aria-labelledby="tabpanel3-tab" data-for="history"></div>
+                    }
                 </div>
             </div>
 
@@ -448,9 +547,9 @@
                                                     }
 
                                                     @*<label class="custom-control custom-radio m-0" for="rdoSS_5">
-                                                            <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_5" value="authorize" />
-                                                            <span class="custom-control-label">@Resources.EA.SK_Authorize</span>
-                                                        </label>*@
+                                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_5" value="authorize" />
+                                                    <span class="custom-control-label">@Resources.EA.SK_Authorize</span>
+                                                </label>*@
                                                     if (Session["LogonID"].ToString() == "jblee")
                                                     {
                                                         <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_6">

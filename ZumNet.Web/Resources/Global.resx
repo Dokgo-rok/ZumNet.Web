@@ -225,6 +225,12 @@
   <data name="Cresyn" xml:space="preserve">
     <value>Cresyn</value>
   </data>
+  <data name="Current" xml:space="preserve">
+    <value>Currently</value>
+  </data>
+  <data name="CurrentWork" xml:space="preserve">
+    <value>Current Work</value>
+  </data>
   <data name="Date_Approve" xml:space="preserve">
     <value>Approved</value>
   </data>
@@ -354,6 +360,9 @@
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="History" xml:space="preserve">
+    <value>History</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>Home</value>
   </data>
@@ -449,6 +458,9 @@
   </data>
   <data name="Next" xml:space="preserve">
     <value>Next</value>
+  </data>
+  <data name="NextWork" xml:space="preserve">
+    <value>Next Work</value>
   </data>
   <data name="NoItemShow" xml:space="preserve">
     <value>No items to show</value>

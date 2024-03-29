@@ -2189,6 +2189,24 @@ $(function () {
                 window.open(url, wnd, etcParam + ",width=" + w + ",height=" + h + sz);
             }
         },
+        "resizeWnd": function (pos, dfor) {
+            var sw = window.screen.availWidth, sh = window.screen.availHeight, w = 0;
+            if (!pos || pos == 'ea') {
+                dfor = dfor || 'current';
+                var el = $('#__FormView div[data-for="' + dfor + '"] .m');
+                if (el.attr('data-val') && el.attr('data-val') != '') w = parseFloat(el.attr('data-val'));
+                else { w = el.outerWidth() + 100; el.attr('data-val', w);  }
+                //console.log(sw + " : " + sh + " : " + w + " : " + el.attr('data-val'))
+
+                if (sw < 860) {
+                    window.moveTo(1, 1); window.resizeTo(sw, sh);
+                } else if (sw < w) {
+                    window.moveTo(1, 10); window.resizeTo(sw, sh - 20);
+                } else {
+                    window.moveTo(sw / 2 - w / 2, 10); window.resizeTo(w < 900 ? 900 : w, sh - 20);
+                }
+            }
+        },
         "hideRightBar": function () {
             if ($('.messages-wrapper, .messages-card').hasClass('messages-sidebox-open')) $('.z-mobile-navbar button.close').click();
             if ($('#layout-navbar-rightbar').hasClass('show')) $('#layout-navbar-rightbar').modal('hide');

@@ -49,6 +49,10 @@
   "currandom": "",
   "curprogress": "",
 
+  "style": {
+    "current": "",
+    "prev": ""
+  },
   "wn": { //worknotice
     "wnid": "",
     "wnstate": "",

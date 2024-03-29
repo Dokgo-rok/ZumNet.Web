@@ -11,6 +11,8 @@ using ZumNet.BSL.ServiceBiz;
 using ZumNet.BSL.FlowBiz;
 using System.Web.UI.WebControls;
 using System.Data;
+using System.Reflection;
+using ZumNet.Framework.Exception;
 
 namespace ZumNet.Web.Controllers
 {
@@ -109,15 +111,19 @@ namespace ZumNet.Web.Controllers
         public string PwdChange()
         {
             string rt = "";
+            string sPos = "";
+
             if (Request.IsAjaxRequest())
             {
                 try
                 {
+                    sPos = "100";
                     JObject jPost = CommonUtils.PostDataToJson();
                     if (jPost == null || jPost.Count == 0) return "필수값 누락!";
 
                     if (Session["LogonPwd"] != null)
                     {
+                        sPos = "200";
                         if (SecurityHelper.AESDecrypt(Session["LogonPwd"].ToString()) == jPost["cur"].ToString())
                         {
                             ZumNet.Framework.Core.ServiceResult svcRt = null;
@@ -125,6 +131,7 @@ namespace ZumNet.Web.Controllers
                             string strPasswordEncrypt = SecurityHelper.AESEncrypt(jPost["new"].ToString());
                             string sAuthType = Framework.Configuration.Config.Read("AuthType");
 
+                            sPos = "300";
                             //if (sAuthType == "DB")
                             //{
                             //DB 암호 변경
@@ -142,10 +149,13 @@ namespace ZumNet.Web.Controllers
                                 //EKP 암호 변경
                                 if (sAuthType == "AD")
                                 {
+                                    sPos = "400";
+
                                     //AD 암호 변경
                                     using (ZumNet.Framework.AD.ADHandler ad = new Framework.AD.ADHandler(Framework.Configuration.Config.Read("DomainName"), "", Framework.Configuration.Config.Read("SysAdmin")
                                         , SecurityHelper.AESDecrypt(Framework.Configuration.ConfigINI.GetValue(Framework.Configuration.Sections.SECTION_ROOT, Framework.Configuration.Property.INIKEY_ROOT_SA1))))
                                     {
+                                        sPos = "410";
                                         rt = ad.ChangePassword(jPost["logonid"].ToString(), jPost["cur"].ToString(), jPost["new"].ToString());
                                     }
                                     if (rt != "OK") rt = "비밀번호가 일치하지 않습니다!";
@@ -155,6 +165,8 @@ namespace ZumNet.Web.Controllers
 
                                 if (Session["IsESP"].ToString() == "Y")
                                 {
+                                    sPos = "500";
+
                                     //구매포탈 암호 변경
                                     string strQuery = @"UPDATE ZWESP.dbo.SVC_USR WITH (ROWLOCK) SET pwd = @pwd, pwdmod = GETDATE() WHERE logonid = @logonid";
 
@@ -182,7 +194,8 @@ namespace ZumNet.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    rt = ex.Message;
+                    ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, MethodBase.GetCurrentMethod().Name, sPos);
+                    rt = "[" + sPos + "] " + ex.Message;
                 }
             }
             return rt;

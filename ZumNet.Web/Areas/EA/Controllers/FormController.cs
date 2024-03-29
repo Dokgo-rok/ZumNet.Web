@@ -92,7 +92,7 @@ namespace ZumNet.Web.Areas.EA.Controllers
                             break;
 
                         case "html":
-                            //LoadHtmlForm();
+                            svcRt = fmMgr.LoadHtmlForm(oId, msgId, xfAlias);
                             break;
 
                         case "autosigninfo":
@@ -220,6 +220,57 @@ namespace ZumNet.Web.Areas.EA.Controllers
                 //에러페이지
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
+        }
+
+        /// <summary>
+        /// 양식본문을 HTML로 내려 주기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string Html()
+        {
+            string rt = "";
+            string sPos = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    sPos = "100";
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    string xfAlias = StringHelper.SafeString(jPost["xf"].ToString());
+                    string oId = jPost.ContainsKey("oi") ? jPost["oi"].ToString() : "";
+                    string msgId = jPost.ContainsKey("mi") ? jPost["mi"].ToString() : "";
+
+                    using (EAFormManager fmMgr = new EAFormManager())
+                    {
+                        svcRt = fmMgr.LoadHtmlForm(oId, msgId, xfAlias);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        string sBody = "";
+                        string sStyle = "";
+                        Framework.Web.HtmlHandler.BodyInnerHtml(svcRt.ResultDataString, out sBody, out sStyle);
+
+                        rt = "OK" + sBody + jPost["boundary"].ToString() + sStyle;
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = "[" + sPos + "] " + ex.Message;
+                }
+            }
+            return rt;
         }
         #endregion
 

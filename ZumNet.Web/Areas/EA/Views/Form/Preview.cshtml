@@ -16,7 +16,7 @@
             var style = $(opener.document).find('style')[1].outerHTML; //console.log(style)
             $('head').append(style);
 
-            $('#__Preview').html($(opener.document).find('#__FormView .z-list-scroll').html());
+            $('#__Preview').html($(opener.document).find('#__FormView .z-list-scroll .tab-pane[data-for="current"]').html());
 
             window.print();
         }());

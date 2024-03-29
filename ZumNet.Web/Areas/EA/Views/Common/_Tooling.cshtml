@@ -90,7 +90,83 @@
             }
             else if (postData["k1"].ToString() == "HISTORY")
             {
+                #region [금형 이력 정보 보기]
+                strQuery = "SELECT * FROM BFFLOWFORMS_CRESYN.admin.ph_VIEW_REGISTER_TOOLING_HISTORY (NOLOCK) WHERE TOOLINGNUMBER = @toolingno ORDER BY ActDate DESC, PIStart DESC";
 
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    ParamSet.Add4Sql("@toolingno", SqlDbType.VarChar, 20, postData["mi"].ToString())
+                };
+
+                using (ExecuteBiz execBiz = new ExecuteBiz())
+                {
+                    svcRt = execBiz.ExecuteQuery(strQuery, 30, parameters);
+                }
+                if (svcRt.ResultCode == 0)
+                {
+                    sb.Append("<div class=\"container-sm mt-5\">");
+                    sb.Append("<table class=\"table table-bordered mb-0\">");
+                    sb.Append("<colgroup><col style=\"width:12%\" /><col style=\"width:12%\" /><col style=\"width:10%\" /><col style=\"width:43%\" /><col style=\"width:23%\" /></colgroup>");
+                    sb.Append("<thead>");
+                    sb.Append("<tr class=\"table-success text-center\"><th>등록</th><th>완료</th><th>구분</th><th>내용</th><th>관련문서</th></tr>");
+                    sb.Append("</thead>");
+                    sb.Append("<tbody>");
+                    if (svcRt.ResultDataSet.Tables != null && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                    {
+                        string strValue = "";
+                        foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td class=\"text-center text-break\"><span>{0}</span></td>", ZumNet.Web.Bc.CommonUtils.LvDate(row["ActDate"].ToString()));
+
+                            strValue = row["PIEnd"].ToString() == "" ? DateHelper.CheckDateTime(row["PIStart"].ToString(), "yy-MM-dd") : DateHelper.CheckDateTime(row["PIEnd"].ToString(), "yy-MM-dd");
+                            sb.AppendFormat("<td class=\"text-center text-break\"><span>{0}</span></td>", strValue);
+
+                            if (row["ActType"].ToString() == "NEW") strValue = "신작";
+                            else if (row["ActType"].ToString() == "ADD") strValue = "증작";
+                            else if (row["ActType"].ToString() == "DISUSE") strValue = "폐기";
+                            else if (row["ActType"].ToString() == "REPAIR") strValue = "수리";
+                            else if (row["ActType"].ToString() == "MODIFY") strValue = "수정";
+                            else if (row["ActType"].ToString() == "MOVE") strValue = "이관";
+                            else if (row["ActType"].ToString() == "SALES") strValue = "판매";
+                            else if (row["ActType"].ToString() == "TRY") strValue = "TRY";
+                            else if (row["ActType"].ToString() == "WRITE") strValue = "작성";
+                            else if (row["ActType"].ToString() == "EDIT") strValue = "편집";
+                            else strValue = "&nbsp;";
+                            sb.AppendFormat("<td class=\"text-center text-break\"><span>{0}</span></td>", strValue);
+
+
+                            sb.AppendFormat("<td class=\"text-break\"><span>일자 : {0}{1}</span></td>"
+                                    , DateHelper.CheckDateTime(row["ActDate"].ToString()), row["ActPlace"].ToString());
+
+                            if (row["ActType"].ToString() == "WRITE" || row["ActType"].ToString() == "EDIT")
+                            {
+                                sb.Append("<td></td>");
+                            }
+                            else
+                            {
+                                strValue = row["DocNumber"].ToString() == "" ? "관련문서" : row["DocNumber"].ToString();
+                                sb.AppendFormat("<td class=\"text-break z-list\"><a class=\"z-lnk-navy\" target=\"_blank\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\">{1}</a></td>"
+                                        , row["MessageID"].ToString(), strValue);
+                            }
+                            sb.Append("</tr>");
+                            strValue = "";
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<tr><td colspan=\"5\" class=\"text-center\">{0}</td></tr>", Resources.Global.NoItemShow);
+                    }
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    sb.Append("</div>");
+                }
+                else
+                {
+                    strReturn = svcRt.ResultMessage;
+                }
+
+                #endregion
             }
             else if (postData["k2"].ToString() == "TOOLING_DATA")
             {

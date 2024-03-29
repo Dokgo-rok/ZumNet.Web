@@ -123,8 +123,16 @@ namespace ZumNet.Web.BizForce.PortalService
             {
                 if (!_disableDocSecurity)
                 {
-                    //2014-11-12 파일 암호화
-                    sRealPath = EncrypFile(sRealPath, ext);
+                    try
+                    {
+                        //2014-11-12 파일 암호화
+                        sRealPath = EncrypFile(sRealPath, ext);
+                    }
+                    catch (Exception ex)
+                    {
+                        Response.Write(Resources.Global.Auth_InvalidPath + Environment.NewLine + "[Error]" + ex.Message);
+                        Response.End();
+                    }
                 }
             }
 
