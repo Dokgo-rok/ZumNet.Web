@@ -1,6 +1,6 @@
 ﻿@using System.Data;
 @using System.Text;
-
+@using ZumNet.Framework.Util;
 @{
     string sSelected = "";
     string sSelectClass = "";
@@ -196,7 +196,7 @@
                                                 {
                                                     if (r["Description"].ToString() == "GWFILE")
                                                     {
-                                                        <a target="_blank" href="/Common/FileDown?fp=@Server.UrlEncode(r["XslName"].ToString())&fn=@Server.UrlEncode(r["DocName"].ToString())" class="px-3 py-2 border" data-val="@r["FormID"]"><i aria-controls="text-teal" class="far fa-file-excel text-teal mr-2"></i>@r["DocName"]</a>
+                                                        <a target="_blank" href="/Common/DownloadV?fp=@Server.UrlEncode(SecurityHelper.ToBase64(r["XslName"].ToString()))&fn=@Server.UrlEncode(SecurityHelper.ToBase64(r["DocName"].ToString()))" class="px-3 py-2 border" data-val="@r["FormID"]"><i aria-controls="text-teal" class="far fa-file-excel text-teal mr-2"></i>@r["DocName"]</a>
                                                     }
                                                     else
                                                     {

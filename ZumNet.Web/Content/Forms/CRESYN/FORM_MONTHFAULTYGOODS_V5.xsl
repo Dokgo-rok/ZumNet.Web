@@ -339,7 +339,7 @@
                             <td style="border-bottom: 0">
                               <xsl:choose>
                                 <xsl:when test="$mode='new' or $mode='edit'">
-                                  <input type="text" id="__mainfield" name="BUYSUM" class="txtDollar" value="{//forminfo/maintable/BUYSUM}" />
+                                  <input type="text" id="__mainfield" name="BUYSUM" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/BUYSUM}" />
                                 </xsl:when>
                                 <xsl:otherwise>
                                   <xsl:attribute name="class">tdRead_Right</xsl:attribute>

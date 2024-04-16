@@ -29,7 +29,7 @@
 			} else if (vPos[1] == 'salebpanum' || vPos[1] == 'midpricelist') {
 				if ($('#__mainfield[name="SALECENTER"]').val() == '') { bootbox.alert('판매처를 선택하십시오!'); return false; }
 				else if ($('#__mainfield[name="CURRENCY"]').val() == '') { bootbox.alert('통화를 선택하십시오!'); return false; }
-				query = $('#__mainfield[name="SALECENTER"]').val(); v1 = $('#__mainfield[name="CURRENCY"]').val();
+				query = $('#__mainfield[name="SALECENTER"]').val(); v1 = $('#__mainfield[name="CURRENCY"]').val(); v2 = $('#__mainfield[name="VENDOR_CODE"]').val();
 			}
 
 			//data body 조건 : N(modal-body 없음), F(footer 포함)

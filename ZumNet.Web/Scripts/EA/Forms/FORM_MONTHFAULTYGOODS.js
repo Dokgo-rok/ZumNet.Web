@@ -105,7 +105,8 @@
 					if (el.name == "WRBSUM0" || el.name == "SUM10" || el.name == "SUM11" || el.name == "WRBSUM1" || el.name == "TOTLOSSMONEY" || el.name == "WRBGONGSU1" || el.name == "WRBGONGSU2" || el.name == "WRBGONGSU3") {
 						s = parseFloat(_zw.ut.empty($('#__mainfield[name="WRBSUM1"]').val()));
 					}
-					if (e2.val() != '') $('#__mainfield[name="RATE1"]').val(numeral(s * parseFloat(_zw.ut.empty(e2.val()))).format('0,0.[00]'))
+					//if (e2.val() != '') $('#__mainfield[name="RATE1"]').val(numeral(s * parseFloat(_zw.ut.empty(e2.val()))).format('0,0.[00]'))
+					if (e2.val() != '') $('#__mainfield[name="RATE1"]').val(numeral(_zw.ut.rate(s, parseFloat(_zw.ut.empty(e2.val())), 4)).format('0,0.[00]'));
 					$('#__mainfield[name="OCCURSUMQ"]').val(numeral(s).format('0,0')); s = 0;
                 }
 
