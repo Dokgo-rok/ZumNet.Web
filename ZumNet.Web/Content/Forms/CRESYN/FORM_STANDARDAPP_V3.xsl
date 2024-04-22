@@ -447,7 +447,7 @@
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(partname))"/>
           </xsl:when>
           <xsl:otherwise>
-            <img style="width:44;height:45;border:0;" border="0">
+            <img style="max-height:45px;max-width:60px;border:0;" border="0">
               <xsl:attribute name="src">
                 <xsl:value-of select="string(sign)" />
               </xsl:attribute>
