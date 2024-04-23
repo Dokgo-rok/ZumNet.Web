@@ -2288,6 +2288,7 @@
     <Content Include="Scripts\EA\Forms\FORM_NEWPRODUCTREVIEW.js" />
     <Content Include="Scripts\EA\Forms\FORM_NIGHTWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_OFFICEPURCHASEREQ.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OFFICIALDOCU.js" />
     <Content Include="Scripts\EA\Forms\FORM_OPERATIONMANUAL.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTSIDERAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGBILL.js" />
