@@ -357,7 +357,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl">사유</td>
+                <td class="f-lbl">내용</td>
                 <td colspan="4" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
