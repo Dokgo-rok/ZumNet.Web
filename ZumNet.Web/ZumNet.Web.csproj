@@ -2196,6 +2196,7 @@
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\EA\Forms\FORM_AFTERCHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_AUDITRESULTREPORT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_BABYVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_BEFORECHANGE.js" />
     <Content Include="Scripts\EA\Forms\FORM_BENCHMARKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_BENCHMARKINGREPORT.js" />
