@@ -1182,7 +1182,7 @@
 		<td class="tdRead_Right" style="border-top:0;border-left:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">           
-            <input type="text" name="DIS" style="text-align:right;width:90px" class="txtDollarMinus" maxlength="20" data-inputmask="number;16;4" value="{DIS}" />                            
+            <input type="text" name="DIS" style="text-align:right;width:90px" class="txtDollarMinus" maxlength="20" data-inputmask="number;16;4;-" value="{DIS}" />                            
           </xsl:when>
           <xsl:otherwise>            
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(DIS))" />
@@ -1192,7 +1192,7 @@
 		<td class="tdRead_Right" style="border-top:0;border-left:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">           
-            <input type="text" name="EARN" style="text-align:right;width:90px" class="txtDollarMinus" maxlength="20" data-inputmask="number;16;4" value="{EARN}" />              
+            <input type="text" name="EARN" style="text-align:right;width:90px" class="txtDollarMinus" maxlength="20" data-inputmask="number;16;4;-" value="{EARN}" />              
           </xsl:when>
           <xsl:otherwise>            
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(EARN))" />
@@ -1311,7 +1311,7 @@
 		<td class="tdRead_Right" style="border-top:0;border-left:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">           
-            <input type="text" name="DISTWO" style="text-align:right;width:90px" class="txtDollarMinus" maxlength="20" data-inputmask="number;16;4" value="{DISTWO}" />              
+            <input type="text" name="DISTWO" style="text-align:right;width:90px" class="txtDollarMinus" maxlength="20" data-inputmask="number;16;4;-" value="{DISTWO}" />              
           </xsl:when>
           <xsl:otherwise>            
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(DISTWO))" />
@@ -1321,7 +1321,7 @@
       <td class="tdRead_Right" style="border-top:0;border-left:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">            
-            <input type="text" name="EARNTWO" style="text-align:right;width:90px" class="txtDollarMinus" maxlength="20" data-inputmask="number;16;4" value="{EARNTWO}" />              
+            <input type="text" name="EARNTWO" style="text-align:right;width:90px" class="txtDollarMinus" maxlength="20" data-inputmask="number;16;4;-" value="{EARNTWO}" />              
           </xsl:when>
           <xsl:otherwise>            
             <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(EARNTWO))" />
