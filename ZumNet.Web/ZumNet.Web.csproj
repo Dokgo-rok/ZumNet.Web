@@ -887,7 +887,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_STANDARDCERTIFICATION_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_STANDARDCERTIFICATION_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_STANDARDCERTIFICATION_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_STANDARDDATA_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SUGGESTPAPER_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_SUGGESTPAPER_V2.xsl" />
