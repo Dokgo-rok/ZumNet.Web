@@ -194,6 +194,13 @@ namespace ZumNet.Web.Controllers
         }
 
         [SessionExpireFilter]
+        [Authorize]
+        public ActionResult Excel()
+        {
+            return View("_Excel");
+        }
+
+        [SessionExpireFilter]
         [HttpPost]
         [Authorize]
         public string PersonSimpleInfo(int id)

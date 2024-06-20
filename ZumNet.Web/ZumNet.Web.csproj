@@ -3450,6 +3450,7 @@
     <Content Include="Views\Report\_PURCHASEUCF.cshtml" />
     <Content Include="Views\Report\_DEVSAMPLELIST.cshtml" />
     <Content Include="Views\Portal\SSOsys.cshtml" />
+    <Content Include="Views\Organ\_Excel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

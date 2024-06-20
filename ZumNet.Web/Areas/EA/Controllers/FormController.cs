@@ -342,9 +342,9 @@ namespace ZumNet.Web.Areas.EA.Controllers
                         if (Convert.ToInt32(sMessageId) > 0)
                         {
                             strView = "조회 설정[" + sActiveWI + "]";
-                            using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
+                            using (ZumNet.BSL.FlowBiz.EApproval ea = new BSL.FlowBiz.EApproval())
                             {
-                                svcRt = cb.AddViewCount(jPost["xf"].ToString(), iFolderId, iActorID, Convert.ToInt32(sMessageId), sIP);
+                                svcRt = ea.ViewCount(jPost["xf"].ToString(), iFolderId, iActorID, Convert.ToInt32(sMessageId), sIP, sActiveWI);
                             }
                         }
                     }

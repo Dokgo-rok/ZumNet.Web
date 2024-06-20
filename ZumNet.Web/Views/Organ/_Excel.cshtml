@@ -1,0 +1,171 @@
+﻿@using System;
+@using System.Collections;
+@using System.Data;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using System.Text;
+@using ZumNet.Framework.Util;
+@{
+    InitConfig();
+
+    ExcelBind(GetData());
+
+    Response.End();
+}
+@functions {
+    string[,] _columnConfig = null;
+    private void InitConfig()
+    {
+        string[,] arr = { { "SEQ", "NO", "3%", "", "" }, { "Grade1", "직위", "7%", "", "" }, { "DisplayName", "성명", "10%", "", "" }
+            , { "GroupName", "부서", "10%", "", "" }, { "MailAccount", "메일", "10%", "", "" }, { "Telephone", "사내전화", "10%", "", "" }
+            , { "Mobile", "휴대전화", "10%", "", "" }, { "HomePhone", "집전화", "10%", "", "" }, { "Keyword1", "업무", "30%", "L", "" }
+        };
+        this._columnConfig = arr;
+    }
+
+    private string GetData()
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = null;
+        string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], "");
+        JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
+
+        string sMode = StringHelper.SafeString(jReq["M"]); //all : 전체 검색
+        string sSearchText = "";
+        StringBuilder sbSearch = new StringBuilder();
+
+        if (sMode == "all")
+        {
+            sSearchText = " AND (Role = 'regular' OR Role = 'chief') AND Grade1 IS NOT NULL";
+        }
+        else
+        {
+            if (StringHelper.SafeInt(jReq["tgt"]) > 0)
+            {
+                sbSearch.AppendFormat(" AND GR_ID = {0}", jReq["tgt"].ToString());
+            }
+            else
+            {
+                if (StringHelper.SafeString(jReq["ur"]) != "") sbSearch.AppendFormat(" AND DisplayName LIKE '%{0}%'", jReq["ur"].ToString());
+                if (StringHelper.SafeString(jReq["urcn"]) != "") sbSearch.AppendFormat(" AND LogonID LIKE '%{0}%'", jReq["urcn"].ToString());
+                if (StringHelper.SafeString(jReq["dept"]) != "") sbSearch.AppendFormat(" AND GroupName LIKE '%{0}%'", jReq["dept"].ToString());
+                if (StringHelper.SafeString(jReq["grade"]) != "") sbSearch.AppendFormat(" AND Code1 = '{0}'", jReq["grade"].ToString());
+            }
+
+            sSearchText = sbSearch.ToString();
+        }
+
+        //엑셀내려받기 경우 페이징 없이 조건에 맞는 전체를 내려준다.
+        using (ZumNet.BSL.ServiceBiz.OfficePortalBiz op = new ZumNet.BSL.ServiceBiz.OfficePortalBiz())
+        {
+            svcRt = op.GetDeptGroupList(StringHelper.SafeInt(Session["DNID"].ToString()), 1, 1000, "", "", "", sSearchText);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\">");
+        sb.Append(RenderColumnHeader("xls"));
+        sb.Append("<tbody>");
+
+        if (svcRt != null && svcRt.ResultCode == 0)
+        {
+            if (svcRt.ResultDataRowCollection != null && svcRt.ResultDataRowCollection.Count > 0)
+            {
+                string strID = "";
+                string strValue = "";
+                int iRow = 1;
+
+                foreach (DataRow row in svcRt.ResultDataRowCollection)
+                {
+                    sb.Append("<tr>");
+                    for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                    {
+                        strID = _columnConfig[i, 0].ToString();
+
+                        if (strID.ToUpper() == "SEQ")
+                        {
+                            strValue = iRow.ToString();
+                        }
+                        else
+                        {
+                            strValue = row[strID].ToString();
+                        }
+                        sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
+                    }
+                    sb.Append("</tr>");
+                    iRow++;
+                }
+            }
+            else
+            {
+                sb.AppendFormat("<tr colspan=\"{0}\" style=\"text-center\">{1}</tr>", _columnConfig.GetLength(0), Resources.Global.NoItemShow);
+            }
+        }
+        else
+        {
+            string sMsg = svcRt != null ? svcRt.ResultMessage : "데이터를 불러올 수 없습니다";
+            sb.AppendFormat("<tr colspan=\"{0}\" style=\"text-center\">{1}</tr>", _columnConfig.GetLength(0), sMsg);
+        }
+
+        sb.Append("</tbody>");
+        sb.Append("</table>");
+
+        return sb.ToString();
+    }
+
+    private string RenderColumnHeader(string mode)
+    {
+        StringBuilder sb = new StringBuilder();
+        string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
+
+        sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+        }
+        sb.Append("</colgroup>");
+
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"table-success\">");
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
+        }
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = "OrgList_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    private string ExcelStyle()
+    {
+        return @"
+    body {width: 100%}
+    table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+    td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+    .xls_warning {background-color: #fcf8e3}
+    .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+    .text-center {text-align: center}
+    .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+    .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+";
+    }
+}

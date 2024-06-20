@@ -181,6 +181,11 @@
             _zw.V.lv.count = sCnt == undefined || sCnt == '' ? '20' : sCnt;
         }
 
+        _zw.fn.exportExcel = function () {
+            var postData = _zw.fn.getLvQuery(); console.log(postData)
+            window.open('/Organ/Excel?qi=' + encodeURIComponent(_zw.base64.encode(JSON.stringify(postData))), 'ifrView');
+        }
+
         _zw.fn.bindCtrl();
 
     }());
@@ -280,7 +285,7 @@
 
             <div class="d-flex align-items-center container-p-x" style="padding-bottom: .6rem !important">
                 <div class="d-none d-sm-flex align-items-center z-lv-menu pl-1 pt-2">
-                    <a href="javascript:void(0)" class="text-success" data-toggle="tooltip" data-placement="bottom" title="엑셀내려받기" data-zv-menu="exportExcel"><i class="fe-download"></i> 엑셀</a>
+                    <a href="javascript:void(0)" class="text-success" data-toggle="tooltip" data-placement="bottom" title="엑셀 내보내기" onclick="_zw.fn.exportExcel();"><i class="fe-download"></i> 엑셀</a>
                 </div>
                 <div class="px-1 flex-grow-1"></div>
                 <ul class="pagination pagination-sm justify-content-center mb-0" id="__ListViewPage">
