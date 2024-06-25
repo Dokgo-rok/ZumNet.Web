@@ -313,6 +313,11 @@ namespace ZumNet.Web.Controllers
             int iCategoryId = Convert.ToInt32(ViewBag.R.ct.Value);
             int iFolderId = Convert.ToInt32(ViewBag.R.fdid.Value);
             int iAppId = Convert.ToInt32(ViewBag.R.appid.Value); //messageid
+            if (iAppId == 0)
+            {
+                rt = Resources.Global.RequiredMissing; //"필수 값 누락";
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
 
             //권한체크, 폴더환경정보
             using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())

@@ -219,6 +219,9 @@
   <data name="Confirm" xml:space="preserve">
     <value>确认</value>
   </data>
+  <data name="ContactAdmin" xml:space="preserve">
+    <value>Please contact the administrator.</value>
+  </data>
   <data name="Count" xml:space="preserve">
     <value>数字</value>
   </data>
@@ -572,6 +575,12 @@
   </data>
   <data name="Requester" xml:space="preserve">
     <value>请求者</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="RequiredMissing" xml:space="preserve">
+    <value>缺少必填值</value>
   </data>
   <data name="Reset" xml:space="preserve">
     <value>初始化</value>

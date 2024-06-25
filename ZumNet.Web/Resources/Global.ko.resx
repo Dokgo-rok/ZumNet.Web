@@ -219,6 +219,9 @@
   <data name="Confirm" xml:space="preserve">
     <value>확인</value>
   </data>
+  <data name="ContactAdmin" xml:space="preserve">
+    <value>관리자에게 문의 바랍니다.</value>
+  </data>
   <data name="Count" xml:space="preserve">
     <value>개</value>
   </data>
@@ -572,6 +575,12 @@
   </data>
   <data name="Requester" xml:space="preserve">
     <value>요청자</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>필수 항목</value>
+  </data>
+  <data name="RequiredMissing" xml:space="preserve">
+    <value>필수 값 누락</value>
   </data>
   <data name="Reset" xml:space="preserve">
     <value>초기화</value>

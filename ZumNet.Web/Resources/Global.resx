@@ -219,6 +219,9 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="ContactAdmin" xml:space="preserve">
+    <value>Please contact the administrator.</value>
+  </data>
   <data name="Count" xml:space="preserve">
     <value>Count</value>
   </data>
@@ -572,6 +575,12 @@
   </data>
   <data name="Requester" xml:space="preserve">
     <value>Requester</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="RequiredMissing" xml:space="preserve">
+    <value>Missing required value</value>
   </data>
   <data name="Reset" xml:space="preserve">
     <value>Reset</value>

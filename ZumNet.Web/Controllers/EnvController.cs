@@ -46,7 +46,7 @@ namespace ZumNet.Web.Controllers
                 try
                 {
                     JObject jPost = CommonUtils.PostDataToJson();
-                    if (jPost == null || jPost.Count == 0 || jPost["UserID"].ToString() == "") return "필수값 누락!";
+                    if (jPost == null || jPost.Count == 0 || jPost["UserID"].ToString() == "") return Resources.Global.RequiredMissing; //"필수값 누락!";
 
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
 
@@ -77,7 +77,7 @@ namespace ZumNet.Web.Controllers
                 try
                 {
                     JObject jPost = CommonUtils.PostDataToJson();
-                    if (jPost == null || jPost.Count == 0 || jPost["UserID"].ToString() == "") return "필수값 누락!";
+                    if (jPost == null || jPost.Count == 0 || jPost["UserID"].ToString() == "") return Resources.Global.RequiredMissing; //"필수값 누락!";
 
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
 

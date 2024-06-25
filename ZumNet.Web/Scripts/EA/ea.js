@@ -210,7 +210,7 @@ $(function () {
 
     _zw.fn.loadList = function () {
         var postData = _zw.fn.getLvQuery(true); //console.log(postData);
-        var url = '/EA/Main/List?qi=' + _zw.base64.encode(postData); //encodeURIComponent(postData);
+        var url = '/EA/Main/List?qi=' + encodeURIComponent(_zw.base64.encode(postData)); //encodeURIComponent(postData);
         //if (_zw.V.alias == "ea.form.report") url = '/Report?qi=' + encodeURIComponent(postData);
         //else url = '/EA/Main/List?qi=' + encodeURIComponent(postData); //_zw.base64.encode(postData);
 

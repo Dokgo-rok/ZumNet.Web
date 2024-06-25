@@ -367,6 +367,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Please contact the administrator.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ContactAdmin {
+            get {
+                return ResourceManager.GetString("ContactAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Count과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Count {
@@ -1425,6 +1434,24 @@ namespace Resources {
         public static string Requester {
             get {
                 return ResourceManager.GetString("Requester", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Required과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Required {
+            get {
+                return ResourceManager.GetString("Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Missing required value과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string RequiredMissing {
+            get {
+                return ResourceManager.GetString("RequiredMissing", resourceCulture);
             }
         }
         
