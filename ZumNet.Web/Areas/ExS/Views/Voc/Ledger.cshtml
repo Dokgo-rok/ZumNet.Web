@@ -26,12 +26,13 @@
 
     private void ConfigColumn()
     {
-        string[,] arr = { { "REGID", "ID", "4%", "", "", "" }, { "REQUEST", "구분", "4%", "", "", "Y" }, { "RCTDT", "접수일", "5%", "", "", "Y" }
-                        , { "CUSTOMER", "고객명", "6%", "", "Y", "" }, { "CONTACT", "연락처", "5%", "", "Y", "" }, { "PRODCLS", "제품분류", "6%", "", "", "" }, { "MODELNMA", "품명", "5%", "", "Y", "Y" }
-                        , { "MODELCOLOR", "색상", "4%", "", "Y", "Y" }, { "SERIALNO", "S/N", "5%", "", "Y", "Y" }, { "PURCHDT", "구입일", "5%", "", "Y", "Y" }
-                        , { "KIND", "VOC", "6%", "", "", "Y" }, { "RESULT", "최종판정", "5%", "", "", "Y" }, { "STATUS", "진행상태", "5%", "", "", "Y" }
-                        , { "REPAIR", "수리내역", "5%", "", "", "Y" }, { "TROUBLE", "불량유형", "7%", "", "", "Y" }, { "TAT", "TAT", "3%", "", "Y", "Y" }
-                        , { "REASON", "고장원인", "11%", "L", "Y", "" }, { "CRNM", "등록자", "4%", "", "", "" }, { "CRDT", "등록일", "5%", "", "", "" }};
+        string[,] arr = { { "REGID", "ID", "3%", "", "", "" }, { "REQUEST", "구분", "4%", "", "", "Y" }, { "RCTDT", "접수일", "4%", "", "", "Y" }
+                        , { "CUSTOMER", "고객명", "5%", "", "Y", "" }, { "CONTACT", "연락처", "5%", "", "Y", "" }, { "PRODCLS", "제품분류", "6%", "", "", "" }, { "MODELNMA", "품명", "5%", "", "Y", "Y" }
+                        , { "MODELCOLOR", "색상", "4%", "", "Y", "Y" }, { "SERIALNO", "S/N", "4%", "", "Y", "Y" }, { "PURCHDT", "구입일", "5%", "", "Y", "Y" }
+                        , { "KIND", "VOC", "5%", "", "", "Y" }, { "RESULT", "최종판정", "4%", "", "", "Y" }, { "STATUS", "진행상태", "5%", "", "", "Y" }
+                        , { "REPAIR", "수리내역", "5%", "", "", "Y" }, { "TROUBLE", "불량유형", "6%", "", "", "Y" }
+                        , { "BRAND", "브랜드명", "5%", "", "", "Y" }, { "USAGE", "사용내역", "5%", "", "", "Y" }, { "TAT", "TAT", "3%", "", "Y", "Y" }
+                        , { "REASON", "고장원인", "9%", "L", "Y", "" }, { "CRNM", "등록자", "4%", "", "", "" }, { "CRDT", "등록일", "4%", "", "", "" }};
         this._columnConfig = arr;
     }
 
@@ -395,6 +396,38 @@
             if (o[7].ToString() != "N")
             {
                 sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd7"]) == o[2].ToString() ? " selected" : "";
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+            }
+        }
+        sb.Append("</select>");
+
+        //브랜드명
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[8, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond8\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.brand"])
+        {
+            if (o[7].ToString() != "N")
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd8"]) == o[2].ToString() ? " selected" : "";
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
+            }
+        }
+        sb.Append("</select>");
+
+        //사용내역
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.AppendFormat("<span class=\"input-group-text bg-light px-2\">{0}</span>", ViewBag.CodeConfig[9, 2]);
+        sb.Append("</div>");
+        sb.Append("<select class=\"custom-select\" id=\"_Cond9\">");
+        sb.Append("<option value=\"\">전체</option>");
+        foreach (object[] o in ViewBag.CodeTable["voc.usage"])
+        {
+            if (o[7].ToString() != "N")
+            {
+                sSelected = ZumNet.Framework.Util.StringHelper.SafeString(ViewBag.R.lv["cd9"]) == o[2].ToString() ? " selected" : "";
                 sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[4].ToString(), o[4].ToString(), sSelected);
             }
         }

@@ -4,7 +4,6 @@
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
 @{
-
 }
 @functions{
     private string NewVoc(JObject post)
@@ -74,6 +73,26 @@
             sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "RESULT");
             sb.Append("<option value=\"\">선택</option>");
             foreach (object[] o in ViewBag.CodeTable["voc.result"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.Append("</select>");
+            sb.Append("</td></tr>");
+
+            //브랜드명, 사용내역
+            sb.Append("<tr><th class=\"bg-light\">브랜드명</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "BRAND");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.brand"])
+            {
+                sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+            }
+            sb.Append("</select></td>");
+
+            sb.Append("<th class=\"bg-light\">사용내역</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "USAGE");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["voc.usage"])
             {
                 sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
             }
@@ -381,6 +400,38 @@
                 foreach (object[] o in ViewBag.CodeTable["voc.result"])
                 {
                     if (row["RESULT"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                sb.Append("</select>");
+            }
+            sb.Append("</td></tr>");
+
+            //브랜드명, 사용내역
+            sb.Append("<tr><th class=\"bg-light\">브랜드명</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["BRAND"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "BRAND");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.brand"])
+                {
+                    if (row["BRAND"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
+                    else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
+                }
+                sb.Append("</select>");
+            }
+
+            sb.Append("</td><th class=\"bg-light\">사용내역</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" />", row["USAGE"].ToString());
+            else
+            {
+                sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "USAGE");
+                sb.Append("<option value=\"\">선택</option>");
+                foreach (object[] o in ViewBag.CodeTable["voc.usage"])
+                {
+                    if (row["USAGE"].ToString() == o[4].ToString()) sb.AppendFormat("<option value=\"{0}\" selected=\"selected\">{1}</option>", o[4].ToString(), o[4].ToString());
                     else sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[4].ToString(), o[4].ToString());
                 }
                 sb.Append("</select>");

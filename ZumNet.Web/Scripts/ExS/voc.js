@@ -232,7 +232,8 @@
         }
 
         _zw.V.lv.cd1 = $('#_Cond1').val(); _zw.V.lv.cd2 = $('#_Cond2').val(); _zw.V.lv.cd3 = $('#_Cond3').val();
-        _zw.V.lv.cd4 = $('#_Cond4').val(); _zw.V.lv.cd5 = $('#_Cond5').val(); _zw.V.lv.cd6 = $('#_Cond6').val(); _zw.V.lv.cd7 = $('#_Cond7').val();
+        _zw.V.lv.cd4 = $('#_Cond4').val(); _zw.V.lv.cd5 = $('#_Cond5').val(); _zw.V.lv.cd6 = $('#_Cond6').val();
+        _zw.V.lv.cd7 = $('#_Cond7').val(); _zw.V.lv.cd8 = $('#_Cond8').val(); _zw.V.lv.cd9 = $('#_Cond9').val();
 
         _zw.fn.loadList();
     }
@@ -293,7 +294,8 @@
         j["basesort"] = _zw.V.lv.basesort;
         j["boundary"] = _zw.V.lv.boundary;
 
-        j["cd1"] = _zw.V.lv.cd1; j["cd2"] = _zw.V.lv.cd2; j["cd3"] = _zw.V.lv.cd3; j["cd4"] = _zw.V.lv.cd4; j["cd5"] = _zw.V.lv.cd5; j["cd6"] = _zw.V.lv.cd6; j["cd7"] = _zw.V.lv.cd7;
+        j["cd1"] = _zw.V.lv.cd1; j["cd2"] = _zw.V.lv.cd2; j["cd3"] = _zw.V.lv.cd3; j["cd4"] = _zw.V.lv.cd4; j["cd5"] = _zw.V.lv.cd5;
+        j["cd6"] = _zw.V.lv.cd6; j["cd7"] = _zw.V.lv.cd7; j["cd8"] = _zw.V.lv.cd8; j["cd9"] = _zw.V.lv.cd9;
 
         return JSON.stringify(j);
     }
@@ -314,7 +316,10 @@
         //_zw.V.lv.basesort = '';
 
         $('#_Search').val(''); $('#_SearchText').val('');
-        $('#_Cond1').val(''); $('#_Cond2').val(''); $('#_Cond3').val(''); $('#_Cond4').val(''); $('#_Cond5').val(''); $('#_Cond6').val(''); $('#_Cond7').val('');
-        _zw.V.lv.cd1 = ''; _zw.V.lv.cd2 = ''; _zw.V.lv.cd3 = ''; _zw.V.lv.cd4 = ''; _zw.V.lv.cd5 = ''; _zw.V.lv.cd6 = ''; _zw.V.lv.cd7 = '';
+        $('#_Cond1').val(''); $('#_Cond2').val(''); $('#_Cond3').val(''); $('#_Cond4').val(''); $('#_Cond5').val('');
+        $('#_Cond6').val(''); $('#_Cond7').val(''); $('#_Cond8').val(''); $('#_Cond9').val('');
+
+        _zw.V.lv.cd1 = ''; _zw.V.lv.cd2 = ''; _zw.V.lv.cd3 = ''; _zw.V.lv.cd4 = ''; _zw.V.lv.cd5 = '';
+        _zw.V.lv.cd6 = ''; _zw.V.lv.cd7 = ''; _zw.V.lv.cd8 = ''; _zw.V.lv.cd9 = '';
     }
 });

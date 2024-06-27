@@ -69,7 +69,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
             {
                 svcRt = rpBiz.GetRegisterVOC(ViewBag.R.mode.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
                                 , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString()
-                                , ViewBag.R.lv.cd5.ToString(), ViewBag.R.lv.cd6.ToString(), ViewBag.R.lv.cd7.ToString()
+                                , ViewBag.R.lv.cd5.ToString(), ViewBag.R.lv.cd6.ToString(), ViewBag.R.lv.cd7.ToString(), ViewBag.R.lv.cd8.ToString(), ViewBag.R.lv.cd9.ToString()
                                 , StringHelper.SafeInt(ViewBag.R.lv.page.Value), StringHelper.SafeInt(ViewBag.R.lv.count.Value), ViewBag.R.lv.basesort.ToString()
                                 , ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), ViewBag.R.lv.search.ToString(), ViewBag.R.lv.searchtext.ToString());
             }
@@ -119,7 +119,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     {
                         svcRt = rpBiz.GetRegisterVOC(jPost["mode"].ToString(), jPost["lv"]["start"].ToString(), jPost["lv"]["end"].ToString()
                                             , jPost["lv"]["cd1"].ToString(), jPost["lv"]["cd2"].ToString(), jPost["lv"]["cd3"].ToString(), jPost["lv"]["cd4"].ToString()
-                                            , jPost["lv"]["cd5"].ToString(), jPost["lv"]["cd6"].ToString(), jPost["lv"]["cd7"].ToString()
+                                            , jPost["lv"]["cd5"].ToString(), jPost["lv"]["cd6"].ToString(), jPost["lv"]["cd7"].ToString(), jPost["lv"]["cd8"].ToString(), jPost["lv"]["cd9"].ToString()
                                             , StringHelper.SafeInt(jPost["lv"]["page"].ToString()), StringHelper.SafeInt(jPost["lv"]["count"].ToString()), jPost["lv"]["basesort"].ToString()
                                             , jPost["lv"]["sort"].ToString(), jPost["lv"]["sortdir"].ToString(), jPost["lv"]["search"].ToString(), jPost["lv"]["searchtext"].ToString());
                     }
@@ -190,7 +190,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
 
             using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
             {
-                svcRt = rpBiz.GetRegisterVOC("ST", ViewBag.R.lv["tgt"].ToString(), "", "", "", "", "", "", "", "", 0, 0, "", "", "", "", "");
+                svcRt = rpBiz.GetRegisterVOC("ST", ViewBag.R.lv["tgt"].ToString(), "", "", "", "", "", "", "", "", "", "", 0, 0, "", "", "", "", "");
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
                     ViewBag.ST = svcRt.ResultDataSet;
@@ -203,7 +203,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
                 }
 
-                svcRt = rpBiz.GetRegisterVOC("PC", "", "", "", "", "", "", "", "", "", 0, 0, "", "", "", "", "");
+                svcRt = rpBiz.GetRegisterVOC("PC", "", "", "", "", "", "", "", "", "", "", "", 0, 0, "", "", "", "", "");
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
                     ViewBag.PCC = svcRt.ResultDataSet;
@@ -231,7 +231,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                 try
                 {
                     JObject jPost = CommonUtils.PostDataToJson();
-                    if (jPost == null || jPost.Count == 0 || jPost["acl"].ToString() == "") return "필수값 누락!";
+                    if (jPost == null || jPost.Count == 0 || jPost["acl"].ToString() == "") return Resources.Global.RequiredMissing; // "필수값 누락!";
 
                     //초기 설정
                     rt = Bc.CtrlHandler.VocInit(this);
@@ -361,10 +361,11 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                             , jPost["RCTDT"].ToString(), jPost["CUSTOMER"].ToString(), jPost["CONTACT"].ToString(), jPost["ADDRESS"].ToString()
                             , jPost["MODELNMA"].ToString() , jPost["MODELNMB"].ToString(), jPost["MODELCOLOR"].ToString(), jPost["SERIALNO"].ToString()
                             , jPost["PURCHDT"].ToString() , jPost["KIND"].ToString() , jPost["RESULT"].ToString(), jPost["STATUS"].ToString()
-                            , jPost["REPAIR"].ToString(), jPost["TROUBLE"].ToString(), StringHelper.SafeString(jPost["EXPTDT"]), jPost["COMPDT"].ToString()
-                            , jPost["TAT"].ToString(), jPost["CONTENTS"].ToString(), jPost["REASON"].ToString(), jPost["REASONC"].ToString()
-                            , StringHelper.SafeString(jPost["DESCRIPTION"]), StringHelper.SafeString(jPost["ETC"]), jPost["MEMO1"].ToString(), StringHelper.SafeString(jPost["MEMO2"])
-                            , StringHelper.SafeString(jPost["CGID"]), StringHelper.SafeString(jPost["CGNM"]), StringHelper.SafeString(jPost["CGDPTID"]), StringHelper.SafeString(jPost["CGDPT"])
+                            , jPost["REPAIR"].ToString(), jPost["TROUBLE"].ToString(), jPost["BRAND"].ToString(), jPost["USAGE"].ToString()
+                            , StringHelper.SafeString(jPost["EXPTDT"]), jPost["COMPDT"].ToString(), jPost["TAT"].ToString(), jPost["CONTENTS"].ToString()
+                            , jPost["REASON"].ToString(), jPost["REASONC"].ToString(), StringHelper.SafeString(jPost["DESCRIPTION"]), StringHelper.SafeString(jPost["ETC"])
+                            , jPost["MEMO1"].ToString(), StringHelper.SafeString(jPost["MEMO2"]), StringHelper.SafeString(jPost["CGID"])
+                            , StringHelper.SafeString(jPost["CGNM"]), StringHelper.SafeString(jPost["CGDPTID"]), StringHelper.SafeString(jPost["CGDPT"])
                             , Session["URID"].ToString(), Session["URName"].ToString(),Session["DeptID"].ToString(), Session["DeptName"].ToString(), ""); //sTRBLs
                     }
 
@@ -406,7 +407,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
                     using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
                     {
-                        svcRt = rpBiz.SetRegisterVOC(jPost["M"].ToString(), lRegId, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+                        svcRt = rpBiz.SetRegisterVOC(jPost["M"].ToString(), lRegId, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
                                 , Session["URID"].ToString(), Session["URName"].ToString(), Session["DeptID"].ToString(), Session["DeptName"].ToString(), "");
                     }
 

@@ -2990,7 +2990,9 @@ namespace ZumNet.Web.Bc
                         { "voc", "result", "최종판정" },
                         { "voc", "status", "진행상태" },
                         { "voc", "repair", "수리내역" },
-                        { "voc", "trouble", "불량유형" }
+                        { "voc", "trouble", "불량유형" },
+                        { "voc", "brand", "브랜드명" },
+                        { "voc", "usage", "사용내역" }
                 };
 
                 using (ZumNet.BSL.ServiceBiz.CommonBiz cb = new BSL.ServiceBiz.CommonBiz())
@@ -3031,6 +3033,8 @@ namespace ZumNet.Web.Bc
                         { "voc", "status", "" },
                         { "voc", "repair", "" },
                         { "voc", "trouble", "" },
+                        { "voc", "brand", "" },
+                        { "voc", "usage", "" },
                         { "voc", "prodmodel", "" },
                         { "voc", "prodcolor", "" },
                         { "voc", "reason", "" }
