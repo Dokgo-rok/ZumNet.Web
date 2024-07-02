@@ -2210,6 +2210,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CANCELREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CARACCIDENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CERTIFICATIONDOCUMENT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CHANGEPLACELIST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPLACEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPOSREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
@@ -2219,6 +2220,7 @@
     <Content Include="Scripts\EA\Forms\FORM_COMPLAINTREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_COMPLETEPRODUCTTEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONAPPLICATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CONSTRUCTDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONTRACTRE.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_CREDIBILITYRESULTREPORT.js" />
@@ -2242,6 +2244,7 @@
     <Content Include="Scripts\EA\Forms\FORM_DRIVEMONEY.js" />
     <Content Include="Scripts\EA\Forms\FORM_EDUREPORTB.js" />
     <Content Include="Scripts\EA\Forms\FORM_EDUREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EDUREQUESTIN.js" />
     <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_EMPLOYMENTREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_EQUIPDRAFTA.js" />
@@ -2265,6 +2268,7 @@
     <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_ISOPARTMONTHLYRETURN.js" />
     <Content Include="Scripts\EA\Forms\FORM_ITEMMASTERCHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_JURIDICALSTAMPREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_LOSSDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_LOSSREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_MANMOVE.js" />
@@ -2300,6 +2304,7 @@
     <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUCC.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTSOURCINGUCD.js" />
     <Content Include="Scripts\EA\Forms\FORM_OUTWORK.js" />
+    <Content Include="Scripts\EA\Forms\FORM_OVERWORKREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_OWNPRODUCTSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSACKSPEC.js" />
     <Content Include="Scripts\EA\Forms\FORM_PARTSINDITESTSTD.js" />
@@ -2321,6 +2326,7 @@
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCD.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCF.js" />
     <Content Include="Scripts\EA\Forms\FORM_REPAIRREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_REPORTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />
     <Content Include="Scripts\EA\Forms\FORM_RESIGNATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_RPUSEAPP.js" />
@@ -2332,6 +2338,7 @@
     <Content Include="Scripts\EA\Forms\FORM_SECONDMODELREG.js" />
     <Content Include="Scripts\EA\Forms\FORM_SELLINGUC.js" />
     <Content Include="Scripts\EA\Forms\FORM_SHIPMENTUC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SOFTWARECHECK.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALCONFIRM.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALPROMOTION.js" />

@@ -3268,7 +3268,7 @@
                     strCol21 = StringHelper.SafeString(row["비고"], "");
 
                     svcRt = rptBiz.SetRegisterVOC("I", 0, strCol1, strCol2, strCol3, strCol4, strCol5, strCol6, strCol7, strCol8, strCol9, strCol10
-                                , strCol11, strCol12, strCol13, strCol15, strCol19, "", "", strCol14, strCol16, strCol17, strCol18, strCol20, strCol21, "", "", "", "", "", ""
+                                , strCol11, strCol12, strCol13, strCol15, strCol19, "", "", "", "", strCol14, strCol16, strCol17, strCol18, strCol20, strCol21, "", "", "", "", "", ""
                                 , Session["URID"].ToString(), Session["URName"].ToString(), Session["DeptID"].ToString(), Session["DeptName"].ToString(), "");
 
                     if (svcRt.ResultCode != 0)
