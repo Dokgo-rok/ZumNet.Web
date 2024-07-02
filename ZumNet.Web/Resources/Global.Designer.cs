@@ -376,6 +376,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Copy과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Copy {
+            get {
+                return ResourceManager.GetString("Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Count과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Count {
@@ -408,6 +417,15 @@ namespace Resources {
         public static string CurrentWork {
             get {
                 return ResourceManager.GetString("CurrentWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cut과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Cut {
+            get {
+                return ResourceManager.GetString("Cut", resourceCulture);
             }
         }
         
@@ -1231,6 +1249,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Paste과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Paste {
+            get {
+                return ResourceManager.GetString("Paste", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Permission과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Permission {
@@ -1402,6 +1429,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Remove과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Remove {
+            get {
+                return ResourceManager.GetString("Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Reply과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Reply {
@@ -1461,6 +1497,24 @@ namespace Resources {
         public static string Reset {
             get {
                 return ResourceManager.GetString("Reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Restore과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Restore {
+            get {
+                return ResourceManager.GetString("Restore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Reuse과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Reuse {
+            get {
+                return ResourceManager.GetString("Reuse", resourceCulture);
             }
         }
         

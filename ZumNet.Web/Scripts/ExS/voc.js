@@ -10,6 +10,8 @@
 
     _zw.fn.sort = function (col) {
         var el = event.target ? event.target : event.srcElement;
+        if (el.tagName == 'I') el = el.parentNode;
+
         var dir = $(el).find('i').hasClass('fe-arrow-up') ? 'DESC' : 'ASC';
         _zw.fn.goSearch(null, col, dir);
     }
@@ -97,7 +99,8 @@
 
                     p.find('.modal-footer .btn[data-zm-menu]').click(function () {
                         var mn = $(this).attr('data-zm-menu');
-                        if (mn == 'save')  _zw.fn.saveVoc(p, m, oId);
+                        if (mn == 'save') _zw.fn.saveVoc(p, m, oId);
+                        else if (mn == 'saveas') _zw.fn.saveVoc(p, 'C', 0);
                         else if (mn == 'delete') _zw.fn.deleteVoc(p, 'D', oId);
                         else if (mn == 'restore') _zw.fn.deleteVoc(p, 'S', oId);
                         else if (mn == 'remove') _zw.fn.deleteVoc(p, 'R', oId);
@@ -150,6 +153,7 @@
         p.find(':checkbox[name="REASON"]:checked').each(function () {
             reasonVal += $(this).val() + ';';
         });
+
         postJson["REASON"] = reasonVal;
         postJson["M"] = m == 'V' && oid != '' && oid != '0' ? 'M' : 'N';
         postJson["oid"] = oid;
@@ -159,7 +163,11 @@
 
         //console.log(postJson);
 
-        var msg = (m == 'V' && oid != '' && oid) ? "해당 접수사항을 변경하시겠습니까?" : "해당 사항을 접수하시겠습니까?";
+        var msg = "해당 사항을 접수하시겠습니까?";
+        if (m == 'V' && oid != '' && oid) msg = "해당 접수사항을 변경 하시겠습니까?";
+        else if (m == 'C') msg = '<div class="text-danger mb-3">새로 저장하는 경우 [접수일, 진행상태, 최종판정] 필드를 재확인 바랍니다.</div>해당 접수사항을 새로 저장 하시겠습니까?';
+        //console.log(postJson);
+
         bootbox.confirm(msg, function (rt) {
             if (rt) {
                 $.ajax({
@@ -168,9 +176,9 @@
                     data: JSON.stringify(postJson),
                     success: function (res) {
                         if (res.substr(0, 2) == 'OK') {
-                            bootbox.alert(res.substr(2), function () {
+                            //bootbox.alert(res.substr(2), function () {
                                 p.find("button[data-dismiss='modal']").click(); _zw.mu.refresh();
-                            });
+                            //});
                         } else bootbox.alert(res);
                     }
                 });

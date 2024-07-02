@@ -222,6 +222,9 @@
   <data name="ContactAdmin" xml:space="preserve">
     <value>관리자에게 문의 바랍니다.</value>
   </data>
+  <data name="Copy" xml:space="preserve">
+    <value>복사</value>
+  </data>
   <data name="Count" xml:space="preserve">
     <value>개</value>
   </data>
@@ -233,6 +236,9 @@
   </data>
   <data name="CurrentWork" xml:space="preserve">
     <value>현재작업</value>
+  </data>
+  <data name="Cut" xml:space="preserve">
+    <value>잘라내기</value>
   </data>
   <data name="Date_Approve" xml:space="preserve">
     <value>결재일</value>
@@ -507,6 +513,9 @@
   <data name="Password_NotMatch" xml:space="preserve">
     <value>비밀번호가 일치하지 않습니다.</value>
   </data>
+  <data name="Paste" xml:space="preserve">
+    <value>붙여넣기</value>
+  </data>
   <data name="Permission" xml:space="preserve">
     <value>권한</value>
   </data>
@@ -564,6 +573,9 @@
   <data name="RememberMe" xml:space="preserve">
     <value>아이디 저장</value>
   </data>
+  <data name="Remove" xml:space="preserve">
+    <value>제거</value>
+  </data>
   <data name="Reply" xml:space="preserve">
     <value>회신</value>
   </data>
@@ -584,6 +596,12 @@
   </data>
   <data name="Reset" xml:space="preserve">
     <value>초기화</value>
+  </data>
+  <data name="Restore" xml:space="preserve">
+    <value>복구</value>
+  </data>
+  <data name="Reuse" xml:space="preserve">
+    <value>재사용</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>저장</value>

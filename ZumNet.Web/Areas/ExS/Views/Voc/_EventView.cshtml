@@ -177,32 +177,37 @@
             sb.Append("<table class=\"table table-bordered table-sm\">");
             sb.Append("<colspan><col style=\"width:13%\" /><co /></colspan>");
 
-            //고장원인
-            sb.AppendFormat("<tr><th class=\"bg-light\">고장원인</th><td><div id=\"{0}\" class=\"px-2 pt-2 pb-0\">", "f_child");
-            //sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"txaText\" onkeyup=\"checkTextAreaLength(this, 1000);\"></textarea>", "REASON");
-            foreach (object[] o in ViewBag.CodeTable["voc.reason"])
-            {
-                if (o[3].ToString() == "99")
-                {
-                    //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString());
-                    //sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"\" style=\"width:200px\" /></span>", "REASONC");
-                    sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
-                    sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled />", o[3].ToString(), "REASON");
-                    sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
-                    sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"\" style=\"width:180px; height: 22px\" /></span>", "REASONC");
-                    sb.Append("</label>");
+            //고장원인 => 24/7/2 막음
+            //sb.AppendFormat("<tr><th class=\"bg-light\">고장원인</th><td><div id=\"{0}\" class=\"px-2 pt-2 pb-0\">", "f_child");
+            ////sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"txaText\" onkeyup=\"checkTextAreaLength(this, 1000);\"></textarea>", "REASON");
+            //foreach (object[] o in ViewBag.CodeTable["voc.reason"])
+            //{
+            //    if (o[3].ToString() == "99")
+            //    {
+            //        //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString());
+            //        //sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"\" style=\"width:200px\" /></span>", "REASONC");
+            //        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
+            //        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled />", o[3].ToString(), "REASON");
+            //        sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
+            //        sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"\" style=\"width:180px; height: 22px\" /></span>", "REASONC");
+            //        sb.Append("</label>");
 
-                }
-                else
-                {
-                    //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString());
-                    sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
-                    sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled />", o[3].ToString(), "REASON");
-                    sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
-                    sb.Append("</label>");
-                }
-            }
-            sb.Append("</div></td></tr>");
+            //    }
+            //    else
+            //    {
+            //        //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString());
+            //        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
+            //        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\" disabled />", o[3].ToString(), "REASON");
+            //        sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
+            //        sb.Append("</label>");
+            //    }
+            //}
+            //sb.Append("</div></td></tr>");
+
+            //고장원인 => 24/7/2 사용
+            sb.Append("<tr><th class=\"bg-light\">고장원인</th><td>");
+            sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"200\"></textarea>", "REASONC");
+            sb.Append("</td></tr>");
 
             //고객요청사항
             sb.Append("<tr><th class=\"bg-light\">고객요청<br />사항</th><td>");
@@ -585,70 +590,79 @@
             //    sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"txaText\" onkeyup=\"checkTextAreaLength(this, 1000);\">{1}</textarea>", "REASON", row["REASON"].ToString());
             //sb.Append("</td></tr>");
 
-            sb.AppendFormat("<tr><th class=\"bg-light\">고장원인</th><td><div id=\"{0}\" class=\"px-2 pt-2 pb-0\">", "f_child");
-            //sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"txaText\" onkeyup=\"checkTextAreaLength(this, 1000);\"></textarea>", "REASON");
+            //고장원인 -> 24/7/2 부터 아래 사용
+            sb.Append("<tr><th class=\"bg-light\">고장원인</th><td>");
+            if (bDel || sAuth == "N")
+                sb.AppendFormat("<textarea class=\"form-control\" readonly>{0}</textarea>", row["REASONC"].ToString());
+            else
+                sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"200\">{1}</textarea>", "REASONC", row["REASONC"].ToString());
+            sb.Append("</td></tr>");
 
-            foreach (object[] s in ViewBag.CodeTable["voc.prodmodel"])
-            {
-                if (s[4].ToString() == row["MODELNMA"].ToString())
-                {
-                    sModelReason = s[7].ToString(); break;
-                }
-            }
+            //24/7/2 아래 고장원인 소스 막음
+            //sb.AppendFormat("<tr><th class=\"bg-light\">고장원인</th><td><div id=\"{0}\" class=\"px-2 pt-2 pb-0\">", "f_child");
+            ////sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"txaText\" onkeyup=\"checkTextAreaLength(this, 1000);\"></textarea>", "REASON");
 
-            foreach (object[] o in ViewBag.CodeTable["voc.reason"])
-            {
-                sChecked = (row["REASON"].ToString().IndexOf(o[3].ToString()) >= 0) ? " checked = \"checked\"" : "";
-                sDisabled = (sModelReason.IndexOf(o[3].ToString() + ";") >= 0) ? "" : " disabled";
+            //foreach (object[] s in ViewBag.CodeTable["voc.prodmodel"])
+            //{
+            //    if (s[4].ToString() == row["MODELNMA"].ToString())
+            //    {
+            //        sModelReason = s[7].ToString(); break;
+            //    }
+            //}
 
-                if (bDel || sAuth == "N")
-                {
-                    if (o[3].ToString() == "99")
-                    {
-                        //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" disabled id=\"ckb_{0}\" name=\"{1}\" value=\"{0}\"{3}{4} onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
-                        //sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" style=\"width:200px\" /></span>", row["REASONC"].ToString());
+            //foreach (object[] o in ViewBag.CodeTable["voc.reason"])
+            //{
+            //    sChecked = (row["REASON"].ToString().IndexOf(o[3].ToString()) >= 0) ? " checked = \"checked\"" : "";
+            //    sDisabled = (sModelReason.IndexOf(o[3].ToString() + ";") >= 0) ? "" : " disabled";
 
-                        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
-                        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" disabled id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
-                        sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
-                        sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" readonly value=\"\" style=\"width:180px; height: 22px\" /></span>", row["REASONC"].ToString());
-                        sb.Append("</label>");
-                    }
-                    else
-                    {
-                        //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" disabled id=\"ckb_{0}\" name=\"{1}\" value=\"{0}\"{3}{4} /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
-                        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
-                        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" disabled id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
-                        sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
-                        sb.Append("</label>");
-                    }
-                }
-                else
-                {
-                    if (o[3].ToString() == "99")
-                    {
-                        //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{3}{4} onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
-                        //if (sChecked != "") sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"{1}\" style=\"width:200px\" /></span>", "REASONC", row["REASONC"].ToString());
-                        //else sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"{1}\" style=\"width:200px\" /></span>", "REASONC", row["REASONC"].ToString());
+            //    if (bDel || sAuth == "N")
+            //    {
+            //        if (o[3].ToString() == "99")
+            //        {
+            //            //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" disabled id=\"ckb_{0}\" name=\"{1}\" value=\"{0}\"{3}{4} onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
+            //            //sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" readonly value=\"{0}\" style=\"width:200px\" /></span>", row["REASONC"].ToString());
 
-                        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
-                        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
-                        sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
-                        if (sChecked != "") sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"{1}\" style=\"width:180px; height: 22px\" /></span>", "REASONC", row["REASONC"].ToString());
-                        else sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"{1}\" style=\"width:180px; height: 22px\" /></span>", "REASONC", row["REASONC"].ToString());
-                        sb.Append("</label>");
-                    }
-                    else
-                    {
-                        //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{3}{4} /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);                        
-                        sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
-                        sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
-                        sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
-                        sb.Append("</label>");
-                    }
-                }
-            }
-            sb.Append("</div></td></tr>");
+            //            sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
+            //            sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" disabled id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
+            //            sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
+            //            sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" readonly value=\"\" style=\"width:180px; height: 22px\" /></span>", row["REASONC"].ToString());
+            //            sb.Append("</label>");
+            //        }
+            //        else
+            //        {
+            //            //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" disabled id=\"ckb_{0}\" name=\"{1}\" value=\"{0}\"{3}{4} /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
+            //            sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
+            //            sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" disabled id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
+            //            sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
+            //            sb.Append("</label>");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (o[3].ToString() == "99")
+            //        {
+            //            //sb.AppendFormat("<span class=\"ckb w-49\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{3}{4} onclick=\"etc_onclick(this);\" /><label for=\"ckb_{0}\">{2}</label>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);
+            //            //if (sChecked != "") sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"{1}\" style=\"width:200px\" /></span>", "REASONC", row["REASONC"].ToString());
+            //            //else sb.AppendFormat("&nbsp;<input type=\"text\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"{1}\" style=\"width:200px\" /></span>", "REASONC", row["REASONC"].ToString());
+
+            //            sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 49%\">");
+            //            sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
+            //            sb.AppendFormat("<span class=\"custom-control-label text-dark mr-2\">{0}</span>", o[4].ToString());
+            //            if (sChecked != "") sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"{1}\" style=\"width:180px; height: 22px\" /></span>", "REASONC", row["REASONC"].ToString());
+            //            else sb.AppendFormat("&nbsp;<input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" disabled value=\"{1}\" style=\"width:180px; height: 22px\" /></span>", "REASONC", row["REASONC"].ToString());
+            //            sb.Append("</label>");
+            //        }
+            //        else
+            //        {
+            //            //sb.AppendFormat("<span class=\"ckb w-24\"><input type=\"checkbox\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{3}{4} /><label for=\"ckb_{0}\">{2}</label></span>", o[3].ToString(), "REASON", o[4].ToString(), sChecked, sDisabled);                        
+            //            sb.Append("<label class=\"custom-control custom-checkbox custom-control-inline mr-0\" style=\"width: 24%\">");
+            //            sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" id=\"ckb_{0}\" name=\"{1}\" data-field=\"{1}\" value=\"{0}\"{2}{3} />", o[3].ToString(), "REASON", sChecked, sDisabled);
+            //            sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", o[4].ToString());
+            //            sb.Append("</label>");
+            //        }
+            //    }
+            //}
+            //sb.Append("</div></td></tr>");
 
             //고객요청사항
             sb.Append("<tr><th class=\"bg-light\">고객요청<br />사항</th><td>");
@@ -715,20 +729,28 @@
 
             sb.Append("</div>"); //modal-body
 
-            sb.Append("<div class=\"modal-footer\">");
+            sb.Append("<div class=\"modal-footer justify-content-between\">");
             if (sAuth != "N")
             {
+                if (!bDel)
+                {
+                    sb.Append("<div>");
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-success\" data-zm-menu=\"saveas\">{0}</button>", Resources.Global.SaveAs); //S
+                    sb.Append("</div>");
+                }
+                sb.Append("<div>");
                 if (bDel)
                 {
-                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"restore\">{0}</button>", "복구"); //S
-                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"remove\">{0}</button>", "제거"); //R
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default mr-2\" data-zm-menu=\"restore\">{0}</button>", Resources.Global.Restore); //S
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"remove\">{0}</button>", Resources.Global.Remove); //R
                 }
                 else
                 {
-                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Confirm);
-                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-zm-menu=\"delete\">{0}</button>", Resources.Global.Delete); //D
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary mr-2\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Save);
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-default mr-2\" data-zm-menu=\"delete\">{0}</button>", Resources.Global.Delete); //D
                 }
                 sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+                sb.Append("</div>");
             }
             else
             {
@@ -759,7 +781,6 @@
                 <span aria-hidden="true">×</span>
             </button>
         </div>
-
         @if (ViewBag.JPost["M"].ToString() == "new")
         {
             @Html.Raw(NewVoc(ViewBag.JPost))

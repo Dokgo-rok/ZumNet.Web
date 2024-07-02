@@ -475,7 +475,32 @@
                   </xsl:choose>
                 </td>
               </tr>
-              <tr>
+
+				<tr>
+					<td class="f-lbl">
+						교육과정명
+						<xsl:if test="$mode='new' or $mode='edit'">
+							<!--<button onclick="parent.fnOption('report.LCM_COURSE',800,400,250,-20,'','STDYEAR');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                      <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}/EA/Images/ico_28.gif" />
+                    </button>-->
+							<button type="button" class="btn btn-outline-secondary btn-18" title="교육과정" onclick="_zw.formEx.optionWnd('report.LCM_COURSE',800,400,250,-20,'','STDYEAR');">
+								<i class="fas fa-angle-down"></i>
+							</button>
+						</xsl:if>
+					</td>
+					<td colspan="3" style="border-right:0">
+						<xsl:choose>
+							<xsl:when test="$mode='new' or $mode='edit'">
+								<input type="text" id="__mainfield" name="COURSEDN" class="txtRead" readonly="readonly" maxlength="100" value="{//forminfo/maintable/COURSEDN}" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/COURSEDN))" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
+				</tr>
+				
+				<tr>
                 <td class="f-lbl">교육유형</td>
                 <td style="width:35%">
                   <xsl:choose>
@@ -525,28 +550,7 @@
                   </xsl:choose>
                 </td>
               </tr>
-              <tr>
-                <td class="f-lbl">교육과정명
-                  <xsl:if test="$mode='new' or $mode='edit'">
-                    <!--<button onclick="parent.fnOption('report.LCM_COURSE',800,400,250,-20,'','STDYEAR');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
-                      <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}/EA/Images/ico_28.gif" />
-                    </button>-->
-					  <button type="button" class="btn btn-outline-secondary btn-18" title="교육과정" onclick="_zw.formEx.optionWnd('report.LCM_COURSE',800,400,250,-20,'','STDYEAR');">
-						  <i class="fas fa-angle-down"></i>
-					  </button>
-                  </xsl:if>
-              </td>
-                <td colspan="3" style="border-right:0">
-                <xsl:choose>
-                  <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="COURSEDN" class="txtRead" readonly="readonly" maxlength="100" value="{//forminfo/maintable/COURSEDN}" />
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/COURSEDN))" />
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-              </tr>
+              
               <tr>
                 <td class="f-lbl">교육기관</td>
                 <td colspan="3" style="border-right:0">
