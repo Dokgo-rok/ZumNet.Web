@@ -139,9 +139,9 @@
                         </xsl:attribute>
                       </img>
                     </button>-->
-					  <!--<button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
 						  <i class="fas fa-angle-down"></i>
-					  </button>-->
+					  </button>
                   </xsl:if>
                 </td>
                 <td class="f-lbl1">소속</td>

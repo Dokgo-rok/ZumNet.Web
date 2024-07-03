@@ -113,7 +113,22 @@
                     {
                         strValue = row[strID].ToString();
                     }
-                    sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
+
+                    if (strID == "UsedSmsCount")
+                    {
+                        if (strValue == "1") { strValue = "파견"; strStyle = " table-info"; }
+                        else if (strValue == "2") { strValue = "재택"; strStyle = " table-warning"; }
+                        else if (strValue == "3") { strValue = "휴직"; strStyle = " table-danger"; }
+                        else { strValue = ""; strStyle = ""; }
+
+                        sb.AppendFormat("<td class=\"text-center{0}\">{1}</td>", strStyle, strValue);
+                        strStyle = "";
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<td class=\"{0}\">{1}</td>", _columnConfig[i, 3].ToString() == "L" ? "text-left" : "text-center", strValue);
+                    }
+
                 }
                 sb.Append("</tr>");
                 iRow++;

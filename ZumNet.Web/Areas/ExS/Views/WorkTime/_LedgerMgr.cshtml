@@ -142,20 +142,22 @@
                                 }
 
                                 string[] temp = sSelect.Split(';');
+                                DateTime dtInTime = Convert.ToDateTime(row["InTime"]); //24-07-03 추가
+
                                 if (DateTime.Compare(Convert.ToDateTime(row["OutTime"]), Convert.ToDateTime(Convert.ToDateTime(row["WorkDate"]).AddDays(1).ToString("yyyy-MM-dd") + " 00:00:00")) >= 0) //24시 이후
                                 {
-                                    if (Convert.ToDateTime(row["InTime"]).Hour < 9) { iN_pay_24 += 4; iN_24++; }
-                                    else if (Convert.ToDateTime(row["InTime"]).Hour < 10) { iN_pay_24 += 3; iN_24++; }
+                                    if (dtInTime.Hour < 9 || (dtInTime.Hour == 9 && dtInTime.Minute < 1)) { iN_pay_24 += 4; iN_24++; }
+                                    else if (dtInTime.Hour < 10 || (dtInTime.Hour == 10 && dtInTime.Minute < 1)) { iN_pay_24 += 3; iN_24++; }
                                 }
                                 else if (DateTime.Compare(Convert.ToDateTime(row["OutTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 23:00:00")) >= 0) //23시 이후
                                 {
-                                    if (Convert.ToDateTime(row["InTime"]).Hour < 9) { iN_pay_23 += 3; iN_23++; }
-                                    else if (Convert.ToDateTime(row["InTime"]).Hour < 10) { iN_pay_23 += 2; iN_23++; }
+                                    if (dtInTime.Hour < 9 || (dtInTime.Hour == 9 && dtInTime.Minute < 1)) { iN_pay_23 += 3; iN_23++; }
+                                    else if (dtInTime.Hour < 10 || (dtInTime.Hour == 10 && dtInTime.Minute < 1)) { iN_pay_23 += 2; iN_23++; }
                                 }
                                 else if (DateTime.Compare(Convert.ToDateTime(row["OutTime"]), Convert.ToDateTime(row["WorkDate"].ToString() + " 22:00:00")) >= 0) //22시 이후
                                 {
-                                    if (Convert.ToDateTime(row["InTime"]).Hour < 9) { iN_pay_22 += 2; iN_22++; }
-                                    else if (Convert.ToDateTime(row["InTime"]).Hour < 10) { iN_pay_22 += 0; iN_22++; }
+                                    if (dtInTime.Hour < 9 || (dtInTime.Hour == 9 && dtInTime.Minute < 1)) { iN_pay_22 += 2; iN_22++; }
+                                    else if (dtInTime.Hour < 10 || (dtInTime.Hour == 10 && dtInTime.Minute < 1)) { iN_pay_22 += 0; iN_22++; }
                                 }
 
                                 sCol_day += String.Format("<button class=\"btn btn-warning btn-sm\" style=\"padding: 3px 5px; margin: 1px 4px 1px 0\" onclick=\"_zw.fn.viewWorkInfo('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, '{8} {10}');\">{9} {10}</button>"
