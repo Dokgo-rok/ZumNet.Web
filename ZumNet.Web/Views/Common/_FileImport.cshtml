@@ -205,9 +205,10 @@
             strReturn = String.Format("** 대상 파일(<a class=\"z-lnk-navy-n\" href=\"/Content/Forms/IMPORT/AS관리대장.xlsx\" target=\"_blank\">AS관리대장</a>)을 선택하시오!");
             //strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 제외됩니다.";
         }
-        else if (_mode == "MC_SUMMARY") //모델별원가 시스템 개발원가견적 업로드
+        else if (_mode == "MC_SUMMARY") //모델별원가 시스템 개발원가견적/실적 업로드
         {
-            strReturn = String.Format("** 대상 파일(<a class=\"z-lnk-navy-n\" href=\"/Content/Forms/IMPORT/개발원가견적.xlsx\" target=\"_blank\">개발원가견적</a>)을 선택하시오!");
+            if (_subCondition == "R") strReturn = String.Format("** 대상 파일(<a class=\"z-lnk-navy-n\" href=\"/Content/Forms/IMPORT/모델별원가실적.xlsx\" target=\"_blank\">모델별원가실적</a>)을 선택하시오!");
+            else if (_subCondition == "D") strReturn = String.Format("** 대상 파일(<a class=\"z-lnk-navy-n\" href=\"/Content/Forms/IMPORT/개발원가견적.xlsx\" target=\"_blank\">개발원가견적</a>)을 선택하시오!");
             strReturn += "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;중복값은 덮어씌워집니다.";
         }
         else if (_mode == "CE_STDPAY") //개발원가견적 기준임율 업로드
@@ -319,9 +320,10 @@
             {
                 rt = "파일명이 올바르지 않습니다!";
             }
-            else if (_mode == "MC_SUMMARY" && !strUploadFile.Contains("개발원가견적")) //모델별원가 시스템 개발원가견적 업로드
+            else if (_mode == "MC_SUMMARY") //모델별원가 시스템 개발원가견적/모델별실적 업로드
             {
-                rt = "파일명[" + strUploadFile + "]이 올바르지 않습니다!";
+                if ((_subCondition == "D" && !strUploadFile.Contains("개발원가견적")) || (_subCondition == "R" && !strUploadFile.Contains("모델별원가실적")))
+                    rt = "파일명[" + strUploadFile + "]이 올바르지 않습니다!";
             }
             else if (_mode == "CE_STDPAY" && !strUploadFile.Contains("기준임율")) //개발원가견적 기준임율 업로드
             {
@@ -500,7 +502,7 @@
                     }
                     else if (_mode == "MC_SUMMARY") //모델별원가
                     {
-                        rt = DoMCSummary(dtList);
+                        rt = DoMCSummary(_subCondition, dtList);
                     }
                     else if (_mode == "CE_STDPAY") //개발원가견적 기준임율
                     {
@@ -579,8 +581,8 @@
 
             //if (strResult.Substring(0, 2) != "OK")
             //{
-                //22-08-06 임시로 암호화 실패 경우 로그 기록만
-                ZumNet.Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strResult, Environment.NewLine));
+            //22-08-06 임시로 암호화 실패 경우 로그 기록만
+            ZumNet.Framework.Log.Logging.WriteDebug(String.Format("{0, -15}{1} => {2}, {3}{4}", DateTime.Now.ToString("HH:mm:ss.ff"), HttpContext.Current.Request.Url.AbsolutePath, "DecrypFile", strUrl + " : " + strResult, Environment.NewLine));
             //}
         }
         catch (Exception ex)
@@ -3292,18 +3294,22 @@
     #endregion
 
     #region [모델별원가]
-    private string DoMCSummary(DataTable data)
+    private string DoMCSummary(string cls, DataTable data) //24-07-10 cls(구분) 추가
     {
         int iTotal = 0; //총 자료 건수
 
         ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
         StringBuilder sb = new StringBuilder();
 
-        if (data.Rows.Count > 0)
+        if (cls == "")
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", Resources.Global.Auth_InvalidPath); //잘못된 경로로 접근했습니다
+        }
+        else if (data.Rows.Count > 0)
         {
             string[] vCol = { "", "", "", "", "", "", "", "", "", "", ""
                             , "", "", "", "", "", "", "", "", "", "", ""
-                            , "", "", "", "", "", "", "", "", "", ""};
+                            , "", "", "", "", "", "", "", "", "", "", ""}; //cls=R 경우 매출액 추가
 
             string strResult = "";
             iTotal = data.Rows.Count;
@@ -3351,13 +3357,22 @@
                     vCol[28] = StringHelper.SafeString(row["공헌이익"], "");
                     vCol[29] = StringHelper.SafeString(row["공헌이익율"], "");
                     vCol[30] = StringHelper.SafeString(row["공수"], "");
+                    vCol[31] = StringHelper.SafeString(row["매출액"], ""); //cls=R 경우 매출액 추가
 
-                    if (vCol[0] != "")
+                    if (vCol[0] == "")
                     {
-                        svcRt = costBiz.InsertMCSUMMARY_EXCEL(0, 0, vCol[2], vCol[3], vCol[0], StringHelper.SafeInt(vCol[1]), vCol[4], vCol[5]
-                                            , vCol[6], vCol[7], vCol[8], vCol[9], vCol[10], vCol[11], vCol[12], vCol[13], vCol[14]
-                                            , vCol[15], vCol[16], "", "", vCol[17], vCol[18], vCol[19], vCol[20], vCol[21], vCol[22]
-                                            , vCol[23], vCol[24], vCol[25], vCol[26], vCol[27], vCol[28], vCol[29], vCol[30]);
+                        strResult = "모델번호 누락";
+                    }
+                    else if (vCol[17] == "" || vCol[18] == "")
+                    {
+                        strResult = "고정원가 정보 누락";
+                    }
+                    else
+                    {
+                        svcRt = costBiz.InsertMCSUMMARY_EXCEL(0, 0, vCol[2], vCol[3], vCol[0], StringHelper.SafeInt(vCol[1]), cls, vCol[4], vCol[5]
+                                                , vCol[6], vCol[7], vCol[8], vCol[9], vCol[10], vCol[11], vCol[12], vCol[13], vCol[14]
+                                                , vCol[15], vCol[16], "", "", vCol[17], vCol[18], vCol[19], vCol[20], vCol[21], vCol[22]
+                                                , vCol[23], vCol[24], vCol[25], vCol[26], vCol[27], vCol[28], vCol[29], vCol[30], vCol[30]);
 
                         if (svcRt.ResultCode == 0)
                         {
@@ -3368,7 +3383,6 @@
                         }
                         else strResult = svcRt.ResultMessage;
                     }
-                    else strResult = "모델번호 누락";
 
                     if (strResult != "OK")
                     {

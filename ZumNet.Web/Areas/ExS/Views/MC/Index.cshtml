@@ -59,6 +59,7 @@
 
         if (formTable == "CostList" || formTable == "StdTime")
         {
+            if (formTable == "CostList") sb.AppendFormat("<a class=\"z-lnk-navy-n mr-3\" href=\"javascript://\" title=\"{0}\" data-zv-menu=\"importExcel\"><i class=\"fas fa-cloud-upload-alt\"></i> {1}</a>", "실적 엑셀 가져오기", "실적가져오기");
             sb.AppendFormat("<a class=\"z-lnk-navy-n mr-3\" href=\"javascript://\" data-zv-menu=\"exportExcel\"><i class=\"fas fa-cloud-download-alt\" title=\"{0}\"></i> {1}</a>", "엑셀 내보내기", "엑셀");
             sb.Append("<button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button>");
         }

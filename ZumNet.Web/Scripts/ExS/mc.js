@@ -43,19 +43,25 @@ $(function () {
     //_zw.fn.exportExcel = function () {}
 
     $('[data-zv-menu="importExcel"]').click(function () {
-        var url = '/Common/FileImport?M=MC_SUMMARY&sy=&cd=';
-        $.ajax({
-            type: "POST",
-            url: url,
-            success: function (res) {
-                var p = $('#popBlank');
-                p.html(res); _zw.fu.bind();
-                fm = p.find('#uploadForm')[0].action = url;
+        var cd = '';
+        if (_zw.V.ft.toLowerCase() == 'excellist') cd = 'D'; //개발원가
+        else if (_zw.V.ft.toLowerCase() == 'costlist') cd = 'R'; //실적
 
-                p.on('hidden.bs.modal', function () { p.html(''); });
-                p.modal();
-            }
-        });
+        if (cd != '') {
+            var url = '/Common/FileImport?M=MC_SUMMARY&sy=&cd=' + cd;
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function (res) {
+                    var p = $('#popBlank');
+                    p.html(res); _zw.fu.bind();
+                    fm = p.find('#uploadForm')[0].action = url;
+
+                    p.on('hidden.bs.modal', function () { p.html(''); });
+                    p.modal();
+                }
+            });
+        }
     });
 
     _zw.fn.complete = function (msg) {

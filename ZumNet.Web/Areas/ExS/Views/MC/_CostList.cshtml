@@ -21,19 +21,20 @@
     private void ConfigColumn(string mode)
     {
         //컬럼 : id,표기,넓이,위치,검색여부,정렬여부
-        string[,] arr = { { "MODELCODE", "MODEL", "12.6%", "left", "", "" }, { "XCLS", "구분", "3.8%", "", "", "" }
-                        , { "MTRCOST", "금액", "3.8%", "right", "", "" }, { "MTRCOSTRT", "비율", "3.8%", "right", "", "" } //재료비
-                        , { "PCCOST", "금액", "3.8%", "right", "", "" }, { "PCCOSTRT", "비율", "3.8%", "right", "", "" } //가공비
-                        , { "SPLEX", "금액", "3.8%", "right", "", "" }, { "SPLEXRT", "비율", "3.8%", "right", "", "" } //소모품비
-                        , { "VARCOST", "금액", "3.8%", "right", "", "" }, { "VARCOSTRT", "비율", "3.8%", "right", "", "" } //변동원가
-                        , { "FIXCOST", "금액", "3.8%", "right", "", "" }, { "FIXCOSTRT", "비율", "3.8%", "right", "", "" } //고정원가
-                        , { "PRODCOST", "금액", "3.8%", "right", "", "" }, { "PRODCOSTRT", "비율", "3.8%", "right", "", "" } //제조원가
-                        , { "SGACOST", "금액", "3.8%", "right", "", "" }, { "SGACOSTRT", "비율", "3.8%", "right", "", "" } //판관비
-                        , { "TOTALCOST", "금액", "3.8%", "right", "", "" }, { "TOTALCOSTRT", "비율", "3.8%", "right", "", "" } //총원가
-                        , { "SALEPRICE", "금액", "3.8%", "right", "", "" } //판매가
-                        , { "OPPROFIT", "금액", "3.8%", "right", "", "" }, { "OPPROFITRT", "비율", "3.8%", "right", "", "" } //영업이익
-                        , { "CTBPROFIT", "금액", "3.8%", "right", "", "" }, { "CTBPROFITRT", "비율", "3.8%", "right", "", "" } //공헌이익
-                        , { "STDTIME", "금액", "3.8%", "right", "", "" } //공수            
+        string[,] arr = { { "MODELCODE", "MODEL", "11.9%", "left", "", "" }, { "XCLS", "구분", "3%", "", "", "" }
+                        , { "MTRCOST", "금액", "3.7%", "right", "", "" }, { "MTRCOSTRT", "비율", "3.7%", "right", "", "" } //재료비
+                        , { "PCCOST", "금액", "3.7%", "right", "", "" }, { "PCCOSTRT", "비율", "3.7%", "right", "", "" } //가공비
+                        , { "SPLEX", "금액", "3.7%", "right", "", "" }, { "SPLEXRT", "비율", "3.7%", "right", "", "" } //소모품비
+                        , { "VARCOST", "금액", "3.7%", "right", "", "" }, { "VARCOSTRT", "비율", "3.7%", "right", "", "" } //변동원가
+                        , { "FIXCOST", "금액", "3.7%", "right", "", "" }, { "FIXCOSTRT", "비율", "3.7%", "right", "", "" } //고정원가
+                        , { "PRODCOST", "금액", "3.7%", "right", "", "" }, { "PRODCOSTRT", "비율", "3.7%", "right", "", "" } //제조원가
+                        , { "SGACOST", "금액", "3.7%", "right", "", "" }, { "SGACOSTRT", "비율", "3.7%", "right", "", "" } //판관비
+                        , { "TOTALCOST", "금액", "3.7%", "right", "", "" }, { "TOTALCOSTRT", "비율", "3.7%", "right", "", "" } //총원가
+                        , { "SALEPRICE", "금액", "3.7%", "right", "", "" } //판매가
+                        , { "OPPROFIT", "금액", "3.7%", "right", "", "" }, { "OPPROFITRT", "비율", "3.7%", "right", "", "" } //영업이익
+                        , { "CTBPROFIT", "금액", "3.7%", "right", "", "" }, { "CTBPROFITRT", "비율", "3.7%", "right", "", "" } //공헌이익
+                        , { "STDTIME", "금액", "3.7%", "right", "", "" } //공수
+                        , { "PSALES", "금액", "3.7%", "right", "", "" } //매출액
                     };
         this._columnConfig = arr;
         //Master.BaseSort = "MODELCODE";
@@ -110,10 +111,14 @@
             sBlind = (sortCol == _columnConfig[23, 0].ToString()) ? "" : " d-none";
             sSortIcon = (sortCol == _columnConfig[23, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
             sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[23, 0].ToString(), "공수", sSortIcon, sBlind);
+
+            sBlind = (sortCol == _columnConfig[24, 0].ToString()) ? "" : " d-none";
+            sSortIcon = (sortCol == _columnConfig[24, 0].ToString() && sortType == "DESC") ? "fe-arrow-down" : "fe-arrow-up";
+            sb.AppendFormat("<th rowspan=\"2\" class=\"sortable text-truncate\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.sort('{0}');\" title=\"{1}\">{1}<i class=\"{2}{3} font-weight-bold\"></i></a></th>", _columnConfig[24, 0].ToString(), "매출액", sSortIcon, sBlind);
             sb.Append("</tr>");
 
             sb.Append("<tr class=\"table-success\">");
-            for (int i = 2; i < _columnConfig.GetLength(0) - 1; i++)
+            for (int i = 2; i < _columnConfig.GetLength(0) - 2; i++)
             {
                 //if (_columnConfig[i, 5].ToString() == "Y")
                 //{
@@ -163,10 +168,11 @@
             sb.AppendFormat("<th class=\"xls_th\" colspan=\"2\">{0}</th>", "영업이익");
             sb.AppendFormat("<th class=\"xls_th\" colspan=\"2\">{0}</th>", "공헌이익");
             sb.AppendFormat("<th class=\"xls_th\" rowspan=\"2\">{0}</th>", "공수");
+            sb.AppendFormat("<th class=\"xls_th\" rowspan=\"2\">{0}</th>", "매출액");
             sb.Append("</tr>");
 
             sb.Append("<tr class=\"success\">");
-            for (int i = 2; i < _columnConfig.GetLength(0) - 1; i++)
+            for (int i = 2; i < _columnConfig.GetLength(0) - 2; i++)
             {
                 if (i != 18) sb.AppendFormat("<th class=\"xls_th\">{0}</th>", _columnConfig[i, 1].ToString());
             }
@@ -233,7 +239,7 @@
                     for (int i = 2; i < _columnConfig.GetLength(0); i++)
                     {
                         strID = _columnConfig[i, 0].ToString();
-                        strClass = (strID == "SALEPRICE") ? " class=\"text-primary\"" : "";
+                        strClass = (strID == "SALEPRICE" || strID == "PSALES") ? " class=\"text-primary\"" : "";
 
                         if (dr != null)
                         {
@@ -275,7 +281,6 @@
                     sb.Append("</tr>");
                 }
 
-
                 //차이 계산
                 sb.Append("<tr class=\"table-warning inner-bold\">");
                 if (mode == "xls") sb.Append("<td class=\"xls_warning\" style=\"text-align: center\">차이</td>");
@@ -293,7 +298,7 @@
                         if (dr2[s].ToString() == "" || dr2[s].ToString() == "0")
                         {
                             sb.AppendFormat("<td{0}>&nbsp;</td>", mode == "xls" ? " class=\"xls_warning\"" : "");
-                            if (s != "SALEPRICE" && s != "STDTIME") sb.Append("<td>&nbsp;</td>");
+                            if (s != "SALEPRICE" && s != "STDTIME" && s != "PSALES") sb.Append("<td>&nbsp;</td>");
                         }
                         else
                         {
@@ -303,12 +308,12 @@
                             if (mode == "xls")
                             {
                                 sb.AppendFormat("<td class=\"xls_warning\" style=\"text-align: right\">{0}</td>", strValue); //재료비
-                                if (s != "SALEPRICE" && s != "STDTIME") sb.Append("<td class=\"xls_warning\">&nbsp;</td>");
+                                if (s != "SALEPRICE" && s != "STDTIME" && s != "PSALES") sb.Append("<td class=\"xls_warning\">&nbsp;</td>");
                             }
                             else
                             {
                                 sb.AppendFormat("<td style=\"text-align: right\">{0}</td>", strValue); //재료비
-                                if (s != "SALEPRICE" && s != "STDTIME") sb.Append("<td>&nbsp;</td>");
+                                if (s != "SALEPRICE" && s != "STDTIME" && s != "PSALES") sb.Append("<td>&nbsp;</td>");
                             }
                         }
                     }
