@@ -162,6 +162,8 @@
             }
 
             if (ViewBag.Mode != "new" && ViewBag.Mode != "reuse" && ViewBag.Mode != "edit") if (row["LNKEA"].ToString() != "" && row["LNKEA"].ToString() != "0") sb.AppendFormat("<li class=\"nav-item mr-3\"><a href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\" class=\"z-lnk-navy-n\" title=\"{1}\"><i class=\"fas fa-tag\"></i> {1}</a></li>", row["LNKEA"].ToString(), "관련문서");
+
+            sb.Append("<li class=\"nav-item\"><button class=\"btn icon-btn btn-outline-secondary m-0 btn-sm\" aria-controls=\"vw-full-fill\" onclick=\"_zw.ut.ctrls();\"><i class=\"fas fa-expand\"></i></button></li>");
         }
         else if (formTable == "OutPayDetail")
         {

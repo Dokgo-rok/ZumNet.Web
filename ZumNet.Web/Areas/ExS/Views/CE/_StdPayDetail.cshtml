@@ -216,8 +216,8 @@
         //sb.AppendFormat("<div class=\"{0}\">", isUse == "N" ? "blind" : "");
 
         sb.Append("<table class=\"z-grid z-grid-bordered\">");
-        sb.Append("<colgroup><col width=\"5.9%\" /><col width=\"5.9%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" />");
-        sb.Append("<col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /><col width=\"5.88%\" /></colgroup>");
+        sb.Append("<colgroup><col width=\"5.29%\" /><col width=\"5.28%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" />");
+        sb.Append("<col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /><col width=\"5.26%\" /></colgroup>");
         sb.Append("<thead>");
         sb.Append("<tr class=\"info\">");
         sb.AppendFormat("<th>{0}</th>", "고객");
@@ -225,6 +225,10 @@
         sb.AppendFormat("<th>{0}</th>", "직접<br />노무임율");
         sb.AppendFormat("<th>{0}</th>", "SMT<br />점당임율");
         sb.AppendFormat("<th>{0}</th>", "변동<br />경비임율");
+
+        sb.AppendFormat("<th>{0}</th>", "간접<br />노무임율"); //24-07-11 추가
+        sb.AppendFormat("<th>{0}</th>", "간접<br />고정임율"); //24-07-11 추가
+
         sb.AppendFormat("<th>{0}</th>", "수입<br />경비율");
         sb.AppendFormat("<th>{0}</th>", "소모품<br />비율");
         //sb.AppendFormat("<th>{0}</th>", "고정<br />원가율");  //21-08-23 막음
@@ -267,6 +271,10 @@
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "DIR_COST", "number;10;4", "");
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SMT_COST", "number;10;4", "");
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FL_COST", "number;10;4", "");
+
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IDLB_COST", "number;10;4", ""); //24-07-11 추가
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IDFX_COST", "number;10;4", ""); //24-07-11 추가
+
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IM_RT", "percent;3;2", "");
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CS_RT", "percent;3;2", "");
                     //sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FX_EM", "percent;3;2", "");
@@ -315,6 +323,10 @@
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "DIR_COST", sInputMask, DataHelper.GetFieldValueToString(r, "DIR_COST", ""));
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SMT_COST", sInputMask, DataHelper.GetFieldValueToString(r, "SMT_COST", ""));
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FL_COST", sInputMask, DataHelper.GetFieldValueToString(r, "FL_COST", ""));
+
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IDLB_COST", sInputMask, DataHelper.GetFieldValueToString(r, "IDLB_COST", ""));
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IDFX_COST", sInputMask, DataHelper.GetFieldValueToString(r, "IDFX_COST", ""));
+
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IM_RT", "percent;3;2", DataHelper.GetFieldValueToString(r, "IM_RT", ""));
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CS_RT", "percent;3;2", DataHelper.GetFieldValueToString(r, "CS_RT", ""));
                     //sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FX_EM", "percent;3;2", DataHelper.GetFieldValueToString(r, "FX_EM", ""));
@@ -368,6 +380,10 @@
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "DIR_COST", sInputMask, r["DIR_COST"].ToString());
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "SMT_COST", sInputMask, r["SMT_COST"].ToString());
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FL_COST", sInputMask, r["FL_COST"].ToString());
+
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IDLB_COST", sInputMask, r["IDLB_COST"].ToString());
+                    sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IDFX_COST", sInputMask, r["IDFX_COST"].ToString());
+
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "IM_RT", "percent;3;2", r["IM_RT"].ToString());
                     sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "CS_RT", "percent;3;2", r["CS_RT"].ToString());
                     //sb.AppendFormat("<td class=\"cell-input\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" data-inputmask=\"{1}\" value=\"{2}\" /></td>", "FX_EM", "percent;3;2", r["FX_EM"].ToString());
@@ -388,6 +404,10 @@
                     sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly /></td>", "DIR_COST", (corp == "VH" || corp == "IC" || corp == "IS") ? CommonUtils.CvtNumeric(r["DIR_COST"].ToString(), 4, "") : CommonUtils.CvtNumeric(r["DIR_COST"].ToString(), 4, ""));
                     sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly /></td>", "SMT_COST", (corp == "VH" || corp == "IC" || corp == "IS") ? CommonUtils.CvtNumeric(r["SMT_COST"].ToString(), 4, "") : CommonUtils.CvtNumeric(r["SMT_COST"].ToString(), 4, ""));
                     sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly /></td>", "FL_COST", (corp == "VH" || corp == "IC" || corp == "IS") ? CommonUtils.CvtNumeric(r["FL_COST"].ToString(), 4, "") : CommonUtils.CvtNumeric(r["FL_COST"].ToString(), 4, ""));
+
+                    sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly /></td>", "IDLB_COST", (corp == "VH" || corp == "IC" || corp == "IS") ? CommonUtils.CvtNumeric(r["IDLB_COST"].ToString(), 4, "") : CommonUtils.CvtNumeric(r["IDLB_COST"].ToString(), 4, ""));
+                    sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly /></td>", "IDFX_COST", (corp == "VH" || corp == "IC" || corp == "IS") ? CommonUtils.CvtNumeric(r["IDFX_COST"].ToString(), 4, "") : CommonUtils.CvtNumeric(r["IDFX_COST"].ToString(), 4, ""));
+
                     sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly /></td>", "IM_RT", r["IM_RT"].ToString() != "" ? CommonUtils.CvtNumeric(r["IM_RT"].ToString(), 2) + "%" : "");
                     sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly /></td>", "CS_RT", r["CS_RT"].ToString() != "" ? CommonUtils.CvtNumeric(r["CS_RT"].ToString(), 2) + "%" : "");
                     //sb.AppendFormat("<td class=\"cell-read\"><input type=\"text\" class=\"text-center\" data-column=\"{0}\" value=\"{1}\" readonly /></td>", "FX_EM", r["FX_EM"].ToString() != "" ? CommonUtils.CvtNumeric(r["FX_EM"].ToString(), 2) + "%" : "");
@@ -429,6 +449,9 @@
         sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"\" />", "BUYER");
         sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"\" />", "ITEMCLS");
         sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"{1}\" />", "ROWSEQ", seq);
+
+        sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"\" />", "IDLB_COST"); //24-07-11 추가
+        sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"\" />", "IDFX_COST"); //24-07-11 추가
 
         sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"\" />", "IM_RT");
         sb.AppendFormat("<input type=\"hidden\" data-column=\"{0}\" value=\"\" />", "FX_EM");
@@ -484,6 +507,10 @@
         sb.AppendFormat("<th>{0}</th>", "직접노무임율");
         sb.AppendFormat("<th>{0}</th>", "SMT점당임율");
         sb.AppendFormat("<th>{0}</th>", "변동경비임율");
+
+        sb.AppendFormat("<th>{0}</th>", "간접노무임율"); //24-07-11 추가
+        sb.AppendFormat("<th>{0}</th>", "간접고정임율"); //24-07-11 추가
+
         sb.AppendFormat("<th>{0}</th>", "수입경비율");
         sb.AppendFormat("<th>{0}</th>", "소모품비율");
         //sb.AppendFormat("<th>{0}</th>", "고정원가율");  //21-08-23 막음
@@ -543,6 +570,8 @@
                 sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["DIR_COST"].ToString(), 4, ""));
                 sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["SMT_COST"].ToString(), 4, ""));
                 sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["FL_COST"].ToString(), 4, ""));
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["IDLB_COST"].ToString(), 4, ""));
+                sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["IDFX_COST"].ToString(), 4, ""));
                 sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["IM_RT"].ToString(), 2) + "%");
                 sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["CS_RT"].ToString(), 2) + "%");
                 //sb.AppendFormat("<td>{0}</td>", r == null ? "" : StringHelper.CvtNumeric(r["FX_EM"].ToString(), 2) + "%" );

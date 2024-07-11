@@ -492,7 +492,8 @@ $(function () {
             });
 
             $('#_Corp_SMT').each(function () {
-                var c = $(this).find('div').clone();
+                //var c = $(this).find('div').clone();
+                var c = $(this).find('table.z-grid').parent().clone();
                 var t = c.find('.z-grid');
                 t.removeClass('z-grid z-grid-bordered').attr({ 'cellpadding': '4px', 'cellspacing': '0', 'border': '0' }).css({ 'font-size': '13px', 'width': '1040px', 'border-top': '2px solid #666', 'border-left': '2px solid #666', 'border-right': '1px solid #666', 'border-bottom': '1px solid #666', 'text-align': 'center' });
                 t.find('colgroup').remove();
