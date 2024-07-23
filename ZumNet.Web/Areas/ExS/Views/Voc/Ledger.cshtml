@@ -504,7 +504,8 @@ else
                             @if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S"))
                             {
                                 <button class="btn btn-default py-1 font-weight-bold mr-2" data-toggle="tooltip" data-placement="bottom" title="AS접수" onclick="_zw.fn.viewEvent('N');"><i class="fe-edit mr-1"></i>AS접수</button>
-                                <button class="btn btn-default py-1 font-weight-bold mr-2" data-toggle="tooltip" data-placement="bottom" title="엑셀 내보내기" onclick="_zw.fn.exportExcel();"><i class="fas fa-file-excel text-success mr-1"></i>내보내기</button>
+                                <button class="btn btn-default py-1 font-weight-bold mr-2" data-toggle="tooltip" data-placement="bottom" title="검색 결과 내보내기" onclick="_zw.fn.exportExcel();"><i class="fas fa-file-excel text-success mr-1"></i>내보내기</button>
+                                <button class="btn btn-default py-1 font-weight-bold mr-2" data-toggle="tooltip" data-placement="bottom" title="전체 목록 내보내기" onclick="_zw.fn.exportExcel('A');"><i class="fas fa-file-excel text-primary mr-1"></i>전체 내보내기</button>
                             }
                             <button class="btn btn-default py-1 font-weight-bold" onclick="window.close();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Close"><i class="fe-log-out"></i></button>
                         </div>

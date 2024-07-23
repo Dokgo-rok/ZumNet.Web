@@ -212,9 +212,20 @@
         });
     }
 
-    _zw.fn.exportExcel = function () {
-        var encQi = '{M:"xls",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",fdid:"' + _zw.V.fdid + '",opnode:"",ttl:"' + _zw.V.ttl + '"}';
-        window.open('?qi=' + encodeURIComponent(_zw.base64.encode(encQi)), 'ifrView');
+    _zw.fn.exportExcel = function (opt) {
+        var encQi = '';
+        if (opt && opt == 'A') {
+            bootbox.confirm('전체 대장을 내려 받겠습니까?<br />다소 시간이 소요될 수 있습니다.', function (rt) {
+                if (rt) {
+                    encQi = '{M:"xls",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",fdid:"' + _zw.V.fdid + '",opnode:"",ttl:"' + _zw.V.ttl + '"}';
+                    window.open('?qi=' + encodeURIComponent(_zw.base64.encode(encQi)), 'ifrView');   
+                }
+            });
+
+        } else {
+            encQi = _zw.fn.getLvQuery('xls');
+            window.open('?qi=' + encodeURIComponent(_zw.base64.encode(encQi)), 'ifrView');
+        }
     }
 
     _zw.fn.goSearch = function (page, sort, dir) {//alert(1)
@@ -247,7 +258,7 @@
     }
 
     _zw.fn.loadList = function () {
-        var postData = _zw.fn.getLvQuery(true); //console.log(postData)
+        var postData = _zw.fn.getLvQuery(_zw.V.mode); //console.log(postData)
         var url = '?qi=' + encodeURIComponent(_zw.base64.encode(postData));
 
         $.ajax({
@@ -276,9 +287,9 @@
         });
     }
 
-    _zw.fn.getLvQuery = function () {
-        var j = {};
-        j["M"] = _zw.V.mode;
+    _zw.fn.getLvQuery = function (m) {
+        var j = {}; m = m || '';
+        j["M"] = m;
         j["ct"] = _zw.V.ct;
         j["ctalias"] = _zw.V.ctalias;
         j["ot"] = _zw.V.ot;
