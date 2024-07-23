@@ -142,6 +142,8 @@ namespace ZumNet.Web.Bc
             string strDestPath = "";
             string strSavedName = "";
 
+            string strRepositoryFolder = ""; //24-07-11 추가
+
             string strReturn = "";
             string sPos = "";
 
@@ -156,13 +158,16 @@ namespace ZumNet.Web.Bc
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
                     sPos = "[200]";
-                    iLocId = svcRt.ResultItemCount;
-                    iFolderNum = xfAlias == "ea" ? svcRt.ResultItemCount / 1000 : svcRt.ResultItemCount / 250;
-
                     //192.168.100.249	newekp	storage\cresyn\Files\ea	389837	storage\cresyn\Images\ea	29023	G:
                     strServer = svcRt.ResultDataRow["ServerName"].ToString();
                     strFileFolder = svcRt.ResultDataRow["FileStorageFolder"].ToString();
                     strImgFolder = svcRt.ResultDataRow["ImgStorageFolder"].ToString();
+                    strRepositoryFolder = svcRt.ResultDataRow["Folder"].ToString(); //24-07-11
+
+                    sPos = "[201]";
+                    iLocId = svcRt.ResultItemCount;
+                    //iFolderNum = xfAlias == "ea" ? svcRt.ResultItemCount / 1000 : svcRt.ResultItemCount / 250;
+                    iFolderNum = strRepositoryFolder == "ea" ? svcRt.ResultItemCount / 1000 : svcRt.ResultItemCount / 250;
 
                     if (fileOrImg.Equals("Img"))
                     {
@@ -253,6 +258,8 @@ namespace ZumNet.Web.Bc
             string strSavedName = "";
             string strImgSize = "";
 
+            string strRepositoryFolder = ""; //24-07-11 추가
+
             string strReturn = "";
             string sPos = "";
 
@@ -267,12 +274,15 @@ namespace ZumNet.Web.Bc
                 if (svcRt != null && svcRt.ResultCode == 0)
                 {
                     sPos = "[200]";
-                    iLocId = svcRt.ResultItemCount;
-                    iFolderNum = xfAlias == "ea" ? svcRt.ResultItemCount / 1000 : svcRt.ResultItemCount / 250;
-
                     //192.168.100.249	newekp	storage\cresyn\Files\ea	389837	storage\cresyn\Images\ea	29023	G:
                     strServer = svcRt.ResultDataRow["ServerName"].ToString();
                     strImgFolder = svcRt.ResultDataRow["ImgStorageFolder"].ToString();
+                    strRepositoryFolder = svcRt.ResultDataRow["Folder"].ToString(); //24-07-11
+
+                    sPos = "[201]";
+                    iLocId = svcRt.ResultItemCount;
+                    //iFolderNum = xfAlias == "ea" ? svcRt.ResultItemCount / 1000 : svcRt.ResultItemCount / 250;
+                    iFolderNum = strRepositoryFolder == "ea" ? svcRt.ResultItemCount / 1000 : svcRt.ResultItemCount / 250;
 
                     sPos = "[210]";
                     strNewDirPath = strImgFolder + @"\" + iFolderNum.ToString();

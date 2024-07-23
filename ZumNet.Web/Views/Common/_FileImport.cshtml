@@ -3371,27 +3371,29 @@
                     {
                         svcRt = costBiz.InsertMCSUMMARY_EXCEL(0, 0, vCol[2], vCol[3], vCol[0], StringHelper.SafeInt(vCol[1]), cls, vCol[4], vCol[5]
                                                 , vCol[6], vCol[7], vCol[8], vCol[9], vCol[10], vCol[11], vCol[12], vCol[13], vCol[14]
-                                                , vCol[15], vCol[16], "", "", vCol[17], vCol[18], vCol[19], vCol[20], vCol[21], vCol[22]
-                                                , vCol[23], vCol[24], vCol[25], vCol[26], vCol[27], vCol[28], vCol[29], vCol[30], vCol[30]);
+                                                , vCol[15], vCol[16], vCol[17], vCol[18], "", "", vCol[19], vCol[20], vCol[21], vCol[22]
+                                                , vCol[23], vCol[24], vCol[25], vCol[26], vCol[27], vCol[28], vCol[29], vCol[30], vCol[31]);
 
                         if (svcRt.ResultCode == 0)
                         {
                             strResult = svcRt.ResultDataString;
                             if (strResult == "NO") strResult = "법인정보 누락";
                             else if (strResult == "PN") strResult = "회계기간 누락";
-                            else if (strResult == "PE") strResult = "회계기간 중복";
+                            //else if (strResult == "PE") strResult = "회계기간 중복";
                         }
                         else strResult = svcRt.ResultMessage;
                     }
 
-                    if (strResult != "OK")
-                    {
-                        sb.Append("<tr>");
-                        sb.AppendFormat("<td class=\"text-center\">{0}</td>", iRowSeq.ToString());
-                        sb.AppendFormat("<td>({0}_{1}_{2}_{3}) {4}</td>", vCol[2], vCol[3], vCol[4], vCol[5], vCol[0]);
-                        sb.AppendFormat("<td class=\"text-danger\">{0}</td>", strResult);
-                        sb.Append("</tr>");
-                    }
+                    //if (strResult != "OK")
+                    //{
+                    sb.Append("<tr>");
+                    sb.AppendFormat("<td class=\"text-center\">{0}</td>", iRowSeq.ToString());
+                    sb.AppendFormat("<td>({0}_{1}_{2}_{3}) {4}</td>", vCol[2], vCol[3], vCol[4], vCol[5], vCol[0]);
+                    if (strResult == "OK") sb.Append("<td class=\"text-success\">신규</td>");
+                    else if (strResult == "PE") sb.Append("<td class=\"text-success\">변경</td>");
+                    else sb.AppendFormat("<td class=\"text-danger\">{0}</td>", strResult);
+                    sb.Append("</tr>");
+                    //}
                     strResult = "";
                     iRowSeq++;
                 }
