@@ -1201,14 +1201,16 @@ $(function () {
             var e1 = $(e).parent().parent(); //row
             var val = e1.find('input[data-column="CORP"]').val();
             if (val == 'CD_SMT' || val == 'VH_SMT') {
-                e2 = 0;
+                var e2 = 0, e3 = 0;
                 e1.find('td').each(function (idx, e) {
                     if (e.firstChild.getAttribute('data-column') != 'SMT_COST') {
-                        e2 += numeral(e.firstChild.value).value();
+                        if (e.firstChild.value != '') { e2 += numeral(e.firstChild.value).value(); e3++; }
                     }
                 });
-                //console.log(numeral(e2).format('0,0.00000'))
-                if (numeral(e2).value() != 0) e1.find('input[data-column="SMT_COST"]').val(numeral(e2).format('0,0.00000'));
+                console.log(e3 + " : " + e2 + " : " + numeral(e2).format('0,0.00000'))
+                //if (numeral(e2).value() != 0) e1.find('input[data-column="SMT_COST"]').val(numeral(e2).format('0,0.00000'));
+                if (e3 > 0) e1.find('input[data-column="SMT_COST"]').val(numeral(e2).format('0,0.00000'));
+                else e1.find('input[data-column="SMT_COST"]').val('');
             }
 
         } else if (_zw.V.ft.toLowerCase() == 'outpaydetail') { //외주임율

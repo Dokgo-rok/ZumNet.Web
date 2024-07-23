@@ -3639,7 +3639,7 @@
     {
         string sValue = DataHelper.GetFieldValueToString(r, column_name, "");
 
-        return sValue != "" ? (Convert.ToDecimal(sValue) * 100).ToString() : "";
+        return sValue != "" ? (Convert.ToDecimal(sValue) * 100).ToString("n2") : "";
     }
     #endregion
 

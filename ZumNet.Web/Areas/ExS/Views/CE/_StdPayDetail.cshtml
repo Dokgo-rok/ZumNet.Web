@@ -117,8 +117,9 @@
         sb.Append("</thead>");
         sb.Append("<tbody>");
 
-        q = dtItems != null && dtItems.Rows.Count > 0 ? dtItems.Select("CORP = 'CD_SMT'") : null;
-        sb.Append(RenderCorpSMT(mode, q, "CD_SMT", "CNY", "1"));
+        //24-07-23 요청으로 막음
+        //q = dtItems != null && dtItems.Rows.Count > 0 ? dtItems.Select("CORP = 'CD_SMT'") : null;
+        //sb.Append(RenderCorpSMT(mode, q, "CD_SMT", "CNY", "1"));
 
         q = dtItems != null && dtItems.Rows.Count > 0 ? dtItems.Select("CORP = 'VH_SMT'") : null;
         sb.Append(RenderCorpSMT(mode, q, "VH_SMT", "VND", "2"));
