@@ -768,7 +768,7 @@
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <textarea id="__mainfield" name="MAINCON1" style="height:40px" class="txaText bootstrap-maxlength" maxlength="1000">
                         <xsl:if test="$mode='edit'">
-                          <xsl:value-of select="//forminfo/maintable/MAINCON" />
+                          <xsl:value-of select="//forminfo/maintable/MAINCON1" />
                         </xsl:if>
                       </textarea>
                     </xsl:when>
