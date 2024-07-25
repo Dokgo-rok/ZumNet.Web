@@ -937,7 +937,7 @@ $(function () {
                                     var vlu = '';
                                     p.find('.zf-dl-list li.zf-dl-add').each(function () {
                                         vlu += '<part partid="' + $(this).attr('partid') + '" pt="' + $(this).attr('pt') + '" pc="' + $(this).attr("pc") + '">'
-                                            + '<pn><![CDATA[' + $(this).find("div > div:nth-child(2)").text() + ']]></pn><pm><![CDATA[' + $(this).attr("pm") + ']]></pm></part>';
+                                            + '<pn>' + _zw.ut.htmlEscape($(this).find("div > div:nth-child(2)").text()) + '</pn><pm>' + _zw.ut.htmlEscape($(this).attr("pm")) + '</pm></part>';
                                     });
                                     //console.log(vlu)
                                     if (vlu != '') {
@@ -1333,7 +1333,7 @@ $(function () {
                         var bInsert = (srcAttr && srcAttr.length > 0 && $(srcAttr.value).find('part[partid="' + vId[1] + '"][pt="' + vId[0] + '"]').length > 0) ? false : true;
                         if (bInsert) {
                             vlu += '<part partid="' + vId[1] + '" pt="' + vId[0] + '" pc="' + $(this).attr("code") + '">'
-                                + '<pn><![CDATA[' + $(this).attr("pn") + ']]></pn><pm><![CDATA[' + $(this).attr("mail") + ']]></pm></part>';
+                                + '<pn>' + _zw.ut.htmlEscape($(this).attr("pn")) + '</pn><pm>' + _zw.ut.htmlEscape($(this).attr("mail")) + '</pm></part>';
                         }
                     });
                     if (vlu != '') {
@@ -1351,7 +1351,7 @@ $(function () {
                         var bInsert = (srcAttr && srcAttr.length > 0 && $(srcAttr.value).find('part[partid="' + vId[1] + '"][type="' + vId[0] + '"]').length > 0) ? false : true;
                         if (bInsert) {
                             vlu += '<part seq="' + (idx + 1) + '" partid="' + vId[1] + '" type="' + vId[0] + '" code="' + $(this).attr("code") + '" dc="' + $(this).attr("dc") + '">'
-                                + '<pn><![CDATA[' + $(this).attr("pn") + ']]></pn><dn><![CDATA[' + $(this).text() + ']]></dn></part>';
+                                + '<pn>' + _zw.ut.htmlEscape($(this).attr("pn")) + '</pn><dn>' + _zw.ut.htmlEscape($(this).text()) + '</dn></part>';
                         }
                     });
                     if (vlu != '') {

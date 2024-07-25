@@ -2133,6 +2133,22 @@ $(function () {
             } else s = '';
             return s;
         },
+        "htmlEscape": function (s) {
+            return String(s)
+                .replace(/&/gi, '&amp;')
+                .replace(/"/gi, '&quot;')
+                .replace(/'/gi, '&#39;')
+                .replace(/</gi, '&lt;')
+                .replace(/>/gi, '&gt;');
+        },
+        "htmlUnescape": function (s) {
+            return String(s)
+                .replace(/&quot;/gi, '"')
+                .replace(/&#39;/gi, "'")
+                .replace(/&lt;/gi, '<')
+                .replace(/&gt;/gi, '>')
+                .replace(/&amp;/gi, '&');
+        },
         "getCookie": function (name) {
             name = name + '=';
             var cookieData = document.cookie;
