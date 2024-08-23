@@ -1727,6 +1727,8 @@ $(function () {
 
                         p.find('.z-lv-formsearch .btn').click(function () {
                             var txt = p.find('.z-lv-formsearch input[type="search"]'); if ($.trim(txt.val()) == '') return false;
+                            txt.val(txt.val().toUpperCase()); //영문 대문자로 변경
+
                             var s = "['\\%^&\"*]";
                             var reg = new RegExp(s, 'g');
                             if (txt.val() != '' && txt.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { txt.val(''); txt.focus(); }); return; }

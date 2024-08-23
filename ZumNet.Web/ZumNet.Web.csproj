@@ -405,6 +405,7 @@
     <Content Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx" />
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
+    <Content Include="Content\Forms\CRESYN\FORM_TICKETHOTELREQ_V1.xsl" />
     <Content Include="Content\Forms\HTML\JURIDICALSTAMPREQ_1.html" />
     <Content Include="Content\grid-preview.css" />
     <Content Include="Content\grid.css" />
@@ -2197,6 +2198,7 @@
     <Content Include="Scripts\EA\form.js" />
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\EA\Forms\FORM_AFTERCHANGEREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_AIRDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_AUDITRESULTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BABYVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_BEFORECHANGE.js" />
@@ -2318,6 +2320,7 @@
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTIONREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTREGICHART.js" />
     <Content Include="Scripts\EA\Forms\FORM_PRODUCTSPECIFICATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PROJECTIDREGISTRATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEBILL.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASESAMPLE.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCA.js" />
@@ -2353,6 +2356,7 @@
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMDELETE.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMREGI.js" />
     <Content Include="Scripts\EA\Forms\FORM_TESTREPORT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_TICKETHOTELREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGDISUSEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_TOOLINGINCREASEREQ.js" />

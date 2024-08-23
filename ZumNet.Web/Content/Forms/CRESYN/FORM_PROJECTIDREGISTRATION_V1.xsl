@@ -31,7 +31,7 @@
           .fh h1 {font-size:20.0pt;letter-spacing:1pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:15%} .m .ft .f-lbl1 {width:12%} .m .ft .f-lbl2 {width:?}
@@ -80,7 +80,7 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:250px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '3', '의뢰부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
@@ -229,12 +229,18 @@
                       <span>&nbsp;&nbsp;1. 기본정보</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable2');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable2');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                 </tr>
               </xsl:when>
@@ -281,7 +287,7 @@
                       <col style="width:30px"></col>
                       <col style="width:30px"></col>
                       <col style="width:30px"></col>
-                      <col style="width:468px"></col>
+                      <col style="width:"></col>
                     </colgroup>
                     <tr>
                       <td class="f-lbl-sub" style="border-top:0" colspan="11">PROJECT ID</td>
@@ -333,12 +339,18 @@
                       <span>&nbsp;&nbsp;2. 추가정보(*필수입력사항)</span>
                     </td>
                     <td class="fm-button">
-                      <button onclick="parent.fnAddChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_26.gif" />추가
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_27.gif" />삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable3');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable3');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -373,11 +385,11 @@
                       <col style="width:80px"></col>
                       <col style="width:70px"></col>
                       <col style="width:90px"></col>
-                      <col style="width:165px"></col>
+                      <col style="width:170px"></col>
                       <col style="width:90px"></col>
                       <col style="width:90px"></col>
                       <col style="width:80px"></col>
-                      <col style="width:93px"></col>
+                      <col style="width:100px"></col>
                     </colgroup>
                     <tr>
                       <td class="f-lbl-sub" style="border-top:0" colspan="2" rowspan="4">* PROJECT<br></br>시작일</td>
@@ -440,7 +452,7 @@
           <div class="ff" />
           <div class="ff" />
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -548,13 +560,12 @@
 
   <xsl:template match="//forminfo/subtables/subtable2/row">
     <tr class="sub_table_row">
-      <td style="text-align:center">
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -665,13 +676,12 @@
 
   <xsl:template match="//forminfo/subtables/subtable3/row">
     <tr class="sub_table_row">
-      <td style="text-align:center">
+      <td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -679,7 +689,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="STARTDATE" class="txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" value="{STARTDATE}" />
+            <input type="text" name="STARTDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{STARTDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -710,7 +720,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="FROMDATE" class="txtDate" style="width:44%" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" value="{FROMDATE}" />
+            <input type="text" name="FROMDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width: 44%" value="{FROMDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -720,7 +730,7 @@
         ~
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TODATE" class="txtDate" style="width:44%" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" value="{TODATE}" />
+            <input type="text" name="TODATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width: 44%" value="{TODATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -741,7 +751,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="SALESK" class="txtCurrency" style="width:30%" maxlength="10" value="{SALESK}" />
+            <input type="text" name="SALESK" class="txtNumberic" style="width:30%" data-inputmask="number;10;0" maxlength="10" value="{SALESK}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -751,7 +761,7 @@
         /
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="SALESMONTH" class="txtCurrency" style="width:20%" maxlength="10" value="{SALESMONTH}" />
+            <input type="text" name="SALESMONTH" class="txtNumberic" style="width:20%" data-inputmask="number;10;0" maxlength="10" value="{SALESMONTH}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -762,7 +772,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="UNITPRICE" class="txtCurrency" maxlength="20" value="{UNITPRICE}" />
+            <input type="text" name="UNITPRICE" class="txtDollar" maxlength="20" data-inputmask="number;20;0" value="{UNITPRICE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -773,7 +783,7 @@
       <td style="border-right:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="ENDDATE" class="txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" value="{ENDDATE}" />
+            <input type="text" name="ENDDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{ENDDATE}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
