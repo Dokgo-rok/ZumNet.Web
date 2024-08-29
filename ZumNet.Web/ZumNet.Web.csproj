@@ -2190,6 +2190,7 @@
     <Content Include="images\banner\portal_cresyn8.jpg" />
     <Content Include="images\icons\calendar_imgs.png" />
     <Content Include="images\main_portal_cresyn7.jpg" />
+    <Content Include="Scripts\Board\photo.js" />
     <Content Include="Scripts\Controls\notice.js" />
     <Content Include="Scripts\Controls\search.js" />
     <Content Include="Scripts\Controls\portal.js" />
@@ -3462,6 +3463,8 @@
     <Content Include="Views\Report\_DEVSAMPLELIST.cshtml" />
     <Content Include="Views\Portal\SSOsys.cshtml" />
     <Content Include="Views\Organ\_Excel.cshtml" />
+    <Content Include="Views\Board\Photo.cshtml" />
+    <Content Include="Views\Board\_PhotoView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

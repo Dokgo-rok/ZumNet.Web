@@ -1,0 +1,57 @@
+﻿@using System.Data;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@functions {
+    private string GetImagePath(DataRow row)
+    {
+        string rt = row["StorageFolder"].ToString().Replace("\\", "/");
+        int idx = rt.IndexOf('/');
+
+        rt = rt.Substring(idx) + "/" + row["SavedName"].ToString();
+
+        return rt;
+    }
+}
+@if (ViewBag.BoardList != null && ViewBag.BoardList.Count > 0)
+{
+    @*<div id="photoswipe-view" class="row form-row">
+        @foreach (DataRow row in ViewBag.BoardList)
+        {
+            string sPath = GetImagePath(row);
+            <figure class="col-sm-6 col-md-6 col-xl-3 mb-4" itemprop="associatedMedia">
+                <a href="@sPath" class="img-thumbnail img-thumbnail-shadow" itemprop="contentUrl"  data-size="1920x1280">
+                    <span class="img-thumbnail-overlay bg-white opacity-25"></span>
+                    <img src="@sPath" alt="" class="img-fluid" itemprop="thumbnail">
+                </a>
+            </figure>
+        }
+    </div>*@
+
+    <div id="blueimp-gallery-view" class="row form-row">
+        @foreach (DataRow row in ViewBag.BoardList)
+        {
+            string sPath = GetImagePath(row);
+            <div class="col-sm-6 col-md-4 col-xl-3 mb-4">
+                <div class="card" style="height: 300px">
+                    <div class="card-body d-flex align-items-center justify-content-center p-1">
+                        <a href="@sPath" class="img-thumbnail img-thumbnail-shadow" title="@row["Subject"]">
+                            <span class="img-thumbnail-overlay bg-white opacity-25"></span>
+                            <img src="@sPath" class="img-fluid" alt="@row["Subject"]" style="max-height: 240px">
+                        </a>
+                    </div>
+                    
+                    <div class="card-footer text-center p-2">
+                        <div>@row["Subject"]</div>
+                        <div class="small text-muted">@row["FileName"] @StringHelper.StrFileSize(row["FileSize"].ToString())</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="d-flex align-items-center container-p-x">
+        <div class="w-100 text-center pt-3">@Resources.Global.NoItemShow</div>
+    </div>
+}

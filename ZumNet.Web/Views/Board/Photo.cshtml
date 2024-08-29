@@ -1,0 +1,140 @@
+﻿@using System.Data;
+@using System.Data;
+@using System.Text;
+@using System.Threading;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = ViewBag.R["ttl"]; //"게시판";
+    Layout = "~/Views/Shared/Layouts/_Layout2Flex.cshtml";
+
+    string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/blueimp-gallery/gallery")
+    @Styles.Render("~/bundle/vendor/css/blueimp-gallery/gallery-indicator")
+    @Styles.Render("~/bundle/vendor/css/blueimp-gallery/gallery-video")
+    @*@Styles.Render("~/bundle/vendor/css/photoswipe/photoswipe")*@
+    @Styles.Render("~/bundle/vendor/css/bootstrap-datepicker/bootstrap-datepicker")
+    @Styles.Render("~/bundle/vendor/css/pages/messages")
+}
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-fullscreen")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-indicator")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-video")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-vimeo")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-youtube")
+    @*@Scripts.Render("~/bundle/vendor/js/photoswipe/photoswipe")*@
+    @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
+    @Scripts.Render("~/External/dext5upload/js/dext5upload.js")
+    @Scripts.Render("~/Scripts/Board/photo.js")
+    @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
+    {
+        <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>
+    }
+    <script type="text/javascript">(function () {_zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R))}());</script>
+}
+<!--
+=================================================================
+**************************** CONTENT ****************************
+-->
+<!-- `.messages-wrapper` fills all available space of container -->
+<div class="messages-wrapper">
+    <!-- sidebox -->
+    @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
+    <!-- / sidebox -->
+    <!-- content -->
+    <div class="d-flex flex-column w-100">
+        <!-- Header -->
+        <div class="flex-grow-0">
+            <div class="d-flex justify-content-between container-p-x m-0 mt-1 pt-3" style="padding-bottom: .65rem !important">
+                <div class="d-flex align-items-center font-weight-bold">
+                    <div class="h5 mb-0">
+                        <a href="javascript:void(0)" class="messages-sidebox-toggler d-none d-md-block d-lg-none align-self-center px-2 mr-3" data-toggle="modal" data-target=".messages-sidebox"><i class="fe-more-vertical"></i></a>
+                    </div>
+
+                    <div class="h5 mb-0 z-ttl">
+                        <i class="mdi mdi-file-table-box-multiple-outline"></i> &nbsp;<span>@ViewBag.Title</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center z-lv-page" id="__ListCount">
+                    @Html.Partial("~/Views/Common/_ListCount.cshtml")
+                </div>
+
+            </div>
+
+            <hr class="border-light m-0 d-none">
+
+            <div class="d-flex align-items-center container-p-x" style="padding-bottom: .6rem !important">
+                <div class="z-lv-menu btn-group-sm" id="__ListMenu">
+                    @Html.Partial("~/Views/Common/_ListMenu.cshtml")
+                </div>
+                <div class="px-1 flex-grow-1"></div>
+                <div class="d-flex z-lv-cond">
+                    <div class="datepicker input-group input-daterange z-lv-date mr-1">
+                        <input type="text" class="form-control start-date px-1" value="@ViewBag.R.lv.start">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">~</span>
+                        </div>
+                        <input type="text" class="form-control end-date px-1" value="@ViewBag.R.lv.end">
+                    </div>
+                    <div class="input-group z-lv-search">
+                        <select class="custom-select">
+                            <option value="">@Resources.Global.Select...</option>
+                            <option value="Subject" @(ViewBag.R.lv.search == "Subject" ? " selected" : "")>@Resources.Global.Title</option>
+                            <option value="CreatorName" @(ViewBag.R.lv.search == "CreatorName" ? " selected" : "")>@Resources.Global.Writer</option>
+                        </select>
+                        <input type="text" class="form-control search-text" placeholder="@Resources.Global.Search" value="@ViewBag.R.lv.searchtext">
+                        <span class="input-group-append">
+                            <button class="btn btn-secondary" type="button" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Search" data-zv-menu="search"><i class="fe-search"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- / Header -->
+
+        <div class="flex-grow-0 z-lv-hdr">
+        </div>
+
+        <div class="flex-grow-1 position-relative">
+            <!-- Remove `.messages-scroll` and add `.flex-grow-1` if you don't need scroll -->
+            <div class="messages-content flex-grow-0 z-lv-item">
+                <!-- Lightbox template -->
+                <div id="blueimp-gallery-view-container" class="blueimp-gallery blueimp-gallery-controls">
+                    <div class="slides"></div>
+                    <h3 class="title"></h3>
+                    <a class="prev">&lsaquo;</a>
+                    <a class="next">&rsaquo;</a>
+                    <a class="close">&times;</a>
+                    <a class="play-pause"></a>
+                    <ol class="indicator"></ol>
+                </div>
+
+                <div id="__ListView" class="messages-list p-2">
+                    @Html.Partial("_PhotoView")
+                </div>
+
+                <ul class="pagination pagination-sm justify-content-center pt-3 border-top" id="__ListViewPage">
+                    @Html.Partial("~/Views/Common/_ListPagination.cshtml")
+                </ul>
+            </div>
+        </div>
+
+        <div class="modal fade" id="popUploader" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body p-1">
+                        <div class="zf-uploader" id="__DextUpload"></div>
+                    </div>
+                    <div class="modal-footer pt-1">
+                        <button type="button" class="btn btn-primary my-0" data-zm-menu="send">@Resources.Global.Send</button>
+                        <button type="button" class="btn btn-default my-0" data-dismiss="modal">@Resources.Global.Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / content -->
+
+</div><!-- / .messages-wrapper -->

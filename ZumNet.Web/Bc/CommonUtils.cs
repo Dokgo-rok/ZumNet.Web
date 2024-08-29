@@ -950,6 +950,7 @@ namespace ZumNet.Web.Bc
                 else if (category.ToLower() == "doc") sName = "docLvCount";
                 else if (category.ToLower() == "orgmap") sName = "orgLvCount";
                 else if (category.ToLower() == "cost") sName = "costLvCount"; //모델별원가, 개발원가
+                else if (category.ToLower() == "photo") sName = "photoLvCount"; //사진관리
                 else sName = "bbsLvCount";
 
                 HttpCookie ck = HttpContext.Current.Request.Cookies[sName];
@@ -974,16 +975,20 @@ namespace ZumNet.Web.Bc
         public static int GetLvCookie(string category)
         {
             string sName = "";
+            int iInitCount = 20;
+
             if (category.ToLower() == "ea") sName = "eaLvCount";
             else if (category.ToLower() == "doc") sName = "docLvCount";
             else if (category.ToLower() == "orgmap") sName = "orgLvCount";
-            else if (category.ToLower() == "cost") sName = "costLvCount"; //모델별원가, 개발원가
+            else if (category.ToLower() == "cost") { sName = "costLvCount"; iInitCount = 7; }//모델별원가, 개발원가
+            else if (category.ToLower() == "photo") { sName = "photoLvCount"; iInitCount = 50; } //사진관리
             else sName = "bbsLvCount";
 
             HttpCookie ck = HttpContext.Current.Request.Cookies[sName];
 
-            if (category.ToLower() == "cost") return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, 7) : 7;
-            else return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, 20) : 20;
+            //if (category.ToLower() == "cost") return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, 7) : 7;
+            //else return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, 20) : 20;
+            return ck != null ? ZumNet.Framework.Util.StringHelper.SafeInt(ck.Value, iInitCount) : iInitCount;
         }
         #endregion
 

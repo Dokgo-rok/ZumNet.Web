@@ -18,6 +18,23 @@ else if (ViewBag.R.xfalias == "notice" || ViewBag.R.xfalias == "bbs" || ViewBag.
         <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" onclick="_zw.mu.deleteMsg();"><i class="fe-trash-2"></i></button>
     }
 }
+else if (ViewBag.R.xfalias == "album")
+{
+    <label class="custom-control custom-checkbox d-inline btn btn-default mr-2">
+        <input type="checkbox" class="custom-control-input">
+        <span class="custom-control-label"></span>
+    </label>
+
+    <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" onclick="_zw.mu.refresh();"><i class="fe-refresh-cw"></i></button>
+    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "W"))
+    {
+        <button class="btn btn-outline-primary text-big" data-toggle="tooltip" data-placement="bottom" title="사진 올리기" onclick="_zw.mu.uploadView('', '@ViewBag.R.fdid', '@ViewBag.R.alias');"><i class="fe-upload"></i><span class="d-none d-sm-inline-block ml-1">사진올리기</span></button>
+    }
+    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "D"))
+    {
+        <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete" onclick="_zw.mu.deleteMsg();"><i class="fe-trash-2"></i></button>
+    }
+}
 else if (ViewBag.R.xfalias == "anonymous")
 {
     <button class="btn btn-outline-secondary text-big" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Refresh" onclick="_zw.mu.refresh();"><i class="fe-refresh-cw"></i></button>
