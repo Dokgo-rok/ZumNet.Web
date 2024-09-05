@@ -229,7 +229,7 @@ $(function () {
                             _zw.fn.loadList();
 
                         } else {
-                            window.location.href = '/Board/PHoto?qi=' + encodeURIComponent(encQi);
+                            window.location.href = '/Board/Photo?qi=' + encodeURIComponent(encQi);
                         }
                         break;
                     case "anonymous":

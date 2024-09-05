@@ -11,7 +11,7 @@
         string sRead = row["IsRead"].ToString() == "N" ? " font-weight-bold" : "";
         string sTopLine = row["TopLine"].ToString() == "Y" ? " z-lv-topline" : "";
 
-        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)@(sTopLine)" xf="@row["XFAlias"]" appid="@row["MessageID"]" acl="@row["AclKind"]" auth="@row["Authority"]">
+        <li class="list-group-item list-group-item-action d-flex align-items-center container-p-x@(sRead)@(sTopLine)" xf="@row["XFAlias"]" appid="@row["MessageID"]" acl="@row["AclKind"]" auth="@row["Authority"]" seq="@row["SeqID"]" depth="@row["Depth"]" cmnt="@row["CommentCount"]">
             <div class="wd-8 wd-lg-5 wd-xl-4 message-checkbox">
                 <label class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input">

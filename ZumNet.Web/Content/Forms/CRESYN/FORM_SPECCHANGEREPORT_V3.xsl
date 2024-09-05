@@ -34,7 +34,7 @@
           .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:8%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
+          .m .ft .f-lbl {width:10%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
           .m .ft .f-option {width:} .m .ft .f-option1 {width:200px} .m .ft .f-option2 {width:70px}
           .m .ft-sub .f-option {width:49%}
 
@@ -80,14 +80,14 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:305px">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', '요청부서')"/>
                 </td>
                 <td style="width:;font-size:1px">&nbsp;</td>
-                <td style="width:236px">
+                <td style="width:245px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignSerialPart($root, //processinfo/signline/lines/line[@bizrole='agree' and @partid!='' and @step!='0'], '__si_Agree', '3', '접수부서', 'N')"/>
                 </td>
-                <td style="width:72px">
+                <td style="width:75px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignEdgePart($root, //processinfo/signline/lines/line[@bizrole='confirm' and @partid!='' and @step!='0'], '__si_Confirm', '1', '')"/>
                 </td>
                
@@ -103,7 +103,7 @@
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="f-lbl">문서번호</td>
-                <td style="width:35%">
+                <td style="width:40%">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//docinfo/docnumber))" />
                 </td>
                 <td class="f-lbl">작성일자</td>
@@ -137,7 +137,7 @@
               </xsl:if>
               <tr>
                 <td class="f-lbl">품명</td>
-                <td style="width:35%">
+                <td style="width:40%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <input type="text" id="__mainfield" name="ITEMNAME">
@@ -235,7 +235,7 @@
                 <xsl:when test="$mode='new' or $mode='edit'">
                   <tr>
                     <td class="fm-button" style="height:30px">
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01">
                           <xsl:attribute name="src">
                             /<xsl:value-of select="$root"/>/EA/Images/ico_26.gif
@@ -248,7 +248,13 @@
                             /<xsl:value-of select="$root"/>/EA/Images/ico_27.gif
                           </xsl:attribute>
                         </img>삭제
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="삭제" onclick="_zw.form.removeRow('__subtable1');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -293,8 +299,8 @@
           <div class="ff" />
           <div class="ff" />
 
-          
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -356,7 +362,7 @@
 
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
-      <td>
+		<td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ">
@@ -366,7 +372,6 @@
             </input>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -374,7 +379,7 @@
       <td style="height:50px">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <textarea name="BECHANGE" style="height:95%" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000)">
+            <textarea name="BECHANGE" style="height:95%" class="txaText bootstrap-maxlength" maxlength="2000">
               <xsl:if test="$mode='edit'">
                 <xsl:value-of select="BECHANGE" />
               </xsl:if>
@@ -391,7 +396,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <textarea name="AFCHANGE" style="height:95%" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000)">
+            <textarea name="AFCHANGE" style="height:95%" class="txaText bootstrap-maxlength" maxlength="2000">
               <xsl:if test="$mode='edit'">
                 <xsl:value-of select="AFCHANGE" />
               </xsl:if>
@@ -408,7 +413,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <textarea name="REASON" style="height:95%" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000)">
+            <textarea name="REASON" style="height:95%" class="txaText bootstrap-maxlength" maxlength="2000">
               <xsl:if test="$mode='edit'">
                 <xsl:value-of select="REASON" />
               </xsl:if>
@@ -444,11 +449,7 @@
         &nbsp;&nbsp;~&nbsp;&nbsp;-->
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="CLIENTSCHEDULETO">
-              <xsl:attribute name="class">txtDate</xsl:attribute>
-              <xsl:attribute name="maxlength">8</xsl:attribute>
-              <xsl:attribute name="style">width:95px</xsl:attribute>
-              <xsl:attribute name="onclick">parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)</xsl:attribute>
+            <input type="text" name="CLIENTSCHEDULETO" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd">
               <xsl:if test="$mode='edit'">
                 <xsl:attribute name="value">
                   <xsl:value-of select="CLIENTSCHEDULETO" />
@@ -464,7 +465,7 @@
       <td style="border-right:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <textarea name="ETC" style="height:95%" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000)">
+            <textarea name="ETC" style="height:95%" class="txaText bootstrap-maxlength" maxlength="2000">
               <xsl:if test="$mode='edit'">
                 <xsl:value-of select="ETC" />
               </xsl:if>

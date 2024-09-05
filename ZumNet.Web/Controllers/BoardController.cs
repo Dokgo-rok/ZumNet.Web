@@ -1600,34 +1600,46 @@ namespace ZumNet.Web.Controllers
                 try
                 {
                     JObject jPost = CommonUtils.PostDataToJson();
-
-                    if (jPost == null || jPost.Count == 0)
-                    {
-                        return "전송 데이터 누락!";
-                    }
+                    if (jPost == null || jPost.Count == 0) return "전송 데이터 누락!";
 
                     ZumNet.Framework.Core.ServiceResult svcRt = null;
 
-                    AttachmentsHandler attachHdr = new AttachmentsHandler();
-                    svcRt = attachHdr.TempToStorage(Convert.ToInt32(Session["DNID"]), jPost["xfalias"].ToString(), (JArray)jPost["attachlist"], null, "");
-                    if (svcRt.ResultCode != 0)
+                    if (jPost["M"] != null && jPost["M"].ToString() == "title")
                     {
-                        strView = svcRt.ResultMessage;
-                    }
-                    else
-                    {
-                        jPost["attachlist"] = (JArray)svcRt.ResultDataDetail["FileInfo"];
-                        jPost["imglist"] = (JArray)svcRt.ResultDataDetail["ImgInfo"];
-                        jPost["body"] = svcRt.ResultDataDetail["Body"].ToString();
+                        if (jPost["appid"] == null || jPost["appid"].ToString() == "" || jPost["appid"].ToString() == "0") return Resources.Global.RequiredMissing;
 
                         using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
                         {
-                            svcRt = bb.SetAlbumMessage(jPost);
-                            strMsg = "등록 하였습니다";
+                            svcRt = bb.SetAlbumMessage(jPost["M"].ToString(), jPost);
+                            strMsg = "저장 하였습니다";
                         }
 
                         if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
                         else strView = "OK" + strMsg;
+                    }
+                    else
+                    {
+                        AttachmentsHandler attachHdr = new AttachmentsHandler();
+                        svcRt = attachHdr.TempToStorage(Convert.ToInt32(Session["DNID"]), jPost["xfalias"].ToString(), (JArray)jPost["attachlist"], null, "");
+                        if (svcRt.ResultCode != 0)
+                        {
+                            strView = svcRt.ResultMessage;
+                        }
+                        else
+                        {
+                            jPost["attachlist"] = (JArray)svcRt.ResultDataDetail["FileInfo"];
+                            jPost["imglist"] = (JArray)svcRt.ResultDataDetail["ImgInfo"];
+                            jPost["body"] = svcRt.ResultDataDetail["Body"].ToString();
+
+                            using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
+                            {
+                                svcRt = bb.SetAlbumMessage("", jPost);
+                                strMsg = "등록 하였습니다";
+                            }
+
+                            if (svcRt.ResultCode != 0) strView = svcRt.ResultMessage;
+                            else strView = "OK" + strMsg;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -1637,6 +1649,52 @@ namespace ZumNet.Web.Controllers
             }
 
             return strView;
+        }
+
+        /// <summary>
+        /// 사진정보 조회
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string PhotoInfo()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0 || jPost["mi"].ToString() == "" || jPost["ur"].ToString() == "") return Resources.Global.RequiredMissing;
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new BSL.ServiceBiz.BoardBiz())
+                    {
+                        svcRt = bb.GetAlbumMsgView(Convert.ToInt32(jPost["ur"]), Convert.ToInt32(jPost["mi"]), Convert.ToInt32(jPost["fd"]), jPost["xf"].ToString()
+                                        , Convert.ToInt32(Session["DNID"]), Convert.ToInt32(jPost["ct"]), jPost["operator"].ToString(), jPost["acl"].ToString());
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.PhotoInfo = svcRt.ResultDataSet;
+                        ViewBag.JPost = jPost;
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_PhotoInfo", ViewBag);
+                    }
+                    else
+                    {
+                        //에러페이지
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
         }
         #endregion
     }

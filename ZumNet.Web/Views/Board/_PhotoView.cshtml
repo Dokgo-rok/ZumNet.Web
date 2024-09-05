@@ -40,9 +40,15 @@
                         </a>
                     </div>
                     
-                    <div class="card-footer text-center p-2">
-                        <div>@row["Subject"]</div>
-                        <div class="small text-muted">@row["FileName"] @StringHelper.StrFileSize(row["FileSize"].ToString())</div>
+                    <div class="card-footer text-center p-2" xf="@row["XFAlias"]" appid="@row["MessageID"]" acl="@row["AclKind"]" auth="@row["Authority"]" cmnt="@row["CommentCount"]">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <label class="custom-control custom-checkbox mb-0">
+                                <input type="checkbox" class="custom-control-input">
+                                <span class="custom-control-label"></span>
+                            </label>
+                            <a class="z-lnk-navy-n" href="javascript:" onclick="_zw.fn.viewPhoto('@row["MessageID"]','@row["FD_ID"]','@row["XFAlias"]');">@row["Subject"]</a>
+                        </div>
+                        <div class="small text-muted mt-1">@row["FileName"] (@StringHelper.StrFileSize(row["FileSize"].ToString()))</div>
                     </div>
                 </div>
             </div>

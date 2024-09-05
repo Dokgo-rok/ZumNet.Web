@@ -1,0 +1,89 @@
+﻿@using System.Data;
+@using System.Text;
+@using ZumNet.Framework.Util;
+@using Newtonsoft.Json.Linq;
+@{
+}
+@functions {
+    private string ResultDelete()
+    {
+        StringBuilder sb = new StringBuilder();
+        ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+        using (ZumNet.BSL.ServiceBiz.BoardBiz bb = new ZumNet.BSL.ServiceBiz.BoardBiz())
+        {
+            foreach (JObject j in (JArray)ViewBag.JPost["tgt"])
+            {
+                sb.Append("<tr>");
+                sb.AppendFormat("<td>{0}</td>", j["ttl"].ToString());
+                if (StringHelper.SafeInt(j["cmnt"].ToString()) > 0)
+                {
+                    sb.AppendFormat("<td class=\"text-danger\">{0}</td>", "삭제불가(댓글)");
+                }
+                else if (j["auth"].ToString() == "owner" || ViewBag.JPost["operator"].ToString() == "Y" || StringHelper.HasAcl(j["acl"].ToString(), "D"))
+                {
+                    string rt = "";
+                    if (j["seq"] != null && j["depth"] != null)
+                    {
+                        svcRt = bb.GetMessageReplyList(Convert.ToInt32(ViewBag.JPost["fdid"].ToString()), j["xf"].ToString(), Convert.ToInt32(j["seq"].ToString()));
+
+                        if (svcRt.ResultCode != 0) rt = svcRt.ResultMessage;
+                        else
+                        {
+                            if (svcRt.ResultItemCount > 1 && Convert.ToInt32(j["depth"].ToString()) == 0) rt = "삭제불가(답글)";
+                        }
+                    }
+
+                    if (rt != "")
+                    {
+                        sb.AppendFormat("<td class=\"text-danger\">{0}</td>", rt);
+                    }
+                    else
+                    {
+                        svcRt = bb.DelBoardMessage(Convert.ToInt32(ViewBag.JPost["fdid"].ToString()), Convert.ToInt32(Session["DNID"])
+                                                , j["xf"].ToString(), j["appid"].ToString(), Convert.ToInt32(ViewBag.JPost["urid"]));
+
+                        if (svcRt.ResultCode != 0) sb.AppendFormat("<td class=\"text-danger\">{0}</td>", svcRt.ResultMessage);
+                        else sb.AppendFormat("<td class=\"text-success\">{0}</td>", "성공");
+                    }
+                }
+                else
+                {
+                    sb.AppendFormat("<td class=\"text-info\">{0}</td>", Resources.Global.Auth_NoPermission);
+                }
+                sb.Append("</tr>");
+            }
+        }
+        return sb.ToString();
+    }
+}
+@*<div class="modal-dialog modal-sm modal-dialog-scrollable">
+    <div class="modal-content bg-white">
+        <div class="modal-header border">
+            <h6 class="modal-title">삭제 목록</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body p-3">
+            <table class="table table-bordered table-sm mb-0">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">항목</th>
+                        <th scope="col">결과</th>
+                    </tr>
+                </thead>
+                <tbody>@Html.Raw(ResultDelete())</tbody>
+            </table>
+        </div>
+    </div>
+</div>*@
+<table class="table table-bordered table-sm mb-0">
+    <thead>
+        <tr class="table-dark">
+            <th scope="col">항목</th>
+            <th scope="col">결과</th>
+        </tr>
+    </thead>
+    <tbody>@Html.Raw(ResultDelete())</tbody>
+</table>

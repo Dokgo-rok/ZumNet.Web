@@ -1,22 +1,6 @@
 ﻿//사진게시판 리스트뷰
 
 $(function () {
-
-    //initPhotoSwipeFromDOM('#photoswipe-view');
-    $('#blueimp-gallery-view').on('click', '.img-thumbnail', function (e) {
-        e.preventDefault();
-
-        var links = $('#blueimp-gallery-view').find('.img-thumbnail');
-
-        window.blueimpGallery(links, {
-            container: '#blueimp-gallery-view-container',
-            carousel: true,
-            hidePageScrollbars: true,
-            disableScroll: true,
-            index: this
-        });
-    });
-
     if ($('#__DextUpload').length > 0) {
         DEXT5UPLOAD.config.Views = 'thumbs';
         //DEXT5UPLOAD.config.ImgPreView = '1';
@@ -28,6 +12,40 @@ $(function () {
         DEXT5UPLOAD.config.UploadHolder = "__DextUpload";
         new Dext5Upload(_zw.T.uploader.id);
     }
+
+    _zw.fn.bindCtrl = function () {
+        $('.z-lv-menu input:checkbox').click(function () {
+            var b = $(this).prop('checked');
+            $('#__ListView .card-footer input:checkbox').each(function () {
+                $(this).prop('checked', b);
+            });
+        });
+
+        //initPhotoSwipeFromDOM('#photoswipe-view');
+        $('#blueimp-gallery-view').on('click', '.img-thumbnail', function (e) {
+            e.preventDefault();
+
+            var links = $('#blueimp-gallery-view').find('.img-thumbnail');
+
+            window.blueimpGallery(links, {
+                container: '#blueimp-gallery-view-container',
+                carousel: true,
+                hidePageScrollbars: true,
+                disableScroll: true,
+                index: this
+            });
+        });
+
+        $('.pagination li a.page-link').click(function () {
+            _zw.mu.search($(this).attr('data-for'));
+        });
+
+        $('.z-lv-cnt select').change(function () {
+            _zw.fn.setLvCnt($(this).val());
+        });
+    }
+
+    _zw.fn.bindCtrl();
 
     _zw.mu.uploadView = function (ab, fd, alias) { //앨범, 폴더, 폴더구분
         //ab : 추후
@@ -41,7 +59,7 @@ $(function () {
                     _zw.V.app["ct"] = _zw.V.ct;
                     _zw.V.app["xfalias"] = _zw.V.xfalias;
                     _zw.V.app["fdid"] = fd;
-                    _zw.V.app["msg"] = alias;
+                    _zw.V.app["msg"] = alias; // alias == 'mold' || alias == 'model' || alias == 'part' ? alias : '';
                     _zw.V.app["inherited"] = "Y";
 
                     _zw.V.app["creur"] = _zw.V.current.user;
@@ -56,7 +74,7 @@ $(function () {
         p.modal();
     }
 
-    _zw.fn.sendPhoto = function () {
+    _zw.fn.sendPhoto = function () { //신규저장
         var fileList = DEXT5UPLOAD.GetNewUploadListForText();
         var jPost = _zw.V.app;
         jPost["attachlist"] = []; //초기화
@@ -110,9 +128,131 @@ $(function () {
         });
     }
 
+    _zw.fn.viewPhoto = function (mi, fd, xf) {
+        if (mi == null || mi == '' || parseInt(mi) == '0') return false;
+
+        $.ajax({
+            type: "POST",
+            url: '/Board/PhotoInfo',
+            data: '{M:"",ct:"' + _zw.V.ct + '",mi:"' + mi + '",xf:"' + xf + '",fd:"0",ur:"' + _zw.V.current.urid + '",operator:"' + _zw.V.current.operator + '",acl:"' + _zw.V.current.acl + '"}',
+            success: function (res) {
+                if (res.substr(0, 2) == 'OK') {
+                    var p = $('#popBlank');
+                    p.html(res.substr(2));
+
+                    p.on('hidden.bs.modal', function (event) { p.html(''); p.attr('style', ''); })
+
+                    p.find('.btn[data-zm-menu="save"]').click(function () {
+                        bootbox.confirm("저장 하시겠습니까?", function (rt) {
+                            if (rt) {
+                                var jPost = {};
+                                jPost["ct"] = _zw.V.ct;
+                                jPost["xfalias"] = xf;
+                                jPost["appid"] = mi;
+                                jPost["fdid"] = fd;
+                                jPost["urid"] = _zw.V.current.urid;
+                                jPost["msg"] = p.find('.modal-body #txtMsgType').val();
+                                jPost["subject"] = p.find('.modal-body #txtSubject').val();
+                                jPost["memo"] = p.find('.modal-body #txtMemo').val();
+                                jPost["attachid"] = p.find('.modal-body #txtImgID').val();;
+                                jPost["M"] = 'title';
+                                //console.log(jPost); return;
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Board/PhotoSend",
+                                    data: JSON.stringify(jPost),
+                                    success: function (res) {
+                                        if (res.substr(0, 2) == "OK") {
+                                            p.modal('hide');
+                                            _zw.mu.refresh();
+                                        } else bootbox.alert(res);
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    p.find('.btn[data-zm-menu="delete"]').click(function () {
+                        bootbox.confirm("삭제 하시겠습니까?", function (rt) {
+                            if (rt) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Common/DeleteMsg",
+                                    data: '{xf:"' + xf + '",fdid:"' + fd + '",mi:"' + mi + '",urid:"' + _zw.V.current.urid + '"}',
+                                    success: function (res) {
+                                        if (res == "OK") {
+                                            p.modal('hide');
+                                            _zw.mu.refresh();
+                                        } else bootbox.alert(res);
+                                    }
+                                });
+                            }
+                        });
+                    });
+                    
+                    p.modal();
+                } else {
+                    bootbox.alert(res);
+                }
+            }
+        });
+    }
+
+    _zw.mu.deleteMsg = function () {
+        if ($('#__ListView').length > 0) {
+            if ($('#__ListView .card-footer input:checkbox:checked').length > 20) {
+                bootbox.alert('삭제 가능한 최대 항목수는 20개입니다!', function () {
+                    $('.z-lv-hdr input:checkbox').prop('checked', false);
+                    $('#__ListView .card-footer input:checkbox:checked').prop('checked', false);
+                });
+                return false;
+            }
+
+            var post = {};  v = [];
+            $('#__ListView .card-footer input:checkbox:checked').each(function () {
+                var p = $(this).parent().parent().parent();
+                //console.log(p.attr('appid') + " : " + p.attr('auth') + " : " + p.attr('cmnt') + " : " + $.trim($(this).parent().next().text()))
+
+                var j = {};
+                j["xf"] = p.attr('xf'); j["appid"] = p.attr('appid'); j["auth"] = p.attr('auth');
+                j["acl"] = p.attr('acl'); j["cmnt"] = p.attr('cmnt'); j["ttl"] = $.trim($(this).parent().next().text());
+
+                v.push(j);
+            });
+            post["urid"] = _zw.V.current.urid;
+            post["operator"] = _zw.V.current.operator;
+            post["fdid"] = _zw.V.fdid;
+            post["tgt"] = v;
+
+            console.log(post);
+
+            bootbox.confirm("선택 항목을 삭제 하시겠습니까?", function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Common/DeleteMsgBatch",
+                        data: JSON.stringify(post),
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                //var p = $('#popBlank');
+                                //p.html(res.substr(2));
+                                //p.on('hidden.bs.modal', function (event) { _zw.mu.refresh();  p.html(''); p.attr('style', ''); })
+                                //p.modal();
+
+                                bootbox.alert({ title: '삭제 목록', message: res.substr(2), callback: function () { _zw.mu.refresh(); } });
+
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
     _zw.mu.goList = function () {
         var postData = _zw.fn.getLvQuery();
-        window.location.href = '/Board/List?qi=' + _zw.base64.encode(postData);
+        window.location.href = '/Board/Photo?qi=' + _zw.base64.encode(postData);
     }
 
     _zw.fn.loadList = function () {
@@ -136,13 +276,7 @@ $(function () {
                     $('#__ListMenu').html(v[2]);
                     $('#__ListViewPage').html(v[3]);
 
-                    $('.pagination li a.page-link').click(function () {
-                        _zw.mu.search($(this).attr('data-for'));
-                    });
-
-                    $('.z-lv-cnt select').change(function () {
-                        _zw.fn.setLvCnt($(this).val());
-                    });
+                    _zw.fn.bindCtrl();
 
                 } else bootbox.alert(res);
             }

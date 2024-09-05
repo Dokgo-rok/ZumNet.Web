@@ -542,7 +542,11 @@ $(function () {
                 lnk: { icon: "fas fa-globe text-blue" },
                 short: { icon: "fas fa-folder" },
                 fav: { icon: "fas fa-star text-warning" },
-                shared: { icon: "fas fa-share-square text-teal" }
+                shared: { icon: "fas fa-share-square text-teal" },
+                bbs: { icon: "fas fa-folder text-warning" },
+                noti: { icon: "fas fa-folder text-warning" }, //fas fa-bullhorn
+                album: { icon: "far fa-image" }, //far fa-image
+                photo: { icon: "far fa-camera text-purple" }
             }
         },
         "editor": {

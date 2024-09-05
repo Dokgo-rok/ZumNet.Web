@@ -1536,6 +1536,12 @@
               </xsl:otherwise>
             </xsl:choose>
           </div>-->
+			<div>
+				<a href="" onclick="window.open('{//forminfo/maintable/MoldImgPath}', '', 'scrollbars=1,resizable=1')" class="img-thumbnail img-thumbnail-shadow" title="{//forminfo/maintable/TOOLING_NUMBER}">
+					<span class="img-thumbnail-overlay bg-white opacity-25"></span>
+					<img src="{//forminfo/maintable/MoldImgPath}" class="img-fluid" alt="" style="max-width: 100%" />
+                </a>
+			</div>
 			<div class="zf-upload w-100">
 				<div class="zf-upload-select d-flex align-items-center">
 					<xsl:choose>

@@ -76,6 +76,13 @@ namespace ZumNet.Web.Controllers
                         else if (row["ObjectType"].ToString() == "P") sIconType = "user";
                         else if (row["ObjectType"].ToString() == "S") sIconType = "sch";
                         else if (row["ObjectType"].ToString() == "L") sIconType = "lnk";
+                        else if (row["ObjectType"].ToString() == "G")
+                        {
+                            if (row["XFAlias"].ToString() == "album") sIconType = "album";
+                            else if (row["XFAlias"].ToString() == "photo") sIconType = "photo";
+                            else if (row["XFAlias"].ToString() == "notice") sIconType = "noti";
+                            else sIconType = "bbs";
+                        }
                         else
                         {
                             if (row["AttType"].ToString() == "S") sIconType = "short";
@@ -359,6 +366,40 @@ namespace ZumNet.Web.Controllers
             }
 
             return strView;
+        }
+
+        /// <summary>
+        /// 게시물 일괄 삭제
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string DeleteMsgBatch()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0) rt = "전송 데이터 누락!";
+                    else if (StringHelper.SafeString(jPost["fdid"]) == "" || StringHelper.SafeString(jPost["urid"]) == "" || jPost["tgt"] == null) rt = Resources.Global.RequiredMissing;
+                    else if (jPost["urid"].ToString() != Session["URID"].ToString()) rt = Resources.Global.Auth_InvalidPath; //잘못된 경로로 접근
+
+                    if (rt == "")
+                    {
+                        ViewBag.JPost = jPost;
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_DeleteMsgBatch", ViewBag);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
         }
 
         #region [댓글 관련]

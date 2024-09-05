@@ -99,11 +99,53 @@ $(function () {
 
     _zw.mu.deleteMsg = function () {
         if ($('#__ListView').length > 0) {//게시판, 임시저장함
+            if ($('#__ListView input:checkbox:checked').length > 20) {
+                bootbox.alert('삭제 가능한 최대 항목수는 20개입니다!', function () {
+                    $('.z-lv-hdr input:checkbox').prop('checked', false);
+                    $('#__ListView input:checkbox:checked').prop('checked', false);
+                });
+                return false;
+            }
+
+            var post = {}; v = [];
             $('#__ListView input:checkbox:checked').each(function () {
                 var p = $(this).parent().parent().parent();
                 //console.log(p.attr('appid') + " : " + p.attr('auth') + " : " + $.trim(p.find('div:nth-child(3)').text()))
+
+                var j = {};
+                j["xf"] = p.attr('xf'); j["appid"] = p.attr('appid'); j["auth"] = p.attr('auth'); j["acl"] = p.attr('acl');
+                j["seqa"] = p.attr('seq'); j["depth"] = p.attr('depth'); j["cmnt"] = p.attr('cmnt'); j["ttl"] = $.trim(p.find('div a[href]').text());
+
+                v.push(j);
             });
-            bootbox.alert('준비중!');
+
+            post["urid"] = _zw.V.current.urid;
+            post["operator"] = _zw.V.current.operator;
+            post["fdid"] = _zw.V.fdid;
+            post["tgt"] = v;
+
+            console.log(post);
+
+            bootbox.confirm("선택 항목을 삭제 하시겠습니까?", function (rt) {
+                if (rt) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Common/DeleteMsgBatch",
+                        data: JSON.stringify(post),
+                        success: function (res) {
+                            if (res.substr(0, 2) == "OK") {
+                                //var p = $('#popBlank');
+                                //p.html(res.substr(2));
+                                //p.on('hidden.bs.modal', function (event) { _zw.mu.refresh(); p.html(''); p.attr('style', ''); })
+                                //p.modal();
+
+                                bootbox.alert({ title: '삭제 목록', message: res.substr(2), callback: function() { _zw.mu.refresh(); } });
+
+                            } else bootbox.alert(res);
+                        }
+                    });
+                }
+            });
         } else {
             var bDeletable = true;
             if (_zw.V.app.cmntcount > 0 || (_zw.V.app.replycount > 1 && parseInt(_zw.V.app.depth) == 0)) bDeletable = false;

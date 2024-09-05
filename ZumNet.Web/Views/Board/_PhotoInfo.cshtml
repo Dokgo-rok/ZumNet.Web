@@ -1,0 +1,108 @@
+﻿@using System.Data;
+@using System.Text;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@{
+    DataRow rowInfo = ViewBag.PhotoInfo != null && ViewBag.PhotoInfo.Tables.Count > 0 && ViewBag.PhotoInfo.Tables[0].Rows.Count > 0 ? ViewBag.PhotoInfo.Tables[0].Rows[0] : null;
+}
+@functions {
+    private string RenderData(DataRow row)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        bool bEditable = false;
+        if (Session["URID"].ToString() == row["CreatorID"].ToString() || ViewBag.JPost["operator"].ToString() == "Y"
+            || StringHelper.HasAcl(ViewBag.JPost["acl"].ToString(), "E"))
+        {
+            bEditable = true;
+        }
+
+        string[] sLabel = { "사진", "제목", "설명", "작성", "파일" };
+        if (row["MsgType"].ToString() == "mold") { sLabel[0] = "금형"; sLabel[1] = "금형번호"; sLabel[2] = "구분"; }
+        else if (row["MsgType"].ToString() == "model") { sLabel[0] = "모델"; sLabel[1] = "모델번호"; sLabel[2] = "구분"; }
+        else if (row["MsgType"].ToString() == "part") { sLabel[0] = "부품"; sLabel[1] = "품번"; sLabel[2] = "구분"; }
+
+        string sImgPath = row["StorageFolder"].ToString().Replace("\\", "/");
+        int idx = sImgPath.IndexOf('/');
+
+        sImgPath = sImgPath.Substring(idx) + "/" + row["SavedName"].ToString();
+
+        sb.Append("<div class=\"modal-header border\">");
+        sb.AppendFormat("<h6 class=\"modal-title\">{0}</h6>", sLabel[0]);
+        sb.Append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">");
+        sb.Append("<span aria-hidden=\"true\">&times;</span>");
+        sb.Append("</button>");
+        sb.Append("</div>"); //modal-header
+        sb.Append("<div class=\"modal-body\">");
+        sb.Append("<div class=\"text-center\">");
+        sb.AppendFormat("<a href=\"javascript://\" onclick=\"window.open('{0}', '', 'scrollbars=1,resizable=1')\" title=\"원본 보기\">", sImgPath);
+        sb.AppendFormat("<img src=\"{0}\" class=\"\" alt=\"\" style=\"max-width: 100%\">", sImgPath);
+        sb.Append("</a>");
+        sb.Append("</div>");
+
+        sb.Append("<div class=\"mt-2\">");
+        sb.Append("<div class=\"form-group row mb-1 mb-sm-2\">");
+        sb.AppendFormat("<label for=\"txtSubject\" class=\"col-sm-3 col-form-label font-weight-normal pr-0\">{0}</label>", sLabel[1]);
+        sb.Append("<div class=\"col-sm-9 input-group align-items-center pl-sm-0\">");
+        if (bEditable)
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"txtSubject\" value=\"{0}\">", row["Subject"].ToString());
+        else
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" id=\"txtSubject\" readonly=\"\" value=\"{0}\">", row["Subject"].ToString());
+        sb.Append("</div>");
+        sb.Append("</div>"); //"form-group
+
+        sb.Append("<div class=\"form-group row mb-1 mb-sm-2\">");
+        sb.AppendFormat("<label for=\"txtMemo\" class=\"col-sm-3 col-form-label font-weight-normal pr-0\">{0}</label>", sLabel[2]);
+        sb.Append("<div class=\"col-sm-9 input-group align-items-center pl-sm-0\">");
+        if (bEditable)
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"txtMemo\" value=\"{0}\">", row["Memo"].ToString());
+        else
+            sb.AppendFormat("<input type=\"text\" class=\"form-control bg-white\" id=\"txtMemo\" readonly=\"\" value=\"{0}\">", row["Memo"].ToString());
+        sb.Append("</div>");
+        sb.Append("</div>"); //"form-group
+
+        sb.Append("<div class=\"form-group row mb-1 mb-sm-2\">");
+        sb.AppendFormat("<label class=\"col-sm-3 col-form-label font-weight-normal pr-0\">{0}</label>", sLabel[3]);
+        sb.Append("<div class=\"col-sm-9 col-form-label font-weight-normal pl-sm-0\">");
+        sb.AppendFormat("<span class=\"mr-3\">{0}</span><span>{1}</span>", row["Creator"].ToString(), CommonUtils.CheckDateTime(row["PublishDate"].ToString()));
+        sb.Append("</div>");
+        sb.Append("</div>"); //"form-group
+
+        sb.Append("<div class=\"form-group row mb-1 mb-sm-2\">");
+        sb.AppendFormat("<label class=\"col-sm-3 col-form-label font-weight-normal pr-0\">{0}</label>", sLabel[4]);
+        sb.Append("<div class=\"col-sm-9 col-form-label font-weight-normal pl-sm-0\">");
+        sb.AppendFormat("<span class=\"mr-3\">{0}</span><span>({1})</span>", row["FileName"].ToString(), StringHelper.StrFileSize(row["FileSize"].ToString()));
+        sb.Append("</div>");
+        sb.Append("</div>"); //"form-group
+
+        sb.AppendFormat("<input type=\"hidden\" id=\"txtMsgType\" value=\"{0}\">", row["MsgType"].ToString()); //hidden
+        sb.AppendFormat("<input type=\"hidden\" id=\"txtImgID\" value=\"{0}\">", row["ImgID"].ToString()); //hidden
+        sb.Append("</div>"); //modal-body
+
+        sb.Append("<div class=\"modal-footer\">");
+        sb.Append("<div class=\"flex-fill\" data-for=\"zf-addinfo\">");
+        if (bEditable) sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-danger\" data-zm-menu=\"delete\">{0}</button>", Resources.Global.Delete);
+        sb.Append("</div>");
+        sb.Append("<div>");
+        sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+        if (bEditable) sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary ml-1\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Save);
+        sb.Append("</div>");
+        sb.Append("</div>"); //modal-footer
+        sb.Append("");
+
+        return sb.ToString();
+    }
+
+    private string GetImagePath(DataRow row)
+    {
+        string rt = row["StorageFolder"].ToString().Replace("\\", "/");
+        int idx = rt.IndexOf('/');
+
+        rt = rt.Substring(idx) + "/" + row["SavedName"].ToString();
+
+        return rt;
+    }
+}
+<div class="modal-dialog modal-sm modal-dialog-scrollable">
+    <div class="modal-content bg-white">@Html.Raw(RenderData(rowInfo))</div>
+</div>
