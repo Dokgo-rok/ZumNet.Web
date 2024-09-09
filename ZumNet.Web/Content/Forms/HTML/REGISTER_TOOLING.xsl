@@ -1546,7 +1546,7 @@
                         </a>
 					</xsl:when>
 					<xsl:when test="//forminfo/maintable/TOOLING_NUMBER!=''">
-						<a href="https://ekp.cresyn.com/Board/Photo?qi=e006IiIsY3Q6IjI5OCIsY3RhbGlhczoidG9vbGluZyIsb3Q6IkciLGFsaWFzOiJtb2xkIix4ZmFsaWFzOiJhbGJ1bSIsZmRpZDoiMTQ3NTUiLG9wbm9kZToiMC4wLjE0NzU1Iix0dGw6IuyCrOynhOuPhOuptCAvIOq4iO2YlSIsYWNsOiJTRkRFUlZTREVNV1JWIn0%3D" target="_blank">금형사진을 등록하시기 바랍니다!</a>
+						<a href="/Board/Photo?qi=e006IiIsY3Q6IjI5OCIsY3RhbGlhczoidG9vbGluZyIsb3Q6IkciLGFsaWFzOiJtb2xkIix4ZmFsaWFzOiJhbGJ1bSIsZmRpZDoiMTQ3NTUiLG9wbm9kZToiMC4wLjE0NzU1Iix0dGw6IuyCrOynhOuPhOuptCAvIOq4iO2YlSIsYWNsOiJTRkRFUlZTREVNV1JWIn0%3D" target="_blank">금형사진을 등록하시기 바랍니다!</a>
 					</xsl:when>
 					<xsl:otherwise>
 						금형번호 생성 후 등록 가능
