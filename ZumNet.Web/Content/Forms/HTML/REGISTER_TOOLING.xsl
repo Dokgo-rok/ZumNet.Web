@@ -1546,7 +1546,7 @@
                         </a>
 					</xsl:when>
 					<xsl:when test="//forminfo/maintable/TOOLING_NUMBER!=''">
-						<a href="/Board/Photo?qi=eyJjdCI6IjI5OCIsImN0YWxpYXMiOiJ0b29saW5nIiwib3QiOiJHIiwiYWxpYXMiOiJtb2xkIiwieGZhbGlhcyI6ImFsYnVtIiwiZmRpZCI6IjE0NzUwIiwiYWNsIjoiU0ZERVJWU0RFTVdSViIsIm9wbm9kZSI6IjAuMC4xNDc1MCIsImZ0IjoiIiwidHRsIjoi7IKs7KeE64%2BE66m0IC8g6riI7ZiVIiwidGd0IjoiMTQ3NTAiLCJwYWdlIjoiMSIsImNvdW50IjoiNTAiLCJzb3J0IjoiU2VxSUQiLCJzb3J0ZGlyIjoiREVTQyIsInNlYXJjaCI6IiIsInNlYXJjaHRleHQiOiIiLCJzdGFydCI6IiIsImVuZCI6IiIsImJhc2Vzb3J0IjoiIiwiYm91bmRhcnkiOiJfX1ltOTFibVJoY25sZmVEUnVaMll3ZW1NeFpHcHVablYzYkRWb2FtaDRiV2t6X18ifQ%3D%3D" target="_blank">금형사진을 등록하시기 바랍니다!</a>
+						<a href="https://ekp.cresyn.com/Board/Photo?qi=e006IiIsY3Q6IjI5OCIsY3RhbGlhczoidG9vbGluZyIsb3Q6IkciLGFsaWFzOiJtb2xkIix4ZmFsaWFzOiJhbGJ1bSIsZmRpZDoiMTQ3NTUiLG9wbm9kZToiMC4wLjE0NzU1Iix0dGw6IuyCrOynhOuPhOuptCAvIOq4iO2YlSIsYWNsOiJTRkRFUlZTREVNV1JWIn0%3D" target="_blank">금형사진을 등록하시기 바랍니다!</a>
 					</xsl:when>
 					<xsl:otherwise>
 						금형번호 생성 후 등록 가능
