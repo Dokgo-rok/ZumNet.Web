@@ -3467,6 +3467,7 @@
     <Content Include="Views\Board\_PhotoView.cshtml" />
     <Content Include="Views\Board\_PhotoInfo.cshtml" />
     <Content Include="Views\Common\_DeleteMsgBatch.cshtml" />
+    <Content Include="Views\Common\PhotoView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

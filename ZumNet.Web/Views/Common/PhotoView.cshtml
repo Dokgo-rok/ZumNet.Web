@@ -1,0 +1,129 @@
+﻿@using System.Data;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@{
+    ViewBag.Title = GetTitle();
+    Layout = "~/Views/Shared/Layouts/_LayoutNone.cshtml";
+}
+@functions {
+    private string GetTitle()
+    {
+        string rt = "";
+        if (ViewBag.JPost["mt"].ToString() == "mold") rt = "금형대장";
+        else if (ViewBag.JPost["mt"].ToString() == "model") rt = "모델";
+        else if (ViewBag.JPost["mt"].ToString() == "part") rt = "부품";
+        else rt = "사진";
+
+        rt += " - " + ViewBag.JPost["sj"].ToString();
+
+        return rt;
+    }
+
+    private string GetImagePath(DataRow row)
+    {
+        string rt = row["StorageFolder"].ToString().Replace("\\", "/");
+        int idx = rt.IndexOf('/');
+
+        rt = rt.Substring(idx) + "/" + row["SavedName"].ToString();
+
+        return rt;
+    }
+}
+@section Styles {
+    @Styles.Render("~/bundle/vendor/css/blueimp-gallery/gallery")
+    @Styles.Render("~/bundle/vendor/css/blueimp-gallery/gallery-indicator")
+    @Styles.Render("~/bundle/vendor/css/blueimp-gallery/gallery-video")
+}
+@section Scripts {
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-fullscreen")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-indicator")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-video")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-vimeo")
+    @Scripts.Render("~/bundle/vendor/js/blueimp-gallery/gallery-youtube")
+
+    <script type="text/javascript">
+        $('#blueimp-gallery-view').on('click', '.img-thumbnail', function (e) {
+            e.preventDefault();
+
+            var links = $('#blueimp-gallery-view').find('.img-thumbnail');
+
+            window.blueimpGallery(links, {
+                container: '#blueimp-gallery-view-container',
+                carousel: true,
+                hidePageScrollbars: true,
+                disableScroll: true,
+                index: this
+            });
+        });
+    </script>
+}
+<div class="container-fluid flex-grow-1 container-p-y">
+    @if (ViewBag.BoardList != null && ViewBag.BoardList.Count > 0)
+    {
+        <!-- Lightbox template -->
+        <div id="blueimp-gallery-view-container" class="blueimp-gallery blueimp-gallery-controls">
+            <div class="slides"></div>
+            <h3 class="title"></h3>
+            <a class="prev">&lsaquo;</a>
+            <a class="next">&rsaquo;</a>
+            <a class="close">&times;</a>
+            <a class="play-pause"></a>
+            <ol class="indicator"></ol>
+        </div>
+
+        <div id="blueimp-gallery-view" class="row form-row">
+            @if (ViewBag.BoardList.Count > 1)
+            {
+                foreach (DataRow row in ViewBag.BoardList)
+                {
+                    string sPath = GetImagePath(row);
+                    <div class="col-md-6 mb-4">
+                        <div class="card" style="height: ">
+                            <div class="card-body d-flex align-items-center justify-content-center p-1">
+                                <a href="@sPath" class="img-thumbnail img-thumbnail-shadow" title="@Server.HtmlEncode(row["Memo"].ToString())">
+                                    <span class="img-thumbnail-overlay bg-white opacity-25"></span>
+                                    <img src="@sPath" class="img-fluid" alt="" style="max-height: ">
+                                </a>
+                            </div>
+
+                            <div class="card-footer text-center p-2">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <a class="" href="javascript:" onclick="window.open('@sPath', '', 'scrollbars=1,resizable=1');" title="원본보기">@row["Memo"]</a>
+                                </div>
+                                <div class="small text-muted mt-1">@row["FileName"] (@StringHelper.StrFileSize(row["FileSize"].ToString()))</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                string sPath = GetImagePath(ViewBag.BoardList[0]);
+                <div class="">
+                    <div class="card" style="height: ">
+                        <div class="card-body d-flex align-items-center justify-content-center p-1">
+                            <a href="@sPath" class="img-thumbnail img-thumbnail-shadow" title="@Server.HtmlEncode(ViewBag.BoardList[0]["Memo"].ToString())">
+                                <span class="img-thumbnail-overlay bg-white opacity-25"></span>
+                                <img src="@sPath" class="img-fluid" alt="" style="max-height: ">
+                            </a>
+                        </div>
+
+                        <div class="card-footer text-center p-2">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <a class="" href="javascript:" onclick="window.open('@sPath', '', 'scrollbars=1,resizable=1');" title="원본보기">@ViewBag.BoardList[0]["Memo"]</a>
+                            </div>
+                            <div class="small text-muted mt-1">@ViewBag.BoardList[0]["FileName"] (@StringHelper.StrFileSize(ViewBag.BoardList[0]["FileSize"].ToString()))</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="d-flex align-items-center container-p-x">
+            <div class="w-100 text-center pt-3">@Resources.Global.NoItemShow</div>
+        </div>
+    }
+</div>

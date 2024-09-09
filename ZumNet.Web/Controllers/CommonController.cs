@@ -585,12 +585,55 @@ namespace ZumNet.Web.Controllers
             return View();
         }
 
-        #region [CODE_DESCRIPTION 테이블 관련]
         /// <summary>
-        /// 코드 추가, 변경
+        /// 사진 보기
         /// </summary>
         /// <returns></returns>
         [SessionExpireFilter]
+        [Authorize]
+        public ActionResult PhotoView()
+        {
+            string req = StringHelper.SafeString(Request["qi"], "");
+            string rt;
+
+            if (req != "")
+            {
+                JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
+
+                ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                using (ZumNet.BSL.ServiceBiz.BoardBiz bd = new BSL.ServiceBiz.BoardBiz())
+                {
+                    svcRt = bd.GetAlbumListByMsgType(jReq["mt"].ToString(), jReq["sj"].ToString());
+                }
+
+                if (svcRt != null && svcRt.ResultCode == 0)
+                {
+                    ViewBag.JPost = jReq;
+                    ViewBag.BoardList = svcRt.ResultDataRowCollection;
+                    ViewBag.ItemCount = svcRt.ResultItemCount.ToString();
+                }
+                else
+                {
+                    rt = svcRt != null ? svcRt.ResultMessage : Resources.Global.NoItemShow;
+                    return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+                }
+            }
+            else
+            {
+                rt = Resources.Global.Auth_InvalidPath;
+                return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
+            }
+
+            return View();
+        }
+
+        #region [CODE_DESCRIPTION 테이블 관련]
+            /// <summary>
+            /// 코드 추가, 변경
+            /// </summary>
+            /// <returns></returns>
+            [SessionExpireFilter]
         [HttpPost]
         [Authorize]
         public string SetCode()

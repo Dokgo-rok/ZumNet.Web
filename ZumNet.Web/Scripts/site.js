@@ -1195,6 +1195,12 @@ $(function () {
         "jusoPopup": function () {
             if (_zw.ut.isMobile()) var pop = window.open("/Common/JusoPopup", "pop", "scrollbars=yes, resizable=yes");
             else var pop = window.open("/Common/JusoPopup", "pop", "width=570,height=420, scrollbars=yes, resizable=yes");
+        },
+        "photoPopup": function (type, ttl) {
+            var qi = '{mt:"' + type + '",sj:"' + ttl + '"}';
+            var url = "/Common/PhotoView?qi=" + encodeURIComponent(_zw.base64.encode(qi));;
+            if (_zw.ut.isMobile()) var pop = window.open(url, "pop", "scrollbars=yes, resizable=yes");
+            else var pop = window.open(url, "pop", "width=770,height=600, scrollbars=yes, resizable=yes");
         }
     };
 

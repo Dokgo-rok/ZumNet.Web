@@ -1536,13 +1536,24 @@
               </xsl:otherwise>
             </xsl:choose>
           </div>-->
-			<div>
-				<a href="" onclick="window.open('{//forminfo/maintable/MoldImgPath}', '', 'scrollbars=1,resizable=1')" class="img-thumbnail img-thumbnail-shadow" title="{//forminfo/maintable/TOOLING_NUMBER}">
-					<span class="img-thumbnail-overlay bg-white opacity-25"></span>
-					<img src="{//forminfo/maintable/MoldImgPath}" class="img-fluid" alt="" style="max-width: 100%" />
-                </a>
+			<div class="zf-photoview w-100">
+				<xsl:choose>
+					<xsl:when test="//forminfo/maintable/MoldImgPath!=''">
+						<!-- <a href="" onclick="window.open('{//forminfo/maintable/MoldImgPath}', '', 'scrollbars=1,resizable=1');" -->
+				        <a href="javascript://" onclick="_zw.mu.photoPopup('mold', '{//forminfo/maintable/TOOLING_NUMBER}');" class="img-thumbnail img-thumbnail-shadow" title="{//forminfo/maintable/TOOLING_NUMBER}">
+					        <span class="img-thumbnail-overlay bg-white opacity-25"></span>
+					        <img src="{//forminfo/maintable/MoldImgPath}" class="img-fluid" alt="" style="max-width: " />
+                        </a>
+					</xsl:when>
+					<xsl:when test="//forminfo/maintable/TOOLING_NUMBER!=''">
+						<a href="/Board/Photo?qi=eyJjdCI6IjI5OCIsImN0YWxpYXMiOiJ0b29saW5nIiwib3QiOiJHIiwiYWxpYXMiOiJtb2xkIiwieGZhbGlhcyI6ImFsYnVtIiwiZmRpZCI6IjE0NzUwIiwiYWNsIjoiU0ZERVJWU0RFTVdSViIsIm9wbm9kZSI6IjAuMC4xNDc1MCIsImZ0IjoiIiwidHRsIjoi7IKs7KeE64%2BE66m0IC8g6riI7ZiVIiwidGd0IjoiMTQ3NTAiLCJwYWdlIjoiMSIsImNvdW50IjoiNTAiLCJzb3J0IjoiU2VxSUQiLCJzb3J0ZGlyIjoiREVTQyIsInNlYXJjaCI6IiIsInNlYXJjaHRleHQiOiIiLCJzdGFydCI6IiIsImVuZCI6IiIsImJhc2Vzb3J0IjoiIiwiYm91bmRhcnkiOiJfX1ltOTFibVJoY25sZmVEUnVaMll3ZW1NeFpHcHVablYzYkRWb2FtaDRiV2t6X18ifQ%3D%3D" target="_blank">금형사진을 등록하시기 바랍니다!</a>
+					</xsl:when>
+					<xsl:otherwise>
+						금형번호 생성 후 등록 가능
+					</xsl:otherwise>
+				</xsl:choose>
 			</div>
-			<div class="zf-upload w-100">
+			<!--<div class="zf-upload w-100">
 				<div class="zf-upload-select d-flex align-items-center">
 					<xsl:choose>
 						<xsl:when test="//fileinfo/file[@isfile='N'] or $mode='read' or ($mode='edit' and ($acl='C' or $acl=''))">
@@ -1608,7 +1619,7 @@
 						</div>
 					</xsl:if>
 				</div>
-			</div>
+			</div>-->
         </td>
       </tr>   
       <tr>
@@ -1779,6 +1790,16 @@
           </xsl:otherwise>
         </xsl:choose>
       </div>
+	
+		<div class="zf-photoview w-100">
+			<xsl:if test="ImgPath!=''">
+				<a href="javascript://" onclick="_zw.mu.photoPopup('model', '{PNUMBER}');" class="img-thumbnail img-thumbnail-shadow" title="{PNUMBER}">
+					<span class="img-thumbnail-overlay bg-white opacity-25"></span>
+					<img src="{ImgPath}" class="img-fluid" alt="" style="max-width: " />
+                </a>
+			</xsl:if>
+		</div>
+	  
     </xsl:when>
     <xsl:when test="CLSNAME='pdmpart'">
       <xsl:choose>
@@ -1847,6 +1868,15 @@
               </xsl:otherwise>
             </xsl:choose>
           </div>
+		
+	        <div class="zf-photoview w-100">
+			    <xsl:if test="ImgPath!=''">
+				    <a href="javascript://" onclick="_zw.mu.photoPopup('part', '{PNUMBER}');" class="img-thumbnail img-thumbnail-shadow" title="{PNUMBER}">
+					    <span class="img-thumbnail-overlay bg-white opacity-25"></span>
+					    <img src="{ImgPath}" class="img-fluid" alt="" style="max-width: " />
+                    </a>
+			    </xsl:if>
+		    </div>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>

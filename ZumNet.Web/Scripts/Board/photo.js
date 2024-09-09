@@ -4,6 +4,9 @@ $(function () {
     if ($('#__DextUpload').length > 0) {
         DEXT5UPLOAD.config.Views = 'thumbs';
         //DEXT5UPLOAD.config.ImgPreView = '1';
+        DEXT5UPLOAD.config.ExtensionAllowOrLimit = '1';
+        DEXT5UPLOAD.config.ExtensionArr = 'jpg,jpeg,png,gif,bmp,tiff';
+
         DEXT5UPLOAD.config.Height = '280px';
         DEXT5UPLOAD.config.MaxTotalFileSize = '100MB';
 
