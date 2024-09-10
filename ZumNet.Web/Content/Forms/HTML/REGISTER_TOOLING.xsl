@@ -1789,16 +1789,22 @@
             <xsl:value-of select="PNUMBER"/>&#160;(<xsl:value-of select="SUBJECT"/>)
           </xsl:otherwise>
         </xsl:choose>
+	  
+		  <xsl:if test="ImgPath!=''">
+		<a class="btn btn-default btn-sm" aria-controls="vw-toggle-{PNUMBER}" onclick="_zw.ut.ctrls();" title="사진"><i class="fas fa-angle-up text-dark"></i></a>
+		  </xsl:if>
+		
       </div>
 	
-		<div class="zf-photoview w-100">
-			<xsl:if test="ImgPath!=''">
-				<a href="javascript://" onclick="_zw.mu.photoPopup('model', '{PNUMBER}');" class="img-thumbnail img-thumbnail-shadow" title="{PNUMBER}">
-					<span class="img-thumbnail-overlay bg-white opacity-25"></span>
-					<img src="{ImgPath}" class="img-fluid" alt="" style="max-width: " />
+		<xsl:if test="ImgPath!=''">
+			<div class="zf-photoview w-100 p-2 d-none" data-controls="vw-toggle-{PNUMBER}">
+			    <a href="javascript://" onclick="_zw.mu.photoPopup('model', '{PNUMBER}');" class="img-thumbnail img-thumbnail-shadow" title="{PNUMBER}">
+				    <span class="img-thumbnail-overlay bg-white opacity-25"></span>
+				    <img src="{ImgPath}" class="img-fluid" alt="" style="max-width: " />
                 </a>
-			</xsl:if>
-		</div>
+		    </div>
+		</xsl:if>
+		
 	  
     </xsl:when>
     <xsl:when test="CLSNAME='pdmpart'">
@@ -1867,16 +1873,20 @@
                 <xsl:value-of select="PNUMBER"/>&#160;(<xsl:value-of select="SUBJECT"/>)
               </xsl:otherwise>
             </xsl:choose>
+		  
+			<xsl:if test="ImgPath!=''">
+		<a class="btn btn-default btn-sm" aria-controls="vw-toggle-{PNUMBER}" onclick="_zw.ut.ctrls();" title="사진"><i class="fas fa-angle-up text-dark"></i></a>
+		  </xsl:if>
           </div>
 		
-	        <div class="zf-photoview w-100">
-			    <xsl:if test="ImgPath!=''">
-				    <a href="javascript://" onclick="_zw.mu.photoPopup('part', '{PNUMBER}');" class="img-thumbnail img-thumbnail-shadow" title="{PNUMBER}">
-					    <span class="img-thumbnail-overlay bg-white opacity-25"></span>
-					    <img src="{ImgPath}" class="img-fluid" alt="" style="max-width: " />
-                    </a>
-			    </xsl:if>
+		<xsl:if test="ImgPath!=''">
+			<div class="zf-photoview w-100 p-2 d-none" data-controls="vw-toggle-{PNUMBER}">
+			    <a href="javascript://" onclick="_zw.mu.photoPopup('part', '{PNUMBER}');" class="img-thumbnail img-thumbnail-shadow" title="{PNUMBER}">
+				    <span class="img-thumbnail-overlay bg-white opacity-25"></span>
+				    <img src="{ImgPath}" class="img-fluid" alt="" style="max-width: " />
+                </a>
 		    </div>
+		</xsl:if>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>

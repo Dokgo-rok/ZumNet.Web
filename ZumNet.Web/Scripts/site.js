@@ -2251,10 +2251,12 @@ $(function () {
                         tgt.addClass('modal'); $(el).find('i').removeClass('fa-expand').addClass('fa-compress');
                     }
                     if (_zw.Fc) _zw.Fc.updateSize();
-                } else if (ctrl == 'vw-search-cond') {
+
+                } else if (ctrl == 'vw-search-cond' || ctrl.substr(0, 9) == 'vw-toggle') {
                     tgt.toggleClass('d-none');
                     if ($(el).find('i').hasClass('fa-angle-down')) $(el).find('i').removeClass('fa-angle-down').addClass('fa-angle-up');
                     else $(el).find('i').removeClass('fa-angle-up').addClass('fa-angle-down');
+
                 }
             }
         },
