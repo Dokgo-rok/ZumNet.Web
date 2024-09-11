@@ -407,6 +407,7 @@
     <Content Include="Content\booking.css" />
     <Content Include="Content\Forms\CRESYN\FORM_TICKETHOTELREQ_V1.xsl" />
     <Content Include="Content\Forms\HTML\JURIDICALSTAMPREQ_1.html" />
+    <Content Include="Content\Forms\HTML\TICKETHOTELREQ_1.html" />
     <Content Include="Content\grid-preview.css" />
     <Content Include="Content\grid.css" />
     <Content Include="Content\ce.css" />

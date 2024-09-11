@@ -432,9 +432,22 @@
                   </a>-->
 					<a href="javascript:" onclick="_zw.fn.openEAFormSimple('{TOOLINGNUMBER}', 'tooling', 'REGISTER_TOOLING')" title="{TOOLINGNUMBER}">
 						<xsl:value-of select="TOOLINGNUMBER"/>
-					</a>
-                </xsl:otherwise>
+					</a>					
+                </xsl:otherwise>				  
               </xsl:choose>
+				<xsl:if test="MoldImgPath!=''">
+					&nbsp;
+					<a class="btn btn-default btn-sm" aria-controls="vw-toggle-{ROWSEQ}-{TOOLINGNUMBER}" onclick="_zw.ut.ctrls();" title="사진">
+						<i class="fas fa-angle-down text-dark"></i>
+					</a>
+					
+					<div class="zf-photoview w-100 p-2" data-controls="vw-toggle-{ROWSEQ}-{TOOLINGNUMBER}">
+						<a href="javascript://" onclick="_zw.mu.photoPopup('mold', '{TOOLINGNUMBER}');" class="img-thumbnail img-thumbnail-shadow" title="{TOOLINGNUMBER}">
+							<span class="img-thumbnail-overlay bg-white opacity-25"></span>
+							<img src="{MoldImgPath}" class="img-fluid" alt="" style="max-width: " />
+						</a>
+					</div>
+				</xsl:if>
             </td>
           </tr>
           <tr>
@@ -509,6 +522,20 @@
                   <xsl:value-of select="MODELOID" />
                 </xsl:attribute>
               </input>
+
+				<xsl:if test="ModelImgPath!=''">
+					&nbsp;
+					<a class="btn btn-default btn-sm" aria-controls="vw-toggle-{ROWSEQ}-{MODELNO}" onclick="_zw.ut.ctrls();" title="사진">
+						<i class="fas fa-angle-up text-dark"></i>
+					</a>
+					
+					<div class="zf-photoview w-100 p-2 d-none" data-controls="vw-toggle-{ROWSEQ}-{MODELNO}">
+						<a href="javascript://" onclick="_zw.mu.photoPopup('model', '{MODELNO}');" class="img-thumbnail img-thumbnail-shadow" title="{MODELNO}">
+							<span class="img-thumbnail-overlay bg-white opacity-25"></span>
+							<img src="{ModelImgPath}" class="img-fluid" alt="" style="max-width: " />
+						</a>
+					</div>
+				</xsl:if>
             </td>
             <td class="f-lbl-sub">모델명</td>
             <td style="border-right:0">
@@ -571,6 +598,20 @@
                       <xsl:value-of select="PARTOID1" />
                     </xsl:attribute>
                   </input>
+
+					<xsl:if test="PartImgPath!=''">
+						&nbsp;
+						<a class="btn btn-default btn-sm" aria-controls="vw-toggle-{ROWSEQ}-{PARTNO1}" onclick="_zw.ut.ctrls();" title="사진">
+							<i class="fas fa-angle-up text-dark"></i>
+						</a>
+
+						<div class="zf-photoview w-100 p-2 d-none" data-controls="vw-toggle-{ROWSEQ}-{PARTNO1}">
+							<a href="javascript://" onclick="_zw.mu.photoPopup('part', '{PARTNO1}');" class="img-thumbnail img-thumbnail-shadow" title="{PARTNO1}">
+								<span class="img-thumbnail-overlay bg-white opacity-25"></span>
+								<img src="{PartImgPath}" class="img-fluid" alt="" style="max-width: " />
+							</a>
+						</div>
+					</xsl:if>
                 </div>
                 <xsl:if test="phxsl:isDiff(string(PARTNO2),'')">
                   <div>

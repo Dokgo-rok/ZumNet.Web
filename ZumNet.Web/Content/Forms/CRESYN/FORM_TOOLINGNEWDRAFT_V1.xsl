@@ -1236,6 +1236,20 @@
                 </xsl:otherwise>
               </xsl:choose>
               <input type="hidden" name="MODELOID" value="{MODELOID}" />
+
+				<xsl:if test="ModelImgPath!=''">
+					&nbsp;
+					<a class="btn btn-default btn-sm" aria-controls="vw-toggle-{ROWSEQ}-{MODELNO}" onclick="_zw.ut.ctrls();" title="사진">
+						<i class="fas fa-angle-up text-dark"></i>
+					</a>
+
+					<div class="zf-photoview w-100 p-2 d-none" data-controls="vw-toggle-{ROWSEQ}-{MODELNO}">
+						<a href="javascript://" onclick="_zw.mu.photoPopup('model', '{MODELNO}');" class="img-thumbnail img-thumbnail-shadow" title="{MODELNO}">
+							<span class="img-thumbnail-overlay bg-white opacity-25"></span>
+							<img src="{ModelImgPath}" class="img-fluid" alt="" style="max-width: " />
+						</a>
+					</div>
+				</xsl:if>
             </td>
             <td class="f-lbl-sub">품명</td>
             <td style="border-right:0">
@@ -1323,6 +1337,20 @@
                       <xsl:value-of select="PARTOID1" />
                     </xsl:attribute>
                   </input>
+
+					<xsl:if test="PartImgPath!=''">
+						&nbsp;
+						<a class="btn btn-default btn-sm" aria-controls="vw-toggle-{ROWSEQ}-{PARTNO1}" onclick="_zw.ut.ctrls();" title="사진">
+							<i class="fas fa-angle-up text-dark"></i>
+						</a>
+
+						<div class="zf-photoview w-100 p-2 d-none" data-controls="vw-toggle-{ROWSEQ}-{PARTNO1}">
+							<a href="javascript://" onclick="_zw.mu.photoPopup('part', '{PARTNO1}');" class="img-thumbnail img-thumbnail-shadow" title="{PARTNO1}">
+								<span class="img-thumbnail-overlay bg-white opacity-25"></span>
+								<img src="{PartImgPath}" class="img-fluid" alt="" style="max-width: " />
+							</a>
+						</div>
+					</xsl:if>
                 </div>
                 <xsl:if test="phxsl:isDiff(string(PARTNO2),'')">
                   <div>
@@ -1930,8 +1958,8 @@
                     <xsl:when test="//optioninfo/foption1[ROWSEQ=$rowidx]">
                       <xsl:for-each select="//optioninfo/foption1[ROWSEQ=$rowidx]">
                         <div>
-                          <a target="_blank">
-                            <xsl:attribute name="href">
+                          <a target="_blank" href="javascript://">
+                            <xsl:attribute name="onclick">
                               <xsl:value-of disable-output-escaping="yes" select="phxsl:linkForm(string(//config/@web), string($root), string(MessageID))" />
                             </xsl:attribute>
                             <xsl:value-of select="PIName"/>_V<xsl:value-of select="MAINREVISION"/>&nbsp;(<xsl:value-of select="DocNumber"/>)

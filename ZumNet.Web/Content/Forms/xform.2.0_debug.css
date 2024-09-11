@@ -362,5 +362,8 @@ body {overflow: hidden}
 	}
 	.m .fm-lines .si-hdr td, .m .fm-lines .si-cur td, .si-tbl .si-title, .m .ft .f-lbl, .m .ft .f-lbl1, .m .ft .f-lbl2, .m .ft .f-lbl3, .m .ft .f-lbl4, .m .ft-sub .f-lbl-sub, .m .ft-sub .ft-sub-sub .f-lbl-sub {
 		background-color: #ffffff
-	} 
+	}
+	.m .btn {
+		display: none
+	}
 }
