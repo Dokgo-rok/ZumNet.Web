@@ -1399,8 +1399,8 @@
                     <xsl:when test="//optioninfo/foption1[ROWSEQ=$rowidx]">
                       <xsl:for-each select="//optioninfo/foption1[ROWSEQ=$rowidx]">
                         <div>
-                          <a target="_blank">
-                            <xsl:attribute name="href">
+                          <a target="_blank" href="javascript:void(0)">
+                            <xsl:attribute name="onclick">
                               <xsl:value-of disable-output-escaping="yes" select="phxsl:linkForm(string(//config/@web), string($root), string(MessageID))" />
                             </xsl:attribute>
                             <xsl:value-of select="PIName"/>_V<xsl:value-of select="MAINREVISION"/>&nbsp;(<xsl:value-of select="DocNumber"/>)

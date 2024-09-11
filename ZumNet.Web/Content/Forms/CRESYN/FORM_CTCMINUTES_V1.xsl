@@ -1031,7 +1031,7 @@
                     </td>
                     <td class="fm-button">
                       <xsl:if test="//optioninfo/foption1">
-                        <a target="_blank" href="javascript:">
+                        <a target="_blank" href="javascript:void(0)">
                           <xsl:attribute name="onclick">
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:linkForm(string(//config/@web), string($root), string(//optioninfo/foption1/@cd))" />
                           </xsl:attribute>

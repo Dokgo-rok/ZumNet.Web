@@ -918,7 +918,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGBUYERINREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGDISUSEDRAFT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGDISUSEREQ_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEDRAFT_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEDRAFT_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEDRAFT_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGINCREASEREQ_V2.xsl">
