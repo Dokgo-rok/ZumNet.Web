@@ -3471,6 +3471,8 @@
     <Content Include="Views\Board\_PhotoInfo.cshtml" />
     <Content Include="Views\Common\_DeleteMsgBatch.cshtml" />
     <Content Include="Views\Common\PhotoView.cshtml" />
+    <Content Include="Views\Report\_FORM_SECONDMODELREG.cshtml" />
+    <Content Include="Views\Report\_FORM_NEWOWNDEVREQUEST.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

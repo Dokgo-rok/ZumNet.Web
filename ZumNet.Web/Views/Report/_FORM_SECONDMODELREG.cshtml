@@ -42,7 +42,7 @@
         //초기 설정
         //if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.Year.ToString() + "-01-01"; //해당년도
         if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddYears(-1).ToString("yyyy-MM-dd") ; //1년전
-        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "OEM신개의현황";
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "OEM신개의현황(파생)";
 
         //검색조건 설정
         ViewBag.R.lv["cd3"] = "PublishDate";
@@ -50,14 +50,11 @@
         ViewBag.R.lv["cd5"] = ViewBag.R.lv.sortdir.ToString();
 
         //크레신 : 신개의현황 2014-05-09
-        string[,] arr = { { "SEQ", "NO", "40px", "", "" }, { "CUSTOMER", "고객명", "150px", "L", "Y" }, { "ITEMNAME", "품명", "150px", "L", "Y" }
-                            , { "MODELNAME", "모델명", "150px", "L", "Y" }, { "GRADE", "개발<br />등급", "50px", "", "Y" }, { "SALEPRICE", "판매<br />목표가<br />(USD)", "75px", "", "" }, { "DEVPRICEA", "재료비", "75px", "", "" }
-                            , { "DEVPRICEBA", "내작", "75px", "", "" }, { "DEVPRICEBB", "외주", "75px", "", "" }, { "DEVPRICEC", "관리비", "75px", "", "" }
-                            , { "DEVELOPPRICE", "TOTAL", "75px", "", "" }, { "PREDICTRATE", "예상<br />이익율(%)", "75px", "", "" }, {"PLANCOUNT", "기획<br />수량", "75px", "", ""}
-                            , { "PREDICTPROFIT", "총예상<br />이익<br />(USD)", "75px", "", "" }, {"PREDICTINVEST", "예상<br />투자비<br />(USD)", "75px", "", ""}, {"PRODUCTCENTER", "생산지", "75px", "", "Y"}
-                            , { "Creator", "작성자", "80px", "", "N" }, { "PublishDate", "등록일자", "100px", "", "Y" }, { "DocStatus", "결재상태", "100px", "", "" }}; //1645
+        string[,] arr = { { "SEQ", "NO", "4%", "", "" }, { "ADDCUST", "고객명", "15%", "L", "Y" }, { "ADDNAME", "품명", "20%", "L", "Y" }
+                            , { "ADDMODEL", "모델명", "15%", "L", "Y" }, { "GRADE", "개발등급", "8%", "", "" }, {"ADDRESS", "생산지", "8%", "", "Y"}
+                            , { "Creator", "작성자", "10%", "", "" }, { "PublishDate", "등록일자", "10%", "", "Y" }, { "DocStatus", "결재상태", "10%", "", "" }};
         this._columnConfig = arr;
-        this._tblWidth = "1645px";
+        this._tblWidth = "100%";
     }
 
     private string RenderColumnHeader(string mode)
@@ -75,19 +72,7 @@
 
         sb.Append("<thead>");
         sb.Append("<tr class=\"table-success\">");
-        for (int i = 0; i <= 5; i++)
-        {
-            if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
-            {
-                strValue = String.Format("<a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"></i></a>"
-                                            , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
-                                            , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
-            }
-            else strValue = _columnConfig[i, 1].ToString();
-            sb.AppendFormat("<th{0} rowspan=\"3\">{1}</th>", sClassExcel, strValue);
-        }
-        sb.Append("<th colspan=\"5\">개발견적가(USD)</th>");
-        for (int i = 11; i < _columnConfig.GetLength(0); i++)
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
         {
             if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
             {
@@ -99,17 +84,6 @@
             sb.AppendFormat("<th{0} rowspan=\"3\">{1}</th>", sClassExcel, strValue);
         }
         sb.Append("</tr>");
-        sb.Append("<tr class=\"table-success\">");
-        sb.AppendFormat("<th{0} rowspan=\"2\">{1}</th>", sClassExcel, _columnConfig[6, 1].ToString());
-        sb.AppendFormat("<th{0} colspan=\"2\">{1}</th>", sClassExcel, "가공비");
-        sb.AppendFormat("<th{0} rowspan=\"2\">{1}</th>", sClassExcel, _columnConfig[9, 1].ToString());
-        sb.AppendFormat("<th{0} rowspan=\"2\">{1}</th>", sClassExcel, _columnConfig[10, 1].ToString());
-        sb.Append("</tr>");
-        sb.Append("<tr class=\"table-success\">");
-        sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[7, 1].ToString());
-        sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[8, 1].ToString());
-        sb.Append("</tr>");
-
         sb.Append("</thead>");
         return sb.ToString();
     }
@@ -143,7 +117,7 @@
                     {
                         strValue = ZumNet.Web.Bc.CommonUtils.LvDate(row[strID].ToString());
                     }
-                    else if (strID == "MODELNAME")
+                    else if (strID == "ADDMODEL")
                     {
                         if (mode == "xls") strValue = "";
                         else strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">" + row[strID].ToString() + "</a>";
