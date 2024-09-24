@@ -564,8 +564,8 @@
                       화환및조화<br></br>신청방법
                     </td>
                     <td colspan="5" style="border-bottom:0;border-right:0">
-                      상호: 사철농원&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HP: 1. 010-5408-6622<br></br>
-                      연락처:02-529-1478&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. 010-5201-1478<br></br>
+                      상호: 사철농원&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HP: 1. 010-5201-1478<br></br>
+                      연락처:02-529-1478&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br></br>
                       <font size="2"> ※긴급건의 경우 직접 신청 가능합니다.</font>
                       
                     </td>

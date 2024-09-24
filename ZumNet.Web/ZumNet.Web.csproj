@@ -405,6 +405,8 @@
     <Content Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx" />
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
+    <Content Include="Content\Forms\CRESYN\FORM_NEWPRODUCTCOMP_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_NEWPRODUCTPLAN_V3.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TICKETHOTELREQ_V1.xsl" />
     <Content Include="Content\Forms\HTML\JURIDICALSTAMPREQ_1.html" />
     <Content Include="Content\Forms\HTML\TICKETHOTELREQ_1.html" />
@@ -3473,6 +3475,7 @@
     <Content Include="Views\Common\PhotoView.cshtml" />
     <Content Include="Views\Report\_FORM_SECONDMODELREG.cshtml" />
     <Content Include="Views\Report\_FORM_NEWOWNDEVREQUEST.cshtml" />
+    <Content Include="Views\Report\_FORM_NEWPRODUCTPLAN.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

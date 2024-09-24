@@ -628,8 +628,8 @@ $(function () {
             p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
                 var rt = p.find('.zf-upload .zf-upload-list #__RESULTINFO');
                 if (rt.length > 0 && rt.html != '') {
-                    //console.log(p.find('.zf-upload .zf-upload-list #__RESULTINFO').html())
-                    var j = JSON.parse(p.find('.zf-upload .zf-upload-list #__RESULTINFO').html()); console.log(j)
+                    //console.log(p.find('.zf-upload .zf-upload-list #__RESULTINFO').val())
+                    var j = JSON.parse(p.find('.zf-upload .zf-upload-list #__RESULTINFO').val()); console.log(j)
                     if (j.length > 0) { //console.log(j[0][0] + " : " + j[1][0])
                         var tbl = $('#__subtable1'), len = tbl.find('tr.sub_table_row').length;
                         tbl.find('tr.sub_table_row').each(function () {
