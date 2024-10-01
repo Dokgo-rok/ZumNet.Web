@@ -672,6 +672,26 @@ a.z-lnk-navy-n {
         height: 155px;
     }
 }
+@media (min-width: 660px) {
+    .modal-zf {
+        max-width: 40rem !important
+    }
+}
+@media (min-width: 780px) {
+    .modal-zf {
+        max-width: 46rem !important
+    }
+}
+@media (min-width: 992px) {
+    .modal-zf {
+        max-width: 50rem !important
+    }
+}
+@media (min-width: 1200px) {
+    .modal-zf {
+        max-width: 56rem !important
+    }
+}
 /* orgchart modal <----- */
 
 /* custom popup layer, modal for code/erp --------> */

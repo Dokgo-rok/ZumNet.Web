@@ -1704,7 +1704,7 @@ $(function () {
             $.ajax({
                 type: "POST",
                 url: "/EA/Main/NewDocument",
-                data: '{tab:"' + tab + '",boundary:"' + _zw.V.lv.boundary + '"}',
+                data: '{tab:"' + tab + '",boundary:"' + (_zw.V.boundary ? _zw.V.boundary : _zw.V.lv.boundary) + '"}',
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {
                         //var v = res.substr(2).split(_zw.V.lv.boundary);

@@ -368,7 +368,7 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="ITEMMODEL">
               <xsl:attribute name="class">txtText</xsl:attribute>
-              <xsl:attribute name="maxlength">20</xsl:attribute>
+              <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="ITEMMODEL" />
               </xsl:attribute>
@@ -384,7 +384,7 @@
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="text" name="MODEL">
               <xsl:attribute name="class">txtText</xsl:attribute>
-              <xsl:attribute name="maxlength">10</xsl:attribute>
+              <xsl:attribute name="maxlength">50</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="MODEL" />
               </xsl:attribute>
