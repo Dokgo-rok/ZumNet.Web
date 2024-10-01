@@ -2223,26 +2223,44 @@ $(function () {
             }
             return true;
         },
-        "checkYN": function (ckb, el, fld) {
-            $(':checkbox[name="' + ckb + '"]').each(function (idx, e) {
-                if (el != e) { if (e.checked) e.checked = false; }
-            });
-            if (fld) {
-                $('input[name="' + fld + '"]').val(fld != '' && el.checked ? el.value : '');
-            }
-            if (_zw.formEx.checkEvent) _zw.formEx.checkEvent(ckb, el, fld);
+        "checkYN": function (ckb, el, fld, sep) {
+            if (sep && sep != '') {
+                var vlu = '';
+                $(':checkbox[name="' + ckb + '"]:checked').each(function () {
+                    vlu += $(this).val() + sep;
+                });
+                $('input[name="' + fld + '"]').val(vlu);
+
+            } else {
+                $(':checkbox[name="' + ckb + '"]').each(function (idx, e) {
+                    if (el != e) { if (e.checked) e.checked = false; }
+                });
+                if (fld) {
+                    $('input[name="' + fld + '"]').val(fld != '' && el.checked ? el.value : '');
+                }
+                if (_zw.formEx.checkEvent) _zw.formEx.checkEvent(ckb, el, fld);
+            }            
         },
-        "checkTableYN": function (ckb, el, fld) {
+        "checkTableYN": function (ckb, el, fld, sep) {
             var p = el.parentNode, vlu = '';
             do { p = p.parentNode; } while (p.tagName.toLowerCase() != 'td');
-            $(p).find('span :checkbox[name="' + ckb + '"]').each(function (idx, e) {
-                if (el != e) { if (e.checked) e.checked = false; }
-            });
-            if (fld) {
-                $(p).find('input:hidden[name="' + fld + '"]').val(fld != '' && el.checked ? el.value : '');
-            }
-            console.log($(p).find('input:hidden[name="' + fld + '"]').val());
-            if (_zw.formEx.checkEvent) _zw.formEx.checkEvent(ckb, el, fld);
+
+            if (sep && sep != '') {
+                $(p).find('span :checkbox[name="' + ckb + '"]:checked').each(function () {
+                    vlu += $(this).val() + sep;
+                });
+                $(p).find('input:hidden[name="' + fld + '"]').val(vlu);
+
+            } else {
+                $(p).find('span :checkbox[name="' + ckb + '"]').each(function (idx, e) {
+                    if (el != e) { if (e.checked) e.checked = false; }
+                });
+                if (fld) {
+                    $(p).find('input:hidden[name="' + fld + '"]').val(fld != '' && el.checked ? el.value : '');
+                }
+                console.log($(p).find('input:hidden[name="' + fld + '"]').val());
+                if (_zw.formEx.checkEvent) _zw.formEx.checkEvent(ckb, el, fld);
+            }            
         },
         "view": function () {
             

@@ -406,8 +406,11 @@
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
     <Content Include="Content\Forms\CRESYN\FORM_INDUSTRIALPRO_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_ITEMMASTERCHART_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_MASTERFILECHANGEREQ_V3.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_NEWPRODUCTCOMP_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_NEWPRODUCTPLAN_V3.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PRODUCTREGICHART_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TICKETHOTELREQ_V1.xsl" />
     <Content Include="Content\Forms\HTML\JURIDICALSTAMPREQ_1.html" />
     <Content Include="Content\Forms\HTML\TICKETHOTELREQ_1.html" />

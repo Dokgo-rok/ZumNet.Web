@@ -37,6 +37,9 @@ body {overflow: hidden}
 .m .fm span {
 	font-size: 14px
 }
+	.m .fm span label{
+		font-size: 13px
+	}
 .m a:hover {
 	color: #0056b3;
 	text-decoration: underline;
