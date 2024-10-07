@@ -1,4 +1,7 @@
 ﻿/* 리스트뷰 */
+.z-list {
+    font-family: 맑은 고딕;
+}
 .z-list-body table thead tr label.custom-checkbox, .z-list-body table tbody tr label.custom-checkbox {
     margin-bottom: 0 !important;
     left: 4px;

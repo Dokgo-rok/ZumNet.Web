@@ -3481,6 +3481,7 @@
     <Content Include="Views\Report\_FORM_NEWOWNDEVREQUEST.cshtml" />
     <Content Include="Views\Report\_FORM_NEWPRODUCTPLAN.cshtml" />
     <Content Include="Views\Report\_FORM_INDUSTRIALPRO.cshtml" />
+    <Content Include="Views\Report\_FORM_CERTIFICATIONDOCUMENT.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />
