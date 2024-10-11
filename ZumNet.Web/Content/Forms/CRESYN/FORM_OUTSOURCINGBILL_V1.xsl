@@ -193,7 +193,7 @@
                           </xsl:attribute>
                         </img>
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18 mr-1" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',220,274,-70,0,'etc','CURRENCY');">
+						<button type="button" class="btn btn-outline-secondary btn-18 mr-1" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',220,274,-70,0,'etc','CURRENCY1');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                       <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
@@ -412,7 +412,7 @@
                           </xsl:attribute>
                         </img>
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18 mr-1" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',220,274,-70,0,'etc','CURRENCY');">
+						<button type="button" class="btn btn-outline-secondary btn-18 mr-1" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',220,274,-70,0,'etc','CURRENCY2');">
 							<i class="fas fa-angle-down"></i>
 						</button>
                       <!--<button onclick="parent.fnAddChkRow('__subtable2');" onfocus="this.blur()" class="btn_bg">

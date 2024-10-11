@@ -398,7 +398,7 @@
                 <td style=";border-right:0" >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="REVWISH" class="txtText" maxlength="200" value="{//forminfo/maintable/REVWISH}" />
+                      <input type="text" id="__mainfield" name="REVWISH" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/REVWISH}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/REVWISH))" />
