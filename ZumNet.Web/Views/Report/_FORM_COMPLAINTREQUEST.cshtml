@@ -39,7 +39,7 @@
     private void InitConfig()
     {
         //초기 설정
-        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"); //최근 1개월
+        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddYears(-1).ToString("yyyy-MM-dd"); //최근 1개월 -> 1년
         if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "계약서관리대장";
 
         //검색조건 설정

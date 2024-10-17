@@ -385,14 +385,15 @@
 							<tr>
 								<td class="f-lbl4" rowspan="2">부서</td>
 								<td class="f-lbl4" rowspan="2">PM</td>
-								<td class="f-lbl4" colspan="2">설계</td>
-								<td class="f-lbl4" rowspan="2">기연</td>
+								<td class="f-lbl4" colspan="2">기구개발</td>
+								<td class="f-lbl4" colspan="3">HW</td>
+								<td class="f-lbl4" colspan="2">AA</td>
+								<td class="f-lbl4" colspan="2">SW</td>
+								<td class="f-lbl4" rowspan="2">음향</td>
 								<td class="f-lbl4" rowspan="2">기술</td>
 								<td class="f-lbl4" rowspan="2">QA</td>
-								<td class="f-lbl4" rowspan="2">영업</td>
-								<td class="f-lbl4" rowspan="2">구매</td>
-								<td class="f-lbl4" colspan="4">해외</td>
-								<td class="f-lbl4" rowspan="2">
+								<td class="f-lbl4" rowspan="2" style="border-right:0">영업</td>
+								<!--<td class="f-lbl4" rowspan="2">
 									<xsl:choose>
 										<xsl:when test="$mode='new' or $mode='edit'">
 											<input type="text" id="__mainfield" name="CFTADD1">
@@ -425,15 +426,18 @@
 											<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CFTADD2))" />
 										</xsl:otherwise>
 									</xsl:choose>
-								</td>
+								</td>-->
 							</tr>
 							<tr>
 								<td class="f-lbl4">기구</td>
 								<td class="f-lbl4">회로</td>
-								<td class="f-lbl4">설계</td>
-								<td class="f-lbl4">기술</td>
-								<td class="f-lbl4">생산</td>
-								<td class="f-lbl4">QC</td>
+								<td class="f-lbl4">EB</td>
+								<td class="f-lbl4">CASE</td>
+								<td class="f-lbl4">안테나</td>
+								<td class="f-lbl4">통화</td>
+								<td class="f-lbl4">ANC</td>
+								<td class="f-lbl4">EB</td>
+								<td class="f-lbl4">CASE</td>
 							</tr>
 							<tr>
 								<td class="f-lbl4">직급</td>
@@ -995,9 +999,9 @@
 								<td class="f-lbl4">T/O</td>
 								<td class="f-lbl4">EP1</td>
 								<td class="f-lbl4">EP2</td>
-								<td class="f-lbl4">PP</td>
-								<td class="f-lbl4">고객<br />승인</td>
-								<td class="f-lbl4">승인<br />차수</td>
+								<td class="f-lbl4">PP1</td>
+								<td class="f-lbl4">PP2</td>
+								<td class="f-lbl4">고객<br />승인</td>								
 								<td class="f-lbl4">PMP</td>
 								<td class="f-lbl4">MP</td>
 								<td class="f-lbl4" style="border-right:0">1st<br />출하</td>

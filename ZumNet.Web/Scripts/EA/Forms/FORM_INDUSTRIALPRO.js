@@ -6,26 +6,26 @@
 
             } else { //결재
                 if (_zw.V.biz == "normal" && _zw.V.act == "_reviewer") {
-                    el = $('#__mainfield[name="CLAIMRIGHTS"]');
-                    if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [청구권리] 누락!", function () { el.focus(); }); return false; }
+                    //el = $('#__mainfield[name="CLAIMRIGHTS"]');
+                    //if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [청구권리] 누락!", function () { el.focus(); }); return false; }
 
-                    el = $('#__mainfield[name="FUTUREAPP"]');
-                    if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [미래적용] 누락!", function () { el.focus(); }); return false; }
+                    //el = $('#__mainfield[name="FUTUREAPP"]');
+                    //if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [미래적용] 누락!", function () { el.focus(); }); return false; }
 
-                    el = $('#__mainfield[name="OTHERAPP"]');
-                    if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [타사적용] 누락!", function () { el.focus(); }); return false; }
+                    //el = $('#__mainfield[name="OTHERAPP"]');
+                    //if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [타사적용] 누락!", function () { el.focus(); }); return false; }
 
-                    el = $('#__mainfield[name="PRODAPP"]');
-                    if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [제품적용] 누락!", function () { el.focus(); }); return false; }
+                    //el = $('#__mainfield[name="PRODAPP"]');
+                    //if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [제품적용] 누락!", function () { el.focus(); }); return false; }
 
-                    el = $('#__mainfield[name="APPMODEL"]');
-                    if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [적용모델] 누락!", function () { el.focus(); }); return false; }
+                    //el = $('#__mainfield[name="APPMODEL"]');
+                    //if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [적용모델] 누락!", function () { el.focus(); }); return false; }
 
-                    el = $('#__mainfield[name="REVIEWRESULT"]');
-                    if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [검토결과] 누락!", function () { el.focus(); }); return false; }
+                    //el = $('#__mainfield[name="REVIEWRESULT"]');
+                    //if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [검토결과] 누락!", function () { el.focus(); }); return false; }
 
-                    el = $('#__mainfield[name="REVIEWMEMO"]');
-                    if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [검토의견] 누락!", function () { el.focus(); }); return false; }
+                    //el = $('#__mainfield[name="REVIEWMEMO"]');
+                    //if (el.length > 0 && $.trim(el.val()) == '') { bootbox.alert("필수항목 [검토의견] 누락!", function () { el.focus(); }); return false; }
                 }
             }
             return true;

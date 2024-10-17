@@ -417,20 +417,7 @@
 										</input>
 										<label for="ckb28">Category</label>
 									</span>
-									<span class="f-option1">
-										<input type="checkbox" id="ckb29" name="ckbCHANGES" value=" L/T">
-											<xsl:if test="$mode='new' or $mode='edit'">
-												<xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGES', this, 'CHANGES', ';')</xsl:attribute>
-											</xsl:if>
-											<xsl:if test="phxsl:isExist(string(//forminfo/maintable/CHANGES),' L/T;')">
-												<xsl:attribute name="checked">true</xsl:attribute>
-											</xsl:if>
-											<xsl:if test="$mode='read' and phxsl:isExist(string(//forminfo/maintable/CHANGES),' L/T;')=false">
-												<xsl:attribute name="disabled">disabled</xsl:attribute>
-											</xsl:if>
-										</input>
-										<label for="ckb29"> L/T</label>
-									</span>
+									
 									<span class="f-option1">
 										<input type="checkbox" id="ckb30" name="ckbCHANGES" value="ETC">
 											<xsl:if test="$mode='new' or $mode='edit'">
@@ -493,9 +480,23 @@
 										</input>
 										<label for="ckb33">MOQ</label>
 									</span>
+									<span class="f-option1">
+										<input type="checkbox" id="ckb29" name="ckbCHANGES" value=" L/T">
+											<xsl:if test="$mode='new' or $mode='edit'">
+												<xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGES', this, 'CHANGES', ';')</xsl:attribute>
+											</xsl:if>
+											<xsl:if test="phxsl:isExist(string(//forminfo/maintable/CHANGES),' L/T;')">
+												<xsl:attribute name="checked">true</xsl:attribute>
+											</xsl:if>
+											<xsl:if test="$mode='read' and phxsl:isExist(string(//forminfo/maintable/CHANGES),' L/T;')=false">
+												<xsl:attribute name="disabled">disabled</xsl:attribute>
+											</xsl:if>
+										</input>
+										<label for="ckb29"> L/T</label>
+									</span>
 								</td>
 							</tr>
-							<tr>
+							<!--<tr>
 								<td class="f-lbl">경영기획</td>
 								<td style="border-right: 0">
 									<span class="f-option1">
@@ -532,7 +533,7 @@
 										<label for="ckb35">Routing</label>
 									</span>
 								</td>
-							</tr>
+							</tr>-->
 							<tr>
 								<td class="f-lbl" style="border-bottom: 0">참고</td>
 								<td style="border-right: 0; border-bottom: 0">
@@ -550,8 +551,8 @@
 										<span class="f-option" style="font-size: 13px">Supplier (업체명),</span>
 										<span class="f-option" style="font-size: 13px">Price (단가),</span>
 										<span class="f-option" style="font-size: 13px">MOQ (최소 발주 수량),</span>
-										<span class="f-option" style="font-size: 13px">Supply Type (출고 처리),</span>
-										<span class="f-option" style="font-size: 13px">Routing (공수)</span>
+										<!--<span class="f-option" style="font-size: 13px">Supply Type (출고 처리),</span>
+										<span class="f-option" style="font-size: 13px">Routing (공수)</span>-->
 									</div>									
 								</td>
 							</tr>
