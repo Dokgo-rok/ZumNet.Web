@@ -2,22 +2,22 @@
     _zw.formEx = {
         "validation": function (cmd) {
             if (cmd == "draft") { //기안
-                if ($('#__mainfield[name="ECONTYN"]').val() == '진행') {
-                    var p = "ECONTMAILSUB;ECONTMAILBODY;ECONTEXPIRED;ECONTPWD;ECONTRCVNMA;ECONTRCVMAILA;ECONTRCVNMB;ECONTRCVMAILB".split(';');
-                    for (var i = 0; i < p.length; i++) {
-                        el = $('#__mainfield[name="' + p[i] + '"]'); if ($.trim(el.val()) == '') { bootbox.alert("전자계약 필수 항목 누락!", function () { el.focus(); }); return false; }
-                    }
-                }
+                //if ($('#__mainfield[name="ECONTYN"]').val() == '진행') {
+                //    var p = "ECONTMAILSUB;ECONTMAILBODY;ECONTEXPIRED;ECONTPWD;ECONTRCVNMA;ECONTRCVMAILA;ECONTRCVNMB;ECONTRCVMAILB".split(';');
+                //    for (var i = 0; i < p.length; i++) {
+                //        el = $('#__mainfield[name="' + p[i] + '"]'); if ($.trim(el.val()) == '') { bootbox.alert("전자계약 필수 항목 누락!", function () { el.focus(); }); return false; }
+                //    }
+                //}
 
             } else {
-                if (_zw.V.biz == "receive" && _zw.V.act == "__r") {
-                    if ($('#__mainfield[name="ECONTYN"]').val() == '진행') {
-                        var p = "ECONTFNM;ECONTFID;ECONTMAILSUB;ECONTMAILBODY;ECONTEXPIRED;ECONTPWD;ECONTRCVNMA;ECONTRCVMAILA;ECONTRCVNMB;ECONTRCVMAILB".split(';');
-                        for (var i = 0; i < p.length; i++) {
-                            el = $('#__mainfield[name="' + p[i] + '"]'); if ($.trim(el.val()) == '') { bootbox.alert("전자계약 필수 항목 누락!", function () { el.focus(); }); return false; }
-                        }
-                    }
-                }
+                //if (_zw.V.biz == "receive" && _zw.V.act == "__r") {
+                //    if ($('#__mainfield[name="ECONTYN"]').val() == '진행') {
+                //        var p = "ECONTFNM;ECONTFID;ECONTMAILSUB;ECONTMAILBODY;ECONTEXPIRED;ECONTPWD;ECONTRCVNMA;ECONTRCVMAILA;ECONTRCVNMB;ECONTRCVMAILB".split(';');
+                //        for (var i = 0; i < p.length; i++) {
+                //            el = $('#__mainfield[name="' + p[i] + '"]'); if ($.trim(el.val()) == '') { bootbox.alert("전자계약 필수 항목 누락!", function () { el.focus(); }); return false; }
+                //        }
+                //    }
+                //}
             }
             return true;
         },
