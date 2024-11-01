@@ -435,7 +435,8 @@ $(function () {
                         if ($(this).is(":checkbox") || $(this).is(":radio")) {
                             p[nm] = $(this).prop('checked') ? $(this).val() : '';
                         } else {
-                            p[nm] = $(this).val();
+                            //p[nm] = $(this).val();
+                            p[nm] = _zw.ut.dateVal($(this));
                         }
                     } else {
                         p[nm] = $(this).val();
@@ -462,9 +463,11 @@ $(function () {
                             if ($(this).is(":checkbox") || $(this).is(":radio")) {
                                 p[nm] = $(this).prop('checked') ? $(this).val() : '';
                             } else if ($(this).hasClass('txtDate')) {
-                                if (org == null || $(this).val() != org.substr(0, 10)) p[nm] = $(this).val();
+                                //if (org == null || $(this).val() != org.substr(0, 10)) p[nm] = $(this).val();
+                                if (org == null || $(this).val() != org.substr(0, 10)) p[nm] = _zw.ut.dateVal($(this));
                             } else {
-                                p[nm] = $(this).val();
+                                //p[nm] = $(this).val();
+                                p[nm] = _zw.ut.dateVal($(this));
                             }
                         }
                     } else {

@@ -961,7 +961,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="COUNT" class="txtDollar" data-inputmask="number;10;4" maxlength="10" value="{COUNT}" />
+            <input type="text" name="COUNT" class="txtNumberic" data-inputmask="number;10;0" maxlength="10" value="{COUNT}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Center</xsl:attribute>
@@ -989,7 +989,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="UNITCOST1" class="txtDollar" maxlength="14" data-inputmask="number;10;4" value="{UNITCOST1}" />
+            <input type="text" name="UNITCOST1" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{UNITCOST1}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1000,7 +1000,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="UNITCOST2" class="txtDollar" maxlength="14" data-inputmask="number;10;4" value="{UNITCOST2}" />
+            <input type="text" name="UNITCOST2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{UNITCOST2}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1022,7 +1022,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="VAT" class="txtDollar" maxlength="14" data-inputmask="number;10;4" value="{VAT}" />
+            <input type="text" name="VAT" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{VAT}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1033,7 +1033,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="TARIFF" class="txtDollar" maxlength="14" data-inputmask="number;10;4" value="{TARIFF}" />
+            <input type="text" name="TARIFF" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{TARIFF}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -1226,7 +1226,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="SUM2" class="txtCurrency" maxlength="14" data-inputmask="number;14;0" value="{SUM2}" />
+            <input type="text" name="SUM2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{SUM2}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>

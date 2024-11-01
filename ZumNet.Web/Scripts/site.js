@@ -1979,7 +1979,7 @@ $(function () {
                     $('.input-daterange').datepicker({
                         autoclose: true,
                         inputs: $('.input-daterange input[type="text"]'),
-                        //format: "yyyy-mm-dd",
+                        format: "yyyy-mm-dd", //24-10-30 지정
                         todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     });
@@ -1988,7 +1988,7 @@ $(function () {
                 if ($('.datepicker, .datepicker-ko, .datepicker-slash').length > 0) {
                     $('.datepicker').datepicker({
                         autoclose: true,
-                        //format: "yyyy-mm-dd",
+                        format: "yyyy-mm-dd", //24-10-30 지정
                         todayHighlight: true, //22-07-14 보류
                         language: $('#current_culture').val()
                     }).on('changeDate', function (e) {
@@ -2063,11 +2063,13 @@ $(function () {
                 if (v[0] == "date") {
                     if (v[1] == 'yyyy' || v[1] == 'YYYY') mv = [/[1-2]/, /\d/, /\d/, /\d/];
                     else if (v[1] == 'yyyy/MM/dd' || v[1] == 'YYYY/MM/DD') {
-                        if (lang == 'en') mv = [/[0-1]/, /\d/, '/', /[0-3]/, /\d/, '/', /[1-2]/, /\d/, /\d/, /\d/];
-                        else mv = [/[1-2]/, /\d/, /\d/, /\d/, '/', /[0-1]/, /\d/, '/', /[0-3]/, /\d/];
+                        //if (lang == 'en') mv = [/[0-1]/, /\d/, '/', /[0-3]/, /\d/, '/', /[1-2]/, /\d/, /\d/, /\d/];
+                        //else mv = [/[1-2]/, /\d/, /\d/, /\d/, '/', /[0-1]/, /\d/, '/', /[0-3]/, /\d/];
+                        mv = [/[1-2]/, /\d/, /\d/, /\d/, '/', /[0-1]/, /\d/, '/', /[0-3]/, /\d/];
                     } else {
-                        if (lang == 'en') mv = [/[0-1]/, /\d/, '-', /[0-3]/, /\d/, '-', /[1-2]/, /\d/, /\d/, /\d/];
-                        else mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
+                        //if (lang == 'en') mv = [/[0-1]/, /\d/, '/', /[0-3]/, /\d/, '/', /[1-2]/, /\d/, /\d/, /\d/];
+                        //else mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
+                        mv = [/[1-2]/, /\d/, /\d/, /\d/, '-', /[0-1]/, /\d/, '-', /[0-3]/, /\d/];
                     }
                 } else if (v[0] == "time") {
                     mv = v[1] == 'HH:MM' ? [/\d/, /\d/, ':', /\d/, /\d/] : [/\d/, /\d/, ':', /\d/, /\d/, ':', /\d/, /\d/];
