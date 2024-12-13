@@ -780,8 +780,8 @@
           </xsl:if>
 
           <xsl:if test="$mode='read' and count(//processinfo/signline/lines/line)>0">
-            <div class="print-none" style="page-break-before:always;font-size:1px;height:1px">&nbsp;</div>
-            <div class="fm-lines print-none">
+            <div style="page-break-before:always;font-size:1px;height:1px">&nbsp;</div>
+            <div class="fm-lines">
               <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignTable(//processinfo/signline/lines)"/>
             </div>
           </xsl:if>
