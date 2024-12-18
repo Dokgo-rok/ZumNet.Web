@@ -640,8 +640,8 @@
               </tr>
 
               <tr>
-                <td class="f-lbl" style="border-bottom:0;height:150px">변경요청사항</td>
-                <td colspan="3" style="border-bottom:0;border-right:0">
+                <td class="f-lbl" style="height:150px">변경요청사항</td>
+                <td colspan="3" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
                       <textarea id="__mainfield" name="CHANGEREQUEST" style="min-height:140px" class="txaText bootstrap-maxlength" maxlength="2000">
@@ -659,12 +659,171 @@
                   </xsl:choose>
                 </td>
               </tr>
+
+				<tr>
+					<td class="f-lbl">변경요청</td>
+					<td>
+						<span class="f-option1">
+							<input type="checkbox" id="ckb61" name="ckbCHANGEREQPOS" value="고객">
+								<xsl:if test="$mode='new' or $mode='edit'">
+									<xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEREQPOS', this, 'CHANGEREQPOS')</xsl:attribute>
+								</xsl:if>
+								<xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEREQPOS),'고객')">
+									<xsl:attribute name="checked">true</xsl:attribute>
+								</xsl:if>
+								<xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CHANGEREQPOS),'고객')">
+									<xsl:attribute name="disabled">disabled</xsl:attribute>
+								</xsl:if>
+							</input>
+							<label for="ckb61">고객</label>
+						</span>
+						<span class="f-option1">
+							<input type="checkbox" id="ckb62" name="ckbCHANGEREQPOS" value="당사">
+								<xsl:if test="$mode='new' or $mode='edit'">
+									<xsl:attribute name="onclick">_zw.form.checkYN('ckbCHANGEREQPOS', this, 'CHANGEREQPOS')</xsl:attribute>
+								</xsl:if>
+								<xsl:if test="phxsl:isEqual(string(//forminfo/maintable/CHANGEREQPOS),'당사')">
+									<xsl:attribute name="checked">true</xsl:attribute>
+								</xsl:if>
+								<xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/CHANGEREQPOS),'당사')">
+									<xsl:attribute name="disabled">disabled</xsl:attribute>
+								</xsl:if>
+							</input>
+							<label for="ckb62">당사</label>
+						</span>
+						<input type="hidden" id="__mainfield" name="CHANGEREQPOS" value="{//forminfo/maintable/CHANGEREQPOS}" />
+					</td>
+				    <td class="f-lbl">고객ECN첨부<br />제외대상</td>
+					<td style="border-right:0">
+						<span class="f-option1">
+							<input type="checkbox" id="ckb71" name="ckbECNATTACHEXC" value="대상">
+								<xsl:if test="$mode='new' or $mode='edit'">
+									<xsl:attribute name="onclick">_zw.form.checkYN('ckbECNATTACHEXC', this, 'ECNATTACHEXC')</xsl:attribute>
+								</xsl:if>
+								<xsl:if test="phxsl:isEqual(string(//forminfo/maintable/ECNATTACHEXC),'대상')">
+									<xsl:attribute name="checked">true</xsl:attribute>
+								</xsl:if>
+								<xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/ECNATTACHEXC),'대상')">
+									<xsl:attribute name="disabled">disabled</xsl:attribute>
+								</xsl:if>
+							</input>
+							<label for="ckb71">대상</label>
+						</span>
+						<span class="f-option1">
+							<input type="checkbox" id="ckb72" name="ckbECNATTACHEXC" value="비대상">
+								<xsl:if test="$mode='new' or $mode='edit'">
+									<xsl:attribute name="onclick">_zw.form.checkYN('ckbECNATTACHEXC', this, 'ECNATTACHEXC')</xsl:attribute>
+								</xsl:if>
+								<xsl:if test="phxsl:isEqual(string(//forminfo/maintable/ECNATTACHEXC),'비대상')">
+									<xsl:attribute name="checked">true</xsl:attribute>
+								</xsl:if>
+								<xsl:if test="$mode='read' and phxsl:isDiff(string(//forminfo/maintable/ECNATTACHEXC),'비대상')">
+									<xsl:attribute name="disabled">disabled</xsl:attribute>
+								</xsl:if>
+							</input>
+							<label for="ckb72">비대상</label>
+						</span>
+						<input type="hidden" id="__mainfield" name="ECNATTACHEXC" value="{//forminfo/maintable/ECNATTACHEXC}" />
+					</td>
+				</tr>
+				<tr>
+					<td class="f-lbl" style="border-bottom:0">고객ECN첨부</td>
+					<td colspan="3" style="border-right:0;border-bottom:0">
+						<div class="zf-upload w-100" preview="false">
+							<div class="zf-upload-select d-flex align-items-center">
+								<xsl:choose>
+									<xsl:when test="//forminfo/maintable/CUTECNATTACH[.!=''] or $mode='read'">
+										<xsl:attribute name="class">zf-upload-select d-none align-items-center</xsl:attribute>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:attribute name="class">zf-upload-select d-flex align-items-center</xsl:attribute>
+									</xsl:otherwise>
+								</xsl:choose>
+								<form id="uploadForm" name="uploadForm" action="/Common/Upload" method="post" enctype="multipart/form-data" target="ifrView">
+									<div class="custom-file">
+										<input type="file" class="custom-file-input" id="file1" name="file1" />
+										<input name="completed" type="hidden" value="parent._zw.fu.completeEx" />
+										<label class="custom-file-label ml-0" for="customFile">파일 선택 ...</label>
+									</div>
+								</form>
+								<div class="ml-2 d-none">
+								</div>
+							</div>
+							<div class="zf-upload-bar mt-1 d-none">
+								<button class="btn btn-sm btn-primary px-5" type="button" disabled="">
+									<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+									<span class="ml-2">uploading...</span>
+								</button>
+							</div>
+							<div>
+								<xsl:choose>
+									<xsl:when test="//forminfo/maintable/CUTECNATTACH[.!='']">
+										<xsl:attribute name="class">zf-upload-list p-1</xsl:attribute>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:attribute name="class">zf-upload-list p-1 d-none</xsl:attribute>
+									</xsl:otherwise>
+								</xsl:choose>
+
+								<textarea id="__FILEINFO" style="display:none">[]</textarea>
+								<xsl:if test="//forminfo/maintable/CUTECNATTACH[.!='']">
+									<xsl:variable name="fnm" select="substring-before(//forminfo/maintable/CUTECNATTACH,';')" />
+									<xsl:variable name="snm" select="substring-after(//forminfo/maintable/CUTECNATTACH,';')" />
+									<xsl:variable name="fid" select="phxsl:getAttachId(//fileinfo/file, $snm)" />
+
+									<div class="zf-upload-view">
+										<div class="d-flex align-items-center mb-1">
+											<div class="mr-1">
+												<xsl:apply-templates select="//fileinfo/file[filename=$fnm and savedname=$snm]"/>
+											</div>
+											<xsl:if test="$mode!='read'">
+												<div class="text-muted">
+													<button class="btn btn-default btn-sm btn-18" onclick="_zw.fu.delete('{$fid}', '{$fnm}');">
+														<i class="fe-x"></i>
+													</button>
+												</div>
+											</xsl:if>
+										</div>
+									</div>
+								</xsl:if>
+							</div>
+							<input type="hidden" id="__mainfield" name="CUTECNATTACH" value="{//forminfo/maintable/CUTECNATTACH}" />
+						</div>
+					</td>
+				</tr>
             </table>
           </div>
 
 
           <div class="ff" />
           <div class="ff" />
+
+			<div class="fm">
+				<table class="ft" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td class="f-lbl" style="border-bottom:0">인증파트<br />검토내용<br />(개발지원작성)</td>
+						<td style="border-right:0;border-bottom:0">
+							<xsl:choose>
+								<xsl:when test="$bizrole='선행검토' and $partid!='' and phxsl:isEqual(string(//currentinfo/@deptcode),'A5300')">
+									<textarea id="__mainfield" name="REVIEWCONTENTS" style="min-height:60px" class="txaText bootstrap-maxlength" maxlength="1000">
+										<xsl:if test="$mode='edit'">
+											<xsl:value-of select="//forminfo/maintable/REVIEWCONTENTS" />
+										</xsl:if>
+									</textarea>
+								</xsl:when>
+								<xsl:otherwise>
+									<div class="txaRead">
+										<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/REVIEWCONTENTS))" />
+									</div>
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="ff" />
+			<div class="ff" />
 
 			<div class="fm">
 				<span class="pl-2">* 사전회의사항</span>
@@ -1209,4 +1368,12 @@
       </a>
     </div>
   </xsl:template>
+	<xsl:template match="//fileinfo/file[@isfile='N']">
+		<a target="_blank">
+			<xsl:attribute name="href">
+				<xsl:value-of disable-output-escaping="yes" select="phxsl:down2(string(//config/@web), string($root), string(virtualpath), string(savedname), string(filename))" />
+			</xsl:attribute>
+			<xsl:value-of select="filename" />
+		</a>
+	</xsl:template>
 </xsl:stylesheet>

@@ -3,6 +3,12 @@
         "validation": function (cmd) {
             var el = null, row = null;
             if (cmd == "draft") { //기안
+                //24-12-18 ECN 첨부
+                if ($('#__mainfield[name="CHANGEREQPOS"]').val() == '고객' && $('#__mainfield[name="ECNATTACHEXC"]').val() == '비대상'
+                    && $('.zf-upload .zf-upload-view a').text() == '') {
+                    bootbox.alert('필수항목 [고객ECN첨부] 누락!'); return false;
+                }
+
             } else {
                 if ((_zw.V.biz == "영업검토" || _zw.V.biz == "해설접수" || _zw.V.biz == "구매검토" || _zw.V.biz == "해품샘플" || _zw.V.biz == "본품샘플") && _zw.V.act == '__r') {
                     $('#__subtable1 tr.sub_table_row').each(function () {
@@ -36,8 +42,9 @@
             return true;
         },
         "make": function (f) {
-            if (_zw.V.biz == "선행검토" && _zw.V.current.deptcd == 'A7100') {
-                _zw.body.main(f, ["SAMPLEREQUEST"]);
+            if (_zw.V.biz == "선행검토") {
+                if (_zw.V.current.deptcd == 'A7100') _zw.body.main(f, ["SAMPLEREQUEST"]);
+                else if (_zw.V.current.deptcd == 'A5300') _zw.body.main(f, ["REVIEWCONTENTS"]);
             }
 
             if (_zw.V.biz != "normal") {

@@ -2777,6 +2777,7 @@ $(function () {
             //$('.zf-upload #uploadForm')[0].reset();
             var rt = decodeURIComponent(msg).replace(/\+/gi, ' '), iFileCnt = _zw.fu.fileList.length;
             if (rt.substr(0, 2) == 'OK') {
+                var bPreview = p.attr('preview') != undefined && p.attr('preview') == 'false' ? false : true; //24-12-18 추가
                 var vFile = rt.substr(2).split(_zw.T.uploader.df);
                 for (var i = 0; i < vFile.length; i++) {
                     var vInfo = vFile[i].split(_zw.T.uploader.da);
@@ -2786,11 +2787,9 @@ $(function () {
                         + "<div class=\"d-flex align-items-center mb-1\">"
                         + "<div class=\"mr-1\"><a href=\"/Common/DownloadV?fn=" + encodeURIComponent(_zw.base64.encode(vInfo[0])) + "&fp=" + encodeURIComponent(_zw.base64.encode(vInfo[4])) + "\" target=\"_blank\">" + vInfo[0] + "</a></div>"
                         + "<div class=\"text-muted\"><button class=\"btn btn-default btn-sm btn-18\" onclick=\"_zw.fu.delete('','" + encodeURIComponent(vInfo[0]) + "','" + encodeURIComponent(_zw.base64.encode(vInfo[4])) + "')\"><i class=\"fe-x\"></i></button></div>"
-                        + "</div>"
-                        + "<div>"
-                        + "<img src=\"" + vInfo[4] + "\" alt=\"\" style=\"max-width: 100%\" />"
-                        + "</div>"
-                        + "</div>" //zf-upload-view
+                        + "</div>";
+                    if (bPreview) s += "<div><img src=\"" + vInfo[4] + "\" alt=\"\" style=\"max-width: 100%\" /></div>"
+                    s += "</div>" //zf-upload-view
 
                     p.find('.zf-upload-list').append(s).removeClass('d-none'); //console.log(multi)
                     if (!multi) p.find('.zf-upload-select').removeClass('d-flex').addClass('d-none');
