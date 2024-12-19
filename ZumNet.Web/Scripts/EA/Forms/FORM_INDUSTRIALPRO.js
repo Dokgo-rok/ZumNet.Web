@@ -32,6 +32,7 @@
         },
         "make": function (f) {
             if (_zw.V.biz == "normal" && _zw.V.act == "_reviewer") _zw.body.main(f, ["CLAIMRIGHTS", "FUTUREAPP", "OTHERAPP", "PRODAPP", "APPMODEL", "REVIEWRESULT", "REVIEWMEMO"]);
+            else if (_zw.V.biz == "receive") _zw.body.main(f, ["MAINTNEXPENSE"]);
         },
         "checkEvent": function (ckb, el, fld) {
         },

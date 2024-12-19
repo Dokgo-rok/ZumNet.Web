@@ -18,6 +18,10 @@
 
             $('#__Preview').html($(opener.document).find('#__FormView .z-list-scroll .tab-pane[data-for="current"]').html());
 
+            $('#__Preview').css('padding-left', '4rem')
+            $('#__Preview').css('padding-right', '4rem');
+            $('#__Preview div.m').css('width', '100%');
+
             window.print();
         }());
     </script>

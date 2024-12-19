@@ -26,24 +26,27 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
-          /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:700px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:5pt}
+			/* 화면 넓이, 에디터 높이, 양식명크기 */
+			.m {width:700px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
+			.fh h1 {font-size:20.0pt;letter-spacing:5pt}
 
-          /* 결재칸 넓이 */
-          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
+			/* 결재칸 넓이 */
+			.si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
-          /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
-          .m .ft .f-lbl {width:18%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:}
-          .m .ft .f-option {width:15%} .m .ft .f-option1 {width:34%}
-          .m .ft-sub .f-option {width:49%}
+			/* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
+			.m .ft .f-lbl {width:18%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:}
+			.m .ft .f-option {width:15%} .m .ft .f-option1 {width:34%}
+			.m .ft-sub .f-option {width:49%}
 
-          .m .ft td,.m .ft td span {font-family:맑은 고딕}
-		  
-          .etctxt{display:none}/*승인문구*/
-          /* 인쇄 설정 : 맨하단으로  , 결재권자창 인쇄 시 안보임 */
-          @media print {.m .fm-editor {height:450px} .fb,.si-tbl,.fh-l img {display:none} .fm-lines {display:none} .m .fh {padding-top:40px} .etctxt{display:block}}
-        </style>
+			.m .ft td,.m .ft td span {font-family:맑은 고딕}
+
+			.etctxt{display:none}/*승인문구*/
+			/* 인쇄 설정 : 맨하단으로  , 결재권자창 인쇄 시 안보임 */
+			@media print {
+			.m .fm-editor {height:450px} .fb,.si-tbl,.fh-l img {display:none} .fm-lines {display:none} .m .fh {padding-top:40px} .etctxt{display:block}
+			.m .fm .ft-ttl {height: 15rem !important} .m .fm .ft-content {height: 35rem !important; vertical-align: top; padding-top: 5rem} .m .fm .ft-content2 {height: 18rem !important; padding-left: 4rem !important}
+			}
+		</style>
       </head>
       <body>
         <div class="m">
@@ -122,7 +125,7 @@
                 <td></td>
               </tr>
               <tr>
-                <td colspan="4" style="text-align:center;vertical-align:middel;border-right:0;font-size:40px;height:140px">
+                <td colspan="4" class="ft-ttl" style="text-align:center;vertical-align:middel;border-right:0;font-size:40px;height:140px">
                   Certificate Of Career<br/>
                   (경 력 증 명 서)
                 </td>
@@ -398,7 +401,7 @@
                 </td>                
               </tr>-->
 			<tr>
-				<td colspan="4" style="border-bottom:0">
+				<td colspan="4" class="ft-content" style="border-bottom:0">
 					<p style="font-size: 1.25rem; font-weight: bold; text-align: center;  padding-top: 3rem;">
 						This is to certify that above mentioned facts are true and correct.<br />(위와 같이 증명합니다.)
 					</p>
@@ -430,7 +433,7 @@
 				</td>
 			</tr>
               <tr>
-                <td colspan="3" style=" padding-left:10px; border-top: 0; border-bottom;0;text-align:left;border-right:0;font-size:1rem;height:170px; line-height:25px; padding-top:10px">
+                <td colspan="3" class="ft-content2" style=" padding-left:10px; border-top: 0; border-bottom;0;text-align:left;border-right:0;font-size:1rem;height:170px; line-height:25px; padding-top:10px">
                   <strong>
                     Jong Bae, Lee  <br/>
                     Representative of CRESYN Co.,Ltd<br/>

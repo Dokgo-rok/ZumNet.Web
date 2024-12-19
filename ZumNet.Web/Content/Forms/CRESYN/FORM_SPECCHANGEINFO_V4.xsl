@@ -175,14 +175,14 @@
                 <col style="width:17.5%"></col>
                 <col style="width:15%"></col>
                 <col style="width:17.5%"></col>
-                <col style="width:17.5"></col>
+                <col style="width:17.5%"></col>
               </colgroup>
               <tr>
                 <td class="f-lbl">해당법인</td>
-                <td colspan="5" style="border-right:0">
+                <td colspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="CORPORATION" class="txtText_u" readonly="readonly"  style="width:96%" value="{//forminfo/maintable/CORPORATION}" />
+                      <input type="text" id="__mainfield" name="CORPORATION" class="txtText_u" readonly="readonly"  style="width:91%" value="{//forminfo/maintable/CORPORATION}" />
                       <!--<button onclick="parent.fnView('external.prodlawname',200,204,400,140,'','CORPORATION');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
@@ -195,25 +195,86 @@
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
-              </tr>
-              <tr>
-                <td class="f-lbl">MODEL</td>
-                <td colspan="2" style="">
-                  <xsl:choose>
-                    <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="MODELNAME" class="txtText" style="width:91%; margin-right: 2px" value="{//forminfo/maintable/MODELNAME}" />
-                      <!--<button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+				  <td class="f-lbl">MODEL</td>
+				  <td colspan="2" style="border-right:0">
+					  <xsl:choose>
+						  <xsl:when test="$mode='new' or $mode='edit'">
+							  <input type="text" id="__mainfield" name="MODELNAME" class="txtText" style="width:91%; margin-right: 2px" value="{//forminfo/maintable/MODELNAME}" />
+							  <!--<button onclick="parent.fnExternal('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                         <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
                       </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="MODEL" onclick="_zw.formEx.externalWnd('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');">
-							<i class="fas fa-angle-down"></i>
-						</button>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
+							  <button type="button" class="btn btn-outline-secondary btn-18" title="MODEL" onclick="_zw.formEx.externalWnd('report.SEARCH_NEWDEVREQMODEL',240,40,120,70,'','MODELNAME');">
+								  <i class="fas fa-angle-down"></i>
+							  </button>
+						  </xsl:when>
+						  <xsl:otherwise>
+							  <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/MODELNAME))" />
+						  </xsl:otherwise>
+					  </xsl:choose>
+				  </td>
+              </tr>
+				<tr>
+					<td class="f-lbl">부품명</td>
+					<td colspan="2">
+						<xsl:choose>
+							<xsl:when test="$mode='new' or $mode='edit'">
+								<input type="text" id="__mainfield" name="PARTNAME">
+									<xsl:attribute name="class">txtText</xsl:attribute>
+									<!--<xsl:attribute name="class">txtText_u</xsl:attribute>
+                        <xsl:attribute name="readonly">readonly</xsl:attribute>-->
+									<xsl:attribute name="value">
+										<xsl:value-of select="//forminfo/maintable/PARTNAME" />
+									</xsl:attribute>
+								</input>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PARTNAME))" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
+					<td class="f-lbl">부품번호</td>
+					<td colspan="2" style="border-right:0">
+						<xsl:choose>
+							<xsl:when test="$mode='new' or $mode='edit'">
+								<input type="text" id="__mainfield" name="PARTNUM" style="width:91%; margin-right: 2px" >
+									<xsl:attribute name="class">txtText</xsl:attribute>
+									<!--<xsl:attribute name="class">txtText_u</xsl:attribute>
+                        <xsl:attribute name="readonly">readonly</xsl:attribute>-->
+									<xsl:attribute name="value">
+										<xsl:value-of select="//forminfo/maintable/PARTNUM" />
+									</xsl:attribute>
+								</input>
+								<!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','PARTNUM','PARTNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                        <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
+                      </button>-->
+								<button type="button" class="btn btn-outline-secondary btn-18" title="MODEL" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','PARTNUM','PARTNAME');">
+									<i class="fas fa-angle-down"></i>
+								</button>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PARTNUM))" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
+				</tr>
+              <tr>
+				  <td class="f-lbl">도면번호</td>
+				  <td colspan="2">
+					  <xsl:choose>
+						  <xsl:when test="$mode='new' or $mode='edit'">
+							  <input type="text" id="__mainfield" name="DRAWNUM">
+								  <xsl:attribute name="class">txtText</xsl:attribute>
+								  <xsl:attribute name="maxlength">100</xsl:attribute>
+								  <xsl:attribute name="value">
+									  <xsl:value-of select="//forminfo/maintable/DRAWNUM" />
+								  </xsl:attribute>
+							  </input>
+						  </xsl:when>
+						  <xsl:otherwise>
+							  <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DRAWNUM))" />
+						  </xsl:otherwise>
+					  </xsl:choose>
+				  </td>
                 <td class="f-lbl">영업담당</td>
                 <td colspan="2"  style="border-right:0">
                   <xsl:choose>
@@ -246,52 +307,9 @@
                   </xsl:if>
                 </td>
               </tr>
+              
               <tr>
-                <td class="f-lbl">부품명</td>
-                <td colspan="2">
-                  <xsl:choose>
-                    <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PARTNAME">
-                        <xsl:attribute name="class">txtText</xsl:attribute>
-                        <!--<xsl:attribute name="class">txtText_u</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>-->
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PARTNAME" />
-                        </xsl:attribute>
-                      </input>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PARTNAME))" />
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-                <td class="f-lbl">부품번호</td>
-                <td colspan="2" style="border-right:0">
-                  <xsl:choose>
-                    <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="PARTNUM" style="width:91%; margin-right: 2px" >
-                        <xsl:attribute name="class">txtText</xsl:attribute>
-                        <!--<xsl:attribute name="class">txtText_u</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>-->
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/PARTNUM" />
-                        </xsl:attribute>
-                      </input>
-                      <!--<button onclick="parent.fnExternal('erp.items',240,40,120,70,'','PARTNUM','PARTNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
-                        <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                      </button>-->
-						<button type="button" class="btn btn-outline-secondary btn-18" title="MODEL" onclick="_zw.formEx.externalWnd('erp.items',240,40,120,70,'','PARTNUM','PARTNAME');">
-							<i class="fas fa-angle-down"></i>
-						</button>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/PARTNUM))" />
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-              </tr>
-              <tr>
-                <td class="f-lbl">요청서NO</td>
+                <td class="f-lbl">요청서번호</td>
                 <td colspan="2">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
@@ -308,20 +326,20 @@
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
-                <td class="f-lbl">도면번호</td>
+                <td class="f-lbl">고객ECN번호</td>
                 <td colspan="2"  style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="DRAWNUM">
+                      <input type="text" id="__mainfield" name="CUTECNNUM">
                         <xsl:attribute name="class">txtText</xsl:attribute>
                         <xsl:attribute name="maxlength">100</xsl:attribute>
                         <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/DRAWNUM" />
+                          <xsl:value-of select="//forminfo/maintable/CUTECNNUM" />
                         </xsl:attribute>
                       </input>
                     </xsl:when>
                     <xsl:otherwise>
-                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/DRAWNUM))" />
+                      <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CUTECNNUM))" />
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>

@@ -280,7 +280,7 @@
 						<td class="f-lbl">유지비용</td>
 						<td>
 							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
+								<xsl:when test="$mode='new' or $mode='edit' or ($bizrole='receive' and $partid!='')">
 									<input type="text" id="__mainfield" name="MAINTNEXPENSE" class="txtText" maxlength="20" value="{//forminfo/maintable/MAINTNEXPENSE}" />
 								</xsl:when>
 								<xsl:otherwise>
