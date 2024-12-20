@@ -27,7 +27,7 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 (tip:_height:500px; IE에만 적용됨) */
-          .m {width:730px} .m .fm-editor {min-height:500px;_height:500px;border:windowtext 1pt solid}
+          .m {width:780px} .m .fm-editor {min-height:500px;_height:500px;border:windowtext 1pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:1pt;}
 
           /* 결재칸 넓이 */
@@ -61,8 +61,8 @@
                 </td>
                 <td class="fh-m">
                   <h1>
-                    <xsl:value-of select="//docinfo/docname" />
-                  </h1>
+					  내부감사보고서<br />(Internal Audit Report)
+				  </h1>
                 </td>
                 <td class="fh-r">&nbsp;</td>
               </tr>
@@ -83,7 +83,7 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:325">
+                <td style="width:325px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @partid!='' and @step!='0'], '__si_Normal', '4', 'CR EA TE DE PT')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
@@ -156,7 +156,7 @@
                 <td  style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="AUDITFROM" class="txtDate" style="width:80px" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" value="{//forminfo/maintable/AUDITFROM}" />
+                      <input type="text" id="__mainfield" name="AUDITFROM" style="width:80px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/AUDITFROM}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/AUDITFROM))" />
@@ -165,7 +165,7 @@
                   &nbsp;&nbsp;~&nbsp;&nbsp;
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="AUDITTO" class="txtDate" style="width:80px" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" value="{//forminfo/maintable/AUDITTO}" />
+                      <input type="text" id="__mainfield" name="AUDITTO" style="width:80px" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/AUDITTO}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/AUDITTO))" />
@@ -217,12 +217,18 @@
                       <span>1. Audit Result 审核结果</span>
                     </td>
                     <td style="text-align:right">
-                      <button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
+                      <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_26.gif" />Add 追加
                       </button>
                       <button onclick="parent.fnDelChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{$root}/EA/Images/ico_27.gif" />Del 删掉
-                      </button>
+                      </button>-->
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Add 追加" onclick="_zw.form.addRow('__subtable1');">
+							<i class="fas fa-plus"></i>
+						</button>
+						<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Del 删掉" onclick="_zw.form.removeRow('__subtable1');">
+							<i class="fas fa-minus"></i>
+						</button>
                     </td>
                   </tr>
                 </xsl:when>
@@ -285,13 +291,12 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="AUDITCONTENTS" style="height:150px" class="txaText" onkeyup="parent.checkTextAreaLength(this, 2000);">
+                      <textarea id="__mainfield" name="AUDITCONTENTS" style="height:150px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:value-of select="//forminfo/maintable/AUDITCONTENTS" />
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="AUDITCONTENTS" style="height:150px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div class="txaRead" style="height:150px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/AUDITCONTENTS))" />
                       </div>
                     </xsl:otherwise>
@@ -319,13 +324,12 @@
                 <td style="border-right:0;border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <textarea id="__mainfield" name="NEEDS" style="height:150px" class="txaText" onkeyup="parent.checkTextAreaLength(this, 3000);">
+                      <textarea id="__mainfield" name="NEEDS" style="height:150px" class="txaText bootstrap-maxlength" maxlength="2000">
                         <xsl:value-of select="//forminfo/maintable/NEEDS" />
                       </textarea>
                     </xsl:when>
                     <xsl:otherwise>
-                      <div id="__mainfield" name="NEEDS" style="height:150px">
-                        <xsl:attribute name="class">txaRead</xsl:attribute>
+                      <div  class="txaRead" style="height:150px">
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/NEEDS))" />
                       </div>
                     </xsl:otherwise>
@@ -340,7 +344,7 @@
           <div class="ff" />
           <div class="ff" />
 
-          <xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file">
+			<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
             <div class="ff" />
             <div class="ff" />
 
@@ -401,13 +405,12 @@
 
   <xsl:template match="//forminfo/subtables/subtable1/row">
     <tr class="sub_table_row">
-      <td>
+		<td class="tdRead_Center">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
             <input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
           </xsl:when>
           <xsl:otherwise>
-            <xsl:attribute name="class">tdRead_Center</xsl:attribute>
             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(ROWSEQ))" />
           </xsl:otherwise>
         </xsl:choose>
@@ -445,13 +448,12 @@
       <td style="border-right:0;height:60px;">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <textarea name="PROBLEMS" style="height:55px;" class="txaText" onkeyup="parent.checkTextAreaLength(this, 3000);" >
+            <textarea name="PROBLEMS" style="height:55px;" class="txaText bootstrap-maxlength" maxlength="2000">
               <xsl:value-of select="(string(PROBLEMS))" />
             </textarea>
           </xsl:when>
           <xsl:otherwise>
-            <div name="PROBLEMS" style="height:55px">
-              <xsl:attribute name="class">txaRead</xsl:attribute>
+            <div class="txaRead" style="height:55px">
               <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(PROBLEMS))" />
             </div>
           </xsl:otherwise>

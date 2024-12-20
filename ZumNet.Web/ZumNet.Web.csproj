@@ -423,6 +423,7 @@
     <Content Include="Content\env.css" />
     <Content Include="Content\Forms\CRESYN\FORM_SAMPLECONTROL_V1.xsl" />
     <Content Include="Content\num.css" />
+    <Content Include="Content\organ.css" />
     <Content Include="Content\report.css" />
     <Content Include="Content\search.css" />
     <Content Include="Content\voc.css" />

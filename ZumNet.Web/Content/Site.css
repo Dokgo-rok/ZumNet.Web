@@ -115,7 +115,7 @@
         display: none;
     }
     .light-style .messages-wrapper .messages-sidebox {
-        width: 14rem !important;
+        width: 16rem !important; /* 14rem */
         -webkit-transform: translateX(0) !important; 
         transform: translateX(0) !important;
     }

@@ -1,0 +1,17 @@
+﻿/*******************************************************************************/
+/* Organ */
+
+@media (min-width: 992px) {
+    .light-style .messages-wrapper .messages-sidebox {
+        width: 18rem !important;
+        -webkit-transform: translateX(0) !important;
+        transform: translateX(0) !important;
+    }
+
+    .light-style .messages-wrapper {
+        padding-left: 18rem !important;
+    }
+}
+
+
+

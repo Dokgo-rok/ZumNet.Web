@@ -74,10 +74,11 @@
 @section Styles {
     @Styles.Render("~/bundle/vendor/css/pages/messages")
     @*@Styles.Render("~/bundle/vendor/css/pages/contacts")*@
+    @Styles.Render("~/Content/organ.css")
 }
 
 @section Scripts {
-<script type="text/javascript">
+    <script type="text/javascript">
     (function () {
         _zw.V = @Html.Raw(JsonConvert.SerializeObject(ViewBag.R));
 
@@ -136,7 +137,7 @@
                 success: function (res) {
                     if (res.substr(0, 2) == "OK") {//console.log(res)
                         var v = res.substr(2).split(_zw.V.lv.boundary);
-                        
+
                         $('#__OrgList').html(v[0]);
                         $('#__ListCount').html(v[1]);
                         $('#__ListViewPage').html(v[2]);
@@ -189,7 +190,7 @@
         _zw.fn.bindCtrl();
 
     }());
-</script>
+    </script>
 }
 
 <!--
@@ -278,7 +279,7 @@
                 <div class="d-flex align-items-center z-lv-page" id="__ListCount">
                     @Html.Partial("~/Views/Common/_ListCount.cshtml")
                 </div>
-                
+
             </div>
 
             <hr class="border-light m-0 d-none">
