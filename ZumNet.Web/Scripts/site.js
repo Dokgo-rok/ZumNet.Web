@@ -2032,7 +2032,23 @@ $(function () {
             var lang = $('#current_culture').length == 0 || $('#current_culture').val() == '' ? 'ko' : $('#current_culture').val().toLowerCase().substr(0, 2);
             //console.log(lang);
 
-            if (v[0] == "number" || v[0] == "percent" || v[0] == "number-n" || v[0] == "month") {
+            if (v[0] == "jumin") {
+                var mv = [];
+                if (v[1] == "f") {
+                    mv = [/\d/, /\d/, /\d/, /\d/, /\d/, /\d/];
+                } else if (v[1] == "b") {
+                    mv = [/[1-4]/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/];
+                } else {
+                    mv = [/\d/, /\d/, /\d/, /\d/, /\d/, /\d/, '-', /[1-4]/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/];
+                }
+                vanillaTextMask.maskInput({
+                    inputElement: e,
+                    mask: mv,
+                    //pipe: textMaskAddons.createAutoCorrectedDatePipe(v[1]),
+                    guide: false
+                });
+
+            } else if (v[0] == "number" || v[0] == "percent" || v[0] == "number-n" || v[0] == "month") {
                 if (v[0] == "month") {
                     vanillaTextMask.maskInput({
                         inputElement: e,

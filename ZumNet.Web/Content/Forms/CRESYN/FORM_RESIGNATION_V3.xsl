@@ -231,7 +231,7 @@
                 <td style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="RSNJUMINNO" class="txtJuminDash" maxlength="6" data-inputmask="number-n;6;0" value="{//forminfo/maintable/RSNJUMINNO}" onblur="_zw.formEx.blur(this)" />
+                      <input type="text" id="__mainfield" name="RSNJUMINNO" class="txtJuminDash" maxlength="6" data-inputmask="jumin;f" value="{//forminfo/maintable/RSNJUMINNO}" onblur="_zw.formEx.blur(this)" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:choose>
