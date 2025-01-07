@@ -174,7 +174,7 @@ namespace ZumNet.Web.Controllers
 
                     if (bWorkTimeCheck)
                     {
-                        if (Session["LogonID"].ToString() != "swjeong" && Session["LogonID"].ToString() != "kimsj") //아래 조건에 속하나 포함 할 대상자
+                        if (Session["LogonID"].ToString() != "dgseo" && Session["LogonID"].ToString() != "kimsj") //아래 조건에 속하나 포함 할 대상자
                         {
                             //제외부서 : 부서명 영문 I, C, V, G가 들어가는 경우, 재무광동, 재무베트남, 재무인니, 업무지원, 금형관리, 임원실(산업)
                             //23-09-06 수정 : 부서명 영문 IS, CD, CT, CL, VH, G가 들어가는 경우로 변경
