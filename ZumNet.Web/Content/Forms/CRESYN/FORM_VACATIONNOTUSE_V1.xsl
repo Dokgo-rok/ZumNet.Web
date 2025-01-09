@@ -27,18 +27,18 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:700px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
-          .fh h1 {font-size:20.0pt;letter-spacing:4pt}
+          .m {width:710px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
+          .fh h1 {font-size:20.0pt;letter-spacing:1pt}
 
           /* 결재칸 넓이 */
-          .si-tbl .si-title {width:25px} .si-tbl .si-bottom {width:75px}
+          .si-tbl .si-title {width:20px} .si-tbl .si-bottom {width:75px}
 
           /* 공통,메인 필드 테이블 - f-lbl(n)은 양식별로 틀릴 수 있다. */
           .m .ft .f-lbl {width:18%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:}
           .m .ft .f-option {width:15%} .m .ft .f-option1 {width:34%}
           .m .ft-sub .f-option {width:49%}
 
-          .m .ft td,.m .ft td span {font-family:굴림}
+          <!--.m .ft td,.m .ft td span {font-family:굴림}-->
 
           /* 인쇄 설정 : 맨하단으로  , 결재권자창 인쇄 시 안보임 */
           @media print {.m .fm-editor {height:450px} .fb,.si-tbl,.fh-l img {display:none} .m .fh {padding-top:40px}}
@@ -50,22 +50,18 @@
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="fh-l">
-                  <img alt="">
-                    <xsl:attribute name="src">
-                      <xsl:choose>
-                        <xsl:when test="$mode='read'">
-                          <xsl:value-of select="//forminfo/maintable/LOGOPATH" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                          /Storage/<xsl:value-of select="//config/@companycode" />/CI/<xsl:value-of select="//creatorinfo/corp/logo" />
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
-                  </img>
+					<xsl:choose>
+						<xsl:when test="$mode='read'">
+							<img alt="" src="{//forminfo/maintable/LOGOPATH}" />
+						</xsl:when>
+						<xsl:otherwise>
+							<img alt="" src="/Storage/{//config/@companycode}/CI/{//creatorinfo/corp/logo}" />
+						</xsl:otherwise>
+					</xsl:choose>
                 </td>
                 <td class="fh-m">
                   <h1>
-                    미사용 연차 이월 동의서
+					  <xsl:value-of select="//docinfo/docname" />
                   </h1>
                 </td>
                 <td class="fh-r">&nbsp;</td>
@@ -89,11 +85,11 @@
           <div class="fb">
             <table border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td style="width:325">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignPart($root, //processinfo/signline/lines/line[@bizrole='normal' and @actrole !='_drafter' and @partid!='' and @step!='0'], '__si_Normal', '4', '신청부서')"/>
                 </td>
                 <td style="font-size:1px">&nbsp;</td>
-                <td style="width:325px">
+                <td style="width:320px">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:mappingSignRcvPart($root, //processinfo/signline/lines, 'receive', '__si_Receive', '4', '주관부서')"/>
                 </td>
               </tr>
@@ -117,50 +113,33 @@
               <xsl:if test="$mode='new' or $mode='edit' or $mode='read'">
                 <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
               </xsl:if>
-              <colgroup>
-                <col style="width:150px"></col>
-                <col style="width:200px"></col>
-                <col style="width:150px"></col>
-                <col style="width:200px"></col>
-              </colgroup>
               <tr>
-                <td class="f-lbl1" style="height:60px">
+                <td class="f-lbl" style="height:60px">
                   성명
                   <xsl:if test="$mode='new' or $mode='edit'">
-                    <button onclick="parent.fnOrgmap('ur','N','THENAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
+                    <!--<button onclick="parent.fnOrgmap('ur','N','THENAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
                       <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{$root}/EA/Images/ico_28.gif" />
-                    </button>
+                    </button>-->
+					  <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="대상자" onclick="_zw.fn.org('user','n', this);">
+						  <i class="fas fa-angle-down"></i>
+					  </button>
                   </xsl:if>
                 </td>
-                <td style="text-align:center">
+                <td class="tdRead_Center" style="width: 32%">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="THENAME">
-                        <xsl:attribute name="class">txtText_u</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="style">width:195px</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/THENAME" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="THENAME" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/THENAME}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/THENAME))" />
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
-                <td class="f-lbl1">생년월일</td>
-                <td style="text-align:center;border-right:0">
+                <td class="f-lbl">생년월일</td>
+                <td class="tdRead_Center" style="border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="THEBIRTH">
-                        <xsl:attribute name="class">txtText_u</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="style">width:195px</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/THEBIRTH" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="THEBIRTH" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/THEBIRTH}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/THEBIRTH))" />
@@ -169,37 +148,23 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl1" style="height:60px">입사일</td>
-                <td style="text-align:center">
+                <td class="f-lbl" style="height:60px">입사일</td>
+				<td class="tdRead_Center">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="THEIN">
-                        <xsl:attribute name="class">txtText_u</xsl:attribute>
-                        <xsl:attribute name="readonly">readonly</xsl:attribute>
-                        <xsl:attribute name="style">width:195px</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/THEIN" />
-                        </xsl:attribute>
-                      </input>
-                    </xsl:when>
+                      <input type="text" id="__mainfield" name="THEIN" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/THEIN}" />
+                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/THEIN))" />
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
-                <td class="f-lbl1">
+                <td class="f-lbl">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/BEFOREYEAR))" />년 발생연차</td>
                 <td style="text-align:center;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="THEVAC">
-                        <xsl:attribute name="class">txtDollar</xsl:attribute>
-                        <xsl:attribute name="maxlength">50</xsl:attribute>
-                        <xsl:attribute name="style">width:195px</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/THEVAC" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="THEVAC" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/THEVAC}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/THEVAC))" />
@@ -208,38 +173,24 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl1" style="height:60px;border-bottom:0">
+                <td class="f-lbl" style="height:60px;border-bottom:0">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/BEFOREYEAR))" />년 사용연차</td>
                 <td style="border-bottom:0;text-align:center">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="THEVACUSE">
-                        <xsl:attribute name="class">txtDollar</xsl:attribute>
-                        <xsl:attribute name="maxlength">50</xsl:attribute>
-                        <xsl:attribute name="style">width:195px</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/THEVACUSE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="THEVACUSE" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/THEVACUSE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/THEVACUSE))" />
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
-                <td class="f-lbl1" style="border-bottom:0">
+                <td class="f-lbl" style="border-bottom:0">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/BEFOREYEAR))" />년 미사용연차</td>
                 <td style="border-bottom:0;text-align:center;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input type="text" id="__mainfield" name="THEVACNOTUSE">
-                        <xsl:attribute name="class">txtDollar</xsl:attribute>
-                        <xsl:attribute name="maxlength">50</xsl:attribute>
-                        <xsl:attribute name="style">width:195px</xsl:attribute>
-                        <xsl:attribute name="value">
-                          <xsl:value-of select="//forminfo/maintable/THEVACNOTUSE" />
-                        </xsl:attribute>
-                      </input>
+                      <input type="text" id="__mainfield" name="THEVACNOTUSE" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/THEVACNOTUSE}" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/THEVACNOTUSE))" />
@@ -278,14 +229,7 @@
                     상기 본인은 
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <input type="text" id="__mainfield" name="BEFOREYEAR">
-                          <xsl:attribute name="class">txtVolumne</xsl:attribute>
-                          <xsl:attribute name="maxlength">50</xsl:attribute>
-                          <xsl:attribute name="style">width:70px</xsl:attribute>
-                          <xsl:attribute name="value">
-                            <xsl:value-of select="//forminfo/maintable/BEFOREYEAR" />
-                          </xsl:attribute>
-                        </input>
+                        <input type="text" id="__mainfield" name="BEFOREYEAR" class="txtVolumne" maxlength="4" data-inputmask="date;yyyy" style="width: 80px" value="{//forminfo/maintable/BEFOREYEAR}" />
                       </xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/BEFOREYEAR))" />
@@ -293,14 +237,7 @@
                     </xsl:choose>년도 미 사용 연차에 대하여  
                     <xsl:choose>
                       <xsl:when test="$mode='new' or $mode='edit'">
-                        <input type="text" id="__mainfield" name="NOWYEAR">
-                          <xsl:attribute name="class">txtVolumne</xsl:attribute>
-                          <xsl:attribute name="maxlength">50</xsl:attribute>
-                          <xsl:attribute name="style">width:70px</xsl:attribute>
-                          <xsl:attribute name="value">
-                            <xsl:value-of select="//forminfo/maintable/NOWYEAR" />
-                          </xsl:attribute>
-                        </input>
+                        <input type="text" id="__mainfield" name="NOWYEAR" class="txtVolumne" maxlength="4" data-inputmask="date;yyyy" style="width: 80px" value="{//forminfo/maintable/NOWYEAR}" />
                       </xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/NOWYEAR))" />
@@ -321,7 +258,7 @@
 
 
           <div>
-            <p style="text-align:right;margin:40px">
+            <p style="font-size: 11pt; text-align:right;margin:40px">
               <xsl:choose>
                 <xsl:when test="$mode='new' or $mode='edit'">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:convertDate(string(//docinfo/createdate), 'ko')" />
@@ -352,21 +289,21 @@
                 <col style="width:10%"></col>
                 <col style="width:25%"></col>
               </colgroup>
-              <tr style="font-family:맑은 고딕">
+              <tr>
                 <td>&nbsp;</td>
-                <td style="text-align:right">위 서약인</td>
-                <td style="text-align:right">성 명 : </td>
-                <td>
+                <td style="font-size: 11pt; text-align:right">위 서약인</td>
+                <td style="font-size: 11pt; text-align:right">성 명 : </td>
+                <td style="font-size: 11pt; ">
                   <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/THENAME))" />
                 </td>
                 <td>
                   <xsl:choose>
                     <xsl:when test="//bizinfo/@docstatus='700'">
-                      <img alt="개인인장" width="84px" style="margin:0;vertical-align:top">
-                        <xsl:attribute name="src">
+                      <img alt="개인인장" width="84px" style="margin:0;vertical-align:top" src="/Storage/{//config/@companycode}/SIGN/{//processinfo/signline/lines/line[@bizrole='normal' and (@actrole='_reviewer') and @partid!='']}">
+                        <!--<xsl:attribute name="src">
                           /Storage/<xsl:value-of select="//config/@companycode" />/SIGN/<xsl:apply-templates select="//processinfo/signline/lines/line[@bizrole='normal' and (@actrole='_reviewer') and @partid!='']">
                           </xsl:apply-templates>.jpg
-                        </xsl:attribute>
+                        </xsl:attribute>-->
                       </img>
                     </xsl:when>
                     <xsl:otherwise>&nbsp;</xsl:otherwise>

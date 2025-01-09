@@ -2386,6 +2386,7 @@
     <Content Include="Scripts\EA\Forms\FORM_VACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONCHANGE.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONHR.js" />
+    <Content Include="Scripts\EA\Forms\FORM_VACATIONNOTUSE.js" />
     <Content Include="Scripts\EA\Forms\FORM_VACATIONUSE.js" />
     <Content Include="Scripts\EA\Forms\FORM_WASTEPRODUCTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_WITHHOLDINGRECEIPT.js" />
