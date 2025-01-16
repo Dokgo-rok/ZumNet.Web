@@ -58,7 +58,7 @@
                 int iPrevSum = 0;
                 int iSum = 0;
                 int iMax = 0;
-                int iDiv = 1000;
+                int iDiv = 1; // 1000; //25-1-10 단위 변경
 
                 iYear = Convert.ToInt32(postData["fk"].ToString().Split('-')[1].Substring(0, 4));
                 iCurrent = Convert.ToInt32(postData["fk"].ToString().Split('-')[1].Substring(4));

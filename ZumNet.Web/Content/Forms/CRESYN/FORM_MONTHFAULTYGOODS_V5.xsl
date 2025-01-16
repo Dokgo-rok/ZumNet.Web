@@ -517,7 +517,7 @@
               <tr>
                 <xsl:choose>
                   <xsl:when test="$mode='new' or $mode='edit'">
-                    <td style="text-align: center; border-bottom:0">K USD</td>
+                    <td style="text-align: center; border-bottom:0">USD</td>
                     <td style="text-align: center; border-bottom:0">&nbsp;</td>
                     <td style="text-align: center; border-bottom:0">&nbsp;</td>
                     <td style="text-align: center; border-bottom:0">&nbsp;</td>

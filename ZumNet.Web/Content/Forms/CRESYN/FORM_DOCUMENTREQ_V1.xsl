@@ -149,22 +149,22 @@
                 <td class="f-lbl">법인사항</td>
                 <td colspan="5" style="padding:10px 50px 10px 20px;border-right:0">
                   <table class="ft1" border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                      <td style="height:30px;border:0">1. 법인인감증명</td>
+                    <!--<tr>
+                      <td style="height:30px;border:0; text-decoration: line-through">1. 법인인감증명</td>
                       <td style="width:80px;border:0">
                         (&nbsp;
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
-                            <input type="text" id="__mainfield" name="COUNT1" style="width:40px" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT1}" />
+                            <input type="text" id="__mainfield" name="COUNT1" disabled="disabled" style="width:40px; cursor: no-drop" class="txtNumberic" maxlength="3" data-inputmask="number;3;0" value="{//forminfo/maintable/COUNT1}" />
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/COUNT1))" />
                           </xsl:otherwise>
                         </xsl:choose>&nbsp;통)
                       </td>
-                    </tr>
+                    </tr>-->
                     <tr>
-                      <td style="height:30px;border:0">2. 법인등기부등본</td>
+                      <td style="height:30px;border:0">1. 법인등기부등본</td>
                       <td style="width:80px;border:0">
                         (&nbsp;
                         <xsl:choose>
@@ -178,7 +178,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td style="height:30px;border:0">3. 부동산등기부등본</td>
+                      <td style="height:30px;border:0">2. 부동산등기부등본</td>
                       <td style="width:80px;border:0">
                         (&nbsp;
                         <xsl:choose>
@@ -212,7 +212,7 @@
                     </tr>
                     <tr>
                       <td style="height:30px;border:0">
-                        4. 기타&nbsp;(
+                        3. 기타&nbsp;(
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="ETC1" style="width:360px">

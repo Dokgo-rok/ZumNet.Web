@@ -1053,7 +1053,7 @@
     var s = '', s2 = '';
     if (nodes.length > 0) {
       var vPrev = ['', '', '', '', '', '', '', '', '', '', '', ''], vStd = ['', '', '', '', '', '', '', '', '', '', '', ''];
-      var d = 1000, iPrev = 0, iStd = 0, iMax = 0, iMin = 0, sH = 0, sH2 = 0, t = 0;
+      var d = 1, iPrev = 0, iStd = 0, iMax = 0, iMin = 0, sH = 0, sH2 = 0, t = 0; //25-1-15 d=1000를1로
       
       var nPoint = etc == 'VU' ? 2 : 0;
         
@@ -1110,7 +1110,7 @@
           s += '<td class=""></td>';
         
         } else if (pos == 'table') {
-          s = '<td style="text-align: center; border-bottom:0">K USD</td>';
+          s = '<td style="text-align: center; border-bottom:0">USD</td>';
           s += '<td style="text-align: center; border-bottom:0">' + addCommaAndDotMinus(iPrev.toString(), nPoint) + '</td>';
           s += '<td style="text-align: center; border-bottom:0">' + addCommaAndDotMinus(iStd.toString(), nPoint) + '</td>';
           for (var x in vStd) {
