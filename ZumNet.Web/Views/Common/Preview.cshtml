@@ -1,26 +1,58 @@
 ﻿@using System;
 @using System.Web;
-
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
 @{
     ViewBag.Title = Resources.Global.Preview;
     Layout = "~/Views/Shared/Layouts/_LayoutBlank.cshtml";
 
-    string _CTAlias = ZumNet.Framework.Util.StringHelper.SafeString(Request["ctalias"], "");
-    string _XFAlias = ZumNet.Framework.Util.StringHelper.SafeString(Request["xfalias"], "");
+    string req = StringHelper.SafeString(HttpContext.Current.Request["qi"], "");
+    JObject jReq = JObject.Parse(SecurityHelper.Base64Decode(req));
 }
 @section Styles {
-
+    @Styles.Render("~/Content/preview.css")
 }
-
 @section Scripts {
-    <script type="text/javascript">
-        (function () {
-            $('#__Preview').html($(opener.document).find('#__FormView .z-list-scroll').html());
-            $('#__Preview').find('[data-for="comment_0"]').hide();
+    @if (jReq["ctalias"].ToString() == "schedule" || jReq["ctalias"].ToString() == "booking")
+    {
+        <script type="text/javascript">
+            (function () {
+                $('#__Preview .card-header h5').html($(opener.document).find('#popForm .modal-header .modal-title').text());
+                $('#__Preview .card-body').html($(opener.document).find('#popForm .modal-body').html());
 
-            window.print();
-        }());
-    </script>
+                $('#__Preview .card-body input[type=text]').css('border', 0);
+            }());
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript">
+            (function () {
+                $('#__Preview').html($(opener.document).find('#__FormView .z-list-scroll').html());
+                $('#__Preview').find('[data-for="comment_0"]').hide();
+
+                window.print();
+            }());
+        </script>
+    }
 }
+<div class="" id="__Preview">
+    @if (jReq["ctalias"].ToString() == "schedule" || jReq["ctalias"].ToString() == "booking")
+    {
+        <div class="container-fluid container-p-y">
+            <div class="card border-0">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"></h5>
+                    <button type="button" class="btn btn-default" title="@Resources.Global.Print" onclick="window.print();"><i class="fe-printer"></i></button>
+                </div>
 
-<div class="" id="__Preview"></div>
+                <div class="card-body"></div>
+            </div>
+        </div>
+    }
+    else
+    {
+
+    }
+</div>

@@ -962,9 +962,17 @@ $(function () {
                 });
             }            
         },
-        "preview": function () {
-            var url = "/Common/Preview?ctalias=" + _zw.V.ctalias + "&xfalias=" + _zw.V.xfalias;
-            _zw.ut.openWnd(url, "preview", 800, 600, "resize");
+        "preview": function (m, appid) {
+            m = m || '';
+            appid = appid && appid != '' && appid != '0' ? appid : 0;
+
+            var postData = '{M:"' + m + '",ctalias:"' + _zw.V.ctalias + '",xfalias:"' + _zw.V.xfalias + '",appid:"' + appid + '"}'; console.log(postData)
+            var url = "/Common/Preview?qi=" + encodeURIComponent(_zw.base64.encode(postData));
+
+            var w = 800, h = 600;;
+            if (_zw.V.ctalias == 'schedule' || _zw.V.ctalias == 'booking') { w = 600; }
+
+            _zw.ut.openWnd(url, "preview", w, h, "resize");
         },
         "saveWorkStatus": function () {
             var n = $('#popWorkStatus input:radio[name="rdoWorkStatus"]:checked');

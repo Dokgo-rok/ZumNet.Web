@@ -229,6 +229,8 @@
 
                         } else if (mn == 'cmnt-reg' || mn == 'cmnt-mod' || mn == 'cmnt-del' || mn == 'cmnt-cancel') {
 
+                        } else if (mn == 'print') {
+                            _zw.mu.preview('read', mi);
                         }
                     });
 
