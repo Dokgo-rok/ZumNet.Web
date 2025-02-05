@@ -435,8 +435,17 @@ namespace ZumNet.Web.Bc
                                 jTemp["docleveltext"] = dr["DocLevelName"].ToString();
                                 jTemp["keepyeartext"] = dr["KeepYearName"].ToString();
 
-                                jTemp["courid"] = dr["CheckOutUserID"].ToString();
                                 jTemp["parentid"] = dr["ParentAttachID"].ToString();
+                                //jTemp["courid"] = dr["CheckOutUserID"].ToString();
+
+                                //25-2-5 추가
+                                jTemp["courid"] = StringHelper.SafeString(dr["COUserID"].ToString(), "0");
+                                jTemp["cour"] = StringHelper.SafeString(dr["COUser"].ToString(), "");
+                                jTemp["couraccount"] = StringHelper.SafeString(dr["COUserAccount"].ToString(), "");
+                                jTemp["codate"] = CommonUtils.CheckDateTime(dr["CODate"].ToString(), "yyyy-MM-dd HH:mm:ss", "");
+                                jTemp["ciexpdate"] = StringHelper.SafeString(dr["CIExpectedDate"].ToString(), "");
+                                jTemp["cidate"] = CommonUtils.CheckDateTime(dr["CIDate"].ToString(), "yyyy-MM-dd HH:mm:ss", "");
+                                jTemp["citype"] = StringHelper.SafeString(dr["CIType"].ToString(), "");
 
                                 jArr.Add(jTemp);
 

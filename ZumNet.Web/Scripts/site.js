@@ -2944,6 +2944,9 @@ $(function () {
             return rt;
         },
         "fileSize": function (len) {
+            var s = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+            var e = Math.floor(Math.log(len) / Math.log(1024));
+            return (len / Math.pow(1024, e)).toFixed(2) + " " + s[e];
         }
     }
 

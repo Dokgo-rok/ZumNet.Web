@@ -213,7 +213,8 @@
                         @*<div class="zf-uploader" id="__DextUpload"></div>*@
                         foreach (var j in ViewBag.R.app.attachlist)
                         {
-                            <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
+                        <div class="border px-2 pt-2 pb-1 mr-1">
+                            <div class="d-flex align-items-center">
                                 <div class="mr-2">
                                     <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
                                 </div>
@@ -223,12 +224,24 @@
                                 {
                                     if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
                                     {
-                                        <div class="ml-2">
+                                        <div class="ml-2 d-flex">
                                             @Html.Raw(ShowFileMenu(j))
                                         </div>
                                     }
                                 }
                             </div>
+                            @if (j["islocked"].ToString() == "Y")
+                            {
+                                <div class="d-flex align-items-center">
+                                    <div class="ml-3 pl-1 text-danger"> * 반출 : <a href="javascript:void(0)" class="z-lnk-navy-n" onclick="_zw.fn.viewUserSimpleInfo(@j["courid"].ToString())">@j["cour"].ToString() (@j["codate"].ToString())</a></div>
+                                    <div class="ml-3 text-danger">반입예정 : @j["ciexpdate"].ToString()</div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-none"></div>
+                            }
+                        </div>
                         }
                     }
                     else
@@ -249,13 +262,13 @@
             </div>
         }
 
-    <div class="container-p-x pt-3 mb-3">
-        <div class="form-group row mb-1">
+    <div class="container-p-x mb-3">
+        @*<div class="form-group row mb-1">
             <div class="col-form-label col-sm-2">문서등급</div>
-            <div class="col-sm-4 pt-2">@ViewBag.R.app["docleveltext"]</div>
+            <div class="col-sm-4 pt-2"></div>
             <div class="col-form-label col-sm-2">보존년한</div>
-            <div class="col-sm-4 pt-2">@ViewBag.R.app["keepyeartext"]</div>
-        </div>
+            <div class="col-sm-4 pt-2"></div>
+        </div>*@
 
         <div class="form-group row mb-1">
             <div class="col-form-label col-sm-2">개정번호</div>
@@ -400,8 +413,24 @@
                 <h6 class="modal-title">반출 정보</h6>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
-            <div class="modal-body">
-                <div class="form-group row mb-2">
+            <div class="modal-body py-2">
+                <div class="form-group row mb-1">
+                    <label class="col-4 col-form-label font-weight-bold">파일명</label>
+                    <div class="col-8 input-group align-items-center" data-for="filename"></div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-4 col-form-label font-weight-bold">파일크기</label>
+                    <div class="col-8 input-group align-items-center" data-for="filesize"></div>
+                </div>
+                <div class="form-group row mb-1">
+                    <label class="col-4 col-form-label font-weight-bold">문서등급</label>
+                    <div class="col-8 input-group align-items-center" data-for="doclevel"></div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-4 col-form-label font-weight-bold">보존년한</label>
+                    <div class="col-8 input-group align-items-center" data-for="keepyear"></div>
+                </div>
+                <div class="form-group row mb-1">
                     <label class="col-4 col-form-label font-weight-bold">반출자</label>
                     <div class="col-8 input-group align-items-center">@Session["URName"]</div>
                 </div>

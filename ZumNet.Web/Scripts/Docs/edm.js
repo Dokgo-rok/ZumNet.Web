@@ -130,8 +130,18 @@ $(function () {
     }
 
     _zw.mu.checkOut = function (fi) {
+        var fInfo = _zw.V.app.attachlist.find(function (element) { if (element.attachid === fi.toString()) return true; }); //console.log(fInfo)
+
         var el = _zw.ut.eventBtn();
         var p = $('#popBlank'); p.html($('.zf-checkout-template').html()); _zw.ut.picker('date');
+        p.find('.modal-body div[data-for]').each(function () {
+            if ($(this).attr('data-for') == 'filename') $(this).text(fInfo['filename']);
+            else if ($(this).attr('data-for') == 'filesize') $(this).text(_zw.fu.fileSize(fInfo['size']));
+            else if ($(this).attr('data-for') == 'doclevel') $(this).text(fInfo['docleveltext']);
+            else if ($(this).attr('data-for') == 'keepyear') $(this).text(fInfo['keepyeartext']);
+        });
+
+
         p.on('hidden.bs.modal', function () { p.html(''); });
         p.modal();
 
