@@ -266,11 +266,46 @@ $(function () {
         });
     }
 
-    _zw.mu.showFileVer = function (fi) {
-        $.post("/Docs/Edm/VersionInfo", '{"mi":"' + _zw.V.appid + '","fi":"' + fi + '"}', function (res) {
-            if (res.substr(0, 2) == 'OK') {
-                var p = $('#popBlank'); p.html(res.substr(2));
+    _zw.mu.showFileVer = function (m, fi) {
+        m = m || '';
 
+        //_zw.ut.ctrls();
+        var el = _zw.ut.eventBtn(), ctrl = el.attr('aria-controls'), tgt = $('[data-controls="' + ctrl + '"]');
+        if (m == 'card' && tgt.html() != '') {
+            tgt.toggleClass('d-none');
+            if ($(el).find('i').hasClass('fa-arrow-circle-down')) $(el).find('i').removeClass('fa-arrow-circle-down').addClass('fa-arrow-circle-up');
+            else if ($(el).find('i').hasClass('fa-arrow-circle-up')) $(el).find('i').removeClass('fa-arrow-circle-up').addClass('fa-arrow-circle-down');
+
+            return;
+        }
+        
+        $.post("/Docs/Edm/VersionInfo", '{"m":"' + m + '","mi":"' + _zw.V.appid + '","fi":"' + fi + '"}', function (res) {
+            if (res.substr(0, 2) == 'OK') {
+                if (m == 'card') {
+                    tgt.html(res.substr(2));
+
+                    tgt.find('.card-body td a[data-val]').click(function () {
+                        var j = JSON.parse(_zw.ut.htmlUnescape($(this).attr('data-val')));
+                        //console.log(j)
+
+                        $.post("/Docs/Edm/CheckHistory", _zw.ut.htmlUnescape($(this).attr('data-val')), function (res) {
+                            if (res.substr(0, 2) == 'OK') {
+                                var p = $('#popBlank'); p.html(res.substr(2));
+                                p.on('hidden.bs.modal', function () { p.html(''); });
+                                p.modal();  
+                            } else bootbox.alert(res);
+                        });
+                    });                    
+
+                    tgt.toggleClass('d-none');
+                    if ($(el).find('i').hasClass('fa-arrow-circle-down')) $(el).find('i').removeClass('fa-arrow-circle-down').addClass('fa-arrow-circle-up');
+                    else if ($(el).find('i').hasClass('fa-arrow-circle-up')) $(el).find('i').removeClass('fa-arrow-circle-up').addClass('fa-arrow-circle-down');
+
+                } else {
+                    var p = $('#popBlank'); p.html(res.substr(2));
+                    p.on('hidden.bs.modal', function () { p.html(''); });
+                    p.modal();                    
+                }
             } else bootbox.alert(res);
         });
     }

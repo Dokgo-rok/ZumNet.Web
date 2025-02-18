@@ -53,6 +53,9 @@
         //sb.AppendFormat("<button type=\"button\" class=\"btn btn-lg btn-outline-info borderless p-1\" style=\"line-height: 1px\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"버전정보\" onclick=\"_zw.mu.showFileVer({0})\">", info["attachid"].ToString());
         //sb.Append("<span class=\"fas fa-info-circle\"></span>");
         //sb.Append("</button>");
+        sb.AppendFormat("<button type=\"button\" class=\"btn btn-lg btn-outline-info borderless p-1\" style=\"line-height: 1px\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"버전정보\" aria-controls=\"vw-toggle-{0}\" onclick=\"_zw.mu.showFileVer('card', {0})\">", info["attachid"].ToString());
+        sb.Append("<i class=\"fas fa-arrow-circle-down\"></i>");
+        sb.Append("</button>");
 
         return sb.ToString();
     }
@@ -213,53 +216,54 @@
                         @*<div class="zf-uploader" id="__DextUpload"></div>*@
                         foreach (var j in ViewBag.R.app.attachlist)
                         {
-                        <div class="border px-2 pt-2 pb-1 mr-1">
-                            <div class="d-flex align-items-center">
-                                <div class="mr-2">
-                                    <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
-                                </div>
-                                <div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64("\\" + j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
-                                <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
-                                @if (ViewBag.R.app["rsvd1"].ToString() == "" && ViewBag.R.app["rsvd2"].ToString() == "") //이관문서 X
-                                {
-                                    if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
-                                    {
-                                        <div class="ml-2 d-flex">
-                                            @Html.Raw(ShowFileMenu(j))
-                                        </div>
-                                    }
-                                }
-                            </div>
-                            @if (j["islocked"].ToString() == "Y")
-                            {
+                            <div class="border px-2 pt-2 pb-1 mr-1">
                                 <div class="d-flex align-items-center">
-                                    <div class="ml-3 pl-1 text-danger"> * 반출 : <a href="javascript:void(0)" class="z-lnk-navy-n" onclick="_zw.fn.viewUserSimpleInfo(@j["courid"].ToString())">@j["cour"].ToString() (@j["codate"].ToString())</a></div>
-                                    <div class="ml-3 text-danger">반입예정 : @j["ciexpdate"].ToString()</div>
+                                    <div class="mr-2">
+                                        <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
+                                    </div>
+                                    <div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64("\\" + j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>
+                                    <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
+                                    @if (ViewBag.R.app["rsvd1"].ToString() == "" && ViewBag.R.app["rsvd2"].ToString() == "") //이관문서 X
+                                    {
+                                        if (ViewBag.R.current["operator"].ToString() == "Y" || ZumNet.Framework.Util.StringHelper.HasAcl(ViewBag.R.current["appacl"].ToString(), "E") || bOwner)
+                                        {
+                                            <div class="ml-2 d-flex">
+                                                @Html.Raw(ShowFileMenu(j))
+                                            </div>
+                                        }
+                                    }
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="d-none"></div>
-                            }
+                                @if (j["islocked"].ToString() == "Y")
+                                {
+                                    <div class="d-flex align-items-center">
+                                        <div class="ml-3 pl-1 text-danger"> * 반출 : <a href="javascript:void(0)" class="z-lnk-navy-n" onclick="_zw.fn.viewUserSimpleInfo(@j["courid"].ToString())">@j["cour"].ToString() (@j["codate"].ToString())</a></div>
+                                        <div class="ml-3 text-danger">반입예정 : @j["ciexpdate"].ToString()</div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-none"></div>
+                                }
+                                <div class="d-none" data-controls="vw-toggle-@j["attachid"]"></div>
                         </div>
+                            }
                         }
-                    }
-                    else
-                    {
-                        foreach (var j in ViewBag.R.app.attachlist)
+                        else
                         {
-                            <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
-                                <div class="mr-2">
-                                    <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
+                            foreach (var j in ViewBag.R.app.attachlist)
+                            {
+                                <div class="d-flex align-items-center border px-2 pt-2 pb-1 mr-1">
+                                    <div class="mr-2">
+                                        <i class="@ZumNet.Web.Bc.CommonUtils.GetFileExt(j["ext"].ToString())"></i>
+                                    </div>
+                                    @*<div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64("\\" + j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>*@
+                                    <div class=""><a href="javascript:void(0)" onclick="bootbox.alert('읽기 권한이 없습니다!')">@j["filename"]</a></div>
+                                    <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
                                 </div>
-                                @*<div class=""><a href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(j["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64("\\" + j["filepath"].ToString() + "\\" + j["savedname"].ToString()))" target="_blank">@j["filename"]</a></div>*@
-                                <div class=""><a href="javascript:void(0)" onclick="bootbox.alert('읽기 권한이 없습니다!')">@j["filename"]</a></div>
-                                <div class="ml-2 text-muted">@ZumNet.Web.Bc.CommonUtils.StrFileSize(j["size"].ToString())</div>
-                            </div>
+                            }
                         }
-                    }
                 </div>
-            </div>
+                </div>
         }
 
     <div class="container-p-x mb-3">

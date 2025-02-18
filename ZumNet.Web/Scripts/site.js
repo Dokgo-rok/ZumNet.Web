@@ -2281,7 +2281,9 @@ $(function () {
                 } else if (ctrl == 'vw-search-cond' || ctrl.substr(0, 9) == 'vw-toggle') {
                     tgt.toggleClass('d-none');
                     if ($(el).find('i').hasClass('fa-angle-down')) $(el).find('i').removeClass('fa-angle-down').addClass('fa-angle-up');
-                    else $(el).find('i').removeClass('fa-angle-up').addClass('fa-angle-down');
+                    else if ($(el).find('i').hasClass('fa-angle-up')) $(el).find('i').removeClass('fa-angle-up').addClass('fa-angle-down');
+                    else if ($(el).find('i').hasClass('fa-arrow-circle-down')) $(el).find('i').removeClass('fa-arrow-circle-down').addClass('fa-arrow-circle-up');
+                    else if ($(el).find('i').hasClass('fa-arrow-circle-up')) $(el).find('i').removeClass('fa-arrow-circle-up').addClass('fa-arrow-circle-down');
 
                 }
             }
@@ -2688,9 +2690,15 @@ $(function () {
                                 if (!_zw.fu.checkExt(id, ext)) {
                                     bootbox.alert('[' + ext + ']는 첨부 가능한 파일 형식이 아닙니다!', function () { fm.reset(); }); return false;
                                 }
-                                if (!_zw.fu.checkName(id, file.name)) {
-                                    bootbox.alert('[' + file.name + '] 파일만 첨부 가능합니다!', function () { fm.reset(); }); return false;
+                                //if (!_zw.fu.checkName(id, file.name)) {
+                                //    bootbox.alert('[' + file.name + '] 파일만 첨부 가능합니다!', function () { fm.reset(); }); return false;
+                                //}
+
+                                var rt = _zw.fu.checkName(id, file.name);
+                                if (rt != '') {
+                                    bootbox.alert('[' + rt + '] 파일만 가능합니다!', function () { fm.reset(); }); return false;
                                 }
+
                                 if (!_zw.fu.checkDouble(file.name)) {
                                     bootbox.alert('[' + file.name + ']는 중복된 파일입니다!', function () { fm.reset(); }); return false;
                                 }
@@ -2704,9 +2712,15 @@ $(function () {
                             if (!_zw.fu.checkExt(id, ext)) {
                                 bootbox.alert('[' + ext + ']는 첨부 가능한 파일 형식이 아닙니다!', function () { fm.reset(); }); return false;
                             }
-                            if (!_zw.fu.checkName(id, fmn)) {
-                                bootbox.alert('[' + fmn + '] 파일만 첨부 가능합니다!', function () { fm.reset(); }); return false;
+                            //if (!_zw.fu.checkName(id, fmn)) {
+                            //    bootbox.alert('[' + fmn + '] 파일만 첨부 가능합니다!', function () { fm.reset(); }); return false;
+                            //}
+
+                            var rt = _zw.fu.checkName(id, fmn);
+                            if (rt != '') {
+                                bootbox.alert('[' + rt + '] 파일만 가능합니다!', function () { fm.reset(); }); return false;
                             }
+
                             if (!_zw.fu.checkDouble(fmn)) {
                                 bootbox.alert('[' + fmn + ']는 중복된 파일입니다!', function () { fm.reset(); }); return false;
                             }
@@ -2741,11 +2755,19 @@ $(function () {
         },
         "checkName": function (id, fn) {
             var p = id && id != '' ? $('#' + id + '.zf-upload') : $('.zf-upload').has('.zf-upload-select.d-flex'); //console.log(p.html())
-            var bExt = true; // data-help 또는 data-for="name" 없는 경우
+            //var bExt = true; // data-help 또는 data-for="name" 없는 경우
+            //if (p.length > 0 && p.find('[data-help="file"] div[data-for="name"]').length > 0) {
+            //    if (p.find('[data-help="file"] div[data-for="name"]').text() != fn) bExt = false;
+            //}
+            //return bExt;
+
+            //25-02-13
+            var rt = '';
             if (p.length > 0 && p.find('[data-help="file"] div[data-for="name"]').length > 0) {
-                if (p.find('[data-help="file"] div[data-for="name"]').text() != fn) bExt = false;
+                rt = p.find('[data-help="file"] div[data-for="name"]').text();
+                if (rt == fn) rt = '';
             }
-            return bExt;
+            return rt;
         },
         "checkDouble": function (fm) {
             if (_zw.fu.fileList && _zw.fu.fileList.length > 0) {

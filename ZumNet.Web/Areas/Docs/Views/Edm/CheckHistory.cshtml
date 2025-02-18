@@ -1,0 +1,79 @@
+﻿@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@{
+}
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h6 class="modal-title">반출입 정보</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body py-2">
+            <div class="px-3">
+                <div class="form-group row mb-0">
+                    <label for="" class="col-sm-2 col-form-label font-weight-normal pt-1">파일명</label>
+                    <div class="col-sm-10 input-group align-items-center">
+                        @if (ViewBag.JPost["isbase"].ToString() == "Y") { <span class="badge badge-pill badge-primary mr-2">현재</span>}
+                        <a class="z-lnk-navy-n" href="/Common/Download?fn=@Server.UrlEncode(SecurityHelper.ToBase64(ViewBag.JPost["filename"].ToString()))&fp=@Server.UrlEncode(SecurityHelper.ToBase64("\\" + ViewBag.JPost["filepath"].ToString() + "\\" + ViewBag.JPost["savedname"].ToString()))" target="_blank">@ViewBag.JPost["filename"]</a>
+                    </div>
+                </div>
+                <div class="form-group row mb-0">
+                    <label for="" class="col-sm-2 col-form-label font-weight-normal pt-1">등록</label>
+                    <div class="col-sm-10 input-group align-items-center">@ViewBag.JPost["crur"] (@DateHelper.CheckDateTime(ViewBag.JPost["regdate"].ToString()))</div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="" class="col-sm-2 col-form-label font-weight-normal pt-1">보존년한</label>
+                    <div class="col-sm-4 input-group align-items-center">@ViewBag.JPost["keepyeartext"]</div>
+                    <label for="" class="col-sm-2 col-form-label font-weight-normal pt-1">문서등급</label>
+                    <div class="col-sm-4 input-group align-items-center">@ViewBag.JPost["docleveltext"]</div>
+                </div>
+            </div>
+
+            <table class="table table-striped table-sm text-center mb-0">
+                <colgroup><col /><col style="width:25%" /><col style="width:25%" /><col style="width:15%" /></colgroup>
+                <thead class="thead-dark">
+                    <tr><th>반출/반입자</th><th>반출일</th><th>반입일</th><th>수정여부</th></tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.BoardList != null && ViewBag.BoardList.Rows.Count > 0)
+                    {
+                        for (int i = ViewBag.BoardList.Rows.Count - 1; i >= 0; i--)
+                        {
+                            DataRow row = ViewBag.BoardList.Rows[i];
+                            <tr>
+                                @if (row["DisplayName"].ToString() != "")
+                                {
+                                    <td>@row["DisplayName"] (@row["GroupName"])</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>@DateHelper.CheckDateTime(row["CODate"].ToString())</td>
+                                <td>@DateHelper.CheckDateTime(row["CIDate"].ToString())</td>
+                                <td>
+                                    @if (row["CI_Type"].ToString() == "1")
+                                    {<span class="far fa-circle"></span> }
+                                    else
+                                    { <span class="fe-x"></span>}
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="pt-3">@Resources.Global.NoItemShow</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">@Resources.Global.Close</button>
+            @*@if (ViewBag.JPost["isbase"].ToString() != "Y") {<button type="button" class="btn btn-primary mr-1" data-zm-menu="changeBase">기본 파일로 변경</button>}*@
+        </div>
+    </div>
+</div>
+

@@ -566,7 +566,7 @@ namespace ZumNet.Web.Areas.Docs.Controllers
         }
         #endregion
 
-        #region [반출입 관련]
+        #region [반출입, 버전 관련]
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
@@ -691,6 +691,86 @@ namespace ZumNet.Web.Areas.Docs.Controllers
                 catch (Exception ex)
                 {
                     rt = sPos + " " + ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string VersionInfo()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["fi"].ToString() == "" || jPost["fi"].ToString() == "0") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.DocBiz doc = new BSL.ServiceBiz.DocBiz())
+                    {
+                        svcRt = doc.GetDocumentVersionInfo(Convert.ToInt32(jPost["fi"].ToString()));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.JPost = jPost;
+                        ViewBag.BoardList = svcRt.ResultDataTable;
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "VersionInfo", ViewBag);
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string CheckHistory()
+        {
+            string rt = "";
+
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["attachid"].ToString() == "" || jPost["attachid"].ToString() == "0") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (ZumNet.BSL.ServiceBiz.DocBiz doc = new BSL.ServiceBiz.DocBiz())
+                    {
+                        svcRt = doc.GetDocumentCheckInOutLogInfo(Convert.ToInt32(jPost["attachid"].ToString()));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        ViewBag.JPost = jPost;
+                        ViewBag.BoardList = svcRt.ResultDataTable;
+
+                        rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "CheckHistory", ViewBag);
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
                 }
             }
             return rt;
