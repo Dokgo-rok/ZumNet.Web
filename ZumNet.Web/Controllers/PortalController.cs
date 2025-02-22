@@ -344,11 +344,11 @@ namespace ZumNet.Web.Controllers
         /// <summary>
         /// 내 알림 보기
         /// </summary>
-        /// <param name="Qi"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [SessionExpireFilter]
         [Authorize]
-        public ActionResult NoticeList(string Qi)
+        public ActionResult NoticeList(string id)
         {
             string rt = Bc.CtrlHandler.PageInit(this, false);
             if (rt != "")
@@ -356,17 +356,17 @@ namespace ZumNet.Web.Controllers
                 return View("~/Views/Shared/_Error.cshtml", new HandleErrorInfo(new Exception(rt), this.RouteData.Values["controller"].ToString(), this.RouteData.Values["action"].ToString()));
             }
 
-            if (Qi == null || Qi == "") Qi = "L";
+            if (id == null || id == "") id = "L";
 
             ZumNet.Framework.Core.ServiceResult svcRt = null;
             using (ZumNet.BSL.ServiceBiz.NoticeBiz ntBiz = new NoticeBiz())
             {
-                svcRt = ntBiz.GetNoticeList(Qi, Convert.ToInt32(Session["URID"]));
+                svcRt = ntBiz.GetNoticeList(id, Convert.ToInt32(Session["URID"]));
             }
             if (svcRt != null && svcRt.ResultCode == 0)
             {
                 ViewBag.Mode = "";
-                ViewBag.Scope = Qi; //L, A
+                ViewBag.Scope = id; //L, A
                 ViewBag.NoticeList = svcRt.ResultDataSet;
             }
             else

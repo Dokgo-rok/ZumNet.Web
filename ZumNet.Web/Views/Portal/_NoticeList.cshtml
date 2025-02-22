@@ -92,7 +92,8 @@
                 {
                     sb.Append("<div class=\"h4 time-line-date\">");
                     sb.Append("<span class=\"rounded-circle d-inline-block bg-info mr-2\"><i class=\"far fa-clock text-white p-2\"></i></span>");
-                    sb.AppendFormat("<span>{0}</span>", DateHelper.DateFormat(row["credate"].ToString(), "m", sCurrentLocale));
+                    if (Convert.ToDateTime(row["credate"]).Year == DateTime.Now.Year) sb.AppendFormat("<span>{0}</span>", DateHelper.DateFormat(row["credate"].ToString(), "m", sCurrentLocale));
+                    else sb.AppendFormat("<span>{0}</span>", DateHelper.DateFormat(row["credate"].ToString(), "D", sCurrentLocale));
                     sb.Append("</div>");
                 }
 

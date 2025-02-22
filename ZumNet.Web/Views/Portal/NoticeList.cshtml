@@ -9,8 +9,10 @@
     string sCurrentLocale = Thread.CurrentThread.CurrentUICulture.Name;
 
     string[,] vBox = {
-//page, title, bold, count
-{ "/Portal/NoticeList", "최근 30일 알림", "L", "" }//, { "/Portal/NoticeList", "지난 전체 알림", "A", "" }
+        //page, title, bold, count
+        { "/Portal/NoticeList", "최근 30일 알림", "L", "" },
+        { "/Portal/NoticeList", "지난 1년 알림", "Y", "" },
+        //{ "/Portal/NoticeList", "지난 전체 알림", "A", "" }
     };
 }
 @functions{
