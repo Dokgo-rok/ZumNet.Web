@@ -62,10 +62,13 @@
     }
 
     _zw.fn.loadList = function () {
+        var v = _zw.V.current.page.split('/');
+        var m = v[3] && v[3] != '' ? v[3] : 'L';
+
         $.ajax({
             type: "POST",
             url: "/Portal/NoticeList",
-            data: '{M:"L",wnd:"",tgtid:"' + _zw.V.current.urid + '"}', //L : 최근30일알림목록
+            data: '{M:"' + m + '",wnd:"",tgtid:"' + _zw.V.current.urid + '"}', //L : 최근30일알림목록
             success: function (res) {
                 if (res.substr(0, 2) == 'OK') {
                     $('#__ListView').html(res.substr(2));
