@@ -131,7 +131,7 @@
           <div class="fm">
             <table class="ft" border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td class="f-lbl" style="border-bottom:0">제목</td>
+                <td class="f-lbl" style="border-bottom:0">출장지/기간</td>
                 <td style="border-bottom:0;border-right:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
