@@ -358,7 +358,7 @@
 										</input>
 										<label for="ckb14">VU</label>
 									</span>
-									<span class="f-option">
+									<!--<span class="f-option">
 										<input type="checkbox" id="ckb15" name="ckbADDREG" value="CD">
 											<xsl:if test="$mode='new' or $mode='edit'">
 												<xsl:attribute name="onclick">_zw.form.checkYN('ckbADDREG', this, 'ADDREG', ';')</xsl:attribute>
@@ -385,7 +385,7 @@
 											</xsl:if>
 										</input>
 										<label for="ckb16">IC</label>
-									</span>
+									</span>-->
 									<span class="f-option">
 										<input type="checkbox" id="ckb17" name="ckbADDREG" value="IS">
 											<xsl:if test="$mode='new' or $mode='edit'">
