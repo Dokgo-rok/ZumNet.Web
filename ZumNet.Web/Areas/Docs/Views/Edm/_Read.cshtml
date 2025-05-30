@@ -190,7 +190,7 @@
             </div>
             <div class="d-flex justify-content-between container-p-x mt-2">
                 <div class="">@ViewBag.R.app["creur"] / @ViewBag.R.app["credept"] / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.R.app["docdate"].ToString(), true)</div>
-                <div>
+                <div class="text-nowrap">
                     <span class="d-inline-block mr-2 text-info" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ViewCount"><i class="fe-eye"></i> @ViewBag.R.app["viewcount"]</span>
                     @if (bDetail)
                     {

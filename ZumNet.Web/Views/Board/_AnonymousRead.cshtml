@@ -40,7 +40,7 @@ else
             <button class="btn btn-default font-weight-bold" onclick="_zw.mu.deleteMsg();" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Delete"><i class="fe-trash-2"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Delete</span></button>
         </div>
         </div>
-        <div>
+        <div class="text-nowrap">
             @if (ViewBag.R.wnd.ToString() == "")
             {
                 <div class="btn-group">
@@ -76,7 +76,7 @@ else
             </div>
             <div class="d-flex justify-content-between container-p-x mt-2">
                 <div class="">@ViewBag.R.app["creur"] / @ZumNet.Web.Bc.CommonUtils.LvDate(ViewBag.R.app["pubdate"].ToString(), true)</div>
-                <div>
+                <div class="text-nowrap">
                     <span class="d-inline-block mr-2 text-info" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.ViewCount"><i class="fe-eye"></i> @ViewBag.R.app["viewcount"]</span>
                     <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.CommentCount"><i class="far fa-comment-dots"></i> @ViewBag.R.app["cmntcount"]</span>
                     <span class="d-inline-block text-danger" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Like"><i class="far fa-heart"></i> @ViewBag.R.app["evalcount"]</span>
