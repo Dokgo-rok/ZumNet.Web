@@ -2212,6 +2212,7 @@
     <Content Include="Scripts\EA\ea.js" />
     <Content Include="Scripts\EA\Forms\FORM_AFTERCHANGEREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_AIRDRAFT.js" />
+    <Content Include="Scripts\EA\Forms\FORM_APINVOICE.js" />
     <Content Include="Scripts\EA\Forms\FORM_AUDITRESULTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BABYVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_BEFORECHANGE.js" />
@@ -2238,6 +2239,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CONSTRUCTDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONTRACTRE.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CORRECTIVEPREVENTIVACTION.js" />
     <Content Include="Scripts\EA\Forms\FORM_CREDIBILITYRESULTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CREIBILITYREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CTCMINUTES.js" />
@@ -2279,6 +2281,7 @@
     <Content Include="Scripts\EA\Forms\FORM_HOMEWORK.js" />
     <Content Include="Scripts\EA\Forms\FORM_HOMEWORKWEEK.js" />
     <Content Include="Scripts\EA\Forms\FORM_INDUSTRIALPRO.js" />
+    <Content Include="Scripts\EA\Forms\FORM_INTERNALAUDITPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_INTERNALAUDITRESULT.js" />
     <Content Include="Scripts\EA\Forms\FORM_INVENTORYTAKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_ISOPARTMONTHLYRETURN.js" />
@@ -2299,6 +2302,7 @@
     <Content Include="Scripts\EA\Forms\FORM_MOLDREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_MONTHFAULTYGOODS.js" />
     <Content Include="Scripts\EA\Forms\FORM_MONTHLOSSCHART.js" />
+    <Content Include="Scripts\EA\Forms\FORM_MONTHPURCHASEUC.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWDEVELOPREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWOWNDEVREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_NEWPARTSREQUEST.js" />
@@ -2346,6 +2350,7 @@
     <Content Include="Scripts\EA\Forms\FORM_REQUESTBPS.js" />
     <Content Include="Scripts\EA\Forms\FORM_RESIGNATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_RPUSEAPP.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SAFERESULTTABLE.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLECONTROL.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLEDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_SAMPLESHIPREQUEST.js" />
@@ -2356,6 +2361,7 @@
     <Content Include="Scripts\EA\Forms\FORM_SHIPMENTUC.js" />
     <Content Include="Scripts\EA\Forms\FORM_SOFTWARECHECK.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEINFO.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SPECCHANGEREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALCONFIRM.js" />
     <Content Include="Scripts\EA\Forms\FORM_SPECIALPROMOTION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SQANEWVERIFREQ.js" />
@@ -2364,6 +2370,7 @@
     <Content Include="Scripts\EA\Forms\FORM_STANDARDCERTIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_STANDARDDATA.js" />
     <Content Include="Scripts\EA\Forms\FORM_SUGGESTPAPER.js" />
+    <Content Include="Scripts\EA\Forms\FORM_SUGGESTPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_SWSPECIFICATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMADDREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_SYSTEMDELETE.js" />

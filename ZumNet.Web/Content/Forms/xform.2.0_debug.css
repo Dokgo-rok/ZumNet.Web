@@ -347,6 +347,9 @@ body {overflow: hidden}
 
 /* 인쇄 설정 : 맨하단으로 */
 @media print {
+	.pace, .page-loader {
+		display: none !important;
+	}
 	.m table {
 		color: #000000;
 	}

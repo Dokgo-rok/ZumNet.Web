@@ -27,7 +27,7 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
 			/* 화면 넓이, 에디터 높이, 양식명크기 */
-			.m {width:700px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
+			.m {width:800px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
 			.fh h1 {font-size:20.0pt;letter-spacing:5pt}
 
 			/* 결재칸 넓이 */
@@ -44,7 +44,12 @@
 			/* 인쇄 설정 : 맨하단으로  , 결재권자창 인쇄 시 안보임 */
 			@media print {
 			.m .fm-editor {height:450px} .fb,.si-tbl,.fh-l img {display:none} .fm-lines {display:none} .m .fh {padding-top:40px} .etctxt{display:block}
-			.m .fm .ft-ttl {height: 15rem !important} .m .fm .ft-content {height: 35rem !important; vertical-align: top; padding-top: 5rem} .m .fm .ft-content2 {height: 18rem !important; padding-left: 4rem !important}
+
+			.m .fh {padding-top:6rem !important}
+			.m .fm .ft-ttl {height: 12rem !important}
+			.m .fm .ft-content {height: 30rem !important; vertical-align: top; padding-top: 6rem !important;}
+			.m .fm .ft-content2 {height: 15rem !important; padding-left: 1.5rem !important}
+			.m .ft td {padding-top: 0.25rem !important; padding-bottom: 0.25rem !important}
 			}
 		</style>
       </head>
@@ -131,7 +136,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl2" style="text-align:center;font-size:16; vertical-align:middle;" rowspan="3"  >
+                <td class="f-lbl2" style="text-align:center;font-size:16px; vertical-align:middle;" rowspan="3"  >
                   Personal <br/>Identification <br/>(인적사항)
                   <xsl:if test="$mode='new' or $mode='edit'">
                     <!--<button onclick="parent.fnExternal('report.DOCCAREER',240,80,320,400,'','');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
@@ -149,8 +154,8 @@
 					  </button>
                   </xsl:if>
                 </td>
-                <td class="f-lbl" style="height:40px;font-size:17px ; display:none">사 번</td>
-                <td colspan="2" style="border-right:0;font-size:17px;padding-left:5px; display:none">
+                <td class="f-lbl" style="height:40px;font-size:16px ; display:none">사 번</td>
+                <td colspan="2" style="border-right:0;font-size:16px;padding-left:5px; display:none">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                       <input type="text" id="__mainfield" name="APPLICANTEMPNO" class="txtText"  style="width:100px" readnoly ="readonly"  value="{//forminfo/maintable/APPLICANTEMPNO}"/>
@@ -187,10 +192,10 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl" style="height:50px;font-size:15px;text-align:center;vertical-align:middle;">
+                <td class="f-lbl" style="height:50px;font-size:16px;text-align:center;vertical-align:middle;">
                   Full Name<br/>(성명)
                 </td>
-                <td colspan="2" style="border-right:0;font-size:15px;padding-left:5px">
+                <td colspan="2" style="border-right:0;font-size:16px;padding-left:5px">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                       <span>
@@ -216,7 +221,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl" style="height:50px;font-size:15px;text-align:center;vertical-align:middle;">
+                <td class="f-lbl" style="height:50px;font-size:16px;text-align:center;vertical-align:middle;">
                   Date of Birth<br/>(생년월일)
                 </td>
                 <td colspan="3" style="border-right:0;text-align:left;font-size:15px;padding-left:5px">
@@ -264,10 +269,10 @@
                 </td>
               </tr>-->
               <tr>
-                <td class="f-lbl2" style="text-align:center;font-size:16; vertical-align:middle;"  rowspan="3" >
+                <td class="f-lbl2" style="text-align:center;font-size:16px; vertical-align:middle;"  rowspan="3" >
                   Working <br/>Experience <br/>(경력사항)
                 </td>
-                <td class="f-lbl" style="height:50px;font-size:15px;text-align:center;vertical-align:middle;">
+                <td class="f-lbl" style="height:50px;font-size:16px;text-align:center;vertical-align:middle;">
                   Department <br/> (소속)
                 </td>
                 <td colspan="2" style="border-right:0;font-size:15px;padding-left:5px">
@@ -297,10 +302,10 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl" style="height:50px;font-size:15px;text-align:center;vertical-align:middle;">
+                <td class="f-lbl" style="height:50px;font-size:16px;text-align:center;vertical-align:middle;">
                   Position<br/>(직책)
                 </td>
-                <td colspan="2" style="border-right:0;font-size:15px;padding-left:5px">
+                <td colspan="2" style="border-right:0;font-size:16px;padding-left:5px">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                       <span>
@@ -326,10 +331,10 @@
                 </td>
               </tr>
               <tr>
-                <td class="f-lbl" style="height:60px;font-size:14px">
+                <td class="f-lbl" style="height:60px;font-size:16px">
                   Working Period<br/>(근무기간) 
                 </td>
-                <td colspan="2" style="text-align:left;border-right:0;font-size:15px;padding-left:5px">
+                <td colspan="2" style="text-align:left;border-right:0;font-size:16px;padding-left:5px">
                   <xsl:choose>
                     <xsl:when test="$mode='new'">
                       <span style="text-align:left">
@@ -402,17 +407,17 @@
               </tr>-->
 			<tr>
 				<td colspan="4" class="ft-content" style="border-bottom:0">
-					<p style="font-size: 1.25rem; font-weight: bold; text-align: center;  padding-top: 3rem;">
+					<p style="font-size: 22px !important; font-weight: bold; text-align: center;  padding-top: 20px; line-height: 2">
 						This is to certify that above mentioned facts are true and correct.<br />(위와 같이 증명합니다.)
 					</p>
 
 					<xsl:if test="//bizinfo/@docstatus!='700'">
-						<p class="etctxt" style="font-size: 1.25rem; font-weight: bold; text-align: center; padding-top: 1rem; color: #ec4a3b">
+						<p class="etctxt" style="font-size: 22px; font-weight: bold; text-align: center; padding-top: 1rem; color: #ec4a3b">
 							승인되지 않은 문서입니다.
 						</p>
 					</xsl:if>
 
-					<p style="font-size:1.05rem;  text-align: center; padding-top: 2rem; height: 8rem">
+					<p style="font-size:18px !important;  text-align: center; padding-top: 60px; height: 180px; line-height: 2">
 						<xsl:choose>
 							<xsl:when test="$mode='new'">
 								Issued Date: <xsl:value-of select="phxsl:convertDate(string(//docinfo/createdate),'en')" /> <br/>
@@ -433,7 +438,7 @@
 				</td>
 			</tr>
               <tr>
-                <td colspan="3" class="ft-content2" style=" padding-left:10px; border-top: 0; border-bottom;0;text-align:left;border-right:0;font-size:1rem;height:170px; line-height:25px; padding-top:10px">
+                <td colspan="3" class="ft-content2" style=" padding-left:1rem; border-top: 0; border-bottom;0;text-align:left;border-right:0;font-size:17px;height:170px; line-height:25px; padding-top:10px">
                   <strong>
                     Jong Bae, Lee  <br/>
                     Representative of CRESYN Co.,Ltd<br/>
@@ -442,7 +447,7 @@
                   Address : 5 Gangnam-daero 107-gil, Seocho-gu, Seoul, Korea #06524<br/>
                   소재지: 서울특별시 서초구 강남대로 107 길 5
                 </td>
-                <td style ="border:0; padding-left:25px;padding-top:20px">
+                <td style ="border:0; padding-left:10px;padding-top:20px">
                   <xsl:if test="//bizinfo/@docstatus='700'">
                     <span style="width:84px;border:0px solid green">
                       <img alt="회사인장" width="84px" style="margin:0;vertical-align:top" src="/Storage/{//config/@companycode}/CI/cresyn_stamp.gif" />
