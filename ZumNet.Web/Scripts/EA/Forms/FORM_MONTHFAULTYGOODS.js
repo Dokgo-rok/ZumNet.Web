@@ -102,9 +102,9 @@
 				s = 0;
 				if (el.name == "BUYSUM" || el.name == "WRBSUM1" || el.name == "WARSUM1" || el.name == "WASSUM1" || el.name == "WAFSUM1" || el.name == "TOTLOSSMONEY" || el.name == "WRBGONGSU1" || el.name == "WRBGONGSU2" || el.name == "WRBGONGSU3") {
 					e2 = $('#__mainfield[name="BUYSUM"]');
-					if (el.name == "WRBSUM0" || el.name == "SUM10" || el.name == "SUM11" || el.name == "WRBSUM1" || el.name == "TOTLOSSMONEY" || el.name == "WRBGONGSU1" || el.name == "WRBGONGSU2" || el.name == "WRBGONGSU3") {
+					//if (el.name == "WRBSUM0" || el.name == "SUM10" || el.name == "SUM11" || el.name == "WRBSUM1" || el.name == "TOTLOSSMONEY" || el.name == "WRBGONGSU1" || el.name == "WRBGONGSU2" || el.name == "WRBGONGSU3") {
 						s = parseFloat(_zw.ut.empty($('#__mainfield[name="WRBSUM1"]').val()));
-					}
+					//} // 2025-08-28 막음
 					//if (e2.val() != '') $('#__mainfield[name="RATE1"]').val(numeral(s * parseFloat(_zw.ut.empty(e2.val()))).format('0,0.[00]'))
 					if (e2.val() != '') $('#__mainfield[name="RATE1"]').val(numeral(_zw.ut.rate(s, parseFloat(_zw.ut.empty(e2.val())), 4)).format('0,0.[00]'));
 					$('#__mainfield[name="OCCURSUMQ"]').val(numeral(s).format('0,0')); s = 0;
