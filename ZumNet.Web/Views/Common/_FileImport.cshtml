@@ -1573,7 +1573,7 @@
                     strStatus = row["일상태"].ToString();
                     strIP = row["IP"].ToString();
                     strETC = "PC/MSIE";
-                    strreg = row["TAG번호"].ToString();
+                    strreg = StringHelper.SafeInt(row["TAG번호"].ToString()).ToString();//2025-08-28
 
                     svcRt = rptBiz.SetRegisterWORKSTATUS(_standardYear, strUserID, strDate, strTime, strStatus, strIP, strETC, strreg);
                     if (svcRt.ResultCode == 0)
