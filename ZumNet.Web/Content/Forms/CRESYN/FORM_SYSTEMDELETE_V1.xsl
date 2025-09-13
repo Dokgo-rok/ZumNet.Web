@@ -27,7 +27,7 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:1100px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
+          .m {width:1280px} .m .fm-editor {height:550px;border:windowtext 1pt solid}
           .fh h1 {font-size:20.0pt;letter -spacing:2pt}
 
           /* 결재칸 넓이 */
@@ -245,7 +245,8 @@
                       <td class="f-lbl-sub" style="" rowspan="2">EKP</td>
                       <td class="f-lbl-sub" style="" rowspan="2">VPN</td>
                       <td class="f-lbl-sub" style="" rowspan="2">문서보안</td>
-                      <td class="f-lbl-sub" style="border-right:0" rowspan="2">Accumeet</td>
+                      <!--<td class="f-lbl-sub" style="border-right:0" rowspan="2">Accumeet</td>-->
+						<td class="f-lbl-sub" style="border-right:0" rowspan="2">Kakao<br />Work</td>
                       
                     </tr>
                     <tr>
@@ -700,7 +701,7 @@
           </xsl:attribute>
         </input>
       </td>
-      <td style="text-align:center;border-right:0">
+      <!--<td style="text-align:center;border-right:0">
         <span class="f-option2">
           <input type="checkbox" name="ckbACCU" value="ACCU">
             <xsl:if test="$mode='new' or $mode='edit'">
@@ -719,7 +720,27 @@
             <xsl:value-of select="CHECKACCU"></xsl:value-of>
           </xsl:attribute>
         </input>
-      </td>
+      </td>-->
+		<td style="text-align:center;border-right:0">
+			<span class="f-option2">
+				<input type="checkbox" name="ckbKAKAOWORK" value="KAKAOWORK">
+					<xsl:if test="$mode='new' or $mode='edit'">
+						<xsl:attribute name="onclick">_zw.form.checkTableYN('ckbKAKAOWORK', this, 'CHECKKAKAOWORK')</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="phxsl:isEqual(string(CHECKKAKAOWORK),'KAKAOWORK')">
+						<xsl:attribute name="checked">true</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="$mode='read' and phxsl:isDiff(string(CHECKKAKAOWORK),'KAKAOWORK')">
+						<xsl:attribute name="disabled">disabled</xsl:attribute>
+					</xsl:if>
+				</input>
+			</span>
+			<input type="hidden" name="CHECKKAKAOWORK">
+				<xsl:attribute name="value">
+					<xsl:value-of select="CHECKKAKAOWORK"></xsl:value-of>
+				</xsl:attribute>
+			</input>
+		</td>
       
     </tr>
   </xsl:template>
