@@ -1550,7 +1550,7 @@
             string strStatus = "";
             string strIP = "";
             string strETC = "";
-            string strreg = "";
+            string strRegID = "";
             string strResult = "";
 
             sb.Append("<table class=\"table table-striped table-sm mb-0\">");
@@ -1573,18 +1573,29 @@
                     strStatus = row["일상태"].ToString();
                     strIP = row["IP"].ToString();
                     strETC = "PC/MSIE";
-                    strreg = StringHelper.SafeInt(row["TAG번호"].ToString()).ToString();//2025-08-28
+                    strRegID = StringHelper.SafeInt(row["TAG번호"].ToString()).ToString();//2025-08-28
 
-                    svcRt = rptBiz.SetRegisterWORKSTATUS(_standardYear, strUserID, strDate, strTime, strStatus, strIP, strETC, strreg);
-                    if (svcRt.ResultCode == 0)
+                    if (strUserID == "" || !StringHelper.IsNumeric(strUserID))
                     {
-                        strResult = svcRt.ResultDataString;
-
-                        if (strResult == "C") strResult = "신규";
-                        else if (strResult == "N") strResult = "변경";
-                        else strResult = "&nbsp;";
+                        strUserID = "[아이디] 오류";
                     }
-                    else strResult = svcRt.ResultMessage;
+                    else if (strRegID == "" || !StringHelper.IsNumeric(strRegID))
+                    {
+                        strUserID = "[TAG번호] 오류";
+                    }
+                    else
+                    {
+                        svcRt = rptBiz.SetRegisterWORKSTATUS(_standardYear, Convert.ToInt32(strUserID), strDate, strTime, strStatus, strIP, strETC, strRegID);
+                        if (svcRt.ResultCode == 0)
+                        {
+                            strResult = svcRt.ResultDataString;
+
+                            if (strResult == "C") strResult = "신규";
+                            else if (strResult == "N") strResult = "변경";
+                            else strResult = "&nbsp;";
+                        }
+                        else strResult = svcRt.ResultMessage;
+                    }
 
                     sb.Append("<tr>");
                     sb.AppendFormat("<td>{0}({1} {2})</td>", strDept, strName, strGrade);
