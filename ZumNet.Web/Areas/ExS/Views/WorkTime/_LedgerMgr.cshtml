@@ -108,13 +108,20 @@
                             }
 
                             string[] temp = row["HolidayWork"].ToString().Substring(2).Split(';');
+                            string sFrom = ""; //25-09-22 추가
+                            string sTo = "";
+                            if (temp[0].IndexOf('^') >= 0)
+                            {
+                                sFrom = temp[0].Split('^')[0];
+                                sTo = temp[0].Split('^')[1];
+                            }
 
                             sCol_day += String.Format("<button class=\"btn btn-success btn-sm\" style=\"padding: 3px 5px; margin: 1px 4px 1px 0\" onclick=\"_zw.fn.viewWorkInfo('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, '{8} {10}');\">{9} {10}</button>"
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["InTime"].ToString())
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["OutTime"].ToString())
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["SecomInTime"].ToString())
                                                 , ZumNet.Web.Bc.CommonUtils.StrHHmmss(row["SecomOutTime"].ToString())
-                                                , temp[0].Split('^')[0], temp[0].Split('^')[1], temp[1], ZumNet.Web.Bc.CommonUtils.StrHour(lReal.ToString())
+                                                , sFrom, sTo, temp[1], ZumNet.Web.Bc.CommonUtils.StrHour(lReal.ToString())
                                                 , Convert.ToDateTime(row["WorkDate"]).ToString("M월 d일")
                                                 , Convert.ToDateTime(row["WorkDate"]).ToString("M/d"), "특근");
                         }
