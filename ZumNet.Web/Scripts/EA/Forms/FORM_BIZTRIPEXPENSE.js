@@ -11,7 +11,7 @@ $(function () {
             _zw.formEx.event($('#__mainfield[name="TRIPFROM"]')[0]);
         },
         "calc": function (el) {
-            if (el.name == "EXCHANGE2" || el.name == "EXCHANGE3" || el.name == "EXCHANGE4" || el.name == "EXCHANGE5" || el.name == "EXCHANGE6" || el.name == "EXCHANGE7" || el.name == "EXCHANGE8") {
+            if (el.name == "EXCHANGE2" || el.name == "EXCHANGE3" || el.name == "EXCHANGE4" || el.name == "EXCHANGE5" || el.name == "EXCHANGE6" || el.name == "EXCHANGE7" || el.name == "EXCHANGE8" || el.name == "EXCHANGE9") {
                 if (el.value != '') {
                     $('#__FormView .f-lbl-sub [name="' + el.name.replace("EXCHANGE", "EXCHANGE_") + '"]').each(function () {
                         $(this).val(el.value);
@@ -71,7 +71,7 @@ $(function () {
                     $('#__mainfield[name="' + prefix + 'SUM' + idx + '"]').val(numeral(s).format(f));
 
                     s = 0;
-                    for (var x = 1; x <= 8; x++) { s += numeral($('#__mainfield[name="' + prefix + 'SUM' + x.toString() + '"]').val()).value(); }
+                    for (var x = 1; x <= 9; x++) { s += numeral($('#__mainfield[name="' + prefix + 'SUM' + x.toString() + '"]').val()).value(); }
                     $('#__mainfield[name="' + prefix + 'TOTAL"]').val(numeral(s).format(f));
 
                     _zw.formEx.expenseTotal();
@@ -83,7 +83,7 @@ $(function () {
                     p = $('#__subtable' + i.toString());
                     var len = p.find('tr.sub_table_row').first().find('td').length;
                     p.find('tr.sub_table_row').first().find('td').each(function (k) {
-                        if (k >= len - 9 && k < len - 1) {
+                        if (k >= len - 10 && k < len - 1) {
                             el1 = $(this).find('input[name]'); idx = el1.attr('name').substr(el1.attr('name').length - 1); prefix = el1.attr('name').substr(0, 1);
                             ex = $('#__mainfield[name="EXCHANGE' + idx + '"]');
 
@@ -94,7 +94,7 @@ $(function () {
                     });
                     
                     s = 0;
-                    for (var x = 1; x <= 8; x++) { s += numeral($('#__mainfield[name="' + prefix + 'SUM' + x.toString() + '"]').val()).value(); }
+                    for (var x = 1; x <= 9; x++) { s += numeral($('#__mainfield[name="' + prefix + 'SUM' + x.toString() + '"]').val()).value(); }
                     $('#__mainfield[name="' + prefix + 'TOTAL"]').val(numeral(s).format(f));
                 }
                 _zw.formEx.expenseTotal();
@@ -225,7 +225,7 @@ $(function () {
                             var pop = _zw.ut.popup(el[0], j);
                             pop.find('a[data-val]').click(function () {
                                 if (param[0].indexOf('CURRENCY') != -1) {
-                                    for (var i = 1; i <= 8; i++) {
+                                    for (var i = 1; i <= 9; i++) {
                                         var temp = $('#__mainfield[name="CURRENCY' + i.toString() + '"]');
                                         if (temp.val() == param[0]) { bootbox.alert("[" + param[0] + "]는(은) 이미 선택 되어 있습니다!"); return; }
                                     }
@@ -258,15 +258,15 @@ $(function () {
                 else {
                     row = x.parentNode.parentNode;
                     if (x.name == "EXPENSERULE") {
-                        for (var i = row.cells.length - 2; i >= row.cells.length - 9; i--) { row.cells[i].firstChild.value = ''; }
+                        for (var i = row.cells.length - 2; i >= row.cells.length - 10; i--) { row.cells[i].firstChild.value = ''; }
                     } else if (x.name == "EXPENSETYPECODE") {
                         if (x.value == "CASH") {
-                            for (var i = row.cells.length - 2; i >= row.cells.length - 9; i--) {
+                            for (var i = row.cells.length - 2; i >= row.cells.length - 10; i--) {
                                 $(row.cells[i].firstChild).removeClass('txtRead_Right').addClass('txtDollar').prop('readonly', false).val('');
                                 _zw.fn.input(row.cells[i].firstChild);
                             }
                         } else {
-                            for (var i = row.cells.length - 2; i >= row.cells.length - 9; i--) {
+                            for (var i = row.cells.length - 2; i >= row.cells.length - 10; i--) {
                                 if (x.value != '' && i == row.cells.length - 9) {
                                     $(row.cells[i].firstChild).removeClass('txtRead_Right').addClass('txtDollar').prop('readonly', false).val('');
                                     _zw.fn.input(row.cells[i].firstChild);
@@ -377,7 +377,7 @@ $(function () {
                     if (res.substr(0, 2) == 'OK') {
                         var j = JSON.parse(res.substr(2)); //console.log(j)
                         var c1, c2, v, col1, col2, f = '0,0.[0000]';
-                        for (var x = 2; x <= 8; x++) {
+                        for (var x = 2; x <= 9; x++) {
                             c1 = $('#__mainfield[name="STDCURRENCY' + x.toString() + '"]');
                             c2 = $('#__mainfield[name="STDEXCHANGE' + x.toString() + '"]');
                             v = j[c1.val()] ? j[c1.val()] : "0";
@@ -409,7 +409,7 @@ $(function () {
                 $('#__subtable' + i.toString() + ' tr.sub_table_row').each(function () {
                     var len = $(this).find('> td').length; c1 = $(this).find('> td > select[name="EXPENSETYPECODE"]');
                     $(this).find('> td').each(function (k) {
-                        if (k >= len - 9 && k < len - 1) {
+                        if (k >= len - 10 && k < len - 1) {
                             c2 = $(this).find('input[name]'); idx = c2.attr('name').substr(c2.attr('name').length - 1);
                             ex = $('#__mainfield[name="EXCHANGE' + idx + '"]');
                             if (c2.val() != '' && c2.val() != '0') {
