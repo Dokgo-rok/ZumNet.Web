@@ -267,7 +267,7 @@ $(function () {
                             }
                         } else {
                             for (var i = row.cells.length - 2; i >= row.cells.length - 10; i--) {
-                                if (x.value != '' && i == row.cells.length - 9) {
+                                if (x.value != '' && i == row.cells.length - 10) {
                                     $(row.cells[i].firstChild).removeClass('txtRead_Right').addClass('txtDollar').prop('readonly', false).val('');
                                     _zw.fn.input(row.cells[i].firstChild);
                                 } else $(row.cells[i].firstChild).removeClass('txtDollar').addClass('txtRead_Right').prop('readonly', true).val('');
