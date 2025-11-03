@@ -27,7 +27,7 @@
         <style type="text/css">
           <xsl:value-of select="phxsl:baseStyle()" />
           /* 화면 넓이, 에디터 높이, 양식명크기 */
-          .m {width:1300px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
+          .m {width:1250px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
           .fh h1 {font-size:20.0pt;letter-spacing:2pt}
 
           /* 결재칸 넓이 */
@@ -341,20 +341,26 @@
                 <td style="width:56%">
                   <table class="ft" border="0" cellspacing="0" cellpadding="0" style="table-layout:fixed">
                     <colgroup>
-                        <col width="9.6%" />
-                        <col width="11.3%" />
-						<col width="11.3%" />
-						<col width="11.3%" />
-						<col width="11.3%" />
-						<col width="11.3%" />
-						<col width="11.3%" />
-						<col width="11.3%" />
-						<col width="11.3%" />
+                      <col width="9%" />
+                      <col width="6%" />
+                      <col width="7%" />
+                      <col width="6%" />
+                      <col width="7%" />
+                      <col width="6%" />
+                      <col width="7%" />
+                      <col width="6%" />
+                      <col width="7%" />
+                      <col width="6%" />
+                      <col width="7%" />
+                      <col width="6%" />
+                      <col width="7%" />
+                      <col width="6%" />
+                      <col width="7%" />
                     </colgroup>
                     <tr>
                       <td class="f-lbl2" rowspan="3">정산금액</td>
-                      <td class="f-lbl2" colspan="2">회사법인카드(\)</td>
-                      <td colspan="2" style="padding-right:6px">
+                      <td class="f-lbl2" colspan="3">회사법인카드(\)</td>
+                      <td colspan="4" style="padding-right:6px">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="TOTCARDCORP1" style="color:blue;font-weight:bold" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/TOTCARDCORP1}" />
@@ -365,8 +371,8 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="2">개인형법인카드(\)</td>
-                      <td colspan="2" style="border-right:0;padding-right:6px">
+                      <td class="f-lbl2" colspan="3">개인형법인카드(\)</td>
+                      <td colspan="4" style="border-right:0;padding-right:6px">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="TOTCARDCORP2" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/TOTCARDCORP2}" />
@@ -379,8 +385,8 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="f-lbl2" colspan="2">개인경비합계(\)</td>
-                      <td colspan="2" style="padding-right:6px">
+                      <td class="f-lbl2" colspan="3">개인경비합계(\)</td>
+                      <td colspan="4" style="padding-right:6px">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="TOTSUM" style="color:red;font-weight:bold" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/TOTSUM}" />
@@ -391,8 +397,8 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="2">개인소지카드(\)</td>
-                      <td colspan="2" style="padding-right:6px;border-right:0">
+                      <td class="f-lbl2" colspan="3">개인소지카드(\)</td>
+                      <td colspan="4" style="padding-right:6px;border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="TOTCARDPERSON" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/TOTCARDPERSON}" />
@@ -405,8 +411,8 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="f-lbl2" colspan="2">경비합계(\)</td>
-                      <td colspan="2" style="padding-right:6px">
+                      <td class="f-lbl2" colspan="3">경비합계(\)</td>
+                      <td colspan="4" style="padding-right:6px">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="TOTCOST" style="font-weight:bold" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/TOTCOST}" />
@@ -417,8 +423,8 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="2">개인현금(\)</td>
-                      <td colspan="2" style="border-right:0;padding-right:6px">
+                      <td class="f-lbl2" colspan="3">개인현금(\)</td>
+                      <td colspan="4" style="border-right:0;padding-right:6px">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="TOTCASH" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/TOTCASH}" />
@@ -432,7 +438,7 @@
                     </tr>
                     <tr>
                       <td class="f-lbl2" rowspan="2">기준환율</td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDCURRENCY2" class="txtRead_Center" readonly="readonly">
@@ -451,7 +457,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDCURRENCY3" class="txtRead_Center" readonly="readonly">
@@ -470,7 +476,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDCURRENCY4" class="txtRead_Center" readonly="readonly" >
@@ -489,7 +495,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDCURRENCY5" class="txtRead_Center" readonly="readonly">
@@ -508,7 +514,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDCURRENCY6" class="txtRead_Center" readonly="readonly">
@@ -527,7 +533,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDCURRENCY7" class="txtRead_Center" readonly="readonly">
@@ -546,7 +552,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2" style="border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDCURRENCY8" class="txtRead_Center" readonly="readonly">
@@ -565,28 +571,9 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl2" colspan="" style="border-right:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="STDCURRENCY9" class="txtRead_Center" readonly="readonly">
-										<xsl:attribute name="value">
-											<xsl:choose>
-												<xsl:when test="$mode='new'">PHP</xsl:when>
-												<xsl:otherwise>
-													<xsl:value-of select="//forminfo/maintable/STDCURRENCY9" />
-												</xsl:otherwise>
-											</xsl:choose>
-										</xsl:attribute>
-									</input>
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/STDCURRENCY9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                     <tr>
-                      <td colspan="">
+                      <td colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDEXCHANGE2" class="txtRead_Center" readonly="readonly" value="{//forminfo/maintable/STDEXCHANGE2}" />
@@ -597,7 +584,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td colspan="">
+                      <td colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDEXCHANGE3" class="txtRead_Center" readonly="readonly" value="{//forminfo/maintable/STDEXCHANGE3}" />
@@ -608,7 +595,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td colspan="">
+                      <td colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDEXCHANGE4" class="txtRead_Center" readonly="readonly" value="{//forminfo/maintable/STDEXCHANGE4}" />
@@ -619,7 +606,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td colspan="">
+                      <td colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDEXCHANGE5" class="txtRead_Center" readonly="readonly" value="{//forminfo/maintable/STDEXCHANGE5}" />
@@ -630,7 +617,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td colspan="">
+                      <td colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDEXCHANGE6" class="txtRead_Center" readonly="readonly" value="{//forminfo/maintable/STDEXCHANGE6}" />
@@ -641,7 +628,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td colspan="">
+                      <td colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDEXCHANGE7" class="txtRead_Center" readonly="readonly" value="{//forminfo/maintable/STDEXCHANGE7}" />
@@ -652,7 +639,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td colspan="">
+                      <td colspan="2" style="border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="STDEXCHANGE8" class="txtRead_Center" readonly="readonly" value="{//forminfo/maintable/STDEXCHANGE8}" />
@@ -663,21 +650,10 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td colspan="" style="border-right:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="STDEXCHANGE9" class="txtRead_Center" readonly="readonly" value="{//forminfo/maintable/STDEXCHANGE9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:attribute name="class">tdRead_Center</xsl:attribute>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/STDEXCHANGE9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                     <tr>
                       <td class="f-lbl2" rowspan="2" style="border-bottom:0">적용환율</td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="CURRENCY2" class="txtRead_Center" readonly="readonly">
@@ -696,7 +672,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="CURRENCY3" class="txtRead_Center" readonly="readonly">
@@ -715,7 +691,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="CURRENCY4" class="txtText_u" readonly="readonly" style="width:76%;text-align:center">
@@ -740,7 +716,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="CURRENCY5" class="txtText_u" readonly="readonly" style="width:76%;text-align:center">
@@ -765,7 +741,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="CURRENCY6" class="txtText_u" readonly="readonly" style="width:76%;text-align:center">
@@ -790,7 +766,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="CURRENCY7" class="txtText_u" readonly="readonly" style="width:76%;text-align:center">
@@ -815,7 +791,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td class="f-lbl2" colspan="">
+                      <td class="f-lbl2" colspan="2" style="border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="CURRENCY8" class="txtText_u" readonly="readonly" style="width:76%;text-align:center">
@@ -840,34 +816,9 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl2" colspan="" style="border-right:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="CURRENCY8" class="txtText_u" readonly="readonly" style="width:76%;text-align:center">
-										<xsl:attribute name="value">
-											<xsl:choose>
-												<xsl:when test="$mode='new'">PHP</xsl:when>
-												<xsl:otherwise>
-													<xsl:value-of select="//forminfo/maintable/CURRENCY9" />
-												</xsl:otherwise>
-											</xsl:choose>
-										</xsl:attribute>
-									</input>
-									<!--<button onclick="parent.fnOption('iso.currency',160,140,20,115,'etc','CURRENCY8');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
-                              <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
-                            </button>-->
-									<button type="button" class="btn btn-outline-secondary btn-18" title="통화" onclick="_zw.formEx.optionWnd('iso.currency',180,274,-30,0,'etc','CURRENCY9');">
-										<i class="fas fa-angle-down"></i>
-									</button>
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                     <tr>
-                      <td style="border-bottom:0" colspan="">
+                      <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="EXCHANGE2" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE2}" />
@@ -878,7 +829,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td style="border-bottom:0" colspan="">
+                      <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="EXCHANGE3" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE3}" />
@@ -889,7 +840,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td style="border-bottom:0" colspan="">
+                      <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="EXCHANGE4" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE4}" />
@@ -900,7 +851,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td style="border-bottom:0" colspan="">
+                      <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="EXCHANGE5" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE5}" />
@@ -911,7 +862,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td style="border-bottom:0" colspan="">
+                      <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="EXCHANGE6" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE6}" />
@@ -922,7 +873,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td style="border-bottom:0" colspan="">
+                      <td style="border-bottom:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="EXCHANGE7" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE7}" />
@@ -933,7 +884,7 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-                      <td style="border-bottom:0" colspan="">
+                      <td style="border-bottom:0;border-right:0" colspan="2">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
                             <input type="text" id="__mainfield" name="EXCHANGE8" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE8}" />
@@ -944,17 +895,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td style="border-bottom:0;border-right:0" colspan="">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="EXCHANGE9" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{//forminfo/maintable/EXCHANGE9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:attribute name="class">tdRead_Center</xsl:attribute>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EXCHANGE9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                   </table>
                 </td>
@@ -1012,22 +952,21 @@
                       <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
                     </xsl:if>
                     <colgroup>
-                        <col style="width:2%"></col>
-                        <col style="width:6%"></col>
-                        <col style="width:6%"></col>
-                        <col style="width:12%"></col>
-                        <col style="width:12%"></col>
-                        <col style="width:6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
+                      <col style="width:2%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:12%"></col>
+                      <col style="width:12%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:8%"></col>
                     </colgroup>
                     <tr style="height:18px">
                       <td class="f-lbl-sub" style="border-top:0" rowspan="2">&nbsp;</td>
@@ -1139,19 +1078,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub" style="border-top:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="PHP" />
-								</xsl:when>
-								<xsl:when test="$mode='edit'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="{//forminfo/maintable/CURRENCY9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td class="f-lbl-sub" style="border-top:0;border-right:0" rowspan="2">비고</td>
                     </tr>
                     <tr style="height:18px">
@@ -1240,16 +1166,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" class="txtRead_Center" name="EXCHANGE_9" readonly="readonly" value="{//forminfo/maintable/EXCHANGE9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EXCHANGE9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                     <xsl:apply-templates select="//forminfo/subtables/subtable1/row"/>
                     <tr style="height:18px">
@@ -1342,17 +1258,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td style="border-bottom:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="ASUM9" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/ASUM9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/ASUM9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td style="border-bottom:0;border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
@@ -1426,16 +1331,15 @@
                       <col style="width:13%"></col>
                       <col style="width:17%"></col>
                       <col style="width:6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:8%"></col>
                     </colgroup>
                     <tr style="height:18px">
                       <td class="f-lbl-sub" style="border-top:0" rowspan="2">&nbsp;</td>
@@ -1547,19 +1451,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub" style="border-top:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="PHP" />
-								</xsl:when>
-								<xsl:when test="$mode='edit'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="{//forminfo/maintable/CURRENCY9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td class="f-lbl-sub" style="border-top:0;border-right:0" rowspan="2">비고</td>
                     </tr>
                     <tr style="height:18px">
@@ -1646,16 +1537,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" class="txtRead_Center" name="EXCHANGE_9" readonly="readonly" value="{//forminfo/maintable/EXCHANGE9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EXCHANGE9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                     <xsl:apply-templates select="//forminfo/subtables/subtable2/row"/>
                     <tr style="height:18px">
@@ -1748,17 +1629,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td style="border-bottom:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="BSUM9" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/BSUM9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/BSUM9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td style="border-bottom:0;border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
@@ -1788,7 +1658,7 @@
                 <xsl:when test="$mode='new' or $mode='edit'">
                   <tr>
                     <td>
-                      <span>3. 식비 (1식한도 갑지1 $24, 갑지2 $12, 을지 $12, 일본 1,500엔) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(*갑지1: 미국, 유럽 &nbsp;&nbsp;&nbsp;갑지2: 홍콩, 싱가폴, 중국, 베트남, 필리핀 &nbsp;&nbsp;&nbsp;을지: 동남아, 인도네시아)</span>
+                      <span>3. 식비 (1식한도 갑지1 $24, 갑지2 $12, 을지 $12, 일본 1,500엔) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(*갑지1: 미국, 유럽 &nbsp;&nbsp;&nbsp;갑지2: 홍콩, 싱가폴, 중국, 베트남 &nbsp;&nbsp;&nbsp;을지: 동남아, 인도네시아)</span>
                     </td>
                     <td class="fm-button">
                       <!--<button onclick="parent.fnAddChkRow('__subtable3');" onfocus="this.blur()" class="btn_bg">
@@ -1809,7 +1679,7 @@
                 <xsl:otherwise>
                   <tr>
                     <td>
-                      <span>3. 식비 (1식한도 갑지1 $24, 갑지2 $12, 을지 $10, 일본 1,500엔) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(*갑지1: 미국, 유럽 &nbsp;&nbsp;&nbsp;갑지2: 홍콩, 싱가폴, 중국, 베트남, 필리핀 &nbsp;&nbsp;&nbsp;을지: 동남아, 인도네시아)</span>
+                      <span>3. 식비 (1식한도 갑지1 $24, 갑지2 $12, 을지 $10, 일본 1,500엔) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(*갑지1: 미국, 유럽 &nbsp;&nbsp;&nbsp;갑지2: 홍콩, 싱가폴, 중국, 베트남 &nbsp;&nbsp;&nbsp;을지: 동남아, 인도네시아)</span>
                     </td>
                   </tr>
                 </xsl:otherwise>
@@ -1827,23 +1697,22 @@
                       <xsl:attribute name="style">table-layout:fixed</xsl:attribute>
                     </xsl:if>
                     <colgroup>
-                        <col style="width:2%"></col>
-                        <col style="width:8%"></col>
-                        <col style="width:11%"></col>
-                        <col style="width:5%"></col>
-                        <col style="width:3%"></col>
-                        <col style="width:9%"></col>
-                        <col style="width:6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
-                        <col style="width:5.6%"></col>
+                      <col style="width:2%"></col>
+                      <col style="width:8%"></col>
+                      <col style="width:11%"></col>
+                      <col style="width:5%"></col>
+                      <col style="width:3%"></col>
+                      <col style="width:9%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:8%"></col>
                     </colgroup>
                     <tr style="height:18px">
                       <td class="f-lbl-sub" style="border-top:0" rowspan="2">&nbsp;</td>
@@ -1957,19 +1826,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub" style="border-top:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="PHP" />
-								</xsl:when>
-								<xsl:when test="$mode='edit'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="{//forminfo/maintable/CURRENCY9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td class="f-lbl-sub" style="border-top:0;border-right:0" rowspan="2">비고</td>
                     </tr>
                     <tr style="height:18px">
@@ -2056,16 +1912,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" class="txtRead_Center" name="EXCHANGE_9" readonly="readonly" value="{//forminfo/maintable/EXCHANGE9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EXCHANGE9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                     <xsl:apply-templates select="//forminfo/subtables/subtable3/row"/>
                     <tr style="height:18px">
@@ -2158,17 +2004,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td style="border-bottom:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="CSUM9" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/CSUM9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CSUM9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td style="border-bottom:0;border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
@@ -2242,16 +2077,15 @@
                       <col style="width:13%"></col>
                       <col style="width:17%"></col>
                       <col style="width:6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:8%"></col>
                     </colgroup>
                     <tr style="height:18px">
                       <td class="f-lbl-sub" style="border-top:0" rowspan="2">&nbsp;</td>
@@ -2363,19 +2197,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub" style="border-top:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="PHP" />
-								</xsl:when>
-								<xsl:when test="$mode='edit'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="{//forminfo/maintable/CURRENCY9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td class="f-lbl-sub" style="border-top:0;border-right:0" rowspan="2">비고</td>
                     </tr>
                     <tr style="height:18px">
@@ -2462,16 +2283,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" class="txtRead_Center" name="EXCHANGE_9" readonly="readonly" value="{//forminfo/maintable/EXCHANGE9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EXCHANGE9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                     <xsl:apply-templates select="//forminfo/subtables/subtable4/row"/>
                     <tr style="height:18px">
@@ -2564,17 +2375,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td style="border-bottom:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="DSUM9" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/DSUM9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/DSUM9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td style="border-bottom:0;border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
@@ -2649,17 +2449,16 @@
                       <col style="width:6%"></col>
                       <col style="width:13%"></col>
                       <col style="width:17%"></col>
-                      <col style="width:6%"></col>						
-                      <col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
-                      <col style="width:5.6%"></col>
-						<col style="width:5.6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:6%"></col>
+                      <col style="width:8%"></col>
                     </colgroup>
                     <tr style="height:18px">
                       <td class="f-lbl-sub" style="border-top:0" rowspan="2">&nbsp;</td>
@@ -2771,19 +2570,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub" style="border-top:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="PHP" />
-								</xsl:when>
-								<xsl:when test="$mode='edit'">
-									<input type="text" class="txtRead_Center" name="CURRENCY_9" readonly="readonly" value="{//forminfo/maintable/CURRENCY9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/CURRENCY9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td class="f-lbl-sub" style="border-top:0;border-right:0" rowspan="2">비고</td>
                     </tr>
                     <tr style="height:18px">
@@ -2870,16 +2656,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td class="f-lbl-sub">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" class="txtRead_Center" name="EXCHANGE_9" readonly="readonly" value="{//forminfo/maintable/EXCHANGE9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/EXCHANGE9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                     </tr>
                     <xsl:apply-templates select="//forminfo/subtables/subtable5/row"/>
                     <tr style="height:18px">
@@ -2972,17 +2748,6 @@
                           </xsl:otherwise>
                         </xsl:choose>
                       </td>
-						<td style="border-bottom:0">
-							<xsl:choose>
-								<xsl:when test="$mode='new' or $mode='edit'">
-									<input type="text" id="__mainfield" name="ESUM9" class="txtRead_Right" readonly="readonly" value="{//forminfo/maintable/ESUM9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-									<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(//forminfo/maintable/ESUM9))" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</td>
                       <td style="border-bottom:0;border-right:0">
                         <xsl:choose>
                           <xsl:when test="$mode='new' or $mode='edit'">
@@ -3335,24 +3100,6 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-		<td>
-			<xsl:choose>
-				<xsl:when test="$mode='new' or $mode='edit'">
-					<xsl:choose>
-						<xsl:when test="EXPENSETYPECODE[.='CASH']">
-							<input type="text" name="AEXPENSE9" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{AEXPENSE9}" />
-						</xsl:when>
-						<xsl:otherwise>
-							<input type="text" name="AEXPENSE9" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-					<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(AEXPENSE9))" />
-				</xsl:otherwise>
-			</xsl:choose>
-		</td>
       <td style="border-right:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
@@ -3578,24 +3325,6 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-		<td>
-			<xsl:choose>
-				<xsl:when test="$mode='new' or $mode='edit'">
-					<xsl:choose>
-						<xsl:when test="EXPENSETYPECODE[.='CASH']">
-							<input type="text" name="BEXPENSE9" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{BEXPENSE9}" />
-						</xsl:when>
-						<xsl:otherwise>
-							<input type="text" name="BEXPENSE9" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-					<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(BEXPENSE9))" />
-				</xsl:otherwise>
-			</xsl:choose>
-		</td>
       <td style="border-right:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
@@ -3844,24 +3573,6 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-		<td>
-			<xsl:choose>
-				<xsl:when test="$mode='new' or $mode='edit'">
-					<xsl:choose>
-						<xsl:when test="EXPENSETYPECODE[.='CASH']">
-							<input type="text" name="CEXPENSE9" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CEXPENSE9}" />
-						</xsl:when>
-						<xsl:otherwise>
-							<input type="text" name="CEXPENSE9" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-					<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(CEXPENSE9))" />
-				</xsl:otherwise>
-			</xsl:choose>
-		</td>
       <td style="border-right:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
@@ -4073,24 +3784,6 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-		<td>
-			<xsl:choose>
-				<xsl:when test="$mode='new' or $mode='edit'">
-					<xsl:choose>
-						<xsl:when test="EXPENSETYPECODE[.='CASH']">
-							<input type="text" name="DEXPENSE9" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{DEXPENSE9}" />
-						</xsl:when>
-						<xsl:otherwise>
-							<input type="text" name="DEXPENSE9" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-					<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(DEXPENSE9))" />
-				</xsl:otherwise>
-			</xsl:choose>
-		</td>
       <td style="border-right:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
@@ -4386,31 +4079,6 @@
           </xsl:otherwise>
         </xsl:choose>
       </td>
-		<td>
-			<xsl:choose>
-				<xsl:when test="$mode='new' or $mode='edit'">
-					<xsl:choose>
-						<xsl:when test="position()=1">
-							<input type="text" name="EEXPENSE9" class="txtRead_Right" readonly="readonly" data-inputmask="number;16;4" value="{EEXPENSE9}" />
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:choose>
-								<xsl:when test="EXPENSETYPECODE[.='CASH']">
-									<input type="text" name="EEXPENSE9" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{EEXPENSE9}" />
-								</xsl:when>
-								<xsl:otherwise>
-									<input type="text" name="EEXPENSE9" class="txtRead_Right" maxlength="20" data-inputmask="number;16;4" readonly="readonly" />
-								</xsl:otherwise>
-							</xsl:choose>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:attribute name="class">tdRead_Right</xsl:attribute>
-					<xsl:value-of disable-output-escaping="yes" select="phxsl:isEmpty(string(EEXPENSE9))" />
-				</xsl:otherwise>
-			</xsl:choose>
-		</td>
       <td style="border-right:0">
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
