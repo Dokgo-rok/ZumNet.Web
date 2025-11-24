@@ -145,7 +145,7 @@
                     }
                     else if (strID == "MODELNAME")
                     {
-                        if (mode == "xls") strValue = "";
+                        if (mode == "xls") strValue = row[strID].ToString();
                         else strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["MessageID"].ToString() + "');\">" + row[strID].ToString() + "</a>";
                     }
                     else if (strID == "DocStatus")
