@@ -1,42 +1,139 @@
 ﻿$(function () {
     _zw.formEx = {
         "validation": function (cmd) {
-            return true;
+            var rt = true;
+            if (cmd == "draft") { //기안
+                var eType = $('#__mainfield[name="CLIENT_TYPE"]'), eType2, eCT = $('#__mainfield[name="COUNTRY_TYPE"]');
+                if (eCT.length > 0 && $.trim(eCT.val()) == '') { bootbox.alert("필수항목 [국내외구분] 누락!"); rt = false; return false; }
+
+                var v, e, f, v1, v2, chk = $('#__mainfield[name="CLIENT_NUMBER"]');
+                if (eType.val() == 'CUST') { //고객
+                    eType2 = $('#__mainfield[name="CUST_TYPE"]');
+                    if (eType2.length > 0 && $.trim(eType2.val()) == '') { bootbox.alert("필수항목 [고객구분] 누락!"); rt = false; return false; }
+
+                    if (eCT.val() == 'LO') { //국내
+                        if (eType2.val() == 'COMPANY') v = 'COUNTRY;국가^CLIENT_NUMBER;사업자등록번호^INDUSTRY_CLASS;업태^INDUSTRY_SUBCLASS;업종^TAXBLE_PERSON;대표자^ADDRES;주소^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^');
+                        else if (eType2.val() == 'PEOPLE') { v = 'COUNTRY;국가^SOCIAL_NUMBER;주민등록번호^ADDRES;주소^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^'); chk = $('#__mainfield[name="SOCIAL_NUMBER"]'); }
+                        else if (eType2.val() == 'PUBLIC') v = 'COUNTRY;국가^CLIENT_NUMBER;고유번호(사업자등록번호)^TAXBLE_PERSON;대표자^ADDRES;주소^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^');
+                    } else if (eCT.val() == 'DI') { //국외
+                        v = 'COUNTRY;국가^TAXBLE_PERSON;대표자^ADDRES;주소'.split('^');
+                    }
+
+                    v1 = 'C';
+                    
+                } else if (eType.val() == 'PROD') { //공급자
+                    eType2 = $('#__mainfield[name="PRODUCER_TYPE"]');
+                    if (eType2.length > 0 && $.trim(eType2.val()) == '') { bootbox.alert("필수항목 [공급자구분] 누락!"); rt = false; return false; }
+
+                    if (eCT.val() == 'LO') { //국내
+                        if (eType2.val() == 'SUPPLIER' || eType2.val() == 'OSP') v = 'COUNTRY;국가^CLIENT_NUMBER;사업자등록번호^INDUSTRY_CLASS;업태^INDUSTRY_SUBCLASS;업종^TAXBLE_PERSON;대표자^ADDRES;주소^TAXRATE;세금구분^CUST_PAYMENT;결제조건^TAXEXPL;세목^PAYMENTMTD;지급수단^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^MANAGER;영업담당자^EMAIL;메일^TEL;연락처'.split('^');
+                        else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명'.split('^');
+                    } else if (eCT.val() == 'DI') { //국외
+                        if (eType2.val() == 'SUPPLIER' || eType2.val() == 'OSP') v = 'COUNTRY;국가^TAXBLE_PERSON;대표자^ADDRES;주소^CUST_PAYMENT;결제조건^PAYMENTMTD;지급수단^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^ACCOUNT_FOREIGN;SWIFT CODE^MANAGER;영업담당자^EMAIL;메일^TEL;연락처'.split('^');
+                        else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^ACCOUNT_FOREIGN;SWIFT CODE'.split('^');
+                    }
+
+                    v1 = 'V';
+                }
+
+                for (var i = 0; i < v.length; i++) {
+                    f = v[i].split(';'); //console.log(i + " : " + f);
+                    e = $('#__mainfield[name="' + f[0] + '"]');
+                    if (e.length > 0 && $.trim(e.val()) == '') { bootbox.alert("필수항목 [" + f[1] + "] 누락!", function () { e.focus(); }); rt = false; return false; }
+
+                }
+
+                //사업자번호(고유번호) 또는 주민번호 중복 체크
+                v2 = $('#__mainfield[name="COMPANYCODE"]').val();
+                if (chk.length > 0 && chk.val() != '') {
+                    $.ajax({
+                        type: "POST",
+                        url: "/EA/Common",
+                        data: '{M:"getreportsearch",body:"S", k1:"report",k2:"ERP_CHKBIZNUM",k3:"' + '' + '",etc:"",query:"",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + chk.val() + '",search:""}',
+                        async: false,
+                        success: function (res) {
+                            if (res == "OK") rt = true;
+                            else { bootbox.alert(res, function () { chk.focus(); }); rt = false; }
+                        },
+                        beforeSend: function () { } //로딩 X
+                    });
+                }
+            }
+            return rt;
         },
         "make": function (f) {
         },
-        "checkEvent": function (ckb, el, fld) { console.log(ckb + " : " + fld)
-            if (fld == 'CLIENT_TYPE') {
-                var bCheck = el.checked;
-                if (el.value == 'CUST') {
-                    $(':checkbox[name="ckbPRODUCER_TYPE"]').prop('checked', false).prop('disabled', bCheck);
-                    $('#__mainfield[name="PRODUCER_TYPE"]').val('');
+        "checkEvent": function (ckb, el, fld) {
+            //console.log(ckb + " : " + fld + " : " + el.value)
+            //if (fld == 'CLIENT_TYPE') {
+            //    var bCheck = el.checked;
+            //    if (el.value == 'CUST') {
+            //        $(':checkbox[name="ckbPRODUCER_TYPE"]').prop('checked', false).prop('disabled', bCheck);
+            //        $('#__mainfield[name="PRODUCER_TYPE"]').val('');
 
-                    $(':checkbox[name="ckbCUST_TYPE"]').prop('checked', false).prop('disabled', false);
-                    $('#__mainfield[name="CUST_TYPE"]').val('');
-                } else if (el.value == 'PROD') {
-                    $(':checkbox[name="ckbPRODUCER_TYPE"]').prop('checked', false).prop('disabled', false);
-                    $('#__mainfield[name="PRODUCER_TYPE"]').val('');
+            //        $(':checkbox[name="ckbCUST_TYPE"]').prop('checked', false).prop('disabled', false);
+            //        $('#__mainfield[name="CUST_TYPE"]').val('');
+            //    } else if (el.value == 'PROD') {
+            //        $(':checkbox[name="ckbPRODUCER_TYPE"]').prop('checked', false).prop('disabled', false);
+            //        $('#__mainfield[name="PRODUCER_TYPE"]').val('');
 
-                    $(':checkbox[name="ckbCUST_TYPE"]').prop('checked', false).prop('disabled', bCheck);
-                    $('#__mainfield[name="CUST_TYPE"]').val('');
-                }
-            } else if (fld == 'BILLTO') {
-                if (el.checked) {
-                    $('#__mainfield[name="COUNTRY2"]').val($('#__mainfield[name="COUNTRY"]').val());
-                    $('#__mainfield[name="COUNTRYCODE2"]').val($('#__mainfield[name="COUNTRYCODE"]').val());
-                    $('#__mainfield[name="CLIENT_NAME2"]').val($('#__mainfield[name="CLIENT_NAME"]').val());
-                    $('#__mainfield[name="ADDRES2"]').val($('#__mainfield[name="ADDRES"]').val());
-                    $('#__mainfield[name="SOCIAL_NUMBER"]').val($('#__mainfield[name="CLIENT_NUMBER"]').val());
+            //        $(':checkbox[name="ckbCUST_TYPE"]').prop('checked', false).prop('disabled', bCheck);
+            //        $('#__mainfield[name="CUST_TYPE"]').val('');
+            //    }
+            //} else if (fld == 'BILLTO') {
+            //    if (el.checked) {
+            //        $('#__mainfield[name="COUNTRY2"]').val($('#__mainfield[name="COUNTRY"]').val());
+            //        $('#__mainfield[name="COUNTRYCODE2"]').val($('#__mainfield[name="COUNTRYCODE"]').val());
+            //        $('#__mainfield[name="CLIENT_NAME2"]').val($('#__mainfield[name="CLIENT_NAME"]').val());
+            //        $('#__mainfield[name="ADDRES2"]').val($('#__mainfield[name="ADDRES"]').val());
+            //        $('#__mainfield[name="SOCIAL_NUMBER"]').val($('#__mainfield[name="CLIENT_NUMBER"]').val());
+            //    } else {
+            //        $('#__mainfield[name="COUNTRY2"]').val(''); $('#__mainfield[name="COUNTRYCODE2"]').val(''); $('#__mainfield[name="CLIENT_NAME2"]').val('');
+            //        $('#__mainfield[name="ADDRES2"]').val(''); $('#__mainfield[name="SOCIAL_NUMBER"]').val('');
+            //    }
+            //}
+
+            if (fld == 'PRODUCER_TYPE') {
+                var b = $('#btnOrganChart');
+                if (el.value == 'EMPLOYEE') {
+                    $('#__mainfield[name="CLIENT_NAME"]').css('width', '90%').prop('readonly', true).val('');
+                    b.removeClass('d-none');
                 } else {
-                    $('#__mainfield[name="COUNTRY2"]').val(''); $('#__mainfield[name="COUNTRYCODE2"]').val(''); $('#__mainfield[name="CLIENT_NAME2"]').val('');
-                    $('#__mainfield[name="ADDRES2"]').val(''); $('#__mainfield[name="SOCIAL_NUMBER"]').val('');
+                    if (!b.hasClass('d-none')) b.addClass('d-none');
+                    $('#__mainfield[name="CLIENT_NAME"]').css('width', '100%').prop('readonly', false).val('');
                 }
             }
         },
         "calc": function (e) {
         },
         "autoCalc": function (p) {
+        },
+        "orgSelect": function (p, x) {
+            p.find('.zf-org .zf-org-select input:checkbox[data-for]').each(function () {
+                var info = JSON.parse($(this).attr('data-attr')); //console.log(info)
+                var dn = $(this).next().text();
+                $('#__mainfield[name="CLIENT_NAME"]').val(info["empid"] + "-" + dn);
+            });
+            p.modal('hide');
+        },
+        "change": function (x, fld) {
+            $('#__mainfield[name="' + fld + '"]').val($(x).children('option:selected').text());
+
+            var s = $(x).val(), eCust = $('.m [data-for="CUST"]'), eProd = $('.m [data-for="PROD"]');
+            if (s == 'CUST') {
+                if (eCust.hasClass('d-none')) eCust.removeClass('d-none');
+                if (!eProd.hasClass('d-none')) eProd.addClass('d-none');
+            } else if (s == 'PROD') {
+                if (!eCust.hasClass('d-none')) eCust.addClass('d-none');
+                if (eProd.hasClass('d-none')) eProd.removeClass('d-none');
+            } else {
+                if (!eCust.hasClass('d-none')) eCust.addClass('d-none');
+                if (!eProd.hasClass('d-none')) eProd.addClass('d-none');
+            }
+
+            eCust.find('#__mainfield').val(''); eCust.find('input[type="checkbox"]').prop('checked', false);
+            eProd.find('#__mainfield').val(''); eProd.find('input[type="checkbox"]').prop('checked', false);
+
         },
         "optionWnd": function (pos, w, h, m, n, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.'); //console.log(arguments)

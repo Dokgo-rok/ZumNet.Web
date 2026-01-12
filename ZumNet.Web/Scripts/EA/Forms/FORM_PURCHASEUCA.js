@@ -165,7 +165,7 @@
                 el2 = $('#__mainfield[name="PRODUCTCENTER"]');
                 if (el2.val() == '') { bootbox.alert('적용사업장을 선택하십시오!', function () { el2.focus(); }); return false; }
 
-                if (pos == "erp.items3") {
+                if (pos == "erp.items3______") { //25-11-24 신규 ERP 연동에서 조건 변경
                     if (el2.val() == "CD") query = "104";
                     else if (el2.val() == "CD2") query = "148";
                     else if (el2.val() == "CH") query = "102";

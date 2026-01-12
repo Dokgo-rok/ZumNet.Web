@@ -1,7 +1,19 @@
 ﻿$(function () {
 	_zw.formEx = {
 		"validation": function (cmd) {
-			return true;
+			var rt = true;
+			if (cmd == "draft") { //기안
+				$('#__subtable1 tr.sub_table_row').each(function (idx, e) {
+					if ($(this).find('td :text[name="YESNO"]').val() == 'Y') {
+						if ($(this).find('td :text[name="MIDCUSTOMER"]').val() == '') {
+							bootbox.alert("필수항목 [중개 고객] 누락!", function () { e.focus(); }); rt = false; return false;
+						} else if ($(this).find('td :text[name="SALEPRICE"]').val() == '') {
+							bootbox.alert("필수항목 [고객판매가] 누락!", function () { e.focus(); }); rt = false; return false;
+						}
+				    }
+				});
+			}
+			return rt;
 		},
 		"make": function (f) {
 		},
@@ -19,15 +31,18 @@
 			else if (vPos[0] == 'report') m = 'getreportsearch';
 			else m = 'getcodedescription';
 
-			if (vPos[1] == 'salecenter') {
+			if (vPos[1] == 'ERP_PRODCUST' || vPos[1] == 'ERP_SALECENTER') {
 				if ($('#__mainfield[name="PRODUCTCENTER"]').val() == '') { bootbox.alert('생산지를 선택하십시오!'); return false; }
-				query = $('#__mainfield[name="PRODUCTCENTER"]').val();
+				query = $('#__mainfield[name="PRODUCTCENTER"]').val(); v1 = $('#__mainfield[name="PRODUCTCENTER"]').val();
+			} else if (vPos[1] == 'ERP_SALESUPPL') {
+				if ($('#__mainfield[name="SALECENTER"]').val() == '') { bootbox.alert('판매지를 선택하십시오!'); return false; }
+				query = $('#__mainfield[name="SALECENTER"]').val(); v1 = $('#__mainfield[name="SALECENTER"]').val();
 			} else if (vPos[1] == 'pricelist') {
 				if ($('#__mainfield[name="PRODUCTCENTER"]').val() == '') { bootbox.alert('생산지를 선택하십시오!'); return false; }
 				else if ($('#__mainfield[name="CURRENCY"]').val() == '') { bootbox.alert('통화를 선택하십시오!'); return false; }
 				query = $('#__mainfield[name="PRODUCTCENTER"]').val(); v1 = $('#__mainfield[name="CURRENCY"]').val();
 			} else if (vPos[1] == 'salebpanum' || vPos[1] == 'midpricelist') {
-				if ($('#__mainfield[name="SALECENTER"]').val() == '') { bootbox.alert('판매처를 선택하십시오!'); return false; }
+				if ($('#__mainfield[name="SALECENTER"]').val() == '') { bootbox.alert('판매지를 선택하십시오!'); return false; }
 				else if ($('#__mainfield[name="CURRENCY"]').val() == '') { bootbox.alert('통화를 선택하십시오!'); return false; }
 				query = $('#__mainfield[name="SALECENTER"]').val(); v1 = $('#__mainfield[name="CURRENCY"]').val(); v2 = $('#__mainfield[name="VENDOR_CODE"]').val();
 			}
@@ -44,7 +59,8 @@
 						j["title"] = el.attr('title'); j["content"] = res.substr(2);
 
 						var pop = _zw.ut.popup(el[0], j);
-						var row = vPos[1] == 'shipmentcod1' || vPos[1] == 'pricelist' || vPos[1] == 'salebpanum' || vPos[1] == 'shipmentcod2' || vPos[1] == 'midpricelist' ? el.parent().parent() : null;
+						var row = vPos[1] == 'shipmentcod1' || vPos[1] == 'ERP_UOM' || vPos[1] == 'pricelist' || vPos[1] == 'salebpanum' || vPos[1] == 'shipmentcod2' || vPos[1] == 'midpricelist' ? el.parent().parent() : null;
+						if (vPos[1] == 'ERP_PRODCUST' && param[0] == 'MIDCUSTOMER') row = el.parent().parent();
 						pop.find('a[data-val]').click(function () {
 							var v = $(this).attr('data-val').split('^');//console.log(v + " : " + param)
 							for (var i = 0; i < param.length; i++) {
@@ -77,8 +93,12 @@
 			if (vPos[1] == 'saleitems') {
 				if ($('#__mainfield[name="PRODUCTCENTER"]').val() == '') { bootbox.alert('생산지를 선택하십시오!'); return false; }
 				query = $('#__mainfield[name="PRODUCTCENTER"]').val();
+
+				if ($('#__mainfield[name="SALECENTER"]').val() == '') { bootbox.alert('판매지를 선택하십시오!'); return false; }
+				v1 = $('#__mainfield[name="SALECENTER"]').val();
+
 			} else if (vPos[1] == 'vendors2') {
-				if ($('#__mainfield[name="SALECENTER"]').val() == '') { bootbox.alert('판매처를 선택하십시오!'); return false; }
+				if ($('#__mainfield[name="SALECENTER"]').val() == '') { bootbox.alert('판매지를 선택하십시오!'); return false; }
 				query = $('#__mainfield[name="SALECENTER"]').val();
             }
 

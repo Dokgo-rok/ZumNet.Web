@@ -30,8 +30,10 @@
 
                     k3 = _zw.V.ft;
                 }
-            } else if (vPos[0] == 'report') m = 'getreportsearch';
-            else m = 'getcodedescription';
+            } else if (vPos[0] == 'report') {
+                if (vPos[1] == 'ERP_UOM') row = el.parent().parent();
+                m = 'getreportsearch';
+            } else m = 'getcodedescription';
 
             //data body 조건 : N(modal-body 없음), F(footer 포함)
             $.ajax({
@@ -88,7 +90,7 @@
                 el2 = $('#__mainfield[name="PRODUCTCENTER"]');
                 if (el2.val() == '') { bootbox.alert('적용사업장을 선택하십시오!', function () { el2.focus(); }); return false; }
 
-                if (pos == "erp.items3") {
+                if (pos == "erp.items3______") { //25-11-24 신규 ERP 연동에서 조건 변경
                     if (el2.val() == "CD") query = "104";
                     else if (el2.val() == "CD2") query = "148";
                     else if (el2.val() == "CH") query = "102";

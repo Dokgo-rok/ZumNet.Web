@@ -36,9 +36,13 @@
                 if (postData["k2"].ToString() == "exchangeinfo")
                 {
                     string strConver = postData.ContainsKey("conver") ? postData["conver"].ToString() : "1000";
-                    using (OracleBiz oraBiz = new OracleBiz())
+                    //using (OracleBiz oraBiz = new OracleBiz())
+                    //{
+                    //    svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES(postData["v1"].ToString(), postData["v2"].ToString(), postData["v3"].ToString(), strConver);
+                    //}
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES(postData["v1"].ToString(), postData["v2"].ToString(), postData["v3"].ToString(), strConver);
+                        svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), postData["v2"].ToString(), "", "", "", "", "", "");
                     }
 
                     if (svcRt.ResultCode == 0)
@@ -83,21 +87,28 @@
                 if (postData["k2"].ToString() == "items" || postData["k2"].ToString() == "items1" || postData["k2"].ToString() == "items3")
                 {
                     #region [items, items1, items3]
-                    if (postData["etc"].ToString().IndexOf("pdm") >= 0)
+                    //if (postData["etc"].ToString().IndexOf("pdm") >= 0)
+                    //{
+                    //    using (ReportBiz rptBiz = new ReportBiz())
+                    //    {
+                    //        svcRt = rptBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["etc"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    using (OracleBiz oraBiz = new OracleBiz())
+                    //    {
+                    //        if (postData["k2"].ToString() == "items") svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["search"].ToString(), iPageCount, iPage);
+                    //        else if (postData["k2"].ToString() == "items1") svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_C(postData["search"].ToString(), iPageCount, iPage, postData["query"].ToString());
+                    //        else if (postData["k2"].ToString() == "items3") svcRt = oraBiz.Cresyn_Get_CBO_EKP_BPA_ITEM_V(postData["search"].ToString(), iPageCount, iPage, postData["query"].ToString());
+                    //    }
+                    //}
+
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        using (ReportBiz rptBiz = new ReportBiz())
-                        {
-                            svcRt = rptBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["etc"].ToString(), postData["search"].ToString(), iPageCount, iPage);
-                        }
-                    }
-                    else
-                    {
-                        using (OracleBiz oraBiz = new OracleBiz())
-                        {
-                            if (postData["k2"].ToString() == "items") svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_B(postData["search"].ToString(), iPageCount, iPage);
-                            else if (postData["k2"].ToString() == "items1") svcRt = oraBiz.Cresyn_Get_MTL_SYSTEM_ITEMS_C(postData["search"].ToString(), iPageCount, iPage, postData["query"].ToString());
-                            else if (postData["k2"].ToString() == "items3") svcRt = oraBiz.Cresyn_Get_CBO_EKP_BPA_ITEM_V(postData["search"].ToString(), iPageCount, iPage, postData["query"].ToString());
-                        }
+                        string cond2 = postData.ContainsKey("query") ? postData["query"].ToString() : "";
+
+                        svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), "", "", iPage, iPageCount, postData["search"].ToString(), cond2, "", "", "");
                     }
 
                     if (svcRt.ResultCode == 0)
@@ -118,11 +129,13 @@
                             sb.Append("<tr><th>품번</th><th>품명</th></tr>");
                             sb.Append("</thead>");
                             sb.Append("<tbody>");
-                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            //foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
                                 sb.Append("<tr>");
-                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}{2}\">{0}</a></td>", row["SEGMENT1"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim()
-                                    , postData["etc"].ToString().IndexOf("pdm") >= 0 ? "^" + row["PDMOID"].ToString().Trim() : "");
+                                //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}{2}\">{0}</a></td>", row["SEGMENT1"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim()
+                                //    , postData["etc"].ToString().IndexOf("pdm") >= 0 ? "^" + row["PDMOID"].ToString().Trim() : "");
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^\">{0}</a></td>", row["SEGMENT1"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim());
                                 sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString().Trim());
                                 sb.Append("</tr>");
                             }
@@ -144,9 +157,15 @@
                 else if (postData["k2"].ToString() == "vendors")
                 {
                     #region [vendors]
-                    using (OracleBiz oraBiz = new OracleBiz())
+                    //using (OracleBiz oraBiz = new OracleBiz())
+                    //{
+                    //    svcRt = oraBiz.Cresyn_Get_PO_VENDORS(postData["searchcol"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                    //}
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        svcRt = oraBiz.Cresyn_Get_PO_VENDORS(postData["searchcol"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                        string sCorpCode = postData.ContainsKey("query") ? postData["query"].ToString() : "";
+
+                        svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), "", "", iPage, iPageCount, sCorpCode, postData["searchcol"].ToString(), postData["search"].ToString(), "", "");
                     }
 
                     if (svcRt.ResultCode == 0)
@@ -167,11 +186,14 @@
                             sb.Append("<tr><th>업체명</th><th>업체코드</th></tr>");
                             sb.Append("</thead>");
                             sb.Append("<tbody>");
-                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            //foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
                                 sb.Append("<tr>");
-                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["VENDOR_NAME"].ToString().Trim(), row["SEGMENT1"].ToString().Trim());
-                                sb.AppendFormat("<td>{0}</td>", row["SEGMENT1"].ToString().Trim());
+                                //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["VENDOR_NAME"].ToString().Trim(), row["SEGMENT1"].ToString().Trim());
+                                //sb.AppendFormat("<td>{0}</td>", row["SEGMENT1"].ToString().Trim());
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["RNAME"].ToString().Trim(), row["RCODE"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["RCODE"].ToString().Trim());
                                 sb.Append("</tr>");
                             }
                             sb.Append("</tbody>");
@@ -192,9 +214,16 @@
                 else if (postData["k2"].ToString() == "vendors2")
                 {
                     #region [vendors2]
-                    using (OracleBiz oraBiz = new OracleBiz())
+                    //using (OracleBiz oraBiz = new OracleBiz())
+                    //{
+                    //    svcRt = oraBiz.Cresyn_Get_PO_VENDORS2(postData["searchcol"].ToString(), postData["search"].ToString(), postData["query"].ToString(), iPageCount, iPage);
+                    //}
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        svcRt = oraBiz.Cresyn_Get_PO_VENDORS2(postData["searchcol"].ToString(), postData["search"].ToString(), postData["query"].ToString(), iPageCount, iPage);
+                        string sCorpCode = postData.ContainsKey("query") ? postData["query"].ToString() : "";
+                        string sSearchCol = postData.ContainsKey("searchcol") ? postData["searchcol"].ToString() : "";
+
+                        svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), "", "", iPage, iPageCount, sCorpCode, sSearchCol, postData["search"].ToString(), "", "");
                     }
 
                     if (svcRt.ResultCode == 0)
@@ -215,11 +244,14 @@
                             sb.Append("<tr><th>업체명</th><th>업체코드</th></tr>");
                             sb.Append("</thead>");
                             sb.Append("<tbody>");
-                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            //foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
                                 sb.Append("<tr>");
-                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["CUSTOMER_NAME"].ToString().Trim(), row["CUSTOMER_NUMBER"].ToString().Trim());
-                                sb.AppendFormat("<td>{0}</td>", row["CUSTOMER_NUMBER"].ToString().Trim());
+                                //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["CUSTOMER_NAME"].ToString().Trim(), row["CUSTOMER_NUMBER"].ToString().Trim());
+                                //sb.AppendFormat("<td>{0}</td>", row["CUSTOMER_NUMBER"].ToString().Trim());
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["RNAME"].ToString().Trim(), row["RCODE"].ToString().Trim());
+                                sb.AppendFormat("<td>{0}</td>", row["RCODE"].ToString().Trim());
                                 sb.Append("</tr>");
                             }
                             sb.Append("</tbody>");
@@ -240,9 +272,15 @@
                 else if (postData["k2"].ToString() == "saleitems")
                 {
                     #region [saleitems]
-                    using (OracleBiz oraBiz = new OracleBiz())
+                    //using (OracleBiz oraBiz = new OracleBiz())
+                    //{
+                    //    svcRt = oraBiz.Cresyn_Get_PO_SALEITEMS(postData["searchcol"].ToString(), postData["search"].ToString(), postData["query"].ToString(), iPageCount, iPage);
+                    //}
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        svcRt = oraBiz.Cresyn_Get_PO_SALEITEMS(postData["searchcol"].ToString(), postData["search"].ToString(), postData["query"].ToString(), iPageCount, iPage);
+                        string cond2 = postData.ContainsKey("query") ? postData["query"].ToString() : "";
+
+                        svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), "", "", iPage, iPageCount, postData["searchcol"].ToString(), postData["search"].ToString(), postData["query"].ToString(), postData["query"].ToString(), "");
                     }
 
                     if (svcRt.ResultCode == 0)
@@ -263,7 +301,8 @@
                             sb.Append("<tr><th>품번</th><th>품명</th></tr>");
                             sb.Append("</thead>");
                             sb.Append("<tbody>");
-                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            //foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
                                 sb.Append("<tr>");
                                 sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["SEGMENT1"].ToString().Trim(), row["DESCRIPTION"].ToString().Trim());
@@ -288,9 +327,16 @@
                 else if (postData["k2"].ToString() == "customers")
                 {
                     #region [customers]
-                    using (OracleBiz oraBiz = new OracleBiz())
+                    //using (OracleBiz oraBiz = new OracleBiz())
+                    //{
+                    //    svcRt = oraBiz.Cresyn_Get_RA_CUSTOMERS(postData["search"].ToString(), iPageCount, iPage);
+                    //}
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        svcRt = oraBiz.Cresyn_Get_RA_CUSTOMERS(postData["search"].ToString(), iPageCount, iPage);
+                        string sCorpCode = postData.ContainsKey("query") ? postData["query"].ToString() : "";
+                        string sSearchCol = postData.ContainsKey("searchcol") ? postData["searchcol"].ToString() : "";
+
+                        svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), "", "", iPage, iPageCount, sCorpCode, sSearchCol, postData["search"].ToString(), "", "");
                     }
 
                     if (svcRt.ResultCode == 0)
@@ -311,10 +357,12 @@
                             sb.Append("<tr><th>고객명</th></tr>");
                             sb.Append("</thead>");
                             sb.Append("<tbody>");
-                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            //foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
                                 sb.Append("<tr>");
-                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["customer_name"].ToString().Trim());
+                                //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["CUSTOMER_NAME"].ToString().Trim());
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["RNAME"].ToString().Trim());
                                 sb.Append("</tr>");
                             }
                             sb.Append("</tbody>");
@@ -335,9 +383,17 @@
                 else if (postData["k2"].ToString() == "vendorcustomer")
                 {
                     #region [vendorcustomer]
-                    using (OracleBiz oraBiz = new OracleBiz())
+                    //using (OracleBiz oraBiz = new OracleBiz())
+                    //{
+                    //    svcRt = oraBiz.Cresyn_Get_PO_VENDORS_CUSTOMERS(postData["etc"].ToString(), postData["searchcol"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                    //}                        
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        svcRt = oraBiz.Cresyn_Get_PO_VENDORS_CUSTOMERS(postData["etc"].ToString(), postData["searchcol"].ToString(), postData["search"].ToString(), iPageCount, iPage);
+                        string sReqCls = postData.ContainsKey("etc") && postData["etc"].ToString()  == "BUYER" ? "erp.customers" : "erp.vendors";
+                        string sCorpCode = postData.ContainsKey("query") ? postData["query"].ToString() : "";
+                        string sSearchCol = postData.ContainsKey("searchcol") ? postData["searchcol"].ToString() : "";
+
+                        svcRt = rptBiz.GetJDEERP("", sReqCls, "", "", iPage, iPageCount, sCorpCode, sSearchCol, postData["search"].ToString(), "", "");
                     }
 
                     if (svcRt.ResultCode == 0)
@@ -358,11 +414,14 @@
                             sb.Append("<tr><th>업체명</th><th>업체코드</th></tr>");
                             sb.Append("</thead>");
                             sb.Append("<tbody>");
-                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            //foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
                                 sb.Append("<tr>");
-                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}\">{0}</a></td>", row["VENDOR_NAME"].ToString().Trim(), row["VENDOR_ID"].ToString().Trim(), row["VENDOR_SITE_ID"].ToString().Trim());
-                                sb.AppendFormat("<td>{0}</td>", row["VENDOR_NUMBER"].ToString().Trim());
+                                //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}\">{0}</a></td>", row["VENDOR_NAME"].ToString().Trim(), row["VENDOR_ID"].ToString().Trim(), row["VENDOR_SITE_ID"].ToString().Trim());
+                                //sb.AppendFormat("<td>{0}</td>", row["VENDOR_NUMBER"].ToString().Trim());
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}\">{0}</a></td>", row["RNAME"].ToString().Trim(), row["RCODE"].ToString().Trim(), "0");
+                                sb.AppendFormat("<td>{0}</td>", row["RCODE"].ToString().Trim());
                                 sb.Append("</tr>");
                             }
                             sb.Append("</tbody>");
@@ -385,23 +444,39 @@
                     #region [exchangerate]
                     if (postData["k3"].ToString() == "detail")
                     {
-                        using (OracleBiz oraBiz = new OracleBiz())
+                        //using (OracleBiz oraBiz = new OracleBiz())
+                        //{
+                        //    svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES_V(postData["fc"].ToString(), postData["tc"].ToString(), postData["ct"].ToString(), postData["cd"].ToString());
+                        //}
+
+                        //if (svcRt.ResultCode == 0)
+                        //{
+                        //    if (svcRt.ResultItemCount > 0) sb.AppendFormat("Y{0}{1}", cDel, svcRt.ResultDataTable.Rows[0]["INV_RATE"].ToString());
+                        //    else sb.AppendFormat("N{0}{1}", cDel, Resources.Global.NoItemShow);
+                        //}
+                        //else strReturn = svcRt.ResultMessage;
+
+                        using (ReportBiz rptBiz = new ReportBiz())
                         {
-                            svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES_V(postData["fc"].ToString(), postData["tc"].ToString(), postData["ct"].ToString(), postData["cd"].ToString());
+                            svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), postData["cd"].ToString(), "", postData["tc"].ToString(), postData["fc"].ToString(), "", "", "");
                         }
 
                         if (svcRt.ResultCode == 0)
                         {
-                            if (svcRt.ResultItemCount > 0) sb.AppendFormat("Y{0}{1}", cDel, svcRt.ResultDataTable.Rows[0]["INV_RATE"].ToString());
+                            if (svcRt.ResultItemCount > 0) sb.AppendFormat("Y{0}{1}", cDel, svcRt.ResultDataSet.Tables[0].Rows[0]["FROM_TO_CON_RATE"].ToString());
                             else sb.AppendFormat("N{0}{1}", cDel, Resources.Global.NoItemShow);
                         }
                         else strReturn = svcRt.ResultMessage;
                     }
                     else
                     {
-                        using (OracleBiz oraBiz = new OracleBiz())
+                        //using (OracleBiz oraBiz = new OracleBiz())
+                        //{
+                        //    svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES_V(postData["etc"].ToString(), postData["v1"].ToString(), postData["search"].ToString());
+                        //}
+                        using (ReportBiz rptBiz = new ReportBiz())
                         {
-                            svcRt = oraBiz.Cresyn_Get_GL_DAILY_RATES_V(postData["etc"].ToString(), postData["v1"].ToString(), postData["search"].ToString());
+                            svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), postData["search"].ToString(), "", postData["v1"].ToString(), postData["etc"].ToString(), "", "", "");
                         }
 
                         if (svcRt.ResultCode == 0)
@@ -411,11 +486,14 @@
                                 sb.Append("<table class=\"table table-striped table-sm mb-0\">");
                                 sb.Append("<colgroup><col width=\"50%\" /><col width=\"50%\" /></colgroup>");
                                 sb.Append("<tbody>");
-                                foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                                //foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                                foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                                 {
                                     sb.Append("<tr>");
-                                    sb.AppendFormat("<td>{0}</td>", row["TO_CURRENCY"].ToString().Trim());
-                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", StringHelper.CvtCurrency(row["TO_FROM_CON_RATE"].ToString(), 4));
+                                    //sb.AppendFormat("<td>{0}</td>", row["TO_CURRENCY"].ToString().Trim());
+                                    //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", StringHelper.CvtCurrency(row["TO_FROM_CON_RATE"].ToString(), 4));
+                                    sb.AppendFormat("<td>{0}</td>", row["FROM_CURRENCY"].ToString().Trim());
+                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", StringHelper.CvtCurrency(row["FROM_TO_CON_RATE"].ToString(), 4));
 
                                     sb.Append("</tr>");
                                 }
@@ -1120,9 +1198,13 @@
                 else if (postData["k2"].ToString() == "inven")
                 {
                     #region [inven 본사창고]
-                    using (OracleBiz oraBiz = new OracleBiz())
+                    //using (OracleBiz oraBiz = new OracleBiz())
+                    //{
+                    //    svcRt = oraBiz.Cresyn_Get_MTL_SECONDARY_INVENTORIES("");
+                    //}
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        svcRt = oraBiz.Cresyn_Get_MTL_SECONDARY_INVENTORIES("");
+                        svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), "", "", "", "", "", "", "");
                     }
 
                     if (svcRt.ResultCode == 0)
@@ -1135,10 +1217,12 @@
                             sb.Append("<tr><th>창고명</th><th>설명</th></tr>");
                             sb.Append("</thead>");
                             sb.Append("<tbody>");
-                            foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            //foreach (DataRow row in svcRt.ResultDataTable.Rows)
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
                                 sb.Append("<tr>");
-                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["SECONDARY_INVENTORY_NAME"].ToString().Trim());
+                                //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["SECONDARY_INVENTORY_NAME"].ToString().Trim());
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["INVENTORY_NAME"].ToString().Trim());
                                 sb.AppendFormat("<td>{0}</td>", row["DESCRIPTION"].ToString().Trim());
                                 sb.Append("</tr>");
                             }
@@ -1160,12 +1244,19 @@
                 else if (postData["k2"].ToString() == "onhand")
                 {
                     #region [onhand 본사 on-hand 조회]
-                    using (OracleBiz oraBiz = new OracleBiz())
+                    //using (OracleBiz oraBiz = new OracleBiz())
+                    //{
+                    //    svcRt = oraBiz.Cresyn_Get_MTL_ONHAND_TOTAL_MWB_V(postData["v1"].ToString(), postData["v2"].ToString());
+                    //}
+                    using (ReportBiz rptBiz = new ReportBiz())
                     {
-                        svcRt = oraBiz.Cresyn_Get_MTL_ONHAND_TOTAL_MWB_V(postData["v1"].ToString(), postData["v2"].ToString());
+                        svcRt = rptBiz.GetJDEERP("", postData["k1"].ToString() + "." + postData["k2"].ToString(), "", "", "KH", postData["v1"].ToString(), postData["v2"].ToString(), "", "");
                     }
 
-                    if (svcRt.ResultCode == 0) sb.Append(svcRt.ResultDataString);
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0) sb.Append(svcRt.ResultDataSet.Tables[0].Rows[0][0]);
+                    }
                     else strReturn = svcRt.ResultMessage;
                     #endregion
                 }

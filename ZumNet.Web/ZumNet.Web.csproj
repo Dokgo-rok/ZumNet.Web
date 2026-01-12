@@ -405,12 +405,36 @@
     <Content Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx" />
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
+    <Content Include="Content\Forms\CRESYN\FORM_CLIENTREGAPP_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_INDUSTRIALPRO_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_ITEMMASTERCHART_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_MASTERFILECHANGEREQ_V3.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_NEWPRODUCTCOMP_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_NEWPRODUCTPLAN_V3.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_OUTSOURCINGUCB_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_OUTSOURCINGUCC_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_OUTSOURCINGUCD_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_OUTSOURCINGUC_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_PRODUCTREGICHART_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASESAMPLE_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCA_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCB_V3.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCC_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCD_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\Forms\CRESYN\FORM_PURCHASEUCF_V2.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_SHIPMENTUC_V3.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_TICKETHOTELREQ_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_TOOLINGREPAIRDRAFT_V2.xsl" />
     <Content Include="Content\Forms\HTML\JURIDICALSTAMPREQ_1.html" />
@@ -487,7 +511,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_CODCHANGEREQUEST_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_COMPANYCARDREQ_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_CORPORATECARDREQ_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_COMPANYSTAMP_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_COMPLAINTREPORTINDUSTRY_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_COMPLAINTREPORT_V1.xsl" />
@@ -2239,6 +2265,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CONSTRUCTDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CONTRACTRE.js" />
     <Content Include="Scripts\EA\Forms\FORM_COOPERATION.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CORPORATECARDREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CORRECTIVEPREVENTIVACTION.js" />
     <Content Include="Scripts\EA\Forms\FORM_CREDIBILITYRESULTREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CREIBILITYREQUEST.js" />
@@ -3495,6 +3522,7 @@
     <Content Include="Views\Report\_FORM_NEWPRODUCTPLAN.cshtml" />
     <Content Include="Views\Report\_FORM_INDUSTRIALPRO.cshtml" />
     <Content Include="Views\Report\_FORM_CERTIFICATIONDOCUMENT.cshtml" />
+    <Content Include="Views\Report\_CC_CARDBASE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

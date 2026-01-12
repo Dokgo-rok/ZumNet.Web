@@ -372,7 +372,7 @@ $(function () {
                 type: "POST",
                 url: "/EA/Common",
                 async: false,
-                data: '{M:"getoracleerp",body:"S", k1:"",k2:"exchangeinfo",k3:"",v1:"KRW",v2:"' + dt + '",v3:"' + dt + '"}',
+                data: '{M:"getoracleerp",body:"S", k1:"erp",k2:"exchangeinfo",k3:"",v1:"KRW",v2:"' + dt + '",v3:"' + dt + '"}',
                 success: function (res) {
                     if (res.substr(0, 2) == 'OK') {
                         var j = JSON.parse(res.substr(2)); //console.log(j)
