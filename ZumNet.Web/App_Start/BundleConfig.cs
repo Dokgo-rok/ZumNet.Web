@@ -67,6 +67,48 @@ namespace ZumNet.Web
                                                             .Include("~/Areas/WoA/Scripts/tree.js")
                                                             );
 
+            // Bundle path: ~/bundle/scripts/ea/
+            foreach (string[] bundleFile in GetScriptsundles("ea", "ea", "**/*", "js"))
+            {
+                bundles.Add(new Bundle(bundleFile[0]).Include(bundleFile[1]));
+            }
+
+            // Bundle path: ~/bundle/scripts/board/
+            foreach (string[] bundleFile in GetScriptsundles("board", "js", "**/*", "js"))
+            {
+                bundles.Add(new Bundle(bundleFile[0]).Include(bundleFile[1]));
+            }
+
+            // Bundle path: ~/bundle/scripts/controls/
+            foreach (string[] bundleFile in GetScriptsundles("controls", "js", "**/*", "js"))
+            {
+                bundles.Add(new Bundle(bundleFile[0]).Include(bundleFile[1]));
+            }
+
+            // Bundle path: ~/bundle/scripts/env/
+            foreach (string[] bundleFile in GetScriptsundles("env", "js", "**/*", "js"))
+            {
+                bundles.Add(new Bundle(bundleFile[0]).Include(bundleFile[1]));
+            }
+
+            // Bundle path: ~/bundle/scripts/exs/
+            foreach (string[] bundleFile in GetScriptsundles("exs", "js", "**/*", "js"))
+            {
+                bundles.Add(new Bundle(bundleFile[0]).Include(bundleFile[1]));
+            }
+
+            // Bundle path: ~/bundle/scripts/report/
+            foreach (string[] bundleFile in GetScriptsundles("report", "js", "**/*", "js"))
+            {
+                bundles.Add(new Bundle(bundleFile[0]).Include(bundleFile[1]));
+            }
+
+            // Bundle path: ~/bundle/scripts/tnc/
+            foreach (string[] bundleFile in GetScriptsundles("tnc", "js", "**/*", "js"))
+            {
+                bundles.Add(new Bundle(bundleFile[0]).Include(bundleFile[1]));
+            }
+
             // ------------------------------------------------------------------------------------
             // Core stylesheets
             //
@@ -202,5 +244,34 @@ namespace ZumNet.Web
             return bundles.ToArray();
         }
 
+        private static string[][] GetScriptsundles(string sourcePath, string bundlePath, string globPattern, string ext)
+        {
+            // Application root directory path
+            string APP_PATH = AppDomain.CurrentDomain.BaseDirectory;
+            //
+
+            DirectoryInfo dirInfo = new DirectoryInfo(APP_PATH + "\\Scripts\\" + sourcePath);
+            IEnumerable<FileInfo> contents = dirInfo.GlobFiles(globPattern + "." + ext);
+
+            List<string[]> bundles = new List<string[]>();
+
+            Regex normalizeRegex = new Regex("\\\\");
+
+            sourcePath = normalizeRegex.Replace(sourcePath, "/") + "/";
+
+            Regex pathRegex = new Regex(".*?" + Regex.Escape("/Scripts/" + sourcePath));
+            Regex nameRegex = new Regex("\\." + Regex.Escape(ext) + "$");
+
+            foreach (FileInfo file in contents)
+            {
+                string filePath = pathRegex.Replace(normalizeRegex.Replace(file.FullName, "/"), "");
+                string relativeBundlePath = "~/bundle/Scripts/" + bundlePath + "/" + nameRegex.Replace(filePath, "");
+                string relativeSourcePath = "~/Scripts/" + sourcePath + filePath;
+
+                bundles.Add(new string[] { relativeBundlePath, relativeSourcePath });
+            }
+
+            return bundles.ToArray();
+        }
     }
 }

@@ -106,7 +106,7 @@
                 ViewBag.R["notice"] = jArr;
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, MethodBase.GetCurrentMethod().Name);
         }
@@ -542,7 +542,7 @@
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="utf-8"></script>
     }
 
-    @Scripts.Render("~/Scripts/Controls/portal.js")
+    @Scripts.Render("~/bundle/scripts/js/portal")
 
     @*<script type="text/javascript" src="~/External/FusionChartsXT/js/fusioncharts.js"></script>
         <script type="text/javascript" src="~/External/FusionChartsXT/js/themes/fusioncharts.theme.fusion.js"></script>

@@ -411,7 +411,7 @@
                 <td style="" >
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="CLIENT_NAME" value="{//forminfo/maintable/CLIENT_NAME}" />
+                      <input class="txtText" type="text" id="__mainfield" name="CLIENT_NAME" maxlength="100" value="{//forminfo/maintable/CLIENT_NAME}" />
 						<button type="button" class="btn btn-outline-secondary btn-18 ml-1 d-none" data-toggle="tooltip" data-placement="bottom" title="임직원 선택" id="btnOrganChart" onclick="_zw.fn.org('user','n');">
 							<i class="fas fa-angle-down"></i>
 						</button>
@@ -443,7 +443,7 @@
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="CLIENT_NUMBER" value="{//forminfo/maintable/CLIENT_NUMBER}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="CLIENT_NUMBER" maxlength="20" value="{//forminfo/maintable/CLIENT_NUMBER}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CLIENT_NUMBER))" />
@@ -455,7 +455,7 @@
                 <td style="border-right:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="SOCIAL_NUMBER" value="{//forminfo/maintable/SOCIAL_NUMBER}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="SOCIAL_NUMBER" maxlength="20" value="{//forminfo/maintable/SOCIAL_NUMBER}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SOCIAL_NUMBER))" />
@@ -468,7 +468,7 @@
 					  <td>
 						  <xsl:choose>
 							  <xsl:when test="$mode='new' or $mode='edit'">
-								  <input class="txtText" type="text" id="__mainfield" maxlength="150"  name="INDUSTRY_CLASS" value="{//forminfo/maintable/INDUSTRY_CLASS}"/>
+								  <input class="txtText" type="text" id="__mainfield" maxlength="100"  name="INDUSTRY_CLASS" value="{//forminfo/maintable/INDUSTRY_CLASS}"/>
 							  </xsl:when>
 							  <xsl:otherwise>
 								  <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/INDUSTRY_CLASS))" />
@@ -479,7 +479,7 @@
 					  <td style="border-right:0;" colspan="2">
 						  <xsl:choose>
 							  <xsl:when test="$mode='new' or $mode='edit'">
-								  <input class="txtText" type="text" id="__mainfield" maxlength="150" name="INDUSTRY_SUBCLASS" value="{//forminfo/maintable/INDUSTRY_SUBCLASS}"/>
+								  <input class="txtText" type="text" id="__mainfield" maxlength="100" name="INDUSTRY_SUBCLASS" value="{//forminfo/maintable/INDUSTRY_SUBCLASS}"/>
 							  </xsl:when>
 							  <xsl:otherwise>
 								  <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/INDUSTRY_SUBCLASS))" />
@@ -492,7 +492,7 @@
 					  <td>
 						  <xsl:choose>
 							  <xsl:when test="$mode='new' or $mode='edit'">
-								  <input class="txtText" type="text" id="__mainfield" name="TAXBLE_PERSON" value="{//forminfo/maintable/TAXBLE_PERSON}"/>
+								  <input class="txtText" type="text" id="__mainfield" name="TAXBLE_PERSON" maxlength="100" value="{//forminfo/maintable/TAXBLE_PERSON}"/>
 							  </xsl:when>
 							  <xsl:otherwise>
 								  <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/TAXBLE_PERSON))" />
@@ -518,7 +518,7 @@
                 <td colspan="3" style="border-right:0;border-bottom:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="ADDRES" value="{//forminfo/maintable/ADDRES}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="ADDRES" maxlength="200" value="{//forminfo/maintable/ADDRES}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ADDRES))" />
@@ -678,7 +678,7 @@
                 <td style="border-right:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="CUST_BANKACCOUNT" value="{//forminfo/maintable/CUST_BANKACCOUNT}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="CUST_BANKACCOUNT" maxlength="100" value="{//forminfo/maintable/CUST_BANKACCOUNT}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CUST_BANKACCOUNT))" />
@@ -692,7 +692,7 @@
 				  <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-						<input class="txtText" type="text" id="__mainfield" name="SALES_PERSON" value="{//forminfo/maintable/SALES_PERSON}"/>
+						<input class="txtText" type="text" id="__mainfield" name="SALES_PERSON" maxlength="100" value="{//forminfo/maintable/SALES_PERSON}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SALES_PERSON))" />
@@ -808,7 +808,7 @@
                 <td style="border-right:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText"  type="text" id="__mainfield" name="ACCOUNT_DOMESTIC" value="{//forminfo/maintable/ACCOUNT_DOMESTIC}"/>
+                      <input class="txtText"  type="text" id="__mainfield" name="ACCOUNT_DOMESTIC" maxlength="100" value="{//forminfo/maintable/ACCOUNT_DOMESTIC}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ACCOUNT_DOMESTIC))" />
@@ -824,7 +824,7 @@
 				  <td style="border-bottom:0">
 					  <xsl:choose>
 						  <xsl:when test="$mode='new' or $mode='edit'">
-							  <input class="txtText"  type="text" id="__mainfield" name="BANK_CALLDATE" value="{//forminfo/maintable/BANK_CALLDATE}"/>
+							  <input class="txtText"  type="text" id="__mainfield" name="BANK_CALLDATE" maxlength="100" value="{//forminfo/maintable/BANK_CALLDATE}"/>
 						  </xsl:when>
 						  <xsl:otherwise>
 							  <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/BANK_CALLDATE))" />
@@ -835,7 +835,7 @@
                 <td style="border-bottom:0;border-right:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="ACCOUNT_FOREIGN" value="{//forminfo/maintable/ACCOUNT_FOREIGN}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="ACCOUNT_FOREIGN" maxlength="100" value="{//forminfo/maintable/ACCOUNT_FOREIGN}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ACCOUNT_FOREIGN))" />
@@ -920,7 +920,7 @@
                 <td style="border-bottom:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="TAXMANAGER" value="{//forminfo/maintable/TAXMANAGER}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="TAXMANAGER" maxlength="100" value="{//forminfo/maintable/TAXMANAGER}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/TAXMANAGER))" />
@@ -932,7 +932,7 @@
                 <td style="border-bottom:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="TAXEMAIL" value="{//forminfo/maintable/TAXEMAIL}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="TAXEMAIL" maxlength="50" value="{//forminfo/maintable/TAXEMAIL}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/TAXEMAIL))" />
@@ -944,7 +944,7 @@
                 <td style="border-right:0;border-bottom:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="TAXTEL" value="{//forminfo/maintable/TAXTEL}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="TAXTEL" maxlength="50" value="{//forminfo/maintable/TAXTEL}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/TAXTEL))" />
@@ -971,7 +971,7 @@
 				  <col style="width:18%"/>
               </colgroup>
               <tr>
-                <td class="f-lbl" style="border-right:0px" colspan="6">영업담당자 정보</td>
+                <td class="f-lbl" style="border-right:0px" colspan="6">거래처담당자 정보</td>
               </tr>
               <tr>
                 <td class="f-lbl" style="border-bottom:0">성명<span class="f-lbl-en">(Name)</span>
@@ -979,7 +979,7 @@
 				  <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="MANAGER" value="{//forminfo/maintable/MANAGER}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="MANAGER" maxlength="100" value="{//forminfo/maintable/MANAGER}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/MANAGER))" />
@@ -991,7 +991,7 @@
 				  <td style="border-bottom:0">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="EMAIL" value="{//forminfo/maintable/EMAIL}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="EMAIL" maxlength="50" value="{//forminfo/maintable/EMAIL}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/EMAIL))" />
@@ -1002,7 +1002,7 @@
                 <td style="border-bottom:0;border-right:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText" type="text" id="__mainfield" name="TEL" value="{//forminfo/maintable/TEL}"/>
+                      <input class="txtText" type="text" id="__mainfield" name="TEL" maxlength="50" value="{//forminfo/maintable/TEL}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/TEL))" />

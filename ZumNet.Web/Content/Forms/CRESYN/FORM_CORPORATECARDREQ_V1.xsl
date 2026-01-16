@@ -130,7 +130,7 @@
 						<table class="ft" border="0" cellspacing="0" cellpadding="0">
 							<tr>
 								<td class="f-lbl" rowspan="2">
-									신청자
+									사용자
 									<xsl:if test="$mode='new' or $mode='edit'">
 										<button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
 											<i class="fas fa-angle-down"></i>

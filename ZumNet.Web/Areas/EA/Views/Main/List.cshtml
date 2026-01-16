@@ -21,7 +21,7 @@
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
     @*@Scripts.Render("~/bundle/vendor/js/bootstrap-autocomplete/bootstrap-autocomplete")*@
-    @Scripts.Render("~/Scripts/EA/ea.js")
+    @Scripts.Render("~/bundle/scripts/ea/ea")
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
         <script src="/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.@(sCurrentLocale.Substring(0, 2)).js" charset="UTF-8"></script>

@@ -152,7 +152,8 @@
             {
                 try { File.Copy(sSourceJs, sFormJs, false); } catch { return ""; }
             }
-            return "~/Scripts/EA/Forms/" + ViewBag.JForm["def"]["maintable"].ToString() + ".js";
+            //return "~/Scripts/EA/Forms/" + ViewBag.JForm["def"]["maintable"].ToString() + ".js";
+            return "~/bundle/scripts/ea/forms/" + ViewBag.JForm["def"]["maintable"].ToString();
         }
         else
         {
@@ -185,7 +186,7 @@
     @if (ViewBag.JForm["xfalias"].ToString() == "ea")
     {
         @Scripts.Render("~/External/dext5editor/js/dext5editor.js")
-        @Scripts.Render("~/Scripts/EA/form.js")
+        @Scripts.Render("~/bundle/scripts/ea/form")
 
         if (_formJs != "")
         {
@@ -196,11 +197,11 @@
     {
         if (ViewBag.JForm["xfalias"].ToString() == "tooling")
         {
-            @Scripts.Render("~/Scripts/EA/tooling.js")
+            @Scripts.Render("~/bundle/scripts/ea/tooling")
         }
         else if (ViewBag.JForm["xfalias"].ToString() == "ecnplan")
         {
-            @Scripts.Render("~/Scripts/EA/ecnplan.js")
+            @Scripts.Render("~/bundle/scripts/ea/ecnplan")
         }
     }
 
@@ -549,9 +550,9 @@
                                                     }
 
                                                     @*<label class="custom-control custom-radio m-0" for="rdoSS_5">
-                                                    <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_5" value="authorize" />
-                                                    <span class="custom-control-label">@Resources.EA.SK_Authorize</span>
-                                                </label>*@
+                                                            <input type="radio" class="custom-control-input" name="rdoSignStatus" id="rdoSS_5" value="authorize" />
+                                                            <span class="custom-control-label">@Resources.EA.SK_Authorize</span>
+                                                        </label>*@
                                                     if (Session["LogonID"].ToString() == "jblee")
                                                     {
                                                         <label class="custom-control custom-radio m-0 ml-3" for="rdoSS_6">

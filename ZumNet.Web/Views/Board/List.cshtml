@@ -32,7 +32,7 @@
 
 @section Scripts {
     @Scripts.Render("~/bundle/vendor/js/bootstrap-datepicker/bootstrap-datepicker")
-    @Scripts.Render("~/Scripts/Board/list.js")
+    @Scripts.Render("~/bundle/scripts/js/list")
 
     @if (sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
@@ -51,7 +51,6 @@
     <!-- sidebox -->
     @Html.Partial("~/Views/Common/_LeftMenu.cshtml")
     <!-- / sidebox -->
-
     <!-- content -->
     <div class="d-flex flex-column w-100">
         <!-- Header -->
@@ -90,8 +89,8 @@
                     <div class="input-group z-lv-search">
                         <select class="custom-select">
                             <option value="">@Resources.Global.Select...</option>
-                            <option value="Subject"@(ViewBag.R.lv.search == "Subject" ? " selected" : "")>@Resources.Global.Title</option>
-                            <option value="CreatorName"@(ViewBag.R.lv.search == "CreatorName" ? " selected" : "")>@Resources.Global.Writer</option>
+                            <option value="Subject" @(ViewBag.R.lv.search == "Subject" ? " selected" : "")>@Resources.Global.Title</option>
+                            <option value="CreatorName" @(ViewBag.R.lv.search == "CreatorName" ? " selected" : "")>@Resources.Global.Writer</option>
                         </select>
                         <input type="text" class="form-control search-text" placeholder="@Resources.Global.Search" value="@ViewBag.R.lv.searchtext">
                         <span class="input-group-append">
