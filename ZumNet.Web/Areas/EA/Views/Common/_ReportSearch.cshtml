@@ -4,8 +4,10 @@
 @using System.Data;
 @using System.IO;
 @using System.Text;
+@using System.Text.RegularExpressions;
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
+
 @using ZumNet.BSL.ServiceBiz;
 @using ZumNet.BSL.InterfaceBiz;
 @using ZumNet.Web.Bc;
@@ -126,7 +128,7 @@
                         sb.AppendFormat("{0}{1}", svcRt.ResultDataSet.Tables[1].Rows[0]["금형보유건수"].ToString(), firstDel);
                         sb.AppendFormat("{0}{1}", svcRt.ResultDataSet.Tables[2].Rows[0]["증작차수"].ToString(), firstDel);
 
-                        foreach(DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                        foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                         {
                             sb.AppendFormat("<div><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" onclick=\"_zw.fn.openEAFormSimple('{0}')\">", row["MessageID"].ToString());
                             sb.AppendFormat("{0}_V{1} ({2})", row["PIName"].ToString(), row["MAINREVISION"].ToString(), row["DocNumber"].ToString());
@@ -244,7 +246,7 @@
                     {
                         ZumNet.Framework.Data.ParamSet.Add4Sql("@userid", SqlDbType.Int, 4, Convert.ToInt32(postData["v1"].ToString())),
                         ZumNet.Framework.Data.ParamSet.Add4Sql("@grid", SqlDbType.Int, 4, Convert.ToInt32(postData["v2"].ToString()))
-                    };
+                        };
                     using (ExecuteBiz exBiz = new ExecuteBiz())
                     {
                         svcRt = exBiz.ExecuteQuery(strWhere, 15, parameters);
@@ -306,9 +308,25 @@
                     else strReturn = svcRt.ResultMessage;
                     #endregion
                 }
-                else if (postData["k2"].ToString() == "ERP_CHKBIZNUM")
+                else if (postData["k2"].ToString() == "CC_CARDBASE")
                 {
-                    #region [JDEERP-사업자번호 중복 체크]
+                    #region [법인카드 카드번호 중복 체크]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("dc", 0, postData["k2"].ToString(), "", "", postData["v1"].ToString(), postData["v2"].ToString(), postData["v3"].ToString(), "", "");
+                    }
+                    if (svcRt.ResultCode == 0)
+                    {
+                        strRt = svcRt.ResultDataSet.Tables[0].Rows[0]["cnt"].ToString();
+                        if (strRt == "0") strReturn = "OK";
+                        else strReturn = "중복된 카드번호입니다";
+                    }
+                    else strReturn = svcRt.ResultMessage;
+                    #endregion
+                }
+                else if (postData["k2"].ToString().IndexOf("ERP_") != -1)
+                {
+                    #region ["ERP_" 시작]
                     using (ReportBiz rptBiz = new ReportBiz())
                     {
                         svcRt = rptBiz.GetJDEERP("", postData["k2"].ToString(), "", "", postData["v1"].ToString(), postData["v2"].ToString(), postData["v3"].ToString(), "", "");
@@ -316,9 +334,39 @@
 
                     if (svcRt.ResultCode == 0)
                     {
-                        strRt = svcRt.ResultDataSet.Tables[0].Rows[0]["Item1"].ToString();
-                        if (strRt == "0") strReturn = "OK";
-                        else strReturn = "중복된 사업자(고유,주민)번호입니다";
+                        DataRow row = null;
+                        if (postData["k2"].ToString() == "ERP_CHKBIZNUM") //사업자번호 중복 체크
+                        {
+                            row = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+                            strRt = row["cnt"].ToString();
+                            if (strRt == "0") strReturn = "OK";
+                            else strReturn = "중복된 사업자번호입니다";
+                        }
+                        else if (postData["k2"].ToString() == "ERP_SUPPLIER") //Supplier 정보 가져오기
+                        {
+                            if (svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                            {
+                                row = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+                                if (row["SupplierID"].ToString() == "") strReturn = "NO";
+                                else strReturn = "OK" + row["SUPPLIERID"].ToString() + cDel + row["SUPPLIER"].ToString() + cDel + row["SUPPLIEREMPNO"].ToString() + cDel + row["SUPPLIERDEPTCD"].ToString() + cDel + row["SUPPLIERGLC"].ToString() + cDel + row["SUPPLIERDEPT"].ToString();
+                            }
+                            else strReturn = "NO";
+                        }
+                        else if (postData["k2"].ToString() == "ERP_ACCOUNTONE") //특정계정과목(부서, 계정명)
+                        {
+                            if (svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                            {
+                                row = svcRt.ResultDataSet.Tables[0].Rows[0];
+
+                                if (row["ACNTID"].ToString() == "") strReturn = "NO";
+                                else strReturn = "OK" + row["ACNTNM"].ToString() + cDel + row["ACNTDPCD"].ToString() + cDel + row["ACNTMAIN"].ToString() + cDel + row["ACNTSUB"].ToString() + cDel + row["ACNTID"].ToString() + cDel + row["ACNTCLS"].ToString();
+                            }
+                            else strReturn = "NO";
+                        }
+                        row = null;
+
                     }
                     else strReturn = svcRt.ResultMessage;
                     #endregion
@@ -572,7 +620,7 @@
                             sb.Append("<tbody>");
 
                             int iSeq = 0;
-                            foreach(DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
                                 iSeq++;
                                 sb.Append("<tr>");
@@ -838,6 +886,226 @@
                     }
                     #endregion
                 }
+                else if (postData["k2"].ToString() == "FORM_CORPORATECARDREQ")
+                {
+                    #region [개별법인카드발급신청목록]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("cc", 0, postData["k2"].ToString(), "", "", "", "", "", "", "");
+                    }
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                            sb.Append("<colgroup><col width=\"40%\" /><col width=\"30%\" /><col width=\"30%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>사용자</th><th>신청일</th><th>완료일</tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+
+                            string strDate = "";
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                //MessageID, APPLICANT, APPLICANTID, APPLICANTDEPT, APPLICANTDEPTID, PIStart, PIEnd
+                                //strDate = row["reqdate"].ToString();
+                                //if (strDate != "") strDate = strDate.Substring(0, 4) + "-" + strDate.Substring(4, 2) + "-" + strDate.Substring(6, 2);
+                                sb.Append("<tr>");
+                                sb.Append("<td class=\"text-break\"><div class=\"custom-control custom-radio custom-control-inline mb-0\">");
+                                sb.AppendFormat("<input type=\"radio\" class=\"custom-control-input\" name=\"rdoEARow\" id=\"rdoEARow_{0}\" value=\"{0};{1}\" />", row["MessageID"].ToString(), DateHelper.CheckDateTime(row["PIEnd"].ToString()));
+                                sb.AppendFormat("<label class=\"custom-control-label\" for=\"rdoEARow_{0}\">{1}. {2}</label>", row["MessageID"].ToString(), row["APPLICANTDEPT"].ToString(), row["APPLICANT"].ToString());
+                                sb.Append("</div></td>");
+                                //sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", strDate);
+                                sb.AppendFormat("<td class=\"text-break\"><span>{0}</span></td>", DateHelper.CheckDateTime(row["PIStart"].ToString()));
+                                sb.AppendFormat("<td class=\"text-break\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\">{1}</a></td>", row["MessageID"].ToString(), DateHelper.CheckDateTime(row["PIEnd"].ToString()));
+                                sb.Append("</tr>");
+                            }
+
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "REGISTER_PROJECTIDREGISTRATION")
+                {
+                    #region [프로젝트ID 검색]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("pi", 0, postData["k2"].ToString(), "", "", postData["search"].ToString(), "", "", "", "");
+                    }
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                            sb.Append("<colgroup><col width=\"40%\" /><col /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>Project ID</th><th>Meaning</tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}\">{0}</a></td>", row["ProjectID"].ToString());
+                                sb.AppendFormat("<td>{0}</td>", row["CodeMean"].ToString());
+                                sb.Append("</tr>");
+                            }
+
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "CC_CARDACK")
+                {
+                    #region [지출결의 카드사용현황]
+                    using (ReportBiz rptBiz = new ReportBiz())
+                    {
+                        svcRt = rptBiz.GetReport("ap", Convert.ToInt32(postData["query"].ToString()), postData["k2"].ToString(), "", "", "", "", "", "", "");
+                    }
+
+                    if (svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            sb.Append("<table class=\"table table-striped text-center mb-0\">");
+                            sb.Append("<colgroup><col width=\"15%\" /><col width=\"8%\" /><col width=\"15%\" /><col width=\"10%\" /><col width=\"30%\" /><col width=\"14%\" /><col width=\"8%\" /></colgroup>");
+                            sb.Append("<thead>");
+                            sb.Append("<tr><th>사용일자</th><th>구분</th><th>카드번호</th><th>승인번호</th><th>가맹점명</th><th>승인금액<th>통화</th></tr>");
+                            sb.Append("</thead>");
+                            sb.Append("<tbody>");
+                            foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                            {
+                                sb.Append("<tr>");
+                                sb.Append("<td>");
+                                sb.Append("<label class=\"custom-control custom-checkbox mb-0\"><input type=\"checkbox\" class=\"custom-control-input\" />");
+                                sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", CvtDate(row["aquidate"].ToString()));
+                                sb.Append("</label>");
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"ACKID\" value=\"{0}\" />", row["ackid"].ToString());
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"PURCHASEFLAG\" value=\"{0}\" />", row["purchaseflag"].ToString());
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"AQUIDATE\" value=\"{0}\" />", CvtDate(row["aquidate"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"CARDNUM\" value=\"{0}\" />", StrCardNum(row["cardnum"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"ACKNO\" value=\"{0}\" />", row["ackno"].ToString());
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"MERCTAXKINDCODE\" value=\"{0}\" />", row["merctaxkind"].ToString());
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"MERCNAME\" value=\"{0}\" />", row["mercname"].ToString());
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"MERCSOCNO\" value=\"{0}\" />", row["mercsocno"].ToString());
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"ACKAMT\" value=\"{0}\" />", StrCardAmt(row["ackamt"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"VALSUPPLY\" value=\"{0}\" />", StrCardAmt(row["valsupply"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"VAT\" value=\"{0}\" />", StrCardAmt(row["vat"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"REQAMT\" value=\"{0}\" />", StrCardAmt(row["ACKAMT"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"CURRENCY\" value=\"{0}\" />", row["currency"].ToString());
+                                sb.Append("</td>");
+                                sb.AppendFormat("<td>{0}</td>", StrPurchaseFlag(row["purchaseflag"].ToString()));
+                                sb.AppendFormat("<td>{0}</td>", StrCardNum(row["cardnum"].ToString(), "A"));
+                                sb.AppendFormat("<td>{0}</td>", row["ackno"].ToString());
+                                sb.AppendFormat("<td class=\"text-left\">{0}</td>", row["mercname"].ToString());
+                                sb.AppendFormat("<td>{0}</td>", StrCardAmt(row["ackamt"].ToString()));
+                                sb.AppendFormat("<td>{0}</td>", row["currency"].ToString());
+                                sb.Append("</tr>");
+                            }
+                            sb.Append("</tbody>");
+                            sb.Append("</table>");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", Resources.Global.NoItemShow);
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("<div class=\"text-center mt-3 h5 text-secondary\">{0}</div>", svcRt.ResultMessage);
+                    }
+                    #endregion
+                }
+                else if (postData["k2"].ToString() == "CC_ACCOUNTDETAILWND")
+                {
+                    #region [지출결의 계정과목 상세정보 작성 화면]
+                    sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                    sb.Append("<colgroup><col width=\"25%\" /><col /></colgroup>");
+                    sb.Append("<tbody>");
+
+                    if (postData["v1"].ToString() == "A1") //회의비
+                    {
+                        sb.Append("<tr><th class=\"bg-light align-middle\">회의일자</th><td><input type=\"text\" class=\"form-control datepicker txtDate\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" data-for=\"DETAILINFO1\" style=\"width: 100px\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">회의장소</th><td><input type=\"text\" class=\"form-control\" maxlength=\"50\" data-for=\"DETAILINFO2\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">작성부서/작성자</th><td><input type=\"text\" class=\"form-control\" maxlength=\"50\" data-for=\"DETAILINFO3\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">회의참석자(당사,고객사)</th><td><input type=\"text\" class=\"form-control\" maxlength=\"50\" data-for=\"DETAILINFO4\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">회의목적</th><td><input type=\"text\" class=\"form-control\" maxlength=\"100\" data-for=\"DETAILINFO5\" /></td></tr>");
+                    }
+                    else if (postData["v1"].ToString() == "A2") //접대비
+                    {
+                        sb.Append("<tr><th class=\"bg-light align-middle\">국내/해외</th><td><select class=\"form-control\" data-for=\"DETAILINFO1\" style=\"width: 100px\"><option value=\"\">선택</option><option value=\"국내\">국내</option><option value=\"국외\">국외</option></select></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">접대일자</th><td><input type=\"text\" class=\"form-control datepicker txtDate\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" data-for=\"DETAILINFO2\" style=\"width: 100px\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">작성부서/작성자</th><td><input type=\"text\" class=\"form-control\" maxlength=\"50\" data-for=\"DETAILINFO3\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">당사 참석인명</th><td><input type=\"text\" class=\"form-control\" maxlength=\"50\" data-for=\"DETAILINFO4\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">거래처명</th><td><input type=\"text\" class=\"form-control\" maxlength=\"100\" data-for=\"DETAILINFO5\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">접대자</th><td><input type=\"text\" class=\"form-control\" maxlength=\"100\" data-for=\"DETAILINFO6\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">접대장소</th><td><input type=\"text\" class=\"form-control\" maxlength=\"100\" data-for=\"DETAILINFO7\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">접대목적</th><td><input type=\"text\" class=\"form-control\" maxlength=\"100\" data-for=\"DETAILINFO8\" /></td></tr>");
+                    }
+                    else if (postData["v1"].ToString() == "A3") //고정자산
+                    {
+                        sb.Append("<tr><th>Non-FA Number</th><td><input type=\"text\" class=\"form-control\" maxlength=\"10\" data-inputmask=\"number-n\" data-for=\"DETAILINFO1\" /></td></tr>");
+                    }
+                    else if (postData["v1"].ToString() == "A4") //여비교통비
+                    {
+                        sb.Append("<tr><th class=\"bg-light align-middle\">S-Date</th><td><input type=\"text\" class=\"form-control datepicker txtDate\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" data-for=\"DETAILINFO1\" style=\"width: 100px\" /></td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">E-Date</th><td><input type=\"text\" class=\"form-control datepicker txtDate\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" data-for=\"DETAILINFO2\" style=\"width: 100px\" /></td></tr>");
+                    }
+                    else if (postData["v1"].ToString() == "B1") //차량유지비(유류) 
+                    {
+                        sb.Append("<tr><th class=\"bg-light align-middle\">차량번호</th><td class=\"text-left\"><input type=\"text\" class=\"form-control d-inline\" readonly data-for=\"DETAILINFO1\" style=\"width: 90%\" />");
+                        sb.Append("<button type=\"button\" class=\"btn btn-outline-secondary btn-sm ml-1\" title=\"차량번호\" onclick=\"_zw.formEx.optionWnd('report.ERP_CORPVEHICLE',240,40,20,70,'','DETAILINFO1');\"><i class=\"fas fa-angle-down\"></i></button>");
+                        sb.Append("</td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">주유일자</th><td><input type=\"text\" class=\"form-control datepicker txtDate\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" data-for=\"DETAILINFO2\" style=\"width: 100px\" /></td></tr>");
+                    }
+                    else if (postData["v1"].ToString() == "B2") //차량유지비(정비) 
+                    {
+                        sb.Append("<tr><th class=\"bg-light align-middle\">차량번호</th><td class=\"text-left\"><input type=\"text\" class=\"form-control d-inline\" readonly data-for=\"DETAILINFO1\" style=\"width: 90%\" />");
+                        sb.Append("<button type=\"button\" class=\"btn btn-outline-secondary btn-sm ml-1\" title=\"차량번호\" onclick=\"_zw.formEx.optionWnd('report.ERP_CORPVEHICLE',240,40,20,70,'','DETAILINFO1');\"><i class=\"fas fa-angle-down\"></i></button>");
+                        sb.Append("</td></tr>");
+                        sb.Append("<tr><th class=\"bg-light align-middle\">정비일자</th><td><input type=\"text\" class=\"form-control datepicker txtDate\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" data-for=\"DETAILINFO2\" style=\"width: 100px\" /></td></tr>");
+                    }
+                    else if (postData["v1"].ToString() == "B3") //차량유지비(업무용 통행) 
+                    {
+                        sb.Append("<tr><th class=\"bg-light align-middle\">차량번호</th><td class=\"text-left\"><input type=\"text\" class=\"form-control d-inline\" readonly data-for=\"DETAILINFO1\" style=\"width: 90%\" />");
+                        sb.Append("<button type=\"button\" class=\"btn btn-outline-secondary btn-sm ml-1\" title=\"차량번호\" onclick=\"_zw.formEx.optionWnd('report.ERP_CORPVEHICLE',240,40,20,70,'','DETAILINFO1');\"><i class=\"fas fa-angle-down\"></i></button>");
+                        sb.Append("</td></tr>");
+                    }
+                    else if (postData["v1"].ToString() == "C1") //통신비(이동전화)
+                    {
+                        sb.Append("<tr><th class=\"bg-light align-middle\">TYPE(개인/법인)</th><td><select class=\"form-control\" data-for=\"DETAILINFO1\" style=\"width: 100px\"><option value=\"\">선택</option><option value=\"개인\">개인</option><option value=\"법인\">법인</option></select></td></tr>");
+                        sb.Append("<tr><th>Phone No.</th><td><input type=\"text\" class=\"form-control\" maxlength=\"500\" data-for=\"DETAILINFO2\" /></td></tr>");
+                    }
+                    else if (postData["v1"].ToString() == "D1") //경상연구개발비
+                    {
+                        sb.Append("<tr><th class=\"bg-light align-middle\">Project ID</th><td class=\"text-left\"><input type=\"text\" class=\"form-control d-inline\" readonly data-for=\"DETAILINFO1\" style=\"width: 90%\" />");
+                        sb.Append("<button type=\"button\" class=\"btn btn-outline-secondary btn-sm ml-1\" title=\"Project ID 검색\" onclick=\"_zw.formEx.externalWnd('report.REGISTER_PROJECTIDREGISTRATION',240,40,20,70,'','DETAILINFO1');\"><i class=\"fas fa-angle-down\"></i></button>");
+                        sb.Append("</td></tr>");
+                    }
+
+                    sb.Append("</tbody>");
+                    sb.Append("</table>");
+                    #endregion
+                }
                 else if (postData["k2"].ToString().IndexOf("ERP_") != -1)
                 {
                     #region ["ERP_" 시작]
@@ -864,9 +1132,9 @@
                                 foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                                 {
                                     sb.Append("<tr>");
-                                    //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["Item1"].ToString(), row["Item2"].ToString());
+                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["Item1"].ToString(), row["Item2"].ToString());
                                     //sb.AppendFormat("<td>{0}</td>", row["Item2"].ToString());
-                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{0}\">{0}</a></td>", row["Item1"].ToString());
+                                    //sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{0}\">{0}</a></td>", row["Item1"].ToString());
                                     sb.Append("</tr>");
                                 }
                                 sb.Append("</tbody>");
@@ -931,6 +1199,50 @@
                                     sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["ITEM2"].ToString(), row["ITEM3"].ToString());
                                     sb.AppendFormat("<td>{0}</td>", row["ITEM3"].ToString());
                                     sb.Append("</tr>");
+                                }
+                                sb.Append("</tbody>");
+                                sb.Append("</table>");
+                            }
+                            else if (postData["k2"].ToString() == "ERP_ACCOUNTCLS") //계정과목
+                            {
+                                sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                                sb.Append("<thead>");
+                                sb.Append("<tr><th style=\"width: 30%\">계정명</th><th style=\"width: 20%\">계정코드</th><th style=\"width: 30%\">부서</th><th>분류</th></tr>");
+                                sb.Append("</thead>");
+                                sb.Append("<tbody>");
+                                foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                                {
+                                    //ACNTNM, ACNTDPCD, ACNTMAIN, ACNTSUB, ACNTID, ACNTCLS, ACNTCLSNM
+                                    sb.Append("<tr>");
+                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}^{3}^{4}^{5}^{6}\">{0}</a></td>"
+                                                , row["ACNTNM"].ToString(), row["ACNTDPCD"].ToString(), row["ACNTMAIN"].ToString(), row["ACNTSUB"].ToString()
+                                                , row["ACNTID"].ToString(), row["ACNTCLS"].ToString(), row["ACNTCLSNM"].ToString());
+                                    sb.AppendFormat("<td>{0}</td>", row["ACNTID"].ToString());
+                                    sb.AppendFormat("<td>{0}</td>", row["ACNTDP"].ToString());
+                                    sb.AppendFormat("<td>{0}</td>", row["ACNTCLSNM"].ToString());
+                                    sb.Append("</tr>");
+                                }
+                                sb.Append("</tbody>");
+                                sb.Append("</table>");
+                            }
+                            else if (postData["k2"].ToString() == "ERP_CORPVEHICLE") //차량
+                            {
+                                sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                                sb.Append("<colgroup><col width=\"50%\" /><col width=\"60%\" /></colgroup>");
+                                sb.Append("<thead>");
+                                sb.Append("<tr><th>차량번호</th><th>차종</th></tr>");
+                                sb.Append("</thead>");
+                                sb.Append("<tbody>");
+                                foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                                {
+                                    sb.Append("<tr>");
+                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}\">{0}</a></td>", row["VHMOL2"].ToString(), StringHelper.JsonDecode(row["VHDSC50"].ToString()));
+                                    sb.AppendFormat("<td>{0}</td>", row["VHDSC50"].ToString());
+                                    sb.Append("</tr>");
+                                }
+                                if (postData["etc"].ToString() == "etc")
+                                {
+                                    sb.Append("<tr><td colspan=\"2\"><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
                                 }
                                 sb.Append("</tbody>");
                                 sb.Append("</table>");
@@ -1003,5 +1315,74 @@
         }
         return strReturn;
     }
+
+    #region [유틸]
+    private string StrPurchaseFlag(string flag)
+    {
+        string rt = "";
+
+        if (flag == "03") rt = "매입";
+        else if (flag == "04") rt = "취소";
+        else rt = flag;
+
+        return rt;
     }
-    @Html.Raw(GetReportSearch(ViewBag.JPost))
+
+    private string StrCardNum(string num)
+    {
+        return StrCardNum(num, "");
+    }
+
+    private string StrCardNum(string num, string option)
+    {
+        // 숫자 이외의 문자 제거
+        string cleaned = Regex.Replace(num, @"\s|-", "");
+        if (option == "A")
+        {
+            return num.Substring(0, 4) + "-" + num.Substring(4, 4) + "..";
+        }
+        else
+        {
+            // 4자리마다 하이픈 삽입
+            return Regex.Replace(cleaned, @"(.{4})(?=.)", "$1-");
+        }
+    }
+
+    private string StrSocNum(string num)
+    {
+        return string.Format("{0:###-##-#####}", long.Parse(num));
+    }
+
+    private string StrCardAmt(string amt)
+    {
+        if (amt == null || amt == "") return "";
+        else
+        {
+            if (decimal.TryParse(amt, out decimal result))
+            {
+                return String.Format($"{result:n0}");
+            }
+            else return amt;
+        }
+    }
+
+    private string CvtDate(string d)
+    {
+        if (d != "") return d.Substring(0, 4) + "-" + d.Substring(4, 2) + "-" + d.Substring(6, 2);
+        else return "";
+    }
+
+    private string StrCardCorp(string card)
+    {
+        foreach (DataRow row in ViewBag.CardCorp)
+        {
+            if (row["Item1"].ToString() == card)
+            {
+                return row["Item2"].ToString();
+            }
+        }
+        return card;
+    }
+    #endregion
+}
+@Html.Raw(GetReportSearch(ViewBag.JPost))

@@ -66,6 +66,7 @@
   function rate2(c, p, n) {if (c=="" || c=="0" || p=="" || p=="0") {return "&nbsp;"} else {return "$" + addComma(c) + "<br />(" + (parseFloat(c)/parseFloat(p)*100).toFixed(n) + ")";}}
   function isDate(d) {return (d != "" && parseInt(d.substr(0,4)) > 1900) ? true : false;}
   function markingJuminNo(s) {if (s && s!='') {return s.substring(0,6) + " - " + "*******";} else {return "&nbsp;";}}
+  function formatCardNumer(s) { return s.replace(/\D/g, '').replace(/(.{4})/g, '$1-').replace(/-$/, ''); }
   function cvtDate(d1, d2, t, n, escaope) {
     var d = (isDate(d1)) ? d1 : d2;
     if (d != "") {//log("d->" + d1 + " : " + d2);
@@ -78,18 +79,23 @@
     return (escaope) ? "" : "&nbsp;";
   }
   function convertDate(date) {
-	  var szReturn = "&nbsp;";
-	  if (date != "") {
-		  if (arguments.length > 1) {
-			  if (arguments[1] == '.') szReturn = date.substring(0, 10).replace(/-/gi, '. ');
-        else if (arguments[1] == 'ko') szReturn = date.substr(0, 4) + "년 " + date.substr(5, 2) + "월 " + date.substr(8, 2) + "일";
-        else if (arguments[1] == 'en') szReturn =   monthNames[date.substr(5, 2)-1]+" "+date.substr(8, 2)+", "+ date.substr(0, 4) ;
-			  else szReturn = date.substring(0, 10);
-		  } else {
-			  szReturn = date.substring(0, 8).replace(/-/gi, '/');
-		  }
-	  }
-	  return szReturn;
+    var szReturn = "&nbsp;";
+    if (date != "") {
+        if (arguments.length > 1) {
+            if (arguments[1] == '.') szReturn = date.substring(0, 10).replace(/-/gi, '. ');
+            else if (arguments[1] == 'ko') szReturn = date.substr(0, 4) + "년 " + date.substr(5, 2) + "월 " + date.substr(8, 2) + "일";
+            else if (arguments[1] == 'en') szReturn = monthNames[date.substr(5, 2)-1]+" "+date.substr(8, 2)+", "+ date.substr(0, 4);
+            else szReturn = date.substring(0, 10);
+        } else {
+		    if (date.indexOf('-') != 0) {
+			    var sep = arguments.length > 1 ? arguments[1] : '-';
+			    if (date.length == 8) szReturn = date.substr(0, 4) + sep + date.substr(4, 2) + sep + date.substr(6, 2);
+				else if (date.length == 6) szReturn = date.substr(4, 2) + "/" + date.substr(2, 2);
+				else if (date.length == 4) szReturn = date.substr(0, 2) + "/" + date.substr(2, 2);
+            } else szReturn = date.substring(0, 8).replace(/-/gi, '/');
+        }
+    }
+    return szReturn;
   }
   function optionYear(cy, sy) {
     var szReturn = '';

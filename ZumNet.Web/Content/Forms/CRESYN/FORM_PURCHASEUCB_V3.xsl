@@ -222,10 +222,10 @@
                       <!--<button onclick="parent.importFile();" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_42.gif" />가져오기
                       </button>-->
-						<!--<button class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="가져오기" onclick="_zw.fn.importFile();">
+						<button class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="가져오기" onclick="_zw.fn.importFile();">
 							<i class="fe-upload text-success"></i>
 							<span class="ml-1">가져오기</span>
-						</button>-->
+						</button>
                       <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_26.gif" />추가
                       </button>
@@ -489,7 +489,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'  or $actrole='__r' or $actrole='_reviewer'">
-            <input type="text" name="PRICEA" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{PRICEA}" />
+            <input type="text" name="PRICEA" class="txtDollar" maxlength="20" data-inputmask="number;15;5" value="{PRICEA}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -500,7 +500,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'  or $actrole='__r' or $actrole='_reviewer'">
-            <input type="text" name="PRICEB" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{PRICEB}" />
+            <input type="text" name="PRICEB" class="txtDollar" maxlength="20" data-inputmask="number;15;5" value="{PRICEB}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -545,7 +545,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'  or $actrole='__r' or $actrole='_reviewer'">
-            <input type="text" name="PRICED" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{PRICED}" />
+            <input type="text" name="PRICED" class="txtDollar" maxlength="20" data-inputmask="number;15;5" value="{PRICED}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>

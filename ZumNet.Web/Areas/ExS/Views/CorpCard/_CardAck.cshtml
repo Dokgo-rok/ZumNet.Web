@@ -1,0 +1,186 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Text.RegularExpressions;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@{
+    string sTitle = "법인카드사용내역";
+}
+@functions{
+    /// <summary>
+    /// 카드사용내역
+    /// </summary>
+    /// <param name="post"></param>
+    /// <param name="ds"></param>
+    /// <returns></returns>
+    private string ViewCard(JObject post, DataSet ds)
+    {
+        //지출결의 예외 처리 : 관리자 또는 사용자
+        bool bAdmin = post["operator"].ToString() == "Y" ? true : false;
+
+        StringBuilder sb = new StringBuilder();
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            DataRow row = ds.Tables[0].Rows[0];
+
+            int iCardUser = StringHelper.SafeInt(row["useid"]);
+
+            sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colspan><col style=\"width:15%\" /><col style=\"width:35%\" /><col style=\"width:15%\" /><col style=\"width:35%\" /></colspan>");
+
+            //거래구분, 카드번호
+            sb.AppendFormat("<tr><th class=\"bg-light\">거래구분</th><td><div class=\"p-1\">{0}</div></td>", StrPurchaseFlag(row["purchaseflag"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">카드번호</th><td><div class=\"p-1\">{0}</div></td>", StrCardNum(row["cardnum"].ToString()));
+            sb.Append("</tr>");
+
+            //승인번호, 매입일자
+            sb.AppendFormat("<tr><th class=\"bg-light\">승인번호</th><td><div class=\"p-1\">{0}</div></td>", row["ackno"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">매입일자</th><td><div class=\"p-1\">{0}</div></td>", CvtDate(row["aquidate"].ToString()));
+            sb.Append("</tr>");
+
+            //승인금액, 통화코드
+            sb.AppendFormat("<tr><th class=\"bg-light\">승인금액</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["ackamt"].ToString(), 2));
+            sb.AppendFormat("<th class=\"bg-light\">통화코드</th><td><div class=\"p-1\">{0}</div></td>", row["currency"].ToString());
+            sb.Append("</tr>");
+
+            //공급가액, 부가세
+            sb.AppendFormat("<tr><th class=\"bg-light\">공급가액</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["valsupply"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">부가세</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["vat"].ToString()));
+            sb.Append("</tr>");
+
+            //가맹점명
+            sb.AppendFormat("<tr><th class=\"bg-light\">가맹점명</th><td colspan=\"3\"><div class=\"p-1\">{0}</div></td>", row["mercname"].ToString());
+            sb.Append("</tr>");
+
+            //사업자번호, 과세구분
+            sb.AppendFormat("<tr><th class=\"bg-light\">사업자번호</th><td><div class=\"p-1\">{0}</div></td>", StrSocNum(row["mercsocno"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">과세구분</th><td><div class=\"p-1\">{0}</div></td>", row["merctaxkind"].ToString());
+            sb.Append("</tr>");
+
+            //연동정보, 사용구분(지출결의제외)
+            sb.AppendFormat("<th class=\"bg-light\">연동일시</th><td><div class=\"p-1\">{0} {1}</div></td>", CvtDate(row["ifdate"].ToString()), CvtTime(row["iftime"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">사용구분</th><td><div class=\"p-1\"><div class=\"custom-control custom-checkbox mb-0\"><input type=\"checkbox\" class=\"custom-control-input\" id=\"chkExceptPro\"{0}>", row["exceptproc"].ToString() == "Y" ? " checked" : "");
+            sb.Append("<label class=\"custom-control-label\" for=\"chkExceptPro\">지출결의서 사용 제외</label></div></div></td>");
+            sb.Append("</tr>");
+
+
+            //메모
+            sb.Append("<tr><th class=\"bg-light\">메모</td><td colspan=\"3\">");
+            if (bAdmin || iCardUser == Convert.ToInt32(Session["URID"]))
+                sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"500\">{1}</textarea>", "memo", row["memo"].ToString());
+            else
+                sb.AppendFormat("<div class=\"p-1\">{0}</div>", StringHelper.ReplaceReply(row["memo"].ToString()));
+            sb.Append("</td></tr>");
+
+            //결재정보
+
+
+            //처리, 최종변경일        
+            sb.AppendFormat("<tr><th class=\"bg-light\">처리</th><td><div class=\"p-1\">{0}. {1}</div></td>", Session["DeptName"].ToString(), Session["URName"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">최종변경</th><td><div class=\"p-1\">{0}</div></td>", DateHelper.CheckDateTime(row["moddate"].ToString()));
+            sb.Append("</tr>");
+
+            sb.Append("</table>");
+
+            //숨은 필드
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "ackid", row["ackid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "regnm", Session["URName"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "regid", Session["URID"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "regdept", Session["DeptName"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "regdeptid", Session["DeptID"].ToString());
+
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "pilink", row["pilink"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "pistate", row["pistate"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "pistart", row["pistart"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "piend", row["piend"].ToString());
+
+            sb.Append("</div>"); //modal-body
+            sb.Append("<div class=\"modal-footer\">");
+            if (bAdmin || iCardUser == Convert.ToInt32(Session["URID"]))
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"memo\">{0}</button>", Resources.Global.Save);
+            }
+            else
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            }
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5 h5\">{0}</p>", Resources.Global.NoItemShow);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+
+    #region [유틸]
+    private string StrPurchaseFlag(string flag)
+    {
+        string rt = "";
+
+        if (flag == "03") rt = "매입";
+        else if (flag == "04") rt = "취소";
+        else rt = flag;
+
+        return rt;
+    }
+
+    private string StrCardNum(string num)
+    {
+        // 숫자 이외의 문자 제거
+        string cleaned = Regex.Replace(num, @"\s|-", "");
+        // 4자리마다 하이픈 삽입
+        return Regex.Replace(cleaned, @"(.{4})(?=.)", "$1-");
+    }
+
+    private string StrSocNum(string num)
+    {
+        return string.Format("{0:###-##-#####}", long.Parse(num));
+    }
+
+    private string CvtDate(string d)
+    {
+        if (d != "") return d.Substring(0, 4) + "-" + d.Substring(4, 2) + "-" + d.Substring(6, 2);
+        else return "";
+    }
+    private string CvtTime(string t)
+    {
+        if (t != "") return t.Substring(0, 2) + ":" + t.Substring(2, 2) + ":" + t.Substring(4, 2);
+        else return "";
+    }
+
+    private string StrApvState(string state)
+    {
+        string rt = "";
+
+        if (state == "1") rt = "결재중";
+        else if (state == "7") rt = "완료";
+        else if (state == "8") rt = "반려";
+
+        return rt;
+    }
+    #endregion
+}
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content bg-white z-list" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header py-2">
+            <h5 class="modal-title">@sTitle</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        @Html.Raw(ViewCard(ViewBag.JPost, ViewBag.CardInfo))
+    </div>
+</div>

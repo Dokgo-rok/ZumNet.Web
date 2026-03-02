@@ -12,11 +12,11 @@
                     if (eType2.length > 0 && $.trim(eType2.val()) == '') { bootbox.alert("필수항목 [고객구분] 누락!"); rt = false; return false; }
 
                     if (eCT.val() == 'LO') { //국내
-                        if (eType2.val() == 'COMPANY') v = 'COUNTRY;국가^CLIENT_NUMBER;사업자등록번호^INDUSTRY_CLASS;업태^INDUSTRY_SUBCLASS;업종^TAXBLE_PERSON;대표자^ADDRES;주소^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^');
-                        else if (eType2.val() == 'PEOPLE') { v = 'COUNTRY;국가^SOCIAL_NUMBER;주민등록번호^ADDRES;주소^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^'); chk = $('#__mainfield[name="SOCIAL_NUMBER"]'); }
-                        else if (eType2.val() == 'PUBLIC') v = 'COUNTRY;국가^CLIENT_NUMBER;고유번호(사업자등록번호)^TAXBLE_PERSON;대표자^ADDRES;주소^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^');
+                        if (eType2.val() == 'COMPANY') v = 'COUNTRY;국가^CLIENT_NUMBER;사업자등록번호^INDUSTRY_CLASS;업태^INDUSTRY_SUBCLASS;업종^TAXBLE_PERSON;대표자^ADDRES;주소^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY;통화^ACCOUNTDN;채권계정^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^');
+                        else if (eType2.val() == 'PEOPLE') { v = 'COUNTRY;국가^SOCIAL_NUMBER;주민등록번호^ADDRES;주소^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY;통화^ACCOUNTDN;채권계정^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^'); chk = $('#__mainfield[name="SOCIAL_NUMBER"]'); }
+                        else if (eType2.val() == 'PUBLIC') v = 'COUNTRY;국가^CLIENT_NUMBER;고유번호(사업자등록번호)^TAXBLE_PERSON;대표자^ADDRES;주소^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY;통화^ACCOUNTDN;채권계정^TAXMANAGER;세금계산서담당자^TAXEMAIL;메일'.split('^');
                     } else if (eCT.val() == 'DI') { //국외
-                        v = 'COUNTRY;국가^TAXBLE_PERSON;대표자^ADDRES;주소'.split('^');
+                        v = 'COUNTRY;국가^TAXBLE_PERSON;대표자^ADDRES;주소^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY;통화^ACCOUNTDN;채권계정'.split('^');
                     }
 
                     v1 = 'C';
@@ -27,10 +27,10 @@
 
                     if (eCT.val() == 'LO') { //국내
                         if (eType2.val() == 'SUPPLIER' || eType2.val() == 'OSP') v = 'COUNTRY;국가^CLIENT_NUMBER;사업자등록번호^INDUSTRY_CLASS;업태^INDUSTRY_SUBCLASS;업종^TAXBLE_PERSON;대표자^ADDRES;주소^TAXRATE;세금구분^CUST_PAYMENT;결제조건^TAXEXPL;세목^PAYMENTMTD;지급수단^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^MANAGER;영업담당자^EMAIL;메일^TEL;연락처'.split('^');
-                        else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명'.split('^');
+                        else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명'.split('^');
                     } else if (eCT.val() == 'DI') { //국외
-                        if (eType2.val() == 'SUPPLIER' || eType2.val() == 'OSP') v = 'COUNTRY;국가^TAXBLE_PERSON;대표자^ADDRES;주소^CUST_PAYMENT;결제조건^PAYMENTMTD;지급수단^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^ACCOUNT_FOREIGN;SWIFT CODE^MANAGER;영업담당자^EMAIL;메일^TEL;연락처'.split('^');
-                        else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^ACCOUNT_FOREIGN;SWIFT CODE'.split('^');
+                        if (eType2.val() == 'SUPPLIER' || eType2.val() == 'OSP') v = 'COUNTRY;국가^TAXBLE_PERSON;대표자^ADDRES;주소^TAXRATE;세금구분^CUST_PAYMENT;결제조건^TAXEXPL;세목^PAYMENTMTD;지급수단^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^ACCOUNT_FOREIGN;SWIFT CODE^MANAGER;영업담당자^EMAIL;메일^TEL;연락처'.split('^');
+                        else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^ACCOUNT_FOREIGN;SWIFT CODE'.split('^');
                     }
 
                     v1 = 'V';
@@ -144,7 +144,7 @@
             } else if (vPos[0] == 'report') {
                 m = 'getreportsearch';
                 if (vPos[1] != 'ERP_FACTORY') {
-                    v1 = $('#__mainfield[name="COMPANYCODE"]').val();
+                    v1 = $('#__mainfield[name="COMPANY"]').val();
                     if (v1 == '') { bootbox.alert('법인코드를 입력하세요!'); return false; }
                 }
             } else m = 'getcodedescription';

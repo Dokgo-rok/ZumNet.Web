@@ -1,0 +1,8 @@
+﻿@if (ViewBag.R.ft == "CC_CARDBASE" && (Session["Admin"].ToString() == "Y" || ViewBag.R.current["operator"].ToString() == "Y"))
+{
+    <button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="카드등록" onclick="_zw.fn.viewCard('N');"><i class="fe-edit"></i><span class="d-none d-sm-inline-block ml-1">카드등록</span></button>
+}
+<button class="btn btn-default py-1 mr-2" data-toggle="tooltip" data-placement="bottom" title="엑셀 내보내기" onclick="_zw.fn.exportExcel();"><i class="fe-download text-success"></i><span class="d-none d-sm-inline-block ml-1">엑셀</span></button>
+<button class="btn btn-default py-1 font-weight-bold" aria-controls="vw-full-fill" onclick="_zw.ut.ctrls();"><i class="fas fa-expand"></i></button>
+
+

@@ -178,7 +178,7 @@
                                 p.find('.modal-body').html(res.substr(2));
                             }
 
-                            var row = vPos[1] == 'items' || vPos[1] == 'items3' || vPos[1] == 'vendors' ? el.parent().parent() : null;
+                            var row = vPos[1] == 'items' || vPos[1] == 'items1' || vPos[1] == 'items3' || vPos[1] == 'vendors' ? el.parent().parent() : null;
                             p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
                                 var v = $(this).attr('data-val').split('^');
                                 if (vPos[1] == 'vendors') row.find('td [name="BPANUM"]').val('');

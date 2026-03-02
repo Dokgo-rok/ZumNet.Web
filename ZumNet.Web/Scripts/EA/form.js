@@ -595,7 +595,7 @@ $(function () {
     _zw.fn.importFile = function (cd) {
         cd = cd || '';
         var url = '/Common/FileImport?M=' + _zw.V.def.maintable + '&sy=&cd=' + cd;
-        if (_zw.V.ft == 'SHIPMENTUC') url += "&gg=" + $('#__mainfield[name="PRODUCTCENTER"]').val() + "&gg2=" + $('#__mainfield[name="SALECENTER"]').val() + "&gg3=" + $('#__mainfield[name="CURRENCY"]').val() + "&gg4=" + $('#__mainfield[name="VENDOR_CODE"]').val();
+        if (_zw.V.ft == 'SHIPMENTUC') url += "&pc=" + $('#__mainfield[name="PRODUCTCENTER"]').val() + "&sc=" + $('#__mainfield[name="SALECENTER"]').val() + "&cy=" + $('#__mainfield[name="CURRENCY"]').val();
 
         $.ajax({
             type: "POST",
@@ -2098,6 +2098,7 @@ $(function () {
                 newRow = tgtRow.clone(); _zw.form.resetField(newRow); tgtRow.after(newRow); _zw.form.orderRow(p);
                 _zw.fn.input(newRow); _zw.ut.picker('date');
             }
+            if (_zw.formEx.addRow) return _zw.formEx.addRow(newRow); //26-02-19 추가
         },
         "removeRow": function (sub) {
             var p = $('#' + sub), ihdr = parseInt(p.attr('header')), iCnt = 0;

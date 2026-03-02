@@ -314,6 +314,46 @@
 						</table>
 					</div>
 
+					<div class="ff" />
+					<div class="ff" />
+					<div class="ff" />
+					<div class="ff" />
+
+					<div class="fm">
+						<span class="pl-2">* 발급정보</span>
+					</div>
+					<div class="ff" />
+
+					<div class="fm">
+						<table class="ft" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td class="f-lbl">카드번호</td>
+								<td style="width:35%">
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:formatCardNumer(string(//forminfo/maintable/CARDNUM))" />
+								</td>
+								<td class="f-lbl">유효기간</td>
+								<td style="border-right:0">
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:convertDate(string(//forminfo/maintable/CARDPERIOD))" />
+								</td>
+							</tr>
+							<tr>
+								<td class="f-lbl">카드사</td>
+								<td style="width:35%">
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/CARDCORP))" />
+								</td>
+								<td class="f-lbl">발급일</td>
+								<td style="border-right:0">
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:convertDate(string(//forminfo/maintable/ISUDATE))" />
+								</td>
+							</tr>
+						</table>
+					</div>
+
+					<div class="ff" />
+					<div class="ff" />
+					<div class="ff" />
+					<div class="ff" />
+
 					<xsl:if test="//linkeddocinfo/linkeddoc or //fileinfo/file[@isfile='Y']">
 						<div class="ff" />
 						<div class="ff" />

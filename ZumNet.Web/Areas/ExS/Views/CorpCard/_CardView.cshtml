@@ -1,0 +1,537 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Text.RegularExpressions;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@{
+    string sTitle = "카드정보 " + (ViewBag.JPost["M"].ToString() == "new" ? "등록" : "조회");
+}
+@functions{
+    /// <summary>
+    /// 신규 등록 카드
+    /// </summary>
+    /// <param name="post"></param>
+    /// <returns></returns>
+    private string NewCard(JObject post)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+        sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+        sb.Append("<colspan><col style=\"width:15%\" /><col style=\"width:35%\" /><col style=\"width:15%\" /><col style=\"width:35%\" /></colspan>");
+
+        //구분, 카드사
+        sb.AppendFormat("<tr><th class=\"bg-light\">구분</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" value=\"\" autocomplete=\"off\"></td>", "membertype");
+        sb.AppendFormat("<th class=\"bg-light\">카드사</th><td>");
+        sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "cardcorp");
+        sb.Append("<option value=\"\">선택</option>");
+        foreach (object[] o in ViewBag.CodeTable["external.cc_cardcorp"])
+        {
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[3].ToString(), o[4].ToString());
+        }
+        sb.Append("</select></td>");
+        sb.Append("</tr>");
+
+        //카드번호, 유효기간
+        sb.AppendFormat("<tr><th class=\"bg-light\">카드번호</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" data-inputmask=\"card;number\" value=\"\" autocomplete=\"off\"></td>", "cardnum");
+        sb.AppendFormat("<th class=\"bg-light\">유효기간</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"card;mmyy\" value=\"\" autocomplete=\"off\"></td>", "cardprid");
+        sb.Append("</tr>");
+
+        //카드종류, 한도
+        sb.AppendFormat("<tr><th class=\"bg-light\">카드종류</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" value=\"\" autocomplete=\"off\"></td>", "cardtype");
+        sb.AppendFormat("<th class=\"bg-light\">한도(천원)</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"number;10;0\" value=\"\" autocomplete=\"off\"></td>", "limitamt");
+        sb.Append("</tr>");
+
+        //상태, 신청구분
+        sb.AppendFormat("<tr><th class=\"bg-light\">상태</th><td>");
+        sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "cardstat");
+        sb.Append("<option value=\"\">선택</option>");
+        foreach (object[] o in ViewBag.CodeTable["external.cc_cardstate"])
+        {
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[3].ToString(), o[4].ToString());
+        }
+        sb.Append("</select></td>");
+        sb.AppendFormat("<th class=\"bg-light\">신청구분</th><td>");
+        sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "isustate");
+        sb.Append("<option value=\"\">선택</option>");
+        foreach (object[] o in ViewBag.CodeTable["external.cc_reqkind"])
+        {
+            sb.AppendFormat("<option value=\"{0}\">{1}</option>", o[3].ToString(), o[4].ToString());
+        }
+        sb.Append("</select></td>");
+        sb.Append("</tr>");
+
+        //신청일, 발급일
+        sb.AppendFormat("<tr><th class=\"bg-light\">신청일</th><td><input type=\"text\" class=\"form-control datepicker\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" value=\"\" autocomplete=\"off\"></td>", "reqdate");
+        sb.AppendFormat("<th class=\"bg-light\">발급일</th><td><input type=\"text\" class=\"form-control datepicker\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" value=\"\" autocomplete=\"off\"></td>", "isudate");
+        sb.Append("</tr>");
+
+        //용도
+        sb.AppendFormat("<tr><th class=\"bg-light\">용도</th><td colspan=\"3\"><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"\"></td>", "cardusage");
+        sb.Append("</tr>");
+
+        //사용자
+        sb.AppendFormat("<tr><th class=\"bg-light\">사용자</th><td colspan=\"3\"><div class=\"input-group\"><input type=\"text\" class=\"form-control\" id=\"_cardUser\" readonly value=\"\"><button class=\"btn btn-outline-secondary\" data-zm-menu=\"del-use\">{0}</button><button class=\"btn btn-outline-secondary\" onclick=\"_zw.fn.org('all','n', 'use');\">{1}</button></td>", "삭제", "선택");
+        sb.Append("</tr>");
+
+        //소지자
+        sb.AppendFormat("<tr><th class=\"bg-light\">소지자</th><td colspan=\"3\"><div class=\"input-group\"><input type=\"text\" class=\"form-control\" id=\"_cardPosUr\" readonly value=\"\"><button class=\"btn btn-outline-secondary\" data-zm-menu=\"del-use\">{0}</button><button class=\"btn btn-outline-secondary\" onclick=\"_zw.fn.org('all','n', 'pos');\">{1}</button></td>", "삭제", "선택");
+        sb.Append("</tr>");
+
+        //메모
+        sb.AppendFormat("<tr><th class=\"bg-light\">메모</td><td colspan=\"3\"><textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"500\"></textarea>", "memo");
+        sb.Append("</tr>");
+
+        //등록자        
+        sb.AppendFormat("<tr><th class=\"bg-light\">등록</th><td colspan=\"3\"><div class=\"p-1\">{0}. {1}</div></td>", Session["DeptName"].ToString(), Session["URName"].ToString());
+        sb.Append("</tr>");
+
+        sb.Append("</table>");
+
+        //숨은 필드
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "rtndate"); //반납일
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "usenm");
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "useid");
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "useempid");
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "usedept");
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "usedeptid");
+
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "posur");
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "posurid");
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "posdept");
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "posdeptid");
+
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrnm", Session["URName"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrid", Session["URID"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrdept", Session["DeptName"].ToString());
+        sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrdeptid", Session["DeptID"].ToString());
+
+        sb.Append("</div>"); //modal-body
+        sb.Append("<div class=\"modal-footer\">");
+        sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+        sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Register);
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 직접입력 카드 경우 관리자만 편집 가능
+    /// </summary>
+    /// <param name="post"></param>
+    /// <param name="ds"></param>
+    /// <returns></returns>
+    private string EditCard(JObject post, DataSet ds)
+    {
+        StringBuilder sb = new StringBuilder();
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            DataRow row = ds.Tables[0].Rows[0];
+            string strFld01 = "";
+
+            sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colspan><col style=\"width:15%\" /><col style=\"width:35%\" /><col style=\"width:15%\" /><col style=\"width:35%\" /></colspan>");
+
+            //구분, 카드사
+            sb.AppendFormat("<tr><th class=\"bg-light\">구분</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" value=\"{1}\"></td>", "membertype", row["membertype"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">카드사</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "cardcorp");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["external.cc_cardcorp"])
+            {
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[3].ToString(), o[4].ToString(), row["cardcorp"].ToString() == o[3].ToString() ? " selected" : "");
+            }
+            sb.Append("</select></td>");
+            sb.Append("</tr>");
+
+            //카드번호, 유효기간
+            sb.AppendFormat("<tr><th class=\"bg-light\">카드번호</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" data-inputmask=\"card;number\" value=\"{1}\" autocomplete=\"off\"></td>", "cardnum", StrCardNum(row["cardnum"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">유효기간</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"card;mmyy\" value=\"{1}\" autocomplete=\"off\"></td>", "cardprid", StrCardPeriod(row["cardprid"].ToString()));
+            sb.Append("</tr>");
+
+            //카드종류, 한도
+            sb.AppendFormat("<tr><th class=\"bg-light\">카드종류</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" value=\"{1}\" autocomplete=\"off\"></td>", "cardtype", row["cardtype"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">한도(천원)</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"number;10;0\" value=\"{1}\" autocomplete=\"off\"></td>", "limitamt", StrCardLimitAmt(row["limitamt"].ToString()));
+            sb.Append("</tr>");
+
+            //상태, 신청구분
+            sb.AppendFormat("<tr><th class=\"bg-light\">상태</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "cardstat");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["external.cc_cardstate"])
+            {
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[3].ToString(), o[4].ToString(), row["cardstat"].ToString() == o[3].ToString() ? " selected" : "");
+            }
+            sb.Append("</select></td>");
+            sb.AppendFormat("<th class=\"bg-light\">신청구분</th><td>");
+            sb.AppendFormat("<select class=\"custom-select\" name=\"RegChangeData\" data-field=\"{0}\">", "isustate");
+            sb.Append("<option value=\"\">선택</option>");
+            foreach (object[] o in ViewBag.CodeTable["external.cc_reqkind"])
+            {
+                sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", o[3].ToString(), o[4].ToString(), row["isustate"].ToString() == o[3].ToString() ? " selected" : "");
+            }
+            sb.Append("</select></td>");
+            sb.Append("</tr>");
+
+            //신청일, 발급일
+            sb.AppendFormat("<tr><th class=\"bg-light\">신청일</th><td><input type=\"text\" class=\"form-control datepicker\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{1}\" autocomplete=\"off\"></td>", "reqdate", CvtDate(row["reqdate"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">발급일</th><td><input type=\"text\" class=\"form-control datepicker\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{1}\" autocomplete=\"off\"></td>", "isudate", CvtDate(row["isudate"].ToString()));
+            sb.Append("</tr>");
+
+            //해지일
+            sb.AppendFormat("<tr><th class=\"bg-light\">해지일</th><td><input type=\"text\" class=\"form-control datepicker\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"date;yyyy-MM-dd\" value=\"{1}\" autocomplete=\"off\"></td>", "rtndate", CvtDate(row["rtndate"].ToString()));
+            sb.Append("<th class=\"bg-light\"></th><td></td>");
+            sb.Append("</tr>");
+
+            //용도
+            sb.AppendFormat("<tr><th class=\"bg-light\">용도</th><td colspan=\"3\"><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"{1}\"></td>", "cardusage", row["cardusage"].ToString());
+            sb.Append("</tr>");
+
+            //사용자
+            strFld01 = StringHelper.SafeInt(row["useid"]) > 0 ? row["usedept"].ToString() + ". " + row["usenm"].ToString() : row["usenm"].ToString();
+            sb.AppendFormat("<tr><th class=\"bg-light\">사용자</th><td colspan=\"3\"><div class=\"input-group\"><input type=\"text\" class=\"form-control\" id=\"_cardUser\" readonly value=\"{0}\"><button class=\"btn btn-outline-secondary\" data-zm-menu=\"del-use\">{1}</button><button class=\"btn btn-outline-secondary\" onclick=\"_zw.fn.org('all','n', 'use');\">{2}</button></td>", strFld01, "삭제", "선택");
+            sb.Append("</tr>");
+
+            //소지자
+            strFld01 = StringHelper.SafeInt(row["posurid"]) > 0 ? row["posdept"].ToString() + ". " + row["posur"].ToString() : row["posur"].ToString();
+            sb.AppendFormat("<tr><th class=\"bg-light\">소지자</th><td colspan=\"3\"><div class=\"input-group\"><input type=\"text\" class=\"form-control\" id=\"_cardPosUr\" readonly value=\"{0}\"><button class=\"btn btn-outline-secondary\" data-zm-menu=\"del-use\">{1}</button><button class=\"btn btn-outline-secondary\" onclick=\"_zw.fn.org('all','n', 'pos');\">{2}</button></td>", strFld01, "삭제", "선택");
+            sb.Append("</tr>");
+
+            //메모
+            sb.AppendFormat("<tr><th class=\"bg-light\">메모</td><td colspan=\"3\"><textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"500\">{1}</textarea>", "memo", row["memo"].ToString());
+            sb.Append("</tr>");
+
+            //등록, 최종변경일        
+            sb.AppendFormat("<tr><th class=\"bg-light\">처리</th><td><div class=\"p-1\">{0}. {1}</div></td>", row["mgrdept"].ToString(), row["mgrnm"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">최종변경</th><td><div class=\"p-1\">{0}</div></td>", DateHelper.CheckDateTime(row["moddate"].ToString()));
+            sb.Append("</tr>");
+
+            sb.Append("</table>");
+
+            //숨은 필드
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "ccid", row["ccid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "usenm", row["usenm"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "useid", row["useid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "useempid", row["useempid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "usedept", row["usedept"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "usedeptid", row["usedeptid"].ToString());
+
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "posur", row["posur"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "posurid", row["posurid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "posdept", row["posdept"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "posdeptid", row["posdeptid"].ToString());
+
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrnm", Session["URName"].ToString()); //처리자
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrid", Session["URID"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrdept", Session["DeptName"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrdeptid", Session["DeptID"].ToString());
+
+            sb.Append("</div>"); //modal-body
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"save\">{0}</button>", Resources.Global.Save);
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5 h5\">{0}</p>", Resources.Global.NoItemShow);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 카드 조회 (연동카드, 직접입력 카드)
+    /// </summary>
+    /// <param name="post"></param>
+    /// <param name="ds"></param>
+    /// <returns></returns>
+    private string ViewCard(JObject post, DataSet ds)
+    {
+        //현대카드연동, 직접입력
+        //결재문서 연결 : 사용자 연결 안된 경우
+        //사용자, 소지자 연결 : 결재문서 연결 안된 경우
+        //관리자만 신규, 수정 권한
+        bool bAdmin = post["operator"].ToString() == "Y" ? true : false;
+
+        StringBuilder sb = new StringBuilder();
+        if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+        {
+            DataRow row = ds.Tables[0].Rows[0];
+
+            int iLinkDoc = StringHelper.SafeInt(row["pilink"]); //연결된 결재문서
+            bool bInterface = row["ifdate"].ToString() == "" ? false : true; //연동 문서 여부
+
+            string strFld01 = "";
+
+            sb.Append("<div class=\"modal-body p-2\">"); //modal-body
+            sb.Append("<table class=\"table table-bordered table-sm mb-0\">");
+            sb.Append("<colspan><col style=\"width:15%\" /><col style=\"width:35%\" /><col style=\"width:15%\" /><col style=\"width:35%\" /></colspan>");
+
+            if (bAdmin && bInterface)
+                sb.AppendFormat("<tr><th class=\"bg-light\">구분</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" value=\"{1}\"></td>", "membertype", row["membertype"].ToString());
+            else
+                sb.AppendFormat("<tr><th class=\"bg-light\">구분</th><td><div class=\"p-1\">{0}</div></td>", row["membertype"].ToString());
+
+            sb.AppendFormat("<th class=\"bg-light\">카드사</th><td><div class=\"p-1\">{0}</div></td>", StrCardCorp(row["cardcorp"].ToString()));
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">카드번호</th><td><div class=\"p-1\">{0}</div></td>", StrCardNum(row["cardnum"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">유효기간</th><td><div class=\"p-1\">{0}</div></td>", StrCardPeriod(row["cardprid"].ToString()));
+            sb.Append("</tr>");
+
+            if (bAdmin && bInterface)
+                sb.AppendFormat("<tr><th class=\"bg-light\">카드종류</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" value=\"{1}\"></td>", "cardtype", row["cardtype"].ToString());
+            else
+                sb.AppendFormat("<tr><th class=\"bg-light\">카드종류</th><td><div class=\"p-1\">{0}</div></td>", row["cardtype"].ToString());
+
+            sb.AppendFormat("<th class=\"bg-light\">한도(천원)</th><td><div class=\"p-1\">{0}</div></td>", StrCardLimitAmt(row["limitamt"].ToString()));
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">상태</th><td><div class=\"p-1\">{0}</div></td>", StrCardState(row["cardstat"].ToString(), "external.cc_cardstate"));
+            sb.AppendFormat("<th class=\"bg-light\">신청구분</th><td><div class=\"p-1\">{0}</div></td>", StrCardState(row["isustate"].ToString(), "external.cc_reqkind"));
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">신청일</th><td><div class=\"p-1\">{0}</div></td>", CvtDate(row["reqdate"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">발급일</th><td><div class=\"p-1\">{0}</div></td>", CvtDate(row["isudate"].ToString()));
+            sb.Append("</tr>");
+
+            sb.AppendFormat("<tr><th class=\"bg-light\">해지일</th><td><div class=\"p-1\">{0}</div></td>", CvtDate(row["rtndate"].ToString()));
+            sb.Append("<th class=\"bg-light\"></th><td></td>");
+            sb.Append("</tr>");
+
+            //용도
+            if (bAdmin && bInterface)
+                sb.AppendFormat("<tr><th class=\"bg-light\">용도</th><td colspan=\"3\"><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"50\" value=\"{1}\"></td>", "cardusage", row["cardusage"].ToString());
+            else
+                sb.AppendFormat("<tr><th class=\"bg-light\">용도</th><td colspan=\"3\"><div class=\"p-1\">{0}</div></td>", row["cardusage"].ToString());
+            sb.Append("</tr>");
+
+            //사용자
+            sb.Append("<tr><th class=\"bg-light\">사용자</th><td colspan=\"3\">");
+            strFld01 = StringHelper.SafeInt(row["useid"]) > 0 ? row["usedept"].ToString() + ". " + row["usenm"].ToString() : row["usenm"].ToString();
+            if (bAdmin && bInterface && iLinkDoc == 0)
+                sb.AppendFormat("<div class=\"input-group\"><input type=\"text\" class=\"form-control\" id=\"_cardUser\" readonly value=\"{0}\"><div class=\"input-group-append\"><button class=\"btn btn-outline-secondary\" data-zm-menu=\"del-use\">{1}</button><button class=\"btn btn-outline-secondary\" onclick=\"_zw.fn.org('all','n', 'use');\">{2}</button></div></div>", strFld01, "삭제", "선택");
+            else
+                sb.AppendFormat("<div class=\"p-1\">{0}</div>", strFld01);
+            sb.Append("</td></tr>");
+
+            //소지자
+            sb.Append("<tr><th class=\"bg-light\">소지자</th><td colspan=\"3\">");
+            strFld01 = StringHelper.SafeInt(row["posurid"]) > 0 ? row["posdept"].ToString() + ". " + row["posur"].ToString() : row["posur"].ToString();
+            if (bAdmin && bInterface)
+                sb.AppendFormat("<div class=\"input-group\"><input type=\"text\" class=\"form-control\" id=\"_cardPosUr\" readonly value=\"{0}\"><div class=\"input-group-append\"><button class=\"btn btn-outline-secondary\" data-zm-menu=\"del-pos\">{1}</button><button class=\"btn btn-outline-secondary\" onclick=\"_zw.fn.org('all','n', 'pos');\">{2}</button></div></div>", strFld01, "삭제", "선택");
+            else
+                sb.AppendFormat("<div class=\"p-1\">{0}</div>", strFld01);
+
+            sb.Append("</td></tr>");
+
+            if (bInterface)
+            {
+                //결재문서
+                if (iLinkDoc > 0)
+                {
+                    sb.AppendFormat("<tr><th class=\"bg-light\">결재문서</th><td><div class=\"p-1\"><a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('{0}');\">{1}</a>", row["pilink"].ToString(), DateHelper.CheckDateTime(row["piend"].ToString()));
+                    if (bAdmin) sb.Append("<button class=\"btn btn-sm btn-outline-secondary ml-1\" data-zm-menu=\"ealink\"><i class=\"fas fa-unlink\"></i></button>");
+                    sb.Append("</div></td>");
+                }
+                else if (bAdmin)
+                {
+                    //sb.AppendFormat("<tr><th class=\"bg-light\">결재문서</th><td><button class=\"btn btn-outline-secondary py-1\" data-zm-menu=\"ealink\" title=\"{0}\">{0}</button></td>", "선택");
+                    sb.AppendFormat("<tr><th class=\"bg-light\">결재문서</th><td><div class=\"p-1\"><button class=\"btn btn-sm btn-outline-secondary ml-1\" data-zm-menu=\"ealink\" title=\"결재문서\"><i class=\"fas fa-link\"></i></button></div></td>", "선택");
+                }
+                else
+                    sb.Append("<th class=\"bg-light\">결재문서</th><td><div class=\"p-1\"></div></td>");
+
+                //연동정보
+                if (bInterface)
+                    sb.AppendFormat("<th class=\"bg-light\">연동일시</th><td><div class=\"p-1\">{0} {1}</div></td>", CvtDate(row["ifdate"].ToString()), CvtTime(row["iftime"].ToString()));
+                else
+                    sb.Append("<th class=\"bg-light\">연동일시</th><td><div class=\"p-1\">해당없음</div></td>");
+                sb.Append("</tr>");
+            }
+
+            //메모
+            sb.Append("<tr><th class=\"bg-light\">메모</td><td colspan=\"3\">");
+            if (bAdmin && bInterface)
+                sb.AppendFormat("<textarea name=\"RegChangeData\" data-field=\"{0}\" class=\"form-control bootstrap-maxlength\" maxlength=\"500\">{1}</textarea>", "memo", row["memo"].ToString());
+            else
+                sb.AppendFormat("<div class=\"p-1\">{0}</div>", StringHelper.ReplaceReply(row["memo"].ToString()));
+            sb.Append("</td></tr>");
+
+
+            //처리, 최종변경일        
+            sb.AppendFormat("<tr><th class=\"bg-light\">처리</th><td><div class=\"p-1\">{0}. {1}</div></td>", Session["DeptName"].ToString(), Session["URName"].ToString());
+            sb.AppendFormat("<th class=\"bg-light\">최종변경</th><td><div class=\"p-1\">{0}</div></td>", DateHelper.CheckDateTime(row["moddate"].ToString()));
+            sb.Append("</tr>");
+
+            sb.Append("</table>");
+
+            //숨은 필드
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "ccid", row["ccid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "usenm", row["usenm"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "useid", row["useid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "useempid", row["useempid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "usedept", row["usedept"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "usedeptid", row["usedeptid"].ToString());
+
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "posur", row["posur"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "posurid", row["posurid"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "posdept", row["posdept"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "posdeptid", row["posdeptid"].ToString());
+
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrnm", Session["URName"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrid", Session["URID"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrdept", Session["DeptName"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "mgrdeptid", Session["DeptID"].ToString());
+
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "pilink", row["pilink"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "pistate", row["pistate"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "pistart", row["pistart"].ToString());
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "piend", row["piend"].ToString());
+
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "ea_msgid", row["pilink"].ToString()); //결재문서 연결 처리 위해
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"\" />", "ea_msglink"); //결재문서 연결 처리 위해
+            sb.AppendFormat("<input type=\"hidden\" name=\"RegChangeData\" data-field=\"{0}\" value=\"{1}\" />", "interface_info", (bInterface ? "Y" : "N")); //연동정보 여부
+
+            sb.Append("</div>"); //modal-body
+            sb.Append("<div class=\"modal-footer\">");
+            if (bAdmin) //관리자 경우
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
+                if (bInterface)
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"link\">{0}</button>", Resources.Global.Save); //연동 경우
+                else
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"edit\">{0}</button>", Resources.Global.Edit);
+            }
+            else
+            {
+                sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            }
+            sb.Append("</div>");
+        }
+        else
+        {
+            sb.Append("<div class=\"modal-body text-center p-0\">"); //modal-body
+
+            sb.AppendFormat("<p class=\"py-5 h5\">{0}</p>", Resources.Global.NoItemShow);
+
+            sb.Append("</div>"); //modal-body
+
+            sb.Append("<div class=\"modal-footer\">");
+            sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Close);
+            sb.Append("</div>");
+        }
+        return sb.ToString();
+    }
+
+    #region [유틸]
+    private string StrCardNum(string num)
+    {
+        // 숫자 이외의 문자 제거
+        string cleaned = Regex.Replace(num, @"\s|-", "");
+        // 4자리마다 하이픈 삽입
+        return Regex.Replace(cleaned, @"(.{4})(?=.)", "$1-");
+    }
+
+    private string StrCardPeriod(string period)
+    {
+        if (period == null || period == "") return "";
+        else
+        {
+            if (period.Length == 4) return period.Substring(0, 2) + "/" + period.Substring(2, 2);
+            else if (period.Length == 6) return period.Substring(4, 2) + "/" + period.Substring(2, 2);
+            else return period;
+        }
+    }
+
+    private string StrCardLimitAmt(string amt)
+    {
+        if (amt == null || amt == "") return "";
+        else
+        {
+            if (decimal.TryParse(amt, out decimal result))
+            {
+                return String.Format($"{result / 1000:n0}");
+            }
+            else return amt;
+        }
+    }
+
+    private string CvtDate(string d)
+    {
+        if (d != "") return d.Substring(0, 4) + "-" + d.Substring(4, 2) + "-" + d.Substring(6, 2);
+        else return "";
+    }
+
+    private string CvtTime(string t)
+    {
+        if (t != "") return t.Substring(0, 2) + ":" + t.Substring(2, 2) + ":" + t.Substring(4, 2);
+        else return "";
+    }
+
+    private string StrCardCorp(string card)
+    {
+        foreach (object[] o in ViewBag.CodeTable["external.cc_cardcorp"])
+        {
+            if (o[3].ToString() == card)
+                return o[4].ToString();
+
+        }
+        return card;
+    }
+
+    private string StrCardState(string state, string codeTable)
+    {
+        string rt = "";
+        //external.cc_cardstate, external.cc_reqkind
+
+        foreach (object[] o in ViewBag.CodeTable[codeTable])
+        {
+            if (o[3].ToString() == state)
+                return o[4].ToString().Length > 3 ? o[4].ToString().Substring(0, 2) : o[4].ToString();
+        }
+
+        //if (isu == "" || isu == "0") rt = "신청";
+        //else if (state == "1") rt = "정상";
+        //else if (state == "3" || state == "5") rt = "정지";
+        //else if (state == "7") rt = "취소";
+        //else if (state == "9") rt = "교체";
+
+        return rt;
+    }
+    #endregion
+}
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content bg-white z-list" style="box-shadow: 0px 5px 15px rgba(0,0,0,0.5)">
+        <div class="modal-header py-2">
+            <h5 class="modal-title">@sTitle</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+
+        @if (ViewBag.JPost["M"].ToString() == "new")
+        {
+            @Html.Raw(NewCard(ViewBag.JPost))
+        }
+        else if (ViewBag.JPost["M"].ToString() == "edit")
+        {
+            @Html.Raw(EditCard(ViewBag.JPost, ViewBag.CardInfo))
+        }
+        else
+        {
+            @Html.Raw(ViewCard(ViewBag.JPost, ViewBag.CardInfo))
+        }
+    </div>
+</div>

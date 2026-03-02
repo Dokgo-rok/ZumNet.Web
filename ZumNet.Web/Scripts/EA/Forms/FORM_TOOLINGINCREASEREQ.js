@@ -229,7 +229,7 @@
 				type: "POST",
 				url: "/EA/Common",
 				async: false,
-				data: '{M:"getoracleerp",body:"S", k1:"",k2:"exchangeinfo",k3:"",v1:"' + tc + '",v2:"' + dt + '",v3:"' + dt + '",conver:"1005"}',
+				data: '{M:"getoracleerp",body:"S", k1:"erp",k2:"exchangeinfo",k3:"",v1:"' + tc + '",v2:"' + dt + '",v3:"' + dt + '",conver:"1005"}',
 				success: function (res) {
 					if (res.substr(0, 2) == 'OK') rt = JSON.parse(res.substr(2)); //console.log(j)
 					else bootbox.alert(res);

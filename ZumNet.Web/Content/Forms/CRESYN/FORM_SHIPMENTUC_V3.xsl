@@ -179,10 +179,10 @@
                             <i class="fas fa-angle-down"></i>
                         </button>
                         &nbsp;&nbsp;
-                        <!--<button class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="가져오기" onclick="_zw.fn.importFile();">
+                        <button class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="가져오기" onclick="_zw.fn.importFile();">
                         <i class="fe-upload text-success"></i>
                             <span class="ml-1">가져오기</span>
-                        </button>-->
+                        </button>
                         <button type="button" class="btn icon-btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" title="추가" onclick="_zw.form.addRow('__subtable1');">
                             <i class="fas fa-plus"></i>
                         </button>
@@ -495,7 +495,7 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit' ">
-            <input type="text" name="SALEPER" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{SALEPER}" />
+            <input type="text" name="SALEPER" class="txtDollar" maxlength="12" data-inputmask="percent;10;2" value="{SALEPER}" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="class">tdRead_Right</xsl:attribute>

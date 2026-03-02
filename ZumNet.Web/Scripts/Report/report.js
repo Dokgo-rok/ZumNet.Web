@@ -446,6 +446,8 @@ $(function () {
                     if (_zw.V.ft == 'FORM_DRAWING') {
                         if ($.trim(e.val()) == '') { bootbox.alert('모델번호 또는 부품번호를 입력하십시오!', function () { e.focus(); }); return false; }
                         _zw.V.lv.cd3 = $('#_SearchCond3').val();
+                    } else if (_zw.V.ft == 'CC_CARDBASE') {
+                        _zw.V.lv.cd3 = $('.z-list-cond [data-for="search-cond3"] input:radio:checked').val();
                     }
                 }
             }

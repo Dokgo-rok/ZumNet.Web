@@ -808,7 +808,7 @@
                 <td style="border-right:0;">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">
-                      <input class="txtText"  type="text" id="__mainfield" name="ACCOUNT_DOMESTIC" maxlength="100" value="{//forminfo/maintable/ACCOUNT_DOMESTIC}"/>
+                      <input class="txtText"  type="text" id="__mainfield" name="ACCOUNT_DOMESTIC" maxlength="30" oninput="this.value = this.value.replace(/[^0-9-]/g, '');" placeholder="숫자-하이픈만 입력" value="{//forminfo/maintable/ACCOUNT_DOMESTIC}"/>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/ACCOUNT_DOMESTIC))" />

@@ -1,8 +1,8 @@
 ﻿@using System.Data;
 @using System.Text;
-
 @{
     int maxPage = 0;
+    int sidePage = 1; //중간페이지 표기
     int totalCount = 0;
     int pageCount = 0;
     int pageIndex = 0;
@@ -11,9 +11,10 @@
     int iStart = 0;
     int iEnd = 0;
 
-    if (ViewBag.R.ft == "REGISTER_TOOLING")
+    if (ViewBag.R.ft == "REGISTER_TOOLING" || ViewBag.R.ft == "CC_CARDBASE" || ViewBag.R.ft == "CC_CARDACK")
     {
         maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+        sidePage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 1 : 4;
         totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
         pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
         pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
@@ -29,8 +30,8 @@
         }
         else if (pageIndex >= maxPage && (totalPage - maxPage + 1 >= pageIndex))
         {
-            iStart = pageIndex - 1;
-            iEnd = pageIndex + 1;
+            iStart = pageIndex - sidePage;
+            iEnd = pageIndex + sidePage;
         }
         else if (pageIndex < maxPage)
         {
@@ -44,7 +45,6 @@
         }
     }
 }
-
 @if (totalPage > 1)
 {
     <ul class="pagination pagination-sm justify-content-center">

@@ -1,0 +1,355 @@
+﻿@using System.Collections;
+@using System.Data;
+@using System.Text;
+@using System.Text.RegularExpressions;
+@using Newtonsoft.Json.Linq;
+@using ZumNet.Framework.Util;
+@using ZumNet.Web.Bc;
+@using ZumNet.Web.Filter;
+@{
+    //법인카드신청대장, CC_CARDBASE
+    string _requestMode = ViewBag.R.mode.ToString();
+    InitConfig();
+
+    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+    using (ZumNet.BSL.InterfaceBiz.ReportBiz rpBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+    {
+        int iCount = _requestMode == "xls" ? 0 : StringHelper.SafeInt(ViewBag.R.lv.count.Value);
+        svcRt = rpBiz.GetReport(ViewBag.R.mode.ToString(), StringHelper.SafeInt(ViewBag.R.lv.tgt.Value), ViewBag.R.ft.ToString(), ViewBag.R.lv.start.ToString(), ViewBag.R.lv.end.ToString()
+            , ViewBag.R.lv.cd1.ToString(), ViewBag.R.lv.cd2.ToString(), ViewBag.R.lv.cd3.ToString(), ViewBag.R.lv.cd4.ToString(), ViewBag.R.lv.cd5.ToString()
+            , StringHelper.SafeInt(ViewBag.R.lv.page.Value), iCount, "", ViewBag.R.lv.sort.ToString(), ViewBag.R.lv.sortdir.ToString(), "");
+    }
+
+    if (svcRt != null && svcRt.ResultCode == 0)
+    {
+        ViewBag.R.lv["total"] = svcRt.ResultItemCount.ToString();
+    }
+    else
+    {
+        ViewBag.R.lv["total"] = 0;
+    }
+
+    if (_requestMode == "xls")
+    {
+        ExcelBind(ViewList(_requestMode, svcRt.ResultDataSet));
+        Response.End();
+    }
+}
+@functions {
+
+    string[,] _columnConfig = null;
+    string _tblWidth = "";
+
+    private void InitConfig()
+    {
+        //초기 설정
+        if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddMonths(-3).ToString("yyyy-MM") + "-01"; //기본 3개월 첫날
+        if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "법인카드사용현황";
+
+        string[,] arr = { { "rownum", "NO", "5%", "", "" }, { "purchaseflag", "구분", "5%", "", "" }, { "aquidate", "매입일자", "7%", "", "Y" }
+                            , { "usenm", "사용자", "7%", "", "Y" }, { "cardnum", "카드번호", "13%", "", "Y" }, { "ackno", "승인번호", "8%", "", "Y" }
+                            , { "mercname", "가맹점명", "15%", "L", "Y" }, { "mercsocno", "가맹점사업자번호", "10%", "", "" }, { "ackamt", "승인금액", "7%", "", "" }
+                            , { "valsupply", "공급가액", "7%", "", "" }, { "vat", "부가세", "6%", "", "" }, { "currency", "통화", "5%", "", "" }
+                            , { "_STATE_", "상태", "5%", "", "" }
+                            };
+        this._columnConfig = arr;
+        if (Session["Admin"].ToString() == "Y" || ViewBag.R.current["operator"].ToString() == "Y") ViewBag.R["mode"] = "dn"; //관리자
+        else
+        {
+            ViewBag.R["mode"] = "ur";
+            ViewBag.R.lv["tgt"] = Convert.ToInt32(Session["URID"]);
+        }
+        this._tblWidth = "100%";
+    }
+
+    private string RenderColumnHeader(string mode)
+    {
+        StringBuilder sb = new StringBuilder();
+        string sClassExcel = mode == "xls" ? " class=\"xls_th\"" : "";
+
+        sb.AppendFormat("<colgroup span=\"{0}\">", _columnConfig.GetLength(0));
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            sb.AppendFormat("<col style=\"width:{0}\" />", _columnConfig[i, 2].ToString());
+        }
+        sb.Append("</colgroup>");
+
+        sb.Append("<thead>");
+        sb.Append("<tr class=\"table-success\">");
+        for (int i = 0; i < _columnConfig.GetLength(0); i++)
+        {
+            if (mode != "xls" && _columnConfig[i, 4].ToString() == "Y")
+            {
+                sb.AppendFormat("<th><a class=\"z-lnk-navy\" href=\"javascript:\" data-val=\"{0}\" onclick=\"_zw.fn.sort();\">{1} <i class=\"{2}\"</a></th>"
+                                 , _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString()
+                                , (ViewBag.R.lv.sort == _columnConfig[i, 0].ToString() ? (ViewBag.R.lv.sortdir == "ASC" ? "fe-arrow-up" : "fe-arrow-down") : ""));
+            }
+            else sb.AppendFormat("<th{0}>{1}</th>", sClassExcel, _columnConfig[i, 1].ToString());
+        }
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        return sb.ToString();
+    }
+
+    private string ViewList(string mode, DataSet data)
+    {
+        if (data != null && data.Tables.Count > 0)
+        {
+            string strID = "";
+            string strValue = "";
+            string strRowClass = "";
+            string strTextDecoration= "";
+            int iRow = 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("<table class=\"table table-hover table-bordered table-sm\" style=\"width:{0}\">", this._tblWidth);
+            sb.Append(RenderColumnHeader(mode));
+            sb.Append("<tbody>");
+
+            DataTable dt = data.Tables[0];
+
+            foreach (DataRow row in dt.Rows)
+            {
+                strRowClass = row["purchaseflag"].ToString() == "04" ? " class=\"table-warning\"" : "";
+
+                sb.AppendFormat("<tr{0} id=\"_{1}\">", strRowClass, row["ackid"].ToString());
+
+                for (int i = 0; i < _columnConfig.GetLength(0); i++)
+                {
+                    strID = _columnConfig[i, 0].ToString();
+                    strTextDecoration = "";
+
+                    if (strID.ToUpper() == "SEQ")
+                    {
+                        strValue = iRow.ToString();
+                    }
+                    else if (strID == "purchaseflag")
+                    {
+                        strValue = StrPurchaseFlag(row[strID].ToString());
+                    }
+                    else if (strID == "cardnum")
+                    {
+                        strTextDecoration = row["exceptproc"].ToString() == "Y" ? " style=\"text-decoration: line-through\"" : "";
+
+                        strValue = StrCardNum(row[strID].ToString());
+                        if (mode != "xls" && strValue != "") strValue = "<a class=\"z-lnk-navy-n\" href=\"javascript:\" onclick=\"_zw.fn.viewCardAck('V');\" title=\"" + Server.HtmlEncode(strValue) + "\">" + strValue + "</a>";
+                    }
+                    else if (strID == "mercsocno")
+                    {
+                        strValue = StrSocNum(row[strID].ToString());
+                    }
+                    else if (strID == "ackamt" || strID == "valsupply" || strID == "vat")
+                    {
+                        strValue = StrCardAmt(row[strID].ToString());
+                    }
+                    else if (strID == "aquidate")
+                    {
+                        strValue = CvtDate(row[strID].ToString());
+                    }
+                    else if (strID == "_STATE_")
+                    {
+                        strValue = StrApvState(row["pistate"].ToString());
+                        if (mode != "xls" && strValue != "" && StringHelper.SafeInt(row["pilink"].ToString(), 0) > 0) strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["pilink"].ToString() + "');\">" + strValue + "</a>";
+                    }
+                    else
+                    {
+                        strValue = row[strID].ToString();
+                    }
+                    sb.AppendFormat("<td class=\"{0}\"{1}>{2}</td>", _columnConfig[i, 3].ToString() == "L" ? " text-left" : "", strTextDecoration, strValue);
+                }
+                sb.Append("</tr>");
+                iRow++;
+            }
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            dt = null;
+            return sb.ToString();
+        }
+        return "";
+    }
+
+    private string ListCount()
+    {
+        string sPage = "";
+        int totalCount = 0;
+        int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+        totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
+        int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
+        int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
+        int totalPage = totalCount / pageCount;
+
+        if (totalCount % pageCount > 0) { totalPage++; }
+        if (pageIndex > totalPage) { pageIndex = totalPage; }
+
+        sPage = String.Format("{0} {1} {2} ({3} / {4} {5})", Resources.Global.Total, totalCount.ToString(), Resources.Global.Count, pageIndex.ToString(), totalPage.ToString(), Resources.Global.Page);
+
+        return sPage;
+    }
+
+    private string ListCond()
+    {
+        string sWidth = _columnConfig != null && _columnConfig.GetLength(0) > 0 ? " wd-md-80 wd-lg-65 wd-xl-60" : " wd-sm-80 wd-md-60 wd-lg-45 wd-xl-40";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat("<div class=\"z-list-cond d-flex justify-content-end wd-70{0}\">", sWidth);
+        sb.Append("<div class=\"z-list-date input-group datepicker input-daterange\">");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control start-date px-1\" value=\"{0}\">", ViewBag.R.lv.start);
+        sb.Append("<div class=\"input-group-prepend\">");
+        sb.Append("<span class=\"input-group-text\">~</span>");
+        sb.Append("</div>");
+        sb.AppendFormat("<input type=\"text\" class=\"form-control end-date px-1\" value=\"{0}\">", ViewBag.R.lv.end);
+        sb.AppendFormat("<div class=\"input-group-append{0}\">", _columnConfig != null && _columnConfig.GetLength(0) > 0 ? "  d-flex d-sm-none" : "");
+        sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+        sb.Append("</div>");
+        sb.Append("</div>");
+
+        if (_columnConfig != null && _columnConfig.GetLength(0) > 0)
+        {
+            sb.Append("<div class=\"z-list-search input-group d-none d-sm-flex\">");
+            sb.Append("<select class=\"custom-select ml-1\" id=\"_SearchSelect\">");
+            sb.AppendFormat("<option value=\"\">{0}..</option>", Resources.Global.Select);
+            for (int i = 0; i < _columnConfig.GetLength(0); i++)
+            {
+                if (_columnConfig[i, 4].ToString() == "Y" && (_columnConfig[i, 0].ToString() == "usenm" || _columnConfig[i, 0].ToString() == "cardnum"))
+                {
+                    sb.AppendFormat("<option value=\"{0}\"{2}>{1}</option>", _columnConfig[i, 0].ToString(), _columnConfig[i, 1].ToString(), _columnConfig[i, 0].ToString() == ViewBag.R.lv.cd1.ToString() ? " selected" : "");
+                }
+
+            }
+            sb.Append("</select>");
+            sb.AppendFormat("<input type=\"text\" class=\"form-control\" id=\"_SearchText\" placeholder=\"{0}\" value=\"{1}\">", Resources.Global.Search, ViewBag.R.lv.cd2.ToString());
+
+            sb.Append("<span class=\"input-group-append\">");
+            sb.Append("<button class=\"btn btn-secondary\" type=\"button\" data-zv-menu=\"search\"><i class=\"fe-search\"></i></button>");
+            sb.Append("</span>");
+            sb.Append("</div>");
+        }
+
+        sb.Append("</div>"); //z-list-cond
+        return sb.ToString();
+    }
+
+    private void ExcelBind(string data)
+    {
+        string strExcelFileName = ViewBag.R.ft.ToString() + "_Export_" + DateTime.Now.ToString("yyMMdd_HHmmss") + ".xls"; //2014-04-11
+        Response.Clear();
+        Response.Charset = "utf-8";
+        Response.Buffer = true;
+        //EnableViewState = false;
+        Response.AddHeader("content-disposition", "attachment;filename=" + strExcelFileName); //Content.xls");
+        Response.ContentType = "application/x-msdownload";
+        string encoding = Request.ContentEncoding.HeaderName;
+        Response.Write("<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head>");
+        Response.Write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">");
+        Response.Write("<style type=\"text/css\">" + ExcelStyle() + "</style>");
+        Response.Write("</head>");
+        Response.Write("<body>");
+        Response.Write(data);
+        Response.Write("</body></html>");
+    }
+
+    public string ExcelStyle()
+    {
+        return @"
+        body {width: 100%}
+        table {width: ; border-top: 0.1pt solid windowtext; border-right: 0.1pt solid windowtext}
+        td {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px;}
+
+        .xls_warning {background-color: #fcf8e3}
+        .xls_th {border-bottom: 0.1pt solid windowtext; border-left: 0.1pt solid windowtext; padding: 4px; text-align: center; background-color: #dff0d8}
+
+        .text-center {text-align: center}
+        .xl66 {mso-number-format:'\#\,\#\#0\.0000\;\[Red\]\\-\#\,\#\#0\.0000';}
+        .xl88 {mso-number-format:'\#\,\#\#0\.0000_\)\;\[Red\]\\\(\#\,\#\#0\.0000\\\)';}
+        ";
+    }
+
+    #region [유틸]
+    private string StrPurchaseFlag(string flag)
+    {
+        string rt = "";
+
+        if (flag == "03") rt = "매입";
+        else if (flag == "04") rt = "취소";
+        else rt = flag;
+
+        return rt;
+    }
+
+    private string StrCardNum(string num)
+    {
+        // 숫자 이외의 문자 제거
+        string cleaned = Regex.Replace(num, @"\s|-", "");
+        // 4자리마다 하이픈 삽입
+        return Regex.Replace(cleaned, @"(.{4})(?=.)", "$1-");
+    }
+
+    private string StrSocNum(string num)
+    {
+        return string.Format("{0:###-##-#####}", long.Parse(num));
+    }
+
+    private string StrCardAmt(string amt)
+    {
+        if (amt == null || amt == "") return "";
+        else
+        {
+            if (decimal.TryParse(amt, out decimal result))
+            {
+                return String.Format($"{result:n0}");
+            }
+            else return amt;
+        }
+    }
+
+    private string CvtDate(string d)
+    {
+        if (d != "") return d.Substring(0, 4) + "-" + d.Substring(4, 2) + "-" + d.Substring(6, 2);
+        else return "";
+    }
+
+    private string StrCardCorp(string card)
+    {
+        foreach (DataRow row in ViewBag.CardCorp)
+        {
+            if (row["Item1"].ToString() == card)
+            {
+                return row["Item2"].ToString();
+            }
+        }
+        return card;
+    }
+
+    private string StrApvState(string state)
+    {
+        string rt = "";
+
+        if (state == "I") rt = "처리중";
+        else if (state == "Y") rt = "완료";
+        else if (state == "R") rt = "반려";
+        else if (state == "C") rt = "취소";
+        return rt;
+    }
+    #endregion
+}
+@if (svcRt == null || svcRt.ResultCode != 0)
+{
+    @Html.Partial("~/Views/Shared/_ErrorInline.cshtml", new HandleErrorInfo(new Exception(svcRt.ResultMessage), "Report", ViewBag.R.ttl.ToString()))
+}
+else
+{
+    <div class="z-list-head d-flex justify-content-between my-2">
+        <div class="z-list-page d-flex align-items-center" id="__ListCount">
+            <div class="z-list-total mt-1 mr-1">
+                <i class="fe-chevron-right"></i> @ListCount()
+            </div>
+        </div>
+        @Html.Raw(ListCond())
+    </div>
+
+    <div class="z-list-body" id="__ListView">
+        @Html.Raw(ViewList(ViewBag.R.mode.ToString(), svcRt.ResultDataSet))
+    </div>
+}

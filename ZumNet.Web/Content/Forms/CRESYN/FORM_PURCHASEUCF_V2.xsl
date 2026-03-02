@@ -172,10 +172,10 @@
                       <!--<button onclick="parent.importFile();" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_42.gif" />가져오기
                       </button>-->
-						<!--<button class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="가져오기" onclick="_zw.fn.importFile();">
+						<button class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="가져오기" onclick="_zw.fn.importFile();">
 							<i class="fe-upload text-success"></i>
 							<span class="ml-1">가져오기</span>
-						</button>-->
+						</button>
                       <!--<button onclick="parent.fnAddChkRow('__subtable1');" onfocus="this.blur()" class="btn_bg">
                         <img alt="" class="blt01" src="/{//config/@root}/EA/Images/ico_26.gif" />추가
                       </button>

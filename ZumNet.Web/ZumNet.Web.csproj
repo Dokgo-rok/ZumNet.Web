@@ -298,6 +298,7 @@
     <Compile Include="Areas\EA\Controllers\CommonController.cs" />
     <Compile Include="Areas\EA\Controllers\FormController.cs" />
     <Compile Include="Areas\EA\Controllers\ProcessController.cs" />
+    <Compile Include="Areas\ExS\Controllers\CorpCardController.cs" />
     <Compile Include="Areas\WoA\ApprovalLine.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\JsEngineSwitcherConfig.cs" />
@@ -405,6 +406,9 @@
     <Content Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx" />
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
+    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPEXPENSE_V2.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_CLIENTREGAPP_V2.xsl">
       <SubType>Designer</SubType>
     </Content>
@@ -450,6 +454,7 @@
     <Content Include="Content\num.css" />
     <Content Include="Content\preview.css" />
     <Content Include="Content\organ.css" />
+    <Content Include="Content\corpcard.css" />
     <Content Include="Content\report.css" />
     <Content Include="Content\search.css" />
     <Content Include="Content\voc.css" />
@@ -643,7 +648,9 @@
     <Content Include="Content\Forms\CRESYN\FORM_ETCFORM_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_ETHICALMANAGEMENT_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_EVENTRESULTREPORT_V1.xsl" />
-    <Content Include="Content\Forms\CRESYN\FORM_EXPENSEREPORT_V1.xsl" />
+    <Content Include="Content\Forms\CRESYN\FORM_EXPENSEREPORT_V1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Forms\CRESYN\FORM_FACTORYESTIMATE_V1.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_FACTORYESTIMATE_V2.xsl" />
     <Content Include="Content\Forms\CRESYN\FORM_FACTORYESTIMATE_V3.xsl" />
@@ -2249,6 +2256,7 @@
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZVACPLAN.js" />
+    <Content Include="Scripts\EA\Forms\FORM_BOOKSREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CANCELREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_CARACCIDENT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CERTIFICATIONDOCUMENT.js" />
@@ -2256,6 +2264,7 @@
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPLACEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEPOSREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_CHANGEREQUEST.js" />
+    <Content Include="Scripts\EA\Forms\FORM_CLAIMDRAFT.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPP.js" />
     <Content Include="Scripts\EA\Forms\FORM_CLIENTREGAPPMODIFY.js" />
     <Content Include="Scripts\EA\Forms\FORM_CODCHANGEREQUEST.js" />
@@ -2286,6 +2295,7 @@
     <Content Include="Scripts\EA\Forms\FORM_DOCWORKSTATE.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRAWING.js" />
     <Content Include="Scripts\EA\Forms\FORM_DRIVEMONEY.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EDUREPORTA.js" />
     <Content Include="Scripts\EA\Forms\FORM_EDUREPORTB.js" />
     <Content Include="Scripts\EA\Forms\FORM_EDUREQUEST.js" />
     <Content Include="Scripts\EA\Forms\FORM_EDUREQUESTIN.js" />
@@ -2299,6 +2309,7 @@
     <Content Include="Scripts\EA\Forms\FORM_EQUIPPURCHASEREQ.js" />
     <Content Include="Scripts\EA\Forms\FORM_ESTIMATEAGREE.js" />
     <Content Include="Scripts\EA\Forms\FORM_ETCFORM.js" />
+    <Content Include="Scripts\EA\Forms\FORM_EXPENSEREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_FIRSTVACATION.js" />
     <Content Include="Scripts\EA\Forms\FORM_FLOWERMONEY.js" />
     <Content Include="Scripts\EA\Forms\FORM_GONGDONGGONGGA.js" />
@@ -2370,6 +2381,7 @@
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCA.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCB.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCC.js" />
+    <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCC2.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCD.js" />
     <Content Include="Scripts\EA\Forms\FORM_PURCHASEUCF.js" />
     <Content Include="Scripts\EA\Forms\FORM_REPAIRREQUEST.js" />
@@ -2432,6 +2444,7 @@
     <Content Include="Scripts\Env\env.js" />
     <Content Include="Scripts\ExS\ce.js" />
     <Content Include="Scripts\ExS\num.js" />
+    <Content Include="Scripts\ExS\corpcard.js" />
     <Content Include="Scripts\ExS\voc.js" />
     <Content Include="Scripts\ExS\lcm.js" />
     <Content Include="Scripts\ExS\mc.js" />
@@ -3337,6 +3350,13 @@
     <Content Include="Areas\ExS\Views\CE\GridPreview.cshtml" />
     <Content Include="Areas\Docs\Views\Edm\VersionInfo.cshtml" />
     <Content Include="Areas\Docs\Views\Edm\CheckHistory.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\Index.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\_ListMenu.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\_ListPagination.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\_CardView.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\_CardAck.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\_CC_VCHREQ.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\_VchInfo.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
@@ -3522,7 +3542,10 @@
     <Content Include="Views\Report\_FORM_NEWPRODUCTPLAN.cshtml" />
     <Content Include="Views\Report\_FORM_INDUSTRIALPRO.cshtml" />
     <Content Include="Views\Report\_FORM_CERTIFICATIONDOCUMENT.cshtml" />
-    <Content Include="Views\Report\_CC_CARDBASE.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\_CC_CARDBASE.cshtml" />
+    <Content Include="Areas\ExS\Views\CorpCard\_CC_CARDACK.cshtml" />
+    <Content Include="Views\Report\_FORM_CORPORATECARDREQ.cshtml" />
+    <Content Include="Views\Report\_REGISTER_PROJECTIDREGISTRATION.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

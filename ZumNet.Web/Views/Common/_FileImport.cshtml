@@ -447,7 +447,8 @@
                     }
                     else if (_mode == "FORM_PURCHASEUCB" || _mode == "FORM_PURCHASEUCC" || _mode == "FORM_PURCHASEUCC2" || _mode == "FORM_PURCHASESAMPLE" || _mode == "FORM_PURCHASEUCF")
                     {
-                        rt = DoFormPURCHASEUC(dtList); //구매단가결정품의서(인하인상, 유사, 샘플), 2016-04-20 유사 추가
+                        //rt = DoFormPURCHASEUC(dtList); //구매단가결정품의서(인하인상, 유사, 샘플), 2016-04-20 유사 추가
+                        rt = DoFormPURCHASE(dtList); //구매단가결정품의서(가단가, 샘플, 유사, 인하인상) : 26-01-28 (신규 ERP 적용)
                     }
                     else if (_mode == "FORM_CODCHANGEREQUEST")
                     {
@@ -2092,6 +2093,244 @@
 
         return sb.ToString();
     }
+
+    private string DoFormPURCHASE(DataTable data)
+    {
+        ZumNet.Framework.Core.ServiceResult svcRt = new ZumNet.Framework.Core.ServiceResult();
+        StringBuilder sbSubTableData = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
+
+        int iH = 0;
+        int iMAX = 500; //2014-06-12 추가 : 결과창 최대 높이
+        int iTotal = 0; //2014-06-12 추가 : 총 자료 건수
+        int iOk = 0;    //2014-06-12 추가 : 유효 건수
+        int iNo = 0;    //2014-06-12 추가 : 비유효 건수
+
+        if (data.Rows.Count > 0)
+        {
+            string sLabel = "";
+            string sName = "";
+
+            if (_mode == "FORM_PURCHASEUCB") //구매단가결정품의서(인하인상)
+            {
+                sLabel = "사업장;모델명;품번;UOM;현행가;변경가;변동액;변동율;소요량;금액;LT;업체코드;적용시점;비고";
+                sName = "MODELNAME;ITEMNAME;ITEMNO;UOM;PRICEA;PRICEB;PRICEC;RATE;AMOUNT;PRICED;TTLLT;COMPANY;COMPANYCODE;APPLYPOINT;ETC";
+            }
+            else if (_mode == "FORM_PURCHASEUCC") //구매단가결정품의서(유사)
+            {
+                sLabel = "사업장;모델명;품번;개발견적가;견적가;UOM;확정가;업체코드;적용시점;LT;비고";
+                sName = "MODELNAME;ITEMNAME;ITEMNO;PRICEA;PRICEB;UOM;PRICED;COMPANY;COMPANYCODE;APPLYPOINT;TTLLT;ETC";
+            }
+            else if (_mode == "FORM_PURCHASEUCF") //구매단가결정품의서(가단가)
+            {
+                sLabel = "사업장;모델명;품번;UOM;가단가;업체코드;적용시점;비고";
+                sName = "MODELNAME;ITEMNAME;ITEMNO;UOM;PRICEB;COMPANY;COMPANYCODE;APPLYPOINT;ETC";
+            }
+            else if (_mode == "FORM_PURCHASESAMPLE") //구매단가결정품의서(샘플)
+            {
+                sLabel = "사업장;모델명;품번;개발견적가;견적가;현행가;UOM;확정가;업체코드;적용시점;LT;비고";
+                sName = "MODELNAME;ITEMNAME;ITEMNO;PRICEA;PRICEB;PRICEC;UOM;PRICED;COMPANY;COMPANYCODE;APPLYPOINT;TTLLT;ETC";
+            }
+            else
+            {
+                throw new Exception("정보 누락");
+            }
+
+
+            string[] vColumnLabel = sLabel.Split(';');
+            string[] vColumnName = sName.Split(';');
+
+            string sCheck = CheckColumn(data.Rows[0], vColumnLabel);
+            if (sCheck != "")
+            {
+                throw new Exception(sCheck);
+            }
+            else
+            {
+                string strOrg = ""; //법인명
+                string strModelDn = ""; //모델명 <- ERP 확인값
+                string strModelNo = ""; //모델번호
+                string strPartNo = ""; //품번
+                string strPartDn = ""; //품명
+                string strCompanyCode = ""; //업체코드
+                string strCompany = ""; //업체명
+                string strApplyDate = ""; //적용시점
+                string strEtc = ""; //비고
+                string strNumberA = ""; //금액
+                string strNumberB = ""; //금액
+                string strNumberC = ""; //금액
+                string strNumberD = ""; //금액
+                string strNumberE = ""; //소요량
+                string strNumberF = ""; //금액
+                string strLTA = ""; //TTL L/T
+
+                bool bApplyDate = true; //21-03-23 적용시점 체크
+
+                string strResult = "";
+                iTotal = data.Rows.Count;
+
+                sbSubTableData.Append("[[");
+                for (int i = 0; i < vColumnName.Length; i++)
+                {
+                    if (i > 0) sbSubTableData.Append(",");
+                    sbSubTableData.AppendFormat("\"{0}\"", vColumnName[i]);
+                }
+                sbSubTableData.Append("]");
+
+                sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                sb.Append("<colgroup><col style=\"width:88%\" /><col style=\"width:12%\" /></colgroup>");
+                sb.Append("<thead>");
+                sb.Append("<tr><th>대상</th><th>결과</th></tr>");
+                sb.Append("</thead>");
+                sb.Append("<tbody>");
+
+                using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+                {
+                    foreach (DataRow row in data.Rows)
+                    {
+                        strOrg = row["사업장"].ToString();
+                        strModelNo = row["모델명"].ToString(); //모델번호
+                        strPartNo = row["품번"].ToString();
+                        strCompanyCode = row["업체코드"].ToString();
+                        bApplyDate = true;
+
+                        if (strOrg != "" && strPartNo != "" && strCompanyCode != "")
+                        {
+                            iH++;
+                            strApplyDate = DateHelper.CheckDateTime(row["적용시점"].ToString(), "yyyy-MM-dd");
+                            strEtc = row["비고"].ToString();
+
+                            if (strApplyDate != "" && DateTime.Compare(Convert.ToDateTime(strApplyDate), DateTime.Now) > 0)
+                            {
+                                //21-03-23 적용시점 체크
+                                bApplyDate = false;
+                            }
+
+                            //throw new Exception(strPartNo + " : " + strCompanyCode);
+
+                            svcRt = rptBiz.GetReport("", 0, this._mode, "", "", strModelNo, strPartNo, strCompanyCode, strOrg, "");
+                            if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                            {
+                                strModelDn = svcRt.ResultDataSet.Tables[0].Rows[0]["모델명"].ToString();
+                                if (strModelNo != "" && strModelDn == "") strModelDn = "N";
+                                strPartDn = svcRt.ResultDataSet.Tables[0].Rows[0]["품명"].ToString();
+                                //test 2016-04-28 이영호 테스트
+                                strCompany = svcRt.ResultDataSet.Tables[0].Rows[0]["업체명"].ToString();
+                            }
+                            else
+                            {
+                                strModelDn = "";
+                                strPartDn = "";
+                                strCompany = "";
+                            }
+
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td>모델 : {0}, 품번 {1}, 업체 : {2}</td>", strModelNo, strPartNo, strCompanyCode);
+
+                            if (!bApplyDate)
+                            {
+                                //적용시점이 오늘 이후인 경우
+                                strResult = "<a href=\"javascript:\" class=\"text-danger\" title=\"적용시점(" + strApplyDate + ")은 오늘 이전이어야 합니다!!\">NO</a>";
+                                iNo++;
+                            }
+                            else if (strModelDn == "N" || strPartDn == "" || strCompany == "")
+                            {
+                                //모델명이 잘못돼 있거나 품명, 업체명 중 하나라도 확인 되지 않을 경우
+                                strResult = "<a href=\"javascript:\" class=\"text-danger\" title=\"모델명 : " + (strModelDn == "N" ? "N/A" : strModelDn) + ", 품명 : " + (strPartDn == "" ? "N/A" : strPartDn) + ", 업체명 : " + (strCompany == "" ? "N/A" : strCompany) + "\">NO</a>";
+                                iNo++;
+                            }
+                            else
+                            {
+                                //모두 확인이 된 경우
+                                if (_mode == "FORM_PURCHASEUCB")
+                                {
+                                    strNumberA = (row["현행가"].ToString() == "") ? "0" : Convert.ToDecimal(row["현행가"]).ToString("###0.#####");
+                                    strNumberB = (row["변경가"].ToString() == "") ? "0" : Convert.ToDecimal(row["변경가"]).ToString("###0.#####");
+                                    strNumberC = (row["변동액"].ToString() == "") ? "0" : Convert.ToDecimal(row["변동액"]).ToString("#,##0.#####");
+                                    strNumberD = (row["변동율"].ToString() == "") ? "0%" : Convert.ToDecimal(row["변동율"]).ToString("#,##0.#") + "%";
+                                    strNumberE = (row["소요량"].ToString() == "") ? "0" : Convert.ToDecimal(row["소요량"]).ToString("#,##0");
+                                    strNumberF = (row["금액"].ToString() == "") ? "0" : Convert.ToDecimal(row["금액"]).ToString("#,##0.#####");
+
+                                    strLTA = (row["LT"].ToString() == "") ? "0" : Convert.ToDecimal(row["LT"]).ToString("#,##0");
+
+                                    sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\"]"
+                                        , JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0), row["UOM"].ToString()
+                                        , strNumberA, strNumberB, strNumberC, strNumberD, strNumberE, strNumberF, strLTA
+                                        , JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0), JsParamEncode(0, strApplyDate, 0), JsParamEncode(0, strEtc, 0));
+
+                                    //if (iH > 1) throw new Exception(strNumberD + " : " + strNumberE + " : " + strNumberF + " : " + strLTA);
+                                }
+                                else if (_mode == "FORM_PURCHASEUCC")
+                                {
+                                    strNumberA = (row["개발견적가"].ToString() == "") ? "" : Convert.ToDecimal(row["개발견적가"]).ToString("###0.#####");
+                                    strNumberB = (row["견적가"].ToString() == "") ? "" : Convert.ToDecimal(row["견적가"]).ToString("###0.#####");
+                                    strNumberD = (row["확정가"].ToString() == "") ? "" : Convert.ToDecimal(row["확정가"]).ToString("###0.#####");
+
+                                    strLTA = (row["LT"].ToString() == "") ? "0" : Convert.ToDecimal(row["LT"]).ToString("#,##0");
+
+                                    sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\"]"
+                                        , JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0)
+                                        , strNumberA, strNumberB, row["UOM"].ToString(), strNumberD, JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0)
+                                        , JsParamEncode(0, strApplyDate, 0), strLTA, JsParamEncode(0, strEtc, 0));
+                                }
+                                else if (_mode == "FORM_PURCHASEUCF")
+                                {
+                                    strNumberB = (row["가단가"].ToString() == "") ? "0" : Convert.ToDecimal(row["가단가"]).ToString("###0.#####");
+
+                                    sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\"]"
+                                            , JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0), row["UOM"].ToString(), strNumberB
+                                            , JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0), JsParamEncode(0, strApplyDate, 0), JsParamEncode(0, strEtc, 0));
+                                }
+                                else if (_mode == "FORM_PURCHASESAMPLE")
+                                {
+                                    strNumberA = (row["개발견적가"].ToString() == "") ? "0" : Convert.ToDecimal(row["개발견적가"]).ToString("###0.#####");
+                                    strNumberB = (row["견적가"].ToString() == "") ? "0" : Convert.ToDecimal(row["견적가"]).ToString("###0.#####");
+                                    strNumberC = (row["현행가"].ToString() == "") ? "0" : Convert.ToDecimal(row["현행가"]).ToString("###0.#####");
+                                    strNumberD = (row["확정가"].ToString() == "") ? "0" : Convert.ToDecimal(row["확정가"]).ToString("###0.#####");
+
+                                    strLTA = (row["LT"].ToString() == "") ? "0" : Convert.ToDecimal(row["LT"]).ToString("#,##0");
+
+                                    sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\"]"
+                                        , JsParamEncode(0, strModelNo, 0), JsParamEncode(0, strPartDn, 0), JsParamEncode(0, strPartNo, 0)
+                                        , strNumberA, strNumberB, strNumberC, row["UOM"].ToString(), strNumberD
+                                        , JsParamEncode(0, strCompany, 0), JsParamEncode(0, strCompanyCode, 0), JsParamEncode(0, strApplyDate, 0), strLTA, JsParamEncode(0, strEtc, 0));
+                                }
+                                strResult = "OK";
+                                iOk++;
+                            }
+                            sb.AppendFormat("<td>{0}</td>", strResult);
+                            sb.Append("</tr>");
+                        }
+                        else
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td colspan=\"2\" class=\"text-center text-secondary\">{0}</td>", "사업장, 품번, 업체코드는 반드시 입력되어야 합니다.");
+                            sb.Append("</tr>");
+                            iNo++;
+                        }
+                        strResult = "";
+                    }
+                }
+                sbSubTableData.Append("]");
+
+                sb.Append("</tbody>");
+                sb.Append("</table>");
+
+                //throw new Exception("여기");
+            }
+        }
+        else
+        {
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+        }
+
+        //throw new Exception(sbSubTableData.ToString());
+
+        sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
+        sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
+
+        return sb.ToString();
+    }
     #endregion
 
     #region [제조조건변경요청서 관련]
@@ -2202,191 +2441,155 @@
         int iOk = 0;    //2014-06-12 추가 : 유효 건수
         int iNo = 0;    //2014-06-12 추가 : 비유효 건수
 
+        string strProductCenter = StringHelper.SafeString(Request["pc"], ""); //생산지
+        string strSaleCenter = StringHelper.SafeString(Request["sc"], ""); //판매지
+        string strCurrency = StringHelper.SafeString(Request["cy"], ""); //통화
+
+        if (strProductCenter == "" || strSaleCenter == "") throw new Exception("필수항목 누락!");
+
         if (data.Rows.Count > 0)
         {
-            string strCUSTOMER = ""; //고객
-            string strITEMNO = ""; //품번
-            string strCHECKREASON = ""; //변동요인
-            string strORGPRICE = ""; //출하단가
-            string strSHIPCONDITION = ""; //선적조건
-            string strLEAVEDATE = ""; //적용시점
-            string strPRICELIST = ""; //생산지 pricelist
-            string strBPANUM = ""; //판매처 BPA NUM
-            string strYESNO = ""; //중개거래
-            string strMIDCUSTOMER = ""; //중계고객
-            string strMIDCUSTOMER_CODE = ""; //중계고객코드
-            string strSALEPRICE = ""; //중계고객판매가
-            string strMIDPRICELIST = ""; //중계pricelist
-            string strSALEPER = ""; //이익율
-            string strETC = ""; //비고
-            string strGG = ""; //생산지
-            string strGG2 = ""; //판매지
-            string strGG3 = ""; //통화
-            string strGG4 = ""; //VENDER_CODE
-            string strCheck = ""; //중계고객CHECK
-            int _totalCount = 0;
+            string[] vColumnLabel = "고객구분;품번;변동요인;UOM;출하단가;선적조건;적용시점;중개거래;중개고객코드;중개고객판매가;이익율;비고".Split(';');
+            string[] vColumnName = "CUSTOMER;ITEMNO;CHECKREASON;UOM;ORGPRICE;SHIPCONDITION;LEAVEDATE;YESNO;MIDCUSTOMER;MIDCUSTOMER_CODE;SALEPRICE;SALEPER;ETC".Split(';');
 
-            string strResult = "";
-            //iTotal = data.Rows.Count;
-
-            //고객구분,품명,품번,현행가,변경가,변동액,소요량,금액,TTL,PRE,LT,POST,업체명,업체코드,BPA,적용시점,비고
-            sbSubTableData.AppendFormat("[[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\"]"
-                    , "CUSTOMER", "ITEMNO", "CHECKREASON", "ORGPRICE", "SHIPCONDITION", "LEAVEDATE", "PRICELIST", "BPANUM", "YESNO", "MIDCUSTOMER", "MIDCUSTOMER_CODE", "SALEPRICE", "MIDPRICELIST", "SALEPER", "ETC");
-
-            sb.Append("<table class=\"table table-striped table-sm mb-0\">");
-            sb.Append("<colgroup><col style=\"width:88%\" /><col style=\"width:12%\" /></colgroup>");
-            sb.Append("<thead>");
-            sb.Append("<tr><th>대상자</th><th>결과</th></tr>");
-            sb.Append("</thead>");
-            sb.Append("<tbody>");
-
-            using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+            string sCheck = CheckColumn(data.Rows[0], vColumnLabel);
+            if (sCheck != "")
             {
-                foreach (DataRow row in data.Rows)
-                {
-                    strCUSTOMER = row["고객"].ToString();
-                    strITEMNO = row["품번"].ToString();
-                    strORGPRICE = row["출하단가"].ToString();
-                    //strLEAVEDATE = EApproval.CheckDateTiem(row["적용시점"].ToString(), "yyyy-MM-dd"); //row["적용시점"].ToString(); //2019-07-26 수정
-                    try
-                    {
-                        //strLEAVEDATE = Convert.ToDateTime(row["적용시점"].ToString()).ToString("yyyy-MM-dd"); //2019-09-10 다시 수정
-                        strLEAVEDATE = _currentLocale.Substring(0, 2).ToLower() == "en" ? DateHelper.CheckDateTime(row["적용시점"].ToString(), "MM/dd/yyyy") : DateHelper.CheckDateTime(row["적용시점"].ToString(), "yyyy-MM-dd");
-                    }
-                    catch
-                    {
-                        strLEAVEDATE = row["적용시점"].ToString(); //.Substring(0, 10);
-                    }
-                    strCHECKREASON = row["변동요인"].ToString();
-                    strSHIPCONDITION = row["선적조건"].ToString();
-                    strGG = Request["gg"].ToString();
-                    strGG2 = Request["gg2"].ToString();
-                    strGG3 = Request["gg3"].ToString();
-                    strGG4 = Request["gg4"].ToString();
-                    strPRICELIST = row["생산지PRICELIST"].ToString();
-                    strBPANUM = row["BPANUM"].ToString();
-                    strYESNO = row["중계거래"].ToString();
-                    strMIDCUSTOMER = row["중계고객"].ToString();
-                    strMIDCUSTOMER_CODE = row["중계고객코드"].ToString();
-                    strSALEPRICE = row["중계고객판매가"].ToString();
-                    strMIDPRICELIST = row["중계PRICELIST"].ToString();
-                    strSALEPER = row["이익율"].ToString();
-                    strETC = row["비고"].ToString();
-
-                    //Response.Write("시간=>" + DateTime.Now.ToString("yyyyMMdd HHmmss.fffffff") + "::::"); => OS에 따라 표기 가능한 정밀도가 다르다
-
-                    if (strITEMNO != "" && strORGPRICE != "")
-                    {
-                        iH++;
-
-                        svcRt = rptBiz.GetReport("", 0, this._mode, "", "", "A", strGG, strGG3, strITEMNO, strPRICELIST);
-                        if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
-                        {
-                            strITEMNO = svcRt.ResultDataSet.Tables[0].Rows[0]["품번"].ToString();
-                            strPRICELIST = svcRt.ResultDataSet.Tables[0].Rows[0]["pricelist"].ToString();
-                        }
-                        else
-                        {
-                            strITEMNO = "";
-                            strPRICELIST = "";
-                        }
-
-                        svcRt = rptBiz.GetReport("", 0, this._mode, "", "", "B", strGG2, strGG3, strGG4, strBPANUM);
-                        if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
-                        {
-                            strBPANUM = svcRt.ResultDataSet.Tables[0].Rows[0]["BPANUM"].ToString();
-                        }
-                        else
-                        {
-                            strBPANUM = "";
-                        }
-
-                        if (strYESNO == "Y")
-                        {
-                            svcRt = rptBiz.GetReport("", 0, this._mode, "", "", "C", strGG2, strGG3, strMIDCUSTOMER_CODE, strMIDPRICELIST);
-                            if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
-                            {
-                                strMIDCUSTOMER_CODE = svcRt.ResultDataSet.Tables[0].Rows[0]["midcus"].ToString();
-                                strMIDPRICELIST = svcRt.ResultDataSet.Tables[0].Rows[0]["midpricelist"].ToString();
-                            }
-                            else
-                            {
-                                strMIDCUSTOMER_CODE = "";
-                                strMIDPRICELIST = "";
-                            }
-                        }
-
-                        sb.Append("<tr>");
-                        sb.AppendFormat("<td>품번 : {0}</td>", strLEAVEDATE);
-
-                        if (strYESNO == "Y")
-                        {
-                            if (strITEMNO == "" || strMIDCUSTOMER_CODE == "" || strMIDPRICELIST == "")
-                            {
-                                //모델명, 품명, 업체명 중 하나라도 확인 되지 않을 경우
-                                //strResult = "<span style=\"color:red;cursor:hand\" title=\"품번 : " + (strITEMNO == "" ? "N/A" : strITEMNO) + ", PRICELIST : " + (strPRICELIST == "" ? "N/A" : strPRICELIST) + ", BPANUM : " + (strBPANUM == "" ? "N/A" : strBPANUM) + "\">NO</span>";
-                                //strResult = "<span style=\"color:red;cursor:hand\" >NO</span>";
-
-                                if (strITEMNO == "") strResult = "a href=\"javascript:\" class=\"text-danger\">NO 품번</a>";
-                                else if (strMIDCUSTOMER_CODE == "") strResult = "<sa href=\"javascript:\" class=\"text-danger\">NO 중계고객</a>";
-                                else if (strMIDPRICELIST == "") strResult = "<a href=\"javascript:\" class=\"text-danger\">NO 중계PL</a>";
-                                //else if (strBPANUM == "") strResult = "<span style=\"color:red;cursor:hand\" >NO BPA</span>";
-                                //else if (strPRICELIST == "") strResult = "<span style=\"color:red;cursor:hand\" >NO PL</span>";
-
-                                iNo++;
-                            }
-                            else
-                            {
-                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\"]"
-                                        , JsParamEncode(0, strCUSTOMER, 0), JsParamEncode(0, strITEMNO, 0), JsParamEncode(0, strCHECKREASON, 0)
-                                        , strORGPRICE, strSHIPCONDITION, strLEAVEDATE, strPRICELIST, strBPANUM, strYESNO, strMIDCUSTOMER, strMIDCUSTOMER_CODE, strSALEPRICE, strMIDPRICELIST
-                                        , JsParamEncode(0, strSALEPER, 0), JsParamEncode(0, strETC, 0));
-
-                                strResult = "OK";
-                                iOk++;
-                            }
-                        }
-                        else if (strYESNO == "N")
-                        {
-                            if (strITEMNO == "")
-                            {
-                                //모델명, 품명, 업체명 중 하나라도 확인 되지 않을 경우
-                                //strResult = "<span style=\"color:red;cursor:hand\" title=\"품번 : " + (strITEMNO == "" ? "N/A" : strITEMNO) + ", PRICELIST : " + (strPRICELIST == "" ? "N/A" : strPRICELIST) + ", BPANUM : " + (strBPANUM == "" ? "N/A" : strBPANUM) + "\">NO</span>";
-                                //strResult = "<span style=\"color:red;cursor:hand\" >NO</span>";
-                                if (strITEMNO == "") strResult = "<a href=\"javascript:\" class=\"text-danger\">NO 품번</a>";
-                                //else if (strPRICELIST == "") strResult = "<span style=\"color:red;cursor:hand\" >NO PL</span>";
-                                //else if (strBPANUM == "") strResult = "<span style=\"color:red;cursor:hand\" >NO BPA</span>";
-
-                                iNo++;
-                            }
-                            else
-                            {
-                                sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\"]"
-                                        , JsParamEncode(0, strCUSTOMER, 0), JsParamEncode(0, strITEMNO, 0), JsParamEncode(0, strCHECKREASON, 0)
-                                        , strORGPRICE, strSHIPCONDITION, strLEAVEDATE, strPRICELIST, strBPANUM, strYESNO, strMIDCUSTOMER, strMIDCUSTOMER_CODE, strSALEPRICE, strMIDPRICELIST
-                                        , JsParamEncode(0, strSALEPER, 0), JsParamEncode(0, strETC, 0));
-
-                                strResult = "OK";
-                                iOk++;
-                            }
-                        }
-
-                        sb.AppendFormat("<td>{0}</td>", strResult);
-                        sb.Append("</tr>");
-                    }
-                    strResult = "";
-                }
+                throw new Exception(sCheck);
             }
+            else
+            {
+                string strITEMNO = ""; //품번
+                string strPartDn = ""; //품명
+                string strLEAVEDATE = ""; //적용시점
+                string strYESNO = ""; //중개거래
+                string strMIDCUSTOMER = ""; //중개고객
+                string strMIDCUSTOMER_CODE = ""; //중개고객코드
+                string strNumberA = ""; //출하단가
+                string strNumberB = ""; //중개고객판매가
+                string strNumberC = ""; //이익율
+                string strETC = ""; //비고
 
-            sbSubTableData.Append("]");
-            iTotal = iNo + iOk;
+                string strResult = "";
+                //iTotal = data.Rows.Count;
 
-            sb.Append("</tbody>");
-            sb.Append("</table>");
+                sbSubTableData.Append("[[");
+                for (int i = 0; i < vColumnName.Length; i++)
+                {
+                    if (i > 0) sbSubTableData.Append(",");
+                    sbSubTableData.AppendFormat("\"{0}\"", vColumnName[i]);
+                }
+                sbSubTableData.Append("]");
+
+                sb.Append("<table class=\"table table-striped table-sm mb-0\">");
+                sb.Append("<colgroup><col style=\"width:88%\" /><col style=\"width:12%\" /></colgroup>");
+                sb.Append("<thead>");
+                sb.Append("<tr><th>대상</th><th>결과</th></tr>");
+                sb.Append("</thead>");
+                sb.Append("<tbody>");
+
+                using (ZumNet.BSL.InterfaceBiz.ReportBiz rptBiz = new ZumNet.BSL.InterfaceBiz.ReportBiz())
+                {
+                    foreach (DataRow row in data.Rows)
+                    {
+                        //throw new Exception(row["품번"].ToString() + " : " + row["적용시점"].ToString());
+
+                        strITEMNO = row["품번"].ToString();
+                        if (strITEMNO.Trim() == "")
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td colspan=\"2\" class=\"text-center text-secondary\">{0}</td>", "품번은 반드시 입력되어야 합니다.");
+                            sb.Append("</tr>");
+                            iNo++;
+
+                            //throw new Exception("품번(" + data.Rows.Count.ToString() + ")은 반드시 입력되어야 합니다.");
+                        }
+                        else
+                        {
+                            try
+                            {
+                                strLEAVEDATE = DateHelper.CheckDateTime(row["적용시점"].ToString(), "yyyy-MM-dd");
+                            }
+                            catch
+                            {
+                                strLEAVEDATE = row["적용시점"].ToString(); //.Substring(0, 10);
+                            }
+                            strYESNO = row["중개거래"].ToString();
+                            strMIDCUSTOMER_CODE = row["중개고객코드"].ToString().Trim();
+                            strETC = row["비고"].ToString();
+
+                            if (strYESNO == "Y" && strMIDCUSTOMER_CODE == "")
+                            {
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td colspan=\"2\" class=\"text-center text-secondary\">{0}</td>", "중개거래 경우 중개고객코드는 반드시 입력되어야 합니다.");
+                                sb.Append("</tr>");
+                                iNo++;
+                            }
+                            else
+                            {
+                                iH++;
+
+                                svcRt = rptBiz.GetReport("", 0, this._mode, "", "", strProductCenter, strSaleCenter, strITEMNO, strMIDCUSTOMER_CODE, "");
+                                if (svcRt.ResultCode == 0 && svcRt.ResultDataSet != null && svcRt.ResultDataSet.Tables.Count > 0 && svcRt.ResultDataSet.Tables[0].Rows.Count > 0)
+                                {
+                                    strPartDn = svcRt.ResultDataSet.Tables[0].Rows[0]["품명"].ToString();
+                                    strMIDCUSTOMER = svcRt.ResultDataSet.Tables[0].Rows[0]["중개고객명"].ToString();
+                                    if (strYESNO == "Y" && strMIDCUSTOMER == "") strMIDCUSTOMER = "N";
+                                }
+                                else
+                                {
+                                    strPartDn = "";
+                                    strMIDCUSTOMER = "";
+                                }
+
+                                sb.Append("<tr>");
+                                sb.AppendFormat("<td>품번 : {0}</td>", strITEMNO);
+
+                                if (strPartDn == "" || strMIDCUSTOMER == "N")
+                                {
+                                    if (strPartDn == "") strResult = "<a href=\"javascript:\" class=\"text-danger\">NO 품번</a>";
+                                    else if (strMIDCUSTOMER == "N") strResult = "<a href=\"javascript:\" class=\"text-danger\">NO 중개고객</a>";
+
+                                    iNo++;
+                                }
+                                else
+                                {
+                                    //throw new Exception(strPartDn + " : " + strMIDCUSTOMER);
+
+                                    strNumberA = (row["출하단가"].ToString() == "") ? "0" : Convert.ToDecimal(row["출하단가"]).ToString("###0.####");
+                                    strNumberB = (row["중개고객판매가"].ToString() == "") ? "0" : Convert.ToDecimal(row["중개고객판매가"]).ToString("###0.####");
+                                    strNumberC = (row["이익율"].ToString() == "") ? "0%" : Convert.ToDecimal(row["이익율"]).ToString("#,##0.##") + "%";
+                                    //strNumberC = row["이익율"].ToString();
+
+                                    //throw new Exception(strNumberA + " : " + JsParamEncode(0, strETC, 0));
+
+                                    sbSubTableData.AppendFormat(",[\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\"]"
+                                    , JsParamEncode(0, row["고객구분"].ToString(), 0), JsParamEncode(0, strITEMNO, 0), JsParamEncode(0, row["변동요인"].ToString(), 0)
+                                    , row["UOM"].ToString(), strNumberA, row["선적조건"].ToString(), strLEAVEDATE, strYESNO, strMIDCUSTOMER, strMIDCUSTOMER_CODE, strNumberB, strNumberC
+                                    , JsParamEncode(0, strETC, 0));
+
+                                    strResult = "OK";
+                                    iOk++;
+                                }
+
+                                sb.AppendFormat("<td>{0}</td>", strResult);
+                                sb.Append("</tr>");
+                            }
+                        }
+                        strResult = "";
+                    }
+                }
+
+                sbSubTableData.Append("]");
+                iTotal = iNo + iOk;
+
+                sb.Append("</tbody>");
+                sb.Append("</table>");
+            }
         }
         else
         {
-            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상자 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
+            sb.AppendFormat("<div class=\"text-center mt-3 h5\">{0}</div>", "대상 정보가 없거나 xlsx 파일을 읽을 수 없습니다!");
         }
         sb.AppendFormat("<textarea id=\"__RESULTINFO\" style=\"display:none\">{0}</textarea>", sbSubTableData.ToString());
         sb.AppendFormat("<div class=\"text-center mt-3\">총 {0}건, 정상 {1}건, 비정상 {2}건</div>", iTotal.ToString(), iOk.ToString(), iNo.ToString());
@@ -3685,6 +3888,18 @@
         if (opt == 0) return s.Replace("\"", "\\\"");
         else if (opt == 1) return s.Replace("'", "\\\'");
         else return s.Replace("'", "&#039;").Replace("\"", "&quot;");
+    }
+
+    private string CheckColumn(DataRow xlsRow, string[] col)
+    {
+        string rt = "";
+
+        foreach (string c in col)
+        {
+            if (!xlsRow.Table.Columns.Contains(c)) rt += ";" + c;
+        }
+
+        return rt != "" ? "컬럼(" + rt.Substring(1).Replace(";", ", ") + ") 누락" : "";
     }
     #endregion
 }

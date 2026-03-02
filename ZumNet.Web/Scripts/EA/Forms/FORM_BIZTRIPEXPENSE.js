@@ -1,7 +1,22 @@
 ﻿//const { alphaNumerate } = require("chartist");
 
 $(function () {
+    var CURRENCY_CNT = 9;   //전체 통화(국가) 수
+    var BASE_ACNT = {};     //기본 계정과목 정보
+
     _zw.formEx = {
+        "init": function () { //초기 설정 : 하단 호출
+            if (_zw.V.apvmode == 'draft') {
+                var d = moment(_zw.V.current.date).subtract(1, 'M').format('YYYY-MM') + '-01'; //AP일자 : 전월 1일
+                $('.datepicker[name="APDATE"]').datepicker('setStartDate', d);
+
+                _zw.formEx.event('supplier', $('#__mainfield[name="TRIPPERSONEMPID"]').val());
+            }
+        },
+        "addRow": function (row) { //26-02-19 추가
+            //row.find('td > [name]').each(function () { $(this).val('').prop('disabled', false); }); _zw.fn.input(row);
+            //return row;
+        },
         "validation": function (cmd) {
             return true;
         },
@@ -11,7 +26,7 @@ $(function () {
             _zw.formEx.event($('#__mainfield[name="TRIPFROM"]')[0]);
         },
         "calc": function (el) {
-            if (el.name == "EXCHANGE2" || el.name == "EXCHANGE3" || el.name == "EXCHANGE4" || el.name == "EXCHANGE5" || el.name == "EXCHANGE6" || el.name == "EXCHANGE7" || el.name == "EXCHANGE8") {
+            if (el.name == "EXCHANGE2" || el.name == "EXCHANGE3" || el.name == "EXCHANGE4" || el.name == "EXCHANGE5" || el.name == "EXCHANGE6" || el.name == "EXCHANGE7" || el.name == "EXCHANGE8" || el.name == "EXCHANGE9") {
                 if (el.value != '') {
                     $('#__FormView .f-lbl-sub [name="' + el.name.replace("EXCHANGE", "EXCHANGE_") + '"]').each(function () {
                         $(this).val(el.value);
@@ -71,7 +86,7 @@ $(function () {
                     $('#__mainfield[name="' + prefix + 'SUM' + idx + '"]').val(numeral(s).format(f));
 
                     s = 0;
-                    for (var x = 1; x <= 8; x++) { s += numeral($('#__mainfield[name="' + prefix + 'SUM' + x.toString() + '"]').val()).value(); }
+                    for (var x = 1; x <= CURRENCY_CNT; x++) { s += numeral($('#__mainfield[name="' + prefix + 'SUM' + x.toString() + '"]').val()).value(); }
                     $('#__mainfield[name="' + prefix + 'TOTAL"]').val(numeral(s).format(f));
 
                     _zw.formEx.expenseTotal();
@@ -83,7 +98,7 @@ $(function () {
                     p = $('#__subtable' + i.toString());
                     var len = p.find('tr.sub_table_row').first().find('td').length;
                     p.find('tr.sub_table_row').first().find('td').each(function (k) {
-                        if (k >= len - 9 && k < len - 1) {
+                        if (k >= len - (CURRENCY_CNT + 1) && k < len - 1) {
                             el1 = $(this).find('input[name]'); idx = el1.attr('name').substr(el1.attr('name').length - 1); prefix = el1.attr('name').substr(0, 1);
                             ex = $('#__mainfield[name="EXCHANGE' + idx + '"]');
 
@@ -167,12 +182,90 @@ $(function () {
                 $('#__mainfield[name="TRIPPERSONDEPTID"]').val(info["grid"]);
 
                 _zw.formEx.event(''); //일비 가져오기
+                _zw.formEx.event('supplier', info["empid"]);
             });
             p.modal('hide');
         },
         "change": function (x, fld) {
             $(x).next().val($(x).children('option:selected').text());
             _zw.formEx.event(x);
+        },
+        "popupWnd": function (pos, w, evtSub) {
+            var el = _zw.ut.eventBtn(), vPos = pos.split('.');
+            var m = '', opt = 'F', ttl = el.attr('title'), v1 = '', v2 = '', v3 = '', query = '', row = el.parent().parent();
+
+            if (vPos[0] == 'report') m = 'getreportsearch';
+            else m = 'getcodedescription';
+
+            if (vPos[1] == 'CC_CARDACK') {
+                query = $('#__mainfield[name="TRIPPERSONID"]').val();
+                ttl = el.text();
+            } else if (vPos[1] == 'CC_ACCOUNTDETAILWND') {
+                v1 = row.find('td [name="ACNTCLS"]').val();
+                if (v1 == '') { bootbox.alert('보여줄 세부정보가 없습니다.'); return false; }
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/EA/Common",
+                data: '{M:"' + m + '",body:"' + opt + '", k1:"' + vPos[0] + '",k2:"' + vPos[1] + '",query:"' + query + '",v1:"' + v1 + '",v2:"' + v2 + '",v3:"' + v3 + '",search:""}',
+                success: function (res) {
+                    if (res.substr(0, 2) == 'OK') {
+                        var p = $('#popLayer');
+                        p.html(res.substr(2)).find(".modal-dialog").css("max-width", w).find('.modal-title').html(ttl);
+
+                        _zw.ut.picker('date'); _zw.ut.maxLength(); _zw.fn.input(p.find('.modal-body'));
+
+                        p.find('.modal-footer .btn[data-zm-menu="confirm"]').click(function () {
+                            if (vPos[1] == 'CC_CARDACK') {
+                                var col = p.find('.modal-body :checkbox:checked'); //console.log(col[0])
+                                if (col.length < 1) bootbox.alert('카드사용내역을 선택하십시오!');
+                                else {
+                                    var subId = '__subtable6', tbl = $('#' + subId), iRowCnt = 0, iRowCnt2 = 0;
+                                    tbl.find('tr.sub_table_row').each(function () { //체크 위치
+                                        if ($(this).find('td [name="ROWSEQ"]').prop('checked')) {
+                                            if (col.length > iRowCnt) {
+                                                _zw.form.resetField($(this)); _zw.formEx.event(vPos[1], $(this).find('td [name]'), $(col[iRowCnt]).parent().parent());
+                                                iRowCnt++;
+                                            }
+                                        }
+                                    });
+                                    tbl.find('tr.sub_table_row td [name="ROWSEQ"]').prop('checked', false); //체크 해제
+
+                                    if (col.length > iRowCnt) {
+                                        tbl.find('tr.sub_table_row').each(function () { //구분값 '' 또는 구분값 '개인법인' 위치
+                                            var temp = $(this).find('td [name="EXPENSETYPECODE"]').val(), temp2 = $(this).find('td [name="ACKID"]').val();
+                                            if (temp == '' || (temp == 'CARDCORP2' && temp2 == '')) {
+                                                if (col.length > iRowCnt + iRowCnt2) {
+                                                    _zw.form.resetField($(this)); _zw.formEx.event(vPos[1], $(this).find('td [name]'), $(col[iRowCnt + iRowCnt2]).parent().parent());
+                                                    iRowCnt2++;
+                                                }
+                                            }
+                                        });
+                                    }// console.log(iRowCnt + " : " + iRowCnt2)
+
+                                    var iDiff = col.length - (iRowCnt + iRowCnt2);
+                                    if (iDiff > 0) {
+                                        for (var i = 0; i < iDiff; i++) { //row 추가
+                                            var newRow = _zw.form.addRow(subId); //console.log(newRow)                                            
+                                            _zw.formEx.event(vPos[1], newRow.find('td [name]'), $(col[iRowCnt + iRowCnt2 + i]).parent().parent());
+                                        }
+                                    }
+
+                                    p.modal('hide');
+                                }
+
+                            } else if (vPos[1] == 'CC_ACCOUNTDETAILWND') {
+                                p.find('.modal-body [data-for]').each(function () {
+                                    row.find('td [name="' + $(this).attr('data-for') + '"]').val($(this).val());
+                                });
+                                p.modal('hide');
+                            }
+                        });
+                        p.modal();
+                    } else bootbox.alert(res);
+                }
+            });
         },
         "optionWnd": function (pos, w, h, l, t, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.');
@@ -225,7 +318,7 @@ $(function () {
                             var pop = _zw.ut.popup(el[0], j);
                             pop.find('a[data-val]').click(function () {
                                 if (param[0].indexOf('CURRENCY') != -1) {
-                                    for (var i = 1; i <= 8; i++) {
+                                    for (var i = 1; i <= CURRENCY_CNT; i++) {
                                         var temp = $('#__mainfield[name="CURRENCY' + i.toString() + '"]');
                                         if (temp.val() == param[0]) { bootbox.alert("[" + param[0] + "]는(은) 이미 선택 되어 있습니다!"); return; }
                                     }
@@ -254,19 +347,68 @@ $(function () {
         },
         "event": function (x) { //console.log(x)
             if (x) {
-                if (x.name == "TRIPFROM") _zw.formEx.exchangeInfo(x.value);
-                else {
+                if (x.name == "TRIPFROM") {
+                    _zw.formEx.exchangeInfo(x.value);
+                } else if (x == 'supplier') {
+                    var res = _zw.ut.ajaxSync('/EA/Common', '{M:"getreportsearch",body:"S", k1:"report",k2:"ERP_SUPPLIER",v1:"' + arguments[1] + '",v2:"",v3:""}');
+                    if (res.substr(0, 2) == 'OK') {
+                        var info = res.substr(2).split(String.fromCharCode(8));
+                        $('#__mainfield[name="SUPPLIERID"]').val(info[0]);
+                        $('#__mainfield[name="SUPPLIER"]').val(info[1]);
+                        $('#__mainfield[name="SUPPLIEREMPNO"]').val(info[2]);
+                        $('#__mainfield[name="SUPPLIERDEPTCD"]').val(info[3]);
+                        $('#__mainfield[name="SUPPLIERDEPT"]').val(info[4]);
+
+                        res = _zw.ut.ajaxSync('/EA/Common', '{M:"getreportsearch",body:"S", k1:"report",k2:"ERP_ACCOUNTONE",v1:"' + info[3] + '",v2:"여비교통비(해외)",v3:""}');
+                        if (res.substr(0, 2) == 'OK') {
+                            info = res.substr(2).split(String.fromCharCode(8));
+                            BASE_ACNT["nm"] = info[0];
+                            BASE_ACNT["dpcd"] = info[1];
+                            BASE_ACNT["main"] = info[2];
+                            BASE_ACNT["sub"] = info[3];
+                            BASE_ACNT["id"] = info[4];
+                            BASE_ACNT["cls"] = info[5]; //console.log(BASE_ACNT)
+
+                        } else {
+                            if (res == 'NO') bootbox.alert('여비교통비(해외) 계정 정보가 없습니다!');
+                            else bootbox.alert(res);
+                        }
+
+                    } else {
+                        $('#__mainfield[name="SUPPLIERID"]').val('');
+                        $('#__mainfield[name="SUPPLIER"]').val('');
+                        $('#__mainfield[name="SUPPLIEREMPNO"]').val('');
+                        $('#__mainfield[name="SUPPLIERDEPTCD"]').val('');
+                        $('#__mainfield[name="SUPPLIERDEPT"]').val('');
+
+                        if (res == 'NO') bootbox.alert('Supplier 정보가 없습니다!');
+                        else bootbox.alert(res);
+                    }
+
+                } else if (x == 'CC_CARDACK') { //카드사용내역 테이블 > 열(row) > 필드 채우기
+                    var col = arguments[1], info = arguments[2];
+                    col.each(function () {
+                        var fld = info.find(':hidden[data-for="' + $(this).attr('name') + '"]');
+                        if (fld && fld.length > 0) {
+                            $(this).val(fld.val()); if ($(this).attr('name') != 'REQAMT') $(this).prop('disabled', true);
+                        }
+                        if ($(this).attr('name') == 'EXPENSETYPECODE') $(this).val('CARDCORP2');
+                        else if ($(this).attr('name') == 'SUPPLIERDEPTCD') $(this).val($('#__mainfield[name="SUPPLIERDEPTCD"]').val());
+                        else if ($(this).attr('name') == 'SUPPLIERDEPT') $(this).val($('#__mainfield[name="SUPPLIERDEPT"]').val());
+                    });
+
+                } else {
                     row = x.parentNode.parentNode;
                     if (x.name == "EXPENSERULE") {
-                        for (var i = row.cells.length - 2; i >= row.cells.length - 9; i--) { row.cells[i].firstChild.value = ''; }
+                        for (var i = row.cells.length - 2; i >= row.cells.length - (CURRENCY_CNT + 1); i--) { row.cells[i].firstChild.value = ''; }
                     } else if (x.name == "EXPENSETYPECODE") {
                         if (x.value == "CASH") {
-                            for (var i = row.cells.length - 2; i >= row.cells.length - 9; i--) {
+                            for (var i = row.cells.length - 2; i >= row.cells.length - (CURRENCY_CNT + 1); i--) {
                                 $(row.cells[i].firstChild).removeClass('txtRead_Right').addClass('txtDollar').prop('readonly', false).val('');
                                 _zw.fn.input(row.cells[i].firstChild);
                             }
                         } else {
-                            for (var i = row.cells.length - 2; i >= row.cells.length - 9; i--) {
+                            for (var i = row.cells.length - 2; i >= row.cells.length - (CURRENCY_CNT + 1); i--) {
                                 if (x.value != '' && i == row.cells.length - 9) {
                                     $(row.cells[i].firstChild).removeClass('txtRead_Right').addClass('txtDollar').prop('readonly', false).val('');
                                     _zw.fn.input(row.cells[i].firstChild);
@@ -377,7 +519,7 @@ $(function () {
                     if (res.substr(0, 2) == 'OK') {
                         var j = JSON.parse(res.substr(2)); //console.log(j)
                         var c1, c2, v, col1, col2, f = '0,0.[0000]';
-                        for (var x = 2; x <= 8; x++) {
+                        for (var x = 2; x <= CURRENCY_CNT; x++) {
                             c1 = $('#__mainfield[name="STDCURRENCY' + x.toString() + '"]');
                             c2 = $('#__mainfield[name="STDEXCHANGE' + x.toString() + '"]');
                             v = j[c1.val()] ? j[c1.val()] : "0";
@@ -409,7 +551,7 @@ $(function () {
                 $('#__subtable' + i.toString() + ' tr.sub_table_row').each(function () {
                     var len = $(this).find('> td').length; c1 = $(this).find('> td > select[name="EXPENSETYPECODE"]');
                     $(this).find('> td').each(function (k) {
-                        if (k >= len - 9 && k < len - 1) {
+                        if (k >= len - (CURRENCY_CNT + 1) && k < len - 1) {
                             c2 = $(this).find('input[name]'); idx = c2.attr('name').substr(c2.attr('name').length - 1);
                             ex = $('#__mainfield[name="EXCHANGE' + idx + '"]');
                             if (c2.val() != '' && c2.val() != '0') {
@@ -433,4 +575,6 @@ $(function () {
             }
         }
     }
+
+    _zw.formEx.init();
 });

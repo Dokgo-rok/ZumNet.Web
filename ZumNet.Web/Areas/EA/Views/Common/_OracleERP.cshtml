@@ -1255,7 +1255,7 @@
 
                     if (svcRt.ResultCode == 0)
                     {
-                        if (svcRt.ResultItemCount > 0) sb.Append(svcRt.ResultDataSet.Tables[0].Rows[0][0]);
+                        if (svcRt.ResultItemCount > 0) sb.Append(StringHelper.CvtCurrency(svcRt.ResultDataSet.Tables[0].Rows[0][0].ToString(), 2)); //소수점2자리
                     }
                     else strReturn = svcRt.ResultMessage;
                     #endregion

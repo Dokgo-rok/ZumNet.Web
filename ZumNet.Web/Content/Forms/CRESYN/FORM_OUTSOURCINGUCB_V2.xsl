@@ -474,7 +474,7 @@
 					  <!--<button onclick="parent.fnExternal('erp.items3',240,40,80,70,'',this,'ITEMNAME');" onfocus="this.blur()" class="btn_bg" style="height:16px;">
               <img alt="" class="blt01" style="margin:0 0 2px 0" src="/{//config/@root}/EA/Images/ico_28.gif" />
             </button>-->
-					  <button type="button" class="btn btn-outline-secondary btn-18" title="품번" onclick="_zw.formEx.externalWnd('erp.items3',240,40,20,70,'','ITEMNO','ITEMNAME');">
+					  <button type="button" class="btn btn-outline-secondary btn-18" title="품번" onclick="_zw.formEx.externalWnd('erp.items1',240,40,20,70,'','ITEMNO','ITEMNAME');">
 						  <i class="fas fa-angle-down"></i>
 					  </button>
 				  </xsl:when>
@@ -500,7 +500,7 @@
 		  <td>
 			  <xsl:choose>
 				  <xsl:when test="$mode='new' or $mode='edit'  or $actrole='__r' or $actrole='_reviewer'">
-					  <input type="text" name="PRICEA" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{PRICEA}" />
+					  <input type="text" name="PRICEA" class="txtDollar" maxlength="20" data-inputmask="number;15;5" value="{PRICEA}" />
 				  </xsl:when>
 				  <xsl:otherwise>
 					  <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -511,7 +511,7 @@
 		  <td>
 			  <xsl:choose>
 				  <xsl:when test="$mode='new' or $mode='edit'  or $actrole='__r' or $actrole='_reviewer'">
-					  <input type="text" name="PRICEB" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{PRICEB}" />
+					  <input type="text" name="PRICEB" class="txtDollar" maxlength="20" data-inputmask="number;15;5" value="{PRICEB}" />
 				  </xsl:when>
 				  <xsl:otherwise>
 					  <xsl:attribute name="class">tdRead_Right</xsl:attribute>
@@ -556,7 +556,7 @@
 		  <td>
 			  <xsl:choose>
 				  <xsl:when test="$mode='new' or $mode='edit'  or $actrole='__r' or $actrole='_reviewer'">
-					  <input type="text" name="PRICED" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{PRICED}" />
+					  <input type="text" name="PRICED" class="txtDollar" maxlength="20" data-inputmask="number;15;5" value="{PRICED}" />
 				  </xsl:when>
 				  <xsl:otherwise>
 					  <xsl:attribute name="class">tdRead_Right</xsl:attribute>

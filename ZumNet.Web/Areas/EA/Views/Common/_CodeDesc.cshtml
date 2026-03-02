@@ -241,6 +241,27 @@
                         sb.Append("</table>");
                         #endregion
                     }
+                    else if (postData["k2"].ToString() == "cc_cardcorp")
+                    {
+                        #region [법인카드 : 카드사 코드]
+                        sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
+                        sb.Append("<colgroup><col width=\"30%\" /><col  /></colgroup>");
+                        sb.Append("<tbody>");
+                        foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
+                        {
+                            sb.Append("<tr>");
+                            sb.AppendFormat("<td>{0}</td>", row["item1"].ToString());
+                            sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{1}^{0}\">{0}</a></td>", row["item2"].ToString(), row["item1"].ToString());
+                            sb.Append("</tr>");
+                        }
+                        if (postData["etc"].ToString() == "etc")
+                        {
+                            sb.Append("<tr><td><input type=\"text\" class=\"form-control z-input-in\" /></td></tr>");
+                        }
+                        sb.Append("</tbody>");
+                        sb.Append("</table>");
+                        #endregion
+                    }
                     else
                     {
                         sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");

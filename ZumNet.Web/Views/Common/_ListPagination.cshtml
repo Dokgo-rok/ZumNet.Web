@@ -1,8 +1,8 @@
 ﻿@using System.Data;
 @using System.Text;
-
 @{
     int maxPage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 5 : 10;
+    int sidePage = ZumNet.Web.Bc.CommonUtils.IsMobile() ? 1 : 4;
     int totalCount = Convert.ToInt32(ViewBag.R.lv.total.Value);
     int pageCount = Convert.ToInt32(ViewBag.R.lv.count.Value);
     int pageIndex = Convert.ToInt32(ViewBag.R.lv.page.Value);
@@ -21,8 +21,8 @@
     }
     else if (pageIndex >= maxPage && (totalPage - maxPage + 1 >= pageIndex))
     {
-        iStart = pageIndex - 1;
-        iEnd = pageIndex + 1;
+        iStart = pageIndex - sidePage;
+        iEnd = pageIndex + sidePage;
     }
     else if (pageIndex < maxPage)
     {
@@ -66,7 +66,6 @@
     //sb.Append("</ul>");
 
 }
-
 @if (totalPage > 1)
 {
     if (pageIndex > 1)

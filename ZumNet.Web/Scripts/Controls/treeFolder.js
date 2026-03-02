@@ -451,6 +451,26 @@ $(function () {
                             encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + n.a_attr.url + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
                             window.location.href = '/Report?qi=' + encodeURIComponent(encQi);
                         }
+                    } else if (n.a_attr.url.toLowerCase().indexOf('/' + _zw.V.ctalias) >= 0) { //형식: exs/corpcard:CC_CARDBASE
+                        var vUrl = n.a_attr.url.split(':');
+                        if (_zw.V.current.page.toLowerCase() == vUrl[0].toLowerCase()) {
+                            _zw.V.ot = n.li_attr.objecttype;
+                            _zw.V.alias = n.li_attr.alias;
+                            _zw.V.xfalias = n.li_attr.xfalias;
+                            _zw.V.fdid = vId[vId.length - 1];
+                            _zw.V.current.acl = n.li_attr.acl;
+                            _zw.V.opnode = n.id;
+                            _zw.V.ft = vUrl[1];
+                            _zw.V.ttl = ttl;
+
+                            //console.log("url=" + vUrl[0] + ", ft=" + vUrl[1]);
+
+                            _zw.fn.initLv(_zw.V.current.urid);
+                            _zw.fn.loadList();
+                        } else {                            
+                            encQi = _zw.base64.encode('{M:"",ct:"' + _zw.V.ct + '",ctalias:"' + _zw.V.ctalias + '",ot:"' + n.li_attr.objecttype + '",alias:"' + n.li_attr.alias + '",xfalias:"' + n.li_attr.xfalias + '",fdid:"' + vId[vId.length - 1] + '",opnode:"' + n.id + '",ft:"' + vUrl[1] + '",ttl:"' + ttl + '",acl:"' + n.li_attr.acl + '"}');
+                            window.location.href = vUrl[0].toLowerCase() + '?qi=' + encodeURIComponent(encQi);
+                        }
                     }
                 }
             }

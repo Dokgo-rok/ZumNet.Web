@@ -2081,7 +2081,7 @@ $(function () {
                             allowNegative: v[3] && v[3] == '-' ? true : false
                         })
                     });
-                }                
+                }
             } else if (v[0] == "date" || v[0] == "time" || v[0] == "year") {
                 var mv = [];
                 if (v[0] == "date") {
@@ -2103,6 +2103,18 @@ $(function () {
                     mask: mv,
                     pipe: textMaskAddons.createAutoCorrectedDatePipe(v[1]),
                     guide: false
+                });
+            } else if (v[0] == "card") {
+                var mv = [];
+                if (v[1] == "number") {
+                    mv = [/\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
+                } else if (v[1] == "mmyy") {
+                    mv = [/[0-1]/, /\d/, '/', /\d/, /\d/];
+                }
+                vanillaTextMask.maskInput({
+                    inputElement: e,
+                    mask: mv,
+                    guide: true
                 });
             }
             $(e).off('blur');
