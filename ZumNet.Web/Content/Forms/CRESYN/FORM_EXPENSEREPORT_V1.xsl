@@ -27,7 +27,7 @@
 				<style type="text/css">
 					<xsl:value-of select="phxsl:baseStyle()" />
 					/* 화면 넓이, 에디터 높이, 양식명크기 */
-					.m {width:1450px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
+					.m {width:1400px} .m .fm-editor {height:450px;border:windowtext 0pt solid}
 					.fh h1 {font-size:20.0pt;letter-spacing:1pt}
 
 					/* 결재칸 넓이 */
@@ -37,6 +37,8 @@
 					.m .ft .f-lbl {width:8%} .m .ft .f-lbl1 {width:10%} .m .ft .f-lbl2 {width:?}
 					.m .ft .f-option {width:15%} .m .ft .f-option1 {width:34%}
 					.m .ft-sub .f-option {width:49%}
+
+					.m .ft-sub-sub .f-lbl-sub, .m .ft-sub-sub .subsub_table_row td {border-style: dotted; border-color: windowtext; border-left: 0; border-top: 0}
 
 					/* 인쇄 설정 : 맨하단으로 */
 					@media print {.m .fm-editor {height:450px}}
@@ -154,9 +156,17 @@
 					<div class="ff" />
 
 					<div class="fm">
-						<table class="ft" border="0" cellspacing="0" cellpadding="0">
+						<table class="ft" border="0" cellspacing="0" cellpadding="0" style="width: 75%">
+							<colgroup>
+								<col style="width:10.67%"></col>
+								<col style="width:22.7%"></col>
+								<col style="width:10.67%"></col>
+								<col style="width:22.7%"></col>
+								<col style="width:10.67%"></col>
+								<col style="width:"></col>
+							</colgroup>
 							<tr>
-								<td class="f-lbl" style="border-bottom:0;">
+								<td class="f-lbl2" style="border-bottom:0;">
 									Supplier
 									<xsl:if test="$mode='new' or $mode='edit'">
 										<button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
@@ -177,7 +187,7 @@
 										</xsl:otherwise>
 									</xsl:choose>
 								</td>
-								<td class="f-lbl1" style="border-bottom:0;">Supplier 부서</td>
+								<td class="f-lbl2" style="border-bottom:0;">Supplier 부서</td>
 								<td style="border-bottom: 0">
 									<xsl:choose>
 										<xsl:when test="$mode='new'">
@@ -191,8 +201,8 @@
 										</xsl:otherwise>
 									</xsl:choose>
 								</td>
-								<td class="f-lbl1" style="border-bottom:0;">AP 일자</td>
-								<td style="border-bottom: 0; border-right: 0">
+								<td class="f-lbl2" style="border-bottom:0;">AP 일자</td>
+								<td style="border-bottom: 0;border-right: 0">
 									<xsl:choose>
 										<xsl:when test="$mode='new'">
 											<input type="text" id="__mainfield" name="APDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" style="width: 100px" value="{phxsl:convertDate(string(//docinfo/createdate), '')}" />
@@ -255,46 +265,49 @@
 										<xsl:if test="$mode='new' or $mode='edit'">
 											<xsl:attribute name="style">table-layout:fixed</xsl:attribute>
 										</xsl:if>
-										<colgroup>
-											<col style="width:2.08%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-											<col style="width:5.76%"></col>
-										</colgroup>
-										<tr style="height:40px">
-											<td class="f-lbl-sub" style="border-top:0">NO</td>
-											<td class="f-lbl-sub" style="border-top:0">구분</td>
-											<td class="f-lbl-sub" style="border-top:0">계정</td>
-											<td class="f-lbl-sub" style="border-top:0">Supplier</td>
-											<td class="f-lbl-sub" style="border-top:0">사용일자</td>
-											<td class="f-lbl-sub" style="border-top:0">카드번호</td>
-											<td class="f-lbl-sub" style="border-top:0">승인번호</td>
-											<td class="f-lbl-sub" style="border-top:0">과세구분</td>
-											<td class="f-lbl-sub" style="border-top:0">가맹점명</td>
-											<td class="f-lbl-sub" style="border-top:0">사업자<br />등록번호</td>
-											<td class="f-lbl-sub" style="border-top:0">승인금액<br />(원화)</td>
-											<td class="f-lbl-sub" style="border-top:0">공급가액<br />(원화)</td>
-											<td class="f-lbl-sub" style="border-top:0">부가세<br />(원화)</td>
-											<td class="f-lbl-sub" style="border-top:0">인정금액</td>
-											<td class="f-lbl-sub" style="border-top:0">세금구분</td>
-											<td class="f-lbl-sub" style="border-top:0">세목</td>
-											<td class="f-lbl-sub" style="border-top:0">세부정보</td>
-											<td class="f-lbl-sub" style="border-top:0;border-right:0">적요</td>
-										</tr>
+										<tr>
+											<td class="f-lbl-sub" style="width: 2.5%; border-top:0; border-right:1px dotted windowtext">NO</td>
+											<td style="border:0; padding: 0">
+												<table class="ft-sub-sub" border="0" cellspacing="0" cellpadding="0">
+													<colgroup>
+														<col style="width:10%"></col>
+														<col style="width:10%"></col>
+														<col style="width:10%"></col>
+														<col style="width:6%"></col>
+														<col style="width:11%"></col>
+														<col style="width:6%"></col>
+														<col style="width:18%"></col>
+														<col style="width:7%"></col>
+														<col style="width:5.5%"></col>
+														<col style="width:5.5%"></col>
+														<col style="width:5.5%"></col>
+														<col style="width:5.5%"></col>
+													</colgroup>
+													<tr style="height:40px">
+														<td class="f-lbl-sub">구분</td>
+														<td class="f-lbl-sub">계정</td>
+														<td class="f-lbl-sub">Supplier<br />(카드사)</td>
+														<td class="f-lbl-sub">사용일자</td>
+														<td class="f-lbl-sub">카드번호</td>
+														<td class="f-lbl-sub">승인번호</td>														
+														<td class="f-lbl-sub">가맹점명</td>
+														<td class="f-lbl-sub">사업자<br />등록번호</td>
+														<td class="f-lbl-sub">승인금액<br />(원화)</td>
+														<td class="f-lbl-sub">공급가액<br />(원화)</td>
+														<td class="f-lbl-sub">부가세<br />(원화)</td>
+														<td class="f-lbl-sub" style="border-right: 0">인정금액<br />(원화)</td>
+													</tr>
+													<tr>
+														<td class="f-lbl-sub" style="border-bottom: 0">과세구분</td>
+														<td class="f-lbl-sub" style="border-bottom: 0">세금구분</td>
+														<td class="f-lbl-sub" style="border-bottom: 0">세목</td>
+														<td class="f-lbl-sub" style="border-bottom: 0" colspan="3">불공제사유</td>														
+														<td class="f-lbl-sub" style="border-bottom: 0" colspan="5">적요</td>
+														<td class="f-lbl-sub" style="border-bottom: 0; border-right: 0">세부정보</td>
+													</tr>
+												</table> 
+											</td>
+										</tr>										
 										<xsl:apply-templates select="//forminfo/subtables/subtable1/row"/>
 									</table>
 								</td>
@@ -391,7 +404,7 @@
 
 	<xsl:template match="//forminfo/subtables/subtable1/row">
 		<tr class="sub_table_row">
-			<td class="tdRead_Center">
+			<td class="tdRead_Center" style="border:0;border-top:1px solid windowtext;border-right:1px dotted windowtext">
 				<xsl:choose>
 					<xsl:when test="$mode='new' or $mode='edit'">
 						<input type="checkbox" name="ROWSEQ" value="{ROWSEQ}" />
@@ -401,221 +414,257 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:optionValue(//optioninfo/foption[@sk='expensetype'], 'EXPENSETYPECODE', string(EXPENSETYPECODE), 'EXPENSETYPE', string(EXPENSETYPE))" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(EXPENSETYPE))" />
-						<input type="hidden" name="EXPENSETYPECODE" value="{EXPENSETYPECODE}" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="ACNTNM" style="width:76%" class="txtText_u" readonly="readonly" value="{ACNTNM}" />
-						<button type="button" class="btn btn-outline-secondary btn-18" title="계정과목" onclick="_zw.formEx.externalWnd('report.ERP_ACCOUNTCLS',240,40,20,70,'','ACNTNM','ACNTDPCD','ACNTMAIN','ACNTSUB','ACNTID','ACNTCLS','ACNTCLSNM');">
-							<i class="fas fa-angle-down"></i>
-						</button>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ACNTNM))" />
-					</xsl:otherwise>
-				</xsl:choose>
-				<input type="hidden" name="ACNTDPCD" value="{ACNTDPCD}" />
-				<input type="hidden" name="ACNTMAIN" value="{ACNTMAIN}" />
-				<input type="hidden" name="ACNTSUB" value="{ACNTSUB}" />
-				<input type="hidden" name="ACNTID" value="{ACNTID}" />
-				<input type="hidden" name="ACNTCLS" value="{ACNTCLS}" />
-				<input type="hidden" name="ACNTCLSNM" value="{ACNTCLSNM}" />
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="SUPPLIERDEPT" style="width:76%" class="txtText_u" readonly="readonly" value="{SUPPLIERDEPT}" />
-						<button type="button" class="btn btn-outline-secondary btn-18" title="Supplier" onclick="_zw.formEx.externalWnd('report.ERP_DEPARTMENT',240,40,20,70,'','SUPPLIERDEPT','SUPPLIERDEPTCD');">
-							<i class="fas fa-angle-down"></i>
-						</button>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(SUPPLIERDEPT))" />
-					</xsl:otherwise>
-				</xsl:choose>
-				<input type="hidden" name="SUPPLIERDEPTCD" value="{SUPPLIERDEPTCD}" />
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="AQUIDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{AQUIDATE}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(AQUIDATE))" />
-					</xsl:otherwise>
-				</xsl:choose>
-				<input type="hidden" name="ACKID" value="{ACKID}" />
-				<input type="hidden" name="PURCHASEFLAG" value="{PURCHASEFLAG}" />
-				<input type="hidden" name="CURRENCY" value="{CURRENCY}" />
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="CARDNUM" class="txtText" maxlength="20" data-inputmask="card;number" autocomplete="off" value="{CARDNUM}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(CARDNUM))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="ACKNO" class="txtText" maxlength="10" data-inputmask="number-n" autocomplete="off" value="{ACKNO}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ACKNO))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:optionValue(//optioninfo/foption[@sk='ERP_TAXKIND'], 'MERCTAXKINDCODE', string(MERCTAXKINDCODE), 'MERCTAXKIND', string(MERCTAXKIND))" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(MERCTAXKIND))" />
-						<input type="hidden" name="EXPENSETYPECODE" value="{MERCTAXKINDCODE}" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="MERCNAME" class="txtText" maxlength="100" value="{MERCNAME}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(MERCNAME))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="MERCSOCNO" class="txtText" maxlength="20" data-inputmask="number-n" autocomplete="off" value="{MERCSOCNO}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(MERCSOCNO))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="ACKAMT" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" autocomplete="off" value="{ACKAMT}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ACKAMT))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="VALSUPPLY" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" autocomplete="off" value="{VALSUPPLY}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(VALSUPPLY))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="VAT" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" autocomplete="off" value="{VAT}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(VAT))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="REQAMT" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" autocomplete="off" value="{REQAMT}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(REQAMT))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="TAXRATE" style="width:76%" class="txtText_u" readonly="readonly" value="{TAXRATE}" />
-						<button type="button" class="btn btn-outline-secondary btn-18" title="세금구분" onclick="_zw.formEx.optionWnd('report.ERP_TAXCODE',240,40,20,70,'','TAXRATE','TAXRATECODE');">
-							<i class="fas fa-angle-down"></i>
-						</button>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TAXRATE))" />
-					</xsl:otherwise>
-				</xsl:choose>
-				<input type="hidden" name="TAXRATECODE" value="{TAXRATECODE}" />
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="TAXEXPL" style="width:76%" class="txtText_u" readonly="readonly" value="{TAXEXPL}" />
-						<button type="button" class="btn btn-outline-secondary btn-18" title="세목" onclick="_zw.formEx.optionWnd('report.ERP_TAXEXPL',240,40,20,70,'','TAXEXPL','TAXEXPLCODE');">
-							<i class="fas fa-angle-down"></i>
-						</button>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TAXEXPL))" />
-					</xsl:otherwise>
-				</xsl:choose>
-				<input type="hidden" name="TAXEXPLCODE" value="{TAXEXPLCODE}" />
-			</td>
-			<td class="tdRead_Center">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<button type="button" class="btn rounded-pill btn-outline-secondary btn-sm" title="불공제사유" onclick="_zw.formEx.optionWnd('report.ERP_TAXNONDEDU',240,40,20,70,'','TAXNONDEDU','TAXNONDEDUCODE');">
-							<i class="fas fa-question"></i>
-						</button>&nbsp;
-						<button type="button" class="btn rounded-pill btn-outline-secondary btn-sm" title="계정과목 세부정보" onclick="_zw.formEx.popupWnd('report.CC_ACCOUNTDETAILWND', '40rem');">
-							<i class="far fa-comment-dots"></i>
-						</button>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TAXNONDEDU))" />
-					</xsl:otherwise>
-				</xsl:choose>
-				<input type="hidden" name="TAXNONDEDU" value="{TAXNONDEDU}" />
-				<input type="hidden" name="TAXNONDEDUCODE" value="{TAXNONDEDUCODE}" />
-				<input type="hidden" name="DETAILINFO1" value="{DETAILINFO1}" />
-				<input type="hidden" name="DETAILINFO2" value="{DETAILINFO2}" />
-				<input type="hidden" name="DETAILINFO3" value="{DETAILINFO3}" />
-				<input type="hidden" name="DETAILINFO4" value="{DETAILINFO4}" />
-				<input type="hidden" name="DETAILINFO5" value="{DETAILINFO5}" />
-				<input type="hidden" name="DETAILINFO6" value="{DETAILINFO6}" />
-				<input type="hidden" name="DETAILINFO7" value="{DETAILINFO7}" />
-				<input type="hidden" name="DETAILINFO8" value="{DETAILINFO8}" />
-				<input type="hidden" name="DETAILINFO9" value="{DETAILINFO9}" />
-				<input type="hidden" name="DETAILINFO10" value="{DETAILINFO10}" />
-				<input type="hidden" name="DETAILINFO11" value="{DETAILINFO11}" />
-				<input type="hidden" name="DETAILINFO12" value="{DETAILINFO12}" />
-			</td>
-			<td style="border-right:0">
-				<xsl:choose>
-					<xsl:when test="$mode='new' or $mode='edit'">
-						<input type="text" name="ETC" class="txtText" maxlength="50" value="{ETC}" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ETC))" />
-					</xsl:otherwise>
-				</xsl:choose>
-			</td>
+			<td style="border:0;border-top:1px solid windowtext;padding:0">
+				<table class="ft-sub-sub" header="0" border="0" cellpadding="0" cellspacing="0">
+					<colgroup>
+						<col style="width:10%"></col>
+						<col style="width:10%"></col>
+						<col style="width:10%"></col>
+						<col style="width:6%"></col>
+						<col style="width:11%"></col>
+						<col style="width:6%"></col>
+						<col style="width:18%"></col>
+						<col style="width:7%"></col>
+						<col style="width:5.5%"></col>
+						<col style="width:5.5%"></col>
+						<col style="width:5.5%"></col>
+						<col style="width:5.5%"></col>
+					</colgroup>
+					<tr class="subsub_table_row">
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:optionValue(//optioninfo/foption[@sk='expensetype'], 'EXPENSETYPECODE', string(EXPENSETYPECODE), 'EXPENSETYPE', string(EXPENSETYPE))" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(EXPENSETYPE))" />
+									<input type="hidden" name="EXPENSETYPECODE" value="{EXPENSETYPECODE}" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="ACNTNM" style="width:84%" class="txtText_u" readonly="readonly" value="{ACNTNM}" />
+									<button type="button" class="btn btn-outline-secondary btn-18" title="계정과목" onclick="_zw.formEx.externalWnd('report.ERP_ACCOUNTCLS',240,40,20,70,'','ACNTNM','ACNTDPCD','ACNTMAIN','ACNTSUB','ACNTID','ACNTCLS','ACNTCLSNM');">
+										<i class="fas fa-angle-down"></i>
+									</button>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ACNTNM))" />
+								</xsl:otherwise>
+							</xsl:choose>
+							<input type="hidden" name="ACNTDPCD" value="{ACNTDPCD}" />
+							<input type="hidden" name="ACNTMAIN" value="{ACNTMAIN}" />
+							<input type="hidden" name="ACNTSUB" value="{ACNTSUB}" />
+							<input type="hidden" name="ACNTID" value="{ACNTID}" />
+							<input type="hidden" name="ACNTCLS" value="{ACNTCLS}" />
+							<input type="hidden" name="ACNTCLSNM" value="{ACNTCLSNM}" />
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="SUPPLIERDEPT" style="width:84%" class="txtText_u" readonly="readonly" value="{SUPPLIERDEPT}" />
+									<button type="button" class="btn btn-outline-secondary btn-18" title="Supplier" onclick="_zw.formEx.externalWnd('report.ERP_DEPARTMENT',240,40,20,70,'','SUPPLIERDEPT','SUPPLIERDEPTCD');">
+										<i class="fas fa-angle-down"></i>
+									</button>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(SUPPLIERDEPT))" />
+								</xsl:otherwise>
+							</xsl:choose>
+							<input type="hidden" name="SUPPLIERDEPTCD" value="{SUPPLIERDEPTCD}" />
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="AQUIDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{AQUIDATE}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(AQUIDATE))" />
+								</xsl:otherwise>
+							</xsl:choose>
+							<input type="hidden" name="ACKID" value="{ACKID}" />
+							<input type="hidden" name="PURCHASEFLAG" value="{PURCHASEFLAG}" />
+							<input type="hidden" name="CURRENCY" value="{CURRENCY}" />
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="CARDNUM" class="txtText" maxlength="20" data-inputmask="card;number" autocomplete="off" value="{CARDNUM}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(CARDNUM))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="ACKNO" class="txtText" maxlength="10" data-inputmask="number-n" autocomplete="off" value="{ACKNO}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ACKNO))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>						
+						<td>
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="MERCNAME" class="txtText" maxlength="100" value="{MERCNAME}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(MERCNAME))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="MERCSOCNO" class="txtText" maxlength="20" data-inputmask="number-n" autocomplete="off" value="{MERCSOCNO}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(MERCSOCNO))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="ACKAMT" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" autocomplete="off" value="{ACKAMT}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ACKAMT))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="VALSUPPLY" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" autocomplete="off" value="{VALSUPPLY}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(VALSUPPLY))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="VAT" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" autocomplete="off" value="{VAT}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(VAT))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center" style="border-right:0">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="REQAMT" class="txtCurrency" maxlength="20" data-inputmask="number;20;0" autocomplete="off" value="{REQAMT}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(REQAMT))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>						
+					</tr>
+					<tr class="subsub_table_row">
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:optionValue(//optioninfo/foption[@sk='ERP_TAXKIND'], 'MERCTAXKINDCODE', string(MERCTAXKINDCODE), 'MERCTAXKIND', string(MERCTAXKIND))" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(MERCTAXKIND))" />
+									<input type="hidden" name="EXPENSETYPECODE" value="{MERCTAXKINDCODE}" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="TAXRATE" style="width:84%" class="txtText_u" readonly="readonly" value="{TAXRATE}" />
+									<button type="button" class="btn btn-outline-secondary btn-18" title="세금구분" onclick="_zw.formEx.optionWnd('report.ERP_TAXCODE',240,40,20,70,'','TAXRATE','TAXRATECODE');">
+										<i class="fas fa-angle-down"></i>
+									</button>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TAXRATE))" />
+								</xsl:otherwise>
+							</xsl:choose>
+							<input type="hidden" name="TAXRATECODE" value="{TAXRATECODE}" />
+						</td>
+						<td class="tdRead_Center">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="TAXEXPL" style="width:84%" class="txtText_u" readonly="readonly" value="{TAXEXPL}" />
+									<button type="button" class="btn btn-outline-secondary btn-18" title="세목" onclick="_zw.formEx.optionWnd('report.ERP_TAXEXPL',240,40,20,70,'','TAXEXPL','TAXEXPLCODE');">
+										<i class="fas fa-angle-down"></i>
+									</button>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TAXEXPL))" />
+								</xsl:otherwise>
+							</xsl:choose>
+							<input type="hidden" name="TAXEXPLCODE" value="{TAXEXPLCODE}" />
+						</td>
+						<td class="tdRead_Center" colspan="3">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="TAXNONDEDU" style="width:93%" class="txtText_u" readonly="readonly" value="{TAXNONDEDU}" />
+									<button type="button" class="btn btn-outline-secondary btn-18" title="불공제사유" onclick="_zw.formEx.optionWnd('report.ERP_TAXNONDEDU',240,40,20,70,'','TAXNONDEDU','TAXNONDEDUCODE');">
+										<i class="fas fa-angle-down"></i>
+									</button>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(TAXNONDEDU))" />
+								</xsl:otherwise>
+							</xsl:choose>
+							<input type="hidden" name="TAXNONDEDUCODE" value="{TAXNONDEDUCODE}" />
+						</td>
+						
+						<td colspan="5">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<input type="text" name="ETC" class="txtText" maxlength="50" value="{ETC}" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(ETC))" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td class="tdRead_Center" style="border-right:0">
+							<xsl:choose>
+								<xsl:when test="$mode='new' or $mode='edit'">
+									<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" title="계정과목 세부정보" onclick="_zw.formEx.popupWnd('report.CC_ACCOUNTDETAILWND', '40rem');">
+										<i class="far fa-comment-dots"></i>
+									</button>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:if test="phxsl:isDiff(string(ACNTCLS),'')">
+										<button type="button" class="btn icon-btn btn-outline-secondary btn-sm" title="계정과목 세부정보" onclick="_zw.formEx.popupWnd('report.CC_ACCOUNTDETAILWND', '40rem');">
+											<i class="far fa-comment-dots"></i>
+										</button>
+									</xsl:if>
+								</xsl:otherwise>
+							</xsl:choose>
+							<input type="hidden" name="DETAILINFO1" value="{DETAILINFO1}" />
+							<input type="hidden" name="DETAILINFO2" value="{DETAILINFO2}" />
+							<input type="hidden" name="DETAILINFO3" value="{DETAILINFO3}" />
+							<input type="hidden" name="DETAILINFO4" value="{DETAILINFO4}" />
+							<input type="hidden" name="DETAILINFO5" value="{DETAILINFO5}" />
+							<input type="hidden" name="DETAILINFO6" value="{DETAILINFO6}" />
+							<input type="hidden" name="DETAILINFO7" value="{DETAILINFO7}" />
+							<input type="hidden" name="DETAILINFO8" value="{DETAILINFO8}" />
+							<input type="hidden" name="DETAILINFO9" value="{DETAILINFO9}" />
+							<input type="hidden" name="DETAILINFO10" value="{DETAILINFO10}" />
+							<input type="hidden" name="DETAILINFO11" value="{DETAILINFO11}" />
+							<input type="hidden" name="DETAILINFO12" value="{DETAILINFO12}" />
+						</td>
+					</tr>
+				</table>
+			</td>			
 		</tr>
 	</xsl:template>
 

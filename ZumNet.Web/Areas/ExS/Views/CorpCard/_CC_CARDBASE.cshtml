@@ -300,7 +300,7 @@
         else
         {
             if (period.Length == 4) return period.Substring(0, 2) + "/" + period.Substring(2, 2);
-            else if (period.Length == 6) return period.Substring(4, 2) + "/" + period.Substring(2, 2);
+            else if (period.Length == 6) return period.Substring(2, 2) + "/" + period.Substring(4, 2);
             else return period;
         }
     }

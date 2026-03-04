@@ -36,7 +36,7 @@
 
         //카드번호, 유효기간
         sb.AppendFormat("<tr><th class=\"bg-light\">카드번호</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" data-inputmask=\"card;number\" value=\"\" autocomplete=\"off\"></td>", "cardnum");
-        sb.AppendFormat("<th class=\"bg-light\">유효기간</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"card;mmyy\" value=\"\" autocomplete=\"off\"></td>", "cardprid");
+        sb.AppendFormat("<th class=\"bg-light\">유효기간</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"card;yymm\" value=\"\" autocomplete=\"off\"></td>", "cardprid");
         sb.Append("</tr>");
 
         //카드종류, 한도
@@ -149,7 +149,7 @@
 
             //카드번호, 유효기간
             sb.AppendFormat("<tr><th class=\"bg-light\">카드번호</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"20\" data-inputmask=\"card;number\" value=\"{1}\" autocomplete=\"off\"></td>", "cardnum", StrCardNum(row["cardnum"].ToString()));
-            sb.AppendFormat("<th class=\"bg-light\">유효기간</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"card;mmyy\" value=\"{1}\" autocomplete=\"off\"></td>", "cardprid", StrCardPeriod(row["cardprid"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">유효기간</th><td><input type=\"text\" class=\"form-control\" name=\"RegChangeData\" data-field=\"{0}\" maxlength=\"10\" data-inputmask=\"card;yymm\" value=\"{1}\" autocomplete=\"off\"></td>", "cardprid", StrCardPeriod(row["cardprid"].ToString()));
             sb.Append("</tr>");
 
             //카드종류, 한도
@@ -450,7 +450,7 @@
         else
         {
             if (period.Length == 4) return period.Substring(0, 2) + "/" + period.Substring(2, 2);
-            else if (period.Length == 6) return period.Substring(4, 2) + "/" + period.Substring(2, 2);
+            else if (period.Length == 6) return period.Substring(2, 2) + "/" + period.Substring(4, 2);
             else return period;
         }
     }

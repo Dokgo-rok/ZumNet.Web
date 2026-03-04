@@ -1293,10 +1293,19 @@
 
                     if (strBodyMode == "F")
                     {
-                        sb.Append("<div class=\"modal-footer\">"); //modal-footer
-                        sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">닫기</button>");
-                        sb.Append("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"confirm\">확인</button>");
-                        sb.Append("</div>");
+                        if (postData["k2"].ToString() == "CC_ACCOUNTDETAILWND" && postData["v2"].ToString() == "read")
+                        {
+                            sb.Append("<div class=\"modal-footer\">"); //modal-footer
+                            sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">닫기</button>");
+                            sb.Append("</div>");
+                        }
+                        else
+                        {
+                            sb.Append("<div class=\"modal-footer\">"); //modal-footer
+                            sb.Append("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">닫기</button>");
+                            sb.Append("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"confirm\">확인</button>");
+                            sb.Append("</div>");
+                        }
                     }
 
                     sb.Append("</div>"); //content

@@ -23,8 +23,6 @@ $(function () {
                 if (!$(this).prop('disabled')) $(this).prop('checked', b);
             });
         });
-
-        $('.z-list [data-toggle="tooltip"][title!=""]').tooltip();
     }
 
     _zw.fn.bindCtrl();
@@ -232,13 +230,13 @@ $(function () {
                 }
                 if (fld == "cardnum") {
                     var v = $(this).val().replace(/_/gi, '').replace(/-/gi, ''); // '_', '-' 제거
-                    if (v.length != 16) { alert("[카드번호] 형식이 잘못됐습니다!"); $(this).focus(); bReg = false; return false; }
+                    if (v.length < 15) { alert("[카드번호] 형식이 잘못됐습니다!"); $(this).focus(); bReg = false; return false; }
                     postJson[fld] = v;
 
                 } else if (fld == "cardprid") {
                     var v = $(this).val().replace(/_/gi, '').replace(/\//gi, ''); // '_', '/' 제거
                     if (v.length != 4) { alert("[유효기간] 형식이 잘못됐습니다!"); $(this).focus(); bReg = false; return false; }
-                    postJson[fld] = '20' + v.substr(2, 2) + v.substr(0, 2);
+                    postJson[fld] = '20' + v; //v.substr(2, 2) + v.substr(0, 2);
 
                 }  else if (fld == "limitamt") postJson[fld] = parseFloat(_zw.ut.empty($(this).val())) * 1000; //천원단위->원단위
                 else if (fld == "reqdate" || fld == "isudate" || fld == "rtndate") postJson[fld] = $(this).val().replace(/-/gi, ''); // 날짜 '-' 제거)
@@ -257,6 +255,8 @@ $(function () {
         postJson["ft"] = _zw.V.ft;
         postJson["operator"] = _zw.V.current.operator;
         postJson["acl"] = _zw.V.current.acl;
+
+        console.log(postJson);
 
         var msg = mode == "edit" ? "카드정보을 변경하시겠습니까?" : "카드정보를 등록하시겠습니까?";
         bootbox.confirm(msg, function (rt) { //console.log(postJson);
@@ -470,7 +470,7 @@ $(function () {
             var e = $('#_SearchText');
             var s = "['\\%^&\"*]";
             var reg = new RegExp(s, 'g');
-            if (e.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e.val(''); e.focus(); }); return false; }
+            if (e.val().search(reg) >= 0 || e.val().search(/\\/) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e.val(''); e.focus(); }); return false; }
 
             _zw.V.lv.cd2 = e.val();
 

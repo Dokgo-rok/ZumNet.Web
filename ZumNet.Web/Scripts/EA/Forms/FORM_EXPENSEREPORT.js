@@ -9,24 +9,82 @@
             }
         },
         "addRow": function (row) { //26-02-19 추가
+            var icnt = 0;
+            $('#__subtable1 tr.sub_table_row').each(function (idx) {
+                $(this).find('input[name]', 'select[name]').each(function (idx) {
+                    if ($(this).attr('name') != 'ROWSEQ' && $(this).val() != '') icnt++;
+                })
+            });
+            console.log('cnt : ' + icnt);
+
             row.find('td > [name]').each(function () { $(this).val('').prop('disabled', false); }); _zw.fn.input(row);
             return row;
         },
         "validation": function (cmd) {
-            return true;
+            var rt = true;
+            if (cmd == "draft") { //기안
+                var el, el2, e,  v, s, s2, f, to = 0;
+                s = 'CARDNUM;카드번호^ACKNO;승인번호^MERCNAME;가맹점명^MERCSOCNO;사업자번호^ACKAMT;승인금액^VALSUPPLY;공급가액^VAT;부가세^REQAMT;인정금액^MERCTAXKINDCODE;과세구분^TAXRATE;세금구분^TAXEXPL;세목';
+                s2 = 'MERCNAME;가맹점명^MERCSOCNO;사업자번호^ACKAMT;승인금액^VALSUPPLY;공급가액^VAT;부가세^REQAMT;인정금액^MERCTAXKINDCODE;과세구분^TAXRATE;세금구분^TAXEXPL;세목';
+
+                $('#__subtable1 tr.sub_table_row').each(function (idx) {
+                    el = $(this).find('[name="EXPENSETYPECODE"]');
+                    if (el.val() != '') {
+                        if (el.val() == 'CARDCORP1' || el.val() == 'CARDCORP2' || el.val() == 'CARDPERSON') v = s.split('^');
+                        else if (el.val() == 'CASH') v = s2.split('^');
+
+                        for (var i = 0; i < v.length; i++) {
+                            f = v[i].split(';');
+                            e = $(this).find('[name="' + f[0] + '"]');
+                            if (e.length > 0 && $.trim(e.val()) == '') { bootbox.alert("필수항목 [" + f[1] + "] 누락!", function () { e.focus(); }); rt = false; return false; }
+                        }
+
+                        if ($(this).find('[name="TAXEXPLCODE"]').val() == 'S2') {
+                            e = $(this).find('[name="TAXNONDEDU"]');
+                            if (e.length > 0 && $.trim(e.val()) == '') { bootbox.alert("[불공제사유]를 선택하십시오!", function () { e.focus(); }); rt = false; return false; }
+                        }
+
+                        el2 = $(this).find('[name="ACNTCLS"]'); //계정분류코드
+                        if (el2.val() == 'A1') to = 5;
+                        else if (el2.val() == 'A2') to = 8;
+                        else if (el2.val() == 'A3' || el2.val() == 'B3' || el2.val() == 'D1') to = 1;
+                        else if (el2.val() == 'A4' || el2.val() == 'B1' || el2.val() == 'B2' || el2.val() == 'C1') to = 2;
+                        else to = 0;
+
+                        for (var i = 1; i <= to; i++) {
+                            e = $(this).find('[name="DETAILINFO' + i.toString() + '"]');
+                            if (e.length > 0 && $.trim(e.val()) == '') { bootbox.alert("필수항목 [세부정보] 누락!"); rt = false; return false; }
+                        }
+                    }                    
+                });
+            }
+            return rt;
         },
         "make": function (f) {
         },
         "checkEvent": function (ckb, el, fld) {
         },
         "calc": function (el) {
-            var s1, s2;
+            var s1, s2, row;
             if (el.name == 'REQAMT') {
                 s1 = parseFloat(_zw.ut.empty($(el).parent().parent().find('td input[name = "ACKAMT"]').val()));
                 s2 = parseFloat(_zw.ut.empty(el.value)); //console.log(s1 + " : " + s2)
                 if (s1 - s2 < 0) {
-                    bootbox.alert('"인정금액"은 "승인금액" 보다 클수 없습니다!', function () { el.value = ''; el.focus(); });
+                    bootbox.alert('"인정금액"은 "승인금액" 보다 클 수 없습니다!', function () { el.value = ''; el.focus(); });
                     return false;
+                }
+            } else if (el.name == 'CARDNUM' && el.value != '') {
+                row = $(el).parent().parent();
+                if (row.find('td [name = "EXPENSETYPECODE"]').val() == 'CARDCORP1') {
+                    if (row.find('td [name = "SUPPLIERDEPTCD"]').val() == '') {
+                        bootbox.alert('[Supplier(카드사)]를 선택하십시오!', function () { el.value = ''; }); return false;
+                    }
+                    var res = _zw.ut.ajaxSync('/EA/Common', '{M:"getreportsearch",body:"S", k1:"report",k2:"CC_CARDBASE",v1:"' + row.find('td [name = "SUPPLIERDEPTCD"]').val() + '",v2:"' + el.value.replace(/_/gi, '').replace(/-/gi, '') + '",v3:""}');
+                    if (res == "OK") {
+                        bootbox.alert('미등록 카드입니다. 관리자에게 문의하십시오', function () { el.value = ''; }); return false;
+                    }
+                } else {
+                    bootbox.alert('[구분] 값 누락', function () { el.value = ''; }); return false;
                 }
             }
         },
@@ -121,7 +179,7 @@
         },
         "popupWnd": function (pos, w) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.');
-            var m = '', opt = 'F', ttl = el.attr('title'), v1 = '', v2 = '', v3 = '', query = '', row = el.parent().parent();
+            var m = '', opt = 'F', ttl = el.attr('title'), v1 = '', v2 = '', v3 = '', query = '', row = el.parent().parent().parent();
 
             if (vPos[0] == 'report') m = 'getreportsearch';
             else m = 'getcodedescription';
@@ -130,7 +188,7 @@
                 query = $('#__mainfield[name="APPLICANTID"]').val();
                 ttl = el.text();
             } else if (vPos[1] == 'CC_ACCOUNTDETAILWND') {
-                v1 = row.find('td [name="ACNTCLS"]').val();
+                v1 = row.find('td [name="ACNTCLS"]').val(); v2 = _zw.V.mode;
                 if (v1 == '') { bootbox.alert('보여줄 세부정보가 없습니다.'); return false; }
             }
 
@@ -264,6 +322,10 @@
             var param = [x]; if (arguments.length > 7) for (var i = 7; i < arguments.length; i++) param.push(arguments[i]); //console.log(param);
             var m = 'getreportsearch', v1 = '', v2 = '', v3 = '', row = el.parent().parent();
 
+            if (vPos[1] == 'ERP_DEPARTMENT' && row.find('td [name="EXPENSETYPECODE"]').val() == 'CARDCORP1') {
+                _zw.formEx.optionWnd('external.cc_cardcorp', $(el), 0, 0, 0, '', 'SUPPLIERDEPTCD', 'SUPPLIERDEPT'); return false;
+            }
+
             var s = '<div class="zf-modal modal-dialog modal-dialog-centered modal-dialog-scrollable">'
                 + '<div class="modal-content" data-for="' + vPos[1] + '" style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)">'
                 + '<div class="modal-header">'
@@ -286,7 +348,7 @@
             searchBtn.click(function () {
                 if ($.trim(searchTxt.val()) == '' || searchTxt.val().length < 1) { bootbox.alert('검색어를 입력하십시오!', function () { searchTxt.focus(); }); return false; }
                 var exp = "['\\%^&\"*]", reg = new RegExp(exp, 'gi');
-                if (searchTxt.val().search(reg) >= 0) { bootbox.alert(exp + ' 문자는 사용될 수 없습니다!', function () { searchTxt.focus(); }); return false; }
+                if (searchTxt.val().search(reg) >= 0 || searchTxt.val().search(/\\/) >= 0) { bootbox.alert(exp + ' 문자는 사용될 수 없습니다!', function () { searchTxt.focus(); }); return false; }
 
                 $.ajax({
                     type: "POST",

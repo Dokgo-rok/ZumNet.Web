@@ -152,7 +152,7 @@
                     {
                         strValue = row[strID].ToString();
                     }
-                    if (strID == "ifstate" && row[strID].ToString() == "8") sb.AppendFormat("<td><a class=\"text-danger\" data-toggle=\"tooltip\" title=\"{1}\" href=\"javascript:void(0)\">{0}</a></td>", strValue, Server.HtmlEncode(row["ifmsg"].ToString()));
+                    if (strID == "ifstate" && row[strID].ToString() == "8") sb.AppendFormat("<td><a class=\"text-danger\" title=\"{1}\" href=\"javascript:void(0)\">{0}</a></td>", strValue, Server.HtmlEncode(row["ifmsg"].ToString()));
                     else sb.AppendFormat("<td{0}>{1}</td>", _columnConfig[i, 3].ToString() == "L" ? " class=\"text-left\"" : "", strValue);
                 }
                 sb.Append("</tr>");

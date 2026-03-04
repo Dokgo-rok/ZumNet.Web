@@ -158,7 +158,7 @@ $(function () {
             var e = $('#_SearchText');
             var s = "['\\%^&\"*]";
             var reg = new RegExp(s, 'g');
-            if (e.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e.val(''); e.focus(); }); return false; }
+            if (e.val().search(reg) >= 0 || e.val().search(/\\/) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e.val(''); e.focus(); }); return false; }
 
             _zw.V.lv.search = $('#_SearchSelect').val();
             _zw.V.lv.searchtext = e.val();

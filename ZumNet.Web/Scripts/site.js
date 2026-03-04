@@ -674,7 +674,7 @@ $(function () {
 
             var s = "['\\%^&\"*]";
             var reg = new RegExp(s, 'g');
-            if (e3.val() != '' && e4.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e4.val(''); e4.focus(); }); return; }
+            if (e3.val() != '' && (e4.val().search(reg) >= 0 || e4.val().search(/\\/) >= 0)) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e4.val(''); e4.focus(); }); return; }
 
             _zw.V.lv.tgt = _zw.V.fdid;
             _zw.V.lv.page = (page) ? page : 1;
@@ -691,7 +691,7 @@ $(function () {
             var e = $('.app-search input[type="text"]'); //console.log(e.val())
             var s = "['\\%^&\"*]";
             var reg = new RegExp(s, 'g');
-            if (e.val().search(reg) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e.val(''); e.focus(); }); return false; }
+            if (e.val().search(reg) >= 0 || e.val().search(/\\/) >= 0) { bootbox.alert(s + " 문자는 사용될 수 없습니다!", function () { e.val(''); e.focus(); }); return false; }
             if ($.trim(e.val()) == '') { bootbox.alert('검색어를 입력하십시오!', function () { e.focus(); }); return false; }
 
             window.location.href = '/Search?qi=' + encodeURIComponent(_zw.base64.encode('{ct:"0",ctalias:"",searchtext:"' + e.val() + '"}'));
@@ -2108,13 +2108,15 @@ $(function () {
                 var mv = [];
                 if (v[1] == "number") {
                     mv = [/\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
+                } else if (v[1] == "yymm") {
+                    mv = [/\d/, /\d/, '/', /[0-1]/, /\d/];
                 } else if (v[1] == "mmyy") {
                     mv = [/[0-1]/, /\d/, '/', /\d/, /\d/];
                 }
                 vanillaTextMask.maskInput({
                     inputElement: e,
                     mask: mv,
-                    guide: true
+                    guide: false
                 });
             }
             $(e).off('blur');

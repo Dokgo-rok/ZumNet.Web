@@ -568,7 +568,7 @@ $(function () {
             if (parseInt(e.value) < 1 || parseInt(e.value) > 12) { e.value = ''; e.focus(); return false; }
             if (_zw.formEx.calc) _zw.formEx.calc(e, v);
         }
-        else if (v[0] == "number" || v[0] == "number-n" || v[0] == "percent") { if (_zw.formEx.calc) _zw.formEx.calc(e, v); }
+        else if (v[0] == "number" || v[0] == "number-n" || v[0] == "percent" || v[0] == "card") { if (_zw.formEx.calc) _zw.formEx.calc(e, v); }
         else if (v[0] == "date" || v[0] == "time") {
             if (v[1] && v[1] == "yyyy") {
                 if (parseInt(e.value) < 1970 || parseInt(e.value) > 2099) { e.value = ''; e.focus(); return false; }

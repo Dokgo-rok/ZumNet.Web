@@ -457,7 +457,7 @@ $(function () {
                 var e = $('#_SearchText');
                 var s = "['\\%^&\"*]";
                 var reg = new RegExp(s, 'g');
-                if (e.val().search(reg) >= 0) { alert(s + " 문자는 사용될 수 없습니다!"); e.val(''); return; }
+                if (e.val().search(reg) >= 0 || e.val().search(/\\/) >= 0) { alert(s + " 문자는 사용될 수 없습니다!"); e.val(''); return; }
 
                 _zw.V.lv.search = 'O'; //성명+부서
                 _zw.V.lv.searchtext = e.val();

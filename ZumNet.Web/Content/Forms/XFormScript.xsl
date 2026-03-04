@@ -90,7 +90,7 @@
 		    if (date.indexOf('-') != 0) {
 			    var sep = arguments.length > 1 ? arguments[1] : '-';
 			    if (date.length == 8) szReturn = date.substr(0, 4) + sep + date.substr(4, 2) + sep + date.substr(6, 2);
-				else if (date.length == 6) szReturn = date.substr(4, 2) + "/" + date.substr(2, 2);
+				else if (date.length == 6) szReturn = date.substr(2, 2) + "/" + date.substr(4, 2);
 				else if (date.length == 4) szReturn = date.substr(0, 2) + "/" + date.substr(2, 2);
             } else szReturn = date.substring(0, 8).replace(/-/gi, '/');
         }
