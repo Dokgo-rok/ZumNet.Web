@@ -177,6 +177,9 @@
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
+  <data name="CapsLockOn" xml:space="preserve">
+    <value>大写锁定键已开启。</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>类别</value>
   </data>

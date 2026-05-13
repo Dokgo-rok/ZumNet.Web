@@ -177,6 +177,9 @@
   <data name="Cancel" xml:space="preserve">
     <value>취소</value>
   </data>
+  <data name="CapsLockOn" xml:space="preserve">
+    <value>Caps Lock이 켜져 있습니다</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>범주</value>
   </data>

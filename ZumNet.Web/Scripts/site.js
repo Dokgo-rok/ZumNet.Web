@@ -461,6 +461,18 @@ $(function () {
             $("#LoginId").focus();
         }
 
+        $('#Password').on('blur', function () {
+            if ($(this).val() == '' && !$('#capslockWarning').hasClass('d-none')) $('#capslockWarning').addClass('d-none');
+        });
+
+        $('#Password').on('keyup', function () {
+            if (event.getModifierState("CapsLock")) {
+                $('#capslockWarning').removeClass('d-none');
+            } else {
+                if (!$('#capslockWarning').hasClass('d-none')) $('#capslockWarning').addClass('d-none');
+            }
+        });
+
         $("#loginForm").submit(function () {
             //console.log(event);
 
@@ -1397,6 +1409,28 @@ $(function () {
                 }
             });
         },
+        "auth": function (au, multi, el) {
+            var boundary = _zw.V.boundary || _zw.V.lv.boundary;
+            $.ajax({
+                type: "POST",
+                url: "/Common/AuthAlias",
+                data: '{aualias:"' + au + '",urid:"' + _zw.V.current.urid + '",multi:"' + multi + '",boundary:"' + boundary + '"}',
+                success: function (res) {
+                    if (res.substr(0, 2) == "OK") {
+                        var p = $('#popBlank'); p.html(res.substr(2));
+
+                        p.find('.z-lnk-navy[data-attr]').click(function () {
+                            var j = JSON.parse($(this).attr('data-attr')); //console.log(j)
+                            if (_zw.fn.authSelect) _zw.fn.authSelect(p, j, el);
+                            else if (_zw.formEx.authSelect) _zw.formEx.authSelect(p, j, el);
+                        });
+
+                        p.on('hidden.bs.modal', function () { p.html(''); });
+                        p.modal();
+                    } else bootbox.alert(res);
+                }
+            });
+        },
         "notice": function () {
             $.ajax({
                 type: "GET",
@@ -2078,7 +2112,8 @@ $(function () {
                             integerLimit: parseInt(v[1]),
                             allowDecimal: parseInt(v[2]) > 0 ? true : false,
                             decimalLimit: parseInt(v[2]) > 0 ? parseInt(v[2]) : 0,
-                            allowNegative: v[3] && v[3] == '-' ? true : false
+                            allowNegative: v[3] && v[3] == '-' ? true : false,
+                            allowLeadingZeroes: v[0] == "number-n" ? true : false
                         })
                     });
                 }
@@ -2281,7 +2316,18 @@ $(function () {
         },
         "ctrls": function () {
             var el = _zw.ut.eventBtn(), ctrl = el.attr('aria-controls');
-            if (ctrl != '') {
+
+            if (typeof ctrl === 'undefined') {
+                ctrl = el.parent().attr('aria-controls');
+
+                if (ctrl == 'vw-move-toolbar') {
+                    var cur = el.parent().find('button:disabled');
+                    el.prop('disabled', true); cur.prop('disabled', false);
+
+                    $('div[data-controls="' + cur.attr('data-for') + '"] > :first-child').appendTo($('div[data-controls="' + el.attr('data-for') + '"]'));
+                }
+
+            } else if (ctrl != '') {
                 var tgt = $('[data-controls="' + ctrl + '"]');
 
                 if (ctrl == 'vw-full-fill') {
@@ -2298,7 +2344,6 @@ $(function () {
                     else if ($(el).find('i').hasClass('fa-angle-up')) $(el).find('i').removeClass('fa-angle-up').addClass('fa-angle-down');
                     else if ($(el).find('i').hasClass('fa-arrow-circle-down')) $(el).find('i').removeClass('fa-arrow-circle-down').addClass('fa-arrow-circle-up');
                     else if ($(el).find('i').hasClass('fa-arrow-circle-up')) $(el).find('i').removeClass('fa-arrow-circle-up').addClass('fa-arrow-circle-down');
-
                 }
             }
         },

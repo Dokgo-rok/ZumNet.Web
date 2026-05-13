@@ -177,6 +177,9 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="CapsLockOn" xml:space="preserve">
+    <value>Caps Lock is on</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Category</value>
   </data>

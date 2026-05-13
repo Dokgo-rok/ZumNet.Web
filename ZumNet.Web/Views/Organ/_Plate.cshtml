@@ -58,6 +58,7 @@
         j["mobile"] = dr["Mobile"].ToString();
         j["belong"] = dr["Belong"].ToString();
         j["indate"] = dr["InDate"].ToString();
+        j["tel"] = dr["Telephone"].ToString(); //26-05-08 내선번호
 
         return JsonConvert.SerializeObject(j);
     }

@@ -102,7 +102,7 @@
                 else
                 {
                     strOption = sTitle + (row["AppMID"].ToString() != "" ? " (" + row["AppMID"].ToString() + ")" : "") + strOption;
-                    <a class="text-truncate" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm('app');">@Html.Raw(strOption)</a>
+                    <a class="text-truncate" href="javascript:void(0)" data-toggle="" data-placement="bottom" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm('app');">@Html.Raw(strOption)</a>
                 }
             }
             else
@@ -124,7 +124,7 @@
                 {
                     <i class="fas fa-minus-circle text-danger mr-1" data-toggle="tooltip" data-placement="bottom" title="보류"></i>
                 }
-                <a class="text-truncate" href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm();">@sTitle</a>
+                <a class="text-truncate" href="javascript:void(0)" data-toggle="" data-placement="bottom" title="@Server.HtmlEncode(sTitle)" onclick="_zw.fn.openEAForm();">@sTitle</a>
             }
         </div>
 

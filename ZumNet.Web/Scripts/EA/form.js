@@ -1878,7 +1878,7 @@ $(function () {
                 for (var i = 0; i < schAct.length; i++) {
                     vPartType = schAct[i]["parttype"].split('_');
 
-                    if (vPartType[1] == "b" || vPartType[1] == "f" || vPartType[1] == "g") {
+                    if (vPartType[1] == "b" || vPartType[1] == "f" || vPartType[1] == "g" || vPartType[1] == "r") {//26-03-12 "r" 추가
                         for (var j = nextStep.length - 1; j >= 0; j--) {
                             if (nextStep[j]["activityid"] == schAct[i]["actid"] && nextStep[j]["partid"] != '') { bCheck = true; break; }
                         }
@@ -2020,12 +2020,12 @@ $(function () {
                     return true;
                 }
             } else if (_zw.V.ft == "NEWDEVELOPREQUEST") {//OEM신제품개발의뢰서
-                if (_zw.V.biz == "등급부서" && _zw.V.act == '_approver') {
-                    p = signLine.find(function (element) { if (element.bizrole == 'application' && element.actrole == '_approver' && element.partid != '') return true; });
-                    if (!p) { bootbox.alert("필수항목 [접수(개발주관팀)] 누락!"); return false; }
-                    $('#__mainfield[name="SUPERVISION"]').val(p["part1"]);
-                    return true;
-                }
+                //if (_zw.V.biz == "등급부서" && _zw.V.act == '_approver') {
+                //    p = signLine.find(function (element) { if (element.bizrole == 'application' && element.actrole == '_approver' && element.partid != '') return true; });
+                //    if (!p) { bootbox.alert("필수항목 [접수(개발주관팀)] 누락!"); return false; }
+                //    $('#__mainfield[name="SUPERVISION"]').val(p["part1"]);
+                //    return true;
+                //}
             } else if (_zw.V.ft == "CTCMINUTES") {//품평회회의록
                 if (_zw.V.biz == "" && _zw.V.act == '') {
                     col = signLine.filter(function (element) { if (element.bizrole == 'receive' && element.actrole == '__r' && element.partid != '') return true; });
@@ -2101,16 +2101,17 @@ $(function () {
             if (_zw.formEx.addRow) return _zw.formEx.addRow(newRow); //26-02-19 추가
         },
         "removeRow": function (sub) {
-            var p = $('#' + sub), ihdr = parseInt(p.attr('header')), iCnt = 0;
-            if (p.find('tr.sub_table_row').length > 1) {
+            var p = $('#' + sub), ihdr = parseInt(p.attr('header')), iCnt = 0, delRow = null;
+            var ifixed = p.attr('fixed') !== undefined ? parseInt(p.attr('fixed')) + 1 : 1; //26-04-28
+            if (p.find('tr.sub_table_row').length > ifixed) {
                 $(p.find('tr.sub_table_row').get().reverse()).each(function () {
-                    if ($(this).find('input:checkbox[name="ROWSEQ"]').prop('checked')) {
-                        $(this).remove(); iCnt++;
+                    if (p.find('tr.sub_table_row').length > ifixed && $(this).find('input:checkbox[name="ROWSEQ"]').prop('checked')) {
+                        delRow = $(this).clone();  $(this).remove(); iCnt++;
                     }
                 }); //console.log(p.find('tr.sub_table_row').last())
-                if (iCnt == 0) p.find('tr.sub_table_row').last().remove();
+                if (iCnt == 0) { delRow = p.find('tr.sub_table_row').last().clone(); p.find('tr.sub_table_row').last().remove(); }
                 _zw.form.orderRow(p);
-                if (_zw.formEx.autoCalc) _zw.formEx.autoCalc(p);
+                if (_zw.formEx.autoCalc) _zw.formEx.autoCalc(p, delRow);
             }
         },
         "copyRow": function (sub) {

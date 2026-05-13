@@ -65,10 +65,11 @@ namespace Resources {
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static string Get(string name) {
+        public static string Get(string name)
+        {
             return ResourceManager.GetString(name, resourceCulture);
         }
-        
+
         /// <summary>
         ///   Folders과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
@@ -151,6 +152,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Rejected과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string BoxRejected {
+            get {
+                return ResourceManager.GetString("BoxRejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Returned과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string BoxReturn {
@@ -192,6 +202,15 @@ namespace Resources {
         public static string BoxSubmitted {
             get {
                 return ResourceManager.GetString("BoxSubmitted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Takeover Folders과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string BoxTakeover {
+            get {
+                return ResourceManager.GetString("BoxTakeover", resourceCulture);
             }
         }
         

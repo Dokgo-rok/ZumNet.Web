@@ -43,23 +43,30 @@
 			var e1, e2, e3, e4;
 			var s = 0, v = 0, f = '0,0.[0000]';
 
-			if (el.name == 'PRODUCTCOSTCURRENCY' || el.name == 'PRODUCTCOST' || el.name == "TOOLREQQTY") {
+			if (el.name == 'PRODUCTCOSTCURRENCY' || el.name == 'PRODUCTCOST' || el.name == "TOOLREQQTY" || el.name == "CONVPRODUCTCOST") {
 				var c = $(el).parent().parent().parent(); //tbody
 				e1 = c.find('[name="PRODUCTCOSTCURRENCY"]'); e2 = c.find('[name="PRODUCTCOST"]');
-				e3 = c.find('[name="TOOLREQQTY"]'); e4 = c.find('[name="PRODUCTCOSTSUM"]'); e5 = c.find('[name="CONVPRODUCTCOSTSUM"]');
+				e3 = c.find('[name="TOOLREQQTY"]'); e4 = c.find('[name="PRODUCTCOSTSUM"]'); e5 = c.find('[name="CONVPRODUCTCOST"]');
 
 				if (e1.val() != '') {
 					v = e1.val() == 'USD' ? 1 : _zw.formEx.exchangeRate('USD', e1.val(), _zw.V.current.date.substr(0, 10), 'Cost_Corporate');
-					s = parseFloat(_zw.ut.empty(e2.val())) * parseFloat(v); //console.log(s)
-					c.find('[name="CONVPRODUCTCOST"]').val(numeral(s).format(f));
+					if (v != '') {
+						s = parseFloat(_zw.ut.empty(e2.val())) * parseFloat(v); //console.log(s)
+						c.find('[name="CONVPRODUCTCOST"]').val(numeral(s).format(f));
+					}
 				}
 
 				if (e2.val() != '') {
 					s = parseFloat(_zw.ut.empty(e2.val())) * parseFloat(_zw.ut.empty(e3.val()));
 					e4.val(numeral(s).format(f)); s = 0;
 
-					s = parseFloat(_zw.ut.empty(e4.val())) * parseFloat(v);
-					c.find('[name="CONVPRODUCTCOSTSUM"]').val(numeral(s).format(f));
+					if (v != '') {
+						s = parseFloat(_zw.ut.empty(e4.val())) * parseFloat(v);
+						c.find('[name="CONVPRODUCTCOSTSUM"]').val(numeral(s).format(f));
+					} else { //26-04-14
+						s = parseFloat(_zw.ut.empty(e5.val())) * parseFloat(_zw.ut.empty(e3.val()));
+						c.find('[name="CONVPRODUCTCOSTSUM"]').val(numeral(s).format(f));
+					}
 				}
 			}
 
@@ -69,8 +76,10 @@
 
 				if (e1.val() != '') {
 					v = e1.val() == 'USD' ? 1 : _zw.formEx.exchangeRate('USD', e1.val(), _zw.V.current.date.substr(0, 10), 'Cost_Corporate');
-					s = parseFloat(_zw.ut.empty(e2.val())) * parseFloat(v); //console.log(s)
-					c.find('[name="CONVPREPRODUCTCOST"]').val(numeral(s).format(f));
+					if (v != '') {
+						s = parseFloat(_zw.ut.empty(e2.val())) * parseFloat(v); //console.log(s)
+						c.find('[name="CONVPREPRODUCTCOST"]').val(numeral(s).format(f));
+					}
 				}
 			}
 
@@ -86,6 +95,10 @@
 				$('#__mainfield[name="TOTALSUM"]').val(numeral(s).format(f));
 
 				_zw.formEx.calcForm();
+
+			} else if (el.name == "SUMKRW") { //26-04-14
+				$('#__subtable2 :text[name="SUMKRW"]').each(function (idx, e) { s += numeral(e.value).value(); })
+				$('#__mainfield[name="TOTALSUMKRW"]').val(numeral(s).format('0,0'));
 			}
         },
 		"autoCalc": function (p) {
@@ -113,10 +126,12 @@
 				var std = 'KRW';
 				var rate = std == e1.val() ? 1 : parseFloat(_zw.ut.empty(_zw.V["xrate"][std]));
 
-				$('#__subtable2 tr.sub_table_row').each(function () {
-					s = rate == 0 ? 0 : parseFloat(_zw.ut.empty($(this).find('input[name="SUM"]').val())) / rate;
-					$(this).find('input[name="SUMKRW"]').val(numeral(s).format('0,0'));
-				});
+				if (rate && rate != 0) {
+					$('#__subtable2 tr.sub_table_row').each(function () {
+						s = rate == 0 ? 0 : parseFloat(_zw.ut.empty($(this).find('input[name="SUM"]').val())) / rate;
+						$(this).find('input[name="SUMKRW"]').val(numeral(s).format('0,0'));
+					});
+				}
 				s = 0;
 
 				$('#__subtable2 :text[name="SUMKRW"]').each(function (idx, e) { s += numeral(e.value).value(); })
@@ -350,7 +365,7 @@
 					if (res.substr(0, 2) == 'OK') {
 						var v = res.substr(2).split(String.fromCharCode(8));
 						if (v[0] == 'Y') rt = v[1];
-						else bootbox.alert(v[0]);
+						//else bootbox.alert(v[1]);
 					} else bootbox.alert(res);
 				}, beforeSend: function () { }
 			});

@@ -37,9 +37,14 @@
             sb.AppendFormat("<th class=\"bg-light\">사번</th><td><div class=\"p-1\">{0}</div></td>", row["supplierempno"].ToString());
             sb.Append("</tr>");
 
-            //부서, AP일자
+            //부서, GLC
             sb.AppendFormat("<tr><th class=\"bg-light\">부서</th><td><div class=\"p-1\">{0}</div></td>", row["supplierdept"].ToString());
-            sb.AppendFormat("<th class=\"bg-light\">AP일자</th><td><div class=\"p-1\">{0}</div></td>", CvtDate(row["apdate"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">GLC</th><td><div class=\"p-1\">{0}</div></td>", row["supplierglc"].ToString());
+            sb.Append("</tr>");
+
+            //AP일자, 작성일자
+            sb.AppendFormat("<tr><th class=\"bg-light\">AP일자</th><td><div class=\"p-1\">{0}</div></td>", CvtDate(row["apdate"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">작성일자</th><td><div class=\"p-1\">{0}</div></td>", DateHelper.CheckDateTime(row["credate"].ToString()));
             sb.Append("</tr>");
             sb.Append("</table>");
 
@@ -59,8 +64,12 @@
             if (row["ifstate"].ToString() == "8") sb.AppendFormat("<tr class=\"table-danger\"><th class=\"bg-light\">오류메시지</th><td colspan=\"3\"><div class=\"p-1\">{0}</div></td>", row["ifmsg"].ToString());
             sb.Append("</tr>");
 
-            sb.AppendFormat("<tr><th class=\"bg-light\">ERP처리</th><td><div class=\"p-1\">{0}</div></td>", StrIFState(row["reqstatus"].ToString()));
-            sb.AppendFormat("<th class=\"bg-light\">작성일자</th><td><div class=\"p-1\">{0}</div></td>", DateHelper.CheckDateTime(row["credate"].ToString()));
+            sb.Append("<th class=\"bg-light\">전표번호</th>");
+            if (row["reqstatus"].ToString() == "D")
+                sb.AppendFormat("<td><div class=\"p-1\">{0}-{1}</div></td>", row["erpno"].ToString(), row["erpno2"].ToString());
+            else
+                sb.Append("<td><div class=\"p-1\"></div></td>");
+            sb.AppendFormat("<th class=\"bg-light\">전표상태</th><td><div class=\"p-1{0}\">{1}</div></td>", row["erpstatus"].ToString() == "1" ? " text-danger" : "", StrIFState(row["reqstatus"].ToString(), row["erpstatus"].ToString()));
             sb.Append("</tr>");
             sb.Append("</table>");
 
@@ -90,16 +99,16 @@
 
             //과세구분, 승인금액, 인정금액
             sb.AppendFormat("<tr><th class=\"bg-light\">과세구분</th><td><div class=\"p-1\">{0}</div></td>", row["merctaxkind"].ToString());
-            sb.AppendFormat("<th class=\"bg-light\">승인금액</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["ackamt"].ToString(), 2));
+            sb.AppendFormat("<th class=\"bg-light\">승인금액</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StringHelper.CvtCurrency(row["ackamt"].ToString(), 2));
             sb.Append("</tr>");
-            sb.AppendFormat("<tr><th class=\"bg-light\">공급가액</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["valsupply"].ToString(), 2));
-            sb.AppendFormat("<th class=\"bg-light\">부가세</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["vat"].ToString(), 2));
+            sb.AppendFormat("<tr><th class=\"bg-light\">공급가액</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StringHelper.CvtCurrency(row["valsupply"].ToString(), 2));
+            sb.AppendFormat("<th class=\"bg-light\">부가세</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StringHelper.CvtCurrency(row["vat"].ToString(), 2));
             sb.Append("</tr>");
             sb.AppendFormat("<tr><th class=\"bg-light\">통화</th><td><div class=\"p-1\">{0}</div></td>", row["currency"].ToString());
-            sb.AppendFormat("<th class=\"bg-light\">인정금액</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["reqamt"].ToString(), 2));
+            sb.AppendFormat("<th class=\"bg-light\">인정금액</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StringHelper.CvtCurrency(row["reqamt"].ToString(), 2));
             sb.Append("</tr>");
-            sb.AppendFormat("<tr><th class=\"bg-light\">공급가액</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["reqvalsupply"].ToString(), 2));
-            sb.AppendFormat("<th class=\"bg-light\">부가세</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["reqvat"].ToString(), 2));
+            sb.AppendFormat("<tr><th class=\"bg-light\">공급가액</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StringHelper.CvtCurrency(row["reqvalsupply"].ToString(), 2));
+            sb.AppendFormat("<th class=\"bg-light\">부가세</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StringHelper.CvtCurrency(row["reqvat"].ToString(), 2));
             sb.Append("</tr>");
 
             //세금구분, 세목
@@ -244,15 +253,24 @@
 
     private string StrIFState(string state)
     {
+        return StrIFState(state, "");
+    }
+
+    private string StrIFState(string state, string erpStatus)
+    {
         string rt = "";
 
-        if (state == "0") rt = "대기";
-        else if (state == "1") rt = "처리중";
-        else if (state == "7") rt = "완료";
-        else if (state == "8") rt = "오류";
-        else if (state == "A") rt = "승인";
-        else if (state == "R") rt = "반려";
-        else if (state == "D") rt = "전표생성";
+        if (erpStatus == "1") rt = "전표삭제";
+        else
+        {
+            if (state == "0") rt = "대기";
+            else if (state == "1") rt = "처리중";
+            else if (state == "7") rt = "완료";
+            else if (state == "8") rt = "오류";
+            else if (state == "A") rt = "승인";
+            else if (state == "R") rt = "반려";
+            else if (state == "D") rt = "전표생성";
+        }
         return rt;
     }
     #endregion

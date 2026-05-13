@@ -516,16 +516,16 @@
                 </xsl:when>
                 <xsl:otherwise>
                   <tr>
-                    <td style="width:200px">
+                    <td style="width:100px">
                       <span>2. 금형비내역</span>
                     </td>
-                    <td class="fm-button">
-                      통화 :
-                      <input type="text" id="__mainfield" name="CURRENCY" style="width:60px" class="txtRead" readonluy="" value="{//forminfo/maintable/CURRENCY}" />
-					&nbsp;&nbsp;적용환율 :
+                    <td class="fm-button_">
+                      (&nbsp;통화 :
+                      <input type="text" id="__mainfield" name="CURRENCY" style="width:50px" class="txtRead" readonluy="" value="{//forminfo/maintable/CURRENCY}" />
+					&nbsp;적용환율 :
 					<!--<input type="text" id="__mainfield" name="EXCHANGERATE" style="width:100px;height:16px" class=" txtText_u txtDate" maxlength="8" onclick="parent.fnShowPopSelfCalendar(this, parent.fnCalcValid)" onfocusout="parent.fnDateFormat(this)"  readonly="readonly" value="{//forminfo/maintable/EXCHANGERATE}" />-->
-					<input type="text" id="__mainfield" name="EXCHANGERATE" style="width:100px" class="txtRead" readonluy="" value="{//forminfo/maintable/EXCHANGERATE}" />
-                    </td>
+					<input type="text" id="__mainfield" name="EXCHANGERATE" style="width:70px" class="txtRead" readonluy="" value="{//forminfo/maintable/EXCHANGERATE}" />
+                    )</td>
                   </tr>
                 </xsl:otherwise>
               </xsl:choose>
@@ -1869,7 +1869,8 @@
 						<i class="fas fa-angle-down"></i>
 					</button>
 					<input type="text" name="PRODUCTCOST" style="width:90px" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{PRODUCTCOST}" />&nbsp;
-					<input type="text" name="CONVPRODUCTCOST" style="width:90px" class="txtDollar" readonly="readonly" value="{CONVPRODUCTCOST}" />
+					<!--<input type="text" name="CONVPRODUCTCOST" style="width:90px" class="txtDollar" readonly="readonly" value="{CONVPRODUCTCOST}" />-->
+					<input type="text" name="CONVPRODUCTCOST" style="width:90px" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CONVPRODUCTCOST}" />
                 </xsl:when>
                 <xsl:otherwise>
                   (<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(PRODUCTCOSTCURRENCY))" />)&nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(PRODUCTCOST))" />
@@ -1939,7 +1940,8 @@
 						<i class="fas fa-angle-down"></i>
 					</button>
 					<input type="text" name="PREPRODUCTCOST" style="width:90px" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{PREPRODUCTCOST}" />&nbsp;
-					<input type="text" name="CONVPREPRODUCTCOST" style="width:90px" class="txtDollar" readonly="readonly" value="{CONVPREPRODUCTCOST}" />
+					<!--<input type="text" name="CONVPREPRODUCTCOST" style="width:90px" class="txtDollar" readonly="readonly" value="{CONVPREPRODUCTCOST}" />-->
+					<input type="text" name="CONVPREPRODUCTCOST" style="width:90px" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{CONVPREPRODUCTCOST}" />
                 </xsl:when>
                 <xsl:otherwise>
                   (<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(PREPRODUCTCOSTCURRENCY))" />)&nbsp;<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(PREPRODUCTCOST))" />
@@ -2273,7 +2275,8 @@
       <td>
         <xsl:choose>
           <xsl:when test="$mode='new' or $mode='edit'">
-            <input type="text" name="SUMKRW" class="txtRead_Right" readonly="readonly" value="{SUMKRW}" />
+            <!--<input type="text" name="SUMKRW" class="txtRead_Right" readonly="readonly" value="{SUMKRW}" />-->
+			  <input type="text" name="SUMKRW" class="txtDollar" maxlength="20" data-inputmask="number;16;4" value="{SUMKRW}" />
           </xsl:when>
           <xsl:otherwise>
             <input type="text" class="txtRead"  name="SUMKRW">

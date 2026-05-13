@@ -62,6 +62,16 @@ $(function () {
                         } else if (mn == 'link') {
                             _zw.fn.linkCard(p, oId);
 
+                        } else if (mn == 'delete') {
+                            bootbox.confirm('해당 카드를 삭제 하시겠습니까?<br />* 이 작업은 되돌릴 수 없습니다', function (rt) {
+                                if (rt) {
+                                    var res = _zw.ut.ajaxSync('/ExS/CorpCard/CardDelete', '{M:"F",ccid:"' + oId + '"}');
+                                    if (res == 'OK') {
+                                        p.modal('hide'); _zw.fn.loadList();
+                                    } else bootbox.alert(res);
+                                }
+                            });
+
                         } else if (mn == 'ealink') {
                             var linkId = p.find('input[name="RegChangeData"][data-field="ea_msgid"]').val();
                             if (linkId == '' || linkId == '0') {
@@ -134,6 +144,55 @@ $(function () {
                             p.find('input[name="RegChangeData"][data-field="posdeptid"]').val('');
                             p.find('#_cardPosUr').val('');
 
+                        } else if (mn == 'save-auth') {
+                            //권한자
+                            if (p.find('#_cardAuthUr input:checkbox[data-pos!=""]').length > 0) {
+                                var carduser = _zw.ut.empty(p.find('[name="RegChangeData"][data-field="useid"]').val()); //alert(carduser);
+                                if (carduser > 0) {
+                                    var sAdd = '', sDell = '';
+                                    p.find('#_cardAuthUr input:checkbox[data-pos="add"]').each(function () {
+                                        if (sAdd != '') sAdd += ';';
+                                        sAdd += $(this).attr('data-for');
+                                    });
+                                    p.find('#_cardAuthUr input:checkbox[data-pos="del"]').each(function () {
+                                        if (sDell != '') sDell += ';';
+                                        sDell += $(this).attr('data-for');
+                                    });
+
+                                    var postJson = {};
+                                    postJson["useid"] = carduser;
+                                    postJson["mgrid"] = p.find('[name="RegChangeData"][data-field="mgrid"]').val();
+                                    postJson["mgrnm"] = p.find('[name="RegChangeData"][data-field="mgrnm"]').val();
+                                    postJson["mgrdept"] = p.find('[name="RegChangeData"][data-field="mgrdept"]').val();
+                                    postJson["add"] = sAdd;
+                                    postJson["del"] = sDell;
+                                    console.log(postJson);
+
+                                    bootbox.confirm("권한자 정보를 저장하시겠습니까?", function (rt) { 
+                                        if (rt) {
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "/ExS/CorpCard/AuthSave",
+                                                data: JSON.stringify(postJson),
+                                                success: function (res) {
+                                                    if (res == 'OK') {
+                                                        p.modal('hide'); _zw.fn.loadList();
+                                                    } else bootbox.alert(res);
+                                                }
+                                            });
+                                        }
+                                    });
+
+
+                                } else {
+                                    bootbox.alert("카드사용자가 지정 되어야 합니다!"); return false;
+                                }
+                            }
+
+                        } else if (mn == 'del-auth') {
+                            p.find('#_cardAuthUr input:checkbox:checked').each(function () {
+                                $(this).attr('data-pos', 'del'); $(this).parent().parent().parent().removeClass('d-flex').addClass('d-none');
+                            });
                         }
                     });
                     p.modal();
@@ -177,7 +236,7 @@ $(function () {
                                         url: "/ExS/CorpCard/CardAckMemo",
                                         data: JSON.stringify(postJson),
                                         success: function (res) {
-                                            if (res.substr(0, 2) == "OK") { _zw.mu.refresh(); p.modal('hide'); }
+                                            if (res.substr(0, 2) == "OK") { p.modal('hide'); _zw.fn.loadList(); }
                                             else bootbox.alert(res);
                                         }
                                     });
@@ -226,7 +285,7 @@ $(function () {
                     else if (fld == "cardnum") { alert("필수항목[카드번호]이 누락됐습니다!"); $(this).focus(); bReg = false; return false; }
                     else if (fld == "cardstat") { alert("필수항목[상태]이 누락됐습니다!"); $(this).focus(); bReg = false; return false; }
                     else if (fld == "isudate") { alert("필수항목[발급일]이 누락됐습니다!"); $(this).focus(); bReg = false; return false; }
-                    else if (fld == "usenm") { alert("필수항목[사용자]이 누락됐습니다!"); $(this).focus(); bReg = false; return false; }
+                    //else if (fld == "usenm") { alert("필수항목[사용자]이 누락됐습니다!"); $(this).focus(); bReg = false; return false; }
                 }
                 if (fld == "cardnum") {
                     var v = $(this).val().replace(/_/gi, '').replace(/-/gi, ''); // '_', '-' 제거
@@ -245,6 +304,21 @@ $(function () {
         }); //console.log(postJson)
         if (!bReg) return false;
 
+        //권한자
+        if ($('#_cardAuthUr input:checkbox[data-for]').length > 0) {
+            var carduser = _zw.ut.empty(p.find('[name="RegChangeData"][data-field="useid"]').val()); //alert(carduser);
+            if (carduser > 0) {
+                var sAuth = '';
+                $('#_cardAuthUr input:checkbox[data-for]').each(function () {
+                    if (sAuth != '') sAuth += ';';
+                    sAuth += $(this).attr('data-for');
+                });
+                postJson["ackauth"] = sAuth;
+            } else {
+                bootbox.alert("권한자 추가는 카드사용자가 지정 되어야 합니다!"); return false;
+            }
+        }
+
         //카드번호 중복 체크
         var res = _zw.ut.ajaxSync('/EA/Common', '{M:"getreportsearch",body:"S", k1:"report",k2:"' + _zw.V.ft + '",v1:"' + postJson['cardcorp'] + '",v2:"' + postJson['cardnum'] + '",v3:"' + id + '"}');
         if (res != "OK")  { alert(res); p.find('[name="RegChangeData"][data-field="cardnum"]').focus(); bReg = false; }
@@ -255,8 +329,7 @@ $(function () {
         postJson["ft"] = _zw.V.ft;
         postJson["operator"] = _zw.V.current.operator;
         postJson["acl"] = _zw.V.current.acl;
-
-        console.log(postJson);
+        //console.log(postJson);
 
         var msg = mode == "edit" ? "카드정보을 변경하시겠습니까?" : "카드정보를 등록하시겠습니까?";
         bootbox.confirm(msg, function (rt) { //console.log(postJson);
@@ -269,7 +342,7 @@ $(function () {
                         if (res.substr(0, 2) == "OK") {
                             //id = res.substr(2)
                             //bootbox.alert("저장했습니다!", function () {
-                                _zw.mu.refresh(); p.modal('hide');
+                            p.modal('hide'); _zw.fn.loadList();
                             //});
                         } else bootbox.alert(res);
                     }
@@ -291,9 +364,10 @@ $(function () {
         postJson["ft"] = _zw.V.ft;
         postJson["operator"] = _zw.V.current.operator;
         postJson["acl"] = _zw.V.current.acl;
+        //console.log(postJson);
 
         var msg = "저장 하시겠습니까?";
-        bootbox.confirm(msg, function (rt) { //console.log(postJson);
+        bootbox.confirm(msg, function (rt) { 
             if (rt) {
                 $.ajax({
                     type: "POST",
@@ -302,7 +376,7 @@ $(function () {
                     success: function (res) {
                         if (res.substr(0, 2) == "OK") {
                             //bootbox.alert("저장했습니다!", function () {
-                                _zw.mu.refresh(); p.modal('hide');
+                            p.modal('hide'); _zw.fn.loadList();
                             //});
                         } else bootbox.alert(res);
                     }
@@ -315,38 +389,51 @@ $(function () {
         p.find('.zf-org .zf-org-select input:checkbox[data-for]').each(function () {
             var info = JSON.parse($(this).attr('data-attr')); //console.log(info);
             var dn = $(this).next().text();
-            if (info['empid'] != null) {
-                if (x == 'use') {
-                    $('input[name="RegChangeData"][data-field="usenm"]').val(dn);
-                    $('input[name="RegChangeData"][data-field="useid"]').val(info["id"]);
-                    $('input[name="RegChangeData"][data-field="useempid"]').val(info["empid"]);
-                    $('input[name="RegChangeData"][data-field="usedept"]').val(info["grdn"]);
-                    $('input[name="RegChangeData"][data-field="usedeptid"]').val(info["grid"]);
-                    $('#_cardUser').val(info["grdn"] + '. ' + dn);
 
-                } else if (x == 'pos') {
-                    $('input[name="RegChangeData"][data-field="posur"]').val(dn);
-                    $('input[name="RegChangeData"][data-field="posurid"]').val(info["id"]);
-                    $('input[name="RegChangeData"][data-field="posdept"]').val(info["grdn"]);
-                    $('input[name="RegChangeData"][data-field="posdeptid"]').val(info["grid"]);
-                    $('#_cardPosUr').val(info["grdn"] + '. ' + dn);
+            if (x == 'auth') {
+                if ($('#_cardAuthUr input:checkbox[data-for="' + info["id"] + '"]').length > 0) {
+                    bootbox.alert("중복된 사용자 입니다!"); return false;
+                } else {
+                    var s = $('.zf-auth-template').html();
+                    s = s.replace("{$mode}", "add").replace("{$id}", info["id"]).replace("{$user}", dn).replace("{$grade}", info["grade"]).replace("{$dept}", info['grdn']);
+
+                    $('#_cardAuthUr').append(s);
                 }
-                
-            } else {
-                if (x == 'use') {
-                    $('input[name="RegChangeData"][data-field="usenm"]').val(dn);
-                    $('input[name="RegChangeData"][data-field="useid"]').val('');
-                    $('input[name="RegChangeData"][data-field="useempid"]').val('');
-                    $('input[name="RegChangeData"][data-field="usedept"]').val(dn);
-                    $('input[name="RegChangeData"][data-field="usedeptid"]').val(info["id"]);
-                    $('#_cardUser').val(dn);
 
-                } else if (x == 'pos') {
-                    $('input[name="RegChangeData"][data-field="posur"]').val(dn);
-                    $('input[name="RegChangeData"][data-field="posurid"]').val('');
-                    $('input[name="RegChangeData"][data-field="posdept"]').val(dn);
-                    $('input[name="RegChangeData"][data-field="posdeptid"]').val(info["id"]);
-                    $('#_cardPosUr').val(dn);
+            } else if (x == 'use' || x == 'pos') {
+                if (info['empid'] != null) {
+                    if (x == 'use') {
+                        $('input[name="RegChangeData"][data-field="usenm"]').val(dn);
+                        $('input[name="RegChangeData"][data-field="useid"]').val(info["id"]);
+                        $('input[name="RegChangeData"][data-field="useempid"]').val(info["empid"]);
+                        $('input[name="RegChangeData"][data-field="usedept"]').val(info["grdn"]);
+                        $('input[name="RegChangeData"][data-field="usedeptid"]').val(info["grid"]);
+                        $('#_cardUser').val(info["grdn"] + '. ' + dn);
+
+                    } else if (x == 'pos') {
+                        $('input[name="RegChangeData"][data-field="posur"]').val(dn);
+                        $('input[name="RegChangeData"][data-field="posurid"]').val(info["id"]);
+                        $('input[name="RegChangeData"][data-field="posdept"]').val(info["grdn"]);
+                        $('input[name="RegChangeData"][data-field="posdeptid"]').val(info["grid"]);
+                        $('#_cardPosUr').val(info["grdn"] + '. ' + dn);
+                    }
+
+                } else {
+                    if (x == 'use') {
+                        $('input[name="RegChangeData"][data-field="usenm"]').val(dn);
+                        $('input[name="RegChangeData"][data-field="useid"]').val('');
+                        $('input[name="RegChangeData"][data-field="useempid"]').val('');
+                        $('input[name="RegChangeData"][data-field="usedept"]').val(dn);
+                        $('input[name="RegChangeData"][data-field="usedeptid"]').val(info["id"]);
+                        $('#_cardUser').val(dn);
+
+                    } else if (x == 'pos') {
+                        $('input[name="RegChangeData"][data-field="posur"]').val(dn);
+                        $('input[name="RegChangeData"][data-field="posurid"]').val('');
+                        $('input[name="RegChangeData"][data-field="posdept"]').val(dn);
+                        $('input[name="RegChangeData"][data-field="posdeptid"]').val(info["id"]);
+                        $('#_cardPosUr').val(dn);
+                    }
                 }
             }
         });

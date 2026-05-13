@@ -9,23 +9,15 @@
             }
         },
         "addRow": function (row) { //26-02-19 추가
-            var icnt = 0;
-            $('#__subtable1 tr.sub_table_row').each(function (idx) {
-                $(this).find('input[name]', 'select[name]').each(function (idx) {
-                    if ($(this).attr('name') != 'ROWSEQ' && $(this).val() != '') icnt++;
-                })
-            });
-            console.log('cnt : ' + icnt);
-
-            row.find('td > [name]').each(function () { $(this).val('').prop('disabled', false); }); _zw.fn.input(row);
+            row.find('td > [name!="ROWSEQ"]').each(function () { $(this).val('').prop('disabled', false); }); _zw.fn.input(row);
             return row;
         },
         "validation": function (cmd) {
             var rt = true;
             if (cmd == "draft") { //기안
                 var el, el2, e,  v, s, s2, f, to = 0;
-                s = 'CARDNUM;카드번호^ACKNO;승인번호^MERCNAME;가맹점명^MERCSOCNO;사업자번호^ACKAMT;승인금액^VALSUPPLY;공급가액^VAT;부가세^REQAMT;인정금액^MERCTAXKINDCODE;과세구분^TAXRATE;세금구분^TAXEXPL;세목';
-                s2 = 'MERCNAME;가맹점명^MERCSOCNO;사업자번호^ACKAMT;승인금액^VALSUPPLY;공급가액^VAT;부가세^REQAMT;인정금액^MERCTAXKINDCODE;과세구분^TAXRATE;세금구분^TAXEXPL;세목';
+                s = 'CARDNUM;카드번호^ACKNO;승인번호^MERCNAME;가맹점명^MERCSOCNO;사업자번호^ACKAMT;승인금액^VALSUPPLY;공급가액^VAT;부가세^REQAMT;인정금액^MERCTAXKINDCODE;과세구분^TAXRATE;세금구분^TAXEXPL;세목^ETC;적요';
+                s2 = 'MERCNAME;가맹점명^MERCSOCNO;사업자번호^ACKAMT;승인금액^VALSUPPLY;공급가액^VAT;부가세^REQAMT;인정금액^MERCTAXKINDCODE;과세구분^TAXRATE;세금구분^TAXEXPL;세목^ETC;적요';
 
                 $('#__subtable1 tr.sub_table_row').each(function (idx) {
                     el = $(this).find('[name="EXPENSETYPECODE"]');
@@ -66,10 +58,10 @@
         },
         "calc": function (el) {
             var s1, s2, row;
-            if (el.name == 'REQAMT') {
+            if (el.name == 'REQAMT' && el.value != '') {
                 s1 = parseFloat(_zw.ut.empty($(el).parent().parent().find('td input[name = "ACKAMT"]').val()));
                 s2 = parseFloat(_zw.ut.empty(el.value)); //console.log(s1 + " : " + s2)
-                if (s1 - s2 < 0) {
+                if (s1 != 0 && s1 - s2 < 0) {
                     bootbox.alert('"인정금액"은 "승인금액" 보다 클 수 없습니다!', function () { el.value = ''; el.focus(); });
                     return false;
                 }
@@ -84,7 +76,7 @@
                         bootbox.alert('미등록 카드입니다. 관리자에게 문의하십시오', function () { el.value = ''; }); return false;
                     }
                 } else {
-                    bootbox.alert('[구분] 값 누락', function () { el.value = ''; }); return false;
+                    //bootbox.alert('[구분] 값 누락', function () { el.value = ''; }); return false;
                 }
             }
         },
@@ -92,20 +84,16 @@
         },
         "date": function (el) {
         },
-        "orgSelect": function (p, x) {
-            p.find('.zf-org .zf-org-select input:checkbox[data-for]').each(function () {
-                var info = JSON.parse($(this).attr('data-attr')); //console.log(info)
-                var dn = $(this).next().text();
-                $('#__mainfield[name="APPLICANT"]').val(dn);
-                $('#__mainfield[name="APPLICANTID"]').val(info["id"]);
-                $('#__mainfield[name="APPLICANTEMPNO"]').val(info["empid"]);
-                $('#__mainfield[name="APPLICANTGRADE"]').val(info["grade"]);
-                $('#__mainfield[name="APPLICANTDEPT"]').val(info["grdn"]);
-                $('#__mainfield[name="APPLICANTDEPTID"]').val(info["grid"]);
-                $('#__mainfield[name="APPLICANTORG"]').val(info["belong"]);
+        "authSelect": function (p, info, x) {
+            $('#__mainfield[name="APPLICANT"]').val(info["name"]);
+            $('#__mainfield[name="APPLICANTID"]').val(info["id"]);
+            $('#__mainfield[name="APPLICANTEMPNO"]').val(info["empid"]);
+            $('#__mainfield[name="APPLICANTGRADE"]').val(info["grade"]);
+            $('#__mainfield[name="APPLICANTDEPT"]').val(info["grdn"]);
+            $('#__mainfield[name="APPLICANTDEPTID"]').val(info["grid"]);
+            $('#__mainfield[name="APPLICANTORG"]').val(info["belong"]);
 
-                _zw.formEx.event('supplier', info["empid"]);
-            });
+            _zw.formEx.event('supplier', info["empid"]);
             p.modal('hide');
         },
         "change": function (x, fld) {
@@ -125,7 +113,7 @@
                     }
                 } else {
                     row.find('td > [name]').each(function () {
-                        if (v.indexOf($(this).attr('name')) != -1) $(this).val('').prop('disabled', false);
+                        if (v.indexOf($(this).attr('name')) != -1) $(this).val('').prop('disabled', false).removeClass('text-danger');
                     });
                 }
 
@@ -163,12 +151,12 @@
                 }
 
             } else if (x == 'CC_CARDACK') { //카드사용내역 테이블 > 열(row) > 필드 채우기
-                var col = arguments[1], info = arguments[2];
+                var col = arguments[1], info = arguments[2], flag = info.find(':hidden[data-for="PURCHASEFLAG"]').val();
                 col.each(function () {
                     var fld = info.find(':hidden[data-for="' + $(this).attr('name') + '"]');
                     if (fld && fld.length > 0) {
                         $(this).val(fld.val()); if ($(this).attr('name') != 'REQAMT') $(this).prop('disabled', true);
-                        
+                        if (flag == '04' && ($(this).attr('name') == 'ACKAMT' || $(this).attr('name') == 'VALSUPPLY' || $(this).attr('name') == 'VAT' || $(this).attr('name') == 'REQAMT')) $(this).addClass('text-danger');
                     }
                     if ($(this).attr('name') == 'EXPENSETYPECODE') { $(this).val('CARDCORP2'); _zw.formEx.change($(this)[0]); }
                     else if ($(this).attr('name') == 'MERCTAXKINDCODE') _zw.formEx.change($(this)[0]);
@@ -333,7 +321,17 @@
                 + '<input type="text" class="form-control" placeholder="' + (el.attr('title') != '' ? el.attr('title') + ' ' : '') + '검색" value="">'
                 + '<span class="input-group-append"><button class="btn btn-secondary" type="button"><i class="fe-search"></i></button></span>'
                 + '</div>'
-                + '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+
+            if (vPos[1] == 'ERP_ACCOUNTCLS') {
+                s += '<div class="input-group w-50 pl-2 pt-2">'
+                    + '<label class="custom-control custom-checkbox">'
+                    + '<input type="checkbox" class="custom-control-input" id="customCheck1">'
+                    + '<span class="custom-control-label" for="customCheck1">타 부서 조회</span>'
+                    + '</label>'
+                    + '</div>';
+            }
+
+            s += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
                 + '</div>'
                 + '<div class="modal-body"></div>'
                 + '</div></div>';
@@ -349,6 +347,8 @@
                 if ($.trim(searchTxt.val()) == '' || searchTxt.val().length < 1) { bootbox.alert('검색어를 입력하십시오!', function () { searchTxt.focus(); }); return false; }
                 var exp = "['\\%^&\"*]", reg = new RegExp(exp, 'gi');
                 if (searchTxt.val().search(reg) >= 0 || searchTxt.val().search(/\\/) >= 0) { bootbox.alert(exp + ' 문자는 사용될 수 없습니다!', function () { searchTxt.focus(); }); return false; }
+
+                if (vPos[1] == 'ERP_ACCOUNTCLS') { v1 = $('.zf-modal .modal-header .input-group :checkbox').prop('checked') ? '' : $('#__mainfield[name="SUPPLIERDEPTCD"]').val(); }
 
                 $.ajax({
                     type: "POST",
@@ -371,7 +371,9 @@
 
                                 if (vPos[1] == 'ERP_ACCOUNTCLS') { //계정과목 선택 후 세부정보 초기화
                                     for (var i = 1; i <= 12; i++) {
-                                        row.find('td [name="DETAILINFO' + i.toString() + '"]').val('');
+                                        row.parent().find('td [name="DETAILINFO' + i.toString() + '"]').val('');
+
+                                        //console.log(row.parent().find('td [name="DETAILINFO' + i.toString() + '"]').attr('name'));
                                     }
                                 }
                                 p.modal('hide');

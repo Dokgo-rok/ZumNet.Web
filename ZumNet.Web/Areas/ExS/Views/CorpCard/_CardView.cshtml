@@ -197,7 +197,7 @@
 
             //소지자
             strFld01 = StringHelper.SafeInt(row["posurid"]) > 0 ? row["posdept"].ToString() + ". " + row["posur"].ToString() : row["posur"].ToString();
-            sb.AppendFormat("<tr><th class=\"bg-light\">소지자</th><td colspan=\"3\"><div class=\"input-group\"><input type=\"text\" class=\"form-control\" id=\"_cardPosUr\" readonly value=\"{0}\"><button class=\"btn btn-outline-secondary\" data-zm-menu=\"del-use\">{1}</button><button class=\"btn btn-outline-secondary\" onclick=\"_zw.fn.org('all','n', 'pos');\">{2}</button></td>", strFld01, "삭제", "선택");
+            sb.AppendFormat("<tr><th class=\"bg-light\">소지자</th><td colspan=\"3\"><div class=\"input-group\"><input type=\"text\" class=\"form-control\" id=\"_cardPosUr\" readonly value=\"{0}\"><button class=\"btn btn-outline-secondary\" data-zm-menu=\"del-pos\">{1}</button><button class=\"btn btn-outline-secondary\" onclick=\"_zw.fn.org('all','n', 'pos');\">{2}</button></td>", strFld01, "삭제", "선택");
             sb.Append("</tr>");
 
             //메모
@@ -208,6 +208,22 @@
             sb.AppendFormat("<tr><th class=\"bg-light\">처리</th><td><div class=\"p-1\">{0}. {1}</div></td>", row["mgrdept"].ToString(), row["mgrnm"].ToString());
             sb.AppendFormat("<th class=\"bg-light\">최종변경</th><td><div class=\"p-1\">{0}</div></td>", DateHelper.CheckDateTime(row["moddate"].ToString()));
             sb.Append("</tr>");
+
+            //권한자
+            //sb.Append("<tr><th class=\"bg-light\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"개인경비지출결의서, 출장경비상세내역서 대리 작성 권한자\">권한자</a></td><td colspan=\"3\">");
+            //sb.Append("<div class=\"card\">");
+            //sb.AppendFormat("<div class=\"card-header py-1 d-flex justify-content-between\">");
+            //sb.Append("<div class=\"font-weight-bold\">선택목록</div>");
+            //sb.Append("<div class=\"{0}\">");
+            //sb.Append("<button type=\"button\" class=\"btn btn-outline-success icon-btn btn-sm mr-1\" title=\"권한자 추가\" onclick=\"_zw.fn.org('all','y', 'auth');\"><i class=\"fas fa-user-plus\"></i></button>");
+            //sb.Append("<button type=\"button\" class=\"btn btn-outline-secondary icon-btn btn-sm\" title=\"권한자 삭제\" data-zm-menu=\"del-auth\"><i class=\"fas fa-user-minus\"></i></button>");
+            //sb.Append("</div>");
+            //sb.Append("</div>"); //card-header
+            //sb.Append("<div class=\"card-body px-2 pt-2 pb-0\" id=\"_cardAuthUr\" style=\"min-height: 2rem\">");
+
+            //sb.Append("</div>");
+            //sb.Append("</div>");
+            //sb.Append("</td></tr>");
 
             sb.Append("</table>");
 
@@ -262,7 +278,9 @@
         //결재문서 연결 : 사용자 연결 안된 경우
         //사용자, 소지자 연결 : 결재문서 연결 안된 경우
         //관리자만 신규, 수정 권한
+        //문서보안 권한자 : 카드사용열람권한자 추가 가능
         bool bAdmin = post["operator"].ToString() == "Y" ? true : false;
+        bool bAckAuth = StringHelper.HasAcl(post["acl"].ToString(), "S");
 
         StringBuilder sb = new StringBuilder();
         if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
@@ -375,6 +393,35 @@
             sb.AppendFormat("<th class=\"bg-light\">최종변경</th><td><div class=\"p-1\">{0}</div></td>", DateHelper.CheckDateTime(row["moddate"].ToString()));
             sb.Append("</tr>");
 
+            //권한자
+            sb.Append("<tr><th class=\"bg-light\"><a href=\"javascript:\" class=\"z-lnk-navy-n\" title=\"개인경비지출결의서, 출장경비상세내역서 대리 작성 권한자\">권한자</a></td><td colspan=\"3\">");
+            sb.Append("<div class=\"card\">");
+            sb.AppendFormat("<div class=\"card-header py-1 {0} justify-content-between\">", (bAdmin || bAckAuth) ? "d-flex" : "d-none");
+            sb.Append("<div class=\"font-weight-bold\">선택목록</div>");
+            sb.Append("<div class=\"{0}\">");
+            sb.Append("<button type=\"button\" class=\"btn btn-outline-success icon-btn btn-sm mr-1\" title=\"권한자 추가\" onclick=\"_zw.fn.org('all','y', 'auth');\"><i class=\"fas fa-user-plus\"></i></button>");
+            sb.Append("<button type=\"button\" class=\"btn btn-outline-secondary icon-btn btn-sm mr-2\" title=\"권한자 삭제\" data-zm-menu=\"del-auth\"><i class=\"fas fa-user-minus\"></i></button>");
+            sb.Append("<button type=\"button\" class=\"btn btn-outline-primary icon-btn btn-sm\" title=\"권한자 저장\" data-zm-menu=\"save-auth\"><i class=\"fas fa-check\"></i></button>");
+            sb.Append("</div>");
+            sb.Append("</div>"); //card-header
+            sb.Append("<div class=\"card-body px-2 pt-2 pb-0\" id=\"_cardAuthUr\" style=\"min-height: 2rem\">");
+            foreach(DataRow dr in ds.Tables[1].Rows)
+            {
+                sb.Append("<div class=\"d-flex align-items-center mb-2\">");
+                sb.Append("<div class=\"wd-35 wd-lg-35 wd-xl-35\">");
+                sb.Append("<label class=\"flex-fill custom-control custom-checkbox mb-0\">");
+                sb.AppendFormat("<input type=\"checkbox\" class=\"custom-control-input\" data-for=\"{0}\" data-pos=\"\">", dr["UserID"].ToString());
+                sb.AppendFormat("<span class=\"custom-control-label\">{0}</span>", dr["DisplayName"].ToString());
+                sb.Append("</label>");
+                sb.Append("</div>");
+                sb.AppendFormat("<div class=\"wd-25 wd-lg-25 wd-xl-25 text-nowrap\">{0}</div>", dr["Grade1"].ToString());
+                sb.AppendFormat("<div class=\"wd-40 wd-lg-40 wd-xl-40 text-nowrap\">{0}</div>", dr["GroupName"].ToString());
+                sb.Append("</div>");
+            }
+            sb.Append("</div>");
+            sb.Append("</div>");
+            sb.Append("</td></tr>");
+
             sb.Append("</table>");
 
             //숨은 필드
@@ -408,6 +455,9 @@
             sb.Append("<div class=\"modal-footer\">");
             if (bAdmin) //관리자 경우
             {
+                if (!bInterface)
+                    sb.AppendFormat("<button type=\"button\" class=\"btn btn-outline-danger position-absolute\" style=\"left: 1.2rem\" data-zm-menu=\"delete\">{0}</button>", Resources.Global.Delete);
+
                 sb.AppendFormat("<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">{0}</button>", Resources.Global.Cancel);
                 if (bInterface)
                     sb.AppendFormat("<button type=\"button\" class=\"btn btn-primary\" data-zm-menu=\"link\">{0}</button>", Resources.Global.Save); //연동 경우
@@ -535,3 +585,16 @@
         }
     </div>
 </div>
+
+<script type="text/template" class="zf-auth-template">
+    <div class="d-flex align-items-center mb-2">
+        <div class="wd-35 wd-lg-35 wd-xl-35">
+            <label class="flex-fill custom-control custom-checkbox mb-0">
+                <input type="checkbox" class="custom-control-input" data-for="{$id}" data-pos="{$mode}">
+                <span class="custom-control-label">{$user}</span>
+            </label>
+        </div>
+        <div class="wd-25 wd-lg-25 wd-xl-25 text-nowrap">{$grade}</div>
+        <div class="wd-40 wd-lg-40 wd-xl-40 text-nowrap">{$dept}</div>
+    </div>
+</script>

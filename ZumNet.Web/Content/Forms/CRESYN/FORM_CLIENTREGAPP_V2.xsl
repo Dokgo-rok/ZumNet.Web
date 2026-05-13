@@ -437,9 +437,39 @@
 					  <input type="hidden" id="__mainfield" name="COUNTRYCODE" value="{//forminfo/maintable/COUNTRYCODE}"/>
 				  </td>
               </tr>
+				  <tr data-for="EMPLOYEE">
+					  <xsl:if test="phxsl:isDiff(string(//forminfo/maintable/PRODUCER_TYPE),'EMPLOYEE')">
+						  <xsl:attribute name="class">d-none</xsl:attribute>
+					  </xsl:if>
+					  <td class="f-lbl">사번<span class="f-lbl-en">(Employee ID)</span></td>
+					  <td>
+						  <xsl:choose>
+							  <xsl:when test="$mode='new' or $mode='edit'">
+								  <input class="txtRead" type="text" id="__mainfield" name="EMPLOYEEID" readonly="readonly" value="{//forminfo/maintable/EMPLOYEEID}"/>
+							  </xsl:when>
+							  <xsl:otherwise>
+								  <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/EMPLOYEEID))" />
+							  </xsl:otherwise>
+						  </xsl:choose>
+					  </td>
+					  <td class="f-lbl">부서<span class="f-lbl-en">(Department)</span></td>
+					  <td style="border-right:0;">
+						  <xsl:choose>
+							  <xsl:when test="$mode='new' or $mode='edit'">
+								  <input type="text" id="__mainfield" name="SUPPLIERDEPT" style="width:92%" class="txtText_u" readonly="readonly" value="{//forminfo/maintable/SUPPLIERDEPT}" />
+								  <button type="button" class="btn btn-outline-secondary btn-18" title="Supplier" onclick="_zw.formEx.externalWnd('report.ERP_DEPARTMENT',240,40,20,70,'','SUPPLIERDEPT','SUPPLIERDEPTCD');">
+									  <i class="fas fa-angle-down"></i>
+								  </button>
+							  </xsl:when>
+							  <xsl:otherwise>
+								  <xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SUPPLIERDEPT))" />
+							  </xsl:otherwise>
+						  </xsl:choose>
+						  <input type="hidden" id="__mainfield" name="SUPPLIERDEPTCD" value="{//forminfo/maintable/SUPPLIERDEPTCD}" />
+					  </td>
+				  </tr>
               <tr>
-                <td class="f-lbl" >사업자등록번호<span class="f-lbl-en">(Tax ID)</span>
-              </td>
+                <td class="f-lbl" >사업자등록번호<span class="f-lbl-en">(Tax ID)</span></td>
                 <td>
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">

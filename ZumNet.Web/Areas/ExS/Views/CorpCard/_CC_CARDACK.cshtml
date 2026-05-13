@@ -54,7 +54,7 @@
                             , { "_STATE_", "상태", "5%", "", "" }
                             };
         this._columnConfig = arr;
-        if (Session["Admin"].ToString() == "Y" || ViewBag.R.current["operator"].ToString() == "Y") ViewBag.R["mode"] = "dn"; //관리자
+        if (Session["Admin"].ToString() == "Y" || ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S")) ViewBag.R["mode"] = "dn"; //관리자
         else
         {
             ViewBag.R["mode"] = "ur";
@@ -141,7 +141,9 @@
                     }
                     else if (strID == "ackamt" || strID == "valsupply" || strID == "vat")
                     {
-                        strValue = StrCardAmt(row[strID].ToString());
+                        strTextDecoration = row["purchaseflag"].ToString() == "04" ? " style=\"color: #ec4a3b\"" : "";
+
+                        strValue = StrCardAmt(row[strID].ToString(), row["purchaseflag"].ToString());
                     }
                     else if (strID == "aquidate")
                     {
@@ -156,6 +158,7 @@
                     {
                         strValue = row[strID].ToString();
                     }
+
                     sb.AppendFormat("<td class=\"{0}\"{1}>{2}</td>", _columnConfig[i, 3].ToString() == "L" ? " text-left" : "", strTextDecoration, strValue);
                 }
                 sb.Append("</tr>");
@@ -291,17 +294,21 @@
         return string.Format("{0:###-##-#####}", long.Parse(num));
     }
 
-    private string StrCardAmt(string amt)
+    private string StrCardAmt(string amt, string flag)
     {
-        if (amt == null || amt == "") return "";
-        else
+        string rt = "";
+
+        if (amt != null && amt != "")
         {
             if (decimal.TryParse(amt, out decimal result))
             {
-                return String.Format($"{result:n0}");
+                rt = String.Format($"{result:n0}");
             }
-            else return amt;
+            else rt = amt;
+
+            if (flag == "04" && rt != "0") rt = "-" + rt;
         }
+        return rt;
     }
 
     private string CvtDate(string d)

@@ -42,13 +42,13 @@
             sb.Append("</tr>");
 
             //승인금액, 통화코드
-            sb.AppendFormat("<tr><th class=\"bg-light\">승인금액</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["ackamt"].ToString(), 2));
+            sb.AppendFormat("<tr><th class=\"bg-light\">승인금액</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StrCardAmt(row["ackamt"].ToString(), row["purchaseflag"].ToString()));
             sb.AppendFormat("<th class=\"bg-light\">통화코드</th><td><div class=\"p-1\">{0}</div></td>", row["currency"].ToString());
             sb.Append("</tr>");
 
             //공급가액, 부가세
-            sb.AppendFormat("<tr><th class=\"bg-light\">공급가액</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["valsupply"].ToString()));
-            sb.AppendFormat("<th class=\"bg-light\">부가세</th><td><div class=\"p-1\">{0}</div></td>", StringHelper.CvtCurrency(row["vat"].ToString()));
+            sb.AppendFormat("<tr><th class=\"bg-light\">공급가액</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StrCardAmt(row["valsupply"].ToString(), row["purchaseflag"].ToString()));
+            sb.AppendFormat("<th class=\"bg-light\">부가세</th><td><div class=\"p-1{0}\">{1}</div></td>", row["purchaseflag"].ToString() == "04" ? " text-danger" : "", StrCardAmt(row["vat"].ToString(), row["purchaseflag"].ToString()));
             sb.Append("</tr>");
 
             //가맹점명
@@ -148,6 +148,23 @@
     private string StrSocNum(string num)
     {
         return string.Format("{0:###-##-#####}", long.Parse(num));
+    }
+
+    private string StrCardAmt(string amt, string flag)
+    {
+        string rt = "";
+
+        if (amt != null && amt != "")
+        {
+            if (decimal.TryParse(amt, out decimal result))
+            {
+                rt = String.Format($"{result:n0}");
+            }
+            else rt = amt;
+
+            if (flag == "04" && rt != "0") rt = "-" + rt;
+        }
+        return rt;
     }
 
     private string CvtDate(string d)

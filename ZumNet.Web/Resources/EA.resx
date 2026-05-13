@@ -315,4 +315,10 @@
   <data name="WS_Progressing" xml:space="preserve">
     <value>Progressing</value>
   </data>
+  <data name="BoxRejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="BoxTakeover" xml:space="preserve">
+    <value>Takeover Folders</value>
+  </data>
 </root>

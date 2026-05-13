@@ -187,7 +187,36 @@
                     </ul>
                 </li>
             }
+            @if (ViewBag.TakeOver != null && ViewBag.TakeOver.Count > 0)
+            {
+                <li class="sidenav-item open">
+                    <a href="javascript:void(0)" class="sidenav-link font-weight-bold sidenav-toggle"><i class="fas fa-share-alt sidenav-icon text-success"></i><span>@Resources.EA.BoxTakeover</span></a>
 
+                    <ul class="sidenav-menu my-0">
+                        @foreach (DataRow row in ViewBag.TakeOver)
+                        {
+                            <li class="sidenav-item@(ViewBag.R["opnode"].Value.IndexOf(row["ObjectID"].ToString()) > 0 ? " open" : "")">
+                                <a href="javascript:void(0)" class="sidenav-link sidenav-toggle"><i class="far fa-folder sidenav-icon text-secondary"></i><span>@row["DisplayName"]</span></a>
+
+                                <ul class="sidenav-menu my-0">
+                                    <li class="sidenav-item@(ViewBag.R["opnode"] == "go//" + row["ObjectID"].ToString()  ? " active" : "")" data-box="node.go" data-location="@("go" + sDel + "" + sDel + row["ObjectID"].ToString())">
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxInProcess"><span>@Resources.EA.BoxInProcess</span></a>
+                                    </li>
+                                    <li class="sidenav-item@(ViewBag.R["opnode"] == "cm//" + row["ObjectID"].ToString() ? " active" : "")" data-box="node.cm" data-location="@("cm" + sDel + "" + sDel + row["ObjectID"].ToString())">
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxCompleted"><span>@Resources.EA.BoxCompleted</span></a>
+                                    </li>
+                                    <li class="sidenav-item@(ViewBag.R["opnode"] == "re" + row["ObjectID"].ToString() ? " active" : "")" data-box="node.re" data-location="@("re" + sDel + "" + sDel + row["ObjectID"].ToString())">
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxReference"><span>@Resources.EA.BoxReference</span></a>
+                                    </li>
+                                    <li class="sidenav-item@(ViewBag.R["opnode"] == "dl/_dl/" + row["ObjectID"].ToString() ? " active" : "")" data-box="node.dl" data-location="@("dl" + sDel + "_dl" + sDel + row["ObjectID"].ToString())">
+                                        <a href="javascript:void(0)" class="sidenav-link" data-toggle="tooltip" data-placement="bottom" title="@Resources.EA.BoxDistribued"><span>@Resources.EA.BoxDistribued</span></a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
         </ul>
     </div>
     <!-- / sidebox tree -->

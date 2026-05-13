@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
-using Newtonsoft.Json.Linq;
+using ZumNet.DAL.ServiceDac;
 using ZumNet.Framework.Util;
 using ZumNet.Web.Bc;
 using ZumNet.Web.Filter;
@@ -238,7 +238,7 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         }
         #endregion
 
-        #region [카드정보 저장, 수정 / 카드사용정보 메모(사용예외처리)]
+        #region [카드정보 저장, 수정, 삭제 / 카드사용정보 메모(사용예외처리)]
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
@@ -314,6 +314,42 @@ namespace ZumNet.Web.Areas.ExS.Controllers
         [SessionExpireFilter]
         [HttpPost]
         [Authorize]
+        public string CardDelete()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["ccid"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+                    using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+                    {
+                        svcRt = rpBiz.DeleteCARDINFO(jPost["M"].ToString(), StringHelper.SafeInt(jPost["ccid"]));
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
         public string CardAckMemo()
         {
             string rt = "";
@@ -328,6 +364,43 @@ namespace ZumNet.Web.Areas.ExS.Controllers
                     using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
                     {
                         svcRt = rpBiz.SetCARDACKMEMO(StringHelper.SafeInt(jPost["ackid"]), jPost);
+                    }
+
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        rt = "OK";
+                    }
+                    else
+                    {
+                        rt = svcRt.ResultMessage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
+
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string AuthSave()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+                    if (jPost == null || jPost.Count == 0 || jPost["useid"].ToString() == "" || jPost["mgrid"].ToString() == "") return "필수값 누락!";
+
+                    ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                    using (BSL.InterfaceBiz.ReportBiz rpBiz = new BSL.InterfaceBiz.ReportBiz())
+                    {
+                        svcRt = rpBiz.SetCardAuth(StringHelper.SafeInt(jPost["useid"]), StringHelper.SafeInt(jPost["mgrid"]), jPost["mgrnm"].ToString(), jPost["mgrdept"].ToString(), jPost["add"].ToString(), jPost["del"].ToString());
                     }
 
                     if (svcRt != null && svcRt.ResultCode == 0)

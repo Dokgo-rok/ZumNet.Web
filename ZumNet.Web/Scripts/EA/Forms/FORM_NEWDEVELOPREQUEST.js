@@ -15,6 +15,21 @@
                     if (el.length > 0 && $.trim(el.val()) == '') {
                         bootbox.alert("필수항목 [개발등급] 누락!", function () { el.focus(); }); return false;
                     }
+
+                    el = $('#__mainfield[name="SUPERVISION"]');
+                    if (el.length > 0 && $.trim(el.val()) == '') {
+                        bootbox.alert("필수항목 [개발주관부서] 누락!", function () { el.focus(); }); return false;
+                    }
+
+                    el = $('#__mainfield[name="SUPERVISIONPM"]');
+                    if (el.length > 0 && $.trim(el.val()) == '') {
+                        bootbox.alert("필수항목 [개발PM] 누락!", function () { el.focus(); }); return false;
+                    }
+
+                    el = $('#__mainfield[name="SUPERVISIONTEL"]');
+                    if (el.length > 0 && $.trim(el.val()) == '') {
+                        bootbox.alert("필수항목 [내선번호] 누락!", function () { el.focus(); }); return false;
+                    }
                 } else if (_zw.V.biz == "생산지" && _zw.V.act == "_approver") {
                     el = $('#__mainfield[name="PRODUCTCENTER"]');
                     if (el.length > 0 && $.trim(el.val()) == '') {
@@ -65,7 +80,7 @@
             return true;
         },
         "make": function (f) {
-            if (_zw.V.biz == "등급부서" && _zw.V.act == "_approver") _zw.body.main(f, ["GRADE", "SUPERVISION"]);
+            if (_zw.V.biz == "등급부서" && _zw.V.act == "_approver") _zw.body.main(f, ["GRADE", "SUPERVISION", "SUPERVISIONPM", "SUPERVISIONPMID", "SUPERVISIONTEL"]);
             else if (_zw.V.biz == "생산지" && _zw.V.act == "_approver") _zw.body.main(f, ["PRODUCTCENTER"]);
             else if (_zw.V.biz == "manage" && _zw.V.act == "_approver") {
                 _zw.body.main(f, ["CURRENCY2", "TOTALSUM", "TOTALSUM2", "DEVELOPPRICE", "PREDICTINVEST", "DEVPRICEA", "DEVPRICEB", "DEVPRICEBA", "DEVPRICEBB", "DEVPRICEC"]);
@@ -133,6 +148,17 @@
                 s = _zw.ut.rate(el7.val(), el6.val(), 4); console.log(el7.val() + " : " + el6.val() + " : " + s)
                 el8.val(numeral(s).format(f));
             }
+        },
+        "orgSelect": function (p, x) {
+            p.find('.zf-org .zf-org-select input:checkbox[data-for]').each(function () {
+                var info = JSON.parse($(this).attr('data-attr')); //console.log(info)
+                var dn = $(this).next().text();
+                $('#__mainfield[name="SUPERVISION"]').val(info["grdn"]);
+                $('#__mainfield[name="SUPERVISIONPM"]').val(dn);
+                $('#__mainfield[name="SUPERVISIONPMID"]').val(info["id"]);
+                $('#__mainfield[name="SUPERVISIONTEL"]').val(info["tel"]);
+            });
+            p.modal('hide');
         },
         "optionWnd": function (pos, w, h, l, t, etc, x) {
             var el = _zw.ut.eventBtn(), vPos = pos.split('.');

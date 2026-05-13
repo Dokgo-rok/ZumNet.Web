@@ -27,7 +27,7 @@
 
                     if (eCT.val() == 'LO') { //국내
                         if (eType2.val() == 'SUPPLIER' || eType2.val() == 'OSP') v = 'COUNTRY;국가^CLIENT_NUMBER;사업자등록번호^INDUSTRY_CLASS;업태^INDUSTRY_SUBCLASS;업종^TAXBLE_PERSON;대표자^ADDRES;주소^TAXRATE;세금구분^CUST_PAYMENT;결제조건^TAXEXPL;세목^PAYMENTMTD;지급수단^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^MANAGER;영업담당자^EMAIL;메일^TEL;연락처'.split('^');
-                        else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명'.split('^');
+                        else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^EMPLOYEEID;사번^SUPPLIERDEPT;부서^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명'.split('^');
                     } else if (eCT.val() == 'DI') { //국외
                         if (eType2.val() == 'SUPPLIER' || eType2.val() == 'OSP') v = 'COUNTRY;국가^TAXBLE_PERSON;대표자^ADDRES;주소^TAXRATE;세금구분^CUST_PAYMENT;결제조건^TAXEXPL;세목^PAYMENTMTD;지급수단^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^ACCOUNT_FOREIGN;SWIFT CODE^MANAGER;영업담당자^EMAIL;메일^TEL;연락처'.split('^');
                         else if (eType2.val() == 'EMPLOYEE') v = 'COUNTRY;국가^TAXRATE;세금구분^TAXEXPL;세목^CURRENCY2;통화^ACCOUNTDN2;채무계정^PAYMENT_BANK;지급은행^ACCOUNT_DOMESTIC;계좌번호^BANK_CALLDATE;수취인명^ACCOUNT_FOREIGN;SWIFT CODE'.split('^');
@@ -40,7 +40,6 @@
                     f = v[i].split(';'); //console.log(i + " : " + f);
                     e = $('#__mainfield[name="' + f[0] + '"]');
                     if (e.length > 0 && $.trim(e.val()) == '') { bootbox.alert("필수항목 [" + f[1] + "] 누락!", function () { e.focus(); }); rt = false; return false; }
-
                 }
 
                 //사업자번호(고유번호) 또는 주민번호 중복 체크
@@ -94,12 +93,14 @@
             //}
 
             if (fld == 'PRODUCER_TYPE') {
-                var b = $('#btnOrganChart');
-                if (el.value == 'EMPLOYEE') {
+                var b = $('#btnOrganChart'), pan = $('.m [data-for="EMPLOYEE"]');
+                if (el.checked && el.value == 'EMPLOYEE') {
                     $('#__mainfield[name="CLIENT_NAME"]').css('width', '90%').prop('readonly', true).val('');
                     b.removeClass('d-none');
+                    if (pan.hasClass('d-none')) pan.removeClass('d-none');
                 } else {
                     if (!b.hasClass('d-none')) b.addClass('d-none');
+                    if (!pan.hasClass('d-none')) pan.addClass('d-none');
                     $('#__mainfield[name="CLIENT_NAME"]').css('width', '100%').prop('readonly', false).val('');
                 }
             }
@@ -113,6 +114,7 @@
                 var info = JSON.parse($(this).attr('data-attr')); //console.log(info)
                 var dn = $(this).next().text();
                 $('#__mainfield[name="CLIENT_NAME"]').val(info["empid"] + "-" + dn);
+                $('#__mainfield[name="EMPLOYEEID"]').val(info["empid"]);
             });
             p.modal('hide');
         },

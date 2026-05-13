@@ -315,4 +315,10 @@
   <data name="WS_Progressing" xml:space="preserve">
     <value>처리중</value>
   </data>
+  <data name="BoxRejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="BoxTakeover" xml:space="preserve">
+    <value>인수 문서함</value>
+  </data>
 </root>

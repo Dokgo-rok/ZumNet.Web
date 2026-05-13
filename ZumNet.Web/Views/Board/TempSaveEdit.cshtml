@@ -30,7 +30,7 @@
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/vanilla-text-mask")
     @Scripts.Render("~/bundle/vendor/js/vanilla-text-mask/text-mask-addons")
 
-    @Scripts.Render("~/Scripts/Board/list.js")
+    @Scripts.Render("~/bundle/scripts/js/list")
 
     @if (ViewBag.R.wnd.ToString() == "" && sCurrentLocale != "" && sCurrentLocale.Substring(0, 2) != "en")
     {
@@ -87,9 +87,10 @@
         <div class="zf-menu d-flex justify-content-between container-p-x m-0 py-2">
             <div class="d-flex align-items-center font-weight-bold">
                 <div class="btn-group">
-                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg();"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
+                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg('temp');"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
                     <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" onclick="_zw.mu.previewMsg();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Preview</span></button>
                     <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" onclick="_zw.mu.saveMsg();"><i class="fe-save"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.TempSave</span></button>
+                    <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="문서종류" onclick="_zw.mu.selectDocKind();"><i class="fe-file-text"></i><span class="d-none d-sm-inline-block ml-1">문서종류</span></button>
                 </div>
             </div>
             <div>
@@ -107,15 +108,15 @@
             <div class="">
                 <div class="d-flex align-items-center container-p-x mt-2">
                     <div class="custom-control custom-checkbox custom-control-inline mb-0 mr-2 mr-sm-3">
-                        <input type="checkbox" id="ckbPriority" class="custom-control-input" @sPriority@(ViewBag.R.app["priority"].ToString() == "Y" ? " checked" : "")>
+                        <input type="checkbox" id="ckbPriority" class="custom-control-input" @sPriority @(ViewBag.R.app["priority"].ToString() == "Y" ? " checked" : "")>
                         <label class="custom-control-label" for="ckbPriority">@Resources.Global.Important</label>
                     </div>
                     <div class="custom-control custom-checkbox custom-control-inline mb-0 mr-2 mr-sm-3">
-                        <input type="checkbox" id="ckbTopLine" class="custom-control-input" @sTopLine@(ViewBag.R.app["topline"].ToString() == "Y" ? " checked" : "")>
+                        <input type="checkbox" id="ckbTopLine" class="custom-control-input" @sTopLine @(ViewBag.R.app["topline"].ToString() == "Y" ? " checked" : "")>
                         <label class="custom-control-label" for="ckbTopLine">TOPLINE</label>
                     </div>
                     <div class="custom-control custom-checkbox custom-control-inline mb-0 mr-2 mr-sm-3">
-                        <input type="checkbox" id="ckbUsePopup" class="custom-control-input" @sPopup@(ViewBag.R.app["ispopup"].ToString() == "Y" ? " checked" : "")>
+                        <input type="checkbox" id="ckbUsePopup" class="custom-control-input" @sPopup @(ViewBag.R.app["ispopup"].ToString() == "Y" ? " checked" : "")>
                         <label class="custom-control-label" for="ckbUsePopup">@Resources.Global.Popup</label>
                     </div>
                     <div class="custom-control-inline mr-0">
@@ -159,7 +160,7 @@
                             @*<button class="zf-btn-sm btn btn-default float-right" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.UploaderFold" data-zf-menu="toggleUploader" aria-expanded="false"><i class="fe-chevron-up"></i></button>*@
                         </div>
                         <div class="col-sm-10">
-                             <div class="zf-uploader" id="__DextUpload"></div>
+                            <div class="zf-uploader" id="__DextUpload"></div>
                         </div>
                     </div>
                 </div>

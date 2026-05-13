@@ -13,7 +13,7 @@ using System.Web.Mvc;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using ZumNet.BSL.ServiceBiz;
 using ZumNet.Framework.Util;
 
 namespace ZumNet.Web.Bc
@@ -1890,6 +1890,25 @@ namespace ZumNet.Web.Bc
                             vCurrentBox[j] = vBox.GetValue(i, j).ToString();
                         }
                         break;
+                    }
+                }
+
+                //업무인수인계 확인
+                ctrl.ViewBag.TakeOver = null;
+                using (CommonBiz com = new CommonBiz())
+                {
+                    svcRt = com.GetObjectAuthority(Convert.ToInt32(HttpContext.Current.Session["DNID"]), "takeover", Convert.ToInt32(HttpContext.Current.Session["URID"]), "UR");
+                    if (svcRt != null && svcRt.ResultCode == 0)
+                    {
+                        if (svcRt.ResultItemCount > 0)
+                        {
+                            ctrl.ViewBag.TakeOver = svcRt.ResultDataTable.Rows;
+                        }
+                    }
+                    else
+                    {
+                        //에러페이지
+                        return svcRt.ResultMessage;
                     }
                 }
 

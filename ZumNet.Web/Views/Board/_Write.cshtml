@@ -48,11 +48,15 @@
                 </div>
             }
 
-            <div class="btn-group">
-                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg();"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
-                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" onclick="_zw.mu.previewMsg();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Preview</span></button>
-                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" onclick="_zw.mu.saveMsg();"><i class="fe-save"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.TempSave</span></button>
-            </div>
+        <div class="btn-group">
+            <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Register" onclick="_zw.mu.registerMsg();"><i class="fas fa-arrow-right text-primary"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Register</span></button>
+            <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.Preview" onclick="_zw.mu.previewMsg();"><i class="fe-printer"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.Preview</span></button>
+            <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="@Resources.Global.TempSave" onclick="_zw.mu.saveMsg();"><i class="fe-save"></i><span class="d-none d-sm-inline-block ml-1">@Resources.Global.TempSave</span></button>
+            @if (ViewBag.R.xfalias == "")
+            {
+                <button class="btn btn-default font-weight-bold" data-toggle="tooltip" data-placement="bottom" title="문서종류" onclick="_zw.mu.selectDocKind();"><i class="fe-file-text"></i><span class="d-none d-sm-inline-block ml-1">문서종류</span></button>
+            }
+        </div>
         </div>
         <div>
             <div class="btn-group">

@@ -1121,5 +1121,56 @@ namespace ZumNet.Web.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// 특정 Authority 권한자 가져오기
+        /// </summary>
+        /// <returns></returns>
+        [SessionExpireFilter]
+        [HttpPost]
+        [Authorize]
+        public string AuthAlias()
+        {
+            string rt = "";
+            if (Request.IsAjaxRequest())
+            {
+                try
+                {
+                    JObject jPost = CommonUtils.PostDataToJson();
+
+                    if (jPost == null || jPost.Count == 0) rt = "전송 데이터 누락!";
+                    else if (StringHelper.SafeString(jPost["aualias"]) == "" || StringHelper.SafeString(jPost["urid"]) == "") rt = Resources.Global.RequiredMissing;
+                    else if (jPost["urid"].ToString() != Session["URID"].ToString()) rt = Resources.Global.Auth_InvalidPath; //잘못된 경로로 접근
+
+                    if (rt == "")
+                    {
+                        ZumNet.Framework.Core.ServiceResult svcRt = null;
+
+                        using (BSL.ServiceBiz.CommonBiz comBiz = new BSL.ServiceBiz.CommonBiz())
+                        {
+                            svcRt = comBiz.GetObjectAuthority(StringHelper.SafeInt(Session["DNID"]), jPost["aualias"].ToString(), StringHelper.SafeInt(jPost["urid"]), "UR");
+                        }
+
+                        if (svcRt != null && svcRt.ResultCode == 0)
+                        {
+                            ViewBag.List = svcRt.ResultDataSet;
+                            ViewBag.JPost = jPost;
+                        }
+                        else
+                        {
+                            //에러페이지
+                            rt = svcRt.ResultMessage;
+                        }
+
+                        if (rt == "") rt = "OK" + RazorViewToString.RenderRazorViewToString(this, "_AuthAlias", ViewBag);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rt = ex.Message;
+                }
+            }
+            return rt;
+        }
     }
 }

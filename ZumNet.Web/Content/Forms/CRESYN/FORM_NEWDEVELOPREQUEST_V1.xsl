@@ -323,7 +323,7 @@
               </tr>
               <tr>
                 <td class="f-lbl4">1차선적일</td>
-                <td colspan="2">
+                <td colspan="3">
                   <xsl:choose>
                     <xsl:when test="$mode='new' or $mode='edit'">                      
                       <input type="text" id="__mainfield" name="SHIPDATE" class="datepicker txtDate" maxlength="10" data-inputmask="date;yyyy-MM-dd" value="{//forminfo/maintable/SHIPDATE}" />
@@ -344,7 +344,7 @@
                   </xsl:choose>
                 </td>
                 <td class="f-lbl4">생산지</td>
-                <td colspan="2">
+                <td colspan="3">
                   <xsl:choose>
                     <xsl:when test="$bizrole='생산지' and $actrole='_approver' and $partid!=''">                      
                       <input type="text" id="__mainfield" name="PRODUCTCENTER" readonly="readonly" class="txtText_u" style="width:85%" value="{//forminfo/maintable/PRODUCTCENTER}" />
@@ -377,7 +377,7 @@
                   </xsl:choose>
                 </td>
                 <td class="f-lbl4">개발등급</td>
-                <td>
+                <td style="border-right:0" colspan="2">
                   <xsl:choose>                    
                     <xsl:when test="$bizrole='등급부서' and $actrole='_approver' and $partid!=''">                      
                       <input type="text" id="__mainfield" name="GRADE" readonly="readonly" class="txtText_u" style="width:72%" value="{//forminfo/maintable/GRADE}" />
@@ -409,7 +409,7 @@
                     </xsl:otherwise>
                   </xsl:choose>
                 </td>
-                <td class="f-lbl4">개발주관</td>
+                <!--<td class="f-lbl4">개발주관</td>
                 <td style="border-right:0" colspan="2">
                   <xsl:choose>
                     <xsl:when test="$bizrole='등급부서' and $actrole='_approver' and $partid!=''">
@@ -429,8 +429,81 @@
                       </xsl:choose>
                     </xsl:otherwise>
                   </xsl:choose>
-                </td>
+                </td>-->
               </tr>
+				<tr>
+					<td class="f-lbl4">개발주관</td>
+					<td class="f-lbl4">부서
+						<xsl:if test="$bizrole='등급부서' and $actrole='_approver' and $partid!=''">
+						    <button type="button" class="btn btn-outline-secondary btn-18" data-toggle="tooltip" data-placement="bottom" title="Contacts" onclick="_zw.fn.org('user','n');">
+							    <i class="fas fa-angle-down"></i>
+						    </button>
+					    </xsl:if>
+				    </td>
+					<td colspan="3">
+						<xsl:choose>
+							<xsl:when test="$bizrole='등급부서' and $actrole='_approver' and $partid!=''">
+								<input type="text" id="__mainfield" name="SUPERVISION" readonly="readonly" class="txtRead" value="{//forminfo/maintable/SUPERVISION}" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:if test="$bizrole='등급부서' and $actrole='_approver' and ($mlvl='A' or $mlvl='B')">
+									<xsl:attribute name="id">___editable</xsl:attribute>
+								</xsl:if>
+								<xsl:choose>
+									<xsl:when test="$bizrole='등급부서' and $actrole='_approver' and $submode='revise'">
+										<input type="text" id="__mainfield" name="SUPERVISION" readonly="readonly" class="txtRead" value="{//forminfo/maintable/SUPERVISION}" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SUPERVISION))" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
+					<td class="f-lbl4">PM</td>
+					<td colspan="2">
+						<xsl:choose>
+							<xsl:when test="$bizrole='등급부서' and $actrole='_approver' and $partid!=''">
+								<input type="text" id="__mainfield" name="SUPERVISIONPM" readonly="readonly" class="txtRead" value="{//forminfo/maintable/SUPERVISIONPM}" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:if test="$bizrole='등급부서' and $actrole='_approver' and ($mlvl='A' or $mlvl='B')">
+									<xsl:attribute name="id">___editable</xsl:attribute>
+								</xsl:if>
+								<xsl:choose>
+									<xsl:when test="$bizrole='등급부서' and $actrole='_approver' and $submode='revise'">
+										<input type="text" id="__mainfield" name="SUPERVISIONPM" readonly="readonly" class="txtRead" value="{//forminfo/maintable/SUPERVISIONPM}" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SUPERVISIONPM))" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
+						<input type="hidden" id="__mainfield" name="SUPERVISIONPMID" value="{//forminfo/maintable/SUPERVISIONPMID}" />
+					</td>
+					<td class="f-lbl4">내선번호</td>
+					<td style="border-right:0" colspan="2">
+						<xsl:choose>
+							<xsl:when test="$bizrole='등급부서' and $actrole='_approver' and $partid!=''">
+								<input type="text" id="__mainfield" name="SUPERVISIONTEL" class="txtText" maxlength="10" value="{//forminfo/maintable/SUPERVISIONTEL}" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:if test="$bizrole='등급부서' and $actrole='_approver' and ($mlvl='A' or $mlvl='B')">
+									<xsl:attribute name="id">___editable</xsl:attribute>
+								</xsl:if>
+								<xsl:choose>
+									<xsl:when test="$bizrole='등급부서' and $actrole='_approver' and $submode='revise'">
+										<input type="text" id="__mainfield" name="SUPERVISIONTEL" class="txtText" maxlength="10" value="{//forminfo/maintable/SUPERVISIONTEL}" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of disable-output-escaping="yes" select="phxsl:encodeHtml(string(//forminfo/maintable/SUPERVISIONTEL))" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
+				</tr>
               <tr>
                 <td class="f-lbl4" rowspan="3" style="border-bottom:0">샘플대응</td>
                 <td class="f-lbl4" colspan="2">1차</td>

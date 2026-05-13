@@ -361,7 +361,7 @@
                                 row = svcRt.ResultDataSet.Tables[0].Rows[0];
 
                                 if (row["ACNTID"].ToString() == "") strReturn = "NO";
-                                else strReturn = "OK" + row["ACNTNM"].ToString() + cDel + row["ACNTDPCD"].ToString() + cDel + row["ACNTMAIN"].ToString() + cDel + row["ACNTSUB"].ToString() + cDel + row["ACNTID"].ToString() + cDel + row["ACNTCLS"].ToString();
+                                else strReturn = "OK" + row["ACNTNM"].ToString() + cDel + row["ACNTDPCD"].ToString() + cDel + row["ACNTMAIN"].ToString() + cDel + row["ACNTSUB"].ToString() + cDel + row["ACNTID"].ToString() + cDel + row["ACNTCLS"].ToString() + cDel + row["ACNTCLSNM"].ToString();
                             }
                             else strReturn = "NO";
                         }
@@ -994,7 +994,7 @@
                             sb.Append("<tbody>");
                             foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                             {
-                                sb.Append("<tr>");
+                                sb.AppendFormat("<tr{0}>", row["purchaseflag"].ToString() == "04" ? " class=\"table-warning\"" : "");
                                 sb.Append("<td>");
                                 sb.Append("<label class=\"custom-control custom-checkbox mb-0\"><input type=\"checkbox\" class=\"custom-control-input\" />");
                                 sb.AppendFormat("<span class=\"custom-control-label text-dark\">{0}</span>", CvtDate(row["aquidate"].ToString()));
@@ -1007,17 +1007,17 @@
                                 sb.AppendFormat("<input type=\"hidden\" data-for=\"MERCTAXKINDCODE\" value=\"{0}\" />", row["merctaxkind"].ToString());
                                 sb.AppendFormat("<input type=\"hidden\" data-for=\"MERCNAME\" value=\"{0}\" />", row["mercname"].ToString());
                                 sb.AppendFormat("<input type=\"hidden\" data-for=\"MERCSOCNO\" value=\"{0}\" />", row["mercsocno"].ToString());
-                                sb.AppendFormat("<input type=\"hidden\" data-for=\"ACKAMT\" value=\"{0}\" />", StrCardAmt(row["ackamt"].ToString()));
-                                sb.AppendFormat("<input type=\"hidden\" data-for=\"VALSUPPLY\" value=\"{0}\" />", StrCardAmt(row["valsupply"].ToString()));
-                                sb.AppendFormat("<input type=\"hidden\" data-for=\"VAT\" value=\"{0}\" />", StrCardAmt(row["vat"].ToString()));
-                                sb.AppendFormat("<input type=\"hidden\" data-for=\"REQAMT\" value=\"{0}\" />", StrCardAmt(row["ACKAMT"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"ACKAMT\" value=\"{0}\" />", StrCardAmt(row["ackamt"].ToString(), row["purchaseflag"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"VALSUPPLY\" value=\"{0}\" />", StrCardAmt(row["valsupply"].ToString(), row["purchaseflag"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"VAT\" value=\"{0}\" />", StrCardAmt(row["vat"].ToString(), row["purchaseflag"].ToString()));
+                                sb.AppendFormat("<input type=\"hidden\" data-for=\"REQAMT\" value=\"{0}\" />", StrCardAmt(row["ackamt"].ToString(), row["purchaseflag"].ToString()));
                                 sb.AppendFormat("<input type=\"hidden\" data-for=\"CURRENCY\" value=\"{0}\" />", row["currency"].ToString());
                                 sb.Append("</td>");
                                 sb.AppendFormat("<td>{0}</td>", StrPurchaseFlag(row["purchaseflag"].ToString()));
                                 sb.AppendFormat("<td>{0}</td>", StrCardNum(row["cardnum"].ToString(), "A"));
                                 sb.AppendFormat("<td>{0}</td>", row["ackno"].ToString());
                                 sb.AppendFormat("<td class=\"text-left\">{0}</td>", row["mercname"].ToString());
-                                sb.AppendFormat("<td>{0}</td>", StrCardAmt(row["ackamt"].ToString()));
+                                sb.AppendFormat("<td{0}>{1}</td>", (row["purchaseflag"].ToString() == "04") ? " class=\"text-danger\"" : "", StrCardAmt(row["ackamt"].ToString(), row["purchaseflag"].ToString()));
                                 sb.AppendFormat("<td>{0}</td>", row["currency"].ToString());
                                 sb.Append("</tr>");
                             }
@@ -1207,19 +1207,19 @@
                             {
                                 sb.Append("<table class=\"table table-striped table-sm text-center mb-0\">");
                                 sb.Append("<thead>");
-                                sb.Append("<tr><th style=\"width: 30%\">계정명</th><th style=\"width: 20%\">계정코드</th><th style=\"width: 30%\">부서</th><th>분류</th></tr>");
+                                sb.Append("<tr><th style=\"width: 25%\">Business Unit</th><th style=\"width: 20%\">Object Account</th><th style=\"width: 15%\">Subsidary</th><th>Account Description</th></tr>");
                                 sb.Append("</thead>");
                                 sb.Append("<tbody>");
                                 foreach (DataRow row in svcRt.ResultDataSet.Tables[0].Rows)
                                 {
                                     //ACNTNM, ACNTDPCD, ACNTMAIN, ACNTSUB, ACNTID, ACNTCLS, ACNTCLSNM
                                     sb.Append("<tr>");
-                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}^{3}^{4}^{5}^{6}\">{0}</a></td>"
-                                                , row["ACNTNM"].ToString(), row["ACNTDPCD"].ToString(), row["ACNTMAIN"].ToString(), row["ACNTSUB"].ToString()
-                                                , row["ACNTID"].ToString(), row["ACNTCLS"].ToString(), row["ACNTCLSNM"].ToString());
-                                    sb.AppendFormat("<td>{0}</td>", row["ACNTID"].ToString());
-                                    sb.AppendFormat("<td>{0}</td>", row["ACNTDP"].ToString());
-                                    sb.AppendFormat("<td>{0}</td>", row["ACNTCLSNM"].ToString());
+                                    sb.AppendFormat("<td>{0}</td>", row["ACNTDPCD"].ToString());
+                                    sb.AppendFormat("<td>{0}</td>", row["ACNTMAIN"].ToString());
+                                    sb.AppendFormat("<td>{0}</td>", row["ACNTSUB"].ToString());
+                                    sb.AppendFormat("<td><a class=\"z-lnk-navy\" href=\"javascript:void(0)\" data-val=\"{0}^{1}^{2}^{3}^{4}^{5}^{6}^{7}^{8}\">{0}</a></td>"
+                                            , row["ACNTNM"].ToString(), row["ACNTDPCD"].ToString(), row["ACNTMAIN"].ToString(), row["ACNTSUB"].ToString()
+                                            , row["ACNTID"].ToString(), row["ACNTCLS"].ToString(), row["ACNTCLSNM"].ToString(), row["ACNTDP"].ToString(), row["ACNTDPCD"].ToString());
                                     sb.Append("</tr>");
                                 }
                                 sb.Append("</tbody>");
@@ -1316,6 +1316,8 @@
         }
         catch (Exception ex)
         {
+            ex.Source += " (" + postData["k2"].ToString() + ")";
+
             ExceptionManager.Publish(ex, ExceptionManager.ErrorLevel.Error, "GetReportSearch");
             strReturn = (strReturn != "" ? "[" + strReturn + "] " : "") + ex.Message;
         }
@@ -1362,17 +1364,21 @@
         return string.Format("{0:###-##-#####}", long.Parse(num));
     }
 
-    private string StrCardAmt(string amt)
+    private string StrCardAmt(string amt, string flag)
     {
-        if (amt == null || amt == "") return "";
-        else
+        string rt = "";
+
+        if (amt != null && amt != "")
         {
             if (decimal.TryParse(amt, out decimal result))
             {
-                return String.Format($"{result:n0}");
+                rt = String.Format($"{result:n0}");
             }
-            else return amt;
+            else rt = amt;
+
+            if (flag == "04" && rt != "0") rt = "-" + rt;
         }
+        return rt;
     }
 
     private string CvtDate(string d)

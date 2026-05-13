@@ -48,13 +48,13 @@
         if (ViewBag.R.lv.start == "") ViewBag.R.lv["start"] = DateTime.Now.AddYears(-1).ToString("yyyy-MM") + "-01"; //기본 1년전 첫날
         if (ViewBag.R.ttl == "") ViewBag.R["ttl"] = "지출결의처리현황";
 
-        string[,] arr = { { "rownum", "NO", "4%", "", "" }, { "acntnm", "계정과목", "16%", "L", "Y" }, { "supplier", "Supplier", "10%", "", "Y" }
-                            , { "aquidate", "사용일자", "6%", "", "" }, { "expensetype", "경비구분", "7%", "", "" }, { "reqamt", "인정금액", "6%", "", "" }
-                            , { "U+D", "신청자", "15%", "", "Y" }, { "pistart", "신청일", "9%", "", "" }, { "pistate", "결재상태", "6%", "", "" }
-                            , { "ifstate", "연동상태", "6%", "", "" }, { "reqstatus", "전표상태", "6%", "", "" }, { "lastreq", "처리요청일", "9%", "", ""}
+        string[,] arr = { { "rownum", "NO", "4%", "", "" }, { "acntnm", "계정과목", "15%", "L", "Y" }, { "supplier", "Supplier", "9%", "", "Y" }
+                            , { "aquidate", "사용일자", "6%", "", "" }, { "expensetype", "경비구분", "6%", "", "" }, { "reqamt", "인정금액", "6%", "", "" }
+                            , { "U+D", "신청자", "13%", "", "Y" }, { "pistart", "신청일", "9%", "", "" }, { "pistate", "결재상태", "5%", "", "" }
+                            , { "ifstate", "연동상태", "5%", "", "" }, { "__EKP__", "문서ID", "10%", "", "" }, { "__ERP__", "전표번호", "12%", "", ""}
                             };
         this._columnConfig = arr;
-        if (Session["Admin"].ToString() == "Y" || ViewBag.R.current["operator"].ToString() == "Y") ViewBag.R["mode"] = "dn"; //관리자
+        if (Session["Admin"].ToString() == "Y" || ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S")) ViewBag.R["mode"] = "dn"; //관리자
         else
         {
             ViewBag.R["mode"] = "ur";
@@ -111,6 +111,7 @@
             foreach (DataRow row in dt.Rows)
             {
                 //strRowClass = row["ifstate"].ToString() == "8" ? " class=\"table-danger\"" : "";
+                //strRowClass = row["ifstate"].ToString() == "7" ? " class=\"table-success\"" : "";
 
                 sb.AppendFormat("<tr{0} id=\"_{1}.{2}\">", strRowClass, row["vchid"].ToString(), row["reqid"].ToString());
 
@@ -134,7 +135,6 @@
                     else if (strID == "U+D")
                     {
                         strValue = row["applicantdept"].ToString() + ". " + row["applicant"].ToString();
-                        if (mode != "xls" && strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["pilink"].ToString() + "');\">" + strValue + "</a>";
                     }
                     else if (strID == "pistart" || strID == "lastreq")
                     {
@@ -144,15 +144,29 @@
                     {
                         strValue = StrApvState(row[strID].ToString());
                     }
-                    else if (strID == "ifstate" || strID == "reqstatus")
+                    else if (strID == "ifstate")
                     {
                         strValue = StrIFState(row[strID].ToString());
+                    }
+                    else if (strID == "__EKP__")
+                    {
+                        strValue = row["pilink"].ToString() + "-" + row["reqid"].ToString();
+                        if (mode != "xls" && strValue != "") strValue = "<a class=\"z-lnk-navy\" href=\"javascript:\" onclick=\"_zw.fn.openEAFormSimple('" + row["pilink"].ToString() + "');\">" + strValue + "</a>";
+                    }
+                    else if (strID == "__ERP__")
+                    {
+                        if (row["reqstatus"].ToString() == "D")
+                            strValue = row["erpno"].ToString() + "-" + row["erpno2"].ToString();
+                        else
+                            strValue = StrIFState(row["reqstatus"].ToString());
                     }
                     else
                     {
                         strValue = row[strID].ToString();
                     }
                     if (strID == "ifstate" && row[strID].ToString() == "8") sb.AppendFormat("<td><a class=\"text-danger\" title=\"{1}\" href=\"javascript:void(0)\">{0}</a></td>", strValue, Server.HtmlEncode(row["ifmsg"].ToString()));
+                    else if (strID == "reqamt" && StringHelper.SafeDecimal(row[strID].ToString()) < 0) sb.AppendFormat("<td class=\"text-danger\">{0}</td>", strValue);
+                    else if (strID == "__ERP__" && row["erpstatus"].ToString() == "1") sb.AppendFormat("<td class=\"text-danger\">{0}<br />({1})</td>", strValue, "전표삭제");
                     else sb.AppendFormat("<td{0}>{1}</td>", _columnConfig[i, 3].ToString() == "L" ? " class=\"text-left\"" : "", strValue);
                 }
                 sb.Append("</tr>");
@@ -301,7 +315,7 @@
         else if (state == "1") rt = "처리중";
         else if (state == "7") rt = "완료";
         else if (state == "8") rt = "오류";
-        else if (state == "A") rt = "승인";
+        else if (state == "A") rt = "대기";
         else if (state == "R") rt = "반려";
         else if (state == "D") rt = "전표생성";
         return rt;

@@ -144,8 +144,8 @@
   <data name="BoxReference" xml:space="preserve">
     <value>Reference</value>
   </data>
-  <data name="BoxRejected" xml:space="preserve">
-    <value>Rejected</value>
+  <data name="BoxReturn" xml:space="preserve">
+    <value>Returned</value>
   </data>
   <data name="BoxSaved" xml:space="preserve">
     <value>Saved</value>
@@ -314,5 +314,11 @@
   </data>
   <data name="WS_Progressing" xml:space="preserve">
     <value>처리중</value>
+  </data>
+  <data name="BoxRejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="BoxTakeover" xml:space="preserve">
+    <value>采购文件盒</value>
   </data>
 </root>

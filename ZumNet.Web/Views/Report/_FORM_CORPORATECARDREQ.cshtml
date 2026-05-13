@@ -50,7 +50,7 @@
                             , { "Creator", "작성자", "15%", "", "" }
                             };
         this._columnConfig = arr;
-        if (Session["Admin"].ToString() == "Y" || ViewBag.R.current["operator"].ToString() == "Y") ViewBag.R["mode"] = "dn"; //관리자
+        if (Session["Admin"].ToString() == "Y" || ViewBag.R.current["operator"].ToString() == "Y" || StringHelper.HasAcl(ViewBag.R.current["acl"].ToString(), "S")) ViewBag.R["mode"] = "dn"; //관리자
         else
         {
             ViewBag.R["mode"] = "ur";

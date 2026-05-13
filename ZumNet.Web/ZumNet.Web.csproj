@@ -406,7 +406,7 @@
     <Content Include="BizForce\PortalService\Person\PersonSimpleInfo.aspx" />
     <Content Include="Blank.htm" />
     <Content Include="Content\booking.css" />
-    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPEXPENSE_V2.xsl">
+    <Content Include="Content\Forms\CRESYN\FORM_BIZTRIPEXPENSECORP_V1.xsl">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\Forms\CRESYN\FORM_CLIENTREGAPP_V2.xsl">
@@ -2252,6 +2252,7 @@
     <Content Include="Scripts\EA\Forms\FORM_BENCHMARKING.js" />
     <Content Include="Scripts\EA\Forms\FORM_BENCHMARKINGREPORT.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZDOMTRIPEXPENSE.js" />
+    <Content Include="Scripts\EA\Forms\FORM_BIZTRIPEXPENSECORP.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPEXPENSE.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPPLAN.js" />
     <Content Include="Scripts\EA\Forms\FORM_BIZTRIPREPORT.js" />
@@ -3546,6 +3547,7 @@
     <Content Include="Areas\ExS\Views\CorpCard\_CC_CARDACK.cshtml" />
     <Content Include="Views\Report\_FORM_CORPORATECARDREQ.cshtml" />
     <Content Include="Views\Report\_REGISTER_PROJECTIDREGISTRATION.cshtml" />
+    <Content Include="Views\Common\_AuthAlias.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EA.ko.resx" />

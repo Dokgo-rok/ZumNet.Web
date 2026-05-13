@@ -241,6 +241,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Caps Lock is on과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CapsLockOn {
+            get {
+                return ResourceManager.GetString("CapsLockOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Category과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Category {

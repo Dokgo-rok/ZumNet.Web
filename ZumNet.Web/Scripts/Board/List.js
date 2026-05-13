@@ -205,7 +205,7 @@ $(function () {
         }
     }
 
-    _zw.mu.registerMsg = function () {
+    _zw.mu.registerMsg = function (pos) {
         //var fp = $('#__FormView input[data-for="SelectedFolderPath"]').val();
         var fd = $('#__FormView input[data-for="SelectedFolder"]').val();
         if (fd == '' || fd == '0') {
@@ -244,7 +244,10 @@ $(function () {
 
         _zw.V.mode = "";
         bootbox.confirm("등록 하시겠습니까?", function (rt) {
-            if (rt) { DEXT5UPLOAD.Transfer(); }
+            if (rt) {
+                if (pos && pos == 'temp') _zw.V.appid = '0';
+                DEXT5UPLOAD.Transfer();
+            }
         });        
     }
 
@@ -253,6 +256,12 @@ $(function () {
     }
 
     _zw.mu.saveMsg = function () {
+        var xf = $('#__FormView input[data-for="SelectedXFAlias"]');
+        if (xf.val() == '') {
+            _zw.mu.selectDocKind();
+            return false;
+        }
+
         var $subject = $('#txtSubject');
         if (!$.trim($subject.val())) {
             bootbox.alert("제목을 입력하세요.", function () { $subject.focus(); }); return;
@@ -260,11 +269,21 @@ $(function () {
 
         var fd = $('#__FormView input[data-for="SelectedFolder"]').val();
         var msg = '';
-        if (fd != '' && fd != '0') msg = '게시분류는 저장되지 않습니다. ';
+        if (fd != '' && fd != '0') msg = '게시분류';
+
+        if (DEXT5UPLOAD.GetTotalFileCount() > 0) {
+            if (msg != '') msg += ', 첨부파일';
+            else msg = '첨부파일'
+        }
+
+        if (msg != '') msg += '(은)는 저장되지 않습니다. ';
 
         _zw.V.mode = "save";
         bootbox.confirm(msg + "저장 하시겠습니까?", function (rt) {
-            if (rt) { DEXT5UPLOAD.Transfer(); }
+            if (rt) {
+                if (DEXT5UPLOAD.GetTotalFileCount() > 0) { DEXT5UPLOAD.DeleteAllFile(); }
+                DEXT5UPLOAD.Transfer();
+            }
         });
     }
 
@@ -274,6 +293,39 @@ $(function () {
             if (_zw.V.wnd == 'popup') window.close();
             else _zw.mu.goList();
         } else history.back();
+    }
+
+    _zw.mu.selectDocKind = function () {
+        var s = '<div class="zf-modal modal-dialog modal-sm" style="max-width: 15rem;">'
+            + '<div class="modal-content">'
+            + '<div class="modal-header">'
+            + '<h5 class="modal-title">문서종류</h5>'
+            + '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>'
+            + '</div>'
+            + '<div class="modal-body">'
+            + '<table class="table table-striped table-sm text-center mb-0">'
+            + '<tbody>'
+            + '<tr><td><a class="z-lnk-navy" href="javascript:void(0)" data-val="notice">공지사항</a></td></tr>'
+            + '<tr><td><a class="z-lnk-navy" href="javascript:void(0)" data-val="bbs">일반게시</a></td></tr>'
+            + '<tr><td><a class="z-lnk-navy" href="javascript:void(0)" data-val="file">자료실</a></td></tr>'
+            //+ '<tr><td><a class="z-lnk-navy" href="javascript:void(0)" data-val="anonymous">익명게시판</a></td></tr>'
+            + '</tbody>'
+            + '</table>'
+            + '</div>'
+            + '</div>'
+            + '</div>';
+
+        var p = $('#popBlank'); p.html(s);
+        p.find('.zf-modal .z-lnk-navy[data-val]').click(function () {
+            _zw.V.xfalias = $(this).attr('data-val');
+            $('#__FormView input[data-for="SelectedXFAlias"]').val($(this).attr('data-val'));
+            $('#__FormView input[data-for="SelectedFolder"]').val('0');
+            $('#__FormView input[data-for="SelectedFolderPath"]').val('');
+            p.modal('hide');
+        });
+
+        p.on('hidden.bs.modal', function () { p.html(''); });
+        p.modal();
     }
 
     _zw.mu.goList = function () {
