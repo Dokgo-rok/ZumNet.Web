@@ -73,7 +73,7 @@
 
             } else if (el.name == 'STDATE' || el.name == 'FIDATE') {
                 from = $('#__mainfield[name="STDATE"]'); to = $('#__mainfield[name="FIDATE"]');
-                dif = _zw.ut.diff('day', to.val(), from);
+                dif = _zw.ut.diff('day', to.val(), from.val());
                 if (dif && dif < 0) { bootbox.alert('날짜 범위 입력 오류!', function () { to.val(''); to.focus(); }); return false; }
             }
         },

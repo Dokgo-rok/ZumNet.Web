@@ -234,6 +234,11 @@ $(function () {
                             if (e.length > 0 && $.trim(e.val()) == '') { bootbox.alert("[불공제사유]를 선택하십시오!", function () { e.focus(); }); rt = false; return false; }
                         }
 
+                        //금액 확인(인정금액 <= 승인금액)
+                        if (_zw.ut.sub(0, $(this).find('[name="REQAMT"]').val(), $(this).find('[name="ACKAMT"]').val()) > 0) {
+                            bootbox.alert("[인정금액]은 [승인금액] 보다 클 수 없습니다!"); rt = false; return false;
+                        }
+
                         el2 = $(this).find('[name="ACNTCLS"]'); //계정분류코드
                         if (el2.val() == 'A1') to = 5;
                         else if (el2.val() == 'A2') to = 8;
@@ -483,7 +488,7 @@ $(function () {
                                             if (col.length > iRowCnt) {
                                                 //removeCardAck($(this).attr('data-ackid')); //배열정보 삭제
                                                 if (temp != 'CARDCORP2') _zw.form.resetField($(this));
-                                                _zw.formEx.event(vPos[1], $(this), $(col[iRowCnt]).parent().parent());
+                                                _zw.formEx.event(vPos[1], $(this), $(col[iRowCnt]).parent().parent(), subSeq);
                                                 iRowCnt++;
                                             }
                                         }
@@ -501,7 +506,7 @@ $(function () {
                                             if (temp == '' || (temp == 'CARDCORP2' && $(this).attr('data-ackid') == '')) {
                                                 if (col.length > iRowCnt + iRowCnt2) {
                                                     if (temp != 'CARDCORP2') _zw.form.resetField($(this));
-                                                    _zw.formEx.event(vPos[1], $(this), $(col[iRowCnt + iRowCnt2]).parent().parent());
+                                                    _zw.formEx.event(vPos[1], $(this), $(col[iRowCnt + iRowCnt2]).parent().parent(), subSeq);
                                                     iRowCnt2++;
                                                 }
                                             }
@@ -512,7 +517,7 @@ $(function () {
                                     if (iDiff > 0) {
                                         for (var i = 0; i < iDiff; i++) { //row 추가
                                             var newRow = _zw.form.addRow(subId); //console.log(newRow)                                            
-                                            _zw.formEx.event(vPos[1], newRow, $(col[iRowCnt + iRowCnt2 + i]).parent().parent());
+                                            _zw.formEx.event(vPos[1], newRow, $(col[iRowCnt + iRowCnt2 + i]).parent().parent(), subSeq);
                                         }
                                     }
 
@@ -775,7 +780,7 @@ $(function () {
                     }
 
                 } else if (x == 'CC_CARDACK') { //카드사용내역 테이블 > 열(row) > 필드 채우기
-                    var col = arguments[1], info = arguments[2];
+                    var col = arguments[1], info = arguments[2], tblSeq = arguments[3];
                     col.find('td [name="EXPENSETYPECODE"]').val('CARDCORP2'); _zw.formEx.change(col.find('td [name="EXPENSETYPECODE"]')[0]);
                     //col.find('td [name="EXPENSETYPE"]').val(col.find('td [name="EXPENSETYPECODE"]').children('option:selected').text());
                     
@@ -790,6 +795,14 @@ $(function () {
                     //j['LINKROW'] = subSeq + '.' + col.find('td [name="ROWSEQ"]').val(); //console.log(j);
                     //CARD_ACK.push(j); console.log(CARD_ACK);
                     col.attr('data-attr', JSON.stringify(j)); //console.log(JSON.parse(col.attr('data-attr')));
+
+                    if (tblSeq && parseInt(tblSeq) > 0) {
+                        if (tblSeq == 1) {
+                            col.find('td [name="HOTEL"]').val(j['MERCNAME']);
+                        } else if (tblSeq > 2) {
+                            col.find('td [name="LOCATION"]').val(j['MERCNAME']);
+                        }
+                    }
 
                 } else {
                     row = x.parentNode.parentNode;
